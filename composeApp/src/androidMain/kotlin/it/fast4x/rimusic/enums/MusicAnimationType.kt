@@ -1,23 +1,20 @@
 package it.fast4x.rimusic.enums
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
+import androidx.annotation.StringRes
 import it.fast4x.rimusic.R
+import me.knighthat.enums.TextView
 
-enum class MusicAnimationType {
-    Disabled,
-    Bars,
-    CrazyBars,
-    CrazyPoints,
-    Bubbles;
+enum class MusicAnimationType(
+    @field:StringRes override val textId: Int
+): TextView {
 
-    val textName: String
-        @Composable
-        get() = when(this) {
-            Disabled -> stringResource(R.string.vt_disabled)
-            Bars -> stringResource(R.string.music_animations_bars)
-            CrazyBars -> stringResource(R.string.music_animations_crazy_bars)
-            CrazyPoints -> stringResource(R.string.music_animations_crazy_points)
-            Bubbles -> stringResource(R.string.music_animations_bubbles)
-        }
+    Disabled( R.string.vt_disabled ),
+
+    Bars( R.string.music_animations_bars ),
+
+    CrazyBars( R.string.music_animations_crazy_bars ),
+
+    CrazyPoints( R.string.music_animations_crazy_points ),
+
+    Bubbles( R.string.music_animations_bubbles );
 }

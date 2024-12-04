@@ -3,15 +3,9 @@ package it.fast4x.rimusic.ui.components.tab
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -19,21 +13,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import it.fast4x.rimusic.R
+import it.fast4x.rimusic.enums.Drawable
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.enums.SortOrder
+import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.MenuState
-import it.fast4x.rimusic.ui.components.themed.MenuEntry
-import it.fast4x.rimusic.utils.menuStyleKey
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
 import it.fast4x.rimusic.ui.components.tab.toolbar.Clickable
 import it.fast4x.rimusic.ui.components.tab.toolbar.Menu
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
-import it.fast4x.rimusic.enums.Drawable
-import it.fast4x.rimusic.enums.MenuTitle
-import it.fast4x.rimusic.typography
+import it.fast4x.rimusic.ui.components.themed.MenuEntry
+import it.fast4x.rimusic.utils.menuStyleKey
+import it.fast4x.rimusic.utils.rememberPreference
+import it.fast4x.rimusic.utils.semiBold
+import me.knighthat.enums.TextView
 import org.intellij.lang.annotations.MagicConstant
 import kotlin.enums.EnumEntries
 
@@ -100,10 +94,10 @@ open class Sort<T: Enum<T>> protected constructor(
                 else
                     painterResource( R.drawable.text )
 
-            if( it is MenuTitle)
+            if( it is TextView)
                 MenuEntry(
                     painter = icon,
-                    text = stringResource( it.titleId ),
+                    text = it.text,
                     onClick = {
                         onDismiss()
                         actions( it )

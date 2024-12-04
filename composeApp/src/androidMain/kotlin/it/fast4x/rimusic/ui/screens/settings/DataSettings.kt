@@ -7,25 +7,11 @@ import android.text.format.Formatter
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
@@ -35,47 +21,20 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import coil.Coil
 import coil.annotation.ExperimentalCoilApi
-import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
+import it.fast4x.rimusic.*
 import it.fast4x.rimusic.R
-import it.fast4x.rimusic.enums.CacheType
-import it.fast4x.rimusic.enums.CoilDiskCacheMaxSize
-import it.fast4x.rimusic.enums.ExoPlayerCacheLocation
-import it.fast4x.rimusic.enums.ExoPlayerDiskCacheMaxSize
-import it.fast4x.rimusic.enums.ExoPlayerDiskDownloadCacheMaxSize
-import it.fast4x.rimusic.enums.NavigationBarPosition
-import it.fast4x.rimusic.enums.PopupType
+import it.fast4x.rimusic.enums.*
+import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
-import it.fast4x.rimusic.ui.components.themed.CacheSpaceIndicator
-import it.fast4x.rimusic.ui.components.themed.ConfirmationDialog
-import it.fast4x.rimusic.ui.components.themed.DefaultDialog
-import it.fast4x.rimusic.ui.components.themed.HeaderIconButton
-import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
-import it.fast4x.rimusic.ui.components.themed.InputNumericDialog
-import it.fast4x.rimusic.ui.components.themed.SmartMessage
+import it.fast4x.rimusic.ui.components.themed.*
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.shimmer
-import it.fast4x.rimusic.utils.RestartPlayerService
-import it.fast4x.rimusic.utils.bold
-import it.fast4x.rimusic.utils.coilCustomDiskCacheKey
-import it.fast4x.rimusic.utils.coilDiskCacheMaxSizeKey
-import it.fast4x.rimusic.utils.exoPlayerCacheLocationKey
-import it.fast4x.rimusic.utils.exoPlayerCustomCacheKey
-import it.fast4x.rimusic.utils.exoPlayerDiskCacheMaxSizeKey
-import it.fast4x.rimusic.utils.exoPlayerDiskDownloadCacheMaxSizeKey
-import it.fast4x.rimusic.utils.intent
-import it.fast4x.rimusic.utils.pauseSearchHistoryKey
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.semiBold
+import it.fast4x.rimusic.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.service.MyDownloadHelper
-import it.fast4x.rimusic.typography
-import it.fast4x.rimusic.utils.asMediaItem
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -396,20 +355,7 @@ fun DataSettings() {
 
                     restartService = true
                 },
-                valueText = {
-                    when (it) {
-                        CoilDiskCacheMaxSize.Custom -> stringResource(R.string.custom)
-                        CoilDiskCacheMaxSize.`32MB` -> "32MB"
-                        CoilDiskCacheMaxSize.`64MB` -> "64MB"
-                        CoilDiskCacheMaxSize.`128MB` -> "128MB"
-                        CoilDiskCacheMaxSize.`256MB`-> "256MB"
-                        CoilDiskCacheMaxSize.`512MB`-> "512MB"
-                        CoilDiskCacheMaxSize.`1GB`-> "1GB"
-                        CoilDiskCacheMaxSize.`2GB` -> "2GB"
-                        CoilDiskCacheMaxSize.`4GB` -> "4GB"
-                        CoilDiskCacheMaxSize.`8GB` -> "8GB"
-                    }
-                }
+                valueText = { it.text }
             )
             RestartPlayerService(restartService, onRestart = { restartService = false } )
 
@@ -470,45 +416,31 @@ fun DataSettings() {
                         if (exoPlayerDiskCacheMaxSize == ExoPlayerDiskCacheMaxSize.Custom)
                             showExoPlayerCustomCacheDialog = true
 
-                        restartService = true
-                    },
-                    valueText = {
-                        when (it) {
-                            ExoPlayerDiskCacheMaxSize.Disabled -> stringResource(R.string.turn_off)
-                            ExoPlayerDiskCacheMaxSize.Unlimited -> stringResource(R.string.unlimited)
-                            ExoPlayerDiskCacheMaxSize.Custom -> stringResource(R.string.custom)
-                            ExoPlayerDiskCacheMaxSize.`32MB` -> "32MB"
-                            ExoPlayerDiskCacheMaxSize.`512MB` -> "512MB"
-                            ExoPlayerDiskCacheMaxSize.`1GB` -> "1GB"
-                            ExoPlayerDiskCacheMaxSize.`2GB` -> "2GB"
-                            ExoPlayerDiskCacheMaxSize.`4GB` -> "4GB"
-                            ExoPlayerDiskCacheMaxSize.`8GB` -> "8GB"
+                    restartService = true
+                },
+                valueText = { it.text }
+            )
+            RestartPlayerService(restartService, onRestart = { restartService = false } )
 
-                        }
+            if (showExoPlayerCustomCacheDialog) {
+                InputNumericDialog(
+                    title = stringResource(R.string.set_custom_cache),
+                    placeholder = stringResource(R.string.enter_value_in_mb),
+                    value = exoPlayerCustomCache.toString(),
+                    valueMin = "32",
+                    valueMax = "10000",
+                    onDismiss = { showExoPlayerCustomCacheDialog = false },
+                    setValue = {
+                        //Log.d("customCache", it)
+                        exoPlayerCustomCache = it.toInt()
+                        showExoPlayerCustomCacheDialog = false
+                        restartService = true
                     }
                 )
                 RestartPlayerService(restartService, onRestart = { restartService = false } )
+            }
 
-                if (showExoPlayerCustomCacheDialog) {
-                    InputNumericDialog(
-                        title = stringResource(R.string.set_custom_cache),
-                        placeholder = stringResource(R.string.enter_value_in_mb),
-                        value = exoPlayerCustomCache.toString(),
-                        valueMin = "32",
-                        valueMax = "10000",
-                        onDismiss = { showExoPlayerCustomCacheDialog = false },
-                        setValue = {
-                            //Log.d("customCache", it)
-                            exoPlayerCustomCache = it.toInt()
-                            showExoPlayerCustomCacheDialog = false
-                            restartService = true
-                        }
-                    )
-                    RestartPlayerService(restartService, onRestart = { restartService = false } )
-                }
-
-                CacheSpaceIndicator(cacheType = CacheType.CachedSongs, horizontalPadding = 20.dp)
-            //}
+            CacheSpaceIndicator(cacheType = CacheType.CachedSongs, horizontalPadding = 20.dp)
         }
 
         binder?.downloadCache?.let { downloadCache ->
@@ -540,19 +472,7 @@ fun DataSettings() {
                     exoPlayerDiskDownloadCacheMaxSize = it
                     restartService = true
                 },
-                valueText = {
-                    when (it) {
-                        ExoPlayerDiskDownloadCacheMaxSize.Disabled -> stringResource(R.string.turn_off)
-                        ExoPlayerDiskDownloadCacheMaxSize.Unlimited -> stringResource(R.string.unlimited)
-                        ExoPlayerDiskDownloadCacheMaxSize.`32MB` -> "32MB"
-                        ExoPlayerDiskDownloadCacheMaxSize.`512MB` -> "512MB"
-                        ExoPlayerDiskDownloadCacheMaxSize.`1GB` -> "1GB"
-                        ExoPlayerDiskDownloadCacheMaxSize.`2GB` -> "2GB"
-                        ExoPlayerDiskDownloadCacheMaxSize.`4GB` -> "4GB"
-                        ExoPlayerDiskDownloadCacheMaxSize.`8GB` -> "8GB"
-
-                    }
-                }
+                valueText = { it.text }
             )
             RestartPlayerService(restartService, onRestart = { restartService = false } )
 
@@ -566,12 +486,7 @@ fun DataSettings() {
                 exoPlayerCacheLocation = it
                 restartService = true
             },
-            valueText = {
-                when (it) {
-                    ExoPlayerCacheLocation.Private -> stringResource(R.string.cache_location_private)
-                    ExoPlayerCacheLocation.System -> stringResource(R.string.cache_location_system)
-                }
-            }
+            valueText = { it.text }
         )
 
         SettingsDescription(stringResource(R.string.info_private_cache_location_can_t_cleaned))

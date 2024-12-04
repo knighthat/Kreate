@@ -176,10 +176,10 @@ fun StatisticsPage(
         StatisticsCategory.Songs
     )
     val buttonsList = listOf(
-        StatisticsCategory.Songs to stringResource(R.string.songs),
-        StatisticsCategory.Artists to stringResource(R.string.artists),
-        StatisticsCategory.Albums to stringResource(R.string.albums),
-        StatisticsCategory.Playlists to stringResource(R.string.playlists)
+        StatisticsCategory.Songs to StatisticsCategory.Songs.text,
+        StatisticsCategory.Artists to StatisticsCategory.Artists.text,
+        StatisticsCategory.Albums to StatisticsCategory.Albums.text,
+        StatisticsCategory.Playlists to StatisticsCategory.Playlists.text
     )
 
     Box(
@@ -211,15 +211,7 @@ fun StatisticsPage(
                     span = { GridItemSpan(maxLineSpan) }
                 ) {
                     HeaderWithIcon(
-                        title = when (statisticsType) {
-                            StatisticsType.Today -> stringResource(R.string.today)
-                            StatisticsType.OneWeek -> stringResource(R.string._1_week)
-                            StatisticsType.OneMonth -> stringResource(R.string._1_month)
-                            StatisticsType.ThreeMonths -> stringResource(R.string._3_month)
-                            StatisticsType.SixMonths -> stringResource(R.string._6_month)
-                            StatisticsType.OneYear -> stringResource(R.string._1_year)
-                            StatisticsType.All -> stringResource(R.string.all)
-                        },
+                        title = statisticsType.text,
                         iconId = statisticsType.iconId,
                         enabled = true,
                         showIcon = true,

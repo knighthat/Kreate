@@ -1,29 +1,24 @@
 package it.fast4x.rimusic.enums
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
+import androidx.annotation.StringRes
 import it.fast4x.rimusic.R
+import me.knighthat.enums.TextView
 
-enum class PlayerTimelineType {
-    Default,
-    Wavy,
-    PinBar,
-    BodiedBar,
-    FakeAudioBar,
-    ThinBar,
-    ColoredBar;
+enum class PlayerTimelineType(
+    @field:StringRes override val textId: Int
+): TextView {
 
+    Default( R.string._default ),
 
-    val textName: String
-        @Composable
-        get() = when (this) {
-            Default -> stringResource(R.string._default)
-            Wavy -> stringResource(R.string.wavy_timeline)
-            BodiedBar -> stringResource(R.string.bodied_bar)
-            PinBar -> stringResource(R.string.pin_bar)
-            FakeAudioBar -> stringResource(R.string.fake_audio_bar)
-            ThinBar -> stringResource(R.string.thin_bar)
-            ColoredBar -> stringResource(R.string.colored_bar)
-        }
+    Wavy( R.string.wavy_timeline ),
 
+    PinBar( R.string.bodied_bar ),
+
+    BodiedBar( R.string.pin_bar ),
+
+    FakeAudioBar( R.string.fake_audio_bar ),
+
+    ThinBar( R.string.thin_bar ),
+
+    ColoredBar( R.string.colored_bar );
 }

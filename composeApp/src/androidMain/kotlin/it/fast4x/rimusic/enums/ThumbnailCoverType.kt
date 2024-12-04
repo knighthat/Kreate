@@ -1,19 +1,14 @@
 package it.fast4x.rimusic.enums
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
+import androidx.annotation.StringRes
 import it.fast4x.rimusic.R
+import me.knighthat.enums.TextView
 
-enum class ThumbnailCoverType {
-    Vinyl,
-    CD,
-    CDwithCover;
+enum class ThumbnailCoverType(
+    @field:StringRes override val textId: Int
+): TextView {
 
-    val textName: String
-        @Composable
-        get() = when (this) {
-            Vinyl -> stringResource(R.string.cover_type_vinyl)
-            CD -> stringResource(R.string.cover_type_cd)
-            CDwithCover -> stringResource(R.string.cover_type_cd_with_cover)
-        }
+    Vinyl (R.string.cover_type_vinyl ),
+    CD( R.string.cover_type_cd ),
+    CDwithCover( R.string.cover_type_cd_with_cover );
 }

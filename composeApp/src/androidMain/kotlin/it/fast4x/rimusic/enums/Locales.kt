@@ -1,56 +1,63 @@
 package it.fast4x.rimusic.enums
 
-enum class Languages {
-    System,
-    Afrikaans,
-    Arabic,
-    Azerbaijani,
-    Bashkir,
-    Bengali,
-    Catalan,
-    Danish,
-    English,
-    Esperanto,
-    Estonian,
-    ChineseSimplified,
-    ChineseTraditional,
-    Czech,
-    Dutch,
-    Filipino,
-    Finnish,
-    French,
-    Galician,
-    German,
-    Greek,
-    Hebrew,
-    Hindi,
-    Hungarian,
-    Italian,
-    Indonesian,
-    Interlingua,
-    Irish,
-    Japanese,
-    Korean,
-    Malayalam,
-    Norwegian,
-    Odia,
+import androidx.annotation.StringRes
+import it.fast4x.rimusic.R
+import me.knighthat.enums.TextView
+
+enum class Languages(
+    @field:StringRes override val textId: Int
+): TextView {
+
+    System( R.string.system_language ),
+    Afrikaans( R.string.lang_afrikaans ),
+    Arabic( R.string.arabic ),
+    Azerbaijani( R.string.lang_azerbaijani ),
+    Bashkir( R.string.bashkir ),
+    Bengali( R.string.lang_bengali ),
+    Catalan( R.string.catalan ),
+    Danish( R.string.lang_danish ),
+    English( R.string.english ),
+    Esperanto( R.string.esperanto ),
+    Estonian( R.string.lang_estonian ),
+    ChineseSimplified( R.string.chinese_simplified ),
+    ChineseTraditional( R.string.chinese_traditional ),
+    Czech( R.string.czech ),
+    Dutch( R.string.lang_dutch ),
+    Filipino( R.string.lang_filipino ),
+    Finnish( R.string.lang_finnish ),
+    French( R.string.french ),
+    Galician( R.string.lang_galician ),
+    German( R.string.german ),
+    Greek( R.string.greek ),
+    Hebrew( R.string.lang_hebrew ),
+    Hindi( R.string.lang_hindi ),
+    Hungarian( R.string.hungarian ),
+    Italian( R.string.italian ),
+    Indonesian( R.string.indonesian ),
+    Interlingua( R.string.lang_interlingua ),
+    Irish( R.string.lang_irish ),
+    Japanese( R.string.lang_japanese ),
+    Korean( R.string.korean ),
+    Malayalam( R.string.lang_malayalam ),
+    Norwegian( R.string.lang_norwegian ),
+    Odia( R.string.odia ),
     //Persian,
-    Polish,
-    PortugueseBrazilian,
-    Portuguese,
-    Romanian,
+    Polish( R.string.polish ),
+    PortugueseBrazilian( R.string.portuguese_brazilian ),
+    Portuguese( R.string.portuguese ),
+    Romanian( R.string.romanian ),
     //RomanianEmo,
-    Russian,
-    SerbianCyrillic,
-    SerbianLatin,
-    Sinhala,
-    Spanish,
-    Swedish,
-    Tamil,
-    Telugu,
-    Turkish,
-    Ukrainian,
-    Vietnamese;
+    Russian( R.string.russian ),
+    SerbianCyrillic( R.string.lang_serbian_cyrillic ),
+    SerbianLatin( R.string.lang_serbian_latin ),
+    Sinhala( R.string.lang_sinhala ),
+    Spanish( R.string.spanish ),
+    Swedish( R.string.lang_swedish ),
+    Tamil( R.string.lang_tamil ),
+    Telugu( R.string.lang_telugu ),
+    Turkish( R.string.turkish ),
+    Ukrainian( R.string.lang_ukrainian ),
+    Vietnamese( R.string.lang_vietnamese );
 
     val code: String
         get() = when (this) {
@@ -105,8 +112,6 @@ enum class Languages {
             Ukrainian -> "uk"
             Vietnamese -> "vi"
         }
-
-
 }
 
 enum class Countries {

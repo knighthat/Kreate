@@ -6,14 +6,9 @@ import android.app.PendingIntent
 import android.app.WallpaperManager
 import android.app.WallpaperManager.FLAG_LOCK
 import android.app.WallpaperManager.FLAG_SYSTEM
-import android.content.BroadcastReceiver
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.content.IntentFilter
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.database.SQLException
 import android.graphics.Bitmap
@@ -34,49 +29,28 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.core.text.isDigitsOnly
-import androidx.media3.common.AudioAttributes
-import androidx.media3.common.C
-import androidx.media3.common.ForwardingPlayer
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
-import androidx.media3.common.PlaybackException
-import androidx.media3.common.PlaybackParameters
-import androidx.media3.common.Player
+import androidx.media3.common.*
 import androidx.media3.common.Player.STATE_IDLE
-import androidx.media3.common.Timeline
 import androidx.media3.common.audio.SonicAudioProcessor
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.DataSpec
-import androidx.media3.datasource.cache.Cache
-import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
-import androidx.media3.datasource.cache.NoOpCacheEvictor
-import androidx.media3.datasource.cache.SimpleCache
+import androidx.media3.datasource.cache.*
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.PlaybackStats
 import androidx.media3.exoplayer.analytics.PlaybackStatsListener
-import androidx.media3.exoplayer.audio.AudioSink
-import androidx.media3.exoplayer.audio.DefaultAudioOffloadSupportProvider
-import androidx.media3.exoplayer.audio.DefaultAudioSink
+import androidx.media3.exoplayer.audio.*
 import androidx.media3.exoplayer.audio.DefaultAudioSink.DefaultAudioProcessorChain
-import androidx.media3.exoplayer.audio.SilenceSkippingAudioProcessor
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
 import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
 import androidx.media3.extractor.DefaultExtractorsFactory
-import androidx.media3.session.CommandButton
-import androidx.media3.session.DefaultMediaNotificationProvider
-import androidx.media3.session.MediaController
-import androidx.media3.session.MediaLibraryService
-import androidx.media3.session.MediaNotification
-import androidx.media3.session.MediaSession
-import androidx.media3.session.MediaStyleNotificationHelper
-import androidx.media3.session.SessionToken
+import androidx.media3.session.*
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.MoreExecutors
 import it.fast4x.innertube.Innertube
@@ -87,111 +61,22 @@ import it.fast4x.innertube.utils.from
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.R
+import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.cleanPrefix
-import it.fast4x.rimusic.enums.AudioQualityFormat
-import it.fast4x.rimusic.enums.DurationInMilliseconds
-import it.fast4x.rimusic.enums.ExoPlayerCacheLocation
-import it.fast4x.rimusic.enums.ExoPlayerDiskCacheMaxSize
-import it.fast4x.rimusic.enums.ExoPlayerMinTimeForEvent
-import it.fast4x.rimusic.enums.NotificationButtons
-import it.fast4x.rimusic.enums.NotificationType
-import it.fast4x.rimusic.enums.PopupType
-import it.fast4x.rimusic.enums.QueueLoopType
-import it.fast4x.rimusic.enums.WallpaperType
+import it.fast4x.rimusic.enums.*
 import it.fast4x.rimusic.extensions.audiovolume.AudioVolumeObserver
 import it.fast4x.rimusic.extensions.audiovolume.OnAudioVolumeChangedListener
 import it.fast4x.rimusic.extensions.discord.sendDiscordPresence
-import it.fast4x.rimusic.models.Event
-import it.fast4x.rimusic.models.PersistentQueue
-import it.fast4x.rimusic.models.PersistentSong
-import it.fast4x.rimusic.models.QueuedMediaItem
-import it.fast4x.rimusic.models.Song
-import it.fast4x.rimusic.models.asMediaItem
+import it.fast4x.rimusic.models.*
 import it.fast4x.rimusic.service.BitmapProvider
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.ui.components.themed.SmartMessage
 import it.fast4x.rimusic.ui.widgets.PlayerHorizontalWidget
 import it.fast4x.rimusic.ui.widgets.PlayerVerticalWidget
-import it.fast4x.rimusic.utils.CoilBitmapLoader
-import it.fast4x.rimusic.utils.TimerJob
-import it.fast4x.rimusic.utils.YouTubeRadio
-import it.fast4x.rimusic.utils.activityPendingIntent
-import it.fast4x.rimusic.utils.audioQualityFormatKey
-import it.fast4x.rimusic.utils.autoLoadSongsInQueueKey
-import it.fast4x.rimusic.utils.broadCastPendingIntent
-import it.fast4x.rimusic.utils.closebackgroundPlayerKey
-import it.fast4x.rimusic.utils.collect
-import it.fast4x.rimusic.utils.discordPersonalAccessTokenKey
-import it.fast4x.rimusic.utils.discoverKey
-import it.fast4x.rimusic.utils.enableWallpaperKey
-import it.fast4x.rimusic.utils.encryptedPreferences
-import it.fast4x.rimusic.utils.exoPlayerCacheLocationKey
-import it.fast4x.rimusic.utils.exoPlayerCustomCacheKey
-import it.fast4x.rimusic.utils.exoPlayerDiskCacheMaxSizeKey
-import it.fast4x.rimusic.utils.exoPlayerMinTimeForEventKey
-import it.fast4x.rimusic.utils.forcePlayFromBeginning
-import it.fast4x.rimusic.utils.getEnum
-import it.fast4x.rimusic.utils.intent
-import it.fast4x.rimusic.utils.isAtLeastAndroid10
-import it.fast4x.rimusic.utils.isAtLeastAndroid6
-import it.fast4x.rimusic.utils.isAtLeastAndroid7
-import it.fast4x.rimusic.utils.isAtLeastAndroid8
-import it.fast4x.rimusic.utils.isAtLeastAndroid81
-import it.fast4x.rimusic.utils.isDiscordPresenceEnabledKey
-import it.fast4x.rimusic.utils.isPauseOnVolumeZeroEnabledKey
-import it.fast4x.rimusic.utils.loudnessBaseGainKey
-import it.fast4x.rimusic.utils.manageDownload
-import it.fast4x.rimusic.utils.mediaItems
-import it.fast4x.rimusic.utils.minimumSilenceDurationKey
-import it.fast4x.rimusic.utils.notificationPlayerFirstIconKey
-import it.fast4x.rimusic.utils.notificationPlayerSecondIconKey
-import it.fast4x.rimusic.utils.notificationTypeKey
-import it.fast4x.rimusic.utils.pauseListenHistoryKey
-import it.fast4x.rimusic.utils.persistentQueueKey
-import it.fast4x.rimusic.utils.playNext
-import it.fast4x.rimusic.utils.playPrevious
-import it.fast4x.rimusic.utils.playbackFadeAudioDurationKey
-import it.fast4x.rimusic.utils.playbackPitchKey
-import it.fast4x.rimusic.utils.playbackSpeedKey
-import it.fast4x.rimusic.utils.preferences
-import it.fast4x.rimusic.utils.putEnum
-import it.fast4x.rimusic.utils.queueLoopTypeKey
-import it.fast4x.rimusic.utils.resumePlaybackOnStartKey
-import it.fast4x.rimusic.utils.resumePlaybackWhenDeviceConnectedKey
-import it.fast4x.rimusic.utils.setLikeState
-import it.fast4x.rimusic.utils.showDownloadButtonBackgroundPlayerKey
-import it.fast4x.rimusic.utils.showLikeButtonBackgroundPlayerKey
-import it.fast4x.rimusic.utils.skipMediaOnErrorKey
-import it.fast4x.rimusic.utils.skipSilenceKey
-import it.fast4x.rimusic.utils.startFadeAnimator
-import it.fast4x.rimusic.utils.timer
-import it.fast4x.rimusic.utils.toggleRepeatMode
-import it.fast4x.rimusic.utils.toggleShuffleMode
-import it.fast4x.rimusic.utils.volumeNormalizationKey
-import it.fast4x.rimusic.utils.wallpaperTypeKey
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import it.fast4x.rimusic.appContext
-import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.autoDownloadSongWhenLikedKey
+import it.fast4x.rimusic.utils.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.io.IOException
 import java.io.ObjectInputStream
@@ -1030,8 +915,10 @@ class PlayerServiceModern : MediaLibraryService(),
             buttons
                 .filter { it == notificationPlayerFirstIcon }
                 .map {
+                    val displayName = appContext().resources.getString( it.textId )
+
                     CommandButton.Builder()
-                        .setDisplayName(it.displayName)
+                        .setDisplayName( displayName )
                         .setIconResId(
                             it.getStateIcon(
                                 it,
@@ -1050,8 +937,10 @@ class PlayerServiceModern : MediaLibraryService(),
             buttons
                 .filter { it == notificationPlayerSecondIcon }
                 .map {
+                    val displayName = appContext().resources.getString( it.textId )
+
                     CommandButton.Builder()
-                        .setDisplayName(it.displayName)
+                        .setDisplayName( displayName )
                         .setIconResId(
                             it.getStateIcon(
                                 it,
@@ -1070,8 +959,10 @@ class PlayerServiceModern : MediaLibraryService(),
             buttons
                 .filterNot { it == notificationPlayerFirstIcon || it == notificationPlayerSecondIcon }
                 .map {
+                    val displayName = appContext().resources.getString( it.textId )
+
                     CommandButton.Builder()
-                        .setDisplayName(it.displayName)
+                        .setDisplayName( displayName )
                         .setIconResId(
                             it.getStateIcon(
                                 it,
@@ -1158,7 +1049,7 @@ class PlayerServiceModern : MediaLibraryService(),
                             player.repeatMode,
                             player.shuffleModeEnabled
                         ),
-                        it.displayName,
+                        appContext().resources.getString( it.textId ),
                         it.pendingIntent
                     )
                 }
@@ -1176,7 +1067,7 @@ class PlayerServiceModern : MediaLibraryService(),
                             player.repeatMode,
                             player.shuffleModeEnabled
                         ),
-                        it.displayName,
+                        appContext().resources.getString( it.textId ),
                         it.pendingIntent
                     )
                 }
@@ -1194,7 +1085,7 @@ class PlayerServiceModern : MediaLibraryService(),
                             player.repeatMode,
                             player.shuffleModeEnabled
                         ),
-                        it.displayName,
+                        appContext().resources.getString( it.textId ),
                         it.pendingIntent
                     )
                 }

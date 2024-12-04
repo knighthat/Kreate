@@ -1,20 +1,13 @@
 package it.fast4x.rimusic.enums
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
+import androidx.annotation.StringRes
 import it.fast4x.rimusic.R
+import me.knighthat.enums.TextView
 
-enum class ArtistsType {
-    Favorites,
-    Library;
-    //All;
+enum class ArtistsType(
+    @field:StringRes override val textId: Int
+): TextView {
 
-    val textName: String
-        @Composable
-        get() = when( this ) {
-            Favorites -> stringResource(R.string.favorites)
-            Library -> stringResource(R.string.library)
-            //All -> stringResource(R.string.all)
-        }
-
+    Favorites( R.string.favorites ),
+    Library( R.string.library );
 }

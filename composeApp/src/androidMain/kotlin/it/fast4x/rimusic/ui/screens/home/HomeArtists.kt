@@ -6,19 +6,8 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -33,35 +22,23 @@ import androidx.media3.common.util.UnstableApi
 import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.R
-import it.fast4x.rimusic.enums.ArtistSortBy
-import it.fast4x.rimusic.enums.ArtistsType
-import it.fast4x.rimusic.enums.NavigationBarPosition
-import it.fast4x.rimusic.enums.UiType
+import it.fast4x.rimusic.colorPalette
+import it.fast4x.rimusic.enums.*
 import it.fast4x.rimusic.models.Artist
 import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.ui.components.ButtonsRow
-import it.fast4x.rimusic.ui.components.themed.FloatingActionsContainerWithScrollToTop
-import it.fast4x.rimusic.ui.components.themed.HeaderInfo
-import it.fast4x.rimusic.ui.components.themed.MultiFloatingActionsContainer
-import it.fast4x.rimusic.ui.items.ArtistItem
-import it.fast4x.rimusic.ui.styling.Dimensions
-import it.fast4x.rimusic.utils.artistSortByKey
-import it.fast4x.rimusic.utils.artistSortOrderKey
-import it.fast4x.rimusic.utils.artistTypeKey
-import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.disableScrollingTextKey
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.showFloatingIconKey
-import kotlinx.coroutines.flow.map
-import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.ui.components.themed.Search
 import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
 import it.fast4x.rimusic.ui.components.tab.ItemSize
 import it.fast4x.rimusic.ui.components.tab.Sort
 import it.fast4x.rimusic.ui.components.tab.TabHeader
 import it.fast4x.rimusic.ui.components.tab.toolbar.Randomizer
 import it.fast4x.rimusic.ui.components.tab.toolbar.SongsShuffle
+import it.fast4x.rimusic.ui.components.themed.*
+import it.fast4x.rimusic.ui.items.ArtistItem
+import it.fast4x.rimusic.ui.styling.Dimensions
+import it.fast4x.rimusic.utils.*
 import it.fast4x.rimusic.utils.Preference.HOME_ARTIST_ITEM_SIZE
+import kotlinx.coroutines.flow.map
 
 @ExperimentalMaterial3Api
 @UnstableApi
@@ -105,7 +82,7 @@ fun HomeArtists(
     }
 
     var artistType by rememberPreference(artistTypeKey, ArtistsType.Favorites )
-    val buttonsList = ArtistsType.entries.map { it to it.textName }
+    val buttonsList = ArtistsType.entries.map { it to it.text }
 
 
     LaunchedEffect( sort.sortBy, sort.sortOrder, artistType ) {

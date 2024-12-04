@@ -3,12 +3,8 @@ package it.fast4x.rimusic.utils
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -16,28 +12,21 @@ import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.PINNED_PREFIX
 import it.fast4x.rimusic.PIPED_PREFIX
 import it.fast4x.rimusic.R
+import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.enums.PlaylistSongSortBy
 import it.fast4x.rimusic.enums.SortOrder
 import it.fast4x.rimusic.models.PipedSession
 import it.fast4x.rimusic.models.PlaylistPreview
 import it.fast4x.rimusic.models.Song
+import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.MenuState
-import it.fast4x.rimusic.ui.components.themed.MenuEntry
-import it.fast4x.rimusic.ui.components.themed.SmartMessage
+import it.fast4x.rimusic.ui.components.tab.Sort
+import it.fast4x.rimusic.ui.components.tab.toolbar.*
+import it.fast4x.rimusic.ui.components.themed.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
-import it.fast4x.rimusic.appContext
-import it.fast4x.rimusic.ui.components.themed.DeleteDialog
-import it.fast4x.rimusic.ui.components.themed.IDialog
-import it.fast4x.rimusic.ui.components.tab.Sort
-import it.fast4x.rimusic.ui.components.tab.toolbar.ConfirmDialog
-import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
-import it.fast4x.rimusic.ui.components.tab.toolbar.DualIcon
-import it.fast4x.rimusic.ui.components.tab.toolbar.DynamicColor
-import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
-import it.fast4x.rimusic.typography
 import java.util.UUID
 
 
@@ -151,22 +140,11 @@ class PlaylistSongsSort private constructor(
     }
 
     @Composable
-    private fun sortTitle( sortBy: PlaylistSongSortBy ): String =
-        when( sortBy ) {
-            PlaylistSongSortBy.ArtistAndAlbum ->
-                "${stringResource(R.string.sort_artist)}, ${stringResource(R.string.sort_album)}"
-
-            else -> stringResource( sortBy.titleId )
-        }
-
-    @Composable
     override fun MenuComponent() {
         super.Menu( sortByEntries ) {
-            val icon = it.icon
-
             MenuEntry(
-                painter = icon,
-                text = sortTitle( it ),
+                painter = it.icon,
+                text = it.text,
                 onClick = {
                     // Don't pass menuState::hide, it won't work
                     menuState.hide()
@@ -181,7 +159,7 @@ class PlaylistSongsSort private constructor(
         super.ToolBarButton()
 
         BasicText(
-            text = sortTitle( this.sortBy ),
+            text = this.sortBy.text,
             style = typography().xs.semiBold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

@@ -5,19 +5,8 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,46 +24,26 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import it.fast4x.compose.persist.persistList
-import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.MODIFIED_PREFIX
+import it.fast4x.rimusic.*
 import it.fast4x.rimusic.R
-import it.fast4x.rimusic.enums.AlbumSortBy
-import it.fast4x.rimusic.enums.AlbumsType
-import it.fast4x.rimusic.enums.NavigationBarPosition
-import it.fast4x.rimusic.enums.UiType
+import it.fast4x.rimusic.enums.*
 import it.fast4x.rimusic.models.Album
 import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.models.SongPlaylistMap
 import it.fast4x.rimusic.ui.components.ButtonsRow
 import it.fast4x.rimusic.ui.components.LocalMenuState
-import it.fast4x.rimusic.ui.components.themed.AlbumsItemMenu
-import it.fast4x.rimusic.ui.components.themed.FloatingActionsContainerWithScrollToTop
-import it.fast4x.rimusic.ui.components.themed.HeaderInfo
-import it.fast4x.rimusic.ui.components.themed.InputTextDialog
-import it.fast4x.rimusic.ui.components.themed.MultiFloatingActionsContainer
-import it.fast4x.rimusic.ui.items.AlbumItem
-import it.fast4x.rimusic.ui.styling.Dimensions
-import it.fast4x.rimusic.utils.addNext
-import it.fast4x.rimusic.utils.albumSortByKey
-import it.fast4x.rimusic.utils.albumSortOrderKey
-import it.fast4x.rimusic.utils.albumTypeKey
-import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.disableScrollingTextKey
-import it.fast4x.rimusic.utils.enqueue
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.showFloatingIconKey
-import kotlinx.coroutines.flow.map
-import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.ui.components.themed.Search
 import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
 import it.fast4x.rimusic.ui.components.tab.ItemSize
 import it.fast4x.rimusic.ui.components.tab.Sort
 import it.fast4x.rimusic.ui.components.tab.TabHeader
 import it.fast4x.rimusic.ui.components.tab.toolbar.Randomizer
 import it.fast4x.rimusic.ui.components.tab.toolbar.SongsShuffle
+import it.fast4x.rimusic.ui.components.themed.*
+import it.fast4x.rimusic.ui.items.AlbumItem
+import it.fast4x.rimusic.ui.styling.Dimensions
+import it.fast4x.rimusic.utils.*
 import it.fast4x.rimusic.utils.Preference.HOME_ALBUM_ITEM_SIZE
-import it.fast4x.rimusic.thumbnailShape
+import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalTextApi
@@ -119,7 +88,7 @@ fun HomeAlbums(
     }
 
     var albumType by rememberPreference(albumTypeKey, AlbumsType.Favorites )
-    val buttonsList = AlbumsType.entries.map { it to it.textName }
+    val buttonsList = AlbumsType.entries.map { it to it.text }
 
     LaunchedEffect( sort.sortBy, sort.sortOrder, albumType ) {
         when ( albumType ) {

@@ -2,23 +2,10 @@ package it.fast4x.rimusic.ui.screens.settings
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -26,122 +13,13 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import it.fast4x.rimusic.R
-import it.fast4x.rimusic.enums.BackgroundProgress
-import it.fast4x.rimusic.enums.CarouselSize
-import it.fast4x.rimusic.enums.IconLikeType
-import it.fast4x.rimusic.enums.MiniPlayerType
-import it.fast4x.rimusic.enums.NavigationBarPosition
-import it.fast4x.rimusic.enums.NotificationButtons
-import it.fast4x.rimusic.enums.PlayerBackgroundColors
-import it.fast4x.rimusic.enums.PlayerControlsType
-import it.fast4x.rimusic.enums.PlayerInfoType
-import it.fast4x.rimusic.enums.PlayerPlayButtonType
-import it.fast4x.rimusic.enums.PlayerThumbnailSize
-import it.fast4x.rimusic.enums.PlayerTimelineSize
-import it.fast4x.rimusic.enums.PlayerTimelineType
-import it.fast4x.rimusic.enums.PlayerType
-import it.fast4x.rimusic.enums.PrevNextSongs
-import it.fast4x.rimusic.enums.QueueType
-import it.fast4x.rimusic.enums.SongsNumber
-import it.fast4x.rimusic.enums.ThumbnailCoverType
-import it.fast4x.rimusic.enums.ThumbnailRoundness
-import it.fast4x.rimusic.enums.ThumbnailType
-import it.fast4x.rimusic.enums.WallpaperType
+import it.fast4x.rimusic.colorPalette
+import it.fast4x.rimusic.enums.*
 import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
+import it.fast4x.rimusic.ui.components.themed.Search
 import it.fast4x.rimusic.ui.components.themed.SmartMessage
 import it.fast4x.rimusic.ui.styling.Dimensions
-import it.fast4x.rimusic.utils.RestartPlayerService
-import it.fast4x.rimusic.utils.actionExpandedKey
-import it.fast4x.rimusic.utils.actionspacedevenlyKey
-import it.fast4x.rimusic.utils.backgroundProgressKey
-import it.fast4x.rimusic.utils.blackgradientKey
-import it.fast4x.rimusic.utils.bottomgradientKey
-import it.fast4x.rimusic.utils.buttonzoomoutKey
-import it.fast4x.rimusic.utils.carouselKey
-import it.fast4x.rimusic.utils.carouselSizeKey
-import it.fast4x.rimusic.utils.clickOnLyricsTextKey
-import it.fast4x.rimusic.utils.controlsExpandedKey
-import it.fast4x.rimusic.utils.coverThumbnailAnimationKey
-import it.fast4x.rimusic.utils.disablePlayerHorizontalSwipeKey
-import it.fast4x.rimusic.utils.disableScrollingTextKey
-import it.fast4x.rimusic.utils.effectRotationKey
-import it.fast4x.rimusic.utils.enableWallpaperKey
-import it.fast4x.rimusic.utils.expandedplayerKey
-import it.fast4x.rimusic.utils.expandedplayertoggleKey
-import it.fast4x.rimusic.utils.fadingedgeKey
-import it.fast4x.rimusic.utils.iconLikeTypeKey
-import it.fast4x.rimusic.utils.isAtLeastAndroid7
-import it.fast4x.rimusic.utils.isLandscape
-import it.fast4x.rimusic.utils.isShowingThumbnailInLockscreenKey
-import it.fast4x.rimusic.utils.keepPlayerMinimizedKey
-import it.fast4x.rimusic.utils.lastPlayerPlayButtonTypeKey
-import it.fast4x.rimusic.utils.miniPlayerTypeKey
-import it.fast4x.rimusic.utils.miniQueueExpandedKey
-import it.fast4x.rimusic.utils.navigationBarPositionKey
-import it.fast4x.rimusic.utils.noblurKey
-import it.fast4x.rimusic.utils.notificationPlayerFirstIconKey
-import it.fast4x.rimusic.utils.notificationPlayerSecondIconKey
-import it.fast4x.rimusic.utils.playerBackgroundColorsKey
-import it.fast4x.rimusic.utils.playerControlsTypeKey
-import it.fast4x.rimusic.utils.playerEnableLyricsPopupMessageKey
-import it.fast4x.rimusic.utils.playerInfoShowIconsKey
-import it.fast4x.rimusic.utils.playerInfoTypeKey
-import it.fast4x.rimusic.utils.playerPlayButtonTypeKey
-import it.fast4x.rimusic.utils.playerSwapControlsWithTimelineKey
-import it.fast4x.rimusic.utils.playerThumbnailSizeKey
-import it.fast4x.rimusic.utils.playerTimelineSizeKey
-import it.fast4x.rimusic.utils.playerTimelineTypeKey
-import it.fast4x.rimusic.utils.playerTypeKey
-import it.fast4x.rimusic.utils.prevNextSongsKey
-import it.fast4x.rimusic.utils.queueDurationExpandedKey
-import it.fast4x.rimusic.utils.queueTypeKey
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.showBackgroundLyricsKey
-import it.fast4x.rimusic.utils.showButtonPlayerAddToPlaylistKey
-import it.fast4x.rimusic.utils.showButtonPlayerArrowKey
-import it.fast4x.rimusic.utils.showButtonPlayerDiscoverKey
-import it.fast4x.rimusic.utils.showButtonPlayerDownloadKey
-import it.fast4x.rimusic.utils.showButtonPlayerLoopKey
-import it.fast4x.rimusic.utils.showButtonPlayerLyricsKey
-import it.fast4x.rimusic.utils.showButtonPlayerMenuKey
-import it.fast4x.rimusic.utils.showButtonPlayerShuffleKey
-import it.fast4x.rimusic.utils.showButtonPlayerSleepTimerKey
-import it.fast4x.rimusic.utils.showButtonPlayerStartRadioKey
-import it.fast4x.rimusic.utils.showButtonPlayerSystemEqualizerKey
-import it.fast4x.rimusic.utils.showButtonPlayerVideoKey
-import it.fast4x.rimusic.utils.showDownloadButtonBackgroundPlayerKey
-import it.fast4x.rimusic.utils.showLikeButtonBackgroundPlayerKey
-import it.fast4x.rimusic.utils.showNextSongsInPlayerKey
-import it.fast4x.rimusic.utils.showRemainingSongTimeKey
-import it.fast4x.rimusic.utils.showTopActionsBarKey
-import it.fast4x.rimusic.utils.showTotalTimeQueueKey
-import it.fast4x.rimusic.utils.showCoverThumbnailAnimationKey
-import it.fast4x.rimusic.utils.showalbumcoverKey
-import it.fast4x.rimusic.utils.showlyricsthumbnailKey
-import it.fast4x.rimusic.utils.showsongsKey
-import it.fast4x.rimusic.utils.showthumbnailKey
-import it.fast4x.rimusic.utils.showvisthumbnailKey
-import it.fast4x.rimusic.utils.statsExpandedKey
-import it.fast4x.rimusic.utils.statsfornerdsKey
-import it.fast4x.rimusic.utils.swipeUpQueueKey
-import it.fast4x.rimusic.utils.tapqueueKey
-import it.fast4x.rimusic.utils.textoutlineKey
-import it.fast4x.rimusic.utils.thumbnailRoundnessKey
-import it.fast4x.rimusic.utils.thumbnailTapEnabledKey
-import it.fast4x.rimusic.utils.thumbnailTypeKey
-import it.fast4x.rimusic.utils.thumbnailpauseKey
-import it.fast4x.rimusic.utils.timelineExpandedKey
-import it.fast4x.rimusic.utils.titleExpandedKey
-import it.fast4x.rimusic.utils.transparentBackgroundPlayerActionBarKey
-import it.fast4x.rimusic.utils.transparentbarKey
-import it.fast4x.rimusic.utils.visualizerEnabledKey
-import it.fast4x.rimusic.utils.wallpaperTypeKey
-import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.enums.AnimatedGradient
-import it.fast4x.rimusic.ui.components.themed.Search
-import it.fast4x.rimusic.utils.animatedGradientKey
-import it.fast4x.rimusic.utils.playerThumbnailSizeLKey
-import it.fast4x.rimusic.utils.topPaddingKey
+import it.fast4x.rimusic.utils.*
 
 @Composable
 fun DefaultAppearanceSettings() {
@@ -589,12 +467,7 @@ fun AppearanceSettings(
                 onValueSelected = {
                     playerType = it
                 },
-                valueText = {
-                    when (it) {
-                        PlayerType.Modern -> stringResource(R.string.pcontrols_modern)
-                        PlayerType.Essential -> stringResource(R.string.pcontrols_essential)
-                    }
-                },
+                valueText = { it.text },
             )
 
         if (search.input.isBlank() || stringResource(R.string.queuetype).contains(
@@ -608,12 +481,7 @@ fun AppearanceSettings(
                 onValueSelected = {
                     queueType = it
                 },
-                valueText = {
-                    when (it) {
-                        QueueType.Modern -> stringResource(R.string.pcontrols_modern)
-                        QueueType.Essential -> stringResource(R.string.pcontrols_essential)
-                    }
-                },
+                valueText = { it.text },
             )
 
         if (playerBackgroundColors == PlayerBackgroundColors.BlurredCoverColor) {
@@ -669,15 +537,7 @@ fun AppearanceSettings(
                             title = stringResource(R.string.carouselsize),
                             selectedValue = carouselSize,
                             onValueSelected = { carouselSize = it },
-                            valueText = {
-                                when (it) {
-                                    CarouselSize.Small -> stringResource(R.string.small)
-                                    CarouselSize.Medium -> stringResource(R.string.medium)
-                                    CarouselSize.Big -> stringResource(R.string.big)
-                                    CarouselSize.Biggest -> stringResource(R.string.biggest)
-                                    CarouselSize.Expanded -> stringResource(R.string.expanded)
-                                }
-                            },
+                            valueText = { it.text },
                             modifier = Modifier.padding(start = if (playerBackgroundColors == PlayerBackgroundColors.BlurredCoverColor) 25.dp else 0.dp)
                         )
                 }
@@ -742,7 +602,7 @@ fun AppearanceSettings(
                                 title = stringResource(R.string.cover_thumbnail_animation_type),
                                 selectedValue = coverThumbnailAnimation,
                                 onValueSelected = { coverThumbnailAnimation = it },
-                                valueText = { it.textName },
+                                valueText = { it.text },
                                 modifier = Modifier.padding(start = if (playerBackgroundColors == PlayerBackgroundColors.BlurredCoverColor) 50.dp else 25.dp)
                             )
                         }
@@ -759,15 +619,7 @@ fun AppearanceSettings(
                             title = stringResource(R.string.player_thumbnail_size),
                             selectedValue = playerThumbnailSizeL,
                             onValueSelected = { playerThumbnailSizeL = it },
-                            valueText = {
-                                when (it) {
-                                    PlayerThumbnailSize.Small -> stringResource(R.string.small)
-                                    PlayerThumbnailSize.Medium -> stringResource(R.string.medium)
-                                    PlayerThumbnailSize.Big -> stringResource(R.string.big)
-                                    PlayerThumbnailSize.Biggest -> stringResource(R.string.biggest)
-                                    PlayerThumbnailSize.Expanded -> stringResource(R.string.expanded)
-                                }
-                            },
+                            valueText = { it.text },
                             modifier = Modifier.padding(start = if (playerBackgroundColors == PlayerBackgroundColors.BlurredCoverColor) 25.dp else 0.dp)
                         )
                 } else {
@@ -780,15 +632,7 @@ fun AppearanceSettings(
                             title = stringResource(R.string.player_thumbnail_size),
                             selectedValue = playerThumbnailSize,
                             onValueSelected = { playerThumbnailSize = it },
-                            valueText = {
-                                when (it) {
-                                    PlayerThumbnailSize.Small -> stringResource(R.string.small)
-                                    PlayerThumbnailSize.Medium -> stringResource(R.string.medium)
-                                    PlayerThumbnailSize.Big -> stringResource(R.string.big)
-                                    PlayerThumbnailSize.Biggest -> stringResource(R.string.biggest)
-                                    PlayerThumbnailSize.Expanded -> stringResource(R.string.expanded)
-                                }
-                            },
+                            valueText = { it.text },
                             modifier = Modifier.padding(start = if (playerBackgroundColors == PlayerBackgroundColors.BlurredCoverColor) 25.dp else 0.dp)
                         )
                 }
@@ -803,12 +647,7 @@ fun AppearanceSettings(
                         onValueSelected = {
                             thumbnailType = it
                         },
-                        valueText = {
-                            when (it) {
-                                ThumbnailType.Modern -> stringResource(R.string.pcontrols_modern)
-                                ThumbnailType.Essential -> stringResource(R.string.pcontrols_essential)
-                            }
-                        },
+                        valueText = { it.text },
                         modifier = Modifier.padding(start = if (playerBackgroundColors == PlayerBackgroundColors.BlurredCoverColor) 25.dp else 0.dp)
                     )
 
@@ -836,14 +675,7 @@ fun AppearanceSettings(
                                     .size(36.dp)
                             )
                         },
-                        valueText = {
-                            when (it) {
-                                ThumbnailRoundness.None -> stringResource(R.string.none)
-                                ThumbnailRoundness.Light -> stringResource(R.string.light)
-                                ThumbnailRoundness.Heavy -> stringResource(R.string.heavy)
-                                ThumbnailRoundness.Medium -> stringResource(R.string.medium)
-                            }
-                        },
+                        valueText = { it.text },
                         modifier = Modifier.padding(start = if (playerBackgroundColors == PlayerBackgroundColors.BlurredCoverColor) 25.dp else 0.dp)
                     )
             }
@@ -888,15 +720,7 @@ fun AppearanceSettings(
                 title = stringResource(R.string.timelinesize),
                 selectedValue = playerTimelineSize,
                 onValueSelected = { playerTimelineSize = it },
-                valueText = {
-                    when (it) {
-                        PlayerTimelineSize.Small -> stringResource(R.string.small)
-                        PlayerTimelineSize.Medium -> stringResource(R.string.medium)
-                        PlayerTimelineSize.Big -> stringResource(R.string.big)
-                        PlayerTimelineSize.Biggest -> stringResource(R.string.biggest)
-                        PlayerTimelineSize.Expanded -> stringResource(R.string.expanded)
-                    }
-                }
+                valueText = { it.text }
             )
 
         if (search.input.isBlank() || stringResource(R.string.pinfo_type).contains(
@@ -910,12 +734,7 @@ fun AppearanceSettings(
                 onValueSelected = {
                     playerInfoType = it
                 },
-                valueText = {
-                    when (it) {
-                        PlayerInfoType.Modern -> stringResource(R.string.pcontrols_modern)
-                        PlayerInfoType.Essential -> stringResource(R.string.pcontrols_essential)
-                    }
-                },
+                valueText = { it.text },
             )
             SettingsDescription(text = stringResource(R.string.pinfo_album_and_artist_name))
 
@@ -952,12 +771,7 @@ fun AppearanceSettings(
                 onValueSelected = {
                     miniPlayerType = it
                 },
-                valueText = {
-                    when (it) {
-                        MiniPlayerType.Modern -> stringResource(R.string.pcontrols_modern)
-                        MiniPlayerType.Essential -> stringResource(R.string.pcontrols_essential)
-                    }
-                },
+                valueText = { it.text },
             )
 
         if (search.input.isBlank() || stringResource(R.string.player_swap_controls_with_timeline).contains(
@@ -981,7 +795,7 @@ fun AppearanceSettings(
                 title = stringResource(R.string.timeline),
                 selectedValue = playerTimelineType,
                 onValueSelected = { playerTimelineType = it },
-                valueText = { it.textName }
+                valueText = { it.text }
             )
 
         if (search.input.isBlank() || stringResource(R.string.transparentbar).contains(
@@ -1007,12 +821,7 @@ fun AppearanceSettings(
                 onValueSelected = {
                     playerControlsType = it
                 },
-                valueText = {
-                    when (it) {
-                        PlayerControlsType.Modern -> stringResource(R.string.pcontrols_modern)
-                        PlayerControlsType.Essential -> stringResource(R.string.pcontrols_essential)
-                    }
-                },
+                valueText = { it.text }
             )
 
 
@@ -1028,15 +837,7 @@ fun AppearanceSettings(
                     playerPlayButtonType = it
                     lastPlayerPlayButtonType = it
                 },
-                valueText = {
-                    when (it) {
-                        PlayerPlayButtonType.Disabled -> stringResource(R.string.vt_disabled)
-                        PlayerPlayButtonType.Default -> stringResource(R.string._default)
-                        PlayerPlayButtonType.Rectangular -> stringResource(R.string.rectangular)
-                        PlayerPlayButtonType.Square -> stringResource(R.string.square)
-                        PlayerPlayButtonType.CircularRibbed -> stringResource(R.string.circular_ribbed)
-                    }
-                },
+                valueText = { it.text }
             )
 
         if (search.input.isBlank() || stringResource(R.string.buttonzoomout).contains(
@@ -1063,17 +864,7 @@ fun AppearanceSettings(
                 onValueSelected = {
                     iconLikeType = it
                 },
-                valueText = {
-                    when (it) {
-                        IconLikeType.Essential -> stringResource(R.string.pcontrols_essential)
-                        IconLikeType.Apple -> stringResource(R.string.icon_like_apple)
-                        IconLikeType.Breaked -> stringResource(R.string.icon_like_breaked)
-                        IconLikeType.Gift -> stringResource(R.string.icon_like_gift)
-                        IconLikeType.Shape -> stringResource(R.string.icon_like_shape)
-                        IconLikeType.Striped -> stringResource(R.string.icon_like_striped)
-                        IconLikeType.Brilliant -> stringResource(R.string.icon_like_brilliant)
-                    }
-                },
+                valueText = { it.text },
             )
 
         /*
@@ -1098,17 +889,7 @@ fun AppearanceSettings(
                 onValueSelected = {
                     playerBackgroundColors = it
                 },
-                valueText = {
-                    when (it) {
-                        PlayerBackgroundColors.CoverColor -> stringResource(R.string.bg_colors_background_from_cover)
-                        PlayerBackgroundColors.ThemeColor -> stringResource(R.string.bg_colors_background_from_theme)
-                        PlayerBackgroundColors.CoverColorGradient -> stringResource(R.string.bg_colors_gradient_background_from_cover)
-                        PlayerBackgroundColors.ThemeColorGradient -> stringResource(R.string.bg_colors_gradient_background_from_theme)
-                        PlayerBackgroundColors.BlurredCoverColor -> stringResource(R.string.bg_colors_blurred_cover_background)
-                        PlayerBackgroundColors.ColorPalette -> stringResource(R.string.colorpalette)
-                        PlayerBackgroundColors.AnimatedGradient -> stringResource(R.string.animatedgradient)
-                    }
-                },
+                valueText = { it.text }
             )
 
         AnimatedVisibility(visible = playerBackgroundColors == PlayerBackgroundColors.AnimatedGradient) {
@@ -1123,25 +904,7 @@ fun AppearanceSettings(
                     onValueSelected = {
                         animatedGradient = it
                     },
-                    valueText = {
-                        when (it) {
-                            AnimatedGradient.FluidThemeColorGradient -> stringResource(R.string.bg_colors_fluid_gradient_background_from_theme)
-                            AnimatedGradient.FluidCoverColorGradient -> stringResource(R.string.bg_colors_fluid_gradient_background_from_cover)
-                            AnimatedGradient.Linear -> stringResource(R.string.linear)
-                            AnimatedGradient.Mesh -> stringResource(R.string.mesh)
-                            AnimatedGradient.MesmerizingLens -> stringResource(R.string.mesmerizinglens)
-                            AnimatedGradient.GlossyGradients -> stringResource(R.string.glossygradient)
-                            AnimatedGradient.GradientFlow -> stringResource(R.string.gradientflow)
-                            AnimatedGradient.PurpleLiquid -> stringResource(R.string.purpleliquid)
-                            AnimatedGradient.Stage -> stringResource(R.string.stage)
-                            AnimatedGradient.InkFlow -> stringResource(R.string.inkflow)
-                            AnimatedGradient.GoldenMagma -> stringResource(R.string.goldenmagma)
-                            AnimatedGradient.OilFlow -> stringResource(R.string.oilflow)
-                            AnimatedGradient.IceReflection -> stringResource(R.string.icereflection)
-                            AnimatedGradient.BlackCherryCosmos -> stringResource(R.string.blackcherrycosmos)
-                            AnimatedGradient.Random -> stringResource(R.string.random)
-                        }
-                    },
+                    valueText = { it.text },
                     modifier = Modifier.padding(start = if (playerBackgroundColors == PlayerBackgroundColors.AnimatedGradient) 25.dp else 0.dp)
                 )
         }
@@ -1226,9 +989,7 @@ fun AppearanceSettings(
                       onValueSelected = {
                           showsongs = it
                       },
-                      valueText = {
-                          it.name
-                      },
+                      valueText = { it.name },
                       modifier = Modifier
                           .padding(start = 25.dp)
                   )
@@ -1345,14 +1106,7 @@ fun AppearanceSettings(
                 onValueSelected = {
                     backgroundProgress = it
                 },
-                valueText = {
-                    when (it) {
-                        BackgroundProgress.Player -> stringResource(R.string.player)
-                        BackgroundProgress.MiniPlayer -> stringResource(R.string.minimized_player)
-                        BackgroundProgress.Both -> stringResource(R.string.both)
-                        BackgroundProgress.Disabled -> stringResource(R.string.vt_disabled)
-                    }
-                },
+                valueText = { it.text },
             )
 
 
@@ -1727,9 +1481,7 @@ fun AppearanceSettings(
                     notificationPlayerFirstIcon = it
                     restartService = true
                 },
-                valueText = {
-                    it.displayName
-                },
+                valueText = { it.text },
             )
             EnumValueSelectorSettingsEntry(
                 title = stringResource(R.string.notificationPlayerSecondIcon),
@@ -1738,9 +1490,7 @@ fun AppearanceSettings(
                     notificationPlayerSecondIcon = it
                     restartService = true
                 },
-                valueText = {
-                    it.displayName
-                },
+                valueText = { it.text },
             )
             RestartPlayerService(restartService, onRestart = { restartService = false })
         }

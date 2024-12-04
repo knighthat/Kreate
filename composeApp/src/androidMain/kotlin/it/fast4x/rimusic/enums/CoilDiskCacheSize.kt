@@ -1,6 +1,11 @@
 package it.fast4x.rimusic.enums
 
-enum class CoilDiskCacheMaxSize {
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import it.fast4x.rimusic.R
+import me.knighthat.enums.TextView
+
+enum class CoilDiskCacheMaxSize: TextView {
     `32MB`,
     `64MB`,
     `128MB`,
@@ -25,4 +30,11 @@ enum class CoilDiskCacheMaxSize {
             `8GB` -> 8192
             Custom -> 1000000
         } * 1000 * 1000L
+
+    override val text: String
+        @Composable
+        get() = when ( this ) {
+            Custom -> stringResource( R.string.custom )
+            else -> this.name
+        }
 }

@@ -10,19 +10,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -35,22 +27,7 @@ import it.fast4x.rimusic.enums.ValidationType
 import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
 import it.fast4x.rimusic.ui.components.themed.SmartMessage
 import it.fast4x.rimusic.ui.styling.Dimensions
-import it.fast4x.rimusic.utils.textCopyToClipboard
-import it.fast4x.rimusic.utils.defaultFolderKey
-import it.fast4x.rimusic.utils.extraspaceKey
-import it.fast4x.rimusic.utils.isAtLeastAndroid10
-import it.fast4x.rimusic.utils.isAtLeastAndroid12
-import it.fast4x.rimusic.utils.isAtLeastAndroid6
-import it.fast4x.rimusic.utils.isIgnoringBatteryOptimizations
-import it.fast4x.rimusic.utils.isKeepScreenOnEnabledKey
-import it.fast4x.rimusic.utils.isProxyEnabledKey
-import it.fast4x.rimusic.utils.logDebugEnabledKey
-import it.fast4x.rimusic.utils.parentalControlEnabledKey
-import it.fast4x.rimusic.utils.proxyHostnameKey
-import it.fast4x.rimusic.utils.proxyModeKey
-import it.fast4x.rimusic.utils.proxyPortKey
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.showFoldersOnDeviceKey
+import it.fast4x.rimusic.utils.*
 import java.io.File
 import java.net.Proxy
 
@@ -149,25 +126,6 @@ fun OtherSettings() {
             modifier = Modifier,
             onClick = {}
         )
-
-        /*
-        SettingsEntryGroupText(title = stringResource(R.string.check_update))
-        EnumValueSelectorSettingsEntry(
-            title = stringResource(R.string.enable_check_for_update),
-            selectedValue = checkUpdateState,
-            onValueSelected = { checkUpdateState = it },
-            valueText = {
-                when(it) {
-                    CheckUpdateState.Disabled -> stringResource(R.string.vt_disabled)
-                    CheckUpdateState.Enabled -> stringResource(R.string.enabled)
-                    CheckUpdateState.Ask -> stringResource(R.string.ask)
-                }
-
-            }
-        )
-        SettingsDescription(text = stringResource(R.string.when_enabled_a_new_version_is_checked_and_notified_during_startup))
-         */
-
 
     SettingsGroupSpacer()
     SettingsEntryGroupText(stringResource(R.string.on_device))

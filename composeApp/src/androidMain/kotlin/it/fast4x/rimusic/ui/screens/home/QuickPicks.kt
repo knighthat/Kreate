@@ -2,37 +2,13 @@ package it.fast4x.rimusic.ui.screens.home
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.ScrollableDefaults
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -66,16 +42,9 @@ import it.fast4x.innertube.models.bodies.NextBody
 import it.fast4x.innertube.requests.chartsPageComplete
 import it.fast4x.innertube.requests.discoverPage
 import it.fast4x.innertube.requests.relatedPage
-import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.EXPLICIT_PREFIX
-import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
-import it.fast4x.rimusic.LocalPlayerServiceBinder
+import it.fast4x.rimusic.*
 import it.fast4x.rimusic.R
-import it.fast4x.rimusic.enums.Countries
-import it.fast4x.rimusic.enums.NavRoutes
-import it.fast4x.rimusic.enums.NavigationBarPosition
-import it.fast4x.rimusic.enums.PlayEventsType
-import it.fast4x.rimusic.enums.UiType
+import it.fast4x.rimusic.enums.*
 import it.fast4x.rimusic.models.Artist
 import it.fast4x.rimusic.models.PlaylistPreview
 import it.fast4x.rimusic.models.Song
@@ -83,61 +52,13 @@ import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.isLocal
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.PullToRefreshBox
-import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
-import it.fast4x.rimusic.ui.components.themed.Loader
-import it.fast4x.rimusic.ui.components.themed.Menu
-import it.fast4x.rimusic.ui.components.themed.MenuEntry
-import it.fast4x.rimusic.ui.components.themed.MultiFloatingActionsContainer
-import it.fast4x.rimusic.ui.components.themed.NonQueuedMediaItemMenu
-import it.fast4x.rimusic.ui.components.themed.Title
-import it.fast4x.rimusic.ui.components.themed.Title2Actions
-import it.fast4x.rimusic.ui.items.AlbumItem
-import it.fast4x.rimusic.ui.items.ArtistItem
-import it.fast4x.rimusic.ui.items.PlaylistItem
-import it.fast4x.rimusic.ui.items.SongItem
+import it.fast4x.rimusic.ui.components.themed.*
+import it.fast4x.rimusic.ui.items.*
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.px
-import it.fast4x.rimusic.utils.WelcomeMessage
-import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.asSong
-import it.fast4x.rimusic.utils.bold
-import it.fast4x.rimusic.utils.center
-import it.fast4x.rimusic.utils.color
-import it.fast4x.rimusic.utils.disableScrollingTextKey
-import it.fast4x.rimusic.utils.forcePlay
-import it.fast4x.rimusic.utils.getDownloadState
-import it.fast4x.rimusic.utils.isDownloadedSong
-import it.fast4x.rimusic.utils.isLandscape
-import it.fast4x.rimusic.utils.isNowPlaying
-import it.fast4x.rimusic.utils.loadedDataKey
-import it.fast4x.rimusic.utils.manageDownload
-import it.fast4x.rimusic.utils.parentalControlEnabledKey
-import it.fast4x.rimusic.utils.playEventsTypeKey
-import it.fast4x.rimusic.utils.quickPicsDiscoverPageKey
-import it.fast4x.rimusic.utils.quickPicsRelatedPageKey
-import it.fast4x.rimusic.utils.quickPicsTrendingSongKey
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.secondary
-import it.fast4x.rimusic.utils.selectedCountryCodeKey
-import it.fast4x.rimusic.utils.semiBold
-import it.fast4x.rimusic.utils.showChartsKey
-import it.fast4x.rimusic.utils.showFloatingIconKey
-import it.fast4x.rimusic.utils.showMonthlyPlaylistInQuickPicksKey
-import it.fast4x.rimusic.utils.showMoodsAndGenresKey
-import it.fast4x.rimusic.utils.showNewAlbumsArtistsKey
-import it.fast4x.rimusic.utils.showNewAlbumsKey
-import it.fast4x.rimusic.utils.showPlaylistMightLikeKey
-import it.fast4x.rimusic.utils.showRelatedAlbumsKey
-import it.fast4x.rimusic.utils.showSearchTabKey
-import it.fast4x.rimusic.utils.showSimilarArtistsKey
-import it.fast4x.rimusic.utils.showTipsKey
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import it.fast4x.rimusic.utils.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
-import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.typography
 import timber.log.Timber
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -483,11 +404,7 @@ fun QuickPicks(
                     )
 
                     BasicText(
-                        text = when (playEventType) {
-                            PlayEventsType.MostPlayed -> stringResource(R.string.by_most_played_song)
-                            PlayEventsType.LastPlayed -> stringResource(R.string.by_last_played_song)
-                            PlayEventsType.CasualPlayed -> stringResource(R.string.by_casual_played_song)
-                        },
+                        text = playEventType.text,
                         style = typography().xxs.secondary,
                         modifier = Modifier
                             .padding(horizontal = 16.dp)

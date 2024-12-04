@@ -1,243 +1,29 @@
 package it.fast4x.rimusic.ui.screens.settings
 
-import android.os.Build
-import android.text.TextUtils
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.core.os.LocaleListCompat
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.R
-import it.fast4x.rimusic.enums.AlbumSwipeAction
-import it.fast4x.rimusic.enums.AudioQualityFormat
-import it.fast4x.rimusic.enums.BackgroundProgress
-import it.fast4x.rimusic.enums.CarouselSize
-import it.fast4x.rimusic.enums.ColorPaletteMode
-import it.fast4x.rimusic.enums.ColorPaletteName
-import it.fast4x.rimusic.enums.DurationInMilliseconds
-import it.fast4x.rimusic.enums.DurationInMinutes
-import it.fast4x.rimusic.enums.ExoPlayerMinTimeForEvent
-import it.fast4x.rimusic.enums.FontType
-import it.fast4x.rimusic.enums.HomeScreenTabs
-import it.fast4x.rimusic.enums.IconLikeType
-import it.fast4x.rimusic.enums.Languages
-import it.fast4x.rimusic.enums.MaxSongs
-import it.fast4x.rimusic.enums.MaxStatisticsItems
-import it.fast4x.rimusic.enums.MaxTopPlaylistItems
-import it.fast4x.rimusic.enums.MenuStyle
-import it.fast4x.rimusic.enums.MessageType
-import it.fast4x.rimusic.enums.MiniPlayerType
-import it.fast4x.rimusic.enums.MusicAnimationType
-import it.fast4x.rimusic.enums.NavigationBarPosition
-import it.fast4x.rimusic.enums.NavigationBarType
-import it.fast4x.rimusic.enums.NotificationType
-import it.fast4x.rimusic.enums.PauseBetweenSongs
-import it.fast4x.rimusic.enums.PipModule
-import it.fast4x.rimusic.enums.PlayerBackgroundColors
-import it.fast4x.rimusic.enums.PlayerControlsType
-import it.fast4x.rimusic.enums.PlayerInfoType
-import it.fast4x.rimusic.enums.PlayerPlayButtonType
-import it.fast4x.rimusic.enums.PlayerPosition
-import it.fast4x.rimusic.enums.PlayerThumbnailSize
-import it.fast4x.rimusic.enums.PlayerTimelineSize
-import it.fast4x.rimusic.enums.PlayerTimelineType
-import it.fast4x.rimusic.enums.PlayerType
-import it.fast4x.rimusic.enums.PlaylistSwipeAction
-import it.fast4x.rimusic.enums.QueueSwipeAction
-import it.fast4x.rimusic.enums.QueueType
-import it.fast4x.rimusic.enums.RecommendationsNumber
-import it.fast4x.rimusic.enums.ThumbnailRoundness
-import it.fast4x.rimusic.enums.ThumbnailType
-import it.fast4x.rimusic.enums.TransitionEffect
-import it.fast4x.rimusic.enums.UiType
-import it.fast4x.rimusic.ui.components.themed.ConfirmationDialog
-import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
-import it.fast4x.rimusic.ui.components.themed.SmartMessage
+import it.fast4x.rimusic.colorPalette
+import it.fast4x.rimusic.enums.*
+import it.fast4x.rimusic.ui.components.themed.*
 import it.fast4x.rimusic.ui.styling.DefaultDarkColorPalette
 import it.fast4x.rimusic.ui.styling.DefaultLightColorPalette
 import it.fast4x.rimusic.ui.styling.Dimensions
-import it.fast4x.rimusic.utils.MaxTopPlaylistItemsKey
-import it.fast4x.rimusic.utils.RestartActivity
-import it.fast4x.rimusic.utils.RestartPlayerService
-import it.fast4x.rimusic.utils.UiTypeKey
-import it.fast4x.rimusic.utils.actionspacedevenlyKey
-import it.fast4x.rimusic.utils.albumSwipeLeftActionKey
-import it.fast4x.rimusic.utils.albumSwipeRightActionKey
-import it.fast4x.rimusic.utils.applyFontPaddingKey
-import it.fast4x.rimusic.utils.audioQualityFormatKey
-import it.fast4x.rimusic.utils.autoLoadSongsInQueueKey
-import it.fast4x.rimusic.utils.backgroundProgressKey
-import it.fast4x.rimusic.utils.blackgradientKey
-import it.fast4x.rimusic.utils.buttonzoomoutKey
-import it.fast4x.rimusic.utils.carouselKey
-import it.fast4x.rimusic.utils.carouselSizeKey
-import it.fast4x.rimusic.utils.clickOnLyricsTextKey
-import it.fast4x.rimusic.utils.closeWithBackButtonKey
-import it.fast4x.rimusic.utils.closebackgroundPlayerKey
-import it.fast4x.rimusic.utils.colorPaletteModeKey
-import it.fast4x.rimusic.utils.colorPaletteNameKey
-import it.fast4x.rimusic.utils.customThemeDark_Background0Key
-import it.fast4x.rimusic.utils.customThemeDark_Background1Key
-import it.fast4x.rimusic.utils.customThemeDark_Background2Key
-import it.fast4x.rimusic.utils.customThemeDark_Background3Key
-import it.fast4x.rimusic.utils.customThemeDark_Background4Key
-import it.fast4x.rimusic.utils.customThemeDark_TextKey
-import it.fast4x.rimusic.utils.customThemeDark_accentKey
-import it.fast4x.rimusic.utils.customThemeDark_iconButtonPlayerKey
-import it.fast4x.rimusic.utils.customThemeDark_textDisabledKey
-import it.fast4x.rimusic.utils.customThemeDark_textSecondaryKey
-import it.fast4x.rimusic.utils.customThemeLight_Background0Key
-import it.fast4x.rimusic.utils.customThemeLight_Background1Key
-import it.fast4x.rimusic.utils.customThemeLight_Background2Key
-import it.fast4x.rimusic.utils.customThemeLight_Background3Key
-import it.fast4x.rimusic.utils.customThemeLight_Background4Key
-import it.fast4x.rimusic.utils.customThemeLight_TextKey
-import it.fast4x.rimusic.utils.customThemeLight_accentKey
-import it.fast4x.rimusic.utils.customThemeLight_iconButtonPlayerKey
-import it.fast4x.rimusic.utils.customThemeLight_textDisabledKey
-import it.fast4x.rimusic.utils.customThemeLight_textSecondaryKey
-import it.fast4x.rimusic.utils.disableClosingPlayerSwipingDownKey
-import it.fast4x.rimusic.utils.disableIconButtonOnTopKey
-import it.fast4x.rimusic.utils.disablePlayerHorizontalSwipeKey
-import it.fast4x.rimusic.utils.disableScrollingTextKey
-import it.fast4x.rimusic.utils.discoverKey
-import it.fast4x.rimusic.utils.effectRotationKey
-import it.fast4x.rimusic.utils.enableCreateMonthlyPlaylistsKey
-import it.fast4x.rimusic.utils.enablePictureInPictureAutoKey
-import it.fast4x.rimusic.utils.enablePictureInPictureKey
-import it.fast4x.rimusic.utils.excludeSongsWithDurationLimitKey
-import it.fast4x.rimusic.utils.exoPlayerMinTimeForEventKey
-import it.fast4x.rimusic.utils.expandedplayertoggleKey
-import it.fast4x.rimusic.utils.fadingedgeKey
-import it.fast4x.rimusic.utils.fontTypeKey
-import it.fast4x.rimusic.utils.iconLikeTypeKey
-import it.fast4x.rimusic.utils.indexNavigationTabKey
-import it.fast4x.rimusic.utils.isAtLeastAndroid12
-import it.fast4x.rimusic.utils.isAtLeastAndroid6
-import it.fast4x.rimusic.utils.isPauseOnVolumeZeroEnabledKey
-import it.fast4x.rimusic.utils.isSwipeToActionEnabledKey
-import it.fast4x.rimusic.utils.jumpPreviousKey
-import it.fast4x.rimusic.utils.keepPlayerMinimizedKey
-import it.fast4x.rimusic.utils.languageAppKey
-import it.fast4x.rimusic.utils.languageDestinationName
-import it.fast4x.rimusic.utils.lastPlayerPlayButtonTypeKey
-import it.fast4x.rimusic.utils.lastPlayerThumbnailSizeKey
-import it.fast4x.rimusic.utils.lastPlayerTimelineTypeKey
-import it.fast4x.rimusic.utils.loudnessBaseGainKey
-import it.fast4x.rimusic.utils.maxSongsInQueueKey
-import it.fast4x.rimusic.utils.maxStatisticsItemsKey
-import it.fast4x.rimusic.utils.menuStyleKey
-import it.fast4x.rimusic.utils.messageTypeKey
-import it.fast4x.rimusic.utils.miniPlayerTypeKey
-import it.fast4x.rimusic.utils.minimumSilenceDurationKey
-import it.fast4x.rimusic.utils.navigationBarPositionKey
-import it.fast4x.rimusic.utils.navigationBarTypeKey
-import it.fast4x.rimusic.utils.notificationTypeKey
-import it.fast4x.rimusic.utils.nowPlayingIndicatorKey
-import it.fast4x.rimusic.utils.pauseBetweenSongsKey
-import it.fast4x.rimusic.utils.pauseListenHistoryKey
-import it.fast4x.rimusic.utils.persistentQueueKey
-import it.fast4x.rimusic.utils.pipModuleKey
-import it.fast4x.rimusic.utils.playbackFadeAudioDurationKey
-import it.fast4x.rimusic.utils.playerBackgroundColorsKey
-import it.fast4x.rimusic.utils.playerControlsTypeKey
-import it.fast4x.rimusic.utils.playerEnableLyricsPopupMessageKey
-import it.fast4x.rimusic.utils.playerInfoShowIconsKey
-import it.fast4x.rimusic.utils.playerInfoTypeKey
-import it.fast4x.rimusic.utils.playerPlayButtonTypeKey
-import it.fast4x.rimusic.utils.playerPositionKey
-import it.fast4x.rimusic.utils.playerSwapControlsWithTimelineKey
-import it.fast4x.rimusic.utils.playerThumbnailSizeKey
-import it.fast4x.rimusic.utils.playerTimelineSizeKey
-import it.fast4x.rimusic.utils.playerTimelineTypeKey
-import it.fast4x.rimusic.utils.playerTypeKey
-import it.fast4x.rimusic.utils.playlistSwipeLeftActionKey
-import it.fast4x.rimusic.utils.playlistSwipeRightActionKey
-import it.fast4x.rimusic.utils.playlistindicatorKey
-import it.fast4x.rimusic.utils.queueSwipeLeftActionKey
-import it.fast4x.rimusic.utils.queueSwipeRightActionKey
-import it.fast4x.rimusic.utils.queueTypeKey
-import it.fast4x.rimusic.utils.recommendationsNumberKey
-import it.fast4x.rimusic.utils.rememberEqualizerLauncher
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.resumePlaybackOnStartKey
-import it.fast4x.rimusic.utils.resumePlaybackWhenDeviceConnectedKey
-import it.fast4x.rimusic.utils.semiBold
-import it.fast4x.rimusic.utils.shakeEventEnabledKey
-import it.fast4x.rimusic.utils.showButtonPlayerAddToPlaylistKey
-import it.fast4x.rimusic.utils.showButtonPlayerArrowKey
-import it.fast4x.rimusic.utils.showButtonPlayerDiscoverKey
-import it.fast4x.rimusic.utils.showButtonPlayerDownloadKey
-import it.fast4x.rimusic.utils.showButtonPlayerLoopKey
-import it.fast4x.rimusic.utils.showButtonPlayerLyricsKey
-import it.fast4x.rimusic.utils.showButtonPlayerMenuKey
-import it.fast4x.rimusic.utils.showButtonPlayerShuffleKey
-import it.fast4x.rimusic.utils.showButtonPlayerSleepTimerKey
-import it.fast4x.rimusic.utils.showButtonPlayerSystemEqualizerKey
-import it.fast4x.rimusic.utils.showCachedPlaylistKey
-import it.fast4x.rimusic.utils.showDownloadedPlaylistKey
-import it.fast4x.rimusic.utils.showFavoritesPlaylistKey
-import it.fast4x.rimusic.utils.showFloatingIconKey
-import it.fast4x.rimusic.utils.showMonthlyPlaylistsKey
-import it.fast4x.rimusic.utils.showMyTopPlaylistKey
-import it.fast4x.rimusic.utils.showNextSongsInPlayerKey
-import it.fast4x.rimusic.utils.showOnDevicePlaylistKey
-import it.fast4x.rimusic.utils.showPinnedPlaylistsKey
-import it.fast4x.rimusic.utils.showPipedPlaylistsKey
-import it.fast4x.rimusic.utils.showRemainingSongTimeKey
-import it.fast4x.rimusic.utils.showSearchTabKey
-import it.fast4x.rimusic.utils.showStatsInNavbarKey
-import it.fast4x.rimusic.utils.showStatsListeningTimeKey
-import it.fast4x.rimusic.utils.showTopActionsBarKey
-import it.fast4x.rimusic.utils.showTotalTimeQueueKey
-import it.fast4x.rimusic.utils.showthumbnailKey
-import it.fast4x.rimusic.utils.skipMediaOnErrorKey
-import it.fast4x.rimusic.utils.skipSilenceKey
-import it.fast4x.rimusic.utils.swipeUpQueueKey
-import it.fast4x.rimusic.utils.tapqueueKey
-import it.fast4x.rimusic.utils.thumbnailRoundnessKey
-import it.fast4x.rimusic.utils.thumbnailTapEnabledKey
-import it.fast4x.rimusic.utils.thumbnailTypeKey
-import it.fast4x.rimusic.utils.transitionEffectKey
-import it.fast4x.rimusic.utils.transparentBackgroundPlayerActionBarKey
-import it.fast4x.rimusic.utils.useSystemFontKey
-import it.fast4x.rimusic.utils.useVolumeKeysToChangeSongKey
-import it.fast4x.rimusic.utils.visualizerEnabledKey
-import it.fast4x.rimusic.utils.volumeNormalizationKey
-import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.ui.components.themed.Search
-import it.fast4x.rimusic.typography
-import it.fast4x.rimusic.utils.autoDownloadSongKey
-import it.fast4x.rimusic.utils.autoDownloadSongWhenAlbumBookmarkedKey
-import it.fast4x.rimusic.utils.autoDownloadSongWhenLikedKey
-import it.fast4x.rimusic.utils.customColorKey
+import it.fast4x.rimusic.utils.*
 
 @Composable
 fun DefaultUiSettings() {
@@ -902,9 +688,7 @@ fun UiSettings(
                     }
 
                 },
-                valueText = {
-                    it.name
-                }
+                valueText = { it.name }
             )
 
         if (search.input.isBlank() || stringResource(R.string.theme).contains(search.input,true))
@@ -919,17 +703,7 @@ fun UiSettings(
                        else -> {}
                    }
                 },
-                valueText = {
-                    when (it) {
-                        ColorPaletteName.Default -> stringResource(R.string._default)
-                        ColorPaletteName.Dynamic -> stringResource(R.string.dynamic)
-                        ColorPaletteName.PureBlack -> stringResource(R.string.theme_pure_black)
-                        ColorPaletteName.ModernBlack -> stringResource(R.string.theme_modern_black)
-                        ColorPaletteName.MaterialYou -> stringResource(R.string.theme_material_you)
-                        ColorPaletteName.Customized -> stringResource(R.string.theme_customized)
-                        ColorPaletteName.CustomColor -> stringResource(R.string.customcolor)
-                    }
-                }
+                valueText = { it.text }
             )
 
         AnimatedVisibility(visible = colorPaletteName == ColorPaletteName.CustomColor) {
@@ -1144,14 +918,7 @@ fun UiSettings(
                     colorPaletteMode = it
                     //if (it == ColorPaletteMode.PitchBlack) colorPaletteName = ColorPaletteName.ModernBlack
                 },
-                valueText = {
-                    when (it) {
-                        ColorPaletteMode.Dark -> stringResource(R.string.dark)
-                        ColorPaletteMode.Light -> stringResource(R.string._light)
-                        ColorPaletteMode.System -> stringResource(R.string.system)
-                        ColorPaletteMode.PitchBlack -> stringResource(R.string.theme_mode_pitch_black)
-                    }
-                }
+                valueText = { it.text }
             )
 
         if (search.input.isBlank() || stringResource(R.string.navigation_bar_position).contains(search.input,true))
@@ -1162,14 +929,7 @@ fun UiSettings(
                 // As of version 0.6.53, changing navigation bar to top or bottom
                 // while using ViMusic theme breaks the UI
                 isEnabled = uiType != UiType.ViMusic,
-                valueText = {
-                    when (it) {
-                        NavigationBarPosition.Left -> stringResource(R.string.direction_left)
-                        NavigationBarPosition.Right -> stringResource(R.string.direction_right)
-                        NavigationBarPosition.Top -> stringResource(R.string.direction_top)
-                        NavigationBarPosition.Bottom -> stringResource(R.string.direction_bottom)
-                    }
-                }
+                valueText = { it.text }
             )
 
         if (search.input.isBlank() || stringResource(R.string.navigation_bar_type).contains(search.input,true))
@@ -1177,12 +937,7 @@ fun UiSettings(
                 title = stringResource(R.string.navigation_bar_type),
                 selectedValue = navigationBarType,
                 onValueSelected = { navigationBarType = it },
-                valueText = {
-                    when (it) {
-                        NavigationBarType.IconAndText -> stringResource(R.string.icon_and_text)
-                        NavigationBarType.IconOnly -> stringResource(R.string.only_icon)
-                    }
-                }
+                valueText = { it.text }
             )
 
         if (search.input.isBlank() || stringResource(R.string.player_position).contains(search.input,true))
@@ -1190,12 +945,7 @@ fun UiSettings(
                 title = stringResource(R.string.player_position),
                 selectedValue = playerPosition,
                 onValueSelected = { playerPosition = it },
-                valueText = {
-                    when (it) {
-                        PlayerPosition.Top -> stringResource(R.string.position_top)
-                        PlayerPosition.Bottom -> stringResource(R.string.position_bottom)
-                    }
-                }
+                valueText = { it.text }
             )
 
         if (search.input.isBlank() || stringResource(R.string.menu_style).contains(search.input,true))
@@ -1203,12 +953,7 @@ fun UiSettings(
                 title = stringResource(R.string.menu_style),
                 selectedValue = menuStyle,
                 onValueSelected = { menuStyle = it },
-                valueText = {
-                    when (it) {
-                        MenuStyle.Grid -> stringResource(R.string.style_grid)
-                        MenuStyle.List -> stringResource(R.string.style_list)
-                    }
-                }
+                valueText = { it.text }
             )
 
         if (search.input.isBlank() || stringResource(R.string.message_type).contains(search.input,true))
@@ -1216,12 +961,7 @@ fun UiSettings(
                 title = stringResource(R.string.message_type),
                 selectedValue = messageType,
                 onValueSelected = { messageType = it },
-                valueText = {
-                    when (it) {
-                        MessageType.Modern -> stringResource(R.string.message_type_modern)
-                        MessageType.Essential -> stringResource(R.string.message_type_essential)
-                    }
-                }
+                valueText = { it.text }
             )
 
         if (search.input.isBlank() || stringResource(R.string.default_page).contains(search.input,true))
@@ -1229,17 +969,7 @@ fun UiSettings(
                 title = stringResource(R.string.default_page),
                 selectedValue = indexNavigationTab,
                 onValueSelected = {indexNavigationTab = it},
-                valueText = {
-                    when (it) {
-                        HomeScreenTabs.Default -> stringResource(R.string._default)
-                        HomeScreenTabs.QuickPics -> stringResource(R.string.quick_picks)
-                        HomeScreenTabs.Songs -> stringResource(R.string.songs)
-                        HomeScreenTabs.Albums -> stringResource(R.string.albums)
-                        HomeScreenTabs.Artists -> stringResource(R.string.artists)
-                        HomeScreenTabs.Playlists -> stringResource(R.string.playlists)
-                        HomeScreenTabs.Search -> stringResource(R.string.search)
-                    }
-                }
+                valueText = { it.text }
             )
 
         if (search.input.isBlank() || stringResource(R.string.transition_effect).contains(search.input,true))
@@ -1247,16 +977,7 @@ fun UiSettings(
                 title = stringResource(R.string.transition_effect),
                 selectedValue = transitionEffect,
                 onValueSelected = { transitionEffect = it },
-                valueText = {
-                    when (it) {
-                        TransitionEffect.None -> stringResource(R.string.none)
-                        TransitionEffect.Expand -> stringResource(R.string.te_expand)
-                        TransitionEffect.Fade -> stringResource(R.string.te_fade)
-                        TransitionEffect.Scale -> stringResource(R.string.te_scale)
-                        TransitionEffect.SlideVertical -> stringResource(R.string.te_slide_vertical)
-                        TransitionEffect.SlideHorizontal -> stringResource(R.string.te_slide_horizontal)
-                    }
-                }
+                valueText = { it.text }
             )
 
         if ( UiType.ViMusic.isCurrent() ) {
@@ -1302,12 +1023,7 @@ fun UiSettings(
                 title = stringResource(R.string.settings_use_font_type),
                 selectedValue = fontType,
                 onValueSelected = { fontType = it },
-                valueText = {
-                    when (it) {
-                        FontType.Rubik -> FontType.Rubik.name
-                        FontType.Poppins -> FontType.Poppins.name
-                    }
-                }
+                valueText = { it.name }
             )
 
         if (search.input.isBlank() || stringResource(R.string.use_system_font).contains(search.input,true))
@@ -1513,9 +1229,7 @@ fun UiSettings(
                 title = stringResource(R.string.statistics_max_number_of_items),
                 selectedValue = recommendationsNumber,
                 onValueSelected = { recommendationsNumber = it },
-                valueText = {
-                    it.number.toString()
-                }
+                valueText = { it.name }
             )
 
         SettingsGroupSpacer()
@@ -1526,9 +1240,7 @@ fun UiSettings(
                 title = stringResource(R.string.statistics_max_number_of_items),
                 selectedValue = maxStatisticsItems,
                 onValueSelected = { maxStatisticsItems = it },
-                valueText = {
-                    it.number.toString()
-                }
+                valueText = { it.name }
             )
 
         if (search.input.isBlank() || stringResource(R.string.listening_time).contains(search.input,true))
@@ -1549,9 +1261,7 @@ fun UiSettings(
                 title = stringResource(R.string.statistics_max_number_of_items),
                 selectedValue = maxTopPlaylistItems,
                 onValueSelected = { maxTopPlaylistItems = it },
-                valueText = {
-                    it.number.toString()
-                }
+                valueText = { it.name }
             )
 
         var resetToDefault by remember { mutableStateOf(false) }

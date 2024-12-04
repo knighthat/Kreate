@@ -1,6 +1,13 @@
 package it.fast4x.rimusic.enums
 
-enum class MessageType {
-    Essential,
-    Modern;
+import androidx.annotation.StringRes
+import it.fast4x.rimusic.R
+import me.knighthat.enums.TextView
+
+enum class MessageType(
+    @field:StringRes override val textId: Int
+): TextView {
+
+    Essential( R.string.message_type_essential ),
+    Modern( R.string.message_type_modern );
 }

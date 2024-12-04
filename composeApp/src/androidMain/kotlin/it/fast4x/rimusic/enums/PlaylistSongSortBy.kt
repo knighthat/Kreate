@@ -2,12 +2,14 @@ package it.fast4x.rimusic.enums
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
 import it.fast4x.rimusic.R
+import me.knighthat.enums.TextView
 
 enum class PlaylistSongSortBy(
-    @StringRes val textId: Int,
+    @field:StringRes override val textId: Int,
     @field:DrawableRes override val iconId: Int
-): MenuTitle, Drawable {
+): TextView, Drawable {
 
     Album( R.string.sort_album, R.drawable.album ),
 
@@ -31,13 +33,10 @@ enum class PlaylistSongSortBy(
 
     DateAdded( R.string.sort_date_added, R.drawable.time );
 
-    override val titleId: Int
-        get() {
-            // Due to the requirement of 2 separated strings,
-            // this needs to be handled separately
-            if( this == ArtistAndAlbum )
-                throw UnsupportedOperationException()
-
-            return this.textId
+    override val text: String
+        @Composable
+        get() = when( this ) {
+            ArtistAndAlbum -> "${Artist.text}, ${Album.text}"
+            else -> super.text
         }
 }

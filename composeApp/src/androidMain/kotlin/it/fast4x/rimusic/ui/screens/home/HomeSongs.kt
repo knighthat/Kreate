@@ -12,21 +12,8 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -54,118 +41,30 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import it.fast4x.compose.persist.persistList
-import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.EXPLICIT_PREFIX
-import it.fast4x.rimusic.LocalPlayerServiceBinder
+import it.fast4x.rimusic.*
 import it.fast4x.rimusic.R
-import it.fast4x.rimusic.enums.BuiltInPlaylist
-import it.fast4x.rimusic.enums.CacheType
-import it.fast4x.rimusic.enums.DurationInMinutes
-import it.fast4x.rimusic.enums.MaxSongs
-import it.fast4x.rimusic.enums.MaxTopPlaylistItems
-import it.fast4x.rimusic.enums.NavigationBarPosition
-import it.fast4x.rimusic.enums.OnDeviceFolderSortBy
-import it.fast4x.rimusic.enums.OnDeviceSongSortBy
-import it.fast4x.rimusic.enums.QueueSelection
-import it.fast4x.rimusic.enums.SongSortBy
-import it.fast4x.rimusic.enums.UiType
-import it.fast4x.rimusic.models.Folder
-import it.fast4x.rimusic.models.OnDeviceSong
-import it.fast4x.rimusic.models.Song
-import it.fast4x.rimusic.models.SongEntity
+import it.fast4x.rimusic.enums.*
+import it.fast4x.rimusic.models.*
 import it.fast4x.rimusic.service.LOCAL_KEY_PREFIX
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.isLocal
 import it.fast4x.rimusic.ui.components.ButtonsRow
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.SwipeablePlaylistItem
-import it.fast4x.rimusic.ui.components.themed.CacheSpaceIndicator
-import it.fast4x.rimusic.ui.components.themed.ConfirmationDialog
-import it.fast4x.rimusic.ui.components.themed.FloatingActionsContainerWithScrollToTop
-import it.fast4x.rimusic.ui.components.themed.FolderItemMenu
-import it.fast4x.rimusic.ui.components.themed.HeaderInfo
-import it.fast4x.rimusic.ui.components.themed.InHistoryMediaItemMenu
-import it.fast4x.rimusic.ui.components.themed.MultiFloatingActionsContainer
-import it.fast4x.rimusic.ui.components.themed.NowPlayingSongIndicator
-import it.fast4x.rimusic.ui.components.themed.SecondaryTextButton
-import it.fast4x.rimusic.ui.components.themed.SmartMessage
+import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
+import it.fast4x.rimusic.ui.components.tab.*
+import it.fast4x.rimusic.ui.components.tab.toolbar.*
+import it.fast4x.rimusic.ui.components.tab.toolbar.Button
+import it.fast4x.rimusic.ui.components.themed.*
 import it.fast4x.rimusic.ui.items.FolderItem
 import it.fast4x.rimusic.ui.items.SongItem
 import it.fast4x.rimusic.ui.screens.ondevice.musicFilesAsFlow
-import it.fast4x.rimusic.ui.styling.Dimensions
-import it.fast4x.rimusic.ui.styling.onOverlay
-import it.fast4x.rimusic.ui.styling.overlay
-import it.fast4x.rimusic.ui.styling.px
-import it.fast4x.rimusic.utils.MaxTopPlaylistItemsKey
-import it.fast4x.rimusic.utils.OnDeviceOrganize
-import it.fast4x.rimusic.utils.addNext
-import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.builtInPlaylistKey
-import it.fast4x.rimusic.utils.center
-import it.fast4x.rimusic.utils.color
-import it.fast4x.rimusic.utils.defaultFolderKey
-import it.fast4x.rimusic.utils.disableScrollingTextKey
-import it.fast4x.rimusic.utils.durationTextToMillis
-import it.fast4x.rimusic.utils.enqueue
-import it.fast4x.rimusic.utils.excludeSongsWithDurationLimitKey
-import it.fast4x.rimusic.utils.forcePlayAtIndex
-import it.fast4x.rimusic.utils.getDownloadState
-import it.fast4x.rimusic.utils.hasPermission
-import it.fast4x.rimusic.utils.includeLocalSongsKey
-import it.fast4x.rimusic.utils.isCompositionLaunched
-import it.fast4x.rimusic.utils.isDownloadedSong
-import it.fast4x.rimusic.utils.isNowPlaying
-import it.fast4x.rimusic.utils.manageDownload
-import it.fast4x.rimusic.utils.maxSongsInQueueKey
-import it.fast4x.rimusic.utils.onDeviceFolderSortByKey
-import it.fast4x.rimusic.utils.onDeviceSongSortByKey
-import it.fast4x.rimusic.utils.parentalControlEnabledKey
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.semiBold
-import it.fast4x.rimusic.utils.showCachedPlaylistKey
-import it.fast4x.rimusic.utils.showDownloadedPlaylistKey
-import it.fast4x.rimusic.utils.showFavoritesPlaylistKey
-import it.fast4x.rimusic.utils.showFloatingIconKey
-import it.fast4x.rimusic.utils.showFoldersOnDeviceKey
-import it.fast4x.rimusic.utils.showMyTopPlaylistKey
-import it.fast4x.rimusic.utils.showOnDevicePlaylistKey
-import it.fast4x.rimusic.utils.songSortByKey
-import it.fast4x.rimusic.utils.songSortOrderKey
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import it.fast4x.rimusic.ui.styling.*
+import it.fast4x.rimusic.utils.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import it.fast4x.rimusic.appContext
-import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.ui.components.themed.Enqueue
-import it.fast4x.rimusic.ui.components.themed.ItemSelector
-import it.fast4x.rimusic.ui.components.themed.LikeSongs
-import it.fast4x.rimusic.ui.components.themed.PlayNext
-import it.fast4x.rimusic.ui.components.themed.PlaylistsMenu
-import it.fast4x.rimusic.ui.components.themed.Search
-import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
-import it.fast4x.rimusic.utils.HiddenSongs
-import it.fast4x.rimusic.utils.PeriodSelector
-import it.fast4x.rimusic.utils.randomSort
-import it.fast4x.rimusic.ui.components.tab.DelSongDialog
-import it.fast4x.rimusic.ui.components.tab.DeleteHiddenSongsDialog
-import it.fast4x.rimusic.ui.components.tab.ExportSongsToCSVDialog
-import it.fast4x.rimusic.ui.components.tab.HideSongDialog
-import it.fast4x.rimusic.ui.components.tab.ImportSongsFromCSV
-import it.fast4x.rimusic.ui.components.tab.LocateComponent
-import it.fast4x.rimusic.ui.components.tab.Sort
-import it.fast4x.rimusic.ui.components.tab.TabHeader
-import it.fast4x.rimusic.ui.components.tab.toolbar.Button
-import it.fast4x.rimusic.ui.components.tab.toolbar.DelAllDownloadedDialog
-import it.fast4x.rimusic.ui.components.tab.toolbar.DownloadAllDialog
-import it.fast4x.rimusic.ui.components.tab.toolbar.SongsShuffle
-import it.fast4x.rimusic.thumbnailShape
-import it.fast4x.rimusic.typography
-import okhttp3.internal.filterList
 import timber.log.Timber
 import java.util.Optional
 import kotlin.math.max
@@ -242,15 +141,7 @@ fun HomeSongs(
 
     // Update playlistNameState's value based on current builtInPlaylist
     LaunchedEffect( builtInPlaylist ) {
-        playlistNameState.value =
-            when (builtInPlaylist) {
-                BuiltInPlaylist.All -> context.resources.getString(R.string.songs)
-                BuiltInPlaylist.OnDevice -> context.resources.getString(R.string.on_device)
-                BuiltInPlaylist.Favorites -> context.resources.getString(R.string.favorites)
-                BuiltInPlaylist.Downloaded -> context.resources.getString(R.string.downloaded)
-                BuiltInPlaylist.Offline -> context.resources.getString(R.string.cached)
-                BuiltInPlaylist.Top -> context.resources.getString(R.string.playlist_top)
-            }
+        playlistNameState.value = context.resources.getString( builtInPlaylist.textId )
     }
 
     val search = Search.init()
@@ -348,17 +239,17 @@ fun HomeSongs(
     val showDownloadedPlaylist by rememberPreference(showDownloadedPlaylistKey, true)
     val showOnDevicePlaylist by rememberPreference(showOnDevicePlaylistKey, true)
 
-    var buttonsList = listOf(BuiltInPlaylist.All to stringResource(R.string.all))
+    var buttonsList = listOf(BuiltInPlaylist.All to BuiltInPlaylist.All.text)
     if (showFavoritesPlaylist) buttonsList +=
-        BuiltInPlaylist.Favorites to stringResource(R.string.favorites)
+        BuiltInPlaylist.Favorites to BuiltInPlaylist.Favorites.text
     if (showCachedPlaylist) buttonsList +=
-        BuiltInPlaylist.Offline to stringResource(R.string.cached)
+        BuiltInPlaylist.Offline to BuiltInPlaylist.Offline.text
     if (showDownloadedPlaylist) buttonsList +=
-        BuiltInPlaylist.Downloaded to stringResource(R.string.downloaded)
+        BuiltInPlaylist.Downloaded to BuiltInPlaylist.Downloaded.text
     if (showMyTopPlaylist) buttonsList +=
-        BuiltInPlaylist.Top to stringResource(R.string.my_playlist_top,maxTopPlaylistItems.number)
+        BuiltInPlaylist.Top to stringResource( R.string.my_playlist_top, maxTopPlaylistItems.number )
     if (showOnDevicePlaylist) buttonsList +=
-        BuiltInPlaylist.OnDevice to stringResource(R.string.on_device)
+        BuiltInPlaylist.OnDevice to BuiltInPlaylist.OnDevice.text
 
     val excludeSongWithDurationLimit by rememberPreference(excludeSongsWithDurationLimitKey, DurationInMinutes.Disabled)
     val hapticFeedback = LocalHapticFeedback.current

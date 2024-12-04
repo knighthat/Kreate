@@ -1,5 +1,10 @@
 package it.fast4x.rimusic.enums
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import it.fast4x.rimusic.R
+import me.knighthat.enums.TextView
+
 enum class DurationInSeconds {
     Disabled,
     `3`,
@@ -44,7 +49,7 @@ enum class DurationInSeconds {
 
 }
 
-enum class DurationInMinutes {
+enum class DurationInMinutes: TextView {
     Disabled,
     `3`,
     `5`,
@@ -67,9 +72,16 @@ enum class DurationInMinutes {
             `30` -> 30
             `60` -> 60
         } * 3600000L
+
+    override val text: String
+        @Composable
+        get() = when( this ) {
+            Disabled -> stringResource( R.string.vt_disabled )
+            else -> "${this.name}m"
+        }
 }
 
-enum class DurationInMilliseconds {
+enum class DurationInMilliseconds: TextView {
     Disabled,
     `100ms`,
     `200ms`,
@@ -95,5 +107,12 @@ enum class DurationInMilliseconds {
             `800ms` -> 800
             `900ms` -> 900
             `1000ms` -> 1000
+        }
+
+    override val text: String
+        @Composable
+        get() = when( this )  {
+            Disabled -> stringResource( R.string.vt_disabled )
+            else -> this.name
         }
 }

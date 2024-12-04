@@ -1,47 +1,25 @@
 package it.fast4x.rimusic.ui.screens.settings
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.util.UnstableApi
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.R
+import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.PlayEventsType
 import it.fast4x.rimusic.ui.components.themed.ConfirmationDialog
 import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
 import it.fast4x.rimusic.ui.styling.Dimensions
-import it.fast4x.rimusic.utils.enableQuickPicksPageKey
-import it.fast4x.rimusic.utils.playEventsTypeKey
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.showChartsKey
-import it.fast4x.rimusic.utils.showMonthlyPlaylistInQuickPicksKey
-import it.fast4x.rimusic.utils.showMoodsAndGenresKey
-import it.fast4x.rimusic.utils.showNewAlbumsArtistsKey
-import it.fast4x.rimusic.utils.showNewAlbumsKey
-import it.fast4x.rimusic.utils.showPlaylistMightLikeKey
-import it.fast4x.rimusic.utils.showRelatedAlbumsKey
-import it.fast4x.rimusic.utils.showSimilarArtistsKey
-import it.fast4x.rimusic.utils.showTipsKey
+import it.fast4x.rimusic.utils.*
 import kotlinx.coroutines.flow.distinctUntilChanged
-import it.fast4x.rimusic.colorPalette
 
 @ExperimentalAnimationApi
 @UnstableApi
@@ -154,13 +132,7 @@ fun  QuickPicsSettings() {
                 title = stringResource(R.string.tips),
                 selectedValue = playEventType,
                 onValueSelected = { playEventType = it },
-                valueText = {
-                    when (it) {
-                        PlayEventsType.MostPlayed -> stringResource(R.string.by_most_played_song)
-                        PlayEventsType.LastPlayed -> stringResource(R.string.by_last_played_song)
-                        PlayEventsType.CasualPlayed -> stringResource(R.string.by_casual_played_song)
-                    }
-                }
+                valueText = { it.text }
             )
         }
 

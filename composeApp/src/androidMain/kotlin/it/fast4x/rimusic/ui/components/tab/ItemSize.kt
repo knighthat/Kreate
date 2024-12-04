@@ -44,7 +44,7 @@ class ItemSize private constructor(
     private fun Entry( size: HomeItemSize) {
         MenuEntry(
             size.icon,
-            stringResource( size.textId ),
+            size.text,
             onClick = {
                 sizeState.value = size
                 menuState::hide

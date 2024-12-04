@@ -1,6 +1,11 @@
 package it.fast4x.rimusic.enums
 
-enum class ExoPlayerDiskDownloadCacheMaxSize {
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import it.fast4x.rimusic.R
+import me.knighthat.enums.TextView
+
+enum class ExoPlayerDiskDownloadCacheMaxSize: TextView {
     `Disabled`,
     `32MB`,
     `512MB`,
@@ -21,4 +26,12 @@ enum class ExoPlayerDiskDownloadCacheMaxSize {
             `8GB` -> 8192
             Unlimited -> 0
         } * 1000 * 1000L
+
+    override val text: String
+        @Composable
+        get() = when ( this ) {
+            Disabled -> stringResource( R.string.turn_off )
+            Unlimited -> stringResource( R.string.unlimited )
+            else -> this.name
+        }
 }
