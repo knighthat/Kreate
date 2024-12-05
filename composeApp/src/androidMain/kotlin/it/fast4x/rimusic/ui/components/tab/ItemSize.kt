@@ -4,13 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.res.stringResource
 import it.fast4x.rimusic.R
+import it.fast4x.rimusic.enums.HomeItemSize
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.MenuState
-import it.fast4x.rimusic.ui.components.themed.Menu
-import it.fast4x.rimusic.ui.components.themed.MenuEntry
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
-import it.fast4x.rimusic.enums.HomeItemSize
+import it.fast4x.rimusic.ui.components.themed.Menu
+import it.fast4x.rimusic.ui.components.themed.MenuEntry
 import it.fast4x.rimusic.utils.Preference
 
 class ItemSize private constructor(
@@ -43,7 +43,7 @@ class ItemSize private constructor(
     @Composable
     private fun Entry( size: HomeItemSize) {
         MenuEntry(
-            size.iconId,
+            size.icon,
             stringResource( size.textId ),
             onClick = {
                 sizeState.value = size

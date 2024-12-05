@@ -4,36 +4,16 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.*
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.*
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.runtime.Composable
@@ -52,10 +32,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -80,75 +57,23 @@ import it.fast4x.innertube.requests.relatedSongs
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.R
-import it.fast4x.rimusic.enums.BuiltInPlaylist
-import it.fast4x.rimusic.enums.MaxSongs
-import it.fast4x.rimusic.enums.MaxTopPlaylistItems
-import it.fast4x.rimusic.enums.NavRoutes
-import it.fast4x.rimusic.enums.NavigationBarPosition
-import it.fast4x.rimusic.enums.PopupType
-import it.fast4x.rimusic.enums.RecommendationsNumber
-import it.fast4x.rimusic.enums.SongSortBy
-import it.fast4x.rimusic.enums.SortOrder
-import it.fast4x.rimusic.enums.ThumbnailRoundness
+import it.fast4x.rimusic.colorPalette
+import it.fast4x.rimusic.enums.*
 import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.models.SongPlaylistMap
 import it.fast4x.rimusic.service.isLocal
+import it.fast4x.rimusic.thumbnailShape
+import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
-import it.fast4x.rimusic.ui.components.themed.ConfirmationDialog
-import it.fast4x.rimusic.ui.components.themed.FloatingActionsContainerWithScrollToTop
-import it.fast4x.rimusic.ui.components.themed.HeaderIconButton
-import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
-import it.fast4x.rimusic.ui.components.themed.IconButton
-import it.fast4x.rimusic.ui.components.themed.IconInfo
-import it.fast4x.rimusic.ui.components.themed.InHistoryMediaItemMenu
-import it.fast4x.rimusic.ui.components.themed.InputTextDialog
-import it.fast4x.rimusic.ui.components.themed.NonQueuedMediaItemMenuLibrary
-import it.fast4x.rimusic.ui.components.themed.NowPlayingSongIndicator
-import it.fast4x.rimusic.ui.components.themed.PlaylistsItemMenu
-import it.fast4x.rimusic.ui.components.themed.SmartMessage
-import it.fast4x.rimusic.ui.components.themed.SortMenu
+import it.fast4x.rimusic.ui.components.themed.*
 import it.fast4x.rimusic.ui.items.PlaylistItem
 import it.fast4x.rimusic.ui.items.SongItem
-import it.fast4x.rimusic.ui.styling.Dimensions
-import it.fast4x.rimusic.ui.styling.favoritesIcon
-import it.fast4x.rimusic.ui.styling.onOverlay
-import it.fast4x.rimusic.ui.styling.overlay
-import it.fast4x.rimusic.ui.styling.px
-import it.fast4x.rimusic.utils.MaxTopPlaylistItemsKey
-import it.fast4x.rimusic.utils.addNext
-import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.autoShuffleKey
-import it.fast4x.rimusic.utils.center
-import it.fast4x.rimusic.utils.color
-import it.fast4x.rimusic.utils.disableScrollingTextKey
-import it.fast4x.rimusic.utils.durationTextToMillis
-import it.fast4x.rimusic.utils.enqueue
-import it.fast4x.rimusic.utils.forcePlay
-import it.fast4x.rimusic.utils.forcePlayAtIndex
-import it.fast4x.rimusic.utils.forcePlayFromBeginning
-import it.fast4x.rimusic.utils.formatAsTime
-import it.fast4x.rimusic.utils.getDownloadState
-import it.fast4x.rimusic.utils.isDownloadedSong
-import it.fast4x.rimusic.utils.isLandscape
-import it.fast4x.rimusic.utils.isNowPlaying
-import it.fast4x.rimusic.utils.isRecommendationEnabledKey
-import it.fast4x.rimusic.utils.manageDownload
-import it.fast4x.rimusic.utils.maxSongsInQueueKey
-import it.fast4x.rimusic.utils.recommendationsNumberKey
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.secondary
-import it.fast4x.rimusic.utils.semiBold
-import it.fast4x.rimusic.utils.showSearchTabKey
-import it.fast4x.rimusic.utils.songSortByKey
-import it.fast4x.rimusic.utils.songSortOrderKey
+import it.fast4x.rimusic.ui.styling.*
+import it.fast4x.rimusic.utils.*
 import it.fast4x.rimusic.utils.thumbnail
-import it.fast4x.rimusic.utils.thumbnailRoundnessKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.thumbnailShape
-import it.fast4x.rimusic.typography
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -537,14 +462,7 @@ fun BuiltInPlaylistSongs(
 
                     if (songs.isEmpty())
                     PlaylistItem(
-                        icon = when (builtInPlaylist) {
-                            BuiltInPlaylist.All -> R.drawable.musical_notes
-                            BuiltInPlaylist.OnDevice -> R.drawable.musical_notes
-                            BuiltInPlaylist.Favorites -> R.drawable.heart
-                            BuiltInPlaylist.Downloaded -> R.drawable.downloaded
-                            BuiltInPlaylist.Offline -> R.drawable.sync
-                            BuiltInPlaylist.Top -> R.drawable.trending
-                        },
+                        icon = builtInPlaylist.iconId,
                         colorTint = colorPalette().favoritesIcon,
                         name = when (builtInPlaylist) {
                             BuiltInPlaylist.All -> context.resources.getString(R.string.songs)

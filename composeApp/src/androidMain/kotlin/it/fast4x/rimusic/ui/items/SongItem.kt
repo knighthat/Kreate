@@ -1,30 +1,11 @@
 package it.fast4x.rimusic.ui.items
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absoluteOffset
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,38 +25,18 @@ import it.fast4x.rimusic.EXPLICIT_PREFIX
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.R
 import it.fast4x.rimusic.cleanPrefix
+import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.DownloadedStateMedia
 import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.service.isLocal
-import it.fast4x.rimusic.ui.components.themed.HeaderIconButton
-import it.fast4x.rimusic.ui.components.themed.IconButton
-import it.fast4x.rimusic.ui.components.themed.SmartMessage
-import it.fast4x.rimusic.ui.components.themed.TextPlaceholder
-import it.fast4x.rimusic.ui.styling.favoritesIcon
-import it.fast4x.rimusic.ui.styling.shimmer
-import it.fast4x.rimusic.ui.components.themed.NowPlayingSongIndicator
-import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.ui.styling.favoritesOverlay
-import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.asSong
-import it.fast4x.rimusic.utils.conditional
-import it.fast4x.rimusic.utils.downloadedStateMedia
-import it.fast4x.rimusic.utils.getLikeState
-import it.fast4x.rimusic.utils.medium
-import it.fast4x.rimusic.utils.playlistindicatorKey
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.secondary
-import it.fast4x.rimusic.utils.semiBold
-import it.fast4x.rimusic.utils.thumbnail
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.utils.shimmerEffect
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.typography
+import it.fast4x.rimusic.ui.components.themed.*
+import it.fast4x.rimusic.ui.styling.*
+import it.fast4x.rimusic.utils.*
+import it.fast4x.rimusic.utils.thumbnail
+import kotlinx.coroutines.*
 
 
 @UnstableApi
@@ -659,7 +620,7 @@ fun SongItem(
                 } else {
                     IconButton(
                         onClick = onDownloadClick,
-                        icon = downloadedStateMedia.icon,
+                        icon = downloadedStateMedia.iconId,
                         color = when(downloadedStateMedia) {
                             DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED -> colorPalette().textDisabled
                             else -> colorPalette().text
@@ -761,7 +722,7 @@ fun SongItemPlaceholder( thumbnailSizeDp: Dp ) {
 
                 IconButton(
                     onClick = {},
-                    icon = DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED.icon,
+                    icon = DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED.iconId,
                     color = colorPalette().textDisabled,
                     modifier = Modifier.size( 20.dp ),
                     enabled = false

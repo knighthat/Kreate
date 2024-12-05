@@ -2,28 +2,9 @@ package it.fast4x.rimusic.ui.screens.statistics
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,56 +34,26 @@ import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.R
-import it.fast4x.rimusic.enums.MaxStatisticsItems
-import it.fast4x.rimusic.enums.NavRoutes
-import it.fast4x.rimusic.enums.NavigationBarPosition
-import it.fast4x.rimusic.enums.StatisticsCategory
-import it.fast4x.rimusic.enums.StatisticsType
-import it.fast4x.rimusic.enums.ThumbnailRoundness
-import it.fast4x.rimusic.models.Album
-import it.fast4x.rimusic.models.Artist
-import it.fast4x.rimusic.models.PlaylistPreview
-import it.fast4x.rimusic.models.Song
+import it.fast4x.rimusic.colorPalette
+import it.fast4x.rimusic.enums.*
+import it.fast4x.rimusic.models.*
+import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.ButtonsRow
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
 import it.fast4x.rimusic.ui.components.themed.NonQueuedMediaItemMenu
-import it.fast4x.rimusic.ui.items.AlbumItem
-import it.fast4x.rimusic.ui.items.ArtistItem
-import it.fast4x.rimusic.ui.items.PlaylistItem
-import it.fast4x.rimusic.ui.items.SongItem
+import it.fast4x.rimusic.ui.items.*
 import it.fast4x.rimusic.ui.screens.settings.SettingsEntry
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.ui.styling.shimmer
-import it.fast4x.rimusic.utils.UpdateYoutubeAlbum
-import it.fast4x.rimusic.utils.UpdateYoutubeArtist
-import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.center
-import it.fast4x.rimusic.utils.color
-import it.fast4x.rimusic.utils.disableScrollingTextKey
-import it.fast4x.rimusic.utils.durationTextToMillis
-import it.fast4x.rimusic.utils.forcePlayAtIndex
-import it.fast4x.rimusic.utils.formatAsTime
-import it.fast4x.rimusic.utils.getDownloadState
-import it.fast4x.rimusic.utils.isDownloadedSong
-import it.fast4x.rimusic.utils.isNowPlaying
-import it.fast4x.rimusic.utils.manageDownload
-import it.fast4x.rimusic.utils.maxStatisticsItemsKey
-import it.fast4x.rimusic.utils.navigationBarPositionKey
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.semiBold
-import it.fast4x.rimusic.utils.showStatsListeningTimeKey
-import it.fast4x.rimusic.utils.statisticsCategoryKey
+import it.fast4x.rimusic.utils.*
 import it.fast4x.rimusic.utils.thumbnail
-import it.fast4x.rimusic.utils.thumbnailRoundnessKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.typography
 import timber.log.Timber
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -269,15 +220,7 @@ fun StatisticsPage(
                             StatisticsType.OneYear -> stringResource(R.string._1_year)
                             StatisticsType.All -> stringResource(R.string.all)
                         },
-                        iconId = when (statisticsType) {
-                            StatisticsType.Today -> R.drawable.stat_today
-                            StatisticsType.OneWeek -> R.drawable.stat_week
-                            StatisticsType.OneMonth -> R.drawable.stat_month
-                            StatisticsType.ThreeMonths -> R.drawable.stat_3months
-                            StatisticsType.SixMonths -> R.drawable.stat_6months
-                            StatisticsType.OneYear -> R.drawable.stat_year
-                            StatisticsType.All -> R.drawable.calendar_clear
-                        },
+                        iconId = statisticsType.iconId,
                         enabled = true,
                         showIcon = true,
                         modifier = Modifier,
