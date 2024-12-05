@@ -146,19 +146,19 @@ fun StatisticsPage(
         }
     }
     LaunchedEffect(Unit) {
-        Database.artistsMostPlayedByPeriod(from, now, maxStatisticsItems.number.toInt())
+        Database.artistsMostPlayedByPeriod(from, now, maxStatisticsItems.toInt())
             .collect { artists = it }
     }
     LaunchedEffect(Unit) {
-        Database.albumsMostPlayedByPeriod(from, now, maxStatisticsItems.number.toInt())
+        Database.albumsMostPlayedByPeriod(from, now, maxStatisticsItems.toInt())
             .collect { albums = it }
     }
     LaunchedEffect(Unit) {
-        Database.playlistsMostPlayedByPeriod(from, now, maxStatisticsItems.number.toInt())
+        Database.playlistsMostPlayedByPeriod(from, now, maxStatisticsItems.toInt())
             .collect { playlists = it }
     }
     LaunchedEffect(Unit) {
-        Database.songsMostPlayedByPeriod(from, now, maxStatisticsItems.number)
+        Database.songsMostPlayedByPeriod(from, now, maxStatisticsItems.toLong())
             .collect { songs = it }
     }
 

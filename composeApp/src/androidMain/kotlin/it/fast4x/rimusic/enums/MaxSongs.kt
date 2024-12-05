@@ -17,23 +17,15 @@ enum class MaxSongs: TextView {
     `3000`,
     Unlimited;
 
-    val number: Long
-        get() = when (this) {
-            `50` -> 50
-            `100` -> 100
-            `200` -> 200
-            `300` -> 300
-            `500` -> 500
-            `1000` -> 1000
-            `2000` -> 2000
-            `3000` -> 3000
-            Unlimited -> 1000000
-        } * 1L
-
     override val text: String
         @Composable
         get() = when( this ) {
             Unlimited -> stringResource( R.string.unlimited)
             else -> this.name
         }
+
+    fun toInt(): Int = when( this ) {
+        Unlimited -> 1_000_000      // YES! This is a valid format in Kotlin
+        else -> this.name.toInt()
+    }
 }

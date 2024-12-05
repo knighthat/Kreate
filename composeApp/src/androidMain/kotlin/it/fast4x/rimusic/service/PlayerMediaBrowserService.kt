@@ -312,7 +312,7 @@ class PlayerMediaBrowserService : MediaBrowserServiceCompat(), ServiceConnection
                 .setMediaId(MediaId.top)
                 .setTitle((this as Context).resources.getString(R.string.my_playlist_top)
                     .format((this as Context).preferences.getEnum(MaxTopPlaylistItemsKey,
-                            MaxTopPlaylistItems.`10`).number))
+                            MaxTopPlaylistItems.`10`).toInt()))
                 .setIconUri(uriFor(R.drawable.trending))
                 .build(),
             MediaItem.FLAG_PLAYABLE
@@ -477,7 +477,7 @@ class PlayerMediaBrowserService : MediaBrowserServiceCompat(), ServiceConnection
 
                     MediaId.top -> {
                         val maxTopSongs = preferences.getEnum(MaxTopPlaylistItemsKey,
-                            MaxTopPlaylistItems.`10`).number.toInt()
+                            MaxTopPlaylistItems.`10`).toInt()
 
                         Database.trending(maxTopSongs)
                                 .first()

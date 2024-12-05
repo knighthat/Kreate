@@ -368,7 +368,7 @@ fun HomeSongsModern(
     if (showDownloadedPlaylist) buttonsList +=
         BuiltInPlaylist.Downloaded to stringResource(R.string.downloaded)
     if (showMyTopPlaylist) buttonsList +=
-        BuiltInPlaylist.Top to String.format(stringResource(R.string.my_playlist_top),maxTopPlaylistItems.number)
+        BuiltInPlaylist.Top to stringResource( R.string.my_playlist_top, maxTopPlaylistItems )
     if (showOnDevicePlaylist) buttonsList +=
         BuiltInPlaylist.OnDevice to stringResource(R.string.on_device)
 
@@ -492,7 +492,7 @@ fun HomeSongsModern(
 
                     if (topPlaylistPeriod.duration == Duration.INFINITE) {
                         Database
-                            .songsEntityByPlayTimeWithLimitDesc(limit = maxTopPlaylistItems.number.toInt())
+                            .songsEntityByPlayTimeWithLimitDesc(limit = maxTopPlaylistItems.toInt())
                             .collect {
                                 items = it.filter { item ->
                                     if (excludeSongWithDurationLimit == DurationInMinutes.Disabled)
@@ -506,7 +506,7 @@ fun HomeSongsModern(
                     } else {
                         Database
                             .trendingSongEntity(
-                                limit = maxTopPlaylistItems.number.toInt(),
+                                limit = maxTopPlaylistItems.toInt(),
                                 period = topPlaylistPeriod.duration.inWholeMilliseconds
                             )
                             .collect {
@@ -1147,9 +1147,9 @@ fun HomeSongsModern(
                                             filteredSongs
                                         if (items.isNotEmpty()) {
                                             val itemsLimited =
-                                                if (items.size > maxSongsInQueue.number) items
+                                                if (items.size > maxSongsInQueue.toInt()) items
                                                     .shuffled()
-                                                    .take(maxSongsInQueue.number.toInt()) else items
+                                                    .take(maxSongsInQueue.toInt()) else items
                                             binder?.stopRadio()
                                             binder?.player?.forcePlayFromBeginning(
                                                 itemsLimited
@@ -1844,10 +1844,10 @@ fun HomeSongsModern(
                                         searching = false
                                         filter = null
 
-                                        val maxSongs = maxSongsInQueue.number.toInt()
+                                        val maxSongs = maxSongsInQueue.toInt()
                                         val itemsRange: IntRange
                                         val playIndex: Int
-                                        if (items.size < maxSongsInQueue.number) {
+                                        if (items.size < maxSongsInQueue.toInt()) {
                                             itemsRange = items.indices
                                             playIndex = index
                                         } else {

@@ -81,7 +81,7 @@ fun BuiltInPlaylistScreen(
                     if(showDownloadedPlaylist)
                         item(2, stringResource(R.string.downloaded), R.drawable.downloaded)
                     if(showMyTopPlaylist)
-                        item(3, stringResource(R.string.my_playlist_top).format(maxTopPlaylistItems.number) , R.drawable.trending)
+                        item(3, stringResource( R.string.my_playlist_top, maxTopPlaylistItems.toInt() ) , R.drawable.trending)
                     if(showOnDevicePlaylist)
                         item(4, stringResource(R.string.on_device), R.drawable.musical_notes)
                 }

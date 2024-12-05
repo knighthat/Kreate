@@ -7,13 +7,7 @@ enum class MaxStatisticsItems {
     `40`,
     `50`;
 
-    val number: Long
-        get() = when (this) {
-            `10` -> 10
-            `20` -> 20
-            `30` -> 30
-            `40` -> 40
-            `50` -> 50
-        }
+    fun toInt(): Int = this.name.toInt()
 
+    fun toLong(): Long = this.name.toLong()
 }

@@ -462,7 +462,7 @@ fun LocalPlaylistSongs(
                 }
         }
         if (relatedSongsRecommendationResult != null) {
-            for (index in 0..recommendationsNumber.number) {
+            for( index in 0..recommendationsNumber.toInt() ) {
                 positionsRecommendationList.add((0..items.size).random())
             }
         }

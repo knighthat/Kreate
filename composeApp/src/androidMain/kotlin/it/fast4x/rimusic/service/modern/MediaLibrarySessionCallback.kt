@@ -271,7 +271,7 @@ class MediaLibrarySessionCallback @Inject constructor(
                             context.getString(R.string.playlist_top),
                             context.preferences.getEnum(
                                 MaxTopPlaylistItemsKey,
-                                MaxTopPlaylistItems.`10`).number.toString(),
+                                MaxTopPlaylistItems.`10`).name,
                             drawableUri(R.drawable.trending),
                             MediaMetadata.MEDIA_TYPE_PLAYLIST
                         ),
@@ -325,7 +325,7 @@ class MediaLibrarySessionCallback @Inject constructor(
                             }
                             ID_TOP -> database.trending(
                                 context.preferences.getEnum(MaxTopPlaylistItemsKey,
-                                    MaxTopPlaylistItems.`10`).number.toInt()
+                                    MaxTopPlaylistItems.`10`).toInt()
                             )
                             ID_ONDEVICE -> database.songsEntityOnDevice().map { list ->
                                 list.map { it.song }
@@ -446,7 +446,7 @@ class MediaLibrarySessionCallback @Inject constructor(
                     }
                     ID_TOP -> database.trendingSongEntity(
                         context.preferences.getEnum(MaxTopPlaylistItemsKey,
-                            MaxTopPlaylistItems.`10`).number.toInt()
+                            MaxTopPlaylistItems.`10`).toInt()
                     )
                     ID_ONDEVICE -> database.songsEntityOnDevice()
                     ID_DOWNLOADED -> {

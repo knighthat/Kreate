@@ -267,7 +267,7 @@ fun LocalPlaylistSongsModern(
         //val numRelated = relatedSongsResult?.getOrNull()?.songs?.size ?: 0
         //val relatedMax = playlistSongs.size
         if (relatedSongsRecommendationResult != null) {
-            for (index in 0..recommendationsNumber.number) {
+            for (index in 0..recommendationsNumber.toInt()) {
                 positionsRecommendationList.add((0..playlistSongs.size).random())
             }
         }
@@ -841,8 +841,8 @@ fun LocalPlaylistSongsModern(
                                         playlistSongs.let { songs ->
                                             if (songs.isNotEmpty()) {
                                                 val itemsLimited =
-                                                    if (songs.size > maxSongsInQueue.number) songs.shuffled()
-                                                        .take(maxSongsInQueue.number.toInt()) else songs
+                                                    if (songs.size > maxSongsInQueue.toInt()) songs.shuffled()
+                                                        .take(maxSongsInQueue.toInt()) else songs
                                                 binder?.stopRadio()
                                                 binder?.player?.forcePlayFromBeginning(
                                                     itemsLimited.shuffled().map(SongEntity::asMediaItem)

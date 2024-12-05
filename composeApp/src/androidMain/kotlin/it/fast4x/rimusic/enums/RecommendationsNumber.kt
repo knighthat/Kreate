@@ -6,12 +6,5 @@ enum class RecommendationsNumber {
     `15`,
     `20`;
 
-    val number: Int
-        get() = when (this) {
-            `5` -> 5
-            `10` -> 10
-            `15` -> 15
-            `20` -> 20
-
-        }
+    fun toInt(): Int = this.name.toInt()
 }
