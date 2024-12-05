@@ -500,7 +500,7 @@ fun HomeSongsModern(
                                     else
                                         item.song.durationText?.let { it1 ->
                                             durationTextToMillis(it1)
-                                        }!! < excludeSongWithDurationLimit.minutesInMilliSeconds
+                                        }!! < excludeSongWithDurationLimit.asMillis
                                 }
                             }
                     } else {
@@ -516,7 +516,7 @@ fun HomeSongsModern(
                                     else
                                         item.song.durationText?.let { it1 ->
                                             durationTextToMillis(it1)
-                                        }!! < excludeSongWithDurationLimit.minutesInMilliSeconds
+                                        }!! < excludeSongWithDurationLimit.asMillis
                                 }
                             }
                     }

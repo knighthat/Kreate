@@ -317,7 +317,7 @@ fun GetSeekBar(
                     ) {
                         paused = true
                         binder.player.pause()
-                        delay(pauseBetweenSongs.number)
+                        delay( pauseBetweenSongs.asMillis )
                         //binder.player.seekTo(position+2000)
                         binder.player.play()
                         paused = false

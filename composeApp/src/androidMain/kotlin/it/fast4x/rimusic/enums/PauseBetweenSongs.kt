@@ -11,17 +11,7 @@ enum class PauseBetweenSongs {
     `50`,
     `60`;
 
-    val number: Long
-        get() = when (this) {
-            `0` -> 0
-            `5` -> 5
-            `10` -> 10
-            `15` -> 15
-            `20` -> 20
-            `30` -> 30
-            `40` -> 40
-            `50` -> 50
-            `60` -> 60
+    val asSeconds: Int = this.name.toInt()
 
-        } * 1000L
+    val asMillis: Long = this.asSeconds * 1000L
 }

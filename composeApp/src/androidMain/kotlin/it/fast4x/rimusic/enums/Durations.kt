@@ -49,29 +49,29 @@ enum class DurationInSeconds {
 
 }
 
-enum class DurationInMinutes: TextView {
-    Disabled,
-    `3`,
-    `5`,
-    `10`,
-    `15`,
-    `20`,
-    `25`,
-    `30`,
-    `60`;
+enum class DurationInMinutes(
+    val asMinutes: Int
+): TextView {
 
-    val minutesInMilliSeconds: Long get() =
-        when (this) {
-            Disabled -> 0
-            `3` -> 3
-            `5` -> 5
-            `10` -> 10
-            `15` -> 15
-            `20` -> 20
-            `25` -> 25
-            `30` -> 30
-            `60` -> 60
-        } * 3600000L
+    Disabled( 0 ),
+
+    `3`( 3 ),
+
+    `5`( 5 ),
+
+    `10`( 10 ),
+
+    `15`( 15 ),
+
+    `20`( 20 ),
+
+    `25`( 25 ),
+
+    `30`( 30 ),
+
+    `60`( 60 );
+
+    val asMillis: Long = this.asMinutes *  3_600_000L
 
     override val text: String
         @Composable
@@ -81,33 +81,20 @@ enum class DurationInMinutes: TextView {
         }
 }
 
-enum class DurationInMilliseconds: TextView {
-    Disabled,
-    `100ms`,
-    `200ms`,
-    `300ms`,
-    `400ms`,
-    `500ms`,
-    `600ms`,
-    `700ms`,
-    `800ms`,
-    `900ms`,
-    `1000ms`;
-
-    val milliSeconds: Int get() =
-        when (this) {
-            Disabled -> 0
-            `100ms` -> 100
-            `200ms` -> 200
-            `300ms` -> 300
-            `400ms` -> 400
-            `500ms` -> 500
-            `600ms` -> 600
-            `700ms` -> 700
-            `800ms` -> 800
-            `900ms` -> 900
-            `1000ms` -> 1000
-        }
+enum class DurationInMilliseconds(
+    val asMillis: Long
+): TextView {
+    Disabled( 0L ),
+    `100ms`( 100L ),
+    `200ms`( 200L ),
+    `300ms`( 300L ),
+    `400ms`( 400L ),
+    `500ms`( 500L ),
+    `600ms`( 600L ),
+    `700ms`( 700L ),
+    `800ms`( 800L ),
+    `900ms`( 900L ),
+    `1000ms`( 1000L );
 
     override val text: String
         @Composable

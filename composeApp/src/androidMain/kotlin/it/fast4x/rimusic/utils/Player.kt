@@ -234,7 +234,7 @@ fun Player.excludeMediaItems(mediaItems: List<MediaItem>, context: Context): Lis
             filteredMediaItems = mediaItems.filter {
                 it.mediaMetadata.extras?.getString("durationText")?.let { it1 ->
                     durationTextToMillis(it1)
-                }!! < excludeSongWithDurationLimit.minutesInMilliSeconds
+                }!! < excludeSongWithDurationLimit.asMillis
             }
 
             val excludedSongs = mediaItems.size - filteredMediaItems.size
@@ -257,7 +257,7 @@ fun Player.excludeMediaItem(mediaItem: MediaItem, context: Context): Boolean {
         if (excludeSongWithDurationLimit != DurationInMinutes.Disabled) {
             val excludedSong = mediaItem.mediaMetadata.extras?.getString("durationText")?.let { it1 ->
                     durationTextToMillis(it1)
-                }!! <= excludeSongWithDurationLimit.minutesInMilliSeconds
+                }!! <= excludeSongWithDurationLimit.asMillis
 
             if (excludedSong)
                 CoroutineScope(Dispatchers.Main).launch {
