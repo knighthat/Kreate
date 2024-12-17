@@ -7,57 +7,14 @@ import android.os.Parcel
 import androidx.core.database.getFloatOrNull
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import androidx.room.AutoMigration
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.DeleteColumn
-import androidx.room.DeleteTable
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.RawQuery
-import androidx.room.RenameColumn
-import androidx.room.RenameTable
-import androidx.room.RewriteQueriesToDropUnusedColumns
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.room.RoomWarnings
-import androidx.room.Transaction
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
-import androidx.room.Update
-import androidx.room.Upsert
+import androidx.room.*
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteQuery
-import it.fast4x.rimusic.enums.AlbumSortBy
-import it.fast4x.rimusic.enums.ArtistSortBy
-import it.fast4x.rimusic.enums.BuiltInPlaylist
-import it.fast4x.rimusic.enums.PlaylistSongSortBy
-import it.fast4x.rimusic.enums.PlaylistSortBy
-import it.fast4x.rimusic.enums.SongSortBy
-import it.fast4x.rimusic.enums.SortOrder
-import it.fast4x.rimusic.models.Album
-import it.fast4x.rimusic.models.Artist
-import it.fast4x.rimusic.models.Event
-import it.fast4x.rimusic.models.EventWithSong
-import it.fast4x.rimusic.models.Format
-import it.fast4x.rimusic.models.Info
-import it.fast4x.rimusic.models.Lyrics
-import it.fast4x.rimusic.models.Playlist
-import it.fast4x.rimusic.models.PlaylistPreview
-import it.fast4x.rimusic.models.PlaylistWithSongs
-import it.fast4x.rimusic.models.QueuedMediaItem
-import it.fast4x.rimusic.models.SearchQuery
-import it.fast4x.rimusic.models.Song
-import it.fast4x.rimusic.models.SongAlbumMap
-import it.fast4x.rimusic.models.SongArtistMap
-import it.fast4x.rimusic.models.SongEntity
-import it.fast4x.rimusic.models.SongPlaylistMap
-import it.fast4x.rimusic.models.SongWithContentLength
-import it.fast4x.rimusic.models.SortedSongPlaylistMap
+import it.fast4x.rimusic.enums.*
+import it.fast4x.rimusic.models.*
 import it.fast4x.rimusic.service.LOCAL_KEY_PREFIX
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -492,6 +449,17 @@ interface Database {
     @Transaction
     @Query("SELECT count(playlistId) FROM SongPlaylistMap WHERE songId = :id")
     fun songUsedInPlaylists(id: String): Int
+
+    /**
+     *  Whether the song is mapped to a playlist
+     */
+    @Query("""
+        SELECT COUNT(s.id) > 1
+        FROM Song s
+        JOIN SongPlaylistMap spm ON spm.songId = s.id 
+        WHERE s.id = :songId
+    """)
+    fun isSongMappedToPlaylist( songId: String ): Flow<Boolean>
 
     @Query("SELECT COUNT(1) FROM Song WHERE likedAt IS NOT NULL")
     fun likedSongsCount(): Flow<Int>
