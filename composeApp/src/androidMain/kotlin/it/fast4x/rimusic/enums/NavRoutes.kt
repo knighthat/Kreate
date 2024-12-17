@@ -30,7 +30,7 @@ enum class NavRoutes {
         fun current( navController: NavController ) = navController.currentBackStackEntry?.destination?.route
     }
 
-    fun isHere( navController: NavController ) = current( navController ) == this.name
+    fun isHere( navController: NavController ) = current( navController )?.startsWith( this.name ) ?: false
 
     fun isNotHere( navController: NavController ) = !isHere( navController )
 }
