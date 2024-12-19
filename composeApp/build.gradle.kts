@@ -2,6 +2,7 @@ import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.time.Instant
 
 
 plugins {
@@ -126,6 +127,12 @@ android {
         targetSdk = 35
         versionCode = 77
         versionName = "0.6.65.1"
+
+        /*
+                UNIVERSAL VARIABLES
+         */
+        val buildTime = Instant.now().toString()
+        buildConfigField( "String", "BUILD_TIME", "\"$buildTime\"")
     }
 
     splits {
@@ -141,6 +148,7 @@ android {
         debug {
             applicationIdSuffix = ".debug"
             manifestPlaceholders["appName"] = "RiMusic-Debug"
+            versionNameSuffix = "-kbm"
         }
 
         create( "full" ) {
@@ -205,7 +213,6 @@ android {
     androidResources {
         generateLocaleConfig = true
     }
-
 }
 
 
