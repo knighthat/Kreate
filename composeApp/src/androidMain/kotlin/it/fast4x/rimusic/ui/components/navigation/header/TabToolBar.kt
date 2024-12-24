@@ -3,16 +3,9 @@ package it.fast4x.rimusic.ui.components.navigation.header
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.IconButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,9 +26,12 @@ object TabToolBar {
     val VERTICAL_PADDING = 4.dp
 
     @Composable
-    fun Buttons( buttons: List<Button> ) {
-        val configuration = LocalConfiguration.current
-        val availableWidth = configuration.screenWidthDp.dp - (HORIZONTAL_PADDING * 2)
+    fun Buttons(
+        buttons: List<Button>,
+        horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceEvenly,
+        verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+        modifier: Modifier = Modifier
+    ) {
         val density = LocalDensity.current.density
         var availableWidth by remember { mutableStateOf(0.dp) }
 
@@ -74,11 +70,10 @@ object TabToolBar {
         }
 
         Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(HORIZONTAL_PADDING, VERTICAL_PADDING)
+            horizontalArrangement = horizontalArrangement,
+            verticalAlignment = verticalAlignment,
+            modifier = modifier.fillMaxWidth()
+                               .padding( HORIZONTAL_PADDING, VERTICAL_PADDING )
                                .onGloballyPositioned {
                                    // [it.size.width] returns size in px
                                    val widthDp = it.size.width / density
@@ -103,7 +98,12 @@ object TabToolBar {
     }
 
     @Composable
-    fun Buttons( vararg buttons: Button) = Buttons( listOf( *buttons ) )
+    fun Buttons(
+        vararg buttons: Button,
+        horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceEvenly,
+        verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+        modifier: Modifier = Modifier
+    ) = Buttons( listOf( *buttons ), horizontalArrangement, verticalAlignment, modifier )
 
     @Composable
     fun Icon(
