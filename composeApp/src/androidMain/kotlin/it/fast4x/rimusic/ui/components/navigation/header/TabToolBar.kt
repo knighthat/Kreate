@@ -17,7 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,8 @@ object TabToolBar {
     fun Buttons( buttons: List<Button> ) {
         val configuration = LocalConfiguration.current
         val availableWidth = configuration.screenWidthDp.dp - (HORIZONTAL_PADDING * 2)
+        val density = LocalDensity.current.density
+        var availableWidth by remember { mutableStateOf(0.dp) }
 
         /*
             `15.dp` is a magic number used to approximate the spacing
@@ -48,9 +51,12 @@ object TabToolBar {
             TODO: Implement a more accurate/efficient mathematical equation to calculate spacing
         */
         val sizeWithSpacing = TOOLBAR_ICON_SIZE + 15.dp
-        val canDisplay = (availableWidth / sizeWithSpacing).toInt()
-        val isClustered by rememberSaveable( canDisplay ) {
-            mutableStateOf( buttons.size > canDisplay )
+        var canDisplay by remember { mutableIntStateOf(0) }
+        var isClustered by remember { mutableStateOf(false) }
+
+        LaunchedEffect( availableWidth ) {
+            canDisplay = (availableWidth / sizeWithSpacing).toInt()
+            isClustered = buttons.size > canDisplay
         }
 
         val ellipsisMenu = EllipsisMenuComponent.init {
@@ -73,7 +79,15 @@ object TabToolBar {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(HORIZONTAL_PADDING, VERTICAL_PADDING)
+                               .onGloballyPositioned {
+                                   // [it.size.width] returns size in px
+                                   val widthDp = it.size.width / density
+                                   availableWidth = widthDp.dp - (HORIZONTAL_PADDING * 2)
+                               }
         ) {
+            // Wait until [availableWidth] is set and [canDisplay]
+            // is properly calculated before showing
+            if( canDisplay == 0 ) return@Row
 
             buttons.take(
                 if( isClustered )
