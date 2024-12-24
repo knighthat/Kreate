@@ -1,11 +1,7 @@
 package it.fast4x.rimusic.ui.components.themed
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,10 +19,11 @@ fun IconInfo (
     title: String,
     icon: Painter,
     spacer: Dp = 4.dp,
-    iconSize: Dp = 20.dp
+    iconSize: Dp = 20.dp,
+    modifier: Modifier = Modifier
 ) {
     Row (
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         Image(
             painter = icon,
