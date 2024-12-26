@@ -1353,6 +1353,17 @@ interface Database {
     @RewriteQueriesToDropUnusedColumns
     fun albumSongs(albumId: String): Flow<List<Song>>
 
+    @RewriteQueriesToDropUnusedColumns
+    @Query("""
+        SELECT DISTINCT Song.*, Format.contentLength, Album.title
+        FROM Album 
+        LEFT JOIN SongAlbumMap ON SongAlbummap.albumId = Album.id
+        LEFT JOIN Song ON Song.id = SongAlbumMap.songId 
+        LEFT JOIN Format ON Format.songId = Song.id
+        WHERE Album.id = :albumId
+    """)
+    fun findSongsOfAlbum( albumId: String ): Flow<List<SongEntity>>
+
     @Transaction
     @Query("SELECT *, (SELECT SUM(CAST(REPLACE(durationText, ':', '') AS INTEGER)) FROM Song JOIN SongAlbumMap ON Song.id = SongAlbumMap.songId WHERE SongAlbumMap.albumId = Album.id AND position IS NOT NULL) as totalDuration " +
             "FROM Album WHERE bookmarkedAt IS NOT NULL ORDER BY totalDuration ASC" )
