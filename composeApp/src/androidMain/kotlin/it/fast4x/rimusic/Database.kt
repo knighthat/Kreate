@@ -1206,6 +1206,39 @@ interface Database {
     @Query("UPDATE Album SET bookmarkedAt = :bookmarkedAt WHERE id = :id")
     fun bookmarkAlbum(id: String, bookmarkedAt: Long?): Int
 
+    @Query("""
+        SELECT 
+            CASE
+                WHEN bookmarkedAt IS NOT NULL THEN 1   
+                ELSE 0
+            END
+        FROM Album
+        WHERE id = :albumId 
+    """)
+    fun isAlbumBookmarked( albumId: String ): Flow<Boolean>
+
+    /**
+     * There are 2 possible actions.
+     *
+     * ### If album IS bookmarked
+     * This will remove [Album.bookmarkedAt] timestamp (replaces with NULL)
+     *
+     * ## If album IS NOT bookmarked
+     * It will assign [Album.bookmarkedAt] with current time in millis
+     *
+     * @param albumId album identifier to update its [Album.bookmarkedAt]
+     */
+    @Query("""
+        UPDATE Album
+        SET bookmarkedAt = 
+            CASE 
+                WHEN bookmarkedAt IS NULL THEN strftime('%s', 'now') * 1000
+                ELSE NULL
+            END
+        WHERE id = :albumId
+    """)
+    fun toggleAlbumBookmark( albumId: String )
+
     @Query("UPDATE Song SET likedAt = :likedAt WHERE id = :songId")
     fun like(songId: String, likedAt: Long?): Int
 
