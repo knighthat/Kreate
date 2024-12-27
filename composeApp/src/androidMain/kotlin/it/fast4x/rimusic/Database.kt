@@ -2265,6 +2265,9 @@ interface Database {
     fun upsert(album: Album, songAlbumMaps: List<SongAlbumMap>)
 
     @Upsert
+    fun upsert( album: Album )
+
+    @Upsert
     fun upsert(songAlbumMap: SongAlbumMap)
 
     @Upsert
