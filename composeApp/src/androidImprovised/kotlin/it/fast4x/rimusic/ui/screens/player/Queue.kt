@@ -355,11 +355,7 @@ fun Queue(
                         item {
                             Column( Modifier.shimmer() ) {
                                 repeat(3) { index ->
-                                    SongItemPlaceholder(
-                                        thumbnailSizeDp = Dimensions.thumbnails.song,
-                                        modifier = Modifier.alpha( 1f - index * 0.125f )
-                                            .fillMaxWidth()
-                                    )
+                                    SongItemPlaceholder( Modifier.alpha( 1f - index * 0.125f ) )
                                 }
                             }
                         }

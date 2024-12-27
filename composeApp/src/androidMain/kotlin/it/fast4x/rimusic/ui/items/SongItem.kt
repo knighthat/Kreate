@@ -635,47 +635,23 @@ fun SongItem(
     }
 }
 
-
-@Composable
-fun SongItemPlaceholder(
-    thumbnailSizeDp: Dp,
-    modifier: Modifier = Modifier
-) {
-    ItemContainer(
-        alternative = false,
-        thumbnailSizeDp =thumbnailSizeDp,
-        modifier = modifier
-    ) {
-        Spacer(
-            modifier = Modifier
-                .background(color = colorPalette().shimmer, shape = thumbnailShape())
-                .size(thumbnailSizeDp)
-        )
-
-        ItemInfoContainer {
-            TextPlaceholder()
-            TextPlaceholder()
-        }
-    }
-}
-
 /**
  * New component is more resemble to the final
  * SongItem that's currently being used.
  */
 @Composable
-fun SongItemPlaceholder( thumbnailSizeDp: Dp ) {
+fun SongItemPlaceholder( modifier: Modifier = Modifier ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy( 12.dp ),
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
                            .padding(
                                vertical = 8.dp,
                                horizontal = 16.dp
                            )
     ) {
         Box(
-            Modifier.size( thumbnailSizeDp )
+            Modifier.size( Dimensions.thumbnails.song )
                     .clip( RoundedCornerShape(12.dp) )
                     .shimmerEffect()
         )

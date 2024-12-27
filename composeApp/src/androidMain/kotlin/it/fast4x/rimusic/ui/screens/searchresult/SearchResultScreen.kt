@@ -9,13 +9,8 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -35,54 +30,19 @@ import it.fast4x.innertube.models.bodies.SearchBody
 import it.fast4x.innertube.requests.albumPage
 import it.fast4x.innertube.requests.searchPage
 import it.fast4x.innertube.utils.from
-import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.EXPLICIT_PREFIX
-import it.fast4x.rimusic.LocalPlayerServiceBinder
+import it.fast4x.rimusic.*
 import it.fast4x.rimusic.R
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.models.Album
 import it.fast4x.rimusic.models.SongAlbumMap
-import it.fast4x.rimusic.ui.components.LocalMenuState
-import it.fast4x.rimusic.ui.components.SwipeableAlbumItem
-import it.fast4x.rimusic.ui.components.SwipeablePlaylistItem
-import it.fast4x.rimusic.ui.components.themed.NonQueuedMediaItemMenu
-import it.fast4x.rimusic.ui.components.themed.NowPlayingSongIndicator
-import it.fast4x.rimusic.ui.components.themed.Title
-import it.fast4x.rimusic.ui.items.AlbumItem
-import it.fast4x.rimusic.ui.items.AlbumItemPlaceholder
-import it.fast4x.rimusic.ui.items.ArtistItem
-import it.fast4x.rimusic.ui.items.ArtistItemPlaceholder
-import it.fast4x.rimusic.ui.items.PlaylistItem
-import it.fast4x.rimusic.ui.items.PlaylistItemPlaceholder
-import it.fast4x.rimusic.ui.items.SongItem
-import it.fast4x.rimusic.ui.items.SongItemPlaceholder
-import it.fast4x.rimusic.ui.items.VideoItem
-import it.fast4x.rimusic.ui.items.VideoItemPlaceholder
+import it.fast4x.rimusic.ui.components.*
+import it.fast4x.rimusic.ui.components.themed.*
+import it.fast4x.rimusic.ui.items.*
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.px
-import it.fast4x.rimusic.utils.addNext
-import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.asSong
-import it.fast4x.rimusic.utils.disableScrollingTextKey
-import it.fast4x.rimusic.utils.enqueue
-import it.fast4x.rimusic.utils.forcePlay
-import it.fast4x.rimusic.utils.getDownloadState
-import it.fast4x.rimusic.utils.isDownloadedSong
-import it.fast4x.rimusic.utils.isNowPlaying
-import it.fast4x.rimusic.utils.manageDownload
-import it.fast4x.rimusic.utils.parentalControlEnabledKey
-import it.fast4x.rimusic.utils.playVideo
-import it.fast4x.rimusic.utils.preferences
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.searchResultScreenTabIndexKey
-import it.fast4x.rimusic.utils.showButtonPlayerVideoKey
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import it.fast4x.rimusic.utils.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import it.fast4x.rimusic.ui.components.Skeleton
-import it.fast4x.rimusic.ui.components.themed.SmartMessage
 
 @ExperimentalMaterialApi
 @ExperimentalTextApi
@@ -276,9 +236,7 @@ fun SearchResultScreen(
                                         )
                                     }
                                 },
-                                itemPlaceholderContent = {
-                                    SongItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp)
-                                }
+                                itemPlaceholderContent = { SongItemPlaceholder() }
                             )
                         }
 

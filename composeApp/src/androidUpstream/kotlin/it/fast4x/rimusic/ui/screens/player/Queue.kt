@@ -641,7 +641,6 @@ fun Queue(
                             ) {
                                 repeat(3) { index ->
                                     SongItemPlaceholder(
-                                        thumbnailSizeDp = thumbnailSizeDp,
                                         modifier = Modifier
                                             .alpha(1f - index * 0.125f)
                                             .fillMaxWidth()

@@ -3,34 +3,11 @@ package it.fast4x.rimusic.ui.screens.artist
 import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,9 +36,7 @@ import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBody
 import it.fast4x.innertube.requests.itemsPage
 import it.fast4x.innertube.utils.from
-import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
-import it.fast4x.rimusic.LocalPlayerServiceBinder
+import it.fast4x.rimusic.*
 import it.fast4x.rimusic.R
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -70,56 +45,14 @@ import it.fast4x.rimusic.models.Artist
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.ShimmerHost
 import it.fast4x.rimusic.ui.components.SwipeablePlaylistItem
-import it.fast4x.rimusic.ui.components.themed.AutoResizeText
-import it.fast4x.rimusic.ui.components.themed.ConfirmationDialog
-import it.fast4x.rimusic.ui.components.themed.FontSizeRange
-import it.fast4x.rimusic.ui.components.themed.HeaderIconButton
-import it.fast4x.rimusic.ui.components.themed.IconButton
-import it.fast4x.rimusic.ui.components.themed.LayoutWithAdaptiveThumbnail
-import it.fast4x.rimusic.ui.components.themed.MultiFloatingActionsContainer
-import it.fast4x.rimusic.ui.components.themed.NonQueuedMediaItemMenu
-import it.fast4x.rimusic.ui.components.themed.SecondaryTextButton
-import it.fast4x.rimusic.ui.components.themed.SmartMessage
-import it.fast4x.rimusic.ui.components.themed.TextPlaceholder
-import it.fast4x.rimusic.ui.components.themed.Title
-import it.fast4x.rimusic.ui.components.themed.Title2Actions
-import it.fast4x.rimusic.ui.items.AlbumItem
-import it.fast4x.rimusic.ui.items.AlbumItemPlaceholder
-import it.fast4x.rimusic.ui.items.PlaylistItem
-import it.fast4x.rimusic.ui.items.SongItem
-import it.fast4x.rimusic.ui.items.SongItemPlaceholder
+import it.fast4x.rimusic.ui.components.themed.*
+import it.fast4x.rimusic.ui.items.*
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.px
-import it.fast4x.rimusic.utils.addNext
-import it.fast4x.rimusic.utils.align
-import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.color
-import it.fast4x.rimusic.utils.conditional
-import it.fast4x.rimusic.utils.enqueue
-import it.fast4x.rimusic.utils.fadingEdge
-import it.fast4x.rimusic.utils.forcePlay
-import it.fast4x.rimusic.utils.getDownloadState
-import it.fast4x.rimusic.utils.getHttpClient
-import it.fast4x.rimusic.utils.isDownloadedSong
-import it.fast4x.rimusic.utils.isLandscape
-import it.fast4x.rimusic.utils.isNowPlaying
-import it.fast4x.rimusic.utils.languageDestination
-import it.fast4x.rimusic.utils.manageDownload
-import it.fast4x.rimusic.utils.medium
-import it.fast4x.rimusic.utils.parentalControlEnabledKey
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.resize
-import it.fast4x.rimusic.utils.secondary
-import it.fast4x.rimusic.utils.semiBold
-import it.fast4x.rimusic.utils.showFloatingIconKey
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import it.fast4x.rimusic.utils.*
+import kotlinx.coroutines.*
 import me.bush.translator.Language
 import me.bush.translator.Translator
-import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.typography
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -890,9 +823,7 @@ fun ArtistOverview(
                         TextPlaceholder(modifier = sectionTextModifier)
 
                         repeat(5) {
-                            SongItemPlaceholder(
-                                thumbnailSizeDp = songThumbnailSizeDp,
-                            )
+                            SongItemPlaceholder()
                         }
 
                         BasicText(
