@@ -23,10 +23,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.*
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -38,11 +37,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import com.github.doyaaaaaken.kotlincsv.client.KotlinCsvExperimental
 import it.fast4x.compose.persist.persist
@@ -55,111 +52,25 @@ import it.fast4x.innertube.models.bodies.BrowseBody
 import it.fast4x.innertube.models.bodies.NextBody
 import it.fast4x.innertube.requests.playlistPage
 import it.fast4x.innertube.requests.relatedSongs
-import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.EXPLICIT_PREFIX
-import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.MONTHLY_PREFIX
-import it.fast4x.rimusic.PINNED_PREFIX
-import it.fast4x.rimusic.PIPED_PREFIX
+import it.fast4x.rimusic.*
 import it.fast4x.rimusic.R
-import it.fast4x.rimusic.cleanPrefix
-import it.fast4x.rimusic.enums.NavigationBarPosition
-import it.fast4x.rimusic.enums.PlaylistSongSortBy
-import it.fast4x.rimusic.enums.PopupType
-import it.fast4x.rimusic.enums.RecommendationsNumber
-import it.fast4x.rimusic.enums.ThumbnailRoundness
-import it.fast4x.rimusic.enums.UiType
-import it.fast4x.rimusic.models.PlaylistPreview
-import it.fast4x.rimusic.models.SongEntity
-import it.fast4x.rimusic.models.SongPlaylistMap
+import it.fast4x.rimusic.enums.*
+import it.fast4x.rimusic.models.*
 import it.fast4x.rimusic.service.isLocal
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.SwipeableQueueItem
-import it.fast4x.rimusic.ui.components.themed.FloatingActionsContainerWithScrollToTop
-import it.fast4x.rimusic.ui.components.themed.HeaderIconButton
-import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
-import it.fast4x.rimusic.ui.components.themed.IconButton
-import it.fast4x.rimusic.ui.components.themed.IconInfo
-import it.fast4x.rimusic.ui.components.themed.InPlaylistMediaItemMenu
-import it.fast4x.rimusic.ui.components.themed.NowPlayingSongIndicator
-import it.fast4x.rimusic.ui.components.themed.Playlist
-import it.fast4x.rimusic.ui.components.themed.SmartMessage
-import it.fast4x.rimusic.ui.items.SongItem
-import it.fast4x.rimusic.ui.styling.Dimensions
-import it.fast4x.rimusic.ui.styling.onOverlay
-import it.fast4x.rimusic.ui.styling.overlay
-import it.fast4x.rimusic.ui.styling.px
-import it.fast4x.rimusic.utils.addNext
-import it.fast4x.rimusic.utils.addToPipedPlaylist
-import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.autosyncKey
-import it.fast4x.rimusic.utils.center
-import it.fast4x.rimusic.utils.checkFileExists
-import it.fast4x.rimusic.utils.color
-import it.fast4x.rimusic.utils.completed
-import it.fast4x.rimusic.utils.deleteFileIfExists
-import it.fast4x.rimusic.utils.deletePipedPlaylist
-import it.fast4x.rimusic.utils.disableScrollingTextKey
-import it.fast4x.rimusic.utils.durationTextToMillis
-import it.fast4x.rimusic.utils.enqueue
-import it.fast4x.rimusic.utils.forcePlay
-import it.fast4x.rimusic.utils.forcePlayAtIndex
-import it.fast4x.rimusic.utils.forcePlayFromBeginning
-import it.fast4x.rimusic.utils.formatAsTime
-import it.fast4x.rimusic.utils.getDownloadState
-import it.fast4x.rimusic.utils.getPipedSession
-import it.fast4x.rimusic.utils.getTitleMonthlyPlaylist
-import it.fast4x.rimusic.utils.isDownloadedSong
-import it.fast4x.rimusic.utils.isLandscape
-import it.fast4x.rimusic.utils.isNowPlaying
-import it.fast4x.rimusic.utils.isPipedEnabledKey
-import it.fast4x.rimusic.utils.isRecommendationEnabledKey
-import it.fast4x.rimusic.utils.manageDownload
-import it.fast4x.rimusic.utils.parentalControlEnabledKey
-import it.fast4x.rimusic.utils.recommendationsNumberKey
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.removeFromPipedPlaylist
-import it.fast4x.rimusic.utils.saveImageToInternalStorage
-import it.fast4x.rimusic.utils.semiBold
-import it.fast4x.rimusic.utils.showFloatingIconKey
-import it.fast4x.rimusic.utils.syncSongsInPipedPlaylist
-import it.fast4x.rimusic.utils.thumbnailRoundnessKey
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
+import it.fast4x.rimusic.ui.components.tab.ExportSongsToCSVDialog
+import it.fast4x.rimusic.ui.components.tab.LocateComponent
+import it.fast4x.rimusic.ui.components.tab.toolbar.*
+import it.fast4x.rimusic.ui.components.tab.toolbar.Button
+import it.fast4x.rimusic.ui.components.themed.*
+import it.fast4x.rimusic.ui.styling.*
+import it.fast4x.rimusic.utils.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import it.fast4x.rimusic.appContext
-import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.ui.components.themed.Enqueue
-import it.fast4x.rimusic.ui.components.themed.ItemSelector
-import it.fast4x.rimusic.ui.components.themed.LikeSongs
-import it.fast4x.rimusic.ui.components.themed.ListenOnYouTube
-import it.fast4x.rimusic.ui.components.themed.PlayNext
-import it.fast4x.rimusic.ui.components.themed.PlaylistsMenu
-import it.fast4x.rimusic.ui.components.themed.ResetThumbnail
-import it.fast4x.rimusic.ui.components.themed.Search
-import it.fast4x.rimusic.ui.components.themed.Synchronize
-import it.fast4x.rimusic.ui.components.themed.ThumbnailPicker
-import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
-import it.fast4x.rimusic.utils.DeletePlaylist
-import it.fast4x.rimusic.utils.PlaylistSongsSort
-import it.fast4x.rimusic.utils.PositionLock
-import it.fast4x.rimusic.utils.RenameDialog
-import it.fast4x.rimusic.utils.Reposition
-import it.fast4x.rimusic.utils.pin
-import it.fast4x.rimusic.ui.components.tab.ExportSongsToCSVDialog
-import it.fast4x.rimusic.ui.components.tab.LocateComponent
-import it.fast4x.rimusic.ui.components.tab.toolbar.Button
-import it.fast4x.rimusic.ui.components.tab.toolbar.DelAllDownloadedDialog
-import it.fast4x.rimusic.ui.components.tab.toolbar.Dialog
-import it.fast4x.rimusic.ui.components.tab.toolbar.DownloadAllDialog
-import it.fast4x.rimusic.ui.components.tab.toolbar.SongsShuffle
-import it.fast4x.rimusic.thumbnailShape
-import it.fast4x.rimusic.typography
 import timber.log.Timber
 import java.util.UUID
 
@@ -266,9 +177,12 @@ fun LocalPlaylistSongs(
     }
     // Either position lock or item selector can be turned on at a time
     LaunchedEffect( positionLock.isFirstIcon ) {
-        if( !positionLock.isFirstIcon )
-        // Open to move position
+        if( !positionLock.isFirstIcon ) {
+            // Open to move position
             itemSelector.isActive = false
+            // Disable smart recommendation, it breaks the index
+            isRecommendationEnabled = false
+        }
     }
 
     val playNext = PlayNext {
@@ -392,29 +306,106 @@ fun LocalPlaylistSongs(
 
     val locator = LocateComponent.init( lazyListState, ::getMediaItems )
 
+    //<editor-fold defaultstate="collapsed" desc="Smart recommendation">
+    val recommendationsNumber by rememberPreference( recommendationsNumberKey, RecommendationsNumber.`5` )
+    var relatedSongs by rememberSaveable {
+        // SongEntity before Int in case random position is equal
+        mutableStateOf( emptyMap <SongEntity, Int>() )
+    }
+
+    LaunchedEffect( isRecommendationEnabled ) {
+        if( !isRecommendationEnabled ) {
+            // Clear the map when this feature is turned off
+            items = items.toMutableList().apply {
+                removeAll( relatedSongs.keys )
+            }
+            relatedSongs = emptyMap()
+            return@LaunchedEffect
+        }
+
+        /*
+            This process will be run before [items]
+               most of the time.
+            When it does, an exception will
+               be thrown because [items] is not ready yet.
+            To make sure that it is ready to use, a
+               delay is set to suspend the thread.
+        */
+        while( items.isEmpty() )
+            delay( 100L )
+
+        val requestBody = NextBody( videoId =  items.random().song.id )
+        Innertube.relatedSongs( requestBody )?.onSuccess { response ->
+            val fetchedSongs = mutableMapOf<SongEntity, Int>()
+
+            response?.songs
+                ?.map { songItem ->
+
+                    // Do NOT use [Utils#Innertube.SongItem.asSong]
+                    // It doesn't have explicit prefix
+                    val song = with( songItem ) {
+                        val prefix = if( explicit ) EXPLICIT_PREFIX else ""
+
+                        Song(
+                            // Song's ID & title must not be "null". If they are,
+                            // Something is wrong with Innertube.
+                            id = "$prefix${info!!.endpoint!!.videoId!!}",
+                            title = info!!.name!!,
+                            artistsText = authors?.joinToString { author -> author.name ?: "" },
+                            durationText = durationText,
+                            thumbnailUrl = thumbnail?.url
+                        )
+                    }
+
+                    SongEntity(
+                        song = song,
+                        // [albumTitle] is optional in this context,
+                        // but it doesn't hurt to reduce nullable variables
+                        albumTitle = songItem.album?.name
+                    )
+                }
+                ?.forEach {
+                    // Skip songs that are already in the playlist by comparing their IDs.
+                    if( it.song.id in items.map{ e -> e.song.id }
+                        || fetchedSongs.size >= recommendationsNumber.toInt()
+                    ) return@forEach
+
+                    val insertPosition = (0..items.size).random()
+                    fetchedSongs[it] = insertPosition
+                }
+
+            relatedSongs = fetchedSongs
+
+            // Enable position lock
+            positionLock.isFirstIcon = true
+        }
+    }
+    //</editor-fold>
     LaunchedEffect( sort.sortOrder, sort.sortBy ) {
         Database.songsPlaylist( playlistId, sort.sortBy, sort.sortOrder )
             .flowOn( Dispatchers.IO )
             .distinctUntilChanged()
             .collect { items = it }
     }
-    LaunchedEffect( items, search.input, parentalControlEnabled ) {
-        items
-            .distinctBy { it.song.id }
-            .filter {
-                if( parentalControlEnabled )
-                    !it.song.title.startsWith(EXPLICIT_PREFIX)
-                else
-                    true
-            }.filter {
-                // Without cleaning, user can search explicit songs with "e:"
-                // I kinda want this to be a feature, but it seems unnecessary
-                val containsName = it.song.cleanTitle().contains(search.input, true)
-                val containsArtist = it.song.artistsText?.contains(search.input, true) ?: false
-                val containsAlbum = it.albumTitle?.contains(search.input, true) ?: false
+    LaunchedEffect( items, relatedSongs, search.input, parentalControlEnabled ) {
+        items.toMutableList()
+             .apply {
+                 relatedSongs.forEach { (song, index) ->
+                     add( index, song )
+                 }
+             }
+             .distinctBy { it.song.id }
+             .filter {
+                 !parentalControlEnabled || !it.song.title.startsWith( EXPLICIT_PREFIX )
+             }.filter {
+                 // Without cleaning, user can search explicit songs with "e:"
+                 // I kinda want this to be a feature, but it seems unnecessary
+                 val containsName = it.song.cleanTitle().contains(search.input, true)
+                 val containsArtist = it.song.artistsText?.contains(search.input, true) ?: false
+                 val containsAlbum = it.albumTitle?.contains(search.input, true) ?: false
 
-                containsName || containsArtist || containsAlbum
-            }.let { itemsOnDisplay = it }
+                 containsName || containsArtist || containsAlbum
+             }.let { itemsOnDisplay = it }
     }
     LaunchedEffect(Unit) {
         Database.singlePlaylistPreview( playlistId )
@@ -438,34 +429,7 @@ fun LocalPlaylistSongs(
         }
     }
 
-    //**** SMART RECOMMENDATION
-    val recommendationsNumber by rememberPreference(
-        recommendationsNumberKey,
-        RecommendationsNumber.`5`
-    )
-    var relatedSongsRecommendationResult by persist<Result<Innertube.RelatedSongs?>?>(tag = "home/relatedSongsResult")
-    var songBaseRecommendation by persist<SongEntity?>("home/songBaseRecommendation")
-    var positionsRecommendationList = arrayListOf<Int>()
     var autosync by rememberPreference(autosyncKey, false)
-
-    if (isRecommendationEnabled) {
-        LaunchedEffect(Unit, isRecommendationEnabled) {
-            Database.songsPlaylist(playlistId, sort.sortBy, sort.sortOrder).distinctUntilChanged()
-                .collect { songs ->
-                    val song = songs.firstOrNull()
-                    if (relatedSongsRecommendationResult == null || songBaseRecommendation?.song?.id != song?.song?.id) {
-                        relatedSongsRecommendationResult =
-                            Innertube.relatedSongs(NextBody(videoId = (song?.song?.id ?: "HZnNt9nnEhw")))
-                    }
-                    songBaseRecommendation = song
-                }
-        }
-        if (relatedSongsRecommendationResult != null) {
-            for( index in 0..recommendationsNumber.toInt() ) {
-                positionsRecommendationList.add((0..items.size).random())
-            }
-        }
-    }
 
     val thumbnailRoundness by rememberPreference(
         thumbnailRoundnessKey,
@@ -606,7 +570,7 @@ fun LocalPlaylistSongs(
                         if (isRecommendationEnabled) {
                             Spacer(modifier = Modifier.height(5.dp))
                             IconInfo(
-                                title = positionsRecommendationList.distinct().size.toString(),
+                                title = relatedSongs.keys.size.toString(),
                                 icon = painterResource(R.drawable.smart_shuffle)
                             )
                         }
@@ -705,33 +669,6 @@ fun LocalPlaylistSongs(
                 contentType = { _, song -> song },
             ) { index, song ->
 
-                if (index in positionsRecommendationList.distinct()) {
-                    val songRecommended =
-                        relatedSongsRecommendationResult?.getOrNull()?.songs?.shuffled()
-                            ?.lastOrNull()
-                    songRecommended?.asMediaItem?.let {
-                        SongItem(
-                            song = it,
-                            isRecommended = true,
-                            thumbnailSizeDp = thumbnailSizeDp,
-                            thumbnailSizePx = thumbnailSizePx,
-                            onDownloadClick = {},
-                            downloadState = Download.STATE_STOPPED,
-                            trailingContent = {},
-                            onThumbnailContent = {},
-                            modifier = Modifier
-                                .combinedClickable (
-                                    onClick = {
-                                        binder?.stopRadio()
-                                        binder?.player?.forcePlay(it)
-                                    }
-                                ),
-                            disableScrollingText = disableScrollingText,
-                            isNowPlaying = binder?.player?.isNowPlaying(it.mediaId) ?: false
-                        )
-                    }
-                }
-
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -827,6 +764,7 @@ fun LocalPlaylistSongs(
                         me.knighthat.component.SongItem(
                             song = song.song,
                             navController = navController,
+                            isRecommended = song in relatedSongs,
                             modifier = Modifier
                                 .combinedClickable(
                                     onLongClick = {
