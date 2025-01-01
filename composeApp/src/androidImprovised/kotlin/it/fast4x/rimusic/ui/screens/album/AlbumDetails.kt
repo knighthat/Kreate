@@ -1,6 +1,5 @@
 package it.fast4x.rimusic.ui.screens.album
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
@@ -10,11 +9,17 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
@@ -25,8 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import it.fast4x.compose.persist.persist
+import coil.compose.AsyncImagePainter
+import it.fast4x.compose.persist.PersistMapCleanup
 import it.fast4x.compose.persist.persistList
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.*
@@ -35,9 +40,7 @@ import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.UiType
 import it.fast4x.rimusic.models.Album
 import it.fast4x.rimusic.models.SongEntity
-import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.ui.components.LocalMenuState
-import it.fast4x.rimusic.ui.components.ShimmerHost
 import it.fast4x.rimusic.ui.components.SwipeablePlaylistItem
 import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
 import it.fast4x.rimusic.ui.components.tab.LocateComponent
@@ -47,6 +50,7 @@ import it.fast4x.rimusic.ui.components.tab.toolbar.SongsShuffle
 import it.fast4x.rimusic.ui.components.themed.*
 import it.fast4x.rimusic.ui.items.AlbumItem
 import it.fast4x.rimusic.ui.items.AlbumItemPlaceholder
+import it.fast4x.rimusic.ui.items.SongItemPlaceholder
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.*
@@ -59,6 +63,7 @@ import me.bush.translator.Language
 import me.bush.translator.Translator
 import me.knighthat.component.SongItem
 import me.knighthat.component.tab.Radio
+import me.knighthat.component.ui.screens.DynamicOrientationLayout
 import me.knighthat.component.ui.screens.album.AlbumBookmark
 import me.knighthat.component.ui.screens.album.AlbumModifier
 import me.knighthat.component.ui.screens.album.Translate
@@ -66,7 +71,6 @@ import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalTextApi
-@SuppressLint("SuspiciousIndentation")
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @UnstableApi
@@ -74,12 +78,15 @@ import timber.log.Timber
 fun AlbumDetails(
     navController: NavController,
     browseId: String,
-    albumPage: Innertube.PlaylistOrAlbumPage?,
-    headerContent: @Composable (textButton: (@Composable () -> Unit)?) -> Unit,
-    thumbnailContent: @Composable () -> Unit,
+    album: Album?,
+    thumbnailPainter: AsyncImagePainter,
+    alternatives: List<Innertube.AlbumItem>,
+    description: String,
     onSearchClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
+    PersistMapCleanup( "album/${browseId}/songs" )
+
     // Essentials
     val context = LocalContext.current
     val binder = LocalPlayerServiceBinder.current
@@ -91,16 +98,11 @@ fun AlbumDetails(
     val parentalControlEnabled by rememberPreference(parentalControlEnabledKey, false)
     val disableScrollingText by rememberPreference(disableScrollingTextKey, false)
 
-    var album by persist<Album?>("album/$browseId")
-    LaunchedEffect(Unit) {
-        Database.album( browseId )
-            .flowOn( Dispatchers.IO )
-            .distinctUntilChanged()
-            .collect { album = it }
-    }
+    var items by persistList<SongEntity>( "album/${browseId}/songs" )
+    LaunchedEffect( album ) {
+        // [album] goes from null to not-null after it's inserted to the database
+        if( album == null ) return@LaunchedEffect
 
-    var items by persistList<SongEntity>( "album/$browseId/songs" )
-    LaunchedEffect(Unit) {
         Database.findSongsOfAlbum( browseId )
             .flowOn( Dispatchers.IO )
             .distinctUntilChanged()
@@ -200,110 +202,74 @@ fun AlbumDetails(
     changeAuthors.Render()
     changeCover.Render()
 
-    LayoutWithAdaptiveThumbnail(thumbnailContent = thumbnailContent) {
+    DynamicOrientationLayout( thumbnailPainter ) {
         Box(
-            Modifier
-                .fillMaxSize()
-                .background(colorPalette().background0)
+            Modifier.fillMaxSize()
+                .background( colorPalette().background0 )
         ) {
             LazyColumn(
                 state = lazyListState,
+                userScrollEnabled = items.isNotEmpty(),
                 contentPadding = PaddingValues( bottom = Dimensions.bottomSpacer ),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(colorPalette().background0)
+                modifier = Modifier.fillMaxSize()
+                    .background( colorPalette().background0 )
             ) {
                 item( "header" ) {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .conditional(isLandscape) {
-                                aspectRatio(4f / 3)
-                            }
-                    ) {
-                        if (album != null) {
-                            if (!isLandscape)
-                                AsyncImage(
-                                    model = album?.thumbnailUrl?.resize(1200, 900),
-                                    contentDescription = "loading...",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .align(Alignment.Center)
-                                        .fadingEdge(
-                                            top = WindowInsets.systemBars
-                                                .asPaddingValues()
-                                                .calculateTopPadding() + Dimensions.fadeSpacingTop,
-                                            bottom = Dimensions.fadeSpacingBottom
-                                        )
-                                )
-
-                            AutoResizeText(
-                                text = cleanPrefix(album?.title ?: ""),
-                                style = typography().l.semiBold,
-                                fontSizeRange = FontSizeRange(32.sp, 38.sp),
-                                fontWeight = typography().l.semiBold.fontWeight,
-                                fontFamily = typography().l.semiBold.fontFamily,
-                                color = typography().l.semiBold.color,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .padding(horizontal = 30.dp)
-                                    .conditional(!disableScrollingText) {
-                                        basicMarquee(iterations = Int.MAX_VALUE)
-                                    }
-                            )
-
-                            HeaderIconButton(
-                                icon = R.drawable.share_social,
-                                color = colorPalette().text,
-                                iconSize = 24.dp,
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(top = 5.dp, end = 5.dp),
-                                onClick = {
-                                    album?.shareUrl?.let { url ->
-                                        val sendIntent = Intent().apply {
-                                            action = Intent.ACTION_SEND
-                                            type = "text/plain"
-                                            putExtra(Intent.EXTRA_TEXT, url)
-                                        }
-
-                                        context.startActivity(
-                                            Intent.createChooser(
-                                                sendIntent,
-                                                null
-                                            )
-                                        )
-                                    }
-                                }
-                            )
-
-                        } else {
-                            Column(
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
+                    Box( Modifier.fillMaxWidth() ) {
+                        if (!isLandscape)
+                            Image(
+                                painter = thumbnailPainter,
+                                contentDescription = null,
+                                contentScale = ContentScale.FillWidth,
+                                modifier = Modifier.aspectRatio( 4f / 3 )      // Limit height
                                     .fillMaxWidth()
-                                    .aspectRatio(4f / 3)
-                            ) {
-                                ShimmerHost {
-                                    AlbumItemPlaceholder(
-                                        thumbnailSizeDp = 200.dp,
-                                        alternative = true
+                                    .align(Alignment.Center)
+                                    .fadingEdge(
+                                        top = WindowInsets.systemBars
+                                            .asPaddingValues()
+                                            .calculateTopPadding() + Dimensions.fadeSpacingTop,
+                                        bottom = Dimensions.fadeSpacingBottom
                                     )
-                                    BasicText(
-                                        text = stringResource(R.string.info_wait_it_may_take_a_few_minutes),
-                                        style = typography().xs.medium,
-                                        maxLines = 1,
-                                        modifier = Modifier
+                            )
+
+                        AutoResizeText(
+                            text = cleanPrefix( album?.title ?: "..." ),
+                            style = typography().l.semiBold,
+                            fontSizeRange = FontSizeRange(32.sp, 38.sp),
+                            fontWeight = typography().l.semiBold.fontWeight,
+                            fontFamily = typography().l.semiBold.fontFamily,
+                            color = typography().l.semiBold.color,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.align( Alignment.BottomCenter )
+                                .padding( horizontal = 30.dp )
+                                .conditional( !disableScrollingText ) {
+                                    basicMarquee(iterations = Int.MAX_VALUE)
+                                }
+                        )
+
+                        HeaderIconButton(
+                            icon = R.drawable.share_social,
+                            color = colorPalette().text,
+                            iconSize = 24.dp,
+                            modifier = Modifier.align( Alignment.TopEnd )
+                                .padding( top = 5.dp, end = 5.dp ),
+                            onClick = {
+                                album?.shareUrl?.let { url ->
+                                    val sendIntent = Intent().apply {
+                                        action = Intent.ACTION_SEND
+                                        type = "text/plain"
+                                        putExtra(Intent.EXTRA_TEXT, url)
+                                    }
+
+                                    context.startActivity(
+                                        Intent.createChooser( sendIntent, null )
                                     )
                                 }
                             }
-                        }
+                        )
                     }
-
                 }
 
                 item( "album_details" ) {
@@ -363,34 +329,21 @@ fun AlbumDetails(
                         modifier = sectionTextModifier.fillMaxWidth()
                     )
                 }
+                // Placeholders while songs are loading
+                if( items.isEmpty() )
+                    items(
+                        count = 10,
+                        key = { index -> "song_placeholders_no$index" }
+                    ) { SongItemPlaceholder() }
                 itemsIndexed(
                     items = items,
                     key = { _, song -> song.song.id }
                 ) { index, song ->
-                    val isLocal by remember { derivedStateOf { song.asMediaItem.isLocal } }
-                    val isDownloaded =
-                        if (!isLocal) isDownloadedSong(song.asMediaItem.mediaId) else true
 
                     SwipeablePlaylistItem(
                         mediaItem = song.asMediaItem,
                         onPlayNext = {
                             binder?.player?.addNext(song.asMediaItem)
-                        },
-                        onDownload = {
-                            binder?.cache?.removeResource(song.asMediaItem.mediaId)
-                            Database.asyncTransaction {
-                                resetContentLength( song.asMediaItem.mediaId )
-                            }
-
-                            if (!isLocal)
-                                manageDownload(
-                                    context = context,
-                                    mediaItem = song.asMediaItem,
-                                    downloadState = isDownloaded
-                                )
-                        },
-                        onEnqueue = {
-                            binder?.player?.enqueue(song.asMediaItem)
                         }
                     ) {
                         var forceRecompose by remember { mutableStateOf(false) }
@@ -473,56 +426,49 @@ fun AlbumDetails(
                     }
                 }
 
-                item(key = "alternateVersionsTitle") {
-                    BasicText(
-                        text = stringResource(R.string.album_alternative_versions),
-                        style = typography().m.semiBold,
-                        maxLines = 1,
-                        modifier = Modifier.padding( all = 16.dp )
-                    )
-                }
+                if( alternatives.isNotEmpty() )
+                    item( "alternatives" ) {
+                        // Section text
+                        BasicText(
+                            text = stringResource( R.string.album_alternative_versions ),
+                            style = typography().m.semiBold,
+                            maxLines = 1,
+                            modifier = Modifier.padding( all = 16.dp )
+                        )
 
-                item(key = "alternateVersions") {
-                    ItemsList(
-                        tag = "album/$browseId/alternatives",
-                        headerContent = {},
-                        initialPlaceholderCount = 1,
-                        continuationPlaceholderCount = 1,
-                        emptyItemsText = stringResource(R.string.album_no_alternative_version),
-                        itemsPageProvider = albumPage?.let {
-                            ({
+                        // List all alternatives
+                        ItemsList(
+                            tag = "album/$browseId/alternatives",
+                            headerContent = {},
+                            initialPlaceholderCount = 1,
+                            continuationPlaceholderCount = 1,
+                            emptyItemsText = stringResource( R.string.album_no_alternative_version ),
+                            itemsPageProvider = {
                                 Result.success(
-                                    Innertube.ItemsPage(
-                                        items = albumPage?.otherVersions,
-                                        continuation = null
-                                    )
+                                    Innertube.ItemsPage( alternatives, null )
                                 )
-                            })
-                        },
-                        itemContent = { album ->
-                            AlbumItem(
-                                alternative = true,
-                                album = album,
-                                thumbnailSizePx = thumbnailAlbumSizePx,
-                                thumbnailSizeDp = thumbnailAlbumSizeDp,
-                                modifier = Modifier
-                                    .clickable {
-                                        navController.navigate(route = "${NavRoutes.album.name}/${album.key}")
-                                    },
-                                disableScrollingText = disableScrollingText
-                            )
-                        },
-                        itemPlaceholderContent = {
-                            AlbumItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp)
-                        }
-                    )
-                }
+                            },
+                            itemContent = { album ->
+                                AlbumItem(
+                                    alternative = true,
+                                    album = album,
+                                    thumbnailSizePx = thumbnailAlbumSizePx,
+                                    thumbnailSizeDp = thumbnailAlbumSizeDp,
+                                    modifier = Modifier
+                                        .clickable {
+                                            navController.navigate(route = "${NavRoutes.album.name}/${album.key}")
+                                        },
+                                    disableScrollingText = disableScrollingText
+                                )
+                            },
+                            itemPlaceholderContent = {
+                                AlbumItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp)
+                            }
+                        )
+                    }
 
-                albumPage?.description?.let { description ->
-                    item(
-                        key = "albumInfo"
-                    ) {
-
+                if( description.isNotBlank() )
+                    item( "description" ) {
                         val attributionsIndex = description.lastIndexOf("\n\nFrom Wikipedia")
 
                         BasicText(
@@ -558,7 +504,6 @@ fun AlbumDetails(
                                     }
                                 )
                             }
-
 
                             if ( translate.isActive ) {
                                 LaunchedEffect(Unit) {
@@ -601,13 +546,12 @@ fun AlbumDetails(
                                 style = typography().xxs
                                     .color( colorPalette().textDisabled )
                                     .align( TextAlign.Start ),
-                                modifier = Modifier.padding( horizontal = 16.dp )
-                                    .padding( bottom = 16.dp )
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                                    .padding(bottom = 16.dp)
                             )
                         }
-
                     }
-                }
             }
 
             val showFloatingIcon by rememberPreference(showFloatingIconKey, false)
