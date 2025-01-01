@@ -826,9 +826,7 @@ fun Queue(
                     IconButton(
                         icon = queueLoopType.iconId,
                         color = colorPalette().text,
-                        onClick = {
-                            queueLoopType = setQueueLoopState(queueLoopType)
-                        },
+                        onClick = queueLoopType::next,
                         modifier = Modifier
                             .padding(horizontal = 4.dp)
                             .size(24.dp)

@@ -516,9 +516,7 @@ fun ControlsEssential(
     IconButton(
         icon = queueLoopType.iconId,
         color = colorPalette().text,
-        onClick = {
-            queueLoopType = setQueueLoopState(queueLoopType)
-        },
+        onClick = queueLoopType::next,
         modifier = Modifier
             //.padding(10.dp)
             .size(26.dp)
