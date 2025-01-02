@@ -16,6 +16,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import it.fast4x.piped.models.authenticatedWith
 import it.fast4x.rimusic.R
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -27,8 +28,7 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.utils.bold
 import it.fast4x.rimusic.utils.getVersionName
 import it.fast4x.rimusic.utils.secondary
-
-const val GITHUB_URL = "https://github.com/knighthat/RiMusic"
+import me.knighthat.utils.Repository
 
 @ExperimentalAnimationApi
 @Composable
@@ -98,7 +98,7 @@ fun About() {
             )
             Row(
                 Modifier.clickable {
-                    uriHandler.openUri( GITHUB_URL )
+                    uriHandler.openUri( Repository.OWNER_URL )
                 }
             ) {
                 Icon(
@@ -121,10 +121,19 @@ fun About() {
         SettingsEntryGroupText(title = stringResource(R.string.troubleshooting))
 
         SettingsEntry(
+            title = stringResource( R.string.view_the_source_code ),
+            text = stringResource( R.string.you_will_be_redirected_to_github ),
+            onClick = {
+                uriHandler.openUri( Repository.REPO_URL )
+            }
+        )
+
+        SettingsEntry(
             title = stringResource(R.string.report_an_issue),
             text = stringResource(R.string.you_will_be_redirected_to_github),
             onClick = {
-                uriHandler.openUri("$GITHUB_URL/issues/new?assignees=&labels=bug&template=bug_report.yaml")
+                val issuePath = "/issues/new?assignees=&labels=bug&template=bug_report.yaml"
+                uriHandler.openUri( Repository.REPO_URL.plus(issuePath) )
             }
         )
 
@@ -132,7 +141,8 @@ fun About() {
             title = stringResource(R.string.request_a_feature_or_suggest_an_idea),
             text = stringResource(R.string.you_will_be_redirected_to_github),
             onClick = {
-                uriHandler.openUri("$GITHUB_URL/issues/new?assignees=&labels=feature_request&template=feature_request.yaml")
+                val issuePath = "/issues/new?assignees=&labels=feature_request&template=feature_request.yaml"
+                uriHandler.openUri( Repository.REPO_URL.plus(issuePath) )
             }
         )
 
