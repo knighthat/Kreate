@@ -9,7 +9,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
@@ -22,25 +21,13 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import it.fast4x.compose.persist.PersistMapCleanup
 import it.fast4x.rimusic.R
-import it.fast4x.rimusic.enums.CheckUpdateState
 import it.fast4x.rimusic.enums.HomeScreenTabs
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.models.toUiMood
-import it.fast4x.rimusic.ui.components.themed.ConfirmationDialog
-import it.fast4x.rimusic.ui.components.themed.SmartMessage
-import it.fast4x.rimusic.utils.CheckAvailableNewVersion
-import it.fast4x.rimusic.utils.checkUpdateStateKey
-import it.fast4x.rimusic.utils.enableQuickPicksPageKey
-import it.fast4x.rimusic.utils.getEnum
-import it.fast4x.rimusic.utils.homeScreenTabIndexKey
-import it.fast4x.rimusic.utils.indexNavigationTabKey
-import it.fast4x.rimusic.utils.preferences
-import it.fast4x.rimusic.utils.rememberPreference
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import it.fast4x.rimusic.ui.components.Skeleton
+import it.fast4x.rimusic.ui.components.themed.SmartMessage
+import it.fast4x.rimusic.utils.*
+import kotlinx.coroutines.*
 import kotlin.system.exitProcess
 
 
@@ -58,12 +45,6 @@ fun HomeScreen(
     miniPlayer: @Composable () -> Unit = {},
     openTabFromShortcut: Int
 ) {
-    var showNewversionDialog by remember {
-        mutableStateOf(true)
-    }
-
-    var checkUpdateState by rememberPreference(checkUpdateStateKey, CheckUpdateState.Disabled)
-
     val saveableStateHolder = rememberSaveableStateHolder()
 
     val preferences = LocalContext.current.preferences
@@ -190,27 +171,6 @@ fun HomeScreen(
             }
         }
     }
-
-
-    if (showNewversionDialog && checkUpdateState == CheckUpdateState.Enabled)
-        CheckAvailableNewVersion(
-            onDismiss = { showNewversionDialog = false },
-            updateAvailable = {}
-        )
-
-    if (checkUpdateState == CheckUpdateState.Ask)
-        ConfirmationDialog(
-            text = stringResource(R.string.check_at_github_for_updates) + "\n\n" +
-                    stringResource(R.string.when_an_update_is_available_you_will_be_asked_if_you_want_to_install_info) + "\n\n" +
-                    stringResource(R.string.but_these_updates_would_not_go_through) + "\n\n" +
-                    stringResource(R.string.you_can_still_turn_it_on_or_off_from_the_settings),
-            confirmText = stringResource(R.string.enable),
-            cancelText = stringResource(R.string.don_t_enable),
-            cancelBackgroundPrimary = true,
-            onCancel = { checkUpdateState = CheckUpdateState.Disabled },
-            onDismiss = { checkUpdateState = CheckUpdateState.Disabled },
-            onConfirm = { checkUpdateState = CheckUpdateState.Enabled },
-        )
 
     // Exit app when user uses back
     val context = LocalContext.current

@@ -3,18 +3,7 @@ package it.fast4x.rimusic.ui.components
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.BottomNavigationDefaults.windowInsets
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -28,16 +17,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.enums.NavigationBarPosition
-import it.fast4x.rimusic.enums.PlayerPosition
-import it.fast4x.rimusic.enums.UiType
-import it.fast4x.rimusic.utils.playerPositionKey
-import it.fast4x.rimusic.utils.rememberPreference
+import it.fast4x.rimusic.enums.*
 import it.fast4x.rimusic.ui.components.navigation.header.AppHeader
 import it.fast4x.rimusic.ui.components.navigation.nav.AbstractNavigationBar
 import it.fast4x.rimusic.ui.components.navigation.nav.HorizontalNavigationBar
 import it.fast4x.rimusic.ui.components.navigation.nav.VerticalNavigationBar
-import it.fast4x.rimusic.utils.transition
+import it.fast4x.rimusic.utils.*
+import me.knighthat.updater.CheckForUpdateDialog
+import me.knighthat.updater.NewUpdateAvailableDialog
+import me.knighthat.updater.Updater
 
 // THIS IS THE SCAFFOLD
 @OptIn(ExperimentalMaterial3Api::class)
@@ -136,5 +124,15 @@ fun Skeleton(
                 content = { miniPlayer?.invoke() }
             )
         }
+    }
+
+    NewUpdateAvailableDialog.Render()
+    CheckForUpdateDialog.Render()
+
+    val check4UpdateState by rememberPreference( checkUpdateStateKey, CheckUpdateState.Disabled )
+    when( check4UpdateState ) {
+        CheckUpdateState.Enabled  -> if( !NewUpdateAvailableDialog.isCancelled ) Updater.checkForUpdate()
+        CheckUpdateState.Ask      -> CheckForUpdateDialog.isActive = true
+        CheckUpdateState.Disabled -> {}
     }
 }

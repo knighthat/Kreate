@@ -3,17 +3,10 @@ package it.fast4x.rimusic
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
-import android.content.SharedPreferences
+import android.content.*
 import android.content.res.Configuration
 import android.graphics.drawable.BitmapDrawable
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
+import android.hardware.*
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -26,48 +19,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.LocalIndication
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.add
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalRippleConfiguration
-import androidx.compose.material3.RippleConfiguration
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.Surface
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.ripple
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -87,7 +45,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.compose.rememberNavController
 import androidx.palette.graphics.Palette
@@ -103,27 +60,8 @@ import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBody
 import it.fast4x.innertube.requests.playlistPage
 import it.fast4x.innertube.requests.song
-import it.fast4x.innertube.utils.LocalePreferenceItem
-import it.fast4x.innertube.utils.LocalePreferences
-import it.fast4x.innertube.utils.ProxyPreferenceItem
-import it.fast4x.innertube.utils.ProxyPreferences
-import it.fast4x.innertube.utils.YoutubePreferenceItem
-import it.fast4x.innertube.utils.YoutubePreferences
-import it.fast4x.rimusic.enums.AnimatedGradient
-import it.fast4x.rimusic.enums.AudioQualityFormat
-import it.fast4x.rimusic.enums.CheckUpdateState
-import it.fast4x.rimusic.enums.ColorPaletteMode
-import it.fast4x.rimusic.enums.ColorPaletteName
-import it.fast4x.rimusic.enums.FontType
-import it.fast4x.rimusic.enums.HomeScreenTabs
-import it.fast4x.rimusic.enums.Languages
-import it.fast4x.rimusic.enums.LogType
-import it.fast4x.rimusic.enums.NavRoutes
-import it.fast4x.rimusic.enums.PipModule
-import it.fast4x.rimusic.enums.PlayerBackgroundColors
-import it.fast4x.rimusic.enums.PopupType
-import it.fast4x.rimusic.enums.ThumbnailRoundness
-import it.fast4x.rimusic.extensions.connectivity.InternetConnectivityObserver
+import it.fast4x.innertube.utils.*
+import it.fast4x.rimusic.enums.*
 import it.fast4x.rimusic.extensions.pip.PipEventContainer
 import it.fast4x.rimusic.extensions.pip.PipModuleContainer
 import it.fast4x.rimusic.extensions.pip.PipModuleCover
@@ -138,112 +76,13 @@ import it.fast4x.rimusic.ui.screens.player.MiniPlayer
 import it.fast4x.rimusic.ui.screens.player.Player
 import it.fast4x.rimusic.ui.screens.player.components.YoutubePlayer
 import it.fast4x.rimusic.ui.screens.player.rememberPlayerSheetState
-import it.fast4x.rimusic.ui.styling.Appearance
-import it.fast4x.rimusic.ui.styling.Dimensions
-import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.ui.styling.applyPitchBlack
-import it.fast4x.rimusic.ui.styling.colorPaletteOf
-import it.fast4x.rimusic.ui.styling.customColorPalette
-import it.fast4x.rimusic.ui.styling.dynamicColorPaletteOf
-import it.fast4x.rimusic.ui.styling.typographyOf
-import it.fast4x.rimusic.utils.InitDownloader
-import it.fast4x.rimusic.utils.LocalMonetCompat
-import it.fast4x.rimusic.utils.OkHttpRequest
-import it.fast4x.rimusic.utils.UiTypeKey
-import it.fast4x.rimusic.utils.animatedGradientKey
-import it.fast4x.rimusic.utils.applyFontPaddingKey
-import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.audioQualityFormatKey
-import it.fast4x.rimusic.utils.backgroundProgressKey
-import it.fast4x.rimusic.utils.checkUpdateStateKey
-import it.fast4x.rimusic.utils.closeWithBackButtonKey
-import it.fast4x.rimusic.utils.colorPaletteModeKey
-import it.fast4x.rimusic.utils.colorPaletteNameKey
-import it.fast4x.rimusic.utils.customColorKey
-import it.fast4x.rimusic.utils.customThemeDark_Background0Key
-import it.fast4x.rimusic.utils.customThemeDark_Background1Key
-import it.fast4x.rimusic.utils.customThemeDark_Background2Key
-import it.fast4x.rimusic.utils.customThemeDark_Background3Key
-import it.fast4x.rimusic.utils.customThemeDark_Background4Key
-import it.fast4x.rimusic.utils.customThemeDark_TextKey
-import it.fast4x.rimusic.utils.customThemeDark_accentKey
-import it.fast4x.rimusic.utils.customThemeDark_iconButtonPlayerKey
-import it.fast4x.rimusic.utils.customThemeDark_textDisabledKey
-import it.fast4x.rimusic.utils.customThemeDark_textSecondaryKey
-import it.fast4x.rimusic.utils.customThemeLight_Background0Key
-import it.fast4x.rimusic.utils.customThemeLight_Background1Key
-import it.fast4x.rimusic.utils.customThemeLight_Background2Key
-import it.fast4x.rimusic.utils.customThemeLight_Background3Key
-import it.fast4x.rimusic.utils.customThemeLight_Background4Key
-import it.fast4x.rimusic.utils.customThemeLight_TextKey
-import it.fast4x.rimusic.utils.customThemeLight_accentKey
-import it.fast4x.rimusic.utils.customThemeLight_iconButtonPlayerKey
-import it.fast4x.rimusic.utils.customThemeLight_textDisabledKey
-import it.fast4x.rimusic.utils.customThemeLight_textSecondaryKey
-import it.fast4x.rimusic.utils.disableClosingPlayerSwipingDownKey
-import it.fast4x.rimusic.utils.disablePlayerHorizontalSwipeKey
-import it.fast4x.rimusic.utils.effectRotationKey
-import it.fast4x.rimusic.utils.enableYouTubeLoginKey
-import it.fast4x.rimusic.utils.encryptedPreferences
-import it.fast4x.rimusic.utils.fontTypeKey
-import it.fast4x.rimusic.utils.forcePlay
-import it.fast4x.rimusic.utils.getEnum
-import it.fast4x.rimusic.utils.intent
-import it.fast4x.rimusic.utils.invokeOnReady
-import it.fast4x.rimusic.utils.isAtLeastAndroid6
-import it.fast4x.rimusic.utils.isAtLeastAndroid8
-import it.fast4x.rimusic.utils.isKeepScreenOnEnabledKey
-import it.fast4x.rimusic.utils.isProxyEnabledKey
-import it.fast4x.rimusic.utils.isValidIP
-import it.fast4x.rimusic.utils.isVideo
-import it.fast4x.rimusic.utils.keepPlayerMinimizedKey
-import it.fast4x.rimusic.utils.languageAppKey
-import it.fast4x.rimusic.utils.loadAppLog
-import it.fast4x.rimusic.utils.loadedDataKey
-import it.fast4x.rimusic.utils.logDebugEnabledKey
-import it.fast4x.rimusic.utils.miniPlayerTypeKey
-import it.fast4x.rimusic.utils.navigationBarPositionKey
-import it.fast4x.rimusic.utils.navigationBarTypeKey
-import it.fast4x.rimusic.utils.parentalControlEnabledKey
-import it.fast4x.rimusic.utils.pipModuleKey
-import it.fast4x.rimusic.utils.playNext
-import it.fast4x.rimusic.utils.playerBackgroundColorsKey
-import it.fast4x.rimusic.utils.playerThumbnailSizeKey
-import it.fast4x.rimusic.utils.playerVisualizerTypeKey
-import it.fast4x.rimusic.utils.preferences
-import it.fast4x.rimusic.utils.proxyHostnameKey
-import it.fast4x.rimusic.utils.proxyModeKey
-import it.fast4x.rimusic.utils.proxyPortKey
-import it.fast4x.rimusic.utils.rememberEncryptedPreference
-import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.resize
-import it.fast4x.rimusic.utils.restartActivityKey
-import it.fast4x.rimusic.utils.setDefaultPalette
-import it.fast4x.rimusic.utils.shakeEventEnabledKey
-import it.fast4x.rimusic.utils.showButtonPlayerVideoKey
-import it.fast4x.rimusic.utils.showSearchTabKey
-import it.fast4x.rimusic.utils.showTotalTimeQueueKey
-import it.fast4x.rimusic.utils.textCopyToClipboard
-import it.fast4x.rimusic.utils.thumbnailRoundnessKey
-import it.fast4x.rimusic.utils.transitionEffectKey
-import it.fast4x.rimusic.utils.useSystemFontKey
-import it.fast4x.rimusic.utils.ytCookieKey
-import it.fast4x.rimusic.utils.ytVisitorDataKey
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import it.fast4x.rimusic.ui.styling.*
+import it.fast4x.rimusic.utils.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import me.knighthat.invidious.Invidious
-import me.knighthat.piped.Piped
-import okhttp3.Call
-import okhttp3.Callback
 import okhttp3.OkHttpClient
-import okhttp3.Response
 import timber.log.Timber
-import java.io.File
 import java.net.Proxy
 import java.util.Locale
 import java.util.Objects
@@ -495,36 +334,6 @@ class MainActivity :
 //            val internetConnectivityObserver = InternetConnectivityObserver(this)
 //            val internetConnected by internetConnectivityObserver.networkStatus.collectAsState(false)
 //            if (internetConnected) downloadHelper.resumeDownloads(this)
-
-            if (preferences.getEnum(
-                    checkUpdateStateKey,
-                    CheckUpdateState.Ask
-                ) == CheckUpdateState.Enabled
-            ) {
-                val urlVersionCode =
-                    "https://raw.githubusercontent.com/fast4x/RiMusic/master/updatedVersion/updatedVersionCode.ver"
-                //val urlVersionCode = "https://rimusic.xyz/update/updatedVersionCode.ver"
-                request.GET(urlVersionCode, object : Callback {
-                    override fun onResponse(call: Call, response: Response) {
-                        val responseData = response.body?.string()
-                        runOnUiThread {
-                            try {
-                                if (responseData != null) {
-                                    val file = File(filesDir, "RiMusicUpdatedVersionCode.ver")
-                                    file.writeText(responseData.toString())
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                        }
-
-                    }
-
-                    override fun onFailure(call: Call, e: java.io.IOException) {
-                        Log.d("UpdatedVersionCode", "Check failure")
-                    }
-                })
-            }
 
             val coroutineScope = rememberCoroutineScope()
             val isSystemInDarkTheme = isSystemInDarkTheme()

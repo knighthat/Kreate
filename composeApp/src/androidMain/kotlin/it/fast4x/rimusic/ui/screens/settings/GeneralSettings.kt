@@ -31,6 +31,7 @@ import it.fast4x.rimusic.ui.styling.DefaultDarkColorPalette
 import it.fast4x.rimusic.ui.styling.DefaultLightColorPalette
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.utils.*
+import me.knighthat.updater.Updater
 
 
 @ExperimentalAnimationApi
@@ -202,7 +203,9 @@ fun GeneralSettings(
             )
         }
 
-
+        SettingsEntryGroupText( stringResource(R.string.update) )
+        if( search.input.isBlank() || stringResource(R.string.update).contains( search.input, true ) )
+            Updater.SettingEntry()
 
         //SettingsGroupSpacer()
         SettingsEntryGroupText(title = stringResource(R.string.languages))
