@@ -152,6 +152,8 @@ android {
         }
 
         create( "full" ) {
+            manifestPlaceholders += mapOf()
+
             // App's properties
             manifestPlaceholders["appName"] = "RiMusic-KBuild"
             applicationIdSuffix = ".kbuild"
@@ -159,6 +161,8 @@ android {
         }
 
         create( "minified" ) {
+            manifestPlaceholders += mapOf()
+
             // App's properties
             manifestPlaceholders["appName"] = "RiMusic-KBuild"
             applicationIdSuffix = ".kbuild"
