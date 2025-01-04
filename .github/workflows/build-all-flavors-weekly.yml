@@ -257,13 +257,13 @@ jobs:
       #
       # UPSTREAM
       #
-      - name: Download unsign upstream (full) APKs
+      - name: Download unsigned upstream (full) APKs
         uses: actions/download-artifact@v4.1.8
         with:
           name: unsigned-full-upstream
           path: upstream/unsigned
 
-      - name: Download unsign upstream (minified) APKs
+      - name: Download unsigned upstream (minified) APKs
         uses: actions/download-artifact@v4.1.8
         with:
           name: unsigned-minified-upstream
@@ -286,13 +286,13 @@ jobs:
       #
       # IMPROVISED
       #
-      - name: Download unsign improvised (full) APKs
+      - name: Download unsigned improvised (full) APKs
         uses: actions/download-artifact@v4.1.8
         with:
           name: unsigned-full-improvised
           path: improvised/unsigned
 
-      - name: Download unsign improvised (minified) APKs
+      - name: Download unsigned improvised (minified) APKs
         uses: actions/download-artifact@v4.1.8
         with:
           name: unsigned-minified-improvised
@@ -341,35 +341,43 @@ jobs:
           tag_name: "weekly-kbuild"
           body: |
             <div align="center">
-              <img src="https://raw.githubusercontent.com/knighthat/RiMusic/refs/heads/master/assets/design/latest/app_logo.svg" width="300" height="100" />
-              <p><b>RiMusic</b> KBuild</p>
+              <img alt="app-logo" src="/assets/design/latest/app_logo.svg" width="300" height="100" />
+              <p><b>RiMusic</b> - KBuild</p>
               <p>Custom build by @knighthat</p>
             </div>
             
-            ## ❗ WARNING ❗
+            ## ATTENTION
             
-            This build is not an official release, it is just ideas before it's pushed into [upstream branch](https://github.com/fast4x/RiMusic).\
-            If you are interested, head down to the download section and get a copy.
+            Since **January 5th, 2025**, KBuild is split into 2 main flavors, **_upstream_** and **_improvised_**.
+            The main different is **_upstream_** contains the most up-to-date code to the actual [RiMusic](https://github.com/fast4x/RiMusic)
+            repository while **_improvised_** offers more performance with custom code, in return, it require
+            significant more time to finish.
             
             ## 📲 Installation
             
-            This version is signed by me. Android treats this build as if this is a different app, thus,
-            your old RiMusic app will not be removed
+            This version is signed by (@knighthat). Android treats this build as if this is a different app, thus,
+            your old RiMusic app will not be removed nor its data will be wiped.
+            
+            > Help! I install your build before Jan 5th, which version should I download now?
+            > **_improvised_** is your updated version. Download _minified_ or _full_ as you see fit.
+            > Your app will be updated normally without losing any data in the process.
+            > 
+            > **If Android says that data will be wiped, cancel and report it [HERE](https://github.com/knighthat/RiMusic/issues/new?assignees=&labels=bug&template=bug_report.yaml)**
             
             ## Verification
             
             > Always check for signature before installing any app you downloaded from Github or any other APK distributor.
             
             ### My signature hashes
-            
-            | Hash algorithm | Variant | Digest |
-            |---|---|---|
-            | SHA-256 | improvised | 8c1bf1d9f63288f36837aba5ba3dbef929d0e78055d3cd6d9ec8d26ae487f56e |
-            | SHA-1 | improvised | 2dae81c56e516193f433c04b5b8b2f79c39ecec2 |
-            | MD5 | improvised | b8ac8c9d91e7c6972d966e0e167e0e71 |
-            | SHA-256 | upstream | 899d2f3924b1f563f898853cc1767f261de4124b106040c6d934bc2dd503d4e0 |
-            | SHA-1 | upstream | 363e4cdf85e6089047b0a97f236dfe5875e12719 |
-            | MD5 | upstream | 6f8f59849089efc9e55b05448f1b8380 |
+              
+              | Algorithm      | Variant    | Hash digest                                                      |
+              |----------------|------------|------------------------------------------------------------------|
+              | SHA-256        | improvised | 8c1bf1d9f63288f36837aba5ba3dbef929d0e78055d3cd6d9ec8d26ae487f56e |
+              | SHA-1          | improvised | 2dae81c56e516193f433c04b5b8b2f79c39ecec2                         |
+              | MD5            | improvised | b8ac8c9d91e7c6972d966e0e167e0e71                                 |
+              | SHA-256        | upstream   | 899d2f3924b1f563f898853cc1767f261de4124b106040c6d934bc2dd503d4e0 |
+              | SHA-1          | upstream   | 363e4cdf85e6089047b0a97f236dfe5875e12719                         |
+              | MD5            | upstream   | 6f8f59849089efc9e55b05448f1b8380                                 |
             
             ## FAQ
             
@@ -393,6 +401,68 @@ jobs:
                   </li>
                 </ol>
               </blockquote>
+            </details>
+            
+            ## Changelogs
+            
+            <details>
+            <summary>October 30th 2024</summary>
+              <ul>
+                <li>About tab make-over</li>
+              </ul>
+            </details>
+            <details>
+            <summary>October 31st 2024</summary>
+              <ul>
+                <li>Special characters are now searchable</li>
+              </ul>
+            </details>
+            <details>
+            <summary>December 8th 2024</summary>
+              <ul>
+                <li>"minified" version is introduced</li>
+              </ul>
+            </details>
+            <details>
+            <summary>December 17th 2024</summary>
+              <ul>
+              <li>
+                <details>
+                <summary>New song card (experimental)</summary>
+                  <blockquote>
+                  <img alt="reorder" src="https://i.ibb.co/t2C7g2M/20250104-125612.jpg" />
+                  <img alt="select" src="https://i.ibb.co/JsKDj6H/20250104-125527.jpg" />
+                  </blockquote>
+                </details>
+                </li>
+              </ul>
+            </details>
+            <details>
+            <summary>December 19th 2024</summary>
+              <ul>
+                <li>New update system</li>
+              </ul>
+            </details>
+            <details>
+            <summary>December 24th 2024</summary>
+              <ul>
+                <li>Bottom search box in queue</li>
+                <li>
+                <details>
+                <summary>Dynamic ellipsis menu in queue</summary>
+                  <blockquote>
+                  Buttons are only shown when there's enough space,
+                  the rest are packed inside a menu.
+                  </blockquote>
+                </details>
+                </li>
+              </ul>
+            </details>
+            <details>
+            <summary>December 26th 2024</summary>
+              <ul>
+                <li>Album screen rework, single update on open</li>
+              </ul>
             </details>
 
           token: ${{ secrets.RELEASE_TOKEN }}
