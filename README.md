@@ -5,14 +5,27 @@
 <p><b>It allowing the user to customize it at will.</b></p>
 </div>
 
+# IMPORTANT
+
+Since `January 5th 2025`, this project is split into 2 parts, **_upstream_** and **_improvised_**.
+
+### What's the different
+
+| Upstream               | Improvised                   |
+|------------------------|------------------------------|
+| Bleeding-edge features | Optimized for performance    |
+| Contains minor changes | Contains significant changes |
+
 ## What is KBuild
 
-You can think of KBuild as an unstable version of RiMusic, this is my playground where I add/test new stuff before
-pushing it back to [upstream branch](https://github.com/fast4x/RiMusic).
+KBuild started as an unstable branch of RiMusic with changes made before pushing to upstream branch.
 
-# Disclaimer
+After some time, changes are too many to be able to merge into upstream, causing diversion between
+branches. This is extremely hard to maintain since I (most likely) have to re-write changes if there's some major
+changes happen in the upstream branch. 
 
-App may crash or cause data loss (within this app). Users are made aware of these problems prior to download.
+Therefore, **_improvised_** flavor is introduced. This will help me keep track of upstream branch while
+letting me port some (or most) of new changes to legacy _kbuild_ flavor.
 
 ## ✨ Features
 - **Multilingual support:** English, Italian, German, Russian, French, Spanish, Czech, Turkish, Romanian and more. Contributions for other languages are welcome
