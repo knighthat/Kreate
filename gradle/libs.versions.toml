@@ -2,7 +2,7 @@
 [versions]
 compose-plugin = "1.7.3"
 agp = "8.7.3"
-kotlin = "2.0.21"
+kotlin = "2.1.20-rigel-310"
 kotlin-ksp = "2.0.21-1.0.26"
 kotlin-coroutine = "1.9.0"
 kotlin-datetime = "0.6.1"
