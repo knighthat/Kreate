@@ -43,7 +43,7 @@ mediaPlayerKMP = "2.0.2"
 navigationKMP = "2.7.0-alpha07"
 vlcj = "4.8.2"
 kotlinxCoroutinesSwing = "1.9.0"
-hilt = "2.53.1"
+hilt = "2.55"
 hypnoticcanvas = "0.3.0"
 
 [libraries]
