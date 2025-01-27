@@ -44,7 +44,7 @@ vlcj = "4.8.3"
 kotlinxCoroutinesSwing = "1.9.0"
 hilt = "2.55"
 hypnoticcanvas = "0.3.0"
-ksoup = "0.3.1"
+ksoup = "0.5.0"
 
 [libraries]
 kotlin-coroutines = {group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlin-coroutine"}
