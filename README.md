@@ -1,3 +1,6 @@
+<h1>❗❗ATTENTION❗❗ This repo is now moved to real <a href="https://github.com/knighthat/RiMusic">RiMusic</a></h1>
+
+
 <div align="center">
   <img src="./assets/design/latest/app_logo.svg" width="300" height="100" />    
   <p><b>RiMusic</b> is a <b>multilingual</b> Android application for streaming music from YouTube Music.</p>
