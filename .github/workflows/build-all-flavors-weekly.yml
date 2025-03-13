@@ -47,8 +47,8 @@ jobs:
         # }
         run: echo "version=$(grep -E '^\s*versionName\s*=' composeApp/build.gradle.kts | awk -F '"' '{print $2}')" >> $GITHUB_OUTPUT
 
-  build-upstream-full:
-    name: Build upstream flavor (full)
+  build-full:
+    name: Build full version
     runs-on: ubuntu-latest
     timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
 
@@ -70,21 +70,21 @@ jobs:
             ./build
             ./composeApp/build
           # Cache key has flavor's name to prevent override each other
-          key: gradle-${{ runner.os }}-upstream-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-${{ runner.os }}-upstream-
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
 
       - name: Build with Gradle
-        run: ./gradlew assembleupstreamFull
+        run: ./gradlew assembleFull
 
       - name: Upload artifacts for signing
         uses: actions/upload-artifact@v4.4.1
         with:
-          name: unsigned-full-upstream
+          name: unsigned-full
           path: |
-            composeApp/build/outputs/apk/upstream/full/*.apk
+            composeApp/build/outputs/apk/full/*.apk
 
-  build-upstream-minified:
-    name: Build upstream flavor (minified)
+  build-minified:
+    name: Build minified version
     runs-on: ubuntu-latest
     timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
 
@@ -106,154 +106,48 @@ jobs:
             ./build
             ./composeApp/build
           # Cache key has flavor's name to prevent override each other
-          key: gradle-${{ runner.os }}-upstream-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-${{ runner.os }}-upstream-
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
 
       - name: Build with Gradle
-        run: ./gradlew assembleupstreamMinified
+        run: ./gradlew assembleMinified
 
       - name: Upload artifacts for signing
         uses: actions/upload-artifact@v4.4.1
         with:
-          name: unsigned-minified-upstream
+          name: unsigned-minified
           path: |
-            composeApp/build/outputs/apk/upstream/minified/*.apk
-
-  build-improvised-full:
-    name: Build improvised flavor (full)
-    runs-on: ubuntu-latest
-    timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
-
-    steps:
-      - uses: actions/checkout@v4.2.1
-
-      - name: Setup Java 21
-        uses: actions/setup-java@v4.7.0
-        with:
-          java-version: "21"
-          distribution: "corretto"
-
-      - name: Restore Gradle dependencies & build cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ./build
-            ./composeApp/build
-          # Cache key has flavor's name to prevent override each other
-          key: gradle-${{ runner.os }}-improvised-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-${{ runner.os }}-improvised-
-
-      - name: Build with Gradle
-        run: ./gradlew assembleimprovisedFull
-
-      - name: Upload artifacts for signing
-        uses: actions/upload-artifact@v4.4.1
-        with:
-          name: unsigned-full-improvised
-          path: |
-            composeApp/build/outputs/apk/improvised/full/*.apk
-
-  build-improvised-minified:
-    name: Build improvised flavor (minified)
-    runs-on: ubuntu-latest
-    timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
-
-    steps:
-      - uses: actions/checkout@v4.2.1
-
-      - name: Setup Java 21
-        uses: actions/setup-java@v4.7.0
-        with:
-          java-version: "21"
-          distribution: "corretto"
-
-      - name: Restore Gradle dependencies & build cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ./build
-            ./composeApp/build
-          # Cache key has flavor's name to prevent override each other
-          key: gradle-${{ runner.os }}-upstream-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-${{ runner.os }}-upstream-
-
-      - name: Build with Gradle
-        run: ./gradlew assembleimprovisedMinified
-
-      - name: Upload artifacts for signing
-        uses: actions/upload-artifact@v4.4.1
-        with:
-          name: unsigned-minified-improvised
-          path: |
-            composeApp/build/outputs/apk/improvised/minified/*.apk
+            composeApp/build/outputs/apk/minified/*.apk
 
   sign-apks:
     name: Sign all built APKs
     needs:
-      - build-upstream-full
-      - build-upstream-minified
-      - build-improvised-full
-      - build-improvised-minified
+      - build-full
+      - build-minified
     runs-on: ubuntu-latest
 
     steps:
-      #
-      # UPSTREAM
-      #
-      - name: Download unsigned upstream (full) APKs
+      - name: Download artifacts
         uses: actions/download-artifact@v4.1.8
         with:
-          name: unsigned-full-upstream
+          # Destination path. Supports basic tilde expansion.
+          # Optional. Default is $GITHUB_WORKSPACE
           path: upstream/unsigned
-
-      - name: Download unsigned upstream (minified) APKs
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: unsigned-minified-upstream
-          path: upstream/unsigned
+          # When multiple artifacts are matched, this changes the behavior of the destination directories.
+          # If true, the downloaded artifacts will be in the same directory specified by path.
+          # If false, the downloaded artifacts will be extracted into individual named directories within the specified path.
+          # Optional. Default is 'false'
+          merge-multiple: true
 
       - name: Sign upstream APKs
         uses: Tlaster/android-sign@v1.2.2
         with:
           releaseDirectory: upstream/unsigned
 
-          signingKeyBase64: "${{ secrets.KEYSTORE }}"
-          keyStorePassword: "${{ secrets.KEYSTORE_PASSWD }}"
-          alias: "${{ secrets.UPSTREAM_KEY_ALIAS }}"
-          keyPassword: "${{ secrets.UPSTREAM_KEY_PASSWD }}"
-
-          output: signed
-        env:
-          BUILD_TOOLS_VERSION: "34.0.0"
-
-      #
-      # IMPROVISED
-      #
-      - name: Download unsigned improvised (full) APKs
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: unsigned-full-improvised
-          path: improvised/unsigned
-
-      - name: Download unsigned improvised (minified) APKs
-        uses: actions/download-artifact@v4.1.8
-        with:
-          name: unsigned-minified-improvised
-          path: improvised/unsigned
-
-      - name: Sign improvised APKs
-        uses: Tlaster/android-sign@v1.2.2
-        with:
-          releaseDirectory: improvised/unsigned
-
-          signingKeyBase64: "${{ secrets.KEYSTORE }}"
-          keyStorePassword: "${{ secrets.KEYSTORE_PASSWD }}"
-          alias: "${{ secrets.IMPROVISED_KEY_ALIAS }}"
-          keyPassword: "${{ secrets.IMPROVISED_KEY_PASSWD }}"
+          signingKeyBase64: "${{ secrets.KREATE_KEYSTORE }}"
+          keyStorePassword: "${{ secrets.KREATE_KEYSTORE_PASSWD }}"
+          alias: "${{ secrets.KREATE_KEY_ALIAS }}"
+          keyPassword: "${{ secrets.KREATE_KEY_PASSWD }}"
 
           output: signed
         env:
@@ -261,7 +155,7 @@ jobs:
 
       - name: Remove trails     # remove "-signed"
         run: |
-          for filename in signed/*.apk; do mv "$filename" "${filename//-unsigned-signed}"; done
+          for filename in signed/*.apk; do mv "$filename" "${filename//-signed}"; done
 
       - name: Upload for release
         uses: actions/upload-artifact@v4.4.1
@@ -274,7 +168,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download signed upstream full APK
+      - name: Download signed APKs
         uses: actions/download-artifact@v4.1.8
         with:
           name: signed-apks
@@ -295,14 +189,25 @@ jobs:
             
             ## ATTENTION
             
-            **NEW**: Since **March 9th, 2025** This project is now called "**_Kreate_**". However, app's ID
-            remains unchanged, therefore, all of your data remains intact. When it happens, a migration 
-            procedure will be introduced
+            **NEW**: This is the final update for old Kreate upstream and improvised. New version of Kreate
+            is now a standalone app, with its own identity.
             
-            Since **January 5th, 2025**, KBuild is split into 2 main flavors, **_upstream_** and **_improvised_**.
-            The main different is **_upstream_** contains the most up-to-date code to the actual [RiMusic](https://github.com/fast4x/RiMusic)
-            repository while **_improvised_** offers more performance with custom code, in return, it require
-            significant more time to finish.
+            ### If you're on old Kreate
+            
+            Continue to download your flavor (upstream or improvise) to unlock button to export your data
+            to a file for migration
+            
+            ### If you're a new user
+            
+            Please download `Kreate-full.apk` or `Kreate-minified.apk` according to your preference 
+            (`minified` version offers smaller size without any loss, only install `full` if you have 
+            troubles with `minified` version)
+            
+            ### How to migrate
+
+            Install new Kreate (don't worry, it won't override your data) then **Settings** > **Data** > **Import migration file**.
+            
+            Or, visit [document](https://kreate.knighthat.me/usr/how-to-migrate) for demonstrations
             
             ## 📲 Installation
             
@@ -321,14 +226,24 @@ jobs:
             
             ### My signature hashes
               
-              | Algorithm      | Variant    | Hash digest                                                      |
-              |----------------|------------|------------------------------------------------------------------|
-              | SHA-256        | improvised | 8c1bf1d9f63288f36837aba5ba3dbef929d0e78055d3cd6d9ec8d26ae487f56e |
-              | SHA-1          | improvised | 2dae81c56e516193f433c04b5b8b2f79c39ecec2                         |
-              | MD5            | improvised | b8ac8c9d91e7c6972d966e0e167e0e71                                 |
-              | SHA-256        | upstream   | 899d2f3924b1f563f898853cc1767f261de4124b106040c6d934bc2dd503d4e0 |
-              | SHA-1          | upstream   | 363e4cdf85e6089047b0a97f236dfe5875e12719                         |
-              | MD5            | upstream   | 6f8f59849089efc9e55b05448f1b8380                                 |
+            | Algorithm      | Variant    | Hash digest                                                      |
+            |----------------|------------|------------------------------------------------------------------|
+            | SHA-256        | improvised | 8c1bf1d9f63288f36837aba5ba3dbef929d0e78055d3cd6d9ec8d26ae487f56e |
+            | SHA-1          | improvised | 2dae81c56e516193f433c04b5b8b2f79c39ecec2                         |
+            | MD5            | improvised | b8ac8c9d91e7c6972d966e0e167e0e71                                 |
+            | SHA-256        | upstream   | 899d2f3924b1f563f898853cc1767f261de4124b106040c6d934bc2dd503d4e0 |
+            | SHA-1          | upstream   | 363e4cdf85e6089047b0a97f236dfe5875e12719                         |
+            | MD5            | upstream   | 6f8f59849089efc9e55b05448f1b8380                                 |
+            
+            ### New Kreate APKs
+            
+            > These are public key hashes
+            
+            | Algorithm      | Hash digest                                                      |
+            |----------------|------------------------------------------------------------------|
+            | SHA-256        | 9dadd5c4bbfb59174bca523dd10b66bedbbf7b2e00630fa990d140a6a17ce7a5 |
+            | SHA-1          | f49a497bd47322c90e9f534ff945ac05f3a8e77a                         |
+            | MD5            | d4fc781f4a5ffc10434cb84d93706eba                                 |
             
             ## FAQ
             

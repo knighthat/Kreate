@@ -33,8 +33,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      rebuild_upstream: ${{ steps.detect-changes.outputs.upstream_changed }}
-      rebuild_improvised: ${{ steps.detect-changes.outputs.improvised_changed }}
+      changes_made: ${{ steps.detect-changes.outputs.changes_made }}
 
     steps:
       - name: Checkout repository
@@ -64,24 +63,21 @@ jobs:
       - name: Detect changes in last 48 hours
         id: detect-changes
         run: |
-          FLAVOR_UPSTREAM_CHANGED=$(git log --since="48 hours ago" --name-only --pretty=format: | grep -q "^composeApp/src/androidUpstream/" && echo "true" || echo "false")
-          FLAVOR_IMPROVISED_CHANGED=$(git log --since="48 hours ago" --name-only --pretty=format: | grep -q "^composeApp/src/androidImprovised/" && echo "true" || echo "false")
+          CHANGES_MADE=false
           if \
             git log --since="48 hours ago" --name-only --pretty=format: | grep -q "^composeApp/src/androidMain/" || \
             git log --since="48 hours ago" --name-only --pretty=format: | grep -q "^composeApp/src/commonMain/" || \
             git log --since="48 hours ago" --name-only --pretty=format: | grep -q "^.*\.gradle.*" || \
             git log --since="48 hours ago" --name-only --pretty=format: | grep -q "^gradle-wrapper.properties"; then
           
-            FLAVOR_UPSTREAM_CHANGED="true"
-            FLAVOR_IMPROVISED_CHANGED="true"
+            CHANGES_MADE=true
           fi
           
-          echo "upstream_changed=$FLAVOR_UPSTREAM_CHANGED" >> $GITHUB_OUTPUT
-          echo "improvised_changed=$FLAVOR_IMPROVISED_CHANGED" >> $GITHUB_OUTPUT
+          echo "changes_made=$CHANGES_MADE" >> $GITHUB_OUTPUT
 
   build-upstream:
     needs: check-changes
-    if: needs.check-changes.outputs.rebuild_upstream == 'true'
+    if: needs.check-changes.outputs.changes_made == 'true'
 
     name: Build upstream
     runs-on: ubuntu-latest
@@ -107,48 +103,11 @@ jobs:
             ./build
             ./composeApp/build
           # Cache key has flavor's name to prevent override each other
-          key: gradle-${{ runner.os }}-upstream-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-${{ runner.os }}-upstream-
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
 
       - name: Build with Gradle (cache only)
         # Gradle has built-in flag "-build-cache"
         # That explicitly tell compiler to generate reusable files.
         # Combine with "--exclude-task" to skip unnecessary tasks
-        run: ./gradlew assembleUpstreamFull --build-cache --exclude-task packageUpstreamFull
-
-  build-improvised:
-    needs: check-changes
-    if: needs.check-changes.outputs.rebuild_improvised == 'true'
-
-    name: Build improvised
-    runs-on: ubuntu-latest
-    timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4.7.0
-        with:
-          # Do NOT add `cache: 'gradle'` here
-          distribution: 'corretto'
-          java-version: '21'
-
-      - name: Cache Gradle dependencies & build cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ./build
-            ./composeApp/build
-          # Cache key has flavor's name to prevent override each other
-          key: gradle-${{ runner.os }}-improvised-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-${{ runner.os }}-improvised-
-
-      - name: Build with Gradle (cache only)
-        # Gradle has built-in flag "-build-cache"
-        # That explicitly tell compiler to generate reusable files.
-        # Combine with "--exclude-task" to skip unnecessary tasks
-        run: ./gradlew assembleImprovisedFull --build-cache --exclude-task packageImprovisedFull
+        run: ./gradlew assembleMinified --build-cache --exclude-task packageUpstreamFull

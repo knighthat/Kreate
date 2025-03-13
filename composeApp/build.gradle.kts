@@ -176,7 +176,7 @@ android {
 
         /**
          * For convenience only.
-         * "Folkers" want to change app name across builds
+         * "Forkers" want to change app name across builds
          * just need to change this variable
          */
         forEach {
@@ -187,7 +187,7 @@ android {
     applicationVariants.all {
         outputs.map { it as BaseVariantOutputImpl }
                .forEach { output ->
-                   output.outputFileName = "$APP_NAME-${buildType.name}-unsigned.apk"
+                   output.outputFileName = "$APP_NAME-${buildType.name}.apk"
                }
     }
 
