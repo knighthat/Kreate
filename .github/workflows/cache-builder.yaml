@@ -110,4 +110,4 @@ jobs:
         # Gradle has built-in flag "-build-cache"
         # That explicitly tell compiler to generate reusable files.
         # Combine with "--exclude-task" to skip unnecessary tasks
-        run: ./gradlew assembleMinified --build-cache --exclude-task packageUpstreamFull
+        run: ./gradlew assembleMinified --build-cache --exclude-task packageMinified
