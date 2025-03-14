@@ -119,7 +119,7 @@ ksoup-entities = { group = "com.mohamedrejeb.ksoup", name = "ksoup-entities", ve
 #newpipe-extractor = { group = "com.github.gechoto", name = "NewPipeExtractor", version = "00cf7dad9e49933c7faaa382c9c7b1e7afb28a7d" }
 newpipe-extractor = { group = "com.github.TeamNewPipe", name = "NewPipeExtractor", version = "v0.24.5" } #before was used v0.24.3
 nanojson = { group = "com.github.TeamNewPipe", name = "nanojson", version = "1d9e1aea9049fc9f85e68b43ba39fe7be1c1f751" }
-androidx-webkit = { group = "androidx.webkit", name = "webkit", version = "1.9.0" }
+androidx-webkit = { group = "androidx.webkit", name = "webkit", version = "1.13.0" }
 
 ui-tooling-preview-android = { group = "androidx.compose.ui", name = "ui-tooling-preview-android", version.ref = "uiToolingPreviewAndroid" }
 
