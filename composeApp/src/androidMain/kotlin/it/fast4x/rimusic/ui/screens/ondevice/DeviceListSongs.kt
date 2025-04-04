@@ -129,6 +129,7 @@ import it.fast4x.rimusic.utils.isCompositionLaunched
 import it.fast4x.rimusic.utils.isNowPlaying
 import it.fast4x.rimusic.utils.onDeviceFolderSortByKey
 import it.fast4x.rimusic.utils.onDeviceSongSortByKey
+import it.fast4x.rimusic.utils.operatorFilterSongEntity
 import it.fast4x.rimusic.utils.rememberPreference
 import it.fast4x.rimusic.utils.secondary
 import it.fast4x.rimusic.utils.semiBold
@@ -273,11 +274,7 @@ fun DeviceListSongs(
         filterCharSequence = filter.toString()
         //Log.d("mediaItemFilter", "<${filter}>  <${filterCharSequence}>")
         if (!filter.isNullOrBlank())
-            filteredSongs = songs
-                .filter {
-                    it.song.title.contains(filterCharSequence,true) ?: false
-                            || it.song.artistsText?.contains(filterCharSequence,true) ?: false
-                }
+            filteredSongs = songs.operatorFilterSongEntity(filterCharSequence)
         if (!filter.isNullOrBlank())
             filteredFolders = folders
                 .filter {

@@ -130,6 +130,7 @@ import it.fast4x.rimusic.utils.isNetworkConnected
 import it.fast4x.rimusic.utils.languageDestination
 import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.medium
+import it.fast4x.rimusic.utils.operatorFilterSongItem
 import it.fast4x.rimusic.utils.parentalControlEnabledKey
 import it.fast4x.rimusic.utils.rememberPreference
 import it.fast4x.rimusic.utils.resize
@@ -230,20 +231,7 @@ fun PlaylistSongList(
     //Log.d("mediaItemFilter", "<${filter}>  <${filterCharSequence}>")
     if (!filter.isNullOrBlank()) {
         playlistPage?.songs =
-            playlistPage?.songs?.filter { songItem ->
-                songItem.asMediaItem.mediaMetadata.title?.contains(
-                    filterCharSequence,
-                    true
-                ) ?: false
-                        || songItem.asMediaItem.mediaMetadata.artist?.contains(
-                    filterCharSequence,
-                    true
-                ) ?: false
-                        || songItem.asMediaItem.mediaMetadata.albumTitle?.contains(
-                    filterCharSequence,
-                    true
-                ) ?: false
-            }!!
+            playlistPage?.songs?.operatorFilterSongItem(filterCharSequence)!!
     } else playlistPage?.songs = playlistSongs
 
     var playlistNotLikedSongs by persistList<Innertube.SongItem>("")
