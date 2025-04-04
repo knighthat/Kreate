@@ -2,7 +2,6 @@ package it.fast4x.rimusic.utils
 
 import androidx.media3.common.MediaMetadata
 import app.kreate.android.R
-import com.google.common.collect.Iterables.all
 import it.fast4x.innertube.Innertube.SongItem
 import it.fast4x.rimusic.context
 import it.fast4x.rimusic.models.Album
@@ -94,7 +93,7 @@ val filterTokensForAutocomplete = listOf(
             to context().getString(R.string.sort_duration),
     context().getString(R.string.explicit).lowercase()
             to context().getString(R.string.explicit),
-);
+)
 
 var tokensCache: Pair<String, List<List<Token>>>? = null
 fun filterMediaMetadata(metadata: MediaMetadata, filter: String): Boolean {
