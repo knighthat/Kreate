@@ -79,6 +79,7 @@ fun isWithinDurationRange(duration: String, range: String): Boolean {
 }
 
 // These are the possible autocomplete buttons: (what they will type in -> the display string).
+// TODO: Implement for the filter searchbar
 val filterTokensForAutocomplete = listOf(
     context().getString(R.string.sort_title).lowercase() + ":"
             to context().getString(R.string.sort_title),
@@ -119,13 +120,17 @@ fun filterMediaMetadata(metadata: MediaMetadata, filter: String): Boolean {
         context().getString(R.string.sort_year).lowercase() to (metadata.releaseYear.toString()),
     )
 
+    // This first any just means include it if any of the ORs applies
     val included = tokenGroups.any { group -> // TODO slight bug with multiple exclusion tokens.
+        // The tokens between an ORs are ANDed together, so all must apply
         group.all { token ->
+            // If there is a search field, only check that. Otherwise, check everything.
             val searchFields = if (metadataFields.containsKey(token.field)) {
                 listOf(metadataFields[token.field] ?: "")
             } else {
                 metadataFields.values
             }
+            // Check that any of the search fields apply
             searchFields.any {
                 val groupApplies = when(token.valueType) {
                     "IntRange" -> isWithinIntRange(it, token.value)
