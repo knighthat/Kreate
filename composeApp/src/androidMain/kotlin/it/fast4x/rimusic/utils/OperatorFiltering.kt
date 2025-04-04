@@ -2,6 +2,7 @@ package it.fast4x.rimusic.utils
 
 import androidx.media3.common.MediaMetadata
 import app.kreate.android.R
+import com.google.common.collect.Iterables.all
 import it.fast4x.innertube.Innertube.SongItem
 import it.fast4x.rimusic.context
 import it.fast4x.rimusic.models.Album
@@ -121,7 +122,7 @@ fun filterMediaMetadata(metadata: MediaMetadata, filter: String): Boolean {
     )
 
     // This first any just means include it if any of the ORs applies
-    val included = tokenGroups.any { group -> // TODO slight bug with multiple exclusion tokens.
+    val included = tokenGroups.any { group ->
         // The tokens between an ORs are ANDed together, so all must apply
         group.all { token ->
             // If there is a search field, only check that. Otherwise, check everything.
@@ -130,8 +131,11 @@ fun filterMediaMetadata(metadata: MediaMetadata, filter: String): Boolean {
             } else {
                 metadataFields.values
             }
-            // Check that any of the search fields apply
-            searchFields.any {
+            // When include: any field with match is good enough
+            // When exclude: any field with a match means it cannot be included.
+            val matchFunction: (Iterable<String>, (String) -> Boolean) -> Boolean =
+                if (token.shouldInclude) Iterable<String>::any else Iterable<String>::all
+            matchFunction(searchFields) {
                 val groupApplies = when(token.valueType) {
                     "IntRange" -> isWithinIntRange(it, token.value)
                     "DurationRange" -> isWithinDurationRange(it, token.value)
@@ -148,7 +152,7 @@ fun filterMediaMetadata(metadata: MediaMetadata, filter: String): Boolean {
 }
 
 // Filter function for Song
-fun List<Song>.operatorFilterSong(filter: String): List<Song> {
+fun List<Song>.operatorFilterSong(filter: String): List<Song> { // TODO: ALBUM NOT PART OF THIS
     return this.filter { it -> filterMediaMetadata(it.asMediaItem.mediaMetadata, filter) }
 }
 
