@@ -88,6 +88,7 @@ import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.isNowPlaying
 import it.fast4x.rimusic.utils.manageDownload
+import it.fast4x.rimusic.utils.operatorFilterSong
 import it.fast4x.rimusic.utils.queueTypeKey
 import it.fast4x.rimusic.utils.rememberPreference
 import it.fast4x.rimusic.utils.shouldBePlaying
@@ -162,20 +163,12 @@ fun Queue(
 
         val search = Search.init()
         LaunchedEffect( items, search.input ) {
-            items.filter {
-                    // Without cleaning, user can search explicit songs with "e:"
-                    // I kinda want this to be a feature, but it seems unnecessary
-                    val containsTitle = it.cleanTitle().contains( search.input, true )
-                    val containsArtist = it.artistsText?.contains( search.input, true ) ?: false
+            items.operatorFilterSong(search.input).let {
+                itemsOnDisplay = it
 
-                    containsTitle || containsArtist
-                }
-                .let {
-                    itemsOnDisplay = it
-
-                    // Keep scroll at top to prevent weird artifact
-                    lazyListState.scrollToItem( 0, 0 )
-                }
+                // Keep scroll at top to prevent weird artifact
+                lazyListState.scrollToItem( 0, 0 )
+            }
         }
 
         val plistName = remember { mutableStateOf("") }

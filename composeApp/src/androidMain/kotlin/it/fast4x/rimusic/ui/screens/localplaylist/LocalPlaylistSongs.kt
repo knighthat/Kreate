@@ -125,6 +125,7 @@ import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.isPipedEnabledKey
 import it.fast4x.rimusic.utils.isRecommendationEnabledKey
 import it.fast4x.rimusic.utils.manageDownload
+import it.fast4x.rimusic.utils.operatorFilterSong
 import it.fast4x.rimusic.utils.parentalControlEnabledKey
 import it.fast4x.rimusic.utils.recommendationsNumberKey
 import it.fast4x.rimusic.utils.rememberPreference
@@ -453,14 +454,7 @@ fun LocalPlaylistSongs(
              }
              .distinctBy( Song::id )
              .filter { !parentalControlEnabled || !it.title.startsWith( EXPLICIT_PREFIX ) }
-             .filter { song ->
-                 // Without cleaning, user can search explicit songs with "e:"
-                 // I kinda want this to be a feature, but it seems unnecessary
-                 val containsName = song.cleanTitle().contains(search.input, true)
-                 val containsArtist = song.artistsText?.contains(search.input, true) ?: false
-
-                 containsName || containsArtist
-             }
+            .operatorFilterSong(search.input)
             .let { itemsOnDisplay = it }
     }
     LaunchedEffect( playlist?.name ) {

@@ -136,6 +136,7 @@ import it.fast4x.rimusic.utils.isNowPlaying
 import it.fast4x.rimusic.utils.isRecommendationEnabledKey
 import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.maxSongsInQueueKey
+import it.fast4x.rimusic.utils.operatorFilterSong
 import it.fast4x.rimusic.utils.recommendationsNumberKey
 import it.fast4x.rimusic.utils.rememberPreference
 import it.fast4x.rimusic.utils.secondary
@@ -327,11 +328,7 @@ fun BuiltInPlaylistSongs(
     filterCharSequence = filter.toString()
     //Log.d("mediaItemFilter", "<${filter}>  <${filterCharSequence}>")
     if (!filter.isNullOrBlank())
-    songs = songs
-        .filter {
-            it.title.contains(filterCharSequence,true)
-            || it.artistsText?.contains(filterCharSequence,true) ?: false
-        }
+        songs = songs.operatorFilterSong(filterCharSequence)
 
     var searching by rememberSaveable { mutableStateOf(false) }
 

@@ -91,6 +91,7 @@ import it.fast4x.rimusic.utils.disableScrollingTextKey
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.filterByKey
 import it.fast4x.rimusic.utils.importYTMLikedAlbums
+import it.fast4x.rimusic.utils.operatorFilterAlbum
 import it.fast4x.rimusic.utils.rememberPreference
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.showFloatingIconKey
@@ -177,11 +178,7 @@ fun HomeAlbums(
         val scrollIndex = lazyGridState.firstVisibleItemIndex
         val scrollOffset = lazyGridState.firstVisibleItemScrollOffset
 
-        itemsOnDisplay = items.filter {
-            it.title?.contains( search.input, true) ?: false
-                    || it.year?.contains( search.input, true) ?: false
-                    || it.authorsText?.contains( search.input, true) ?: false
-        }
+        itemsOnDisplay = items.operatorFilterAlbum(search.input)
 
         lazyGridState.scrollToItem( scrollIndex, scrollOffset )
     }
