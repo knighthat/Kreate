@@ -92,7 +92,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK
-        uses: actions/setup-java@v4.7.0
+        uses: actions/setup-java@v4.7.1
         with:
           # Do NOT add `cache: 'gradle'` here
           distribution: 'corretto'
