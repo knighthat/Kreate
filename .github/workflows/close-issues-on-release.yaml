@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Close issues marked as "patched" upon a release.
-        uses: gcampbell-msft/fixed-pending-release@0.0.9
+        uses: gcampbell-msft/fixed-pending-release@0.0.12
         with:
           token: ${{ secrets.CLOSE_ISSUE_ON_RELEASE }}
           label: patched
@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Close issues marked as "implemented" upon a release.
-        uses: gcampbell-msft/fixed-pending-release@0.0.9
+        uses: gcampbell-msft/fixed-pending-release@0.0.12
         with:
           token: ${{ secrets.CLOSE_ISSUE_ON_RELEASE }}
           label: implemented
