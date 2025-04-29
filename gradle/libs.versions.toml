@@ -41,7 +41,7 @@ navigationKMP = "2.9.0-alpha16"
 vlcj = "4.10.1"
 kotlinxCoroutines = "1.10.2"
 hilt = "2.56.2"
-hypnoticcanvas = "0.3.0"
+hypnoticcanvas = "0.4.0"
 ksoup = "0.5.0"
 uiToolingPreviewAndroid = "1.7.8"
 
