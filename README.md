@@ -1,7 +1,7 @@
 <div align="center">
   <img alt="project's banner" src="./assets/design/app_banner.png" width="250px" />    
   <p>
-    <b>Kreate</b> is a <a href="https://github.com/fast4x/RiMusic">RiMusic</a> folk with performance in mind
+    <b>Kreate</b> is a <a href="https://github.com/fast4x/RiMusic">RiMusic</a> fork with performance in mind
   </p>
     
   <br>
