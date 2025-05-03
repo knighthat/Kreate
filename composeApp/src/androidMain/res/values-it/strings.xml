@@ -44,7 +44,7 @@
     <string name="edit_lyrics">Modifica lyrics</string>
     <string name="search_lyrics_online">Cerca lyrics online</string>
     <string name="fetch_lyrics_again">Recupera nuovamente lyrics</string>
-    <string name="id">Id</string>
+    <string name="id">ID</string>
     <string name="itag">Itag</string>
     <string name="bitrate">Velocità in bit</string>
     <string name="size">Grandezza</string>
@@ -101,7 +101,7 @@
     <string name="disable_background_restrictions">Disabilita le restrizioni sullo sfondo</string>
     <string name="invincible_service">Servizio invincibile</string>
     <string name="turning_off_battery_optimizations_is_not_enough">Quando disattivare le ottimizzazioni della batteria non è sufficiente</string>
-    <string name="player">Player</string>
+    <string name="player">Lettore multimediale</string>
     <string name="persistent_queue">Coda persistente</string>
     <string name="save_and_restore_playing_songs">Salva e ripristina la riproduzione di brani</string>
     <string name="resume_playback">Riprendi la riproduzione</string>
@@ -215,10 +215,10 @@
     <string name="vt_double_side_circular">Onde circolari</string>
     <string name="vt_full">Barre</string>
     <string name="new_albums_of_your_artists">Nuovi album dei tuoi artisti</string>
-    <string name="timeline">Timeline</string>
+    <string name="timeline">Cronologia</string>
     <string name="song_cache_by_player">CACHE BRANI (Player)</string>
     <string name="song_cache_by_download">CACHE BRANI (Download)</string>
-    <string name="visualizer">Visualizer</string>
+    <string name="visualizer">Visualizzazione</string>
     <string name="visualizer_require_mic_permission">Visualizer RICHIEDE ACCESSO AL MICROFONO</string>
     <string name="restart_app_please">Riavvia l\'app per favore.</string>
     <string name="listen_on_piped">Ascolta su Piped</string>
