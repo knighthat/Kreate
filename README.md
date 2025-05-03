@@ -6,11 +6,11 @@
     
   <br>
 
-  [![Latest version download count](https://api.knighthat.me/kreate/downloads/latest)](https://github.com/knighthat/kreate/releases/latest)
-  [![Localization progress](https://badges.crowdin.net/kreate/localized.svg)](https://translate.kreate.knighthat.me/project/kreate)
-  ![Total download count](https://api.knighthat.me/kreate/downloads/total)
-</div>
+[![Latest version download count](https://api.knighthat.me/kreate/downloads/latest)](https://github.com/knighthat/kreate/releases/latest)
+[![Localization progress](https://badges.crowdin.net/kreate/localized.svg)](https://translate.kreate.knighthat.me/project/kreate)
+![Total download count](https://api.knighthat.me/kreate/downloads/total)
 
+</div>
 
 # 📲 Installation
 
@@ -21,17 +21,17 @@
 [![Get it on AndroidFreeware](./assets/get-it-on/AndroidFreeware.png)](https://www.androidfreeware.net/download-kreate-apk.html)
 [![Get it on IzzyOnDroid](./assets/get-it-on/IzzyOnDroid.png)](https://apt.izzysoft.de/fdroid/index/apk/me.knighthat.kreate)
 
-
 # ✨ Features
 
 - **Multilingual:** English, Italian, German, Russian, French, Spanish, Czech, Turkish, Romanian and more. Contributions for other languages are welcome
 - Friendly designs
 - UI Mode, switch from RiMusic to classic ViMusic style, and vice versa.
 - Auto cache songs for offline playback with a custom cache size
-- Download songs or entire playlists for offline playback (not cache) 
+- Download songs or entire playlists for offline playback (not cache)
 - Background playback
 - Listening statistics
 - Audio visualizer on player with many type of effects.
+  > [!NOTE]
   > THIS FEATURE REQUIRES MIC PERMISSION, ONLY AVAILABLE IF ACTIVATED FROM SETTINGS. Full list of permissions (available soon)
 - News, mood, musical genres, new albums from favourite artists
 - Import/Export online, RiMusic playlists, can be shared with friends
@@ -45,8 +45,7 @@
 - Export cached/downloaded media
 - Export settings
 - Weekly update
-- Plays music even with no internet connection 
-
+- Plays music even with no internet connection
 
 # 📷 Screenshots
 
@@ -58,7 +57,6 @@
   <img alt="screenshot 1" src="./fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" />
   <img alt="screenshot 1" src="./fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" />
 </div>
-
 
 # 🌐 Supported languages
 
@@ -86,7 +84,7 @@
 - **Hindi:** thanks to [NikunjKhangwal](https://crowdin.com/profile/nikunjkhangwal), [Sharunkumar](https://crowdin.com/profile/sharunkumar), [Th3-C0der](https://github.com/Th3-C0der)
 - **Hungarìan:** thanks to [Zan1456](https://crowdin.com/profile/Zan1456), [Ndvok](https://crowdin.com/profile/ndvok)
 - **Italian:** thanks to [Fabio Iotti](https://crowdin.com/profile/bruce965), [agefcgo](https://crowdin.com/profile/agefcgo), [CiccioDerole](https://crowdin.com/profile/CiccioDerole), [fast4x](https://github.com/fast4x), [Strange-IPmart ](https://github.com/Strange-IPmart)
-- **Indonesian:** thanks to [luthfialfarabi](https://crowdin.com/profile/luthfialfarabi), [teddysulaimanGL](https://github.com/teddysulaimanGL), [Fausta Ahmad](https://crowdin.com/profile/faustaahmad)  
+- **Indonesian:** thanks to [luthfialfarabi](https://crowdin.com/profile/luthfialfarabi), [teddysulaimanGL](https://github.com/teddysulaimanGL), [Fausta Ahmad](https://crowdin.com/profile/faustaahmad)
 - **Interlingua** thanks to [softinterlingua](https://github.com/softinterlingua)
 - **Japanese:** thanks to [maboroshin](https://crowdin.com/profile/maboroshin), [Mid_Vur_Shaan](https://crowdin.com/profile/Mid_Vur_Shaan)
 - **Malayalam** thanks to [XDreamist](https://crowdin.com/profile/xdreamist)
@@ -106,11 +104,10 @@
 - **Tamil** thanks to [Vignesh-p-s](https://crowdin.com/profile/vignesh-p-s)
 - **Turkish:** thanks to [abfreeman](https://github.com/abfreeman), [2010furs](https://github.com/2010furs), [Muha Aliss](https://crowdin.com/profile/muhaaliss), [mikropsoft](https://github.com/mikropsoft)
 - **Telugu** thanks to [SureshTimma](https://crowdin.com/profile/sureshtimma)
-- **Ukrainian:** thanks to [Avin](https://crowdin.com/profile/avinateachip), [Michael Müller](https://crowdin.com/profile/xqzme1337), [NiXT0y](https://crowdin.com/profile/nixt0y), [Crayz310](https://github.com/Crayz310) 
+- **Ukrainian:** thanks to [Avin](https://crowdin.com/profile/avinateachip), [Michael Müller](https://crowdin.com/profile/xqzme1337), [NiXT0y](https://crowdin.com/profile/nixt0y), [Crayz310](https://github.com/Crayz310)
 - **Vietnamese:** thanks to [teaminh](https://crowdin.com/profile/teaminh)
 
 > Don't see your langague here? [Request one](https://translate.kreate.knighthat.me/project/kreate) now.
-
 
 # 🤝 Contributing
 
@@ -124,7 +121,7 @@ For more details, please refer to [the documentation](https://kreate.knighthat.m
 
 ## To translate app
 
-To **translate** or **improve a translation**, **fix typo**, or to **request new language**. 
+To **translate** or **improve a translation**, **fix typo**, or to **request new language**.
 
 [![Translated with Crowdin](https://badges.crowdin.net/badge/light/crowdin-on-dark.png)](https://translate.kreate.knighthat.me/project/kreate)
 
@@ -137,7 +134,6 @@ To help others understand the app, please visit [knighthat/Kreate-docs](https://
 > Whether UI/UX are welcomed
 
 Submit your designs by [opening a ticket](https://github.com/knighthat/Kreate/issues/new?template=feature_request.yaml)
-
 
 # 🫂 Acknowledgements
 
@@ -153,24 +149,22 @@ Submit your designs by [opening a ticket](https://github.com/knighthat/Kreate/is
 - [**HypnoticCanvas**](https://mikepenz.github.io/HypnoticCanvas/): A shader modifier for Compose Multiplatform / Jetpack Compose
 - [**MedieroAF**](https://github.com/MedieroAF): App logo
 
-
 # 💸 Donation
 
 > Help me keep the project running longer.
 > This is completely optional, you don't have to pay to use/unlock any feature.
 
-| Platform | Address |
-| -------- | --- |
-| Liberapay | https://liberapay.com/knighthat |
-| Patreon | https://patreon.com/knighthat |
-| Monero | 44G5dUFTbFWYfZAk69irnDUCTNZzP5viNTmkGpCNCLHjjYQq7jjRTWoYTH1aY8P841hExP31Qxg2hXPtxreKu11zCYdxQUj |
-| Bitcoin | 1GpZUvhdVkCFxqF4vuaiFxtBTxB3L94vnK |
-
+| Platform  | Address                                                                                         |
+| --------- | ----------------------------------------------------------------------------------------------- |
+| Liberapay | https://liberapay.com/knighthat                                                                 |
+| Patreon   | https://patreon.com/knighthat                                                                   |
+| Monero    | 44G5dUFTbFWYfZAk69irnDUCTNZzP5viNTmkGpCNCLHjjYQq7jjRTWoYTH1aY8P841hExP31Qxg2hXPtxreKu11zCYdxQUj |
+| Bitcoin   | 1GpZUvhdVkCFxqF4vuaiFxtBTxB3L94vnK                                                              |
 
 # ⚠️ Disclaimer
 
 This project is built on top of [RiMusic](https://github.com/fast4x/RiMusic) but has no relation to the original author.
-Furthermore, its contents are not affiliated with, funded, authorized, endorsed by, or in any way associated with YouTube, 
+Furthermore, its contents are not affiliated with, funded, authorized, endorsed by, or in any way associated with YouTube,
 Google LLC or any of its affiliates, subsidiaries.
 
 Any trademark, service mark, trade name, or other intellectual property rights used in this project are owned by the respective owners.
