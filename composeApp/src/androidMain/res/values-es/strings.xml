@@ -540,7 +540,7 @@
     <string name="click_to_reset_default_dark_colors">Pulsa para restablecer los colores personalizados oscuros</string>
     <string name="info_color_s_applied">Color %s aplicado</string>
     <string name="time_seconds">segundos</string>
-    <string name="info_bookmark_album">Álbum de marcadores</string>
+    <string name="info_bookmark_album">Marcadores de álbum</string>
     <string name="effect_fade_songs">Atenuar canciones</string>
     <string name="bg_colors_fluid_gradient_background_from_theme">Fondo degradado dinámico del tema</string>
     <string name="bg_colors_fluid_gradient_background_from_cover">Fondo degradado dinámico de la portada</string>
@@ -571,7 +571,7 @@
     <string name="player_swap_controls_with_timeline">Intercambiar controles con la línea de tiempo</string>
     <string name="player_enable_lyrics_popup_message">Habilitar mensaje emergente de la letra</string>
     <string name="exclude_songs_with_duration_limit">Excluir canciones con límite de duración</string>
-    <string name="exclude_songs_with_duration_limit_description">Si está activado, las canciones con duración superior al límite serán excluidas de Mi Top y la cola de reproducción</string>
+    <string name="exclude_songs_with_duration_limit_description">Si está habilitado, las canciones con duración superior al límite serán excluidas y se aplicarán a Mi Top y a la cola de reproducción</string>
     <string name="no_log_available">No hay ningún registro disponible</string>
     <string name="enable_quick_picks_page">Habilitar página de selecciones rápidas</string>
     <string name="lang_vietnamese">Vietnamita</string>
@@ -579,7 +579,7 @@
     <string name="info_prevent_play_songs_with_age_limitation">Evitar reproducir canciones con límite de edad</string>
     <string name="cache_location_private">Privado</string>
     <string name="cache_location_system">Sistema</string>
-    <string name="info_cannot_rename_a_monthly_or_piped_playlist">No se puede renombrar una lista de reproducción mensual, en línea o piped</string>
+    <string name="info_cannot_rename_a_monthly_or_piped_playlist">No se puede renombrar una lista de reproducción mensual, en línea o Piped</string>
     <string name="debug">DEPURACIÓN</string>
     <string name="enable_log_debug">Habilitar registro de depuración</string>
     <string name="if_enabled_create_a_log_file_to_highlight_errors">Si está habilitado, crea un archivo de registro para resaltar errores</string>
@@ -737,7 +737,7 @@
     <string name="vertical_widget">Widget vertical</string>
     <string name="horizontal_widget">Widget horizontal</string>
     <string name="social_reddit">Reddit</string>
-    <string name="social_reddit_info">Únete a la comunidad de Reddit</string>
+    <string name="social_reddit_info">Únete a la comunidad en Reddit</string>
     <string name="sleep_timer_ended">El temporizador de apagado ha finalizado</string>
     <string name="social_discord">Discord</string>
     <string name="social_discord_info">Únete a la comunidad en Discord</string>
