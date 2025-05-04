@@ -875,7 +875,7 @@
     <string name="info_use_ytm_login_only_for_browse">Zu verwenden, wenn Lieder nicht abgespielt werden, während man eingeloggt ist</string>
     <string name="disliked_this_song">Diese Aktion kann nicht mit den mit \"Mag ich nicht\" markierten Titeln durchgeführt werden</string>
     <string name="removed_from_disliked">Von \"Gefällt mir nicht\" entfernt</string>
-    <string name="disliked_this_collection">Diese Aktion kann nicht durchgeführt werden, wenn alle Titel entweder unbeliebt oder unpassend sind</string>
+    <string name="disliked_this_collection">Cannot Perform this Action when all the Songs are Disliked</string>
     <string name="toggle_controls_landscape">Bildschirmsteuerung Ein-/Ausblenden</string>
     <string name="delete_songs_not_in_library">Titel außerhalb der Bibliothek löschen</string>
     <string name="delete_in_process">Titel löschen, die nicht in der Bibliothek vorhanden sind. Die Anwendung wird nach Abschluss des Vorgangs geschlossen</string>
