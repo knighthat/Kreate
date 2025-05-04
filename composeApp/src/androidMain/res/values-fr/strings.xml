@@ -928,12 +928,12 @@ Volume BAS : titre précédent</string>
     <string name="adding_yt_to_pl_failed">Une erreur s\'est produite pour les 50 titres suivants. Ajout des titres à la playlist un par un.</string>
     <string name="songs_add_yt_success">Ajout du titre à la playlist YouTube</string>
     <string name="songs_add_yt_failed">Impossible d\'ajouter le titre à la playlist YouTube</string>
-    <string name="are_you_sure">Are you sure?</string>
-    <string name="title_reset_cache">Reset cache</string>
+    <string name="are_you_sure">Êtes-vous sûr ?</string>
+    <string name="title_reset_cache">Réinitialiser le cache</string>
     <string name="playing_song_not_found_on_current_list">Could not find playing song on current list</string>
-    <string name="no_songs_playing">No song is playing at the moment</string>
-    <string name="invalid_input">Invalid input!</string>
-    <string name="rename_playlist">Rename playlist</string>
+    <string name="no_songs_playing">Aucun titre n\'est joué pour le moment</string>
+    <string name="invalid_input">Entrée invalide !</string>
+    <string name="rename_playlist">Renommer la playlist</string>
     <string name="no_song_to_shuffle">No song to shuffle</string>
     <string name="looking_up_artist_online">Looking up %s online...</string>
     <string name="failed_to_fetch_artist">Failed to fetch aritst</string>
@@ -941,7 +941,7 @@ Volume BAS : titre précédent</string>
     <string name="failed_to_fetch_original_property">Failed to fetch original property</string>
     <string name="failed_to_fetch_album">Failed to fetch album</string>
     <string name="info_open_reset_dialog">Open reset dialog</string>
-    <string name="title_reset_title">Reset title</string>
+    <string name="title_reset_title">Réinitialiser le titre</string>
     <string name="title_reset_authors">Reset authors</string>
     <string name="title_reset_total_play_time">Reset total play time</string>
     <string name="title_name_your_export">Name your export</string>
@@ -962,9 +962,9 @@ Volume BAS : titre précédent</string>
     <string name="added_to_dislikes">Disliked %s</string>
     <string name="removed_from_dislikes">Removed %s from dislikes</string>
     <string name="artist_featured_on">Featured on</string>
-    <string name="artist_fans_might_also_like">Fans might also like</string>
+    <string name="artist_fans_might_also_like">Les fans pourraient également aimer</string>
     <string name="update_changelogs">%s changelogs</string>
     <string name="rotating_cover_title">Rotating album cover</string>
-    <string name="title_playback_speed">Playback speed</string>
+    <string name="title_playback_speed">Vitesse de lecture</string>
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
 </resources>
