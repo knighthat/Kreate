@@ -193,7 +193,7 @@
     <string name="mood">Estado de ánimo</string>
     <string name="new_albums">Nuevos álbumes</string>
     <string name="moods_and_genres">Estados de ánimo y géneros</string>
-    <string name="search_queries">" entradas de búsqueda "</string>
+    <string name="search_queries">" entradas de búsqueda"</string>
     <string name="not_find_battery_optimization_settings">No se pudieron encontrar los ajustes de optimización de la batería. Por favor, otorga los permisos manualmente</string>
     <string name="search">Buscar</string>
     <string name="no">No</string>
@@ -225,7 +225,7 @@
     <string name="listen_on_invidious">Escuchar en Invidious</string>
     <string name="disable_horizontal_swipe">Deshabilitar deslizamiento horizontal</string>
     <string name="disable_vertical_swipe">Deshabilitar cambio de canción por deslizamiento vertical</string>
-    <string name="disable_vertical_swipe_secondary">Afecta sólo cuando el reproductor expandido está apagado</string>
+    <string name="disable_vertical_swipe_secondary">Afecta solo cuando el reproductor expandido está deshabilitado</string>
     <string name="disable_song_switching_via_swipe">Deshabilitar cambio de canción por deslizamiento</string>
     <string name="interface_in_use">Interfaz en uso</string>
     <string name="user_interface">Interfaz</string>
@@ -930,7 +930,7 @@
     <string name="playing_song_not_found_on_current_list">Could not find playing song on current list</string>
     <string name="no_songs_playing">No song is playing at the moment</string>
     <string name="invalid_input">Invalid input!</string>
-    <string name="rename_playlist">Rename playlist</string>
+    <string name="rename_playlist">Renombrar lista de reproducción</string>
     <string name="no_song_to_shuffle">No song to shuffle</string>
     <string name="looking_up_artist_online">Looking up %s online...</string>
     <string name="failed_to_fetch_artist">Failed to fetch aritst</string>
@@ -950,7 +950,7 @@
     <string name="title_export_settings">Export settings</string>
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
-    <string name="title_import_settings">Import settings</string>
+    <string name="title_import_settings">Importar configuración</string>
     <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
@@ -962,6 +962,6 @@
     <string name="artist_fans_might_also_like">Fans might also like</string>
     <string name="update_changelogs">%s changelogs</string>
     <string name="rotating_cover_title">Rotating album cover</string>
-    <string name="title_playback_speed">Playback speed</string>
+    <string name="title_playback_speed">Velocidad de reproducción</string>
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
 </resources>
