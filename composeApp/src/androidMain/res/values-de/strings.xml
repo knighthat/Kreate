@@ -58,7 +58,7 @@
     <string name="featured">Vorgestellt</string>
     <string name="view_the_source_code">Den Quellcode ansehen</string>
     <string name="report_an_issue">Ein Problem melden</string>
-    <string name="you_will_be_redirected_to_github">Du wirst weitergeleitet zu GitHub</string>
+    <string name="you_will_be_redirected_to_github">Du wirst zu GitHub weitergeleitet</string>
     <string name="request_a_feature_or_suggest_an_idea">Fordere eine Funktion an oder schlage eine Idee vor</string>
     <string name="theme">Farbschema</string>
     <string name="theme_mode">Themenmodus</string>
