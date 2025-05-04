@@ -224,7 +224,7 @@
     <string name="listen_on_piped">Écouter sur Piped</string>
     <string name="listen_on_invidious">Écouter sur Invidious</string>
     <string name="disable_horizontal_swipe">Désactiver le glissement horizontal</string>
-    <string name="disable_vertical_swipe">Désactiver le changement de chanson via le balayage vertical</string>
+    <string name="disable_vertical_swipe">Désactiver le changement de titre via le balayage vertical</string>
     <string name="disable_vertical_swipe_secondary">Cela n\'affecte que lorsque le lecteur étendu est désactivé</string>
     <string name="disable_song_switching_via_swipe">Désactiver le changement de titre par balayage</string>
     <string name="interface_in_use">Interface en cours d\'utilisation</string>
@@ -367,7 +367,7 @@
     <string name="ask">Demander</string>
     <string name="item_select">Sélectionner</string>
     <string name="blacklisted_folders">Dossiers sur la liste noire</string>
-    <string name="edit_blacklist_for_on_device_songs">Editer la liste noire pour les titres de l\'appareil.</string>
+    <string name="edit_blacklist_for_on_device_songs">Éditer la liste noire pour les titres de l\'appareil.</string>
     <string name="add_folder">Ajouter un dossier</string>
     <string name="this_folder_already_exists">Ce dossier existe déjà.</string>
     <string name="are_you_sure_you_want_to_remove_this_folder_from_the_blacklist">Êtes-vous sûr de vouloir supprimer ce dossier de la liste noire ?</string>
@@ -451,7 +451,7 @@
     <string name="page_not_been_loaded">La page n\'a pas été chargée correctement, essayez de rafraîchir la page.</string>
     <string name="sorry_tips_are_not_available">Désolé, des conseils ne sont pas disponibles pour le moment.</string>
     <string name="library_collections">Collections</string>
-    <string name="info_show_hide_hidden_songs">Afficher/masquer les titres cachés</string>
+    <string name="info_show_hide_hidden_songs">Afficher / Masquer les titres cachés</string>
     <string name="info_shuffle">Aléatoire</string>
     <string name="info_includes_excludes_songs_on_the_device">Inclure / Exclure les titres présents sur l\'appareil</string>
     <string name="info_enqueue_songs">Mettre les titres en file d\'attente</string>
@@ -463,7 +463,7 @@
     <string name="info_smart_recommendation">Recommandation intelligente</string>
     <string name="info_clean_cached_congs">Nettoyer les titres en cache</string>
     <string name="info_pin_unpin_playlist">Épingler/Désépingler la playlist</string>
-    <string name="info_lock_unlock_reorder_songs">Verrouiller/Déverrouiller la réorganisation des titres</string>
+    <string name="info_lock_unlock_reorder_songs">Verrouiller / Déverrouiller la réorganisation des titres</string>
     <string name="info_add_in_playlist">Ajouter à la playlist</string>
     <string name="info_not_find_application_audio">Impossible de trouver une application pour égaliser l\'audio</string>
     <string name="info_error">Erreur</string>
@@ -650,7 +650,7 @@
     <string name="layout">Disposition</string>
     <string name="layoutinfo">La mise en page 2 est recommandée uniquement pour les grands écrans</string>
     <string name="hideprevnext">Mettre les titres en file d\'attente dans le lecteur</string>
-    <string name="onesong">Un titre</string>
+    <string name="onesong">Un Titre</string>
     <string name="twosongs">Deux Titres</string>
     <string name="info_debug_mode_enabled">Mode debug activé</string>
     <string name="info_debug_mode_is_enabled">Le mode débogage est activé, n\'oubliez pas de le désactiver dans les paramètres</string>
@@ -669,7 +669,7 @@
     <string name="playlistindicatorinfo2">Le titre est présent dans une des playlists</string>
     <string name="statsfornerdsplayer">Afficher les statistiques pour les nerds dans le lecteur</string>
     <string name="discover">Découvrir</string>
-    <string name="discoverinfo">Supprime les titres aimés et les listes de lecture de la file d\'attente</string>
+    <string name="discoverinfo">Supprime les titres aimés et les playlists de la file d\'attente</string>
     <string name="controls_header_customize">Personnaliser</string>
     <string name="controls_title_blur_effect">Effet de flou</string>
     <string name="controls_title_medley_duration">Durée du Medley</string>
@@ -680,7 +680,7 @@
     <string name="lang_malayalam">Malayalam (മലയാളം)</string>
     <string name="searches_suggestions">Suggestions</string>
     <string name="searches_saved_searches">Recherches sauvegardées</string>
-    <string name="event_volumekeys">Changer de chanson avec les boutons de volume</string>
+    <string name="event_volumekeys">Changer de titre avec les boutons de volume</string>
     <string name="event_volumekeysinfo">Volume HAUT : titre suivant, 
 Volume BAS : titre précédent</string>
     <string name="paste">Coller</string>
@@ -699,7 +699,7 @@ Volume BAS : titre précédent</string>
     <string name="message_type">Type de message</string>
     <string name="message_type_modern">Moderne</string>
     <string name="message_type_essential">Minimale</string>
-    <string name="discoverinforadio">Supprime les titres likés et les playlists de la file d\'attente</string>
+    <string name="discoverinforadio">Supprime les titres aimés et les playlists de la file d\'attente</string>
     <string name="discover_has_been_applied_to_radio">La découverte a été appliquée à la radio, titres retirés : %s</string>
     <string name="songs_number_to_show">Nombre de titres à afficher</string>
     <string name="discover_has_been_applied_to_queue">La découverte a été appliquée à la radio, titres retirés : %s</string>
@@ -934,7 +934,7 @@ Volume BAS : titre précédent</string>
     <string name="no_songs_playing">Aucun titre n\'est joué pour le moment</string>
     <string name="invalid_input">Entrée invalide !</string>
     <string name="rename_playlist">Renommer la playlist</string>
-    <string name="no_song_to_shuffle">No song to shuffle</string>
+    <string name="no_song_to_shuffle">Aucun titre à mélanger</string>
     <string name="looking_up_artist_online">Looking up %s online...</string>
     <string name="failed_to_fetch_artist">Failed to fetch aritst</string>
     <string name="looking_up_album_from_the_internet">Looking up album from the internet</string>
@@ -942,14 +942,14 @@ Volume BAS : titre précédent</string>
     <string name="failed_to_fetch_album">Failed to fetch album</string>
     <string name="info_open_reset_dialog">Open reset dialog</string>
     <string name="title_reset_title">Réinitialiser le titre</string>
-    <string name="title_reset_authors">Reset authors</string>
-    <string name="title_reset_total_play_time">Reset total play time</string>
-    <string name="title_name_your_export">Name your export</string>
-    <string name="export_cached">Export cached</string>
-    <string name="info_export_cached_or_downloaded_song">Export cached or downloaded song</string>
+    <string name="title_reset_authors">Réinitialiser les auteurs</string>
+    <string name="title_reset_total_play_time">Réinitialiser le temps de lecture total</string>
+    <string name="title_name_your_export">Nommez votre exportation</string>
+    <string name="export_cached">Exporter en cache</string>
+    <string name="info_export_cached_or_downloaded_song">Exporter le titre mis en cache ou téléchargé</string>
     <string name="song_must_be_cached_or_downloaded_to_export">Song must be cached or downloaded to export</string>
-    <string name="title_restart_required">Restart required</string>
-    <string name="restart_dialog_body">Please open %s again after!</string>
+    <string name="title_restart_required">Redémarrage requis</string>
+    <string name="restart_dialog_body">Veuillez rouvrir %s après !</string>
     <string name="title_export_settings">Paramètres d\'exportation</string>
     <string name="store_settings_in_a_file">Stocker vos paramètres dans un seul fichier</string>
     <string name="description_exclude_credentials">Les identifiants comme la connexion à YouTube sont exclus pour des raisons de sécurité</string>
@@ -958,13 +958,13 @@ Volume BAS : titre précédent</string>
     <string name="title_import_migration_file">Importer le fichier de migration</string>
     <string name="description_import_migration_file">Pour les anciens utilisateurs avant la conversion. \nUtiliser l\'ancienne application pour effectuer une sauvegarde en vue de la migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
-    <string name="relative_listening_time">Relative Listening Time</string>
-    <string name="added_to_dislikes">Disliked %s</string>
-    <string name="removed_from_dislikes">Removed %s from dislikes</string>
-    <string name="artist_featured_on">Featured on</string>
+    <string name="relative_listening_time">Temps d\'écoute relatif</string>
+    <string name="added_to_dislikes">N\'a pas aimé %s</string>
+    <string name="removed_from_dislikes">Suppression de %s des « je n\'aime pas »</string>
+    <string name="artist_featured_on">En vedette sur</string>
     <string name="artist_fans_might_also_like">Les fans pourraient également aimer</string>
-    <string name="update_changelogs">%s changelogs</string>
+    <string name="update_changelogs">%s journaux des modifications</string>
     <string name="rotating_cover_title">Rotating album cover</string>
     <string name="title_playback_speed">Vitesse de lecture</string>
-    <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
+    <string name="description_playback_speed">Ajuster la vitesse / la lenteur du titre</string>
 </resources>
