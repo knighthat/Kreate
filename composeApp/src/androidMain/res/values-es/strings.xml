@@ -61,7 +61,7 @@
     <string name="you_will_be_redirected_to_github">Serás redirigido a GitHub</string>
     <string name="request_a_feature_or_suggest_an_idea">Solicitar una función o sugerir una idea</string>
     <string name="theme">Tema</string>
-    <string name="theme_mode">Modo de tema</string>
+    <string name="theme_mode">Modo del tema</string>
     <string name="thumbnail_roundness">Redondez de la miniatura</string>
     <string name="use_system_font">Utilizar fuente del sistema</string>
     <string name="use_font_by_the_system">Utiliza la fuente aplicada por el sistema</string>
@@ -727,7 +727,7 @@
     <string name="lang_norwegian">Noruego</string>
     <string name="translate_to">Traducir a %s</string>
     <string name="translate_to_other_language">Traducir a otro idioma</string>
-    <string name="action_bar_show_video_button">Mostrar botón de vídeo</string>
+    <string name="action_bar_show_video_button">Mostrar botón vídeo</string>
     <string name="social_telegram">Telegram</string>
     <string name="social_telegram_info">Únete al grupo de Telegram</string>
     <string name="social_github">GitHub</string>
