@@ -694,8 +694,8 @@
     <string name="effect_fade_audio_description">Fade audio when song is paused or played</string>
     <string name="autosync">Auto Sync Imported Playlists</string>
     <string name="message_type">Message type</string>
-    <string name="message_type_modern">Modern</string>
-    <string name="message_type_essential">Essential</string>
+    <string name="message_type_modern">মডার্ন</string>
+    <string name="message_type_essential">অপরিহার্য</string>
     <string name="discoverinforadio">Removes Liked and Playlist songs from Radio</string>
     <string name="discover_has_been_applied_to_radio">Discover has been applied to radio, removed songs: %s</string>
     <string name="songs_number_to_show">Songs number to show</string>
@@ -742,8 +742,8 @@
     <string name="social_discord">Discord</string>
     <string name="social_discord_info">Join the community on Discord</string>
     <string name="discord_enable_rich_presence">Enable Rich Presence</string>
-    <string name="discord_disconnect">Disconnect</string>
-    <string name="discord_connect">Connect</string>
+    <string name="discord_disconnect">ডিসকানেক্ট</string>
+    <string name="discord_connect">কানেক্ট</string>
     <string name="discord_connected_to_discord_account">Connected to Discord Account</string>
     <string name="settings_reset">Reset</string>
     <string name="settings_restore_default_settings">Restore default settings</string>
@@ -783,7 +783,7 @@
     <string name="failed_to_remove_thumbnail">Failed to Remove Thumbnail</string>
     <string name="settings_enable_pip">Enable Picture in Picture</string>
     <string name="settings_enable_pip_auto">Enable Automatic Picture in Picture</string>
-    <string name="pipmodule_cover">Cover</string>
+    <string name="pipmodule_cover">কভার</string>
     <string name="settings_pip_module">Pip module</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">From Android 12 pip can be automatically enabled</string>
@@ -826,7 +826,7 @@
     <string name="enable_wallpaper">Enable wallpaper</string>
     <string name="set_cover_thumbnail_as_wallpaper">Set cover thumbnail as wallpaper</string>
     <string name="notification_type">Notification type</string>
-    <string name="notification_type_default">Default</string>
+    <string name="notification_type_default">পূর্ব-নির্ধারিত</string>
     <string name="notification_type_advanced">Advanced</string>
     <string name="notification_type_info">The way the player is handled in the notification area and lockscreen.</string>
     <string name="action_bar_show_start_radio_button">Start radio button</string>
