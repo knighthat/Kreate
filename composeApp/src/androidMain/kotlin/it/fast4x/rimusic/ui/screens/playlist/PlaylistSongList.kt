@@ -68,8 +68,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastDistinctBy
 import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastFirst
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.R
@@ -78,7 +80,6 @@ import it.fast4x.compose.persist.persist
 import it.fast4x.compose.persist.persistList
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.YtMusic
-import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.innertube.requests.PlaylistPage
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
@@ -613,19 +614,17 @@ fun PlaylistSongList(
                                     .padding(horizontal = 5.dp)
                                     .combinedClickable(
                                         onClick = {
-                                            if (binder != null) {
-                                                if (playlistPage?.songs?.any { it.asMediaItem.mediaId !in dislikedSongs } == true) {
-                                                    binder.stopRadio()
-                                                    binder.playRadio(
-                                                        NavigationEndpoint.Endpoint.Watch(videoId =
-                                                        if (binder.player.currentMediaItem?.mediaId != null)
-                                                            binder.player.currentMediaItem?.mediaId
-                                                        else playlistPage?.songs?.first { it.asMediaItem.mediaId !in dislikedSongs }?.asMediaItem?.mediaId
-                                                        )
-                                                    )
-                                                } else
-                                                    Toaster.e( R.string.disliked_this_collection )
+                                            val songs = playlistPage?.songs.orEmpty()
+                                            if( songs.fastAny { it.key in dislikedSongs } ) {
+                                                Toaster.e( R.string.disliked_this_collection )
+                                                return@combinedClickable
                                             }
+
+                                            val mediaItem =
+                                                // [songs.fastFirst] won't throw NoSuchElementException
+                                                // because of the checking above.
+                                                binder?.player?.currentMediaItem ?: songs.fastFirst { it.key !in dislikedSongs }.asMediaItem
+                                            mediaItem.let { binder?.startRadio( it ) }
                                         },
                                         onLongClick = {
                                             Toaster.i( R.string.info_start_radio )

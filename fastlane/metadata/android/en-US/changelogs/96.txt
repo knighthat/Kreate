@@ -1,0 +1,3 @@
+Fixed:
+- mofified: prefix showed in miniplayer
+- Radio & song discover didn't work properly

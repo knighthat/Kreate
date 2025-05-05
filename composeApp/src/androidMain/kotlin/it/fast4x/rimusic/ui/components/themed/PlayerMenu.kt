@@ -17,7 +17,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.R
-import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.PIPED_PREFIX
 import it.fast4x.rimusic.cleanPrefix
@@ -39,7 +38,6 @@ import it.fast4x.rimusic.utils.rememberEqualizerLauncher
 import it.fast4x.rimusic.utils.rememberPreference
 import it.fast4x.rimusic.utils.removeFromPipedPlaylist
 import it.fast4x.rimusic.utils.removeYTSongFromPlaylist
-import it.fast4x.rimusic.utils.seamlessPlay
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -99,9 +97,7 @@ fun PlayerMenu(
             mediaItem = mediaItem,
             onDismiss = onDismiss,
             onStartRadio = {
-                binder.stopRadio()
-                binder.player.seamlessPlay(mediaItem)
-                binder.setupRadio(NavigationEndpoint.Endpoint.Watch(videoId = mediaItem.mediaId))
+                binder.startRadio( mediaItem )
             },
             onGoToEqualizer = launchEqualizer,
             /*
@@ -128,9 +124,7 @@ fun PlayerMenu(
             navController = navController,
             mediaItem = mediaItem,
             onStartRadio = {
-                binder.stopRadio()
-                binder.player.seamlessPlay(mediaItem)
-                binder.setupRadio(NavigationEndpoint.Endpoint.Watch(videoId = mediaItem.mediaId))
+                binder.startRadio( mediaItem )
             },
             onGoToEqualizer = launchEqualizer,
             onShowSleepTimer = {},

@@ -200,9 +200,7 @@ fun SearchResultScreen(
                                     song = song.asSong,
                                     navController = navController,
                                     onClick = {
-                                        localBinder?.stopRadio()
-                                        localBinder?.player?.forcePlay(song.asMediaItem)
-                                        localBinder?.setupRadio(song.info?.endpoint)
+                                        binder?.startRadio( song.asMediaItem, true, song.info?.endpoint )
                                     }
                                 )
                             }

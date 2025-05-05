@@ -348,7 +348,7 @@ fun MiniPlayer(
                                 .size(14.dp)
                         )
                     BasicText(
-                        text = cleanPrefix(mediaItem.mediaMetadata.title?.toString() ?: ""),
+                        text = cleanPrefix( mediaItem.mediaMetadata.title.toString() ),
                         style = typography().xxs.semiBold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -358,7 +358,7 @@ fun MiniPlayer(
                 }
 
                 BasicText(
-                    text = mediaItem.mediaMetadata.artist?.toString() ?: "",
+                    text = cleanPrefix( mediaItem.mediaMetadata.artist.toString() ),
                     style = typography().xxs.semiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

@@ -59,7 +59,6 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.R
-import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.appRunningInBackground
@@ -98,7 +97,6 @@ import it.fast4x.rimusic.utils.playerBackgroundColorsKey
 import it.fast4x.rimusic.utils.playerTypeKey
 import it.fast4x.rimusic.utils.playlistindicatorKey
 import it.fast4x.rimusic.utils.rememberPreference
-import it.fast4x.rimusic.utils.seamlessPlay
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.showButtonPlayerAddToPlaylistKey
 import it.fast4x.rimusic.utils.showButtonPlayerArrowKey
@@ -664,11 +662,7 @@ fun BoxScope.ActionBar(
                         icon = R.drawable.radio,
                         color = colorPalette().accent,
                         onClick = {
-                            binder.stopRadio()
-                            binder.player.seamlessPlay( mediaItem )
-                            binder.setupRadio(
-                                NavigationEndpoint.Endpoint.Watch(videoId = mediaItem.mediaId)
-                            )
+                            binder.startRadio( mediaItem )
                         },
                         modifier = Modifier.size( 24.dp )
                     )

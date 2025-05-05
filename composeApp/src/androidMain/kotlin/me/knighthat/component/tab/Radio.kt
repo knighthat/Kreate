@@ -32,6 +32,6 @@ class Radio private constructor(
         get() = stringResource( messageId )
 
     override fun onShortClick() {
-        binder?.startRadio( songs().random(), true )
+        binder?.startRadio( songs().random() )
     }
 }

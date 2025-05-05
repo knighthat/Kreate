@@ -67,7 +67,6 @@ import app.kreate.android.R
 import coil.compose.AsyncImage
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.innertube.models.bodies.BrowseBody
 import it.fast4x.innertube.requests.podcastPage
 import it.fast4x.rimusic.Database
@@ -496,17 +495,8 @@ fun Podcast(
                                     .padding(horizontal = 5.dp)
                                     .combinedClickable(
                                         onClick = {
-                                            if (binder != null) {
-                                                binder.stopRadio()
-                                                binder.playRadio(
-                                                    NavigationEndpoint.Endpoint.Watch( videoId =
-                                                        if (binder.player.currentMediaItem?.mediaId != null)
-                                                            binder.player.currentMediaItem?.mediaId
-                                                        else podcastPage?.listEpisode?.first()?.asMediaItem?.mediaId
-                                                    )
-                                                )
-                                            }
-
+                                            val mediaItem = binder?.player?.currentMediaItem ?: podcastPage?.listEpisode?.first()?.asMediaItem
+                                            mediaItem?.let { binder?.startRadio( it ) }
                                         },
                                         onLongClick = {
                                             Toaster.i( R.string.info_start_radio )

@@ -42,7 +42,6 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
-import androidx.media3.common.Player.STATE_IDLE
 import androidx.media3.common.Timeline
 import androidx.media3.common.audio.SonicAudioProcessor
 import androidx.media3.common.util.Log
@@ -83,10 +82,7 @@ import com.google.common.util.concurrent.MoreExecutors
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.innertube.models.bodies.NextBody
-import it.fast4x.innertube.models.bodies.SearchBody
 import it.fast4x.innertube.requests.nextPage
-import it.fast4x.innertube.requests.searchPage
-import it.fast4x.innertube.utils.from
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.appContext
@@ -131,7 +127,6 @@ import it.fast4x.rimusic.utils.broadCastPendingIntent
 import it.fast4x.rimusic.utils.closebackgroundPlayerKey
 import it.fast4x.rimusic.utils.collect
 import it.fast4x.rimusic.utils.discordPersonalAccessTokenKey
-import it.fast4x.rimusic.utils.discoverKey
 import it.fast4x.rimusic.utils.enableWallpaperKey
 import it.fast4x.rimusic.utils.encryptedPreferences
 import it.fast4x.rimusic.utils.exoPlayerCacheLocationKey
@@ -884,41 +879,14 @@ class PlayerServiceModern : MediaLibraryService(),
         }
     }
 
-    private fun loadFromRadio(reason: Int) {
-        if (!preferences.getBoolean(autoLoadSongsInQueueKey, true)) return
-        /*
-        // Old feature add songs only if radio is started by user and when last song in player is played
-        radio?.let { radio ->
-            if (player.mediaItemCount - player.currentMediaItemIndex == 1) {
-                coroutineScope.launch(Dispatchers.Main) {
-                    player.addMediaItems(radio.process())
-                }
-            }
-        }
+    private fun loadFromRadio( reason: Int ) {
+        val isEnabled = preferences.getBoolean( autoLoadSongsInQueueKey, true )
+        val isRepeatTransition = reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT
 
-         */
-        val isDiscoverEnabled = applicationContext.preferences.getBoolean(discoverKey, false)
-        if (reason != Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT &&
-            player.mediaItemCount - player.currentMediaItemIndex <= if (
-                isDiscoverEnabled) 10 else 3
-        ) {
-            if (radio == null) {
-                binder.setupRadio(
-                    NavigationEndpoint.Endpoint.Watch(
-                        videoId = player.currentMediaItem?.mediaId
-                    )
-                )
-            } else {
-                radio?.let { radio ->
-                    //if (player.mediaItemCount - player.currentMediaItemIndex <= 3) {
-                    coroutineScope.launch(Dispatchers.Main) {
-                        if (player.playbackState != STATE_IDLE)
-                            player.addMediaItems(radio.process())
-                    }
-                    //}
-                }
+        if( isEnabled && !isRepeatTransition && !binder.isLoadingRadio )
+            player.currentMediaItem?.let {
+                binder.startRadio( it, true )
             }
-        }
     }
 
     private fun maybeBassBoost() {
@@ -1362,7 +1330,7 @@ class PlayerServiceModern : MediaLibraryService(),
     }
 
     fun startRadio() {
-       binder.startRadio()
+        player.currentMediaItem?.let( binder::startRadio )
     }
 
     fun callActionPause() {
@@ -1660,10 +1628,7 @@ class PlayerServiceModern : MediaLibraryService(),
                     binder.toggleDownload()
                 }
 
-                Action.playradio.value -> {
-                    binder.stopRadio()
-                    binder.playRadio(NavigationEndpoint.Endpoint.Watch(videoId = binder.player.currentMediaItem?.mediaId))
-                }
+                Action.playradio.value -> startRadio()
 
                 Action.shuffle.value -> {
                     binder.toggleShuffle()
@@ -1743,43 +1708,6 @@ class PlayerServiceModern : MediaLibraryService(),
         var isLoadingRadio by mutableStateOf(false)
             private set
 
-
-        @UnstableApi
-        private fun startRadio(endpoint: NavigationEndpoint.Endpoint.Watch?, justAdd: Boolean, filterArtist: String = "") {
-            radioJob?.cancel()
-            radio = null
-            val isDiscoverEnabled = applicationContext.preferences.getBoolean(discoverKey, false)
-            YouTubeRadio(
-                endpoint?.videoId,
-                endpoint?.playlistId,
-                endpoint?.playlistSetVideoId,
-                endpoint?.params,
-                isDiscoverEnabled,
-                applicationContext,
-                binder,
-                coroutineScope
-            ).let {
-                isLoadingRadio = true
-                radioJob = coroutineScope.launch(Dispatchers.Main) {
-
-                    val songs = if (filterArtist.isEmpty()) it.process()
-                    else it.process().filter { song -> song.mediaMetadata.artist == filterArtist }
-
-                    Database.asyncTransaction {
-                        songs.forEach( ::insertIgnore )
-                    }
-
-                    if (justAdd) {
-                        player.addMediaItems(songs.drop(1))
-                    } else {
-                        player.forcePlayFromBeginning(songs)
-                    }
-                    radio = it
-                    isLoadingRadio = false
-                }
-            }
-        }
-
         /**
          * Contains 2 major steps:
          * 1. Fetch YouTube Music for **playlistId** of this song
@@ -1788,28 +1716,35 @@ class PlayerServiceModern : MediaLibraryService(),
          * **_playlistId_** isn't the playlist this song belongs to,
          * but rather the "mood", "style", or "vibe" matches this song.
          */
-        fun startRadio( song: Song, append: Boolean ) {
+        fun startRadio(
+            mediaItem: MediaItem,
+            append: Boolean = false,
+            endpoint: NavigationEndpoint.Endpoint.Watch? = null
+        ) {
             this.stopRadio()
 
-            if( append )
-                player.forcePlay( song.asMediaItem )
+            if( !append || player.currentMediaItem == null )
+                player.forcePlay( mediaItem )
 
             // Prevent UI from freezing up while data is being fetched
-            coroutineScope.launch {
-                var playlistId = ""
+            radioJob = coroutineScope.launch {
+                isLoadingRadio = true
 
-                // Retrieve "playlistId" by sending song's id to "next" endpoint
-                Innertube.nextPage( NextBody(videoId = song.id) )
-                         ?.getOrNull()
-                         ?.itemsPage
-                         ?.items
-                         ?.firstOrNull()
-                         ?.let { it.info?.endpoint?.playlistId }
-                         ?.also { playlistId = it }
+                var playlistId = endpoint?.playlistId
+
+                if( playlistId == null )
+                    // Retrieve "playlistId" by sending song's id to "next" endpoint
+                    Innertube.nextPage( NextBody(videoId = mediaItem.mediaId) )
+                             ?.getOrNull()
+                             ?.itemsPage
+                             ?.items
+                             ?.firstOrNull()
+                             ?.let { it.info?.endpoint?.playlistId }
+                             ?.also { playlistId = it }
 
                 // This time add "playlistId" to the search to get more songs
-                if( playlistId.isNotBlank() )
-                    Innertube.nextPage( NextBody(videoId = song.id, playlistId = playlistId) )
+                if( !playlistId.isNullOrBlank() )
+                    Innertube.nextPage( NextBody(videoId = mediaItem.mediaId, playlistId = playlistId) )
                              ?.getOrNull()
                              ?.itemsPage
                              ?.items
@@ -1822,7 +1757,7 @@ class PlayerServiceModern : MediaLibraryService(),
                                  // Songs with the same id as provided [Song] should be removed.
                                  // The song usually lives at the the first index, but this
                                  // way is safer to implement, as it can live through changes in position.
-                                 relatedSongs.dropWhile { append && it.mediaId == song.id }
+                                 relatedSongs.dropWhile { append && it.mediaId == mediaItem.mediaId }
                              }
                              ?.also {
                                  // Any call to [player] must happen on Main thread
@@ -1833,34 +1768,22 @@ class PlayerServiceModern : MediaLibraryService(),
                                          player.forcePlayFromBeginning( it )
                                  }
                              }
+
+                isLoadingRadio = false
             }
         }
+
+        fun startRadio(
+            song: Song,
+            append: Boolean = false,
+            endpoint: NavigationEndpoint.Endpoint.Watch? = null
+        ) = startRadio( song.asMediaItem, append, endpoint )
 
         fun stopRadio() {
             isLoadingRadio = false
             radioJob?.cancel()
             radio = null
         }
-
-        fun playFromSearch(query: String) {
-            coroutineScope.launch {
-                Innertube.searchPage(
-                    body = SearchBody(
-                        query = query,
-                        params = Innertube.SearchFilter.Song.value
-                    ),
-                    fromMusicShelfRendererContent = Innertube.SongItem.Companion::from
-                )?.getOrNull()?.items?.firstOrNull()?.info?.endpoint?.let { playRadio(it) }
-            }
-        }
-
-        @UnstableApi
-        fun setupRadio(endpoint: NavigationEndpoint.Endpoint.Watch?, filterArtist: String = "") =
-            startRadio(endpoint = endpoint, justAdd = true, filterArtist = filterArtist)
-
-        @UnstableApi
-        fun playRadio(endpoint: NavigationEndpoint.Endpoint.Watch?) =
-            startRadio(endpoint = endpoint, justAdd = false)
 
         fun callPause(onPause: () -> Unit) {
             val fadeDisabled = preferences.getEnum(
@@ -1926,20 +1849,11 @@ class PlayerServiceModern : MediaLibraryService(),
             updateDefaultNotification()
         }
 
-        fun startRadio() {
-            binder.stopRadio()
-            binder.playRadio(NavigationEndpoint.Endpoint.Watch(videoId = binder.player.currentMediaItem?.mediaId))
-        }
-
         fun actionSearch() {
             startActivity(Intent(applicationContext, MainActivity::class.java)
                 .setAction(MainActivity.action_search)
                 .setFlags(FLAG_ACTIVITY_NEW_TASK + FLAG_ACTIVITY_CLEAR_TASK))
             println("PlayerServiceModern actionSearch")
-        }
-
-        fun updateWidgets() {
-
         }
     }
 
