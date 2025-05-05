@@ -53,15 +53,12 @@
 
 # 📷 Screenshots
 
-<div align="center">
-  <img alt="screenshot 1" src="./fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" />
-  <img alt="screenshot 1" src="./fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" />
-  <img alt="screenshot 1" src="./fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" />
-  <img alt="screenshot 1" src="./fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" />
-  <img alt="screenshot 1" src="./fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" />
-  <img alt="screenshot 1" src="./fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" />
-</div>
-
+[![Screenshot-2025-05-05-18-29-12-58-dd257aec8daab42cce0b10d3156a6733.jpg](https://i.postimg.cc/fy9DBhgB/Screenshot-2025-05-05-18-29-12-58-dd257aec8daab42cce0b10d3156a6733.jpg)](https://postimg.cc/fy9DBhgB)  
+[![Screenshot-2025-05-05-18-30-49-06-dd257aec8daab42cce0b10d3156a6733.jpg](https://i.postimg.cc/3WQ7qbs7/Screenshot-2025-05-05-18-30-49-06-dd257aec8daab42cce0b10d3156a6733.jpg)](https://postimg.cc/3WQ7qbs7)  
+[![Screenshot-2025-05-05-18-33-48-77-dd257aec8daab42cce0b10d3156a6733.jpg](https://i.postimg.cc/tCFVg0C3/Screenshot-2025-05-05-18-33-48-77-dd257aec8daab42cce0b10d3156a6733.jpg)](https://postimg.cc/tCFVg0C3)  
+[![Screenshot-2025-05-05-18-53-09-22-dd257aec8daab42cce0b10d3156a6733.jpg](https://i.postimg.cc/3JJmt8Xt/Screenshot-2025-05-05-18-53-09-22-dd257aec8daab42cce0b10d3156a6733.jpg)](https://postimg.cc/3JJmt8Xt)  
+[![Screenshot-2025-05-05-18-34-48-21-dd257aec8daab42cce0b10d3156a6733.jpg](https://i.postimg.cc/ZqbYZ2C5/Screenshot-2025-05-05-18-34-48-21-dd257aec8daab42cce0b10d3156a6733.jpg)](https://postimg.cc/ZqbYZ2C5)  
+[![Screenshot-2025-05-05-18-35-23-07-dd257aec8daab42cce0b10d3156a6733.jpg](https://i.postimg.cc/kM0b9M9M/Screenshot-2025-05-05-18-35-23-07-dd257aec8daab42cce0b10d3156a6733.jpg)](https://postimg.cc/kM0b9M9M)
 
 # 🌐 Supported languages
 
