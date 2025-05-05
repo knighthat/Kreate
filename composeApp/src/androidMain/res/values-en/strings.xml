@@ -183,7 +183,7 @@
     <string name="dark">Dark</string>
     <string name="system">System</string>
     <string name="unlimited">Unlimited</string>
-    <string name="_light">Light</string>
+    <string name="_light">Small</string>
     <string name="downloaded">Downloaded</string>
     <string name="turn_off">Turn off</string>
     <string name="download">Download</string>
@@ -602,7 +602,7 @@
     <string name="miniplayertype">Mini Player Type</string>
     <string name="expanded">Expanded</string>
     <string name="lyricscolor">Lyrics Color</string>
-    <string name="accent">Accent</string>
+    <string name="accent">Color accent</string>
     <string name="lyrics_size">Lyrics Size</string>
     <string name="translate">Translate</string>
     <string name="transparentbar">Transparent Timeline Bar</string>
