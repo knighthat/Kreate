@@ -781,8 +781,8 @@
     <string name="no_thumbnail_present">Küçük Resim Yok</string>
     <string name="removed_thumbnail">Küçük Resim Kaldırıldı</string>
     <string name="failed_to_remove_thumbnail">Küçük Resmi Kaldırma Başarısız</string>
-    <string name="settings_enable_pip">Picture in Picture\'ı Etkinleştir</string>
-    <string name="settings_enable_pip_auto">Otomatik Picture in Picture\'ı Etkinleştir</string>
+    <string name="settings_enable_pip">Resim içinde resmi etkinleştir</string>
+    <string name="settings_enable_pip_auto">Otomatik resim içinde resmi etkinleştir</string>
     <string name="pipmodule_cover">Kapak</string>
     <string name="settings_pip_module">Pip modülü</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
@@ -913,7 +913,7 @@
     <string name="settings_audio_reverb">Ses yankısı</string>
     <string name="settings_audio_reverb_info_apply_a_depth_effect_to_the_audio">Sese derinlik efekti uygula</string>
     <string name="settings_audio_focus">Ses odağı</string>
-    <string name="settings_audio_focus_info">Örneğin bir aramadan sonra çalmayı otomatik duraklatma ve devam ettirme sağlar</string>
+    <string name="settings_audio_focus_info">Örneğin bir arama sonrası otomatik duraklatma ve devam ettirme sağlar</string>
     <string name="please_wait">Lütfen bekleyin</string>
     <string name="songs_liked_yt">Şarkı(lar) YouTube\'da Beğenildi</string>
     <string name="song_unliked_yt">Şarkı YouTube\'da Beğenilmedi</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Ayarlarınızı tek bir dosyada saklayın</string>
     <string name="description_exclude_credentials">Güvenlik nedenleriyle YouTube girişi gibi kimlik bilgileri hariç tutulur</string>
     <string name="title_import_settings">Ayarları içe aktar</string>
-    <string name="restore_settings_from_file">\" %s\" tarafından oluşturulan dosyadan ayarlarınızı geri yükleyin</string>
+    <string name="restore_settings_from_file">\"%s\" tarafından oluşturulan dosyadan ayarlarınızı geri yükleyin</string>
     <string name="title_import_migration_file">Taşıma dosyasını içe aktar</string>
     <string name="description_import_migration_file">Dönüşümden önceki eski kullanıcılar için. \nTaşıma için yedekleme yapmak üzere eski uygulamayı kullanın</string>
     <string name="description_app_not_installed_by_apk">APK dağıtıcısı tarafından yüklenen uygulama, dağıtıcısının uygulamayı güncellemesine izin vermelidir!</string>
