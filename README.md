@@ -12,6 +12,7 @@
 
 </div>
 
+
 # 📲 Installation
 
 [![Get it on Github](./assets/get-it-on/GitHub.png)](https://github.com/knighthat/RiMusic/releases/latest)
@@ -20,6 +21,7 @@
 [![Get it on OpenApk](./assets/get-it-on/OpenAPK.png)](https://www.openapk.net/kreate/me.knighthat.kreate/)
 [![Get it on AndroidFreeware](./assets/get-it-on/AndroidFreeware.png)](https://www.androidfreeware.net/download-kreate-apk.html)
 [![Get it on IzzyOnDroid](./assets/get-it-on/IzzyOnDroid.png)](https://apt.izzysoft.de/fdroid/index/apk/me.knighthat.kreate)
+
 
 # ✨ Features
 
@@ -49,6 +51,7 @@
 - Weekly update
 - Plays music even with no internet connection
 
+
 # 📷 Screenshots
 
 [![Screenshot-2025-05-05-18-29-12-58-dd257aec8daab42cce0b10d3156a6733.jpg](https://i.postimg.cc/fy9DBhgB/Screenshot-2025-05-05-18-29-12-58-dd257aec8daab42cce0b10d3156a6733.jpg)](https://postimg.cc/fy9DBhgB)  
@@ -57,6 +60,7 @@
 [![Screenshot-2025-05-05-18-53-09-22-dd257aec8daab42cce0b10d3156a6733.jpg](https://i.postimg.cc/3JJmt8Xt/Screenshot-2025-05-05-18-53-09-22-dd257aec8daab42cce0b10d3156a6733.jpg)](https://postimg.cc/3JJmt8Xt)  
 [![Screenshot-2025-05-05-18-34-48-21-dd257aec8daab42cce0b10d3156a6733.jpg](https://i.postimg.cc/ZqbYZ2C5/Screenshot-2025-05-05-18-34-48-21-dd257aec8daab42cce0b10d3156a6733.jpg)](https://postimg.cc/ZqbYZ2C5)  
 [![Screenshot-2025-05-05-18-35-23-07-dd257aec8daab42cce0b10d3156a6733.jpg](https://i.postimg.cc/kM0b9M9M/Screenshot-2025-05-05-18-35-23-07-dd257aec8daab42cce0b10d3156a6733.jpg)](https://postimg.cc/kM0b9M9M)
+
 
 # 🌐 Supported languages
 
@@ -109,6 +113,7 @@
 
 > Don't see your langague here? [Request one](https://translate.kreate.knighthat.me/project/kreate) now.
 
+
 # 🤝 Contributing
 
 ## To improve functionalities
@@ -135,6 +140,7 @@ To help others understand the app, please visit [knighthat/Kreate-docs](https://
 
 Submit your designs by [opening a ticket](https://github.com/knighthat/Kreate/issues/new?template=feature_request.yaml)
 
+
 # 🫂 Acknowledgements
 
 - [**RiMusic**](https://github.com/fast4x/RiMusic)
@@ -149,6 +155,7 @@ Submit your designs by [opening a ticket](https://github.com/knighthat/Kreate/is
 - [**HypnoticCanvas**](https://mikepenz.github.io/HypnoticCanvas/): A shader modifier for Compose Multiplatform / Jetpack Compose
 - [**MedieroAF**](https://github.com/MedieroAF): App logo
 
+
 # 💸 Donation
 
 > Help me keep the project running longer.
@@ -160,6 +167,7 @@ Submit your designs by [opening a ticket](https://github.com/knighthat/Kreate/is
 | Patreon   | https://patreon.com/knighthat                                                                   |
 | Monero    | 44G5dUFTbFWYfZAk69irnDUCTNZzP5viNTmkGpCNCLHjjYQq7jjRTWoYTH1aY8P841hExP31Qxg2hXPtxreKu11zCYdxQUj |
 | Bitcoin   | 1GpZUvhdVkCFxqF4vuaiFxtBTxB3L94vnK                                                              |
+
 
 # ⚠️ Disclaimer
 
