@@ -450,12 +450,12 @@
     <string name="sorry_tips_are_not_available">Sorry, tips are not available for now.</string>
     <string name="library_collections">Collections</string>
     <string name="info_show_hide_hidden_songs">Show/hide hidden songs</string>
-    <string name="info_shuffle">Shuffle</string>
+    <string name="info_shuffle">Suaith</string>
     <string name="info_includes_excludes_songs_on_the_device">Includes/Excludes songs on the device</string>
     <string name="info_enqueue_songs">Enqueue songs</string>
     <string name="info_download_all_songs">Download all songs</string>
     <string name="info_remove_all_downloaded_songs">Remove all downloaded songs</string>
-    <string name="info_start_radio">Start radio</string>
+    <string name="info_start_radio">Tosaigh raidió</string>
     <string name="info_translation">Translation</string>
     <string name="info_find_the_song_that_is_playing">Find the song that is playing</string>
     <string name="info_smart_recommendation">Smart recommendation</string>
