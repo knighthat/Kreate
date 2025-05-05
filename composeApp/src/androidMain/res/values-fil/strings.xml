@@ -962,6 +962,6 @@
     <string name="artist_fans_might_also_like">Fans might also like</string>
     <string name="update_changelogs">%s changelogs</string>
     <string name="rotating_cover_title">Rotating album cover</string>
-    <string name="title_playback_speed">Playback speed</string>
+    <string name="title_playback_speed">Speed ng playback</string>
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
 </resources>
