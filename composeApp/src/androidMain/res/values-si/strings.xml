@@ -451,12 +451,12 @@ CC-BY-SA 3.0</string>
     <string name="sorry_tips_are_not_available">Sorry, tips are not available for now.</string>
     <string name="library_collections">Collections</string>
     <string name="info_show_hide_hidden_songs">Show/hide hidden songs</string>
-    <string name="info_shuffle">Shuffle</string>
+    <string name="info_shuffle">කලවම් කරන්න</string>
     <string name="info_includes_excludes_songs_on_the_device">Includes/Excludes songs on the device</string>
     <string name="info_enqueue_songs">Enqueue songs</string>
     <string name="info_download_all_songs">Download all songs</string>
     <string name="info_remove_all_downloaded_songs">Remove all downloaded songs</string>
-    <string name="info_start_radio">Start radio</string>
+    <string name="info_start_radio">රේඩියෝව ආරම්භ කරන්න</string>
     <string name="info_translation">Translation</string>
     <string name="info_find_the_song_that_is_playing">Find the song that is playing</string>
     <string name="info_smart_recommendation">Smart recommendation</string>
@@ -553,8 +553,8 @@ CC-BY-SA 3.0</string>
     <string name="pcontrols_type">Controls type</string>
     <string name="player_swiping_down_is_disabled">Player swiping down is disabled</string>
     <string name="player_position">Player position</string>
-    <string name="position_top">Top</string>
-    <string name="position_bottom">Bottom</string>
+    <string name="position_top">Direction Top</string>
+    <string name="position_bottom">Direction bottom</string>
     <string name="added_to_favorites">Added to favorites</string>
     <string name="removed_from_favorites">Removed from favorites</string>
     <string name="lang_filipino">Filipino</string>
