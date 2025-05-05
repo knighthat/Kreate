@@ -552,8 +552,8 @@
     <string name="pcontrols_type">Controls type</string>
     <string name="player_swiping_down_is_disabled">Player swiping down is disabled</string>
     <string name="player_position">Player position</string>
-    <string name="position_top">Top</string>
-    <string name="position_bottom">Bottom</string>
+    <string name="position_top">മുകളില്‍</string>
+    <string name="position_bottom">താഴേക്ക</string>
     <string name="added_to_favorites">Added to favorites</string>
     <string name="removed_from_favorites">Removed from favorites</string>
     <string name="lang_filipino">Filipino</string>
@@ -578,7 +578,7 @@
     <string name="parental_control">Parental control</string>
     <string name="info_prevent_play_songs_with_age_limitation">Prevent play songs with age limitation</string>
     <string name="cache_location_private">Private</string>
-    <string name="cache_location_system">System</string>
+    <string name="cache_location_system">സിസ്റ്റം</string>
     <string name="info_cannot_rename_a_monthly_or_piped_playlist">Cannot rename a monthly or online or piped playlist</string>
     <string name="debug">DEBUG</string>
     <string name="enable_log_debug">Enable log debug</string>
@@ -783,7 +783,7 @@
     <string name="failed_to_remove_thumbnail">Failed to Remove Thumbnail</string>
     <string name="settings_enable_pip">Enable Picture in Picture</string>
     <string name="settings_enable_pip_auto">Enable Automatic Picture in Picture</string>
-    <string name="pipmodule_cover">Cover</string>
+    <string name="pipmodule_cover">കവർ</string>
     <string name="settings_pip_module">Pip module</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">From Android 12 pip can be automatically enabled</string>
@@ -826,7 +826,7 @@
     <string name="enable_wallpaper">Enable wallpaper</string>
     <string name="set_cover_thumbnail_as_wallpaper">Set cover thumbnail as wallpaper</string>
     <string name="notification_type">Notification type</string>
-    <string name="notification_type_default">Default</string>
+    <string name="notification_type_default">ഡിഫോൾട്ട്</string>
     <string name="notification_type_advanced">Advanced</string>
     <string name="notification_type_info">The way the player is handled in the notification area and lockscreen.</string>
     <string name="action_bar_show_start_radio_button">Start radio button</string>
@@ -955,7 +955,7 @@
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
-    <string name="relative_listening_time">Relative Listening Time</string>
+    <string name="relative_listening_time">ബന്ധപ്പെട്ട കേൾവിയുടെ സമയം</string>
     <string name="added_to_dislikes">Disliked %s</string>
     <string name="removed_from_dislikes">Removed %s from dislikes</string>
     <string name="artist_featured_on">Featured on</string>
