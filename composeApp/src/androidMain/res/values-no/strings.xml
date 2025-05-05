@@ -826,7 +826,7 @@
     <string name="enable_wallpaper">Enable wallpaper</string>
     <string name="set_cover_thumbnail_as_wallpaper">Set cover thumbnail as wallpaper</string>
     <string name="notification_type">Notification type</string>
-    <string name="notification_type_default">Default</string>
+    <string name="notification_type_default">Standard</string>
     <string name="notification_type_advanced">Advanced</string>
     <string name="notification_type_info">The way the player is handled in the notification area and lockscreen.</string>
     <string name="action_bar_show_start_radio_button">Start radio button</string>
@@ -962,6 +962,6 @@
     <string name="artist_fans_might_also_like">Fans might also like</string>
     <string name="update_changelogs">%s changelogs</string>
     <string name="rotating_cover_title">Rotating album cover</string>
-    <string name="title_playback_speed">Playback speed</string>
+    <string name="title_playback_speed">Avspillingshastighet</string>
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
 </resources>
