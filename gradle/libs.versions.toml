@@ -44,7 +44,7 @@ hilt = "2.56.2"
 hypnoticcanvas = "0.4.0"
 ksoup = "0.5.0"
 uiToolingPreviewAndroid = "1.8.0"
-jetbrains-annotations = "24.1.0"
+jetbrains-annotations = "26.0.2"
 lombok = "1.18.34"
 junit5 = "5.11.3"
 
