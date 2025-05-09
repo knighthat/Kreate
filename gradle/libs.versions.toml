@@ -118,7 +118,7 @@ hypnoticcanvas = { group = "com.mikepenz.hypnoticcanvas", name = "hypnoticcanvas
 hypnoticcanvas-shaders = { group = "com.mikepenz.hypnoticcanvas", name = "hypnoticcanvas-shaders", version.ref = "hypnoticcanvas" }
 
 # Newpipe extractor
-newpipe-extractor = { group = "com.github.TeamNewPipe", name = "NewPipeExtractor", version = "v0.24.5" }
+newpipe-extractor = { group = "com.github.TeamNewPipe", name = "NewPipeExtractor", version = "v0.24.6" }
 nanojson = { group = "com.github.TeamNewPipe", name = "nanojson", version = "1d9e1aea9049fc9f85e68b43ba39fe7be1c1f751" }
 
 # Annotations
