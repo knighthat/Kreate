@@ -48,9 +48,9 @@
     <string name="itag">Itag</string>
     <string name="bitrate">Bitrate</string>
     <string name="size">Größe</string>
-    <string name="cached">Zwischenspeicher</string>
-    <string name="loudness">Lautstärke</string>
-    <string name="clear">Löschen</string>
+    <string name="cached">Zwischengespeichert</string>
+    <string name="loudness">Lautheit</string>
+    <string name="clear">Leeren</string>
     <string name="error">Es ist ein Fehler aufgetreten.</string>
     <string name="online">Online</string>
     <string name="no_results_found">Keine Ergebnisse gefunden. Bitte versuche eine andere Suchanfrage oder Kategorie</string>
@@ -506,11 +506,11 @@
     <string name="info_lyrics_not_found_on_s">Liedtext nicht gefunden auf %s</string>
     <string name="info_lyrics_tracks_found_on_s">Liedtexte gefunden auf %s</string>
     <string name="info_lyrics_tracks_not_found_on_s">Liedtexte nicht gefunden auf %s</string>
-    <string name="background_colors">Hintergrundfarben</string>
-    <string name="bg_colors_background_from_cover">Hintergrund aus Cover</string>
-    <string name="bg_colors_background_from_theme">Hintergrund aus Design</string>
+    <string name="background_colors">Hintergrundstil</string>
+    <string name="bg_colors_background_from_cover">Hintergrundfarbe aus Cover</string>
+    <string name="bg_colors_background_from_theme">Hintergrundfarbe vom Design</string>
     <string name="bg_colors_gradient_background_from_cover">Farbverlauf aus Cover</string>
-    <string name="bg_colors_gradient_background_from_theme">Farbverlauf aus Design</string>
+    <string name="bg_colors_gradient_background_from_theme">Farbverlauf vom Design</string>
     <string name="vimusic_show_search_button_in_navigation_bar">Suchbutton in der Navigationsleiste anzeigen</string>
     <string name="vismusic_only_in_left_right_navigation_bar">Nur im ViMusic UI Modus bei Navigationsleiste links oder rechts</string>
     <string name="enable_monthly_playlists_creation">Erstellung monatlicher Wiedergabelisten aktivieren</string>
@@ -542,7 +542,7 @@
     <string name="time_seconds">Sekunden</string>
     <string name="info_bookmark_album">Album merken</string>
     <string name="effect_fade_songs">Titel überblenden</string>
-    <string name="bg_colors_fluid_gradient_background_from_theme">Fluid Farbverlauf aus Design</string>
+    <string name="bg_colors_fluid_gradient_background_from_theme">Fluid Farbverlauf vom Design</string>
     <string name="bg_colors_fluid_gradient_background_from_cover">Fluid Farbverlauf aus Cover</string>
     <string name="show_background_in_lyrics">Hintergrundfarbe in Liedtexten anzeigen</string>
     <string name="bg_colors_blurred_cover_background">Verschwommenes Cover als Hintergrund</string>
