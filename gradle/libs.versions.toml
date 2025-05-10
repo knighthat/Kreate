@@ -42,7 +42,7 @@ hypnoticcanvas = "0.4.0"
 ksoup = "0.5.0"
 uiToolingPreviewAndroid = "1.8.0"
 jetbrains-annotations = "26.0.2"
-lombok = "1.18.34"
+lombok = "1.18.38"
 junit5 = "5.12.2"
 webkit = "1.13.0"
 
