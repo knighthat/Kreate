@@ -37,7 +37,7 @@
     <string name="artist_no_release_album">Cet artiste n’a sorti aucun album</string>
     <string name="artist_no_release_single">Cet artiste n’a sorti aucun titre</string>
     <string name="delete_playlist">Voulez-vous vraiment supprimer cette playlist ?</string>
-    <string name="sync">Synchronise</string>
+    <string name="sync">Synchroniser</string>
     <string name="rename">Renommer</string>
     <string name="delete">Supprimer</string>
     <string name="enter_the_lyrics">Entrer les paroles</string>
