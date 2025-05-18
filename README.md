@@ -3,10 +3,6 @@
   <p>
     <b>N-Zik</b> is a <a href="https://github.com/knighthat/Kreate">Kreate</a> fork with UI and UX performace in mind
   </p>
-    
-  <br>
-
-  [![Latest version download count](https://api.knighthat.me/kreate/downloads/latest)](https://github.com/NEVARLeVrai/N-Zik/releases/latest)
 </div>
 
 
@@ -38,11 +34,6 @@
 - Export settings
 - Weekly update
 - Plays music even with no internet connection
-
-
-# Social media
-
-- [Discord](https://discord.gg/WYr9ZgJzpx)
 
 
 # 📷 Screenshots
@@ -140,6 +131,7 @@ Submit your designs by [opening a ticket](https://github.com/knighthat/Kreate/is
 
 # 🫂 Acknowledgements
 
+- [**Kreate**](https://github.com/knighthat/Kreate)
 - [**RiMusic**](https://github.com/fast4x/RiMusic)
 - RiMusic previous Logo, many current icons from [jaimtres](https://github.com/jaimtres)
 - Player designed by [aneesh1122](https://github.com/aneesh1122)
@@ -153,22 +145,9 @@ Submit your designs by [opening a ticket](https://github.com/knighthat/Kreate/is
 - [**MedieroAF**](https://github.com/MedieroAF): App logo
 
 
-# 💸 Donation
-
-> Help me keep the project running longer.
-> This is completely optional, you don't have to pay to use/unlock any feature.
-
-| Platform  | Address                                                                                         |
-| --------- | ----------------------------------------------------------------------------------------------- |
-| Liberapay | https://liberapay.com/knighthat                                                                 |
-| Patreon   | https://patreon.com/knighthat                                                                   |
-| Monero    | 44G5dUFTbFWYfZAk69irnDUCTNZzP5viNTmkGpCNCLHjjYQq7jjRTWoYTH1aY8P841hExP31Qxg2hXPtxreKu11zCYdxQUj |
-| Bitcoin   | 1GpZUvhdVkCFxqF4vuaiFxtBTxB3L94vnK                                                              |
-
-
 # ⚠️ Disclaimer
 
-This project is built on top of [RiMusic](https://github.com/fast4x/RiMusic) but has no relation to the original author.
+This project is built on top of [Kreate](https://github.com/knighthat/Kreate) but has no relation to the original author.
 Furthermore, its contents are not affiliated with, funded, authorized, endorsed by, or in any way associated with YouTube,
 Google LLC or any of its affiliates, subsidiaries.
 
