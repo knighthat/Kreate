@@ -11,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.kreate.android.R
@@ -38,7 +37,7 @@ private fun HamburgerMenu(
 
     val menu = DropdownMenu(
         expanded = expanded,
-        modifier = Modifier.background( colorPalette().background0.copy(0.90f) ),
+        modifier = Modifier.background(colorPalette().background0.copy(0.90f)),
         onDismissRequest = onDismissRequest
     )
     // History button
@@ -91,7 +90,6 @@ fun ActionBar(
                 contentDescription = null,
                 modifier = Modifier.height(40.dp)
                     .padding(end = 10.dp)
-                    .clip( thumbnailShape() )
                     .clickable { expanded = !expanded }
             )
         else HeaderIcon( R.drawable.ytmusic, size = 30.dp ) { expanded = !expanded }

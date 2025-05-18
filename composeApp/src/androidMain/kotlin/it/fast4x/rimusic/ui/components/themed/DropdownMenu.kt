@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import it.fast4x.rimusic.ui.styling.favoritesIcon
 import it.fast4x.rimusic.colorPalette
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 class DropdownMenu(
     val expanded: Boolean,
@@ -42,6 +43,7 @@ class DropdownMenu(
             onDismissRequest = onDismissRequest,
             containerColor = containerColor,
             modifier = modifier,
+            shape = RoundedCornerShape(16.dp),
             content = { components().forEach { it() } }
         )
     }
