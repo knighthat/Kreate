@@ -3,7 +3,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-val APP_NAME = "Kreate"
+val APP_NAME = "N-Zik"
 
 plugins {
     // Multiplatform
@@ -123,7 +123,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "me.knighthat.kreate"
+        applicationId = "com.nevar.nkik"
         minSdk = 21
         targetSdk = 35
         versionCode = 98
@@ -156,6 +156,7 @@ android {
         create( "full" ) {
             // App's properties
             versionNameSuffix = "-f"
+            signingConfig = signingConfigs.getByName("debug")
         }
 
         create( "minified" ) {

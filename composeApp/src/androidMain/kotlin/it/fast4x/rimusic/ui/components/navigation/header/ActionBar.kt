@@ -71,7 +71,6 @@ private fun HamburgerMenu(
             R.string.settings
         ) { onItemClick( NavRoutes.settings ) }
     )
-
     menu.Draw()
 }
 
