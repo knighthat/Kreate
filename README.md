@@ -1,5 +1,5 @@
 <div align="center">
-  <img alt="project's banner" src="./assets/design/app_banner.png" width="250px" />    
+  <img alt="project's banner" src="./assets/design/ic_launcher.png" width="250px" />    
   <p>
     <b>N-Zik</b> is a <a href="https://github.com/knighthat/Kreate">Kreate</a> fork with UI and UX performace in mind
   </p>
