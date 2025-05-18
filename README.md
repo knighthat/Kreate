@@ -1,36 +1,14 @@
 <div align="center">
   <img alt="project's banner" src="./assets/design/app_banner.png" width="250px" />    
   <p>
-    <b>Kreate</b> is a <a href="https://github.com/fast4x/RiMusic">RiMusic</a> fork with performance in mind
+    <b>N-Zik</b> is a <a href="https://github.com/knighthat/Kreate">Kreate</a> fork with UI and UX performace in mind
   </p>
     
   <br>
-  
-  [![Latest version download count](https://api.knighthat.me/kreate/downloads/latest)](https://github.com/knighthat/kreate/releases/latest)
-  [![Localization progress](https://badges.crowdin.net/kreate/localized.svg)](https://translate.kreate.knighthat.me/project/kreate)
-  ![Total download count](https://api.knighthat.me/kreate/downloads/total)
 
-  <br>
-
-  [![Discord badge](https://dcbadge.limes.pink/api/server/https://discord.gg/WYr9ZgJzpx?theme=default-inverted)](https://discord.gg/WYr9ZgJzpx)
-
+  [![Latest version download count](https://api.knighthat.me/kreate/downloads/latest)](https://github.com/NEVARLeVrai/N-Zik/releases/latest)
 </div>
 
-
-# Announcement - First social media
-
-Discord server is public, join now!
-
-[![Discord badge](https://dcbadge.limes.pink/api/server/https://discord.gg/cZ35BPNXQp?theme=default-inverted)](https://discord.gg/cZ35BPNXQp)  <-- Click me
-
-# 📲 Installation
-
-[![Get it on Github](./assets/get-it-on/GitHub.png)](https://github.com/knighthat/RiMusic/releases/latest)
-[![Get it on Obtainium](./assets/get-it-on/Obtainium.png)](http://apps.obtainium.imranr.dev/redirect.html?r=obtainium://app/%7B%22id%22%3A%20%22me.knighthat.kreate%22%2C%20%22url%22%3A%20%22https%3A%2F%2Fgithub.com%2Fknighthat%2FKreate%22%2C%20%22author%22%3A%20%22knighthat%22%2C%20%22name%22%3A%20%22Kreate%22%2C%20%22preferredApkIndex%22%3A%200%2C%20%22additionalSettings%22%3A%20%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22fallbackToOlderReleases%5C%22%3Atrue%2C%5C%22filterReleaseTitlesByRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22filterReleaseNotesByRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22verifyLatestTag%5C%22%3Atrue%2C%5C%22sortMethodChoice%5C%22%3A%5C%22date%5C%22%2C%5C%22useLatestAssetDateAsReleaseDate%5C%22%3Atrue%2C%5C%22releaseTitleAsVersion%5C%22%3Afalse%2C%5C%22trackOnly%5C%22%3Afalse%2C%5C%22versionExtractionRegEx%5C%22%3A%5C%22%5C%22%2C%5C%22matchGroupToUse%5C%22%3A%5C%22%5C%22%2C%5C%22versionDetection%5C%22%3Atrue%2C%5C%22releaseDateAsVersion%5C%22%3Afalse%2C%5C%22useVersionCodeAsOSVersion%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22.*-minified.*%5C%22%2C%5C%22invertAPKFilter%5C%22%3Afalse%2C%5C%22autoApkFilterByArch%5C%22%3Atrue%2C%5C%22appName%5C%22%3A%5C%22Kreate%5C%22%2C%5C%22appAuthor%5C%22%3A%5C%22Knight%20Hat%5C%22%2C%5C%22shizukuPretendToBeGooglePlay%5C%22%3Afalse%2C%5C%22allowInsecure%5C%22%3Afalse%2C%5C%22exemptFromBackgroundUpdates%5C%22%3Afalse%2C%5C%22skipUpdateNotifications%5C%22%3Afalse%2C%5C%22about%5C%22%3A%5C%22%5C%22%2C%5C%22refreshBeforeDownload%5C%22%3Afalse%7D%22%7D%0A)
-[![Get it on F-Droid](./assets/get-it-on/F-Droid.png)](https://f-droid.org/packages/me.knighthat.kreate)
-[![Get it on OpenApk](./assets/get-it-on/OpenAPK.png)](https://www.openapk.net/kreate/me.knighthat.kreate/)
-[![Get it on AndroidFreeware](./assets/get-it-on/AndroidFreeware.png)](https://www.androidfreeware.net/download-kreate-apk.html)
-[![Get it on IzzyOnDroid](./assets/get-it-on/IzzyOnDroid.png)](https://apt.izzysoft.de/fdroid/index/apk/me.knighthat.kreate)
 
 
 # ✨ Features
