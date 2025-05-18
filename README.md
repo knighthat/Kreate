@@ -99,34 +99,12 @@
 - **Ukrainian:** thanks to [Avin](https://crowdin.com/profile/avinateachip), [Michael Müller](https://crowdin.com/profile/xqzme1337), [NiXT0y](https://crowdin.com/profile/nixt0y), [Crayz310](https://github.com/Crayz310)
 - **Vietnamese:** thanks to [teaminh](https://crowdin.com/profile/teaminh)
 
-> Don't see your langague here? [Request one](https://translate.kreate.knighthat.me/project/kreate) now.
-
 
 # 🤝 Contributing
 
 ## To improve functionalities
 
 > Pull requests are welcome
-
-To **develop new functions** or **fix a bug**, fork the repository, open a pull request.
-
-For more details, please refer to [the documentation](https://kreate.knighthat.me/dev/getting_started).
-
-## To translate app
-
-To **translate** or **improve a translation**, **fix typo**, or to **request new language**.
-
-[![Translated with Crowdin](https://badges.crowdin.net/badge/light/crowdin-on-dark.png)](https://translate.kreate.knighthat.me/project/kreate)
-
-## To write documentation
-
-To help others understand the app, please visit [knighthat/Kreate-docs](https://github.com/knighthat/Kreate-docs) repository.
-
-## If you are good at designing
-
-> Whether UI/UX are welcomed
-
-Submit your designs by [opening a ticket](https://github.com/knighthat/Kreate/issues/new?template=feature_request.yaml)
 
 
 # 🫂 Acknowledgements
