@@ -1390,7 +1390,7 @@ class PlayerServiceModern : MediaLibraryService(),
     }
 
     private fun maybeResumePlaybackOnStart() {
-        if( isPersistentQueueEnabled || preferences.getBoolean(resumePlaybackOnStartKey, false) )
+        if( isPersistentQueueEnabled && preferences.getBoolean(resumePlaybackOnStartKey, false) )
             binder.gracefulPlay()
     }
 
