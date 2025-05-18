@@ -123,11 +123,11 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.nevar.nkik"
+        applicationId = "com.nevar.nzik"
         minSdk = 21
         targetSdk = 35
-        versionCode = 98
-        versionName = "1.3.4"
+        versionCode = 1
+        versionName = "1.0.0"
 
         /*
                 UNIVERSAL VARIABLES
@@ -188,6 +188,7 @@ android {
 
             // App's properties
             versionNameSuffix = "-fdroid"
+            signingConfig = signingConfigs.getByName("debug")
         }
 
         /**
