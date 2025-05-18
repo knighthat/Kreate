@@ -1,7 +1,7 @@
 
 [versions]
 compose-plugin = "1.8.0"
-agp = "8.9.1"
+agp = "8.10.0"
 kotlin = "2.0.21"
 kotlin-ksp = "2.0.21-1.0.26"
 kotlin-datetime = "0.6.2"
