@@ -107,15 +107,9 @@ fun Context.getLocalSongs(
         val dateModifiedColumn = cursor.getColumnIndex( MediaStore.Audio.Media.DATE_MODIFIED )
 
         while( cursor.moveToNext() ) {
-            val relPath = cursor.getString( pathColumn ).run {
-                // Before Android 10, absolute file path should look like this
-                // /storage/emulated/0/Music/path/to/MySong.m4a
-                // So this step is needed to remove file's name out of the path
-                val file = File(this)
-                if( file.isFile )
-                    file.parent!!
-                else
-                    this
+            val relPath = cursor.getString( pathColumn ).apply {
+                // Absolute paths always start with '/'
+                if( !isAtLeastAndroid10 ) substringAfterLast( "/" )
             }
             if( blacklistedPaths.contains( relPath ) ) continue
 
