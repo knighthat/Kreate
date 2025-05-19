@@ -11,21 +11,22 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastForEachIndexed
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
+import java.io.File
 
 object PathUtils {
 
     fun findCommonPath( paths: Collection<String> ): String {
         if( paths.isEmpty() ) return ""
 
-        val splitPaths = paths.map { it.split( "/" ) } // Split each path by '/'
+        val splitPaths = paths.map { it.split( File.separator ) } // Split each path by '/'
         val commonParts = mutableListOf<String>()
 
         for (i in 0 until splitPaths[0].size) {
@@ -88,28 +89,46 @@ object PathUtils {
                                }
         )
 
-        val totalPaths = currentPath.split( "/" ).filter( String::isNotEmpty )
-        var fullPath = ""
-        totalPaths.fastForEach { path ->
-            fullPath += "/$path"
+        val segments = currentPath.split( "/" ).fastFilter( String::isNotEmpty )
+        val paths = segments.runningFold( "" ) { acc, item ->
+            if( acc.isBlank() ) item else "$acc/$item"
+        }
 
+         /*
+             To avoid address bar from clustering up because
+             of long address bar, this additional step is
+             introduce to limit the number of paths showed
+             on address bar.
+             TODO: Add setting entry to allow user to change the number
+          */
+        val visible = segments.takeLast( 3 )
+        val visiblePaths = paths.takeLast( visible.size + 1 ).drop( 1 )     // skip the first empty segment from split
+
+        visible.fastForEachIndexed { index, name ->
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 tint = colorPalette().accent,
                 contentDescription = null
             )
 
-            val capturedCurrentPath = remember {
-                // Remove prefix "/"
-                fullPath.drop(1)
-            }
             BasicText(
-                text = path,
+                text = name,
                 style = typography().xs.copy(
                     color = colorPalette().text,
                     fontWeight = FontWeight.Bold
                 ),
-                modifier = Modifier.clickable { onSpecificAddressClick( capturedCurrentPath ) }
+                modifier = Modifier.clickable {
+                    val path = visiblePaths[index]
+                    val completePath =
+                        // If [currentPath] is an absolute path,
+                        // then this return value must be an absolute path.
+                        if( currentPath.startsWith( File.separator ) && !path.startsWith( File.separator ) )
+                            "/$path"
+                        else
+                            path
+
+                    onSpecificAddressClick( completePath )
+                }
             )
         }
     }
