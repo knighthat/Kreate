@@ -92,25 +92,16 @@ object PathUtils {
         val segments = currentPath.split( "/" ).fastFilter( String::isNotEmpty )
         val paths = segments.runningFold( "" ) { acc, item ->
             if( acc.isBlank() ) item else "$acc/$item"
-        }
+        }.drop( 1 )     // skip the first empty segment from split
 
-         /*
-             To avoid address bar from clustering up because
-             of long address bar, this additional step is
-             introduce to limit the number of paths showed
-             on address bar.
-             TODO: Add setting entry to allow user to change the number
-          */
-        val visible = segments.takeLast( 3 )
-        val visiblePaths = paths.takeLast( visible.size + 1 ).drop( 1 )     // skip the first empty segment from split
-
-        visible.fastForEachIndexed { index, name ->
+        paths.fastForEachIndexed { index, path ->
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 tint = colorPalette().accent,
                 contentDescription = null
             )
 
+            val name = segments[index]
             BasicText(
                 text = name,
                 style = typography().xs.copy(
@@ -118,7 +109,6 @@ object PathUtils {
                     fontWeight = FontWeight.Bold
                 ),
                 modifier = Modifier.clickable {
-                    val path = visiblePaths[index]
                     val completePath =
                         // If [currentPath] is an absolute path,
                         // then this return value must be an absolute path.
