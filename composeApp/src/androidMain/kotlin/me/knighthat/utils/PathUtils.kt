@@ -11,22 +11,21 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastFilter
-import androidx.compose.ui.util.fastForEachIndexed
+import androidx.compose.ui.util.fastForEach
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
-import java.io.File
 
 object PathUtils {
 
     fun findCommonPath( paths: Collection<String> ): String {
         if( paths.isEmpty() ) return ""
 
-        val splitPaths = paths.map { it.split( File.separator ) } // Split each path by '/'
+        val splitPaths = paths.map { it.split( "/" ) } // Split each path by '/'
         val commonParts = mutableListOf<String>()
 
         for (i in 0 until splitPaths[0].size) {
@@ -89,36 +88,30 @@ object PathUtils {
                                }
         )
 
-        val segments = currentPath.split( "/" ).fastFilter( String::isNotEmpty )
-        val paths = segments.runningFold( "" ) { acc, item ->
-            if( acc.isBlank() ) item else "$acc/$item"
-        }.drop( 1 )     // skip the first empty segment from split
+        val totalPaths = currentPath.split( "/" ).filter( String::isNotEmpty )
+        var fullPath = ""
+        // Older versions of Android display full path,
+        // this makes the address bar go overflow.
+        totalPaths.takeLast( 3 ).fastForEach { path ->
+            fullPath += "/$path"
 
-        paths.fastForEachIndexed { index, path ->
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 tint = colorPalette().accent,
                 contentDescription = null
             )
 
-            val name = segments[index]
+            val capturedCurrentPath = remember {
+                // Remove prefix "/"
+                fullPath.drop(1)
+            }
             BasicText(
-                text = name,
+                text = path,
                 style = typography().xs.copy(
                     color = colorPalette().text,
                     fontWeight = FontWeight.Bold
                 ),
-                modifier = Modifier.clickable {
-                    val completePath =
-                        // If [currentPath] is an absolute path,
-                        // then this return value must be an absolute path.
-                        if( currentPath.startsWith( File.separator ) && !path.startsWith( File.separator ) )
-                            "/$path"
-                        else
-                            path
-
-                    onSpecificAddressClick( completePath )
-                }
+                modifier = Modifier.clickable { onSpecificAddressClick( capturedCurrentPath ) }
             )
         }
     }
