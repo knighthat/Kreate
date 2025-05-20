@@ -602,7 +602,7 @@
     <string name="miniplayertype">Mini Player Type</string>
     <string name="expanded">Expanded</string>
     <string name="lyricscolor">Lyrics Color</string>
-    <string name="accent">Accent</string>
+    <string name="accent">Accentfärg</string>
     <string name="lyrics_size">Lyrics Size</string>
     <string name="translate">Översätt</string>
     <string name="transparentbar">Transparent tidslinje</string>
@@ -743,7 +743,7 @@
     <string name="social_discord_info">Join the community on Discord</string>
     <string name="discord_enable_rich_presence">Enable Rich Presence</string>
     <string name="discord_disconnect">Disconnect</string>
-    <string name="discord_connect">Connect</string>
+    <string name="discord_connect">Anslut</string>
     <string name="discord_connected_to_discord_account">Connected to Discord Account</string>
     <string name="settings_reset">Återställ</string>
     <string name="settings_restore_default_settings">Restore default settings</string>
@@ -783,7 +783,7 @@
     <string name="failed_to_remove_thumbnail">Failed to Remove Thumbnail</string>
     <string name="settings_enable_pip">Enable Picture in Picture</string>
     <string name="settings_enable_pip_auto">Enable Automatic Picture in Picture</string>
-    <string name="pipmodule_cover">Cover</string>
+    <string name="pipmodule_cover">Omslag</string>
     <string name="settings_pip_module">Pip module</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">From Android 12 pip can be automatically enabled</string>
@@ -826,7 +826,7 @@
     <string name="enable_wallpaper">Enable wallpaper</string>
     <string name="set_cover_thumbnail_as_wallpaper">Set cover thumbnail as wallpaper</string>
     <string name="notification_type">Notification type</string>
-    <string name="notification_type_default">Default</string>
+    <string name="notification_type_default">Standard</string>
     <string name="notification_type_advanced">Advanced</string>
     <string name="notification_type_info">The way the player is handled in the notification area and lockscreen.</string>
     <string name="action_bar_show_start_radio_button">Start radio button</string>
