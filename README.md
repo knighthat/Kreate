@@ -3,6 +3,8 @@
   <p>
     <b>N-Zik</b> is a <a href="https://github.com/knighthat/Kreate">Kreate</a> fork with UI and UX performance in mind
   </p>
+
+<p><b>N-Zik</b> might not be as stable as <a href="https://github.com/knighthat/Kreate">Kreate</a>, but you can use Kreate if needed. I'm still learning Kotlin and will update the project when I have time.</p>
     
   <br>
   
