@@ -920,7 +920,7 @@ Volume BAS : titre précédent</string>
     <string name="please_wait">Veuillez patienter</string>
     <string name="songs_liked_yt">Les titres sont appréciés sur YouTube</string>
     <string name="song_unliked_yt">Le titre n\'est pas apprécié sur YouTube</string>
-    <string name="add_rimusic_to_ytm_favorites">J\'aime les titres aimés de RiMusic sur YouTube</string>
+    <string name="add_rimusic_to_ytm_favorites">Like N-Zik Liked songs in Youtube</string>
     <string name="do_you_really_want_to_like_all_rimusictoytmusic">(temps estimé) est nécessaire pour aimer tous les titres. Cette action ne peut pas être reprise si elle est annulée entre-temps. Vous devez fermer l\'application pour annuler ce processus. Voulez-vous continuer ?</string>
     <string name="do_you_really_want_to_like_all">(temps estimé) est nécessaire pour aimer tous les titres. Vous devez fermer l\'application pour annuler ce processus. Voulez-vous continuer ?</string>
     <string name="songs_liked_yt_failed">Impossible d\'aimer le titre sur YouTube</string>
@@ -967,4 +967,5 @@ Volume BAS : titre précédent</string>
     <string name="rotating_cover_title">Pochette d\'album rotative</string>
     <string name="title_playback_speed">Vitesse de lecture</string>
     <string name="description_playback_speed">Ajuster la vitesse / la lenteur du titre</string>
+    <string name="log_in_to_ytm">Log in to your YTM account for more content</string>
 </resources>
