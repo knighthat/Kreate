@@ -919,7 +919,7 @@
     <string name="please_wait">Пожалуйста, подождите</string>
     <string name="songs_liked_yt">Песня(и) нравится в YouTube</string>
     <string name="song_unliked_yt">Песня не нравится в YouTube</string>
-    <string name="add_rimusic_to_ytm_favorites">Like N-Zik Liked songs in Youtube</string>
+    <string name="add_rimusic_to_ytm_favorites">Понравившиеся песни RiMusic в Youtube</string>
     <string name="do_you_really_want_to_like_all_rimusictoytmusic">(расчетное время) необходимо, чтобы поставить отметку «Нравится» всем песням. Это действие не может быть возобновлено, если отменено в промежутке. Чтобы отменить этот процесс, необходимо закрыть приложение. Хотите продолжить?</string>
     <string name="do_you_really_want_to_like_all">(расчетное время) необходимо, чтобы поставить отметку «Нравится» всем песням. Чтобы отменить этот процесс, необходимо закрыть приложение. Хотите продолжить?</string>
     <string name="songs_liked_yt_failed">Не удалось поставить отметку «Нравится» под песней на YouTube</string>
