@@ -1,6 +1,6 @@
 
 [versions]
-compose-plugin = "1.8.0"
+compose-plugin = "1.8.1"
 agp = "8.9.1"
 kotlin = "2.0.21"
 kotlin-ksp = "2.0.21-1.0.26"
