@@ -964,4 +964,5 @@
     <string name="rotating_cover_title">Roterende albumcover</string>
     <string name="title_playback_speed">Afspilningshastighed</string>
     <string name="description_playback_speed">Juster, hvor langsomt/hurtigt sangen går</string>
+    <string name="log_in_to_ytm">Log ind på din YTM-konto for mere indhold</string>
 </resources>

@@ -964,4 +964,5 @@
     <string name="rotating_cover_title">Albumcover drehen</string>
     <string name="title_playback_speed">Wiedergabegeschwindigkeit</string>
     <string name="description_playback_speed">Festlegen, wie langsam oder schnell der Titel laufen soll</string>
+    <string name="log_in_to_ytm">Melden Sie sich bei Ihrem YTM-Konto für weitere Inhalte an</string>
 </resources>

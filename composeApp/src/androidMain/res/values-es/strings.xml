@@ -964,4 +964,5 @@
     <string name="rotating_cover_title">Rotación de la portada del álbum</string>
     <string name="title_playback_speed">Velocidad de reproducción</string>
     <string name="description_playback_speed">Ajusta qué tan lenta/rápida va la canción</string>
+    <string name="log_in_to_ytm">Inicia sesión en tu cuenta de YTM para más contenido</string>
 </resources>

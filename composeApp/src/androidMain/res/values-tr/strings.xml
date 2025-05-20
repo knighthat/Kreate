@@ -964,4 +964,5 @@
     <string name="rotating_cover_title">Döner albüm kapağı</string>
     <string name="title_playback_speed">Çalma hızı</string>
     <string name="description_playback_speed">Şarkının ne kadar yavaş/hızlı gittiğini ayarla</string>
+    <string name="log_in_to_ytm">Log in to your YTM account for more content</string>
 </resources>
