@@ -1,10 +1,17 @@
 <div align="center">
   <img alt="project's banner" src="./assets/design/ic_launcher.png" width="250px" />    
   <p>
-    <b>N-Zik</b> is a <a href="https://github.com/knighthat/Kreate">Kreate</a> fork with UI and UX performace in mind
+    <b>N-Zik</b> is a <a href="https://github.com/knighthat/Kreate">Kreate</a> fork with UI and UX performance in mind
   </p>
-</div>
+    
+  <br>
+  
 
+  [![Localization progress](https://badges.crowdin.net/N-Zik/localized.svg)](https://crowdin.com/project/N-Zik)
+
+
+
+</div>
 
 
 # ✨ Features
@@ -105,6 +112,12 @@
 ## To improve functionalities
 
 > Pull requests are welcome
+
+## To translate app
+
+To **translate** or **improve a translation**, **fix typo**, or to **request new language**.
+
+[![Translated with Crowdin](https://badges.crowdin.net/badge/light/crowdin-on-dark.png)](https://crowdin.com/project/N-Zik)
 
 
 # 🫂 Acknowledgements
