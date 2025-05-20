@@ -917,7 +917,7 @@
     <string name="please_wait">Lütfen bekleyin</string>
     <string name="songs_liked_yt">Şarkı(lar) YouTube\'da Beğenildi</string>
     <string name="song_unliked_yt">Şarkı YouTube\'da Beğenilmedi</string>
-    <string name="add_rimusic_to_ytm_favorites">Like N-Zik Liked songs in Youtube</string>
+    <string name="add_rimusic_to_ytm_favorites">RiMusic Beğenilen Şarkıları YouTube\'da Beğen</string>
     <string name="do_you_really_want_to_like_all_rimusictoytmusic">Tüm şarkıları beğenmek için (tahmini süre) gereklidir. Bu işlem yarıda kesilirse devam edilemez. Bu işlemi iptal etmek için uygulamayı kapatmanız gerekir. Devam etmek istiyor musunuz?</string>
     <string name="do_you_really_want_to_like_all">Tüm şarkıları beğenmek için (tahmini süre) gereklidir. Bu işlemi iptal etmek için uygulamayı kapatmanız gerekir. Devam etmek istiyor musunuz?</string>
     <string name="songs_liked_yt_failed">Şarkı YouTube\'da beğenilemedi</string>
