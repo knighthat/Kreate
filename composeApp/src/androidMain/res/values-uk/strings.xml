@@ -917,7 +917,7 @@
     <string name="please_wait">Будь ласка, зачекайте</string>
     <string name="songs_liked_yt">Пісня(і) подобається у YouTube</string>
     <string name="song_unliked_yt">Пісня не подобається у YouTube</string>
-    <string name="add_rimusic_to_ytm_favorites">Вподобані пісні RiMusic в Youtube</string>
+    <string name="add_rimusic_to_ytm_favorites">Like N-Zik Liked songs in Youtube</string>
     <string name="do_you_really_want_to_like_all_rimusictoytmusic">(розрахунковий час) необхідно, щоб поставити позначку \"Подобається\" всім пісням. Ця дія не може бути відновлена, якщо скасовано у процесі. Щоб скасувати цей процес, необхідно закрити програму. Бажаєте продовжити?</string>
     <string name="do_you_really_want_to_like_all">(розрахунковий час) необхідно, щоб поставити позначку \"Подобається\" всім пісням. Щоб скасувати цей процес, необхідно закрити програму. Бажаєте продовжити?</string>
     <string name="songs_liked_yt_failed">Не вдалося поставити відмітку «Подобається» під піснею на YouTube</string>
@@ -964,4 +964,5 @@
     <string name="rotating_cover_title">Rotating album cover</string>
     <string name="title_playback_speed">Швидкість відтворення</string>
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
+    <string name="log_in_to_ytm">Увійдіть у свій YTM акаунт для додаткової інформації</string>
 </resources>
