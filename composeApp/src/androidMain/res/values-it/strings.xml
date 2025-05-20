@@ -917,7 +917,7 @@
     <string name="please_wait">Attendere prego</string>
     <string name="songs_liked_yt">Canzone apprezzata su YouTube</string>
     <string name="song_unliked_yt">Canzone non apprezzata su YouTube</string>
-    <string name="add_rimusic_to_ytm_favorites">Like N-Zik Liked songs in Youtube</string>
+    <string name="add_rimusic_to_ytm_favorites">Mi piace RiMusic Canzoni piaciute su Youtube</string>
     <string name="do_you_really_want_to_like_all_rimusictoytmusic">(tempo stimato) è necessario per mettere \"Mi piace\" a tutte le canzoni. Questa azione non può essere ripresa se annullata nel frattempo. Devi chiudere l\'app per annullare questo processo. Vuoi continuare?</string>
     <string name="do_you_really_want_to_like_all">(tempo stimato) è necessario per mettere \"Mi piace\" a tutte le canzoni. Devi chiudere l\'app per annullare questo processo. Vuoi continuare?</string>
     <string name="songs_liked_yt_failed">Impossibile mettere mi piace alla canzone su YouTube</string>
