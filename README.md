@@ -7,7 +7,7 @@
   <br>
   
 
-  [![Localization progress](https://badges.crowdin.net/N-Zik/localized.svg)](https://crowdin.com/project/N-Zik/translations)
+  [![Localization progress](https://badges.crowdin.net/N-Zik/localized.svg)](https://crowdin.com/project/N-Zik)
 
 
 
@@ -112,6 +112,12 @@
 ## To improve functionalities
 
 > Pull requests are welcome
+
+## To translate app
+
+To **translate** or **improve a translation**, **fix typo**, or to **request new language**.
+
+[![Translated with Crowdin](https://badges.crowdin.net/badge/light/crowdin-on-dark.png)](https://crowdin.com/project/N-Zik)
 
 
 # 🫂 Acknowledgements
