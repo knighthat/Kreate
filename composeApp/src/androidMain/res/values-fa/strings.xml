@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cancel">لغو</string>
-    <string name="done">انجام شد</string>
-    <string name="hidesong">آیا واقعاً میخواهید این آهنگ را پنهان کنید؟ زمان پخش و حافظه پنهان آن پاک می‌شود.\nاین عمل غیرقابل برگشت است.</string>
-    <string name="new_playlist">لیست پخش جدید</string>
-    <string name="start_radio">راه‌اندازی رادیو</string>
-    <string name="equalizer">برابر ساز</string>
-    <string name="stop_sleep_timer">آیا میخواهید تایمر خواب را متوقف کنید؟</string>
-    <string name="set_sleep_timer">تنظیم زمان‌سنج خواب</string>
+    <string name="cancel">Cancel</string>
+    <string name="done">Done</string>
+    <string name="hidesong">Do you really want to hide this song? Its playback time and cache will be wipedThis action is irreversible.</string>
+    <string name="new_playlist">New playlist</string>
+    <string name="start_radio">Start radio</string>
+    <string name="equalizer">Equalizer</string>
+    <string name="stop_sleep_timer">Do you want to stop the sleep timer?</string>
+    <string name="set_sleep_timer">Set sleep timer</string>
     <string name="add_to_playlist">Add to playlist</string>
     <string name="go_to_album">Go to album</string>
     <string name="remove_from_queue">Remove from queue</string>
@@ -121,7 +121,7 @@
     <string name="synchronized_lyrics">synchronized lyrics</string>
     <string name="provided_by">Provided by</string>
     <string name="delete_playback_events">Delete %1$s playback events</string>
-    <string name="existing_data_will_be_overwritten">Existing data will be overwritten. %1$s will automatically close itself after restoring the database.</string>
+    <string name="existing_data_will_be_overwritten">Existing data will be overwritten.%1$s will automatically close itself after restoring the database.</string>
     <string name="folder_cache">FOLDER CACHE</string>
     <string name="cache_reset_by_clicking_button">Attention by clicking on the button below, the cache location folder will be reset to the default</string>
     <string name="cache_location_folder">Location folder</string>
@@ -195,7 +195,7 @@
     <string name="moods_and_genres">Moods and genres</string>
     <string name="search_queries">" search queries"</string>
     <string name="not_find_battery_optimization_settings">Couldn\'t find battery optimization settings, please whitelist manually</string>
-    <string name="search">Search...</string>
+    <string name="search">Search</string>
     <string name="no">No</string>
     <string name="stop">Stop</string>
     <string name="listen_on_youtube">Listen on YouTube</string>
@@ -309,7 +309,7 @@
     <string name="action_bar_show_loop_button">Show Loop button</string>
     <string name="action_bar_show_shuffle_button">Show Shuffle button</string>
     <string name="action_bar_show_lyrics_button">Show Lyrics button</string>
-    <string name="action_bar_show_arrow_button_to_open_queue">Show Arrow button</string>
+    <string name="action_bar_show_arrow_button_to_open_queue">Show Arrow button to open queue</string>
     <string name="lang_finnish">Finnish</string>
     <string name="listening_time">Listening time</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">Shows the number of songs heard and their listening time</string>
@@ -371,7 +371,7 @@
     <string name="add_folder">Add folder</string>
     <string name="this_folder_already_exists">This folder already exists.</string>
     <string name="are_you_sure_you_want_to_remove_this_folder_from_the_blacklist">Are you sure you want to remove this folder from the blacklist?</string>
-    <string name="player_appearance">Player Appearance</string>
+    <string name="player_appearance">Appearance</string>
     <string name="player_action_bar">PLAYER ACTION BAR</string>
     <string name="tab_data">Data</string>
     <string name="image_cache_max_size">Image cache max size</string>
@@ -422,20 +422,20 @@
     <string name="lang_danish">Danish</string>
     <string name="lang_serbian_latin">Serbian Latin</string>
     <string name="item_deselect">Deselect</string>
-    <string name="show_next_songs_in_player">Show next songs in player</string>
+    <string name="show_next_songs_in_player">Show Mini Queue in Player</string>
     <string name="show_remaining_song_time">Show remaining song time</string>
     <string name="full_screen">Full screen</string>
     <string name="click_lyrics_text">Click lyrics text</string>
     <string name="folder_that_will_show_when_you_open_on_device_page">Folder that will show when you open On device page.</string>
     <string name="folder_was_not_found">Folder was not found</string>
-    <string name="direction_top">Direction Top</string>
+    <string name="direction_top">Top</string>
     <string name="pick_from">Pick from</string>
     <string name="download_cover">Download cover</string>
     <string name="menu_style">Menu style</string>
     <string name="style_grid">Grid</string>
     <string name="style_list">List</string>
     <string name="click_to_switch_to">Click to switch to</string>
-    <string name="direction_bottom">Direction bottom</string>
+    <string name="direction_bottom">Bottom</string>
     <string name="event_shake">Shake</string>
     <string name="shake_to_change_song">Shake to change song</string>
     <string name="history">History</string>
@@ -455,7 +455,7 @@
     <string name="info_enqueue_songs">Enqueue songs</string>
     <string name="info_download_all_songs">Download all songs</string>
     <string name="info_remove_all_downloaded_songs">Remove all downloaded songs</string>
-    <string name="info_start_radio">راه‌اندازی رادیو</string>
+    <string name="info_start_radio">Start radio</string>
     <string name="info_translation">Translation</string>
     <string name="info_find_the_song_that_is_playing">Find the song that is playing</string>
     <string name="info_smart_recommendation">Smart recommendation</string>
@@ -552,8 +552,8 @@
     <string name="pcontrols_type">Controls type</string>
     <string name="player_swiping_down_is_disabled">Player swiping down is disabled</string>
     <string name="player_position">Player position</string>
-    <string name="position_top">Direction Top</string>
-    <string name="position_bottom">Direction bottom</string>
+    <string name="position_top">Top</string>
+    <string name="position_bottom">Bottom</string>
     <string name="added_to_favorites">Added to favorites</string>
     <string name="removed_from_favorites">Removed from favorites</string>
     <string name="lang_filipino">Filipino</string>
@@ -579,7 +579,7 @@
     <string name="info_prevent_play_songs_with_age_limitation">Prevent play songs with age limitation</string>
     <string name="cache_location_private">Private</string>
     <string name="cache_location_system">System</string>
-    <string name="info_cannot_rename_a_monthly_or_piped_playlist">Cannot rename a monthly or piped playlist</string>
+    <string name="info_cannot_rename_a_monthly_or_piped_playlist">Cannot rename a monthly or online or piped playlist</string>
     <string name="debug">DEBUG</string>
     <string name="enable_log_debug">Enable log debug</string>
     <string name="if_enabled_create_a_log_file_to_highlight_errors">If enabled, create a log file to highlight errors</string>
@@ -599,7 +599,7 @@
     <string name="show_thumbnail">Show thumbnail</string>
     <string name="show_lyrics_thumbnail">Show thumbnail for lyrics</string>
     <string name="large">Large</string>
-    <string name="miniplayertype">Mini PlayerMini Player Type Type</string>
+    <string name="miniplayertype">Mini Player Type</string>
     <string name="expanded">Expanded</string>
     <string name="lyricscolor">Lyrics Color</string>
     <string name="accent">Accent</string>
@@ -609,8 +609,8 @@
     <string name="timelinesize">Player Timeline Size</string>
     <string name="actionspacedevenly">Spaced Evenly</string>
     <string name="expandedplayer">Expanded Player</string>
-    <string name="expandedlyrics">Expanded view of lyrics</string>
-    <string name="expandedlyricsinfo">Works only when lyrics thumbnail is disabled</string>
+    <string name="expandedlyrics">Expanded Lyrics</string>
+    <string name="expandedlyricsinfo">Expanded Player works only when Lyrics are activated</string>
     <string name="info_connect_your_piped_account_first">Connect your piped account first or disable piped synchronization</string>
     <string name="piped_playlists">Piped</string>
     <string name="lang_bengali">Bengali</string>
@@ -620,7 +620,7 @@
     <string name="fluidtheme">Fluid Theme</string>
     <string name="blackgradient">Black Gradient at Bottom</string>
     <string name="glow">Glow</string>
-    <string name="bottomgradient">Show Bottom Gradient</string>
+    <string name="bottomgradient">Show Gradient</string>
     <string name="textoutline">Enable Text Outline</string>
     <string name="set_cache_location">Cache location</string>
     <string name="info_private_cache_location_can_t_cleaned">Private cache location, can\'t be cleaned by the system</string>
@@ -639,7 +639,7 @@
     <string name="buttonzoomout">Button Zoom Out Animation</string>
     <string name="thumbnailpause">Shrink thumbnail when paused</string>
     <string name="upnext">Up Next</string>
-    <string name="showtwosongs">Show Next two Songs in Queue</string>
+    <string name="showtwosongs">Number of Songs in Mini Queue(1 to 9)</string>
     <string name="showalbumcover">Show Album Cover</string>
     <string name="do_not_translate">Do not translate</string>
     <string name="info_sleep_timer_delayed_at_end_of_song">Sleep timer delayed at end of song</string>
@@ -647,7 +647,7 @@
     <string name="landscapelayout">Landscape Layout</string>
     <string name="layout">Layout</string>
     <string name="layoutinfo">Layout 2 is Recommended only for Big Screens</string>
-    <string name="hideprevnext">Hide Previous and Next Songs</string>
+    <string name="hideprevnext">Queue Songs in Player</string>
     <string name="onesong">One Song</string>
     <string name="twosongs">Two Songs</string>
     <string name="info_debug_mode_enabled">Debug Mode Enabled</string>
@@ -687,7 +687,7 @@
     <string name="noblur">No Blur when Lyrics is Disabled</string>
     <string name="fadingedge">Fading Edge</string>
     <string name="carousel">Carousel View</string>
-    <string name="carouselsize">Size of Carousel</string>
+    <string name="carouselsize">Thumbnail Size in Expanded Mode</string>
     <string name="addednext">Added to play next</string>
     <string name="info_paused_with_volume_zero">Paused with volume zero</string>
     <string name="effect_fade_audio">Fade audio</string>
@@ -704,7 +704,7 @@
     <string name="info_pauses_player_when_volume_zero">Pauses the player when the volume reaches 0 and resumes when the volume is greater than 0</string>
     <string name="quality">Quality</string>
     <string name="value_must_be_ip_address">Value must be an ip address</string>
-    <string name="swipe_up_to_open_the_queue">Swipe up to open the queue</string>
+    <string name="swipe_up_to_open_the_queue">Swipe up to open Queue</string>
     <string name="pinfo_show_icons">Show info with icons</string>
     <string name="format_ms">%1$s ms</string>
     <string name="minimum_silence_length">Minimum silence length</string>
@@ -774,7 +774,7 @@
     <string name="player_auto_load_songs_in_queue">Auto load songs in queue</string>
     <string name="player_auto_load_songs_in_queue_description">Adds songs when the queue is about to end</string>
     <string name="show_vinyl_thumbnail_animation">Show Vinyl animation as thumbnail</string>
-    <string name="toggle_romanization">Toggle Romanization</string>
+    <string name="toggle_romanization">Romanization</string>
     <string name="edit_thumbnail">Edit Thumbnail</string>
     <string name="thumbnail_not_selected">Thumbnail Not Selected</string>
     <string name="reset_thumbnail">Reset Thumbnail</string>
@@ -875,7 +875,7 @@
     <string name="info_use_ytm_login_only_for_browse">To be used if the songs are not played when logged in</string>
     <string name="disliked_this_song">Cannot Perform this Action with the Disliked Songs</string>
     <string name="removed_from_disliked">Removed from Dislike</string>
-    <string name="disliked_this_collection">Cannot Perform this Action when all the Songs are Disliked</string>
+    <string name="disliked_this_collection">Cannot Perform this Action when all the Songs are either Disliked or Unmatched</string>
     <string name="toggle_controls_landscape">Toggle On-screen Controls</string>
     <string name="delete_songs_not_in_library">Delete Songs not in the Library</string>
     <string name="delete_in_process">Deleting the Songs which are not in your Library. The App will Close After the Process is Over</string>
