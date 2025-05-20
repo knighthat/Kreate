@@ -917,7 +917,7 @@
     <string name="please_wait">Por favor, espera</string>
     <string name="songs_liked_yt">Canción/canciones que tienen me gusta en YouTube</string>
     <string name="song_unliked_yt">La canción tiene un no me gusta en YouTube</string>
-    <string name="add_rimusic_to_ytm_favorites">Like N-Zik Liked songs in Youtube</string>
+    <string name="add_rimusic_to_ytm_favorites">Me gusta RiMusic, me gustan canciones en YouTube</string>
     <string name="do_you_really_want_to_like_all_rimusictoytmusic">(tiempo estimado) es necesario para dar me gusta a todas las canciones. Esta acción no se puede reanudar si se cancela en el medio del proceso. Debes cerrar la aplicación para cancelar este proceso. ¿Quieres continuar?</string>
     <string name="do_you_really_want_to_like_all">(tiempo estimado) es necesario para dar me gusta a todas las canciones. Debes cerrar la aplicación para cancelar este proceso. ¿Quieres continuar?</string>
     <string name="songs_liked_yt_failed">Error al dar un me gusta a la canción en YouTube</string>
@@ -964,5 +964,5 @@
     <string name="rotating_cover_title">Rotación de la portada del álbum</string>
     <string name="title_playback_speed">Velocidad de reproducción</string>
     <string name="description_playback_speed">Ajusta qué tan lenta/rápida va la canción</string>
-    <string name="log_in_to_ytm">Log in to your YTM account for more content</string>
+    <string name="log_in_to_ytm">Inicia sesión en tu cuenta de YTM para más contenido</string>
 </resources>
