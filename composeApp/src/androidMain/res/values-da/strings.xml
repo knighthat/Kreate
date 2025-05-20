@@ -917,7 +917,7 @@
     <string name="please_wait">Vent venligst</string>
     <string name="songs_liked_yt">Sangen(e) er liket på YouTube</string>
     <string name="song_unliked_yt">Sangen er ikke længere liket på YouTube</string>
-    <string name="add_rimusic_to_ytm_favorites">Like N-Zik Liked songs in Youtube</string>
+    <string name="add_rimusic_to_ytm_favorites">Like RiMusic\'s \'Kan lide\'-sange på Youtube</string>
     <string name="do_you_really_want_to_like_all_rimusictoytmusic">(Estimeret tid) er påkrævet for at like alle sangene. Denne handling kan ikke genoptages, hvis den afbrydes. Du skal lukke appen for at annullere processen. Vil du fortsætte?</string>
     <string name="do_you_really_want_to_like_all">(Estimeret tid) er påkrævet for at like alle sangene. Du skal lukke appen for at annullere processen. Vil du fortsætte?</string>
     <string name="songs_liked_yt_failed">Kunne ikke like sangen i YouTube</string>
