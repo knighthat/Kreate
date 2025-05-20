@@ -122,6 +122,13 @@ To **translate** or **improve a translation**, **fix typo**, or to **request new
 
 [![Translated with Crowdin](https://badges.crowdin.net/badge/light/crowdin-on-dark.png)](https://crowdin.com/project/N-Zik)
 
+# 💸 Donation
+
+> Help me keep the project running longer.
+> This is completely optional, you don't have to pay to use/unlock any feature.
+
+| Patreon   | https://patreon.com/nevarlevrai                                                                  |
+
 
 # 🫂 Acknowledgements
 
