@@ -1,5 +1,5 @@
 <div align="center">
-  <img alt="project's banner" src="./assets/design/app_banner.png" width="250px" />    
+  <img alt="project's banner" src="./assets/design/ic_launcher.png" width="250px" />    
   <p>
     <b>N-Zik</b> is a <a href="https://github.com/knighthat/Kreate">Kreate</a> fork with UI and UX performance in mind
   </p>
@@ -7,12 +7,9 @@
   <br>
   
 
-  [![Localization progress]()](https://crowdin.com/project/N-Zik/translations)
+  [![Localization progress](https://badges.crowdin.net/N-Zik/localized.svg)](https://crowdin.com/project/N-Zik/translations)
 
 
-  <br>
-
-  [![Discord badge](https://dcbadge.limes.pink/api/server/https://discord.gg/WYr9ZgJzpx?theme=default-inverted)](https://discord.gg/WYr9ZgJzpx)
 
 </div>
 
