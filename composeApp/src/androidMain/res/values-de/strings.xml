@@ -917,7 +917,7 @@
     <string name="please_wait">Bitte warten</string>
     <string name="songs_liked_yt">Titel die auf YouTube mit \"Gefällt mir\" markiert sind</string>
     <string name="song_unliked_yt">Der Titel ist auf YouTube nicht mit \"Gefällt mir\" markiert</string>
-    <string name="add_rimusic_to_ytm_favorites">Like N-Zik Liked songs in Youtube</string>
+    <string name="add_rimusic_to_ytm_favorites">\"Gefällt mir\" Angaben aus Kreate nach YouTube übertragen</string>
     <string name="do_you_really_want_to_like_all_rimusictoytmusic">(geschätzte Zeit) ist erforderlich, um alle Lieder zu markieren. Dieser Vorgang kann nicht fortgesetzt werden, wenn er zwischendurch abgebrochen wird. Die App muss geschlossen werden, um den Vorgang abzubrechen. Willst du fortfahren?</string>
     <string name="do_you_really_want_to_like_all">(geschätzte Zeit) ist erforderlich um alle Titel mit \"Gefällt mir\" zu markieren. Um diesen Vorgang abzubrechen, muss die App geschlossen werden. Möchtest du fortfahren?</string>
     <string name="songs_liked_yt_failed">Der Titel konnte auf YouTube nicht mit \"Gefällt mir\" markiert werden</string>
