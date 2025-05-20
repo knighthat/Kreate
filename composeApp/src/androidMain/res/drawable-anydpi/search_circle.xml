@@ -6,10 +6,10 @@
     android:tint="#000000">
 
   <group
-      android:scaleX="0.64"
-      android:scaleY="0.64"
-      android:translateX="70"
-      android:translateY="70">
+      android:scaleX="0.80"
+      android:scaleY="0.80"
+      android:translateX="30"
+      android:translateY="30">
 
     <path
         android:fillColor="#000000"

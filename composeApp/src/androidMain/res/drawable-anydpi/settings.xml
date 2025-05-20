@@ -3,7 +3,7 @@
     android:height="24dp"
     android:viewportWidth="512"
     android:viewportHeight="512"
-    android:tint="?attr/colorControlNormal">
+    android:tint="#000000">
 
 
   <group
@@ -14,7 +14,7 @@
 
     <path
 
-        android:fillColor="@android:color/white"
+        android:fillColor="#000000"
         android:pathData="M34.283,384c17.646,30.626,56.779,41.148,87.405,23.502c0.021-0.012,0.041-0.024,0.062-0.036l9.493-5.483
         c17.92,15.332,38.518,27.222,60.757,35.072V448c0,35.346,28.654,64,64,64s64-28.654,64-64v-10.944
         c22.242-7.863,42.841-19.767,60.757-35.115l9.536,5.504c30.633,17.673,69.794,7.167,87.467-23.467
