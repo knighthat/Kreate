@@ -1,5 +1,0 @@
-files:
-  - source: /composeApp/src/androidMain/res/values/strings.xml
-    translation: /composeApp/src/androidMain/res/values-%two_letters_code%/strings.xml
-  - source: /docs/res/values/strings.xml
-    translation: /docs/res/values-%two_letters_code%/strings.xml

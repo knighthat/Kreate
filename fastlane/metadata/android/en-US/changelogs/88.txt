@@ -1,6 +1,0 @@
-Fixed:
-- Random crashes
-- Long load time on "cached" & "downloaded"
-
-New:
-- Banners & feature graphics

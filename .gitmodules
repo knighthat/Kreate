@@ -1,3 +1,0 @@
-[submodule "innertube-java"]
-	path = modules/innertube
-	url = https://github.com/knighthat/innertube-java

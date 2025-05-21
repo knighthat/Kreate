@@ -1,2 +1,0 @@
-Fixed:
-- Android Auto failed to load
