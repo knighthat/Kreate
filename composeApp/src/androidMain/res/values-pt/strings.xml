@@ -917,7 +917,7 @@
     <string name="please_wait">Por favor, aguarde</string>
     <string name="songs_liked_yt">Músicas são curtidas no YouTube</string>
     <string name="song_unliked_yt">Música não está curtida no YouTube</string>
-    <string name="add_rimusic_to_ytm_favorites">Like RiMusic Liked songs in Youtube</string>
+    <string name="add_rimusic_to_ytm_favorites">Like N-Zik Liked songs in Youtube</string>
     <string name="do_you_really_want_to_like_all_rimusictoytmusic">(estimated time) is required to like all the songs. This action cannot be resumed if cancelled in between. You need to close the app to cancel this process. Do you want to continue?</string>
     <string name="do_you_really_want_to_like_all">(estimated time) is required to like all the songs. You need to close the app to cancel this process. Do you want to continue?</string>
     <string name="songs_liked_yt_failed">Falha ao curtir a música no YouTube</string>
