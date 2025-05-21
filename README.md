@@ -10,6 +10,7 @@
   
 
   [![Localization progress](https://badges.crowdin.net/N-Zik/localized.svg)](https://crowdin.com/project/N-Zik)
+  [![License](https://img.shields.io/github/license/NEVARLeVrai/N-Zik)](https://www.gnu.org/licenses/gpl-3.0)
 <a href="https://github.com/NEVARLeVrai/N-Zik/releases"><img src="https://img.shields.io/github/downloads/NEVARLeVrai/N-Zik/total?label=Total%20Downloads"></a>
 <a href="https://github.com/NEVARLeVrai/N-Zik/releases/latest"><img src="https://img.shields.io/github/downloads/NEVARLeVrai/N-Zik/latest/total?label=Downloads%20of%20latest%20Release"></a>
 <a href="https://github.com/NEVARLeVrai/N-Zik/releases/latest"><img src="https://img.shields.io/github/v/release/NEVARLeVrai/N-Zik?label=Release"></a>
