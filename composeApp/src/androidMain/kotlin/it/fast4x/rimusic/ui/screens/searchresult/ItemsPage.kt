@@ -1,5 +1,5 @@
 package it.fast4x.rimusic.ui.screens.searchresult
-
+//test
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -35,6 +35,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 
 @ExperimentalAnimationApi
 @Composable
@@ -54,6 +62,8 @@ inline fun <T : Innertube.Item> ItemsPage(
     val lazyListState = rememberLazyListState()
 
     var itemsPage by persist<Innertube.ItemsPage<T>?>(tag)
+    var hasScrolledToTop by remember { mutableStateOf(false) }
+    var isInitialLoad by remember { mutableStateOf(true) }
 
     LaunchedEffect(lazyListState, updatedItemsPageProvider) {
         val currentItemsPageProvider = updatedItemsPageProvider ?: return@LaunchedEffect
@@ -74,6 +84,27 @@ inline fun <T : Innertube.Item> ItemsPage(
                     }
                 }?.exceptionOrNull()?.printStackTrace()
             }
+    }
+
+    LaunchedEffect(itemsPage, updatedItemsPageProvider) {
+        if (itemsPage == null && updatedItemsPageProvider != null) {
+            withContext(Dispatchers.IO) {
+                updatedItemsPageProvider?.invoke(null)
+            }?.onSuccess {
+                if (it == null) {
+                    itemsPage = Innertube.ItemsPage(null, null)
+                } else {
+                    itemsPage = it
+                }
+            }?.exceptionOrNull()?.printStackTrace()
+        }
+    }
+
+    LaunchedEffect(itemsPage?.items?.isNotEmpty()) {
+        if (itemsPage?.items?.isNotEmpty() == true && !hasScrolledToTop) {
+            lazyListState.scrollToItem(0)
+            hasScrolledToTop = true
+        }
     }
 
     Box(
@@ -147,5 +178,146 @@ inline fun <T : Innertube.Item> ItemsPage(
         FloatingActionsContainerWithScrollToTop(lazyListState = lazyListState)
 
 
+    }
+}
+
+@ExperimentalAnimationApi
+@Composable
+inline fun <T : Innertube.Item> ItemsGridPage(
+    tag: String,
+    crossinline headerContent: @Composable (textButton: (@Composable () -> Unit)?) -> Unit,
+    noinline itemContent: @Composable androidx.compose.foundation.lazy.grid.LazyGridItemScope.(T) -> Unit,
+    noinline itemPlaceholderContent: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    initialPlaceholderCount: Int = 8,
+    continuationPlaceholderCount: Int = 3,
+    emptyItemsText: String = "No items found",
+    noinline itemsPageProvider: (suspend (String?) -> Result<Innertube.ItemsPage<T>?>?)? = null,
+    thumbnailSizeDp: androidx.compose.ui.unit.Dp
+) {
+    val updatedItemsPageProvider by rememberUpdatedState(itemsPageProvider)
+    val lazyGridState = rememberLazyGridState()
+    var itemsPage by persist<Innertube.ItemsPage<T>?>(tag)
+    var hasScrolledToTop by remember { mutableStateOf(false) }
+
+    LaunchedEffect(lazyGridState, updatedItemsPageProvider) {
+        val currentItemsPageProvider = updatedItemsPageProvider ?: return@LaunchedEffect
+        snapshotFlow { lazyGridState.layoutInfo.visibleItemsInfo.any { it.key == "loading" } }
+            .collect { shouldLoadMore ->
+                if (!shouldLoadMore) return@collect
+                withContext(Dispatchers.IO) {
+                    currentItemsPageProvider(itemsPage?.continuation)
+                }?.onSuccess {
+                    if (it == null) {
+                        if (itemsPage == null) {
+                            itemsPage = Innertube.ItemsPage(null, null)
+                        }
+                    } else {
+                        itemsPage += it
+                    }
+                }?.exceptionOrNull()?.printStackTrace()
+            }
+    }
+
+    LaunchedEffect(itemsPage, updatedItemsPageProvider) {
+        if (itemsPage == null && updatedItemsPageProvider != null) {
+            withContext(Dispatchers.IO) {
+                updatedItemsPageProvider?.invoke(null)
+            }?.onSuccess {
+                if (it == null) {
+                    itemsPage = Innertube.ItemsPage(null, null)
+                } else {
+                    itemsPage = it
+                }
+            }?.exceptionOrNull()?.printStackTrace()
+        }
+    }
+
+    LaunchedEffect(itemsPage?.items?.isNotEmpty()) {
+        if (itemsPage?.items?.isNotEmpty() == true && !hasScrolledToTop) {
+            lazyGridState.scrollToItem(0)
+            hasScrolledToTop = true
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .background(colorPalette().background0)
+            .fillMaxHeight()
+            .fillMaxWidth(
+                if (NavigationBarPosition.Right.isCurrent())
+                    Dimensions.contentWidthRightBar
+                else
+                    1f
+            )
+    ) {
+        if (itemsPage == null) {
+            ShimmerHost(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                repeat(initialPlaceholderCount) {
+                    itemPlaceholderContent()
+                }
+            }
+        } else {
+            LazyVerticalGrid(
+                state = lazyGridState,
+                columns = GridCells.Adaptive(thumbnailSizeDp),
+                contentPadding = PaddingValues(bottom = Dimensions.bottomSpacer),
+                modifier = modifier
+                    .background(colorPalette().background0)
+                    .fillMaxSize()
+            ) {
+                item(
+                    key = "header",
+                    contentType = 0,
+                    span = { GridItemSpan(maxLineSpan) }
+                ) {
+                    headerContent(null)
+                }
+
+                items(
+                    itemsPage?.items ?: emptyList(),
+                    key = { it.key },
+                    itemContent = itemContent
+                )
+
+                if (itemsPage != null && itemsPage?.items.isNullOrEmpty()) {
+                    item(
+                        key = "empty",
+                        span = { GridItemSpan(maxLineSpan) }
+                    ) {
+                        BasicText(
+                            text = emptyItemsText,
+                            style = typography().xs.secondary.center,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 32.dp)
+                                .fillMaxWidth()
+                        )
+                    }
+                }
+
+                if (!(itemsPage != null && itemsPage?.continuation == null)) {
+                    item(
+                        key = "loading",
+                        span = { GridItemSpan(maxLineSpan) }
+                    ) {
+                        val isFirstLoad = itemsPage?.items.isNullOrEmpty()
+                        ShimmerHost(
+                            modifier = Modifier
+                                .run {
+                                    if (isFirstLoad) fillMaxSize() else this
+                                }
+                        ) {
+                            repeat(if (isFirstLoad) initialPlaceholderCount else continuationPlaceholderCount) {
+                                itemPlaceholderContent()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        FloatingActionsContainerWithScrollToTop(lazyGridState = lazyGridState)
     }
 }
