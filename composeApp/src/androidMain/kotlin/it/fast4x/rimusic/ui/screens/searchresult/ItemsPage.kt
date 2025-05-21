@@ -62,6 +62,8 @@ inline fun <T : Innertube.Item> ItemsPage(
     val lazyListState = rememberLazyListState()
 
     var itemsPage by persist<Innertube.ItemsPage<T>?>(tag)
+    var hasScrolledToTop by remember { mutableStateOf(false) }
+    var isInitialLoad by remember { mutableStateOf(true) }
 
     LaunchedEffect(lazyListState, updatedItemsPageProvider) {
         val currentItemsPageProvider = updatedItemsPageProvider ?: return@LaunchedEffect
@@ -95,6 +97,13 @@ inline fun <T : Innertube.Item> ItemsPage(
                     itemsPage = it
                 }
             }?.exceptionOrNull()?.printStackTrace()
+        }
+    }
+
+    LaunchedEffect(itemsPage?.items?.isNotEmpty()) {
+        if (itemsPage?.items?.isNotEmpty() == true && !hasScrolledToTop) {
+            lazyListState.scrollToItem(0)
+            hasScrolledToTop = true
         }
     }
 

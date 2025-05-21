@@ -12,13 +12,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
@@ -69,6 +74,9 @@ import androidx.compose.foundation.text.BasicText
 import it.fast4x.rimusic.typography
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import it.fast4x.rimusic.colorPalette
 
 @ExperimentalTextApi
 @SuppressLint("SuspiciousIndentation")
@@ -196,6 +204,81 @@ fun SearchResultScreen(
                 1 -> {
                     val thumbnailSizeDp = Dimensions.thumbnails.album + 8.dp
                     val thumbnailSizePx = thumbnailSizeDp.px
+                    var useGrid by rememberSaveable { mutableStateOf(true) }
+
+                    val albumItemContentGrid: @Composable androidx.compose.foundation.lazy.grid.LazyGridItemScope.(Innertube.AlbumItem) -> Unit = { album ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            AlbumItem(
+                                yearCentered = false,
+                                album = album,
+                                thumbnailSizePx = thumbnailSizePx,
+                                thumbnailSizeDp = thumbnailSizeDp,
+                                modifier = Modifier
+                                    .combinedClickable(
+                                        onClick = {
+                                            navController.navigate("${NavRoutes.album.name}/${album.key}")
+                                        },
+                                        onLongClick = {}
+                                    ),
+                                disableScrollingText = disableScrollingText
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            BasicText(
+                                text = album.title ?: "",
+                                style = typography().s.copy(textAlign = TextAlign.Center),
+                                maxLines = 2
+                            )
+                            album.year?.let { year ->
+                                if (year.isNotBlank()) {
+                                    BasicText(
+                                        text = year,
+                                        style = typography().xs.copy(color = Color.Gray, textAlign = TextAlign.Center)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    val albumItemContentList: @Composable androidx.compose.foundation.lazy.LazyItemScope.(Innertube.AlbumItem) -> Unit = { album ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            AlbumItem(
+                                yearCentered = false,
+                                album = album,
+                                thumbnailSizePx = thumbnailSizePx,
+                                thumbnailSizeDp = thumbnailSizeDp,
+                                modifier = Modifier
+                                    .combinedClickable(
+                                        onClick = {
+                                            navController.navigate("${NavRoutes.album.name}/${album.key}")
+                                        },
+                                        onLongClick = {}
+                                    ),
+                                disableScrollingText = disableScrollingText
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            BasicText(
+                                text = album.title ?: "",
+                                style = typography().s.copy(textAlign = TextAlign.Center),
+                                maxLines = 2
+                            )
+                            album.year?.let { year ->
+                                if (year.isNotBlank()) {
+                                    BasicText(
+                                        text = year,
+                                        style = typography().xs.copy(color = Color.Gray, textAlign = TextAlign.Center)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    val albumItemPlaceholder: @Composable () -> Unit = { AlbumItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) }
 
                     Column {
                         Title(
@@ -208,68 +291,68 @@ fun SearchResultScreen(
                             onClick = {
                                 navController.navigate("${NavRoutes.search.name}?text=${Uri.encode(query)}")
                             },
-                            verticalPadding = 4.dp
+                            verticalPadding = 4.dp,
+                            trailingIcon = {
+                                IconButton(onClick = { useGrid = !useGrid }) {
+                                    Icon(
+                                        painter = painterResource(id = if (useGrid) R.drawable.sort_vertical else R.drawable.sort_grid),
+                                        contentDescription = "Switch Mode",
+                                        tint = colorPalette().text
+                                    )
+                                }
+                            }
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-
-                        ItemsGridPage(
-                            tag = "searchResults/$query/albums",
-                            itemsPageProvider = { continuation ->
-                                if (continuation == null) {
-                                    Innertube.searchPage(
-                                        body = SearchBody(
-                                            query = query,
-                                            params = Innertube.SearchFilter.Album.value
-                                        ),
-                                        fromMusicShelfRendererContent = Innertube.AlbumItem::from
-                                    )
-                                } else {
-                                    Innertube.searchPage(
-                                        body = ContinuationBody(continuation = continuation),
-                                        fromMusicShelfRendererContent = Innertube.AlbumItem::from
-                                    )
-                                }
-                            },
-                            emptyItemsText = emptyItemsText,
-                            headerContent = {},
-                            itemContent = { album ->
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier.padding(vertical = 8.dp)
-                                ) {
-                                    AlbumItem(
-                                        yearCentered = false,
-                                        album = album,
-                                        thumbnailSizePx = thumbnailSizePx,
-                                        thumbnailSizeDp = thumbnailSizeDp,
-                                        modifier = Modifier
-                                            .combinedClickable(
-                                                onClick = {
-                                                    navController.navigate("${NavRoutes.album.name}/${album.key}")
-                                                },
-                                                onLongClick = {}
+                        if (useGrid) {
+                            ItemsGridPage(
+                                tag = "searchResults/$query/albums",
+                                itemsPageProvider = { continuation ->
+                                    if (continuation == null) {
+                                        Innertube.searchPage(
+                                            body = SearchBody(
+                                                query = query,
+                                                params = Innertube.SearchFilter.Album.value
                                             ),
-                                        disableScrollingText = disableScrollingText
-                                    )
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    BasicText(
-                                        text = album.title ?: "",
-                                        style = typography().s.copy(textAlign = TextAlign.Center),
-                                        maxLines = 2
-                                    )
-                                    album.year?.let { year ->
-                                        if (year.isNotBlank()) {
-                                            BasicText(
-                                                text = year,
-                                                style = typography().xs.copy(color = Color.Gray, textAlign = TextAlign.Center)
-                                            )
-                                        }
+                                            fromMusicShelfRendererContent = Innertube.AlbumItem::from
+                                        )
+                                    } else {
+                                        Innertube.searchPage(
+                                            body = ContinuationBody(continuation = continuation),
+                                            fromMusicShelfRendererContent = Innertube.AlbumItem::from
+                                        )
                                     }
-                                }
-                            },
-                            itemPlaceholderContent = { AlbumItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) },
-                            thumbnailSizeDp = thumbnailSizeDp
-                        )
+                                },
+                                emptyItemsText = emptyItemsText,
+                                headerContent = {},
+                                itemContent = albumItemContentGrid,
+                                itemPlaceholderContent = albumItemPlaceholder,
+                                thumbnailSizeDp = thumbnailSizeDp
+                            )
+                        } else {
+                            ItemsPage(
+                                tag = "searchResults/$query/albums",
+                                itemsPageProvider = { continuation ->
+                                    if (continuation == null) {
+                                        Innertube.searchPage(
+                                            body = SearchBody(
+                                                query = query,
+                                                params = Innertube.SearchFilter.Album.value
+                                            ),
+                                            fromMusicShelfRendererContent = Innertube.AlbumItem::from
+                                        )
+                                    } else {
+                                        Innertube.searchPage(
+                                            body = ContinuationBody(continuation = continuation),
+                                            fromMusicShelfRendererContent = Innertube.AlbumItem::from
+                                        )
+                                    }
+                                },
+                                emptyItemsText = emptyItemsText,
+                                headerContent = {},
+                                itemContent = albumItemContentList,
+                                itemPlaceholderContent = albumItemPlaceholder
+                            )
+                        }
                     }
                 }
 
@@ -397,6 +480,57 @@ fun SearchResultScreen(
                 4 -> {
                     val thumbnailSizeDp = Dimensions.thumbnails.playlist + 8.dp
                     val thumbnailSizePx = thumbnailSizeDp.px
+                    var useGrid by rememberSaveable { mutableStateOf(true) }
+
+                    val playlistItemContentGrid: @Composable androidx.compose.foundation.lazy.grid.LazyGridItemScope.(Innertube.PlaylistItem) -> Unit = { playlist ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            PlaylistItem(
+                                playlist = playlist,
+                                thumbnailSizePx = thumbnailSizePx,
+                                thumbnailSizeDp = thumbnailSizeDp,
+                                showSongsCount = false,
+                                modifier = Modifier.clickable {
+                                    navController.navigate("${NavRoutes.playlist.name}/${playlist.key}")
+                                },
+                                disableScrollingText = disableScrollingText
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            BasicText(
+                                text = playlist.title ?: "",
+                                style = typography().s.copy(textAlign = TextAlign.Center),
+                                maxLines = 2
+                            )
+                        }
+                    }
+
+                    val playlistItemContentList: @Composable androidx.compose.foundation.lazy.LazyItemScope.(Innertube.PlaylistItem) -> Unit = { playlist ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            PlaylistItem(
+                                playlist = playlist,
+                                thumbnailSizePx = thumbnailSizePx,
+                                thumbnailSizeDp = thumbnailSizeDp,
+                                showSongsCount = false,
+                                modifier = Modifier.clickable {
+                                    navController.navigate("${NavRoutes.playlist.name}/${playlist.key}")
+                                },
+                                disableScrollingText = disableScrollingText
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            BasicText(
+                                text = playlist.title ?: "",
+                                style = typography().s.copy(textAlign = TextAlign.Center),
+                                maxLines = 2
+                            )
+                        }
+                    }
+
+                    val playlistItemPlaceholder: @Composable () -> Unit = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) }
 
                     Column {
                         Title(
@@ -409,58 +543,119 @@ fun SearchResultScreen(
                             onClick = {
                                 navController.navigate("${NavRoutes.search.name}?text=${Uri.encode(query)}")
                             },
-                            verticalPadding = 4.dp
+                            verticalPadding = 4.dp,
+                            trailingIcon = {
+                                IconButton(onClick = { useGrid = !useGrid }) {
+                                    Icon(
+                                        painter = painterResource(id = if (useGrid) R.drawable.sort_vertical else R.drawable.sort_grid),
+                                        contentDescription = "Switch Mode",
+                                        tint = colorPalette().text
+                                    )
+                                }
+                            }
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        ItemsGridPage(
-                            tag = "searchResults/$query/playlists",
-                            itemsPageProvider = { continuation ->
-                                if (continuation == null) {
-                                    Innertube.searchPage(
-                                        body = SearchBody(query = query, params = Innertube.SearchFilter.CommunityPlaylist.value),
-                                        fromMusicShelfRendererContent = Innertube.PlaylistItem::from
-                                    )
-                                } else {
-                                    Innertube.searchPage(
-                                        body = ContinuationBody(continuation = continuation),
-                                        fromMusicShelfRendererContent = Innertube.PlaylistItem::from
-                                    )
-                                }
-                            },
-                            emptyItemsText = emptyItemsText,
-                            headerContent = {},
-                            itemContent = { playlist ->
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier.padding(vertical = 8.dp)
-                                ) {
-                                    PlaylistItem(
-                                        playlist = playlist,
-                                        thumbnailSizePx = thumbnailSizePx,
-                                        thumbnailSizeDp = thumbnailSizeDp,
-                                        showSongsCount = false,
-                                        modifier = Modifier.clickable {
-                                            navController.navigate("${NavRoutes.playlist.name}/${playlist.key}")
-                                        },
-                                        disableScrollingText = disableScrollingText
-                                    )
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    BasicText(
-                                        text = playlist.title ?: "",
-                                        style = typography().s.copy(textAlign = TextAlign.Center),
-                                        maxLines = 2
-                                    )
-                                }
-                            },
-                            itemPlaceholderContent = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) },
-                            thumbnailSizeDp = thumbnailSizeDp
-                        )
+                        if (useGrid) {
+                            ItemsGridPage(
+                                tag = "searchResults/$query/playlists",
+                                itemsPageProvider = { continuation ->
+                                    if (continuation == null) {
+                                        Innertube.searchPage(
+                                            body = SearchBody(query = query, params = Innertube.SearchFilter.CommunityPlaylist.value),
+                                            fromMusicShelfRendererContent = Innertube.PlaylistItem::from
+                                        )
+                                    } else {
+                                        Innertube.searchPage(
+                                            body = ContinuationBody(continuation = continuation),
+                                            fromMusicShelfRendererContent = Innertube.PlaylistItem::from
+                                        )
+                                    }
+                                },
+                                emptyItemsText = emptyItemsText,
+                                headerContent = {},
+                                itemContent = playlistItemContentGrid,
+                                itemPlaceholderContent = playlistItemPlaceholder,
+                                thumbnailSizeDp = thumbnailSizeDp
+                            )
+                        } else {
+                            ItemsPage(
+                                tag = "searchResults/$query/playlists",
+                                itemsPageProvider = { continuation ->
+                                    if (continuation == null) {
+                                        Innertube.searchPage(
+                                            body = SearchBody(query = query, params = Innertube.SearchFilter.CommunityPlaylist.value),
+                                            fromMusicShelfRendererContent = Innertube.PlaylistItem::from
+                                        )
+                                    } else {
+                                        Innertube.searchPage(
+                                            body = ContinuationBody(continuation = continuation),
+                                            fromMusicShelfRendererContent = Innertube.PlaylistItem::from
+                                        )
+                                    }
+                                },
+                                emptyItemsText = emptyItemsText,
+                                headerContent = {},
+                                itemContent = playlistItemContentList,
+                                itemPlaceholderContent = playlistItemPlaceholder
+                            )
+                        }
                     }
                 }
 
                 5 -> {
                     val thumbnailSizeDp = Dimensions.thumbnails.playlist + 8.dp
                     val thumbnailSizePx = thumbnailSizeDp.px
+                    var useGrid by rememberSaveable { mutableStateOf(true) }
+
+                    val playlistItemContentGrid: @Composable androidx.compose.foundation.lazy.grid.LazyGridItemScope.(Innertube.PlaylistItem) -> Unit = { playlist ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            PlaylistItem(
+                                playlist = playlist,
+                                thumbnailSizePx = thumbnailSizePx,
+                                thumbnailSizeDp = thumbnailSizeDp,
+                                showSongsCount = false,
+                                modifier = Modifier.clickable {
+                                    navController.navigate("${NavRoutes.playlist.name}/${playlist.key}")
+                                },
+                                disableScrollingText = disableScrollingText
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            BasicText(
+                                text = playlist.title ?: "",
+                                style = typography().s.copy(textAlign = TextAlign.Center),
+                                maxLines = 2
+                            )
+                        }
+                    }
+
+                    val playlistItemContentList: @Composable androidx.compose.foundation.lazy.LazyItemScope.(Innertube.PlaylistItem) -> Unit = { playlist ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            PlaylistItem(
+                                playlist = playlist,
+                                thumbnailSizePx = thumbnailSizePx,
+                                thumbnailSizeDp = thumbnailSizeDp,
+                                showSongsCount = false,
+                                modifier = Modifier.clickable {
+                                    navController.navigate("${NavRoutes.playlist.name}/${playlist.key}")
+                                },
+                                disableScrollingText = disableScrollingText
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            BasicText(
+                                text = playlist.title ?: "",
+                                style = typography().s.copy(textAlign = TextAlign.Center),
+                                maxLines = 2
+                            )
+                        }
+                    }
+
+                    val playlistItemPlaceholder: @Composable () -> Unit = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) }
 
                     Column {
                         Title(
@@ -473,58 +668,119 @@ fun SearchResultScreen(
                             onClick = {
                                 navController.navigate("${NavRoutes.search.name}?text=${Uri.encode(query)}")
                             },
-                            verticalPadding = 4.dp
+                            verticalPadding = 4.dp,
+                            trailingIcon = {
+                                IconButton(onClick = { useGrid = !useGrid }) {
+                                    Icon(
+                                        painter = painterResource(id = if (useGrid) R.drawable.sort_vertical else R.drawable.sort_grid),
+                                        contentDescription = "Switch Mode",
+                                        tint = colorPalette().text
+                                    )
+                                }
+                            }
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        ItemsGridPage(
-                            tag = "searchResults/$query/featured",
-                            itemsPageProvider = { continuation ->
-                                if (continuation == null) {
-                                    Innertube.searchPage(
-                                        body = SearchBody(query = query, params = Innertube.SearchFilter.FeaturedPlaylist.value),
-                                        fromMusicShelfRendererContent = Innertube.PlaylistItem::from
-                                    )
-                                } else {
-                                    Innertube.searchPage(
-                                        body = ContinuationBody(continuation = continuation),
-                                        fromMusicShelfRendererContent = Innertube.PlaylistItem::from
-                                    )
-                                }
-                            },
-                            emptyItemsText = emptyItemsText,
-                            headerContent = {},
-                            itemContent = { playlist ->
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier.padding(vertical = 8.dp)
-                                ) {
-                                    PlaylistItem(
-                                        playlist = playlist,
-                                        thumbnailSizePx = thumbnailSizePx,
-                                        thumbnailSizeDp = thumbnailSizeDp,
-                                        showSongsCount = false,
-                                        modifier = Modifier.clickable {
-                                            navController.navigate("${NavRoutes.playlist.name}/${playlist.key}")
-                                        },
-                                        disableScrollingText = disableScrollingText
-                                    )
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    BasicText(
-                                        text = playlist.title ?: "",
-                                        style = typography().s.copy(textAlign = TextAlign.Center),
-                                        maxLines = 2
-                                    )
-                                }
-                            },
-                            itemPlaceholderContent = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) },
-                            thumbnailSizeDp = thumbnailSizeDp
-                        )
+                        if (useGrid) {
+                            ItemsGridPage(
+                                tag = "searchResults/$query/featured",
+                                itemsPageProvider = { continuation ->
+                                    if (continuation == null) {
+                                        Innertube.searchPage(
+                                            body = SearchBody(query = query, params = Innertube.SearchFilter.FeaturedPlaylist.value),
+                                            fromMusicShelfRendererContent = Innertube.PlaylistItem::from
+                                        )
+                                    } else {
+                                        Innertube.searchPage(
+                                            body = ContinuationBody(continuation = continuation),
+                                            fromMusicShelfRendererContent = Innertube.PlaylistItem::from
+                                        )
+                                    }
+                                },
+                                emptyItemsText = emptyItemsText,
+                                headerContent = {},
+                                itemContent = playlistItemContentGrid,
+                                itemPlaceholderContent = playlistItemPlaceholder,
+                                thumbnailSizeDp = thumbnailSizeDp
+                            )
+                        } else {
+                            ItemsPage(
+                                tag = "searchResults/$query/featured",
+                                itemsPageProvider = { continuation ->
+                                    if (continuation == null) {
+                                        Innertube.searchPage(
+                                            body = SearchBody(query = query, params = Innertube.SearchFilter.FeaturedPlaylist.value),
+                                            fromMusicShelfRendererContent = Innertube.PlaylistItem::from
+                                        )
+                                    } else {
+                                        Innertube.searchPage(
+                                            body = ContinuationBody(continuation = continuation),
+                                            fromMusicShelfRendererContent = Innertube.PlaylistItem::from
+                                        )
+                                    }
+                                },
+                                emptyItemsText = emptyItemsText,
+                                headerContent = {},
+                                itemContent = playlistItemContentList,
+                                itemPlaceholderContent = playlistItemPlaceholder
+                            )
+                        }
                     }
                 }
 
                 6 -> {
                     val thumbnailSizeDp = Dimensions.thumbnails.playlist + 8.dp
                     val thumbnailSizePx = thumbnailSizeDp.px
+                    var useGrid by rememberSaveable { mutableStateOf(true) }
+
+                    val playlistItemContentGrid: @Composable androidx.compose.foundation.lazy.grid.LazyGridItemScope.(Innertube.PlaylistItem) -> Unit = { playlist ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            PlaylistItem(
+                                playlist = playlist,
+                                thumbnailSizePx = thumbnailSizePx,
+                                thumbnailSizeDp = thumbnailSizeDp,
+                                showSongsCount = false,
+                                modifier = Modifier.clickable {
+                                    navController.navigate("${NavRoutes.podcast.name}/${playlist.key}")
+                                },
+                                disableScrollingText = disableScrollingText
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            BasicText(
+                                text = playlist.title ?: "",
+                                style = typography().s.copy(textAlign = TextAlign.Center),
+                                maxLines = 2
+                            )
+                        }
+                    }
+
+                    val playlistItemContentList: @Composable androidx.compose.foundation.lazy.LazyItemScope.(Innertube.PlaylistItem) -> Unit = { playlist ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            PlaylistItem(
+                                playlist = playlist,
+                                thumbnailSizePx = thumbnailSizePx,
+                                thumbnailSizeDp = thumbnailSizeDp,
+                                showSongsCount = false,
+                                modifier = Modifier.clickable {
+                                    navController.navigate("${NavRoutes.podcast.name}/${playlist.key}")
+                                },
+                                disableScrollingText = disableScrollingText
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            BasicText(
+                                text = playlist.title ?: "",
+                                style = typography().s.copy(textAlign = TextAlign.Center),
+                                maxLines = 2
+                            )
+                        }
+                    }
+
+                    val playlistItemPlaceholder: @Composable () -> Unit = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) }
 
                     Column {
                         Title(
@@ -537,52 +793,62 @@ fun SearchResultScreen(
                             onClick = {
                                 navController.navigate("${NavRoutes.search.name}?text=${Uri.encode(query)}")
                             },
-                            verticalPadding = 4.dp
+                            verticalPadding = 4.dp,
+                            trailingIcon = {
+                                IconButton(onClick = { useGrid = !useGrid }) {
+                                    Icon(
+                                        painter = painterResource(id = if (useGrid) R.drawable.sort_vertical else R.drawable.sort_grid),
+                                        contentDescription = "Switch Mode",
+                                        tint = colorPalette().text
+                                    )
+                                }
+                            }
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        ItemsGridPage(
-                            tag = "searchResults/$query/podcasts",
-                            itemsPageProvider = { continuation ->
-                                if (continuation == null) {
-                                    Innertube.searchPage(
-                                        body = SearchBody(query = query, params = Innertube.SearchFilter.Podcast.value),
-                                        fromMusicShelfRendererContent = Innertube.PlaylistItem::from
-                                    )
-                                } else {
-                                    Innertube.searchPage(
-                                        body = ContinuationBody(continuation = continuation),
-                                        fromMusicShelfRendererContent = Innertube.PlaylistItem::from
-                                    )
-                                }
-                            },
-                            emptyItemsText = emptyItemsText,
-                            headerContent = {},
-                            itemContent = { playlist ->
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier.padding(vertical = 8.dp)
-                                ) {
-                                    PlaylistItem(
-                                        playlist = playlist,
-                                        thumbnailSizePx = thumbnailSizePx,
-                                        thumbnailSizeDp = thumbnailSizeDp,
-                                        showSongsCount = false,
-                                        modifier = Modifier.clickable {
-                                            navController.navigate("${NavRoutes.podcast.name}/${playlist.key}")
-                                        },
-                                        disableScrollingText = disableScrollingText
-                                    )
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    BasicText(
-                                        text = playlist.title ?: "",
-                                        style = typography().s.copy(textAlign = TextAlign.Center),
-                                        maxLines = 2
-                                    )
-                                }
-                            },
-                            itemPlaceholderContent = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) },
-                            thumbnailSizeDp = thumbnailSizeDp
-                        )
+                        if (useGrid) {
+                            ItemsGridPage(
+                                tag = "searchResults/$query/podcasts",
+                                itemsPageProvider = { continuation ->
+                                    if (continuation == null) {
+                                        Innertube.searchPage(
+                                            body = SearchBody(query = query, params = Innertube.SearchFilter.Podcast.value),
+                                            fromMusicShelfRendererContent = Innertube.PlaylistItem::from
+                                        )
+                                    } else {
+                                        Innertube.searchPage(
+                                            body = ContinuationBody(continuation = continuation),
+                                            fromMusicShelfRendererContent = Innertube.PlaylistItem::from
+                                        )
+                                    }
+                                },
+                                emptyItemsText = emptyItemsText,
+                                headerContent = {},
+                                itemContent = playlistItemContentGrid,
+                                itemPlaceholderContent = playlistItemPlaceholder,
+                                thumbnailSizeDp = thumbnailSizeDp
+                            )
+                        } else {
+                            ItemsPage(
+                                tag = "searchResults/$query/podcasts",
+                                itemsPageProvider = { continuation ->
+                                    if (continuation == null) {
+                                        Innertube.searchPage(
+                                            body = SearchBody(query = query, params = Innertube.SearchFilter.Podcast.value),
+                                            fromMusicShelfRendererContent = Innertube.PlaylistItem::from
+                                        )
+                                    } else {
+                                        Innertube.searchPage(
+                                            body = ContinuationBody(continuation = continuation),
+                                            fromMusicShelfRendererContent = Innertube.PlaylistItem::from
+                                        )
+                                    }
+                                },
+                                emptyItemsText = emptyItemsText,
+                                headerContent = {},
+                                itemContent = playlistItemContentList,
+                                itemPlaceholderContent = playlistItemPlaceholder
+                            )
+                        }
                     }
                 }
             }
