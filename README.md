@@ -8,12 +8,9 @@
     
   <br>
   
+[![Latest Version](https://img.shields.io/github/v/release/NEVARLeVrai/N-Zik?label=Latest%20Version)](https://github.com/NEVARLeVrai/N-Zik/releases/latest) [![Total Downloads](https://img.shields.io/github/downloads/NEVARLeVrai/N-Zik/total?label=Total%20Downloads)](https://github.com/NEVARLeVrai/N-Zik/releases) [![Latest Release Downloads](https://img.shields.io/github/downloads/NEVARLeVrai/N-Zik/latest/total?label=Latest%20Release%20Downloads)](https://github.com/NEVARLeVrai/N-Zik/releases/latest) 
 
-  [![Localization progress](https://badges.crowdin.net/N-Zik/localized.svg)](https://crowdin.com/project/N-Zik)
-  [![License](https://img.shields.io/github/license/NEVARLeVrai/N-Zik)](https://www.gnu.org/licenses/gpl-3.0)
-<a href="https://github.com/NEVARLeVrai/N-Zik/releases"><img src="https://img.shields.io/github/downloads/NEVARLeVrai/N-Zik/total?label=Total%20Downloads"></a>
-<a href="https://github.com/NEVARLeVrai/N-Zik/releases/latest"><img src="https://img.shields.io/github/downloads/NEVARLeVrai/N-Zik/latest/total?label=Downloads%20of%20latest%20Release"></a>
-<a href="https://github.com/NEVARLeVrai/N-Zik/releases/latest"><img src="https://img.shields.io/github/v/release/NEVARLeVrai/N-Zik?label=Release"></a>
+[![Localization Progress](https://badges.crowdin.net/N-Zik/localized.svg)](https://crowdin.com/project/N-Zik) [![License: GPL v3](https://img.shields.io/github/license/NEVARLeVrai/N-Zik?color=blue)](https://www.gnu.org/licenses/gpl-3.0)
 
 
 
