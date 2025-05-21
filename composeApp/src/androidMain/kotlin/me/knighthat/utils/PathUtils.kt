@@ -90,7 +90,9 @@ object PathUtils {
 
         val totalPaths = currentPath.split( "/" ).filter( String::isNotEmpty )
         var fullPath = ""
-        totalPaths.fastForEach { path ->
+        // Older versions of Android display full path,
+        // this makes the address bar go overflow.
+        totalPaths.takeLast( 3 ).fastForEach { path ->
             fullPath += "/$path"
 
             Icon(

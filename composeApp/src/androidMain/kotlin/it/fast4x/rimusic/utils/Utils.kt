@@ -200,7 +200,7 @@ val MediaItem.cleaned: MediaItem
         .setMediaMetadata(
             MediaMetadata.Builder()
                 .setTitle(cleanPrefix(mediaMetadata.title.toString()))
-                .setArtist(mediaMetadata.artist)
+                .setArtist(cleanPrefix(mediaMetadata.artist.toString()))
                 .setArtworkUri(mediaMetadata.artworkUri)
                 .setExtras(mediaMetadata.extras)
                 .build()

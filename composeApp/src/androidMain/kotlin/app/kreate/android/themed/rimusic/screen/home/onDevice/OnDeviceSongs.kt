@@ -132,13 +132,13 @@ fun OnDeviceSong(
     val odSort = Sort( HOME_ON_DEVICE_SONGS_SORT_BY, HOME_SONGS_SORT_ORDER )
 
     LaunchedEffect( isPermissionGranted, odSort.sortBy, odSort.sortOrder ) {
+        if( !isPermissionGranted ) return@LaunchedEffect
+
         context.getLocalSongs( odSort.sortBy, odSort.sortOrder )
                .distinctUntilChanged()
                .onEach { lazyListState.scrollToItem( 0, 0 ) }
                .collect {
                    songsOnDevice = it
-
-                   it.keys.toList()
                }
     }
     LaunchedEffect( songsOnDevice, search.inputValue, currentPath ) {

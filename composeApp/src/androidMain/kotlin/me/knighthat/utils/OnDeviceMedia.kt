@@ -2,10 +2,6 @@ package me.knighthat.utils
 
 import android.content.ContentUris
 import android.content.Context
-import android.database.ContentObserver
-import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import android.provider.MediaStore
 import androidx.core.net.toUri
 import it.fast4x.rimusic.Database
@@ -16,9 +12,12 @@ import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
 import it.fast4x.rimusic.utils.isAtLeastAndroid10
 import it.fast4x.rimusic.utils.isAtLeastAndroid11
-import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import java.io.File
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -45,6 +44,26 @@ val PROJECTION by lazy {
 
     return@lazy projection
 }
+val PRO = buildList {
+    add( MediaStore.Audio.Media._ID )
+    add( MediaStore.Audio.Media.DISPLAY_NAME )
+    add( MediaStore.Audio.Media.DURATION )
+    add( MediaStore.Audio.Media.ARTIST )
+    add( MediaStore.Audio.Media.ALBUM_ID )
+    if (isAtLeastAndroid10) {
+        add( MediaStore.Audio.Media.RELATIVE_PATH )
+    } else {
+        add( MediaStore.Audio.Media.DATA )
+    }
+    add( MediaStore.Audio.Media.TITLE )
+    add( MediaStore.Audio.Media.IS_MUSIC )
+    add( MediaStore.Audio.Media.MIME_TYPE )
+    add( MediaStore.Audio.Media.DATE_MODIFIED )
+    add( MediaStore.Audio.Media.SIZE )
+    if ( isAtLeastAndroid11 )
+        add( MediaStore.Audio.Media.BITRATE )
+}.toTypedArray()
+
 val ALBUM_URI = "content://media/external/audio/albumart".toUri()
 
 private fun blacklistedPaths( context: Context ): Set<String> {
@@ -55,40 +74,41 @@ private fun blacklistedPaths( context: Context ): Set<String> {
         emptySet()
 }
 
-private fun Context.getLocalSongs(
-    uri: Uri,
+fun Context.getLocalSongs(
     sortBy: OnDeviceSongSortBy,
     sortOrder: SortOrder
-): LinkedHashMap<Song, String> {
+): Flow<Map<Song, String>> = flow {
     val results = linkedMapOf<Song, String>()
-    val blacklistedPaths = blacklistedPaths( this )
+    val blacklistedPaths = blacklistedPaths( this@getLocalSongs )
 
-    contentResolver.query(
-        uri,
-        PROJECTION,
-        null,
-        null,
-        "${sortBy.value} COLLATE NOCASE ${sortOrder.asSqlString}"
-    )?.use {  cursor ->
+    val uri =
+        if (isAtLeastAndroid10)
+            MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+        else
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+    val selection = "${MediaStore.Audio.Media.IS_MUSIC} > 0"
+    val order = "${sortBy.value} COLLATE NOCASE ${sortOrder.asSqlString}"
+
+    contentResolver.query( uri, PROJECTION, selection, null, order )?.use { cursor ->
         val idColumn = cursor.getColumnIndex( MediaStore.Audio.Media._ID )
         val nameColumn = cursor.getColumnIndex( MediaStore.Audio.Media.DISPLAY_NAME )
         val durationColumn = cursor.getColumnIndex( MediaStore.Audio.Media.DURATION )
         val artistColumn = cursor.getColumnIndex( MediaStore.Audio.Media.ARTIST )
         val albumIdColumn = cursor.getColumnIndex( MediaStore.Audio.Media.ALBUM_ID )
-        val relativePathColumn = if (isAtLeastAndroid10) {
+        val pathColumn = if (isAtLeastAndroid10) {
             cursor.getColumnIndex( MediaStore.Audio.Media.RELATIVE_PATH )
         } else {
             cursor.getColumnIndex( MediaStore.Audio.Media.DATA )
         }
         val titleColumn = cursor.getColumnIndex( MediaStore.Audio.Media.TITLE )
-        val isMusicColumn = cursor.getColumnIndex( MediaStore.Audio.Media.IS_MUSIC )
         val mimeTypeColumn = cursor.getColumnIndex( MediaStore.Audio.Media.MIME_TYPE )
         val bitrateColumn = if (isAtLeastAndroid11) cursor.getColumnIndex( MediaStore.Audio.Media.BITRATE ) else -1
         val fileSizeColumn = cursor.getColumnIndex( MediaStore.Audio.Media.SIZE )
         val dateModifiedColumn = cursor.getColumnIndex( MediaStore.Audio.Media.DATE_MODIFIED )
 
-        while( cursor.moveToNext() && cursor.getInt( isMusicColumn ) == 1 ) {
-            val relPath = cursor.getString( relativePathColumn ).apply {
+        while( cursor.moveToNext() ) {
+            val relPath = cursor.getString( pathColumn ).apply {
+                // Absolute paths always start with '/'
                 if( !isAtLeastAndroid10 ) substringAfterLast( "/" )
             }
             if( blacklistedPaths.contains( relPath ) ) continue
@@ -97,14 +117,14 @@ private fun Context.getLocalSongs(
             // TODO apply some non-null method
             val durationText =
                 cursor.getInt( durationColumn )
-                      .takeIf { it > 0 }
-                      ?.milliseconds
-                      ?.toComponents { hrs, mins, secs, _ ->
-                          if( hrs > 0 )
-                              "%02d:%02d:%02d".format( hrs, mins, secs )
-                          else
-                              "%02d:%02d".format( mins, secs )
-                      }
+                    .takeIf { it > 0 }
+                    ?.milliseconds
+                    ?.toComponents { hrs, mins, secs, _ ->
+                        if( hrs > 0 )
+                            "%02d:%02d:%02d".format( hrs, mins, secs )
+                        else
+                            "%02d:%02d".format( mins, secs )
+                    }
             val id = cursor.getLong( idColumn )
             val title = cursor.getString( titleColumn ) ?: cursor.getString( nameColumn )
             val artist = cursor.getString( artistColumn )
@@ -126,31 +146,5 @@ private fun Context.getLocalSongs(
         }
     }
 
-    return results
-}
-
-fun Context.getLocalSongs(
-    sortBy: OnDeviceSongSortBy,
-    sortOrder: SortOrder
-): Flow<LinkedHashMap<Song, String>> = callbackFlow {
-
-    val uri =
-        if (isAtLeastAndroid10)
-            MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-        else
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-
-    val observer = object : ContentObserver(Handler(Looper.getMainLooper())) {
-        override fun onChange( selfChange: Boolean ) {
-            trySend( getLocalSongs( uri, sortBy, sortOrder ) )
-        }
-    }
-
-    contentResolver.registerContentObserver( uri, true, observer )
-
-    trySend( getLocalSongs( uri, sortBy, sortOrder ) )
-
-    awaitClose {
-        contentResolver.unregisterContentObserver( observer )
-    }
-}
+    emit( results )
+}.stateIn( CoroutineScope(Dispatchers.IO), SharingStarted.Eagerly, mapOf() )

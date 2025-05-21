@@ -100,8 +100,8 @@ object Database {
             artistsText = PropUtils.retainIfModified( dbSong?.artistsText, song.artistsText ),
             durationText = song.durationText,       // Force update to new duration text
             thumbnailUrl = PropUtils.retainIfModified( dbSong?.thumbnailUrl, song.thumbnailUrl ),
-            likedAt = song.likedAt,
-            totalPlayTimeMs = song.totalPlayTimeMs
+            likedAt = dbSong?.likedAt,
+            totalPlayTimeMs = dbSong?.totalPlayTimeMs ?: 0
         ))
         //</editor-fold>
 

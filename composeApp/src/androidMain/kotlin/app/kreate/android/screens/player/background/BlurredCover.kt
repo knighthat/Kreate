@@ -118,7 +118,7 @@ private fun Backdrop( blurAdjuster: BlurAdjuster, modifier: Modifier = Modifier 
             )
         }
     }
-    Box( modifier.background( backdropColor ) )
+    Box( modifier.fillMaxSize().background( backdropColor ) )
 }
 
 @Composable
