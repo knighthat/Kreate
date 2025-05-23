@@ -1,5 +1,4 @@
 package it.fast4x.rimusic.ui.screens.searchresult
-// test
 import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -77,6 +76,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import it.fast4x.rimusic.colorPalette
+import it.fast4x.rimusic.ui.items.AlbumPlaceholder
 
 @ExperimentalTextApi
 @SuppressLint("SuspiciousIndentation")
@@ -176,7 +176,7 @@ fun SearchResultScreen(
                                 onDownload = {
                                     localBinder?.cache?.removeResource(song.asMediaItem.mediaId)
                                     Database.asyncTransaction {
-                                        formatTable.updateContentLengthOf( song.key )
+                                        formatTable.updateContentLengthOf(song.key)
                                     }
                                     manageDownload(
                                         context = context,
@@ -192,12 +192,18 @@ fun SearchResultScreen(
                                     song = song.asSong,
                                     navController = navController,
                                     onClick = {
-                                        binder?.startRadio( song.asMediaItem, false, song.info?.endpoint )
+                                        binder?.startRadio(song.asMediaItem, false, song.info?.endpoint)
                                     }
                                 )
                             }
                         },
-                        itemPlaceholderContent = { SongItemPlaceholder() }
+                        itemPlaceholderContent = {
+                            Column {
+                                repeat(8) {
+                                    SongItemPlaceholder()
+                                }
+                            }
+                        }
                     )
                 }
 
@@ -278,8 +284,6 @@ fun SearchResultScreen(
                         }
                     }
 
-                    val albumItemPlaceholder: @Composable () -> Unit = { AlbumItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) }
-
                     Column {
                         Title(
                             title = stringResource(R.string.search_results_for),
@@ -325,7 +329,7 @@ fun SearchResultScreen(
                                 emptyItemsText = emptyItemsText,
                                 headerContent = {},
                                 itemContent = albumItemContentGrid,
-                                itemPlaceholderContent = albumItemPlaceholder,
+                                itemPlaceholderContent = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) },
                                 thumbnailSizeDp = thumbnailSizeDp
                             )
                         } else {
@@ -350,7 +354,7 @@ fun SearchResultScreen(
                                 emptyItemsText = emptyItemsText,
                                 headerContent = {},
                                 itemContent = albumItemContentList,
-                                itemPlaceholderContent = albumItemPlaceholder
+                                itemPlaceholderContent = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) }
                             )
                         }
                     }
@@ -392,8 +396,12 @@ fun SearchResultScreen(
                                 disableScrollingText = disableScrollingText
                             )
                         },
-                        itemPlaceholderContent = {
-                            ArtistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp)
+                        itemPlaceholderContent = { 
+                            Column {
+                                repeat(8) {
+                                    ArtistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp)
+                                }
+                            }
                         }
                     )
                 }
@@ -530,8 +538,6 @@ fun SearchResultScreen(
                         }
                     }
 
-                    val playlistItemPlaceholder: @Composable () -> Unit = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) }
-
                     Column {
                         Title(
                             title = stringResource(R.string.search_results_for),
@@ -574,7 +580,7 @@ fun SearchResultScreen(
                                 emptyItemsText = emptyItemsText,
                                 headerContent = {},
                                 itemContent = playlistItemContentGrid,
-                                itemPlaceholderContent = playlistItemPlaceholder,
+                                itemPlaceholderContent = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) },
                                 thumbnailSizeDp = thumbnailSizeDp
                             )
                         } else {
@@ -596,7 +602,7 @@ fun SearchResultScreen(
                                 emptyItemsText = emptyItemsText,
                                 headerContent = {},
                                 itemContent = playlistItemContentList,
-                                itemPlaceholderContent = playlistItemPlaceholder
+                                itemPlaceholderContent = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) }
                             )
                         }
                     }
@@ -655,8 +661,6 @@ fun SearchResultScreen(
                         }
                     }
 
-                    val playlistItemPlaceholder: @Composable () -> Unit = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) }
-
                     Column {
                         Title(
                             title = stringResource(R.string.search_results_for),
@@ -699,7 +703,7 @@ fun SearchResultScreen(
                                 emptyItemsText = emptyItemsText,
                                 headerContent = {},
                                 itemContent = playlistItemContentGrid,
-                                itemPlaceholderContent = playlistItemPlaceholder,
+                                itemPlaceholderContent = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) },
                                 thumbnailSizeDp = thumbnailSizeDp
                             )
                         } else {
@@ -721,7 +725,7 @@ fun SearchResultScreen(
                                 emptyItemsText = emptyItemsText,
                                 headerContent = {},
                                 itemContent = playlistItemContentList,
-                                itemPlaceholderContent = playlistItemPlaceholder
+                                itemPlaceholderContent = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) }
                             )
                         }
                     }
@@ -780,8 +784,6 @@ fun SearchResultScreen(
                         }
                     }
 
-                    val playlistItemPlaceholder: @Composable () -> Unit = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) }
-
                     Column {
                         Title(
                             title = stringResource(R.string.search_results_for),
@@ -824,7 +826,7 @@ fun SearchResultScreen(
                                 emptyItemsText = emptyItemsText,
                                 headerContent = {},
                                 itemContent = playlistItemContentGrid,
-                                itemPlaceholderContent = playlistItemPlaceholder,
+                                itemPlaceholderContent = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) },
                                 thumbnailSizeDp = thumbnailSizeDp
                             )
                         } else {
@@ -846,7 +848,7 @@ fun SearchResultScreen(
                                 emptyItemsText = emptyItemsText,
                                 headerContent = {},
                                 itemContent = playlistItemContentList,
-                                itemPlaceholderContent = playlistItemPlaceholder
+                                itemPlaceholderContent = { PlaylistItemPlaceholder(thumbnailSizeDp = thumbnailSizeDp) }
                             )
                         }
                     }

@@ -1,8 +1,8 @@
 package it.fast4x.rimusic.ui.screens.searchresult
-//test
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,6 +43,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import it.fast4x.rimusic.ui.items.AlbumPlaceholder
+import it.fast4x.rimusic.ui.items.SongItemPlaceholder
 
 @ExperimentalAnimationApi
 @Composable
@@ -110,7 +112,6 @@ inline fun <T : Innertube.Item> ItemsPage(
     Box(
         modifier = Modifier
             .background(colorPalette().background0)
-            //.fillMaxSize()
             .fillMaxHeight()
             .fillMaxWidth(
                 if( NavigationBarPosition.Right.isCurrent() )
@@ -119,65 +120,69 @@ inline fun <T : Innertube.Item> ItemsPage(
                     1f
             )
     ) {
-        LazyColumn(
-            state = lazyListState,
-            //contentPadding = LocalPlayerAwareWindowInsets.current
-            //    .only(WindowInsetsSides.Vertical + WindowInsetsSides.End).asPaddingValues(),
-            modifier = modifier
-                .fillMaxSize()
-        ) {
-            item(
-                key = "header",
-                contentType = "header",
+        if (itemsPage == null) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
             ) {
-                headerContent(null)
-            }
-
-            items(
-                items = itemsPage?.items ?: emptyList(),
-                key = Innertube.Item::key,
-                itemContent = itemContent
-            )
-
-            if (itemsPage != null && itemsPage?.items.isNullOrEmpty()) {
-                item(key = "empty") {
-                    BasicText(
-                        text = emptyItemsText,
-                        style = typography().xs.secondary.center,
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp, vertical = 32.dp)
-                            .fillMaxWidth()
-                    )
+                item {
+                    headerContent(null)
+                }
+                items(initialPlaceholderCount) {
+                    itemPlaceholderContent()
                 }
             }
+        } else {
+            LazyColumn(
+                state = lazyListState,
+                modifier = modifier
+                    .fillMaxSize()
+            ) {
+                item(
+                    key = "header",
+                    contentType = "header",
+                ) {
+                    headerContent(null)
+                }
 
-            if (!(itemsPage != null && itemsPage?.continuation == null)) {
-                item(key = "loading") {
-                    val isFirstLoad = itemsPage?.items.isNullOrEmpty()
-                    ShimmerHost(
-                        modifier = Modifier
-                            .run {
-                                if (isFirstLoad) fillParentMaxSize() else this
+                items(
+                    items = itemsPage?.items ?: emptyList(),
+                    key = Innertube.Item::key,
+                    itemContent = itemContent
+                )
+
+                if (itemsPage != null && itemsPage?.items.isNullOrEmpty()) {
+                    item(key = "empty") {
+                        BasicText(
+                            text = emptyItemsText,
+                            style = typography().xs.secondary.center,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 32.dp)
+                                .fillMaxWidth()
+                        )
+                    }
+                }
+
+                if (!(itemsPage != null && itemsPage?.continuation == null)) {
+                    item(key = "loading") {
+                        val isFirstLoad = itemsPage?.items.isNullOrEmpty()
+                        Column {
+                            repeat(if (isFirstLoad) initialPlaceholderCount else continuationPlaceholderCount) {
+                                itemPlaceholderContent()
                             }
-                    ) {
-                        repeat(if (isFirstLoad) initialPlaceholderCount else continuationPlaceholderCount) {
-                            itemPlaceholderContent()
                         }
                     }
                 }
-            }
 
-            item(
-                key = "footer",
-                contentType = 0,
-            ) {
-                Spacer(modifier = Modifier.height(Dimensions.bottomSpacer))
+                item(
+                    key = "footer",
+                    contentType = 0,
+                ) {
+                    Spacer(modifier = Modifier.height(Dimensions.bottomSpacer))
+                }
             }
         }
 
         FloatingActionsContainerWithScrollToTop(lazyListState = lazyListState)
-
-
     }
 }
 
@@ -252,10 +257,13 @@ inline fun <T : Innertube.Item> ItemsGridPage(
             )
     ) {
         if (itemsPage == null) {
-            ShimmerHost(
+            LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                repeat(initialPlaceholderCount) {
+                item {
+                    headerContent(null)
+                }
+                items(initialPlaceholderCount) {
                     itemPlaceholderContent()
                 }
             }
@@ -303,12 +311,7 @@ inline fun <T : Innertube.Item> ItemsGridPage(
                         span = { GridItemSpan(maxLineSpan) }
                     ) {
                         val isFirstLoad = itemsPage?.items.isNullOrEmpty()
-                        ShimmerHost(
-                            modifier = Modifier
-                                .run {
-                                    if (isFirstLoad) fillMaxSize() else this
-                                }
-                        ) {
+                        Column {
                             repeat(if (isFirstLoad) initialPlaceholderCount else continuationPlaceholderCount) {
                                 itemPlaceholderContent()
                             }
