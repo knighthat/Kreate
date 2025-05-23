@@ -917,7 +917,7 @@
     <string name="please_wait">Xahiş olunur, gözləyin</string>
     <string name="songs_liked_yt">Mahnı(lar) YouTube-da bəyənilib</string>
     <string name="song_unliked_yt">Mahnı YouTube-da Bəyənilməyib</string>
-    <string name="add_rimusic_to_ytm_favorites">RiMusic Bəyənilən Mahnıları, Youtube-da Bəyən</string>
+    <string name="add_rimusic_to_ytm_favorites">Like Kreate Liked songs in Youtube</string>
     <string name="do_you_really_want_to_like_all_rimusictoytmusic">(təxmini vaxt) bütün mahnıları bəyənmək tələb olunur. Aralıqda ləğv edilərsə, bu fəaliyyət davam etdirilə bilməz. Bu prosesi ləğv etmək üçün tətbiqi bağlamalısınız. Davam etmək istəyirsiniz?</string>
     <string name="do_you_really_want_to_like_all">(təxmini vaxt) bütün mahnıları bəyənmək tələb olunur. Bu prosesi ləğv etmək üçün tətbiqi bağlamalısınız. Davam etmək istəyirsiniz?</string>
     <string name="songs_liked_yt_failed">Mahnını YouTube-da bəyənmək olmadı</string>
@@ -961,7 +961,8 @@
     <string name="artist_featured_on">Seçilmişdir</string>
     <string name="artist_fans_might_also_like">Pərəstişkarlar da bəyənə bilər</string>
     <string name="update_changelogs">%s dəyişiklik qeydləri</string>
-    <string name="rotating_cover_title">Rotating album cover</string>
+    <string name="rotating_cover_title">Fırlanan albom cildi</string>
     <string name="title_playback_speed">Səslənmə sürəti</string>
-    <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
+    <string name="description_playback_speed">Mahnının nə qədər yavaş/sürətli getdiyini tənzimlə</string>
+    <string name="log_in_to_ytm">Log in to your YTM account for more content</string>
 </resources>
