@@ -1082,7 +1082,7 @@ fun HomeQuickPicks(
                         }
                     }
                 } ?: if (!isYouTubeLoggedIn()) BasicText(
-                    text = "Log in to your YTM account for more content",
+                    text = stringResource(R.string.log_in_to_ytm),
                     style = typography().xs.center,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
