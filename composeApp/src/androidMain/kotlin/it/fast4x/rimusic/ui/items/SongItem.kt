@@ -205,7 +205,7 @@ fun SongItem(
     SongItem(
         thumbnailSizeDp = thumbnailSizeDp,
         thumbnailContent = {
-            ImageCacheFactory.Painter( thumbnailUrl )
+            ImageCacheFactory.Thumbnail( thumbnailUrl )
 
             onThumbnailContent?.invoke(this)
 
