@@ -684,17 +684,21 @@ class MainActivity :
                                     Languages.English
                                 )
 
-                                //val precLangCode = LocaleListCompat.getDefault().get(0).toString()
-                                val systemLangCode =
-                                    AppCompatDelegate.getApplicationLocales().get(0).toString()
-                                //Log.d("LanguageActivity", "lang.code ${lang.code} precLangCode $precLangCode systemLangCode $systemLangCode")
+                                val systemLocales = AppCompatDelegate.getApplicationLocales()
+                                val systemLangCode = if (systemLocales.isEmpty) {
+                                    ""
+                                } else {
+                                    systemLocales.get(0)?.toLanguageTag() ?: ""
+                                }
 
-                                val sysLocale: LocaleListCompat =
-                                    LocaleListCompat.forLanguageTags(systemLangCode)
-                                val appLocale: LocaleListCompat =
-                                    LocaleListCompat.forLanguageTags(lang.code)
-                                AppCompatDelegate.setApplicationLocales(if (lang.code == "") sysLocale else appLocale)
+                                val sysLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(systemLangCode)
+                                val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(lang.code)
+
+                                AppCompatDelegate.setApplicationLocales(
+                                    if (lang.code.isEmpty()) sysLocale else appLocale
+                                )
                             }
+
 
                             effectRotationKey, playerThumbnailSizeKey,
                             playerVisualizerTypeKey,
