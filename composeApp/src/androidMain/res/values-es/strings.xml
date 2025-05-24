@@ -964,4 +964,6 @@
     <string name="rotating_cover_title">Rotación de la portada del álbum</string>
     <string name="title_playback_speed">Velocidad de reproducción</string>
     <string name="description_playback_speed">Ajusta qué tan lenta/rápida va la canción</string>
+    <string name="word_documentation">Documentation</string>
+    <string name="opens_link_in_web_browser">Opens link in web browser</string>
 </resources>

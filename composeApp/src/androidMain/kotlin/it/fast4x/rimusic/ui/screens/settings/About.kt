@@ -2,6 +2,7 @@ package it.fast4x.rimusic.ui.screens.settings
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,11 +17,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +44,7 @@ import it.fast4x.rimusic.extensions.contributors.ShowTranslators
 import it.fast4x.rimusic.extensions.contributors.countDevelopers
 import it.fast4x.rimusic.extensions.contributors.countTranslators
 import it.fast4x.rimusic.typography
+import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
 import it.fast4x.rimusic.ui.components.themed.Title
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.utils.bold
@@ -123,9 +127,8 @@ fun About() {
                     uriHandler.openUri( url )
                 }
             ) {
-                Icon(
-                    painter = painterResource( R.drawable.github_icon ),
-                    tint = typography().s.color,
+                Image(
+                    painter = painterResource( R.drawable.github_logo ),
                     contentDescription = null
                 )
                 BasicText(
@@ -138,6 +141,36 @@ fun About() {
             }
         }
 
+        // Social platforms
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth( .9f )
+                               .padding( top = 10.dp )
+        ) {
+            // [Icon] overrides vector's color at render time.
+            // Using [Image] to retain original color(s)
+            Image(
+                painter = painterResource( R.drawable.discord_logo ),
+                contentDescription = "Discord server",
+                modifier = Modifier.size( TabToolBar.TOOLBAR_ICON_SIZE )
+                                   .clickable( null, ripple(false) ) {
+                                       uriHandler.openUri( "https://discord.gg/WYr9ZgJzpx" )
+                                   }
+
+            )
+
+            Spacer( Modifier.width( 15.dp ) )
+
+            Image(
+                painter = painterResource( R.drawable.github_logo ),
+                contentDescription = "Github discussion board",
+                modifier = Modifier.size( TabToolBar.TOOLBAR_ICON_SIZE )
+                                   .clickable( null, ripple(false) ) {
+                                       uriHandler.openUri( "${Repository.REPO_URL}/discussions" )
+                                   }
+            )
+        }
+
         SettingsGroupSpacer()
 
         SettingsEntryGroupText(title = stringResource(R.string.troubleshooting))
@@ -147,6 +180,14 @@ fun About() {
             text = stringResource( R.string.you_will_be_redirected_to_github ),
             onClick = {
                 uriHandler.openUri( Repository.REPO_URL )
+            }
+        )
+
+        SettingsEntry(
+            title = stringResource( R.string.word_documentation ),
+            text = stringResource( R.string.opens_link_in_web_browser ),
+            onClick = {
+                uriHandler.openUri( "https://kreate.knighthat.me" )
             }
         )
 
