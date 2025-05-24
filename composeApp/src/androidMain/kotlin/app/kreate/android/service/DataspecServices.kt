@@ -171,7 +171,7 @@ suspend fun getIosFormatUrl(
     connectionMetered: Boolean
 ): Uri {
     val cpn = CharUtils.randomString( 16 )
-    val visitorData = Store.getVisitorData()
+    val visitorData = Store.getIosVisitorData()
     val playerRequestToken = generateIosPoToken().orEmpty()
     val poTokenResult = PoTokenResult(visitorData, playerRequestToken, null )
     val response = YoutubeStreamHelper.getIosPlayerResponse( ContentCountry.DEFAULT, Localization.DEFAULT, videoId, cpn, poTokenResult )

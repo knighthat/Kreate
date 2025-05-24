@@ -91,7 +91,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.palette.graphics.Palette
 import app.kreate.android.BuildConfig
 import app.kreate.android.R
-import app.kreate.android.network.innertube.Store
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.kieronquinn.monetcompat.core.MonetActivityAccessException
@@ -109,8 +108,6 @@ import it.fast4x.innertube.utils.LocalePreferences
 import it.fast4x.innertube.utils.NewPipeDownloaderImpl
 import it.fast4x.innertube.utils.ProxyPreferenceItem
 import it.fast4x.innertube.utils.ProxyPreferences
-import it.fast4x.innertube.utils.YoutubePreferenceItem
-import it.fast4x.innertube.utils.YoutubePreferences
 import it.fast4x.rimusic.enums.AnimatedGradient
 import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.enums.ColorPaletteMode
@@ -222,15 +219,11 @@ import it.fast4x.rimusic.utils.thumbnail
 import it.fast4x.rimusic.utils.thumbnailRoundnessKey
 import it.fast4x.rimusic.utils.transitionEffectKey
 import it.fast4x.rimusic.utils.useSystemFontKey
-import it.fast4x.rimusic.utils.ytCookieKey
-import it.fast4x.rimusic.utils.ytDataSyncIdKey
-import it.fast4x.rimusic.utils.ytVisitorDataKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import me.knighthat.invidious.Invidious
 import me.knighthat.piped.Piped
@@ -492,31 +485,9 @@ class MainActivity :
 
             LocalePreferences.preference =
                 LocalePreferenceItem(
-                    hl = Locale.getDefault().toLanguageTag(),
-                    //Locale.getDefault().country
-                    gl = ""
-                    //gl = "US" // US IMPORTANT
+                    hl = Locale.getDefault().language,
+                    gl = Locale.getDefault().country
                 )
-                //TODO Manage login
-            //if (preferences.getBoolean(enableYouTubeLoginKey, false)) {
-                    var visitorData by rememberPreference(
-                        key = ytVisitorDataKey,
-                        defaultValue = Innertube.DEFAULT_VISITOR_DATA
-                    )
-
-                    if (visitorData.isEmpty())
-                        runBlocking { visitorData = Store.getVisitorData() }
-
-                    YoutubePreferences.preference =
-                        YoutubePreferenceItem(
-                            cookie = preferences.getString(ytCookieKey, ""),
-                            visitordata = visitorData
-                                .takeIf { it != "null" }
-                                ?: Innertube.DEFAULT_VISITOR_DATA,
-                            dataSyncId = preferences.getString(ytDataSyncIdKey, "")
-
-                        )
-            //}
 
             preferences.getEnum(audioQualityFormatKey, AudioQualityFormat.Auto)
 
