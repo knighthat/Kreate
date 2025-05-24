@@ -964,4 +964,6 @@
     <string name="rotating_cover_title">Albumcover drehen</string>
     <string name="title_playback_speed">Wiedergabegeschwindigkeit</string>
     <string name="description_playback_speed">Festlegen, wie langsam oder schnell der Titel laufen soll</string>
+    <string name="word_documentation">Documentation</string>
+    <string name="opens_link_in_web_browser">Opens link in web browser</string>
 </resources>

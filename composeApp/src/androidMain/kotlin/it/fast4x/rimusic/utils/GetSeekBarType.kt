@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -14,28 +15,35 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.util.UnstableApi
+import app.kreate.android.R
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
@@ -51,8 +59,11 @@ import it.fast4x.rimusic.ui.components.SeekBarCustom
 import it.fast4x.rimusic.ui.components.SeekBarThin
 import it.fast4x.rimusic.ui.components.SeekBarWaved
 import it.fast4x.rimusic.ui.styling.collapsedPlayerProgressBar
+import it.fast4x.rimusic.ui.styling.favoritesIcon
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+const val DURATION_INDICATOR_HEIGHT = 20
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -73,7 +84,6 @@ fun GetSeekBar(
     val animatedPosition = remember { Animatable(position.toFloat()) }
     var isSeeking by remember { mutableStateOf(false) }
     val showRemainingSongTime by rememberPreference(showRemainingSongTimeKey, true)
-    val pauseBetweenSongs by rememberPreference(pauseBetweenSongsKey, PauseBetweenSongs.`0`)
 
     val compositionLaunched = isCompositionLaunched()
     LaunchedEffect(mediaId) {
@@ -284,7 +294,6 @@ fun GetSeekBar(
             .height(8.dp)
     )
 
-
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -292,133 +301,195 @@ fun GetSeekBar(
             .padding(horizontal = 10.dp)
             .fillMaxWidth()
     ) {
-        Box(
+        Icon(
+            painter = painterResource( R.drawable.play_forward ),
+            tint = colorPalette().favoritesIcon,
+            contentDescription = "Rewind 5 seconds",
+            modifier = Modifier.rotate( 180f )
+                               .size( DURATION_INDICATOR_HEIGHT.dp )
+                               .align( Alignment.CenterVertically )
+                               .pointerInput( position ) {
+                                   detectTapGestures(
+                                       onTap = {
+                                           binder.player.seekTo( position - 5000 )
+                                       },
+                                       onDoubleTap = {
+                                           binder.player.seekTo( position - 10_000 )
+                                       },
+                                       onLongPress = {
+                                           binder.player.seekTo( position - 30_000 )
+                                       }
+                                   )
+                               }
+        )
 
+        Spacer( Modifier.width( 5.dp ) )
+
+        val outlineColor =
+            if ( colorPaletteMode == ColorPaletteMode.Light || (colorPaletteMode == ColorPaletteMode.System && !isSystemInDarkTheme()) )
+                Color.White.copy( 0.5f )
+            else if( !textoutline )
+                Color.Transparent
+            else
+                Color.Black
+
+        // Scrubbing position
+        Box(
+            modifier = Modifier.weight( 1f )
+                               .height( DURATION_INDICATOR_HEIGHT.dp ),
+            contentAlignment = Alignment.CenterStart
         ) {
+            val toDisplay by remember( position ) {
+                derivedStateOf { formatAsDuration( scrubbingPosition ?: position ) }
+            }
+
+            // Main text
             BasicText(
-                text = formatAsDuration(scrubbingPosition ?: position),
+                text = toDisplay,
                 style = typography().xxs.semiBold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = ripple(false),
-                        onClick = {binder.player.seekTo(position - 5000)}
-                    )
+                modifier = Modifier.clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = ripple(false),
+                    onClick = {binder.player.seekTo(position - 5000)}
+                )
             )
+
+            // Outline (if applicable)
             BasicText(
-                text = formatAsDuration(scrubbingPosition ?: position),
-                style = typography().xxs.semiBold.merge(TextStyle(
-                    drawStyle = Stroke(width = 1.0f, join = StrokeJoin.Round),
-                    color = if (!textoutline) Color.Transparent else if (colorPaletteMode == ColorPaletteMode.Light || (colorPaletteMode == ColorPaletteMode.System && (!isSystemInDarkTheme()))) Color.White.copy(0.5f)
-                    else Color.Black)),
+                text = toDisplay,
+                style = typography().xxs
+                                    .semiBold
+                                    .merge(
+                                        TextStyle(
+                                            drawStyle = Stroke(width = 1.0f, join = StrokeJoin.Round),
+                                            color = outlineColor
+                                        )
+                                    ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
         }
 
-        if (duration != C.TIME_UNSET) {
-            val positionAndDuration = binder.player.positionAndDurationState()
-            var timeRemaining by remember { mutableIntStateOf(0) }
-            timeRemaining =
-                positionAndDuration.value.second.toInt() - positionAndDuration.value.first.toInt()
-            var paused by remember { mutableStateOf(false) }
+        // Remaining duration
+        Box(
+            modifier = Modifier.weight( 1f )
+                               .height( DURATION_INDICATOR_HEIGHT.dp ),
+            contentAlignment = Alignment.Center
+        ) {
+            val positionAndDuration by binder.player.positionAndDurationState()
+            val timeRemaining by remember { derivedStateOf {
+                positionAndDuration.second - positionAndDuration.first
+            } }
+            var isPaused by remember { mutableStateOf( false ) }
 
-            if (pauseBetweenSongs != PauseBetweenSongs.`0`)
-                LaunchedEffect(timeRemaining) {
-                    if (
-                    //formatAsDuration(timeRemaining.toLong()) == "0:00"
-                        timeRemaining.toLong() < 500
-                    ) {
-                        paused = true
+            val pauseBetweenSongs by rememberPreference( pauseBetweenSongsKey, PauseBetweenSongs.`0` )
+            if( pauseBetweenSongs != PauseBetweenSongs.`0` )
+                LaunchedEffect( timeRemaining ) {
+                    if ( timeRemaining < 500 ) {
+                        isPaused = true
                         binder.player.pause()
                         delay( pauseBetweenSongs.asMillis )
                         binder.player.play()
-                        paused = false
+                        isPaused = false
                     }
                 }
 
-            if (!paused) {
+            if( isPaused ) return@Box
 
-                if (showRemainingSongTime)
-                    Box(
-
-                    ){
-                    BasicText(
-                        text = "-${formatAsDuration(timeRemaining.toLong())}",
-                        style = typography().xxs.semiBold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .padding(horizontal = 5.dp)
-                    )
-                    BasicText(
-                        text = "-${formatAsDuration(timeRemaining.toLong())}",
-                        style = typography().xxs.semiBold.merge(TextStyle(
-                            drawStyle = Stroke(width = 1.0f, join = StrokeJoin.Round),
-                            color = if (!textoutline) Color.Transparent else if (colorPaletteMode == ColorPaletteMode.Light || (colorPaletteMode == ColorPaletteMode.System && (!isSystemInDarkTheme()))) Color.White.copy(0.5f)
-                            else Color.Black)),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .padding(horizontal = 5.dp)
-                    )
-
-            } else {
-               /* Image(
-                    painter = painterResource(R.drawable.pause),
-                    colorFilter = ColorFilter.tint(colorPalette().accent),
-                    modifier = Modifier
-                        .size(20.dp),
-                    contentDescription = "Background Image",
-                    contentScale = ContentScale.Fit
-                ) */
+            val toDisplay by remember {
+                derivedStateOf { formatAsDuration( timeRemaining ) }
             }
 
-            /*
+            // Main text
             BasicText(
-                text = "-${formatAsDuration(timeRemaining.toLong())} / ${formatAsDuration(duration)}",
+                text = toDisplay,
                 style = typography().xxs.semiBold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = ripple(false),
+                    onClick = {binder.player.seekTo(position - 5000)}
+                )
             )
-             */
-            Box(
 
-            ) {
-                BasicText(
-                    text = formatAsDuration(duration),
-                    style = typography().xxs.semiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = ripple(false),
-                            onClick = {binder.player.seekTo(position + 5000)}
-                        )
-                )
-                BasicText(
-                    text = formatAsDuration(duration),
-                    style = typography().xxs.semiBold.merge(
-                        TextStyle(
-                            drawStyle = Stroke(width = 1.0f, join = StrokeJoin.Round),
-                            color = if (!textoutline) Color.Transparent else if (colorPaletteMode == ColorPaletteMode.Light || (colorPaletteMode == ColorPaletteMode.System && (!isSystemInDarkTheme()))) Color.White.copy(
-                                0.5f
-                            )
-                            else Color.Black
-                        )
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+            // Outline (if applicable)
+            BasicText(
+                text = toDisplay,
+                style = typography().xxs
+                                    .semiBold
+                                    .merge(
+                                        TextStyle(
+                                            drawStyle = Stroke(width = 1.0f, join = StrokeJoin.Round),
+                                            color = outlineColor
+                                        )
+                                    ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+
+        // Song's duration
+        Box(
+            modifier = Modifier.weight( 1f )
+                               .height( DURATION_INDICATOR_HEIGHT.dp ),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            val toDisplay = remember( duration ) {
+                if( duration <= 0 ) "--:--" else formatAsDuration( duration )
             }
 
-          }
+            // Main text
+            BasicText(
+                text = toDisplay,
+                style = typography().xxs.semiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = ripple(false),
+                    onClick = {binder.player.seekTo(position - 5000)}
+                )
+            )
 
+            // Outline (if applicable)
+            BasicText(
+                text = toDisplay,
+                style = typography().xxs
+                                    .semiBold
+                                    .merge(
+                                        TextStyle(
+                                            drawStyle = Stroke(width = 1.0f, join = StrokeJoin.Round),
+                                            color = outlineColor
+                                        )
+                                    ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
+
+        Spacer( Modifier.width( 5.dp ) )
+
+        Icon(
+            painter = painterResource( R.drawable.play_forward ),
+            tint = colorPalette().favoritesIcon,
+            contentDescription = "Forward 5 seconds",
+            modifier = Modifier.size( DURATION_INDICATOR_HEIGHT.dp )
+                               .pointerInput( position ) {
+                                   detectTapGestures(
+                                       onTap = {
+                                           binder.player.seekTo( position + 5000 )
+                                       },
+                                       onDoubleTap = {
+                                           binder.player.seekTo( position + 10_000 )
+                                       },
+                                       onLongPress = {
+                                           binder.player.seekTo( position + 30_000 )
+                                       }
+                                   )
+                               }
+        )
     }
-
-
 }

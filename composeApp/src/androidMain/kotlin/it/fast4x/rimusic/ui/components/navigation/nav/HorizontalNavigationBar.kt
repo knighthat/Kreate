@@ -30,16 +30,16 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.NavigationBarType
 import it.fast4x.rimusic.enums.UiType
-import it.fast4x.rimusic.ui.styling.Dimensions
-import it.fast4x.rimusic.ui.components.themed.Button
-import it.fast4x.rimusic.ui.components.themed.TextIconButton
-import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.showSearchIconInNav
 import it.fast4x.rimusic.showStatsIconInNav
+import it.fast4x.rimusic.ui.components.themed.Button
+import it.fast4x.rimusic.ui.components.themed.TextIconButton
+import it.fast4x.rimusic.ui.styling.Dimensions
 
 // Shown when "Navigation bar position" is set to "top" or "bottom"
 class HorizontalNavigationBar(
@@ -142,6 +142,8 @@ class HorizontalNavigationBar(
 
     @Composable
     override fun Draw() {
+        if( buttonList.size < 2 ) return
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Bottom,

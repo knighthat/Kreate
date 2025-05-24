@@ -964,4 +964,6 @@
     <string name="rotating_cover_title">Döner albüm kapağı</string>
     <string name="title_playback_speed">Çalma hızı</string>
     <string name="description_playback_speed">Şarkının ne kadar yavaş/hızlı gittiğini ayarla</string>
+    <string name="word_documentation">Documentation</string>
+    <string name="opens_link_in_web_browser">Opens link in web browser</string>
 </resources>

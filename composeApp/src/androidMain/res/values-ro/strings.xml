@@ -964,4 +964,6 @@
     <string name="rotating_cover_title">Rotating album cover</string>
     <string name="title_playback_speed">Viteza redării</string>
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
+    <string name="word_documentation">Documentation</string>
+    <string name="opens_link_in_web_browser">Opens link in web browser</string>
 </resources>

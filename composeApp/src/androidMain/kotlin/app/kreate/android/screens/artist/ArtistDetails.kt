@@ -292,17 +292,22 @@ fun ArtistDetails(
                         modifier = Modifier.weight( 1f )
                     )
 
-                    if( !section.items.any { it is Innertube.SongItem } )
-                        return@Row
-
-                    section.moreEndpoint?.browseId?.let {
+                    section.moreEndpoint?.browseId?.let { browseId ->
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = null,
                             tint = colorPalette().textSecondary,
                             modifier = Modifier.clickable {
-                                val path = "$it?params=${section.moreEndpoint?.params}"
-                                navController.navigate("${NavRoutes.playlist.name}/$path")
+                                val path = "$browseId?params=${section.moreEndpoint?.params}"
+
+                                val route: NavRoutes = if( section.items.fastAll { it is Innertube.SongItem } )
+                                    NavRoutes.playlist
+                                else if( section.items.fastAll { it is Innertube.AlbumItem } )
+                                    NavRoutes.artistAlbums
+                                else
+                                    return@clickable
+
+                                route.navigateHere( navController, path )
                             }
                         )
                     }

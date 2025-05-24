@@ -23,22 +23,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarType
 import it.fast4x.rimusic.enums.UiType
+import it.fast4x.rimusic.showSearchIconInNav
+import it.fast4x.rimusic.typography
+import it.fast4x.rimusic.ui.components.themed.Button
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.semiBold
-import it.fast4x.rimusic.ui.components.themed.Button
-import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.showSearchIconInNav
-import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.utils.vertical
 
 // Shown when "Navigation bar position" is set to "left" or "right"
@@ -180,6 +178,8 @@ class VerticalNavigationBar(
 
     @Composable
     override fun Draw() {
+        if( buttonList.size < 2 ) return
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
