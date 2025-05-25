@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -200,6 +201,7 @@ import it.fast4x.rimusic.utils.useSystemFontKey
 import it.fast4x.rimusic.utils.useVolumeKeysToChangeSongKey
 import it.fast4x.rimusic.utils.visualizerEnabledKey
 import it.fast4x.rimusic.utils.volumeNormalizationKey
+import me.knighthat.component.dialog.AppearanceChangeDialog
 import me.knighthat.component.dialog.RestartAppDialog
 import me.knighthat.component.tab.Search
 import me.knighthat.utils.Toaster
@@ -530,7 +532,9 @@ fun UiSettings(
 ) {
     val binder = LocalPlayerServiceBinder.current
 
-
+    LaunchedEffect(Unit) {
+        AppearanceChangeDialog.isActive = true
+    }
 
     var recommendationsNumber by rememberPreference(recommendationsNumberKey,   RecommendationsNumber.`5`)
 
@@ -612,7 +616,6 @@ fun UiSettings(
     var playerPosition by rememberPreference(playerPositionKey, PlayerPosition.Bottom)
 
     var messageType by rememberPreference(messageTypeKey, MessageType.Modern)
-
 
     /*  ViMusic Mode Settings  */
     var showTopActionsBar by rememberPreference(showTopActionsBarKey, true)

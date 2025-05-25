@@ -57,8 +57,10 @@ import it.fast4x.rimusic.ui.components.themed.ValueSelectorDialog
 import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.secondary
 import it.fast4x.rimusic.utils.semiBold
+import me.knighthat.component.dialog.AppearanceChangeDialog
 import me.knighthat.component.dialog.RestartAppDialog
 import me.knighthat.utils.Toaster
+
 
 @ExperimentalTextApi
 @ExperimentalFoundationApi
@@ -112,6 +114,7 @@ fun SettingsScreen(
     }
 
     RestartAppDialog.Render()
+    AppearanceChangeDialog.Render()
 }
 
 @Composable

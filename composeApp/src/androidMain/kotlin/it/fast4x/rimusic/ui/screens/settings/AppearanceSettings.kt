@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -160,6 +161,7 @@ import it.fast4x.rimusic.utils.visualizerEnabledKey
 import it.fast4x.rimusic.utils.wallpaperTypeKey
 import me.knighthat.component.tab.Search
 import me.knighthat.utils.Toaster
+import me.knighthat.component.dialog.AppearanceChangeDialog
 
 @Composable
 fun DefaultAppearanceSettings() {
@@ -353,6 +355,10 @@ fun DefaultAppearanceSettings() {
 fun AppearanceSettings(
     navController: NavController,
 ) {
+
+    LaunchedEffect(Unit) {
+        AppearanceChangeDialog.isActive = true
+    }
 
     var isShowingThumbnailInLockscreen by rememberPreference(
         isShowingThumbnailInLockscreenKey,
