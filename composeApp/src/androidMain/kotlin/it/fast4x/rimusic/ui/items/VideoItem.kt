@@ -2,8 +2,13 @@ package it.fast4x.rimusic.ui.items
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,10 +23,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import it.fast4x.innertube.Innertube
-import it.fast4x.rimusic.ui.components.themed.TextPlaceholder
+
 import it.fast4x.rimusic.ui.styling.onOverlay
 import it.fast4x.rimusic.ui.styling.overlay
-import it.fast4x.rimusic.ui.styling.shimmer
+
 import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.conditional
 import it.fast4x.rimusic.utils.medium
@@ -30,6 +35,7 @@ import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.typography
+import it.fast4x.rimusic.utils.shimmerEffect
 
 @Composable
 fun VideoItem(
@@ -137,23 +143,43 @@ fun VideoItemPlaceholder(
     thumbnailWidthDp: Dp,
     modifier: Modifier = Modifier
 ) {
-    ItemContainer(
-        alternative = false,
-        thumbnailSizeDp = 0.dp,
+    Row(
         modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Spacer(
-            modifier = Modifier
-                .background(color = colorPalette().shimmer, shape = thumbnailShape())
-                .size(width = thumbnailWidthDp, height = thumbnailHeightDp)
+        Box(
+            Modifier.size(width = thumbnailWidthDp, height = thumbnailHeightDp)
+                .clip(thumbnailShape())
+                .shimmerEffect()
         )
-
-        ItemInfoContainer {
-            TextPlaceholder()
-            TextPlaceholder()
-            TextPlaceholder(
-                modifier = Modifier
-                    .padding(top = 8.dp)
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.weight(1f)
+        ) {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(16.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .shimmerEffect()
+            )
+            Box(
+                Modifier
+                    .fillMaxWidth(0.6f)
+                    .height(12.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .shimmerEffect()
+            )
+            Box(
+                Modifier
+                    .padding(top = 4.dp)
+                    .fillMaxWidth(0.4f)
+                    .height(10.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .shimmerEffect()
             )
         }
     }

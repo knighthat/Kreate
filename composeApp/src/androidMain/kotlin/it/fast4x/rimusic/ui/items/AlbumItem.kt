@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -276,5 +277,91 @@ fun AlbumPlaceholder(
                     modifier = Modifier.weight( 1f ).shimmerEffect()
                 )
             }
+    }
+}
+
+
+@Composable
+fun AlbumItemGridPlaceholder(
+    thumbnailSizeDp: Dp,
+    modifier: Modifier = Modifier,
+    alternative: Boolean = false,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        repeat(3) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = modifier.padding(
+                    vertical = Dimensions.itemsVerticalPadding,
+                    horizontal = 0.dp
+                )
+            ) {
+                Box(
+                    Modifier.size(thumbnailSizeDp - 8.dp)
+                        .clip(thumbnailShape())
+                        .shimmerEffect()
+                )
+                Box(
+                    Modifier
+                        .padding(top = 8.dp)
+                        .width((thumbnailSizeDp - 8.dp) * 0.8f)
+                        .height(12.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .shimmerEffect()
+                )
+                Box(
+                    Modifier
+                        .padding(top = 4.dp)
+                        .width((thumbnailSizeDp - 8.dp) * 0.4f)
+                        .height(10.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .shimmerEffect()
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AlbumItemListPlaceholder(
+    thumbnailSizeDp: Dp,
+    modifier: Modifier = Modifier,
+    alternative: Boolean = false,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            Modifier.size(thumbnailSizeDp - 8.dp)
+                .clip(thumbnailShape())
+                .shimmerEffect()
+        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.weight(1f)
+        ) {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(16.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .shimmerEffect()
+            )
+            Box(
+                Modifier
+                    .fillMaxWidth(0.6f)
+                    .height(12.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .shimmerEffect()
+            )
+        }
     }
 }
