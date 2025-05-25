@@ -1,0 +1,21 @@
+Added:
+- More albums in artist page
+- Single, double, and long tap to forward/rewind timeline
+- Documentation website in About
+- Social medias in About
+
+Changed:
+- Hide navigation bar when there's less than 2 items to navigate
+- Number of paths showed in address bar in "On device"
+
+Fixed:
+- App crashed after logging out of YT account
+- Cover disappeared occasionally
+- "modified:" in media control
+- Song's total play time reset on each play
+- Song's like state reset on each play
+- Backdrop didn't apply
+- Local songs didn't show up in older Android versions
+- App crashed when permission to view local files is denied on older Android versions
+- Immediate play when persistent queue is enabled
+
