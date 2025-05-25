@@ -14,7 +14,7 @@ fun languageDestination (
     language: Languages? = null,
 ): Language {
     //val languageApp  by rememberPreference(languageAppKey, Languages.English)
-    val otherLanguageApp  by rememberPreference(otherLanguageAppKey, Languages.English)
+    val otherLanguageApp  by rememberPreference(otherLanguageAppKey, Languages.System)
     //Timber.d("LanguageDestination: language $language otherLanguageApp $otherLanguageApp")
 
     return when (language ?: otherLanguageApp) {
@@ -74,7 +74,7 @@ fun languageDestinationName (
     language: Languages? = null,
 ): String {
     //val languageApp  by rememberPreference(languageAppKey, Languages.English)
-    val otherLanguageApp  by rememberPreference(otherLanguageAppKey, Languages.English)
+    val otherLanguageApp  by rememberPreference(otherLanguageAppKey, Languages.System)
     //Timber.d("LanguageDestination: language $language otherLanguageApp $otherLanguageApp")
 
     return when (language ?: otherLanguageApp) {

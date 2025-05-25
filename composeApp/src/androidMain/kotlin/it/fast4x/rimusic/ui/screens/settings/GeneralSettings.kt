@@ -136,7 +136,7 @@ fun GeneralSettings(
 ) {
     val binder = LocalPlayerServiceBinder.current
 
-    var languageApp  by rememberPreference(languageAppKey, Languages.English)
+    var languageApp  by rememberPreference(languageAppKey, Languages.System)
     val systemLocale = LocaleListCompat.getDefault().get(0).toString()
 
     var exoPlayerMinTimeForEvent by rememberPreference(
