@@ -470,8 +470,8 @@ fun DataSettings() {
         val importMigration = ImportMigration( context, binder )
 
         SettingsEntry(
-            title = "Import migration file",
-            text = "For old users before conversion. \nUse old app to make a backup for migration",
+            title = stringResource( R.string.title_import_settings_migration ),
+            text = stringResource( R.string.description_import_settings_migration ),
             onClick = importMigration::onShortClick
         )
 
