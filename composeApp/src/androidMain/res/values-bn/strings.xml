@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">বাতিল</string>
     <string name="done">হয়েছে</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">কিউ থেকে সড়ান</string>
     <string name="remove_from_playlist">প্লে-লিস্ট থেকে সড়ান</string>
     <string name="hide">লুকান</string>
-    <string name="hide_from_quick_picks">\"কুইক পিকস\" থেকে লুকান</string>
+    <string name="hide_from_quick_picks">\&quot;কুইক পিকস\&quot; থেকে লুকান</string>
     <string name="related_albums">রিলেটেড এলবাম</string>
     <string name="similar_artists">কাছাকাছি শিল্পী</string>
     <string name="playlists_you_might_like">যে প্লে লিস্ট গুলো আপনার ভালো লাগবে</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">লোকেশন ফোল্ডার</string>
     <string name="custom_cache_from_android_10_may_not_be_available">এন্ড্রোয়েড ১০ এর পর থেকে এই ফিচার নাও থাকতে পারে।</string>
     <string name="reset_cache_location_folder">ক্যাশে ফোল্ডার লোকেশন রিসেট করুন</string>
-    <string name="used">" ব্যবহৃত"</string>
+    <string name="used">&quot; ব্যবহৃত&quot;</string>
     <string name="close_background_player">ব্যাকগ্রাউন্ড প্লেয়ার বন্ধ করুন</string>
     <string name="when_app_swipe_out_from_task_manager">যখন এপ টাস্ক ম্যানেহার থেকে বাতিল করা হয়</string>
     <string name="opening_url">লোড করা হচ্ছে.... </string>
@@ -193,7 +193,7 @@
     <string name="mood">অনুভূতি</string>
     <string name="new_albums">নতুন অ্যালবাম</string>
     <string name="moods_and_genres">অনুভূতি ও গানের ধারা গুলো</string>
-    <string name="search_queries">"খোঁজার ইতিহাস"</string>
+    <string name="search_queries">&quot;খোঁজার ইতিহাস&quot;</string>
     <string name="not_find_battery_optimization_settings">ব্যাটারি অপ্টিমাইজেশন সেটিংস পাওয়া যায় নি, ম্যানুয়ালি হোয়াইট লিস্ট করুন</string>
     <string name="search">খুঁজুন</string>
     <string name="no">না</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">কাস্টম ক্যাশে ঠিক করুন</string>
     <string name="enter_value_in_mb">মেগাবাইটে ভ্যালু দিন</string>
     <string name="value_cannot_be_empty">ভ্যালু খালি রাখা যাবে না</string>
-    <string name="value_must_be_greater_than">"ভ্যালুকে অবশ্যই বড় হতে হবে "</string>
+    <string name="value_must_be_greater_than">&quot;ভ্যালুকে অবশ্যই বড় হতে হবে &quot;</string>
     <string name="custom">কাস্টম</string>
     <string name="custom_cache_size">কাস্টম ক্যাশের আকার</string>
     <string name="listen_on">শুনুন</string>
@@ -269,8 +269,8 @@
     <string name="persian">ফার্সি</string>
     <string name="hungarian">হাঙ্গেরীয়</string>
     <string name="korean">কোরিয়ান</string>
-    <string name="background_player">"ব্যাকগ্রাউন্ড প্লেয়ার"</string>
-    <string name="show_favorite_button">\"প্রিয়\" বাটন দেখান</string>
+    <string name="background_player">&quot;ব্যাকগ্রাউন্ড প্লেয়ার&quot;</string>
+    <string name="show_favorite_button">\&quot;প্রিয়\&quot; বাটন দেখান</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">লক স্ক্রিন আর নোটিফিকেশন এরিয়াতে প্রিয় বাটন দেখান</string>
     <string name="show_download_button">ডাউনলোড বাটন দেখান</string>
     <string name="show_download_button_in_lock_screen_and_notification_area">লক স্ক্রিন আর নোটিফিকেশন এরিয়াতে ডাওনলোড বাটন দেখান</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

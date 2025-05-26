@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">අවලංගු කරන්න</string>
     <string name="done">අවසන්</string>
@@ -86,7 +86,7 @@ CC-BY-SA 3.0</string>
     <string name="restore_1">Restore</string>
     <string name="import_the_database">දත්ත පිටත storage එකකට යවන්න</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Android Auto හි Developer settings වල \"Unknown Sources\" ක්‍රියාත්මක කිරීමට මතක තබා ගන්න</string>
+    <string name="enable_unknown_sources">Android Auto හි Developer settings වල \&quot;Unknown Sources\&quot; ක්‍රියාත්මක කිරීමට මතක තබා ගන්න</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Android Auto support ක්‍රියාත්මක කරන්න</string>
     <string name="search_history">සෙවීම් අතීතය</string>
@@ -96,7 +96,7 @@ CC-BY-SA 3.0</string>
     <string name="history_is_empty">අතීතය හිස් </string>
     <string name="service_lifetime">SERVICE LIFETIME</string>
     <string name="battery_optimizations_applied">බැටරි ප්‍රශස්තිකරණය යොදන්නේ නම්, විරාම කළ විට නැවත ධාවනය දැනුම්දීම හදිසියේම අතුරුදහන් විය හැක.</string>
-    <string name="is_android12">Android 12 සිට, \"අපරාජිත සේවා\" විකල්පය බලාත්මක වීමට බැටරි ප්‍රශස්තිකරණය අක්‍රිය කිරීම අවශ්‍ය වේ.</string>
+    <string name="is_android12">Android 12 සිට, \&quot;අපරාජිත සේවා\&quot; විකල්පය බලාත්මක වීමට බැටරි ප්‍රශස්තිකරණය අක්‍රිය කිරීම අවශ්‍ය වේ.</string>
     <string name="ignore_battery_optimizations">බැටරි ප්‍රශස්තකරණය නොසලකා හරින්න</string>
     <string name="already_unrestricted">දැනටමත් සීමා රහිතයි</string>
     <string name="disable_background_restrictions">පසුබිම් ක්‍රියාවන්හි සීමා අවහිර නොකරන්න</string>
@@ -128,7 +128,7 @@ CC-BY-SA 3.0</string>
     <string name="cache_location_folder">ෆෝල්ඩර ස්ථානය</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Android 10යෙන් පසු මෙම ක්‍රියාවලිය කළ නොහැකි වේ</string>
     <string name="reset_cache_location_folder">කැෂේ ෆෝල්ඩරය ඇති ස්ථානය මුල් තත්වයට ගෙනෙන්න</string>
-    <string name="used">" භාවිතා කරන ලද"</string>
+    <string name="used">&quot; භාවිතා කරන ලද&quot;</string>
     <string name="close_background_player">පසුබිම් දාවකය වසන්න</string>
     <string name="when_app_swipe_out_from_task_manager">ක්‍රියා මැනේජරයෙන් ඉවත් කළ විට</string>
     <string name="opening_url">ලෝඩ් වෙමින් පවතී...</string>
@@ -194,7 +194,7 @@ CC-BY-SA 3.0</string>
     <string name="mood">Mood</string>
     <string name="new_albums">New albums</string>
     <string name="moods_and_genres">Moods and genres</string>
-    <string name="search_queries">" search queries"</string>
+    <string name="search_queries">&quot; search queries&quot;</string>
     <string name="not_find_battery_optimization_settings">Couldn\'t find battery optimization settings, please whitelist manually</string>
     <string name="search">Search</string>
     <string name="no">No</string>
@@ -236,7 +236,7 @@ CC-BY-SA 3.0</string>
     <string name="set_custom_cache">Set custom cache</string>
     <string name="enter_value_in_mb">Enter value in MB</string>
     <string name="value_cannot_be_empty">Value cannot be empty</string>
-    <string name="value_must_be_greater_than">"Value must be greater than "</string>
+    <string name="value_must_be_greater_than">&quot;Value must be greater than &quot;</string>
     <string name="custom">Custom</string>
     <string name="custom_cache_size">Custom cache size</string>
     <string name="listen_on">Listen on</string>
@@ -270,7 +270,7 @@ CC-BY-SA 3.0</string>
     <string name="persian">Persian</string>
     <string name="hungarian">Hungarian</string>
     <string name="korean">Korean</string>
-    <string name="background_player">"BACKGROUND PLAYER "</string>
+    <string name="background_player">&quot;BACKGROUND PLAYER &quot;</string>
     <string name="show_favorite_button">Show Favorite button</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Show Favorite button in lock screen and notification area</string>
     <string name="show_download_button">Show Download button</string>
@@ -952,7 +952,7 @@ CC-BY-SA 3.0</string>
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -967,4 +967,6 @@ CC-BY-SA 3.0</string>
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

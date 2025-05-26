@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Annulla</string>
     <string name="done">Ok</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Rimuovi dalla coda</string>
     <string name="remove_from_playlist">Rimuovi dalla playlist</string>
     <string name="hide">Nascondi</string>
-    <string name="hide_from_quick_picks">Nascondi da \"Scelte rapide\"</string>
+    <string name="hide_from_quick_picks">Nascondi da \&quot;Scelte rapide\&quot;</string>
     <string name="related_albums">Album correlati</string>
     <string name="similar_artists">Artisti simili</string>
     <string name="playlists_you_might_like">Playlist che potrebbero piacerti</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Ripristino</string>
     <string name="import_the_database">Importa database da un supporto esterno</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Ricorda di abilitare \"Origini sconosciute\" nelle Impostazioni sviluppatore di Android Auto.</string>
+    <string name="enable_unknown_sources">Ricorda di abilitare \&quot;Origini sconosciute\&quot; nelle Impostazioni sviluppatore di Android Auto.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Abilita supporto per Android Auto</string>
     <string name="search_history">CRONOLOGIA RICERCHE</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">La cronologia è vuota</string>
     <string name="service_lifetime">SERVIZIO LIFETIME</string>
     <string name="battery_optimizations_applied">Se vengono applicate le ottimizzazioni della batteria, la notifica di riproduzione può scomparire improvvisamente quando viene messa in pausa.</string>
-    <string name="is_android12">A partire da Android 12, è necessario disabilitare le ottimizzazioni della batteria affinché l\'opzione \"Servizio invincibile\" abbia effetto.</string>
+    <string name="is_android12">A partire da Android 12, è necessario disabilitare le ottimizzazioni della batteria affinché l\'opzione \&quot;Servizio invincibile\&quot; abbia effetto.</string>
     <string name="ignore_battery_optimizations">Ignora ottimizzazione batteria</string>
     <string name="already_unrestricted">Già senza restrizioni</string>
     <string name="disable_background_restrictions">Disabilita le restrizioni sullo sfondo</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Posizione della cache</string>
     <string name="custom_cache_from_android_10_may_not_be_available">A partire da Android 10, questa funzionalità potrebbe non essere disponibile</string>
     <string name="reset_cache_location_folder">RESET CARTELLA CACHE</string>
-    <string name="used">" usato"</string>
+    <string name="used">&quot; usato&quot;</string>
     <string name="close_background_player">Chiudi lettore in background</string>
     <string name="when_app_swipe_out_from_task_manager">Quando l\'app viene rimossa dal task manager</string>
     <string name="opening_url">sta caricando...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Stato d\'animo</string>
     <string name="new_albums">Nuovi album</string>
     <string name="moods_and_genres">Moods and generi</string>
-    <string name="search_queries">" ricerche"</string>
+    <string name="search_queries">&quot; ricerche&quot;</string>
     <string name="not_find_battery_optimization_settings">Impossibile trovare le impostazioni di ottimizzazione della batteria, si prega di farlo manualmente</string>
     <string name="search">Cerca</string>
     <string name="no">No</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Personalizza cache</string>
     <string name="enter_value_in_mb">Grandezza in MB</string>
     <string name="value_cannot_be_empty">Il valore non può essere vuoto</string>
-    <string name="value_must_be_greater_than">"Il valore deve essere maggiore di "</string>
+    <string name="value_must_be_greater_than">&quot;Il valore deve essere maggiore di &quot;</string>
     <string name="custom">Personalizzata</string>
     <string name="custom_cache_size">Cache personalizzata</string>
     <string name="listen_on">Ascolta su</string>
@@ -269,7 +269,7 @@
     <string name="persian">Persiano</string>
     <string name="hungarian">Ungherese</string>
     <string name="korean">Coreano</string>
-    <string name="background_player">"PLAYER IN SOTTOFONDO "</string>
+    <string name="background_player">&quot;PLAYER IN SOTTOFONDO &quot;</string>
     <string name="show_favorite_button">Mostra pulsante Preferiti</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Mostra pulsante Preferiti nel blocco schermo e nell\'area notifiche</string>
     <string name="show_download_button">Mostra pulsante Download</string>
@@ -918,8 +918,8 @@
     <string name="songs_liked_yt">Canzone apprezzata su YouTube</string>
     <string name="song_unliked_yt">Canzone non apprezzata su YouTube</string>
     <string name="add_rimusic_to_ytm_favorites">Mi piace RiMusic Canzoni piaciute su Youtube</string>
-    <string name="do_you_really_want_to_like_all_rimusictoytmusic">(tempo stimato) è necessario per mettere \"Mi piace\" a tutte le canzoni. Questa azione non può essere ripresa se annullata nel frattempo. Devi chiudere l\'app per annullare questo processo. Vuoi continuare?</string>
-    <string name="do_you_really_want_to_like_all">(tempo stimato) è necessario per mettere \"Mi piace\" a tutte le canzoni. Devi chiudere l\'app per annullare questo processo. Vuoi continuare?</string>
+    <string name="do_you_really_want_to_like_all_rimusictoytmusic">(tempo stimato) è necessario per mettere \&quot;Mi piace\&quot; a tutte le canzoni. Questa azione non può essere ripresa se annullata nel frattempo. Devi chiudere l\'app per annullare questo processo. Vuoi continuare?</string>
+    <string name="do_you_really_want_to_like_all">(tempo stimato) è necessario per mettere \&quot;Mi piace\&quot; a tutte le canzoni. Devi chiudere l\'app per annullare questo processo. Vuoi continuare?</string>
     <string name="songs_liked_yt_failed">Impossibile mettere mi piace alla canzone su YouTube</string>
     <string name="songs_unliked_yt_failed">Impossibile togliere mi piace alla canzone su YouTube</string>
     <string name="adding_yt_to_pl_failed">Si è verificato un errore per i prossimi 50 brani. Aggiunta di brani alla playlist uno alla volta</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Memorizza le tue impostazioni in un unico file</string>
     <string name="description_exclude_credentials">Per motivi di sicurezza, le credenziali come l\'accesso a YouTube sono escluse</string>
     <string name="title_import_settings">Impostazioni di importazione</string>
-    <string name="restore_settings_from_file">Ripristina le tue impostazioni dal file creato da \"%s\"</string>
+    <string name="restore_settings_from_file">Ripristina le tue impostazioni dal file creato da \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Importa file di migrazione</string>
     <string name="description_import_migration_file">Per i vecchi utenti prima della conversione. \nUtilizza la vecchia app per creare un backup per la migrazione</string>
     <string name="description_app_not_installed_by_apk">Un\'app installata da un distributore APK dovrebbe consentire al suo distributore di aggiornare l\'app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

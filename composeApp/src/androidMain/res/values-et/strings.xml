@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Tühista</string>
     <string name="done">Tehtud</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Taasta</string>
     <string name="import_the_database">Impordi andmebaas väliselt salvestusseadmelt</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Pidage meeles Android Auto Arendaja Sätetes lubada \"Tundmatud allikad\".</string>
+    <string name="enable_unknown_sources">Pidage meeles Android Auto Arendaja Sätetes lubada \&quot;Tundmatud allikad\&quot;.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Luba Android Auto tugi</string>
     <string name="search_history">OTSINGU AJALUGU</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Ajalugu on tühi</string>
     <string name="service_lifetime">TEENUSE ELUIGA</string>
     <string name="battery_optimizations_applied">Kui aku optimeerimine on rakendatud, siis võib pausile pannes taasesituse teavitus järsku kaduda.</string>
-    <string name="is_android12">Alates Android 12 on vaja \"Kõikvõimsa teenuse\" töötamiseks, keelata aku optimeerimine.</string>
+    <string name="is_android12">Alates Android 12 on vaja \&quot;Kõikvõimsa teenuse\&quot; töötamiseks, keelata aku optimeerimine.</string>
     <string name="ignore_battery_optimizations">Eira aku optimiseerimist</string>
     <string name="already_unrestricted">Juba on piiramatu</string>
     <string name="disable_background_restrictions">Keela tausta piirangud</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Asukoha kaust</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Alates Android 10 see võimalus võib puududa</string>
     <string name="reset_cache_location_folder">LÄHTESTA VAHEMÄLU ASUKOHA KAUST</string>
-    <string name="used">" kasutatud"</string>
+    <string name="used">&quot; kasutatud&quot;</string>
     <string name="close_background_player">Sulge taustapleier</string>
     <string name="when_app_swipe_out_from_task_manager">Kui rakendus tegumihaldurist välja nipsata</string>
     <string name="opening_url">laeb...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Meeleolu</string>
     <string name="new_albums">Uued albumid</string>
     <string name="moods_and_genres">Meeleolud ja žanrid</string>
-    <string name="search_queries">" otsingu päringud"</string>
+    <string name="search_queries">&quot; otsingu päringud&quot;</string>
     <string name="not_find_battery_optimization_settings">Ei leidnud aku optimeerimise sätteid, lisage käsitsi</string>
     <string name="search">Otsing</string>
     <string name="no">Ei</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Määra kohandatud vahemälu</string>
     <string name="enter_value_in_mb">Sisesta väärtus MB-des</string>
     <string name="value_cannot_be_empty">Väärtus peab olema määratud</string>
-    <string name="value_must_be_greater_than">"Väärtus peab olema suurem, kui "</string>
+    <string name="value_must_be_greater_than">&quot;Väärtus peab olema suurem, kui &quot;</string>
     <string name="custom">Kohandatud</string>
     <string name="custom_cache_size">Kohandatud vahemälu suurus</string>
     <string name="listen_on">Kuula</string>
@@ -269,7 +269,7 @@
     <string name="persian">Pärsia</string>
     <string name="hungarian">Ungari</string>
     <string name="korean">Korea</string>
-    <string name="background_player">"TAUSTAPLEIER "</string>
+    <string name="background_player">&quot;TAUSTAPLEIER &quot;</string>
     <string name="show_favorite_button">Kuva lemmikute nupp</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Kuva lemmikute nupp lukustuskuval ja teavituste alal</string>
     <string name="show_download_button">Kuva allalaadimise nupp</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

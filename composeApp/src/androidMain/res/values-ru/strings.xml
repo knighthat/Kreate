@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Отмена</string>
     <string name="done">Готово</string>
@@ -14,7 +14,7 @@
     <string name="remove_from_queue">Удалить из очереди</string>
     <string name="remove_from_playlist">Удалить из плейлиста</string>
     <string name="hide">Удалить</string>
-    <string name="hide_from_quick_picks">Удалить из \"Обзора\"</string>
+    <string name="hide_from_quick_picks">Удалить из \&quot;Обзора\&quot;</string>
     <string name="related_albums">Похожие альбомы</string>
     <string name="similar_artists">Похожие исполнители</string>
     <string name="playlists_you_might_like">Плейлисты, которые вам могут понравиться</string>
@@ -86,7 +86,7 @@
     <string name="restore_1">Восстановить</string>
     <string name="import_the_database">Восстановление данных из локального хранилища</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Не забудьте включить функцию \"Неизвестные источники\" в настройках разработчика в Андроид Авто.</string>
+    <string name="enable_unknown_sources">Не забудьте включить функцию \&quot;Неизвестные источники\&quot; в настройках разработчика в Андроид Авто.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Включение поддержки Андроид Авто</string>
     <string name="search_history">ИСТОРИЯ ПОИСКА</string>
@@ -96,7 +96,7 @@
     <string name="history_is_empty">История пуста</string>
     <string name="service_lifetime">СРОК СЛУЖБЫ</string>
     <string name="battery_optimizations_applied">Если включена экономия батареи, уведомление плеера может внезапно исчезнуть.</string>
-    <string name="is_android12">Андроид 12+: Обязательно отключите экономию батареи, прежде чем включать опцию \"Невидимый сервис\".</string>
+    <string name="is_android12">Андроид 12+: Обязательно отключите экономию батареи, прежде чем включать опцию \&quot;Невидимый сервис\&quot;.</string>
     <string name="ignore_battery_optimizations">Игнор. экономии батареи</string>
     <string name="already_unrestricted">Уже неограничено</string>
     <string name="disable_background_restrictions">Отключить ограничения на фоне</string>
@@ -128,7 +128,7 @@
     <string name="cache_location_folder">Папка с местоположением</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Начиная с Android 10, эта функция может быть недоступна</string>
     <string name="reset_cache_location_folder">СБРОС РАСПОЛОЖЕНИЯ ПАПКИ КЭША</string>
-    <string name="used">" используется"</string>
+    <string name="used">&quot; используется&quot;</string>
     <string name="close_background_player">Закрыть фоновый плеер</string>
     <string name="when_app_swipe_out_from_task_manager">Когда приложение вылетает из диспетчера задач</string>
     <string name="opening_url">загружается...</string>
@@ -194,7 +194,7 @@
     <string name="mood">Настроение</string>
     <string name="new_albums">Новые альбомы</string>
     <string name="moods_and_genres">Настроение и жанры</string>
-    <string name="search_queries">" поисковые запросы"</string>
+    <string name="search_queries">&quot; поисковые запросы&quot;</string>
     <string name="not_find_battery_optimization_settings">Не удалось найти настройки оптимизации батареи. Добавьте вручную в белый список.</string>
     <string name="search">Поиск</string>
     <string name="no">Нет</string>
@@ -236,7 +236,7 @@
     <string name="set_custom_cache">Установить пользовательский кэш</string>
     <string name="enter_value_in_mb">Введите значение в MB</string>
     <string name="value_cannot_be_empty">Значение не может быть пустым</string>
-    <string name="value_must_be_greater_than">"Значение должно быть больше 0"</string>
+    <string name="value_must_be_greater_than">&quot;Значение должно быть больше 0&quot;</string>
     <string name="custom">Пользовательский</string>
     <string name="custom_cache_size">Пользовательский размер кэша</string>
     <string name="listen_on">Слушать в</string>
@@ -253,8 +253,8 @@
     <string name="odia">Ория (ଓଡ଼ିଆ)</string>
     <string name="bashkir">Башкирский (Башҡорт)</string>
     <string name="esperanto">Эсперанто (Esperanto)</string>
-    <string name="close_app_with_back_button">Закрыть приложение кнопкой \"Назад\"</string>
-    <string name="when_you_use_the_back_button_from_the_home_page">При нажатии кнопки \"Назад\" на главной странице</string>
+    <string name="close_app_with_back_button">Закрыть приложение кнопкой \&quot;Назад\&quot;</string>
+    <string name="when_you_use_the_back_button_from_the_home_page">При нажатии кнопки \&quot;Назад\&quot; на главной странице</string>
     <string name="audio_quality_format_high">Высокий</string>
     <string name="audio_quality_format_medium">Средний</string>
     <string name="audio_quality_format_low">Низкий</string>
@@ -270,7 +270,7 @@
     <string name="persian">Фарси (فارْسِى)</string>
     <string name="hungarian">Венгерский (Magyar)</string>
     <string name="korean">Корейский (한국어)</string>
-    <string name="background_player">"ФОНОВЫЙ ПЛЕЕР "</string>
+    <string name="background_player">&quot;ФОНОВЫЙ ПЛЕЕР &quot;</string>
     <string name="show_favorite_button">Показать кнопку Мне нравится</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Показывать кнопку Избранное на экране блокировки и области уведомлений</string>
     <string name="show_download_button">Показать кнопку Загрузить</string>
@@ -419,7 +419,7 @@
     <string name="max_songs_in_queue">Макс. кол-во треков в очереди</string>
     <string name="back">Назад</string>
     <string name="folders">Папки</string>
-    <string name="show_folders_in_on_device_page">Отображать папки на странице \"На устройстве\"</string>
+    <string name="show_folders_in_on_device_page">Отображать папки на странице \&quot;На устройстве\&quot;</string>
     <string name="lang_danish">Датский (Dansk)</string>
     <string name="lang_serbian_latin">Сербский (Srpski)</string>
     <string name="item_deselect">Отменить выделение</string>
@@ -427,7 +427,7 @@
     <string name="show_remaining_song_time">Показать оставшееся время песни</string>
     <string name="full_screen">Во весь экран</string>
     <string name="click_lyrics_text">Нажать на текст песни</string>
-    <string name="folder_that_will_show_when_you_open_on_device_page">Папка, которая будет отображаться при открытии страницы \"На устройстве\".</string>
+    <string name="folder_that_will_show_when_you_open_on_device_page">Папка, которая будет отображаться при открытии страницы \&quot;На устройстве\&quot;.</string>
     <string name="folder_was_not_found">Папка не найдена</string>
     <string name="direction_top">Сверху</string>
     <string name="pick_from">Выбрать из</string>
@@ -543,8 +543,8 @@
     <string name="time_seconds">секунды</string>
     <string name="info_bookmark_album">Добавить альбом в закладки</string>
     <string name="effect_fade_songs">Плавный переход между песнями</string>
-    <string name="bg_colors_fluid_gradient_background_from_theme">\"Жидкий\" градиентный фон из темы</string>
-    <string name="bg_colors_fluid_gradient_background_from_cover">\"Жидкий\" градиентный фон из обложки</string>
+    <string name="bg_colors_fluid_gradient_background_from_theme">\&quot;Жидкий\&quot; градиентный фон из темы</string>
+    <string name="bg_colors_fluid_gradient_background_from_cover">\&quot;Жидкий\&quot; градиентный фон из обложки</string>
     <string name="show_background_in_lyrics">Показывать цвет фона в текстах песен</string>
     <string name="bg_colors_blurred_cover_background">Размытая обложка на фоне</string>
     <string name="lang_estonian">Эстонский (Eesti keel)</string>
@@ -562,7 +562,7 @@
     <string name="pinfo_type">Стиль отображения</string>
     <string name="pinfo_album_and_artist_name">Название альбома и исполнителя</string>
     <string name="show_player_top_actions_bar">Показать верхнюю панель действий</string>
-    <string name="icon_like_button">Кнопка \"Мне нравится\"</string>
+    <string name="icon_like_button">Кнопка \&quot;Мне нравится\&quot;</string>
     <string name="icon_like_apple">Яблоко</string>
     <string name="icon_like_breaked">Надломленная</string>
     <string name="icon_like_gift">Подарок</string>
@@ -593,7 +593,7 @@
     <string name="piped_disconnect">Отключиться</string>
     <string name="piped_connect">Подключиться</string>
     <string name="piped_connected_to_s">Подключен к %s</string>
-    <string name="fake_audio_bar">\"Фальшивая\" вейвформа</string>
+    <string name="fake_audio_bar">\&quot;Фальшивая\&quot; вейвформа</string>
     <string name="copy_crash_log_to_clipboard">Скопировать логи сбоев в буфер обмена</string>
     <string name="title_backup_and_restore">РЕЗЕРВНОЕ КОПИРОВАНИЕ И ВОССТАНОВЛЕНИЕ</string>
     <string name="message_excluded_s_songs">Исключено %s песен</string>
@@ -617,8 +617,8 @@
     <string name="lang_bengali">Бенгальский (বাংলা)</string>
     <string name="lang_irish">Ирландский (Gaeilge)</string>
     <string name="lyricsoutline">Обводка текстов песен</string>
-    <string name="fluidrainbow">\"Жидкая\" радуга</string>
-    <string name="fluidtheme">\"Жидкая\" тема</string>
+    <string name="fluidrainbow">\&quot;Жидкая\&quot; радуга</string>
+    <string name="fluidtheme">\&quot;Жидкая\&quot; тема</string>
     <string name="blackgradient">Черный градиент снизу</string>
     <string name="glow">Свечение</string>
     <string name="bottomgradient">Показать градиент</string>
@@ -637,7 +637,7 @@
     <string name="black">Чёрный</string>
     <string name="highlight">Выделить</string>
     <string name="thin_bar">Тонкий таймлайн</string>
-    <string name="buttonzoomout">Анимация кнопки \"Уменьшить масштаб\"</string>
+    <string name="buttonzoomout">Анимация кнопки \&quot;Уменьшить масштаб\&quot;</string>
     <string name="thumbnailpause">Сжать миниатюру во время паузы</string>
     <string name="upnext">Далее</string>
     <string name="showtwosongs">Количество треков в мини-очереди (от 1 до 9)</string>
@@ -666,7 +666,7 @@
     <string name="playlistindicatorinfo">Показывает если песня уже добавлена в плейлист</string>
     <string name="deleted">Удалено</string>
     <string name="playlistindicatorinfo2">Песня присутствует в одном из плейлистов</string>
-    <string name="statsfornerdsplayer">Показать статистику для \"гиков\" в плеере</string>
+    <string name="statsfornerdsplayer">Показать статистику для \&quot;гиков\&quot; в плеере</string>
     <string name="discover">Открытия</string>
     <string name="discoverinfo">Убирает понравившиеся песни и плейлисты из очереди</string>
     <string name="controls_header_customize">Настроить</string>
@@ -683,11 +683,11 @@
     <string name="event_volumekeysinfo">Громкость ВВЕРХ следующая и громкость ВНИЗ предыдущая песня</string>
     <string name="paste">Вставить</string>
     <string name="searches_no_suggestions">Нет рекомендаций</string>
-    <string name="action_bar_show_discover_button">Показать кнопку \"Открытия\"</string>
+    <string name="action_bar_show_discover_button">Показать кнопку \&quot;Открытия\&quot;</string>
     <string name="playertype">Тип плеера</string>
     <string name="noblur">Без размытия, если текст песни отключён</string>
     <string name="fadingedge">Затухающий Край</string>
-    <string name="carousel">\"Карусель\"</string>
+    <string name="carousel">\&quot;Карусель\&quot;</string>
     <string name="carouselsize">Размер миниатюры в расширенном режиме</string>
     <string name="addednext">Добавлено в очередь</string>
     <string name="info_paused_with_volume_zero">Пауза при нулевой громкости</string>
@@ -698,9 +698,9 @@
     <string name="message_type_modern">Современное</string>
     <string name="message_type_essential">Основное</string>
     <string name="discoverinforadio">Убирает понравившиеся песни и плейлисты из радио</string>
-    <string name="discover_has_been_applied_to_radio">\"Открытия\" были применены к радио, удаленные песни: %s</string>
+    <string name="discover_has_been_applied_to_radio">\&quot;Открытия\&quot; были применены к радио, удаленные песни: %s</string>
     <string name="songs_number_to_show">Количество отображаемых треков</string>
-    <string name="discover_has_been_applied_to_queue">\"Открытия\" были применены к очереди, удаленные песни: %s</string>
+    <string name="discover_has_been_applied_to_queue">\&quot;Открытия\&quot; были применены к очереди, удаленные песни: %s</string>
     <string name="player_pause_on_volume_zero">Пауза при нулевой громкости</string>
     <string name="info_pauses_player_when_volume_zero">Приостановит проигрывание, когда громкость достигнет 0 и возобновит, когда громкость будет больше 0</string>
     <string name="quality">Качество</string>
@@ -728,7 +728,7 @@
     <string name="lang_norwegian">Норвежский (Norsk)</string>
     <string name="translate_to">Перевести на %s</string>
     <string name="translate_to_other_language">Перевести на другой язык</string>
-    <string name="action_bar_show_video_button">Показать кнопку \"Видео\"</string>
+    <string name="action_bar_show_video_button">Показать кнопку \&quot;Видео\&quot;</string>
     <string name="social_telegram">Telegram</string>
     <string name="social_telegram_info">Присоединиться к группе в Telegram</string>
     <string name="social_github">GitHub</string>
@@ -783,8 +783,8 @@
     <string name="no_thumbnail_present">Миниатюра отсутствует</string>
     <string name="removed_thumbnail">Миниатюра удалена</string>
     <string name="failed_to_remove_thumbnail">Не удалось удалить миниатюру</string>
-    <string name="settings_enable_pip">Включить \"Картинка в картинке\"</string>
-    <string name="settings_enable_pip_auto">Включить автоматически \"Картинка в картинке\"</string>
+    <string name="settings_enable_pip">Включить \&quot;Картинка в картинке\&quot;</string>
+    <string name="settings_enable_pip_auto">Включить автоматически \&quot;Картинка в картинке\&quot;</string>
     <string name="pipmodule_cover">Обложка</string>
     <string name="settings_pip_module"> Модуль Pip</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
@@ -817,8 +817,8 @@
     <string name="enable_youtube_music_login">Включить вход в YouTube Music</string>
     <string name="show_cover_thumbnail_animation">Показывать анимацию миниатюр обложки</string>
     <string name="cover_thumbnail_animation_type">Тип анимации обложки</string>
-    <string name="jump_previous">Кнопка \"Предыдущая\" перезапустит текущую песню по истечении следующих секунд</string>
-    <string name="jump_previous_blank">Оставьте поле пустым или 0 для кнопки \"Назад\", чтобы всегда воспроизводить предыдущую песню</string>
+    <string name="jump_previous">Кнопка \&quot;Предыдущая\&quot; перезапустит текущую песню по истечении следующих секунд</string>
+    <string name="jump_previous_blank">Оставьте поле пустым или 0 для кнопки \&quot;Назад\&quot;, чтобы всегда воспроизводить предыдущую песню</string>
     <string name="delete_hidden_songs">Вы действительно хотите удалить все скрытые песни из базы данных? Это действие необратимо.</string>
     <string name="delete_hidden_songs_message">Удалить скрытые песни</string>
     <string name="cover_type_vinyl">Винил</string>
@@ -953,7 +953,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -968,4 +968,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Юҡҡа сығарыу</string>
     <string name="done">Әҙер</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Сираттан юйырға</string>
     <string name="remove_from_playlist">Плейлисттаң юйырға</string>
     <string name="hide">Йәшерергә</string>
-    <string name="hide_from_quick_picks">\"Тиҙ һайлауҙан\" йәшерергә</string>
+    <string name="hide_from_quick_picks">\&quot;Тиҙ һайлауҙан\&quot; йәшерергә</string>
     <string name="related_albums">Оҡшаған альбомдар</string>
     <string name="similar_artists">Оҡшаған артисттар</string>
     <string name="playlists_you_might_like">Был плейлисттар һеҙгә моғайындыр оҡшарҙар</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Ҡайтарыу</string>
     <string name="import_the_database">Мәғлүмәт базаһын урындағы һаҡлауыстан ҡайтарып күсерергә</string>
     <string name="android_auto">Андроид Авто</string>
-    <string name="enable_unknown_sources">Онотмағыҙ, Андроид Авто көйләүҙәрҙә \"Билдәһеҙ сығанаҡтар\" функцияны яндырығыҙ.</string>
+    <string name="enable_unknown_sources">Онотмағыҙ, Андроид Авто көйләүҙәрҙә \&quot;Билдәһеҙ сығанаҡтар\&quot; функцияны яндырығыҙ.</string>
     <string name="android_auto_1">Андроид Авто</string>
     <string name="enable_android_auto_support">Андроид Авто ярҙамын яндырыу</string>
     <string name="search_history">ЭҘЛӘҮ ТАРИХЫ</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Тарих буш</string>
     <string name="service_lifetime">ХЕҘМӘТ МӨҘҘӘТЕ</string>
     <string name="battery_optimizations_applied">Батареянын оптимизацияһы яндырылған булһа, паузаға ҡуйған саҡта, уйнатыу тураһында белдереү юғала ала.</string>
-    <string name="is_android12">Андроид 12-сенән, опция \"Еңелмәгән сервис\" эшләргә башлау өсөн, батарея оптимизацияһын һүндерергә кәрәк.</string>
+    <string name="is_android12">Андроид 12-сенән, опция \&quot;Еңелмәгән сервис\&quot; эшләргә башлау өсөн, батарея оптимизацияһын һүндерергә кәрәк.</string>
     <string name="ignore_battery_optimizations">Батарея оптимизацияһын игнор итергә</string>
     <string name="already_unrestricted">Сикләнмәгән инде</string>
     <string name="disable_background_restrictions">Фон сикләүҙәрҙе һүндерергә</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Урынлашыу менән папка</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Андроид 10-дан башланып, был функция еткеһеҙ булырға мөмкин</string>
     <string name="reset_cache_location_folder">КЭШ УРЫНЛАШЫУЫН ПАПКАҺЫН БЫРАҠТЫРЫУ</string>
-    <string name="used">" ҡуллана"</string>
+    <string name="used">&quot; ҡуллана&quot;</string>
     <string name="close_background_player">Фон плейерҙы ябырға</string>
     <string name="when_app_swipe_out_from_task_manager">Ҡушымта йөкләмә диспертерҙан быраҡтырылһа</string>
     <string name="opening_url">йөкләнә...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Кәйеф</string>
     <string name="new_albums">Яңы альбомдар</string>
     <string name="moods_and_genres">Кәйефтәр һәм жанрҙар</string>
-    <string name="search_queries">" эҙләү һорауҙары"</string>
+    <string name="search_queries">&quot; эҙләү һорауҙары&quot;</string>
     <string name="not_find_battery_optimization_settings">Батарея оптимизацияһын көйләүҙәрен табыу булманы, зинһар, аҡ исемлеккә үҙегеҙ өҫтәгеҙ</string>
     <string name="search">Эҙләү</string>
     <string name="no">Юҡ</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Ҡулланыусы кэшын ҡуйығыҙ</string>
     <string name="enter_value_in_mb">MB-ға мәғәнәһен индерегеҙ</string>
     <string name="value_cannot_be_empty">Мәғәнәһе буш була алмай</string>
-    <string name="value_must_be_greater_than">"Мәғәнәһе... күберәк булырға тейеш "</string>
+    <string name="value_must_be_greater_than">&quot;Мәғәнәһе... күберәк булырға тейеш &quot;</string>
     <string name="custom">Ҡулланыусы</string>
     <string name="custom_cache_size">Ҡулланыусы кэшын күләме</string>
     <string name="listen_on">... тыңларға</string>
@@ -252,8 +252,8 @@
     <string name="odia">Одия</string>
     <string name="bashkir">Башҡурт</string>
     <string name="esperanto">Эсперанто</string>
-    <string name="close_app_with_back_button">\"Кире\" тигән төймәгә баҫып, ҡушымтаны ябырға</string>
-    <string name="when_you_use_the_back_button_from_the_home_page">Баш биттә \"Кире\" төймәне баҫҡас</string>
+    <string name="close_app_with_back_button">\&quot;Кире\&quot; тигән төймәгә баҫып, ҡушымтаны ябырға</string>
+    <string name="when_you_use_the_back_button_from_the_home_page">Баш биттә \&quot;Кире\&quot; төймәне баҫҡас</string>
     <string name="audio_quality_format_high">Оҙон</string>
     <string name="audio_quality_format_medium">Урта</string>
     <string name="audio_quality_format_low">Түбән</string>
@@ -269,10 +269,10 @@
     <string name="persian">Фарсы</string>
     <string name="hungarian">Мадьяр</string>
     <string name="korean">Корея</string>
-    <string name="background_player">"Фон плееры "</string>
-    <string name="show_favorite_button">\"Яратҡан\" тигән төймәне күрһәтергә</string>
+    <string name="background_player">&quot;Фон плееры &quot;</string>
+    <string name="show_favorite_button">\&quot;Яратҡан\&quot; тигән төймәне күрһәтергә</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Яратҡандар төймәне блокировка экранында һәм белдереү урында күрһәтергә</string>
-    <string name="show_download_button">\"Йөкләү\" тигән төймәне күрһәтергә</string>
+    <string name="show_download_button">\&quot;Йөкләү\&quot; тигән төймәне күрһәтергә</string>
     <string name="show_download_button_in_lock_screen_and_notification_area">Йөкләнгән төймәне блокировка экранында һәм белдереү урында күрһәтергә</string>
     <string name="by_most_played_song">Иң уйнатылған йыр</string>
     <string name="by_last_played_song">Һуңғы уйнатылған йыр</string>
@@ -304,7 +304,7 @@
     <string name="paste_or_type_a_valid_url">Ҡуйырға йәки тоғро url-адресты индерергә</string>
     <string name="you_can_put_a_complete_link">YouTube-та йәғни YouTube Music-та: плейлистҡа, альбомға, каналға йәки йырҙарға тулы һылтанманы урынлаштырырға мөмкин</string>
     <string name="go_to_link">Һылтанма аша кисергә</string>
-    <string name="action_bar_show_download_button">\"Йөкләү\" тигән төймәне күрһәтергә</string>
+    <string name="action_bar_show_download_button">\&quot;Йөкләү\&quot; тигән төймәне күрһәтергә</string>
     <string name="action_bar_show_add_to_playlist_button">Плейлист өҫтәү төймәне күрһәтергә</string>
     <string name="action_bar_show_loop_button">Сират төймәне күрһәтергә</string>
     <string name="action_bar_show_shuffle_button">Булғатыу төймәне күрһәтергә</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

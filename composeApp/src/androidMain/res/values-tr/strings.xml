@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">İptal</string>
     <string name="done">Tamam</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Sıradan kaldır</string>
     <string name="remove_from_playlist">Çalma listesinden kaldır</string>
     <string name="hide">Gizle</string>
-    <string name="hide_from_quick_picks">\"Hızlı seçimler\"den gizle</string>
+    <string name="hide_from_quick_picks">\&quot;Hızlı seçimler\&quot;den gizle</string>
     <string name="related_albums">İlgili albümler</string>
     <string name="similar_artists">Benzer sanatçılar</string>
     <string name="playlists_you_might_like">Beğenebileceğiniz çalma listeleri</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Geri yükle</string>
     <string name="import_the_database">Veritabanını harici depolamadan içe aktar</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Android Auto\'nun Geliştirici Ayarları\'nda \"Bilinmeyen kaynaklar\"ı etkinleştirmeyi unutmayın.</string>
+    <string name="enable_unknown_sources">Android Auto\'nun Geliştirici Ayarları\'nda \&quot;Bilinmeyen kaynaklar\&quot;ı etkinleştirmeyi unutmayın.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Android Auto desteğini etkinleştir</string>
     <string name="search_history">ARAMA GEÇMİŞİ</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Geçmiş boş</string>
     <string name="service_lifetime">HİZMET ÖMRÜ</string>
     <string name="battery_optimizations_applied">Pil optimizasyonları uygulanırsa, duraklatıldığında çalma bildirimi aniden kaybolabilir.</string>
-    <string name="is_android12">Android 12\'den itibaren, \"Yenilmez hizmet\" seçeneğinin etkili olması için pil optimizasyonlarının devre dışı bırakılması gereklidir.</string>
+    <string name="is_android12">Android 12\'den itibaren, \&quot;Yenilmez hizmet\&quot; seçeneğinin etkili olması için pil optimizasyonlarının devre dışı bırakılması gereklidir.</string>
     <string name="ignore_battery_optimizations">Pil optimizasyonlarını yoksay</string>
     <string name="already_unrestricted">Zaten kısıtlanmamış</string>
     <string name="disable_background_restrictions">Arka plan kısıtlamalarını devre dışı bırak</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Konum klasörü</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Android 10\'dan itibaren bu özellik mevcut olmayabilir</string>
     <string name="reset_cache_location_folder">ÖNBELLEK KONUM KLASÖRÜNÜ SIFIRLA</string>
-    <string name="used">" kullanıldı"</string>
+    <string name="used">&quot; kullanıldı&quot;</string>
     <string name="close_background_player">Arka plan oynatıcısını kapat</string>
     <string name="when_app_swipe_out_from_task_manager">Uygulama görev yöneticisinden kaydırıldığında</string>
     <string name="opening_url">yükleniyor...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Ruh Hali</string>
     <string name="new_albums">Yeni albümler</string>
     <string name="moods_and_genres">Ruh Halleri ve Türler</string>
-    <string name="search_queries">"arama sorguları"</string>
+    <string name="search_queries">&quot;arama sorguları&quot;</string>
     <string name="not_find_battery_optimization_settings">Pil optimizasyon ayarları bulunamadı, lütfen manuel olarak beyaz listeye ekleyin</string>
     <string name="search">Ara</string>
     <string name="no">Hayır</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Özel önbellek ayarla</string>
     <string name="enter_value_in_mb">Değeri MB cinsinden girin</string>
     <string name="value_cannot_be_empty">Değer boş olamaz</string>
-    <string name="value_must_be_greater_than">"Değer şundan büyük olmalıdır "</string>
+    <string name="value_must_be_greater_than">&quot;Değer şundan büyük olmalıdır &quot;</string>
     <string name="custom">Özel</string>
     <string name="custom_cache_size">Özel önbellek boyutu</string>
     <string name="listen_on">Dinle</string>
@@ -269,7 +269,7 @@
     <string name="persian">Farsça</string>
     <string name="hungarian">Macarca</string>
     <string name="korean">Korece</string>
-    <string name="background_player">"ARKA PLAN OYNATICISI "</string>
+    <string name="background_player">&quot;ARKA PLAN OYNATICISI &quot;</string>
     <string name="show_favorite_button">Favori düğmesini göster</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Kilit ekranında ve bildirim alanında Favori düğmesini göster</string>
     <string name="show_download_button">İndir düğmesini göster</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Ayarlarınızı tek bir dosyada saklayın</string>
     <string name="description_exclude_credentials">Güvenlik nedenleriyle YouTube girişi gibi kimlik bilgileri hariç tutulur</string>
     <string name="title_import_settings">Ayarları içe aktar</string>
-    <string name="restore_settings_from_file">\"%s\" tarafından oluşturulan dosyadan ayarlarınızı geri yükleyin</string>
+    <string name="restore_settings_from_file">\&quot;%s\&quot; tarafından oluşturulan dosyadan ayarlarınızı geri yükleyin</string>
     <string name="title_import_migration_file">Taşıma dosyasını içe aktar</string>
     <string name="description_import_migration_file">Dönüşümden önceki eski kullanıcılar için. \nTaşıma için yedekleme yapmak üzere eski uygulamayı kullanın</string>
     <string name="description_app_not_installed_by_apk">APK dağıtıcısı tarafından yüklenen uygulama, dağıtıcısının uygulamayı güncellemesine izin vermelidir!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Şarkının ne kadar yavaş/hızlı gittiğini ayarla</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

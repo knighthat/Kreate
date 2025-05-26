@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Vissza</string>
     <string name="done">Kész</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Eltávolítás a várólistáról</string>
     <string name="remove_from_playlist">Eltávolítás a lejátszási listából</string>
     <string name="hide">Elrejtés</string>
-    <string name="hide_from_quick_picks">Elrejtés innen: \"Ajánlatok\"</string>
+    <string name="hide_from_quick_picks">Elrejtés innen: \&quot;Ajánlatok\&quot;</string>
     <string name="related_albums">Kapcsolódó albumok</string>
     <string name="similar_artists">Hasonló előadók</string>
     <string name="playlists_you_might_like">Lejátszási listák, amelyek tetszhetnek</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Hely mappa</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Előfordulhat, hogy Android 10-től ez a funkció nem érhető el</string>
     <string name="reset_cache_location_folder">GYORSÍTÁSI HELYMAPPA VISSZAÁLLÍTÁSA</string>
-    <string name="used">" használt"</string>
+    <string name="used">&quot; használt&quot;</string>
     <string name="close_background_player">Zárja be a háttérlejátszót</string>
     <string name="when_app_swipe_out_from_task_manager">Amikor az alkalmazás ki lett húzza a feladatkezelőből</string>
     <string name="opening_url">betöltődik...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Hangulat</string>
     <string name="new_albums">Új albumok</string>
     <string name="moods_and_genres">Hangulatok és műfajok</string>
-    <string name="search_queries">" keresési lekérdezések"</string>
+    <string name="search_queries">&quot; keresési lekérdezések&quot;</string>
     <string name="not_find_battery_optimization_settings">Nem találhatók az akkumulátor-optimalizálási beállítások, kérjük, tegye fel manuálisan az engedélyezési listára</string>
     <string name="search">Keresés</string>
     <string name="no">Nem</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Egyéni gyorsítótárméret beállítása</string>
     <string name="enter_value_in_mb">Ad meg az értéket MB-ban</string>
     <string name="value_cannot_be_empty">Az érték nem lehet üres</string>
-    <string name="value_must_be_greater_than">"Az értéknek nagyobnak kell lennie a következőnél "</string>
+    <string name="value_must_be_greater_than">&quot;Az értéknek nagyobnak kell lennie a következőnél &quot;</string>
     <string name="custom">Egyéni</string>
     <string name="custom_cache_size">Egyedi gyorsítótár méret</string>
     <string name="listen_on">Meghallgatás a következőn</string>
@@ -269,7 +269,7 @@
     <string name="persian">Perzsa</string>
     <string name="hungarian">Magyar</string>
     <string name="korean">Koreai</string>
-    <string name="background_player">"HÁTTÉR LEJÁTSZÓ "</string>
+    <string name="background_player">&quot;HÁTTÉR LEJÁTSZÓ &quot;</string>
     <string name="show_favorite_button">Kedvencek gomb megjelenítése</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">A Kedvenc gomb megjelenítése a lezárt képernyőn és az értesítési felületen</string>
     <string name="show_download_button">Letöltés gomb megjelenítése</string>
@@ -418,7 +418,7 @@
     <string name="max_songs_in_queue">Max dalok a sorban</string>
     <string name="back">Vissza</string>
     <string name="folders">Mappák</string>
-    <string name="show_folders_in_on_device_page">Mappák megjelenítése \"Az eszközön\" oldalon</string>
+    <string name="show_folders_in_on_device_page">Mappák megjelenítése \&quot;Az eszközön\&quot; oldalon</string>
     <string name="lang_danish">Dán</string>
     <string name="lang_serbian_latin">Szerb (Latin)</string>
     <string name="item_deselect">Törölje a kijelölést</string>
@@ -426,7 +426,7 @@
     <string name="show_remaining_song_time">A zeneszám hátralévő időtartamának megjelenítése</string>
     <string name="full_screen">Teljes képernyő</string>
     <string name="click_lyrics_text">Kattints a dalszöveg szövegére</string>
-    <string name="folder_that_will_show_when_you_open_on_device_page">Az a mappa amely megjelenik amikor megnyítod az \"Ezen az eszközön\" oldalt.</string>
+    <string name="folder_that_will_show_when_you_open_on_device_page">Az a mappa amely megjelenik amikor megnyítod az \&quot;Ezen az eszközön\&quot; oldalt.</string>
     <string name="folder_was_not_found">A mappa nem található</string>
     <string name="direction_top">Fel</string>
     <string name="pick_from">Válassz innen</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Avbryt</string>
     <string name="done">Ferdig</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Fjern fra kø</string>
     <string name="remove_from_playlist">Fjern fra spillelisten</string>
     <string name="hide">Skjul</string>
-    <string name="hide_from_quick_picks">Skjul fra \"Hurtigvalg\"</string>
+    <string name="hide_from_quick_picks">Skjul fra \&quot;Hurtigvalg\&quot;</string>
     <string name="related_albums">Relaterte album</string>
     <string name="similar_artists">Lignende artister</string>
     <string name="playlists_you_might_like">Spillelister du kanskje liker</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Gjenopprett</string>
     <string name="import_the_database">Importer database fra ekstern lagring</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Husk å aktivere \"Ukjente kilder\" i Innstillinger for utviklere i Android Auto.</string>
+    <string name="enable_unknown_sources">Husk å aktivere \&quot;Ukjente kilder\&quot; i Innstillinger for utviklere i Android Auto.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Aktiver Android auto støtte</string>
     <string name="search_history">SØKEHISTORIKK</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Historikken er tom</string>
     <string name="service_lifetime">LEVETID</string>
     <string name="battery_optimizations_applied">Hvis batterioptimaliseringer brukes, kan avspillingsvarselet plutselig forsvinne ved pausing.</string>
-    <string name="is_android12">Siden Android 12 er det nødvendig å deaktivere batterioptimalisering for \"Usynlig tjeneste\" for å tre i kraft.</string>
+    <string name="is_android12">Siden Android 12 er det nødvendig å deaktivere batterioptimalisering for \&quot;Usynlig tjeneste\&quot; for å tre i kraft.</string>
     <string name="ignore_battery_optimizations">Ignorer batterioptimaliseringer</string>
     <string name="already_unrestricted">Allerede ubegrenset</string>
     <string name="disable_background_restrictions">Deaktiver bakgrunnsrestriksjoner</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Mappeplassering</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Fra Android 10 er muligens kke denne funksjonen tilgjengelig</string>
     <string name="reset_cache_location_folder">TILBAKESTILL BUFFERMAPPE PLASSERING</string>
-    <string name="used">" brukt"</string>
+    <string name="used">&quot; brukt&quot;</string>
     <string name="close_background_player">Lukk bakgrunnsspiller</string>
     <string name="when_app_swipe_out_from_task_manager">Når appen sveipes ut fra oppgaveadministreringen</string>
     <string name="opening_url">laster inn...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Stemning</string>
     <string name="new_albums">Nye album</string>
     <string name="moods_and_genres">Stemninger og sjangre</string>
-    <string name="search_queries">" søkeforespørsler"</string>
+    <string name="search_queries">&quot; søkeforespørsler&quot;</string>
     <string name="not_find_battery_optimization_settings">Kunne ikke finne innstillinger for batterioptimalisering, vennligst hviteliste manuelt</string>
     <string name="search">Search...</string>
     <string name="no">Nei</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Angi egendefinert hurtigbuffer</string>
     <string name="enter_value_in_mb">Angi verdi i MB</string>
     <string name="value_cannot_be_empty">Verdien kan ikke være tom</string>
-    <string name="value_must_be_greater_than">"Verdien må være større enn "</string>
+    <string name="value_must_be_greater_than">&quot;Verdien må være større enn &quot;</string>
     <string name="custom">Egendefinert</string>
     <string name="custom_cache_size">Egendefinert mellomlagerstørrelse</string>
     <string name="listen_on">Hør på</string>
@@ -269,7 +269,7 @@
     <string name="persian">Persisk</string>
     <string name="hungarian">Ungarsk</string>
     <string name="korean">Koreansk</string>
-    <string name="background_player">"BAKGRUNNS SPILLER "</string>
+    <string name="background_player">&quot;BAKGRUNNS SPILLER &quot;</string>
     <string name="show_favorite_button">Vis Favorittknapp</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Vis Favorittknappen på låseskjermen og i varslingsområdet</string>
     <string name="show_download_button">Vis Nedlastingsknapp</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

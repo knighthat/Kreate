@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">취소</string>
     <string name="done">완료</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">대기열에서 삭제</string>
     <string name="remove_from_playlist">재생목록에서 삭제</string>
     <string name="hide">숨기기</string>
-    <string name="hide_from_quick_picks">\"추천 목록\"에서 숨기기</string>
+    <string name="hide_from_quick_picks">\&quot;추천 목록\&quot;에서 숨기기</string>
     <string name="related_albums">관련 앨범</string>
     <string name="similar_artists">비슷한 아티스트</string>
     <string name="playlists_you_might_like">당신을 위한 재생목록</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">폴더 위치</string>
     <string name="custom_cache_from_android_10_may_not_be_available">안드로이드 10부터, 이 기능은 이용 불가능할 수도 있습니다</string>
     <string name="reset_cache_location_folder">캐시 폴더 위치 초기화</string>
-    <string name="used">" 사용됨"</string>
+    <string name="used">&quot; 사용됨&quot;</string>
     <string name="close_background_player">백그라운드 플레이어 닫기</string>
     <string name="when_app_swipe_out_from_task_manager">알림창에서 스와이프할 때</string>
     <string name="opening_url">로딩 중...</string>
@@ -193,7 +193,7 @@
     <string name="mood">분위기</string>
     <string name="new_albums">새 앨범</string>
     <string name="moods_and_genres">분위기 및 장르</string>
-    <string name="search_queries">" 검색어"</string>
+    <string name="search_queries">&quot; 검색어&quot;</string>
     <string name="not_find_battery_optimization_settings">배터리 최적화 설정을 찾지 못했습니다, 수동으로 해제해주세요</string>
     <string name="search">검색</string>
     <string name="no">아니요</string>
@@ -219,7 +219,7 @@
     <string name="song_cache_by_player">음악 캐시 (재생)</string>
     <string name="song_cache_by_download">음악 캐시 (다운로드)</string>
     <string name="visualizer">시각적 효과</string>
-    <string name="visualizer_require_mic_permission">시각적 효과는 \"마이크 권한이 필요해요!\"</string>
+    <string name="visualizer_require_mic_permission">시각적 효과는 \&quot;마이크 권한이 필요해요!\&quot;</string>
     <string name="restart_app_please">앱을 다시 시작해주세요.</string>
     <string name="listen_on_piped">Piped에서 듣기</string>
     <string name="listen_on_invidious">Invidious에서 듣기</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">맞춤 캐시 설정</string>
     <string name="enter_value_in_mb">MB 단위로 입력하기</string>
     <string name="value_cannot_be_empty">값을 비워둘 수 없습니다</string>
-    <string name="value_must_be_greater_than">"최솟값: "</string>
+    <string name="value_must_be_greater_than">&quot;최솟값: &quot;</string>
     <string name="custom">맞춤 설정</string>
     <string name="custom_cache_size">맞춤 캐시 크기</string>
     <string name="listen_on">다른 곳에서 듣기</string>
@@ -269,7 +269,7 @@
     <string name="persian">페르시아어</string>
     <string name="hungarian">헝가리어</string>
     <string name="korean">한국어</string>
-    <string name="background_player">"백그라운드 플레이어 "</string>
+    <string name="background_player">&quot;백그라운드 플레이어 &quot;</string>
     <string name="show_favorite_button">즐겨찾기 버튼 표시</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">잠금화면과 알림창에서 즐겨찾기 버튼 표시하기</string>
     <string name="show_download_button">다운로드 버튼 표시</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

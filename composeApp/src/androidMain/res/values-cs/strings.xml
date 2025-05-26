@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Zrušit</string>
     <string name="done">Hotovo</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Odstranit z fronty</string>
     <string name="remove_from_playlist">Odstranit z playlistu</string>
     <string name="hide">Skrýt</string>
-    <string name="hide_from_quick_picks">Skrýt z \"Rychlý výběr\"</string>
+    <string name="hide_from_quick_picks">Skrýt z \&quot;Rychlý výběr\&quot;</string>
     <string name="related_albums">Příbuzná alba</string>
     <string name="similar_artists">Podobní interpreti</string>
     <string name="playlists_you_might_like">Playlisty, které by se vám mohly líbit</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Obnovit</string>
     <string name="import_the_database">Import databáze z externího úložiště</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Nezapomeňte povolit \"Neznámé zdroje\" ve vývojářském nastavení aplikace Android Auto.</string>
+    <string name="enable_unknown_sources">Nezapomeňte povolit \&quot;Neznámé zdroje\&quot; ve vývojářském nastavení aplikace Android Auto.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Povolení podpory Android Auto</string>
     <string name="search_history">HISTORIE VYHLEDÁVÁNÍ</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Historie je prázdná</string>
     <string name="service_lifetime">ŽIVOTNOST SLUŽBY</string>
     <string name="battery_optimizations_applied">Pokud je použita optimalizace baterie, může oznámení o přehrávání při pozastavení náhle zmizet.</string>
-    <string name="is_android12">Od Androidu 12 je k tomu, aby se možnost \"Nezničitelná služba\" projevila, nutné vypnout optimalizace baterie.</string>
+    <string name="is_android12">Od Androidu 12 je k tomu, aby se možnost \&quot;Nezničitelná služba\&quot; projevila, nutné vypnout optimalizace baterie.</string>
     <string name="ignore_battery_optimizations">Ignorovat optimalizace baterie</string>
     <string name="already_unrestricted">Již neomezené</string>
     <string name="disable_background_restrictions">Zakázat omezení na pozadí</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Umístění složky</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Od Androidu 10 tato funkce nemusí být k dispozici.</string>
     <string name="reset_cache_location_folder">OBNOVENÍ UMÍSTĚNÍ SLOŽKY MEZIPAMĚTI</string>
-    <string name="used">" použitý"</string>
+    <string name="used">&quot; použitý&quot;</string>
     <string name="close_background_player">Zavřít přehrávač na pozadí</string>
     <string name="when_app_swipe_out_from_task_manager">Když aplikaci vysunete ze správce úloh</string>
     <string name="opening_url">se načítá...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Nálady</string>
     <string name="new_albums">Nová alba</string>
     <string name="moods_and_genres">Nálady a žánry</string>
-    <string name="search_queries">" vyhledávací dotazy"</string>
+    <string name="search_queries">&quot; vyhledávací dotazy&quot;</string>
     <string name="not_find_battery_optimization_settings">Nepodařilo se najít nastavení optimalizace baterie, prosím, vytvořte whitelist ručně</string>
     <string name="search">Vyhledávání</string>
     <string name="no">Ne</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Nastavit vlastní mezipaměť</string>
     <string name="enter_value_in_mb">Zadejte hodnotu v MB</string>
     <string name="value_cannot_be_empty">Hodnota nemůže být prázdná</string>
-    <string name="value_must_be_greater_than">"Hodnota musí být vyšší než "</string>
+    <string name="value_must_be_greater_than">&quot;Hodnota musí být vyšší než &quot;</string>
     <string name="custom">Vlastní</string>
     <string name="custom_cache_size">Vlastní velikost mezipaměti</string>
     <string name="listen_on">Poslouchat na</string>
@@ -269,7 +269,7 @@
     <string name="persian">Perština (فارسی)</string>
     <string name="hungarian">Maďarština (Magyar)</string>
     <string name="korean">Korejština (한국어)</string>
-    <string name="background_player">"PŘEHRÁVAČ NA POZADÍ "</string>
+    <string name="background_player">&quot;PŘEHRÁVAČ NA POZADÍ &quot;</string>
     <string name="show_favorite_button">Zobrazit tlačítko Oblíbené</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Zobrazit tlačítko Oblíbené na uzamčené obrazovce a v oznamovací oblasti</string>
     <string name="show_download_button">Zobrazit tlačítko Stáhnout</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

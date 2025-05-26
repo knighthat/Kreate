@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Cancel·lar</string>
     <string name="done">Fet</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Restaura</string>
     <string name="import_the_database">Importeu la base de dades des de l\'emmagatzematge extern</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Recordeu activar \"Fonts desconegudes\" a la configuració per a desenvolupadors d\'Android Auto.</string>
+    <string name="enable_unknown_sources">Recordeu activar \&quot;Fonts desconegudes\&quot; a la configuració per a desenvolupadors d\'Android Auto.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Activa el suport d\'Android Auto</string>
     <string name="search_history">HISTORIAL DE CERQUES</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">L\'historial de cerques és buit</string>
     <string name="service_lifetime">DURADA DE VIDA DEL SERVEI</string>
     <string name="battery_optimizations_applied">Si s\'apliquen optimitzacions de la bateria, la notificació de reproducció pot desaparèixer de sobte quan es posa en pausa.</string>
-    <string name="is_android12">Des d\'Android 12, cal desactivar l\'optimització de la bateria perquè l\'opció \"Servei invencible\" tingui efecte.</string>
+    <string name="is_android12">Des d\'Android 12, cal desactivar l\'optimització de la bateria perquè l\'opció \&quot;Servei invencible\&quot; tingui efecte.</string>
     <string name="ignore_battery_optimizations">Ignora les optimitzacions de la bateria</string>
     <string name="already_unrestricted">Ja sense restriccions</string>
     <string name="disable_background_restrictions">Desactiva les restriccions de fons</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Carpeta d\'ubicació</string>
     <string name="custom_cache_from_android_10_may_not_be_available">A partir d\'Android 10, és possible que aquesta funció no estigui disponible</string>
     <string name="reset_cache_location_folder">RESTABLEIX LA CARPETA D\'UBICACIÓ DE LA CACHE</string>
-    <string name="used">" usat"</string>
+    <string name="used">&quot; usat&quot;</string>
     <string name="close_background_player">Tanca el reproductor de fons</string>
     <string name="when_app_swipe_out_from_task_manager">Quan l\'aplicació llisca des del gestor de tasques</string>
     <string name="opening_url">s\'està carregant...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Estat d\'ànim</string>
     <string name="new_albums">Àlbums nous</string>
     <string name="moods_and_genres">Estats d\'ànim i gèneres</string>
-    <string name="search_queries">" consultes de cerca"</string>
+    <string name="search_queries">&quot; consultes de cerca&quot;</string>
     <string name="not_find_battery_optimization_settings">No s\'ha pogut trobar la configuració d\'optimització de la bateria, si us plau, afegiu la llista blanca manualment</string>
     <string name="search">Search...</string>
     <string name="no">No</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Estableix una memòria cau personalitzada</string>
     <string name="enter_value_in_mb">Introduïu el valor en MB</string>
     <string name="value_cannot_be_empty">El valor no pot estar buit</string>
-    <string name="value_must_be_greater_than">"El valor ha de ser superior a "</string>
+    <string name="value_must_be_greater_than">&quot;El valor ha de ser superior a &quot;</string>
     <string name="custom">Personalitzat</string>
     <string name="custom_cache_size">Mida de memòria cau personalitzada</string>
     <string name="listen_on">Escolta a</string>
@@ -269,7 +269,7 @@
     <string name="persian">Persa</string>
     <string name="hungarian">Hongarès</string>
     <string name="korean">Coreà</string>
-    <string name="background_player">"REPRODUCTOR DE FONS "</string>
+    <string name="background_player">&quot;REPRODUCTOR DE FONS &quot;</string>
     <string name="show_favorite_button">Mostra el botó Preferits</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Mostra el botó Preferit a la pantalla de bloqueig i a l\'àrea de notificacions</string>
     <string name="show_download_button">Mostra el botó de Descàrrega</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

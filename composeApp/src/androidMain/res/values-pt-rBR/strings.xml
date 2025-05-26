@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Cancelar</string>
     <string name="done">Terminar</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Remover da fila</string>
     <string name="remove_from_playlist">Remover da Lista de Produção</string>
     <string name="hide">Ocultar</string>
-    <string name="hide_from_quick_picks">Ocultar de \"Opções Rápidas\"</string>
+    <string name="hide_from_quick_picks">Ocultar de \&quot;Opções Rápidas\&quot;</string>
     <string name="related_albums">Álbuns relacionados</string>
     <string name="similar_artists">Artistas similares</string>
     <string name="playlists_you_might_like">Listas de reprodução que você pode gostar</string>
@@ -30,7 +30,7 @@
     <string name="enqueue">Em fila</string>
     <string name="shuffle">Aleatorizar</string>
     <string name="view_all">Ver tudo</string>
-    <string name="from_wikipedia_cca">A partir da Wikipédia sob \"Creative Commons Attribution CC-BY-SA 3.0\"</string>
+    <string name="from_wikipedia_cca">A partir da Wikipédia sob \&quot;Creative Commons Attribution CC-BY-SA 3.0\&quot;</string>
     <string name="overview">Visão geral</string>
     <string name="singles">Simples</string>
     <string name="library">Biblioteca</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Restauração</string>
     <string name="import_the_database">Importar a base de dados do armazenamento externo</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Lembre-se de habilitar \"Fontes desconhecidas\" nas Configurações do desenvolvedor do Android Auto.</string>
+    <string name="enable_unknown_sources">Lembre-se de habilitar \&quot;Fontes desconhecidas\&quot; nas Configurações do desenvolvedor do Android Auto.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Ativar suporte automático para Android Auto</string>
     <string name="search_history">PESQUISAR HISTÓRIA</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">O histórico está vazio</string>
     <string name="service_lifetime">Vida útil do serviço</string>
     <string name="battery_optimizations_applied">Se as otimizações da bateria forem aplicadas, a notificação de reprodução pode desaparecer repentinamente quando pausada.</string>
-    <string name="is_android12">Desde o Android 12, desativar otimizações de bateria é necessário para a opção \"Serviço Invencível\" ter efeito.</string>
+    <string name="is_android12">Desde o Android 12, desativar otimizações de bateria é necessário para a opção \&quot;Serviço Invencível\&quot; ter efeito.</string>
     <string name="ignore_battery_optimizations">Ignorar otimizações de bateria</string>
     <string name="already_unrestricted">Já está irrestrito</string>
     <string name="disable_background_restrictions">Desativar restrições de fundo</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Pasta de localização</string>
     <string name="custom_cache_from_android_10_may_not_be_available">A partir do Android 10, esse recurso pode não estar disponível</string>
     <string name="reset_cache_location_folder">REDEFINIR SEGURO DE LOCAL CACHE</string>
-    <string name="used">" usado"</string>
+    <string name="used">&quot; usado&quot;</string>
     <string name="close_background_player">Fechar reprodutor de fundo</string>
     <string name="when_app_swipe_out_from_task_manager">Quando o aplicativo deslizar para fora do gerenciador de tarefas</string>
     <string name="opening_url">está carregando...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Humor</string>
     <string name="new_albums">Novos álbuns</string>
     <string name="moods_and_genres">Humor e gêneros</string>
-    <string name="search_queries">" consultas de pesquisa"</string>
+    <string name="search_queries">&quot; consultas de pesquisa&quot;</string>
     <string name="not_find_battery_optimization_settings">Não foi possível encontrar configurações de otimização de bateria, por favor whitelist manualmente</string>
     <string name="search">Pesquisa</string>
     <string name="no">Não</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Definir cache personalizado</string>
     <string name="enter_value_in_mb">Insira o valor em MB</string>
     <string name="value_cannot_be_empty">Valor não pode ser vazio</string>
-    <string name="value_must_be_greater_than">"Valor deve ser superior a "</string>
+    <string name="value_must_be_greater_than">&quot;Valor deve ser superior a &quot;</string>
     <string name="custom">Personalizado</string>
     <string name="custom_cache_size">Tamanho do cache personalizado</string>
     <string name="listen_on">Escutar no</string>
@@ -245,7 +245,7 @@
     <string name="rectangular">Retangular</string>
     <string name="square">Quadrado</string>
     <string name="circular_ribbed">Cama circular</string>
-    <string name="play_button">Botão \"Reproduzir\"</string>
+    <string name="play_button">Botão \&quot;Reproduzir\&quot;</string>
     <string name="portuguese_brazilian">Português brasileiro</string>
     <string name="portuguese">Português</string>
     <string name="indonesian">Indonésia</string>
@@ -269,7 +269,7 @@
     <string name="persian">Persa</string>
     <string name="hungarian">Húngaro</string>
     <string name="korean">Coreano</string>
-    <string name="background_player">"Reprodutor no fundo de tela "</string>
+    <string name="background_player">&quot;Reprodutor no fundo de tela &quot;</string>
     <string name="show_favorite_button">Mostrar botão de Favoritos</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Mostrar botão de Favoritos na tela de bloqueio e na área de notificação</string>
     <string name="show_download_button">Mostrar botão de download</string>
@@ -561,7 +561,7 @@
     <string name="pinfo_type">Tipo de informação</string>
     <string name="pinfo_album_and_artist_name">Álbum e nome do artista</string>
     <string name="show_player_top_actions_bar">Mostrar barra de ação superior</string>
-    <string name="icon_like_button">Botão \"curtir\"</string>
+    <string name="icon_like_button">Botão \&quot;curtir\&quot;</string>
     <string name="icon_like_apple">Maçã</string>
     <string name="icon_like_breaked">Coração partido</string>
     <string name="icon_like_gift">Presente</string>
@@ -812,7 +812,7 @@
     <string name="about_developers_designers">Desenvolvedores / Designers</string>
     <string name="set_custom_value">Valor personalizado</string>
     <string name="title_youtube_music">YOUTUBE MUSIC</string>
-    <string name="enable_youtube_music_login">Habilitar \"login\" no YouTube Music</string>
+    <string name="enable_youtube_music_login">Habilitar \&quot;login\&quot; no YouTube Music</string>
     <string name="show_cover_thumbnail_animation">Mostrar animação de miniatura da capa</string>
     <string name="cover_thumbnail_animation_type">Animação da capa</string>
     <string name="jump_previous">O botão de voltar a música irá reiniciar a música atual após os seguintes segundos terem passado</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

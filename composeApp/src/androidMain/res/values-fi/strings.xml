@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Peruuta</string>
     <string name="done">Valmis</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Poista jonosta</string>
     <string name="remove_from_playlist">Poista soittolistasta</string>
     <string name="hide">Piilota</string>
-    <string name="hide_from_quick_picks">Piilota \"Pikavalinnoista\"</string>
+    <string name="hide_from_quick_picks">Piilota \&quot;Pikavalinnoista\&quot;</string>
     <string name="related_albums">Samankaltaiset albumit</string>
     <string name="similar_artists">Samankaltaiset artistit</string>
     <string name="playlists_you_might_like">Soittolistat joista saatat pitää</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Palauta</string>
     <string name="import_the_database">Tuo tietokanta ulkoisesta tallennustilasta</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Muista ottaa käyttöön \"Tuntemattomat lähteet\" Android Auto:n kehittäjäasetuksista.</string>
+    <string name="enable_unknown_sources">Muista ottaa käyttöön \&quot;Tuntemattomat lähteet\&quot; Android Auto:n kehittäjäasetuksista.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Ota Android Auto -tuki käyttöön</string>
     <string name="search_history">HAKUHISTORIA</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Historia on tyhjä</string>
     <string name="service_lifetime">Palvelun elinikä</string>
     <string name="battery_optimizations_applied">Jos akun optimointia käytetään, soittoilmoitus voidaan yhtäkkiä poistaa, kun soitto on keskeytetty.</string>
-    <string name="is_android12">Android 12:sta lähtien, akun optimointien poistaminen käytöstä on tarpeen, jotta \"Kuolematon palvelu\" -vaihtoehto toimii.</string>
+    <string name="is_android12">Android 12:sta lähtien, akun optimointien poistaminen käytöstä on tarpeen, jotta \&quot;Kuolematon palvelu\&quot; -vaihtoehto toimii.</string>
     <string name="ignore_battery_optimizations">Ohita akun optimointi</string>
     <string name="already_unrestricted">On jo rajoittamaton</string>
     <string name="disable_background_restrictions">Poista taustarajoitukset käytöstä</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Kansion sijainti</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Android 10:stä lähtien tämä ominaisuus ei välttämättä ole käytettävissä</string>
     <string name="reset_cache_location_folder">NOLLAA VÄLIMUISTIN KANSIO</string>
-    <string name="used">" käytetty"</string>
+    <string name="used">&quot; käytetty&quot;</string>
     <string name="close_background_player">Sulje taustasoitin</string>
     <string name="when_app_swipe_out_from_task_manager">Kun sovellus suljetaan tehtävienhallinnasta</string>
     <string name="opening_url">ladataan...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Tunnelma</string>
     <string name="new_albums">Uudet albumit</string>
     <string name="moods_and_genres">Tunnelmat ja tyylilajit</string>
-    <string name="search_queries">" hakuja"</string>
+    <string name="search_queries">&quot; hakuja&quot;</string>
     <string name="not_find_battery_optimization_settings">Akun optimointiasetuksia ei löytynyt, ole hyvä ja muuta manuaalisesti</string>
     <string name="search">Search...</string>
     <string name="no">Ei</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Aseta mukautettu välimuisti</string>
     <string name="enter_value_in_mb">Syötä arvo Mt:ssa</string>
     <string name="value_cannot_be_empty">Arvo ei voi olla tyhjä</string>
-    <string name="value_must_be_greater_than">"Arvon on oltava suurempi kuin "</string>
+    <string name="value_must_be_greater_than">&quot;Arvon on oltava suurempi kuin &quot;</string>
     <string name="custom">Mukautettu</string>
     <string name="custom_cache_size">Mukautettu välimuistin koko</string>
     <string name="listen_on">Kuuntele</string>
@@ -269,7 +269,7 @@
     <string name="persian">persia</string>
     <string name="hungarian">unkari</string>
     <string name="korean">korea</string>
-    <string name="background_player">"TAUSTASOITIN "</string>
+    <string name="background_player">&quot;TAUSTASOITIN &quot;</string>
     <string name="show_favorite_button">Näytä Suosikki -nappi</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Näytä Suosikki -nappi lukitusnäytössä ja ilmoituksissa</string>
     <string name="show_download_button">Näytä Lataa -nappi</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

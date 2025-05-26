@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">റദ്ദാക്കുക</string>
     <string name="done">കഴിഞ്ഞു</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">ക്യൂവിൽ നിന്ന് നീക്കംചെയ്യുക</string>
     <string name="remove_from_playlist">പ്ലേലിസ്റ്റിൽ നിന്ന് നീക്കംചെയ്യുക</string>
     <string name="hide">മറയ്ക്കുക</string>
-    <string name="hide_from_quick_picks">\"ക്വിക് പിക്സ്\" ലിസ്റ്റിൽ നിന്ന് മറയ്ക്കുക</string>
+    <string name="hide_from_quick_picks">\&quot;ക്വിക് പിക്സ്\&quot; ലിസ്റ്റിൽ നിന്ന് മറയ്ക്കുക</string>
     <string name="related_albums">ബന്ധപ്പെട്ട ആൽബങ്ങൾ</string>
     <string name="similar_artists">സമാന ആർട്ടിസ്റ്റുകൾ</string>
     <string name="playlists_you_might_like">നിങ്ങൾക്ക് ഇഷ്ടപ്പെടാവുന്ന പ്ലെയ്ലിസ്റ്റുകൾ</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">പുനഃസ്ഥാപിക്കുക</string>
     <string name="import_the_database">ഡാറ്റാബേസ് എക്സ്റ്റേണൽ സ്റ്റോറേജിൽ നിന്ന് ഇമ്പോർട്ട് ചെയ്യുക</string>
     <string name="android_auto">ആൻഡ്രോയിഡ് ഓട്ടോ</string>
-    <string name="enable_unknown_sources">ആൻഡ്രോയിഡ് ഓട്ടോയുടെ ഡെവലപ്പർ സെറ്റിംഗ്സിൽ \"അൺനോൺ സോഴ്‌സുകൾ\" പ്രവർത്തനക്ഷമമാക്കാൻ മറക്കരുത്.</string>
+    <string name="enable_unknown_sources">ആൻഡ്രോയിഡ് ഓട്ടോയുടെ ഡെവലപ്പർ സെറ്റിംഗ്സിൽ \&quot;അൺനോൺ സോഴ്‌സുകൾ\&quot; പ്രവർത്തനക്ഷമമാക്കാൻ മറക്കരുത്.</string>
     <string name="android_auto_1">ആൻഡ്രോയിഡ് ഓട്ടോ</string>
     <string name="enable_android_auto_support">ആൻഡ്രോയിഡ് ഓട്ടോ പിന്തുണ പ്രവർത്തനക്ഷമമാക്കുക</string>
     <string name="search_history">സേർച്ച് ഹിസ്റ്ററി</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">സ്ഥലം ഫോൾഡർ</string>
     <string name="custom_cache_from_android_10_may_not_be_available">ആൻഡ്രോയിഡ് 10 മുതൽ ഈ സവിശേഷത ലഭ്യമല്ലാവും</string>
     <string name="reset_cache_location_folder">കാഷെ ലൊക്കേഷൻ ഫോൾഡർ പുന: ക്രമീകരിക്കുക</string>
-    <string name="used">"  ഉപയോഗിച്ചു"</string>
+    <string name="used">&quot;  ഉപയോഗിച്ചു&quot;</string>
     <string name="close_background_player">ബാക്ക്ഗ്രൗണ്ട് പ്ലെയർ അടയ്ക്കുക</string>
     <string name="when_app_swipe_out_from_task_manager">ആപ്പ് ടാസ്‌ക്ക് മാനേജറിൽ നിന്ന് സ്വൈപ്പ് ചെയ്യുമ്പോൾ</string>
     <string name="opening_url">...ലോഡിംഗ്...</string>
@@ -193,7 +193,7 @@
     <string name="mood">മനോഭാവം</string>
     <string name="new_albums">പുതിയ ആൽബങ്ങൾ</string>
     <string name="moods_and_genres">മനോഭാവങ്ങളും ശൈലികളും</string>
-    <string name="search_queries">" തിരയൽ ചോദ്യങ്ങൾ"</string>
+    <string name="search_queries">&quot; തിരയൽ ചോദ്യങ്ങൾ&quot;</string>
     <string name="not_find_battery_optimization_settings">ബാറ്ററി ഓപ്റ്റിമൈസേഷൻ സജ്ജീകരണങ്ങൾ കണ്ടെത്താനായില്ല, ദയവായി കൈമാനമായി വൈറ്റ്‌ലിസ്റ്റ് ചെയ്യുക</string>
     <string name="search">തിരയുക</string>
     <string name="no">ഇല്ല</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">കസ്റ്റം കാഷ് സജ്ജമാക്കുക</string>
     <string name="enter_value_in_mb">മൂല്യം MBയിൽ ചേർക്കുക</string>
     <string name="value_cannot_be_empty">മൂല്യം ശൂന്യമാകരുത്</string>
-    <string name="value_must_be_greater_than">"മൂല്യം ഇതിലധികമാകണം "</string>
+    <string name="value_must_be_greater_than">&quot;മൂല്യം ഇതിലധികമാകണം &quot;</string>
     <string name="custom">കസ്റ്റം</string>
     <string name="custom_cache_size">കസ്റ്റം കാഷ് വലുപ്പം</string>
     <string name="listen_on">കേൾക്കുക</string>
@@ -269,7 +269,7 @@
     <string name="persian">പേർഷ്യൻ</string>
     <string name="hungarian">ഹങ്കേറിയൻ</string>
     <string name="korean">കൊറിയൻ</string>
-    <string name="background_player">"ബാക്ക്‌ഗ്രൗണ്ട് പ്ലെയർ "</string>
+    <string name="background_player">&quot;ബാക്ക്‌ഗ്രൗണ്ട് പ്ലെയർ &quot;</string>
     <string name="show_favorite_button">പ്രിയപ്പെട്ട ബട്ടൺ പ്രദർശിപ്പിക്കുക</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">ലോക്ക്സ്ക്രീനിലും അറിയിപ്പ് മേഖലയിലും പ്രിയപ്പെട്ട ബട്ടൺ പ്രദർശിപ്പിക്കുക</string>
     <string name="show_download_button">ഡൗൺലോഡ് ബട്ടൺ പ്രദർശിപ്പിക്കുക</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

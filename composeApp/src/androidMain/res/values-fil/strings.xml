@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Kanselahin</string>
     <string name="done">I-tapos</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Alisin sa queue</string>
     <string name="remove_from_playlist">Alisin sa playlist</string>
     <string name="hide">Itago</string>
-    <string name="hide_from_quick_picks">Huwag ipakita sa \"Quick picks\"</string>
+    <string name="hide_from_quick_picks">Huwag ipakita sa \&quot;Quick picks\&quot;</string>
     <string name="related_albums">Relatibo na album</string>
     <string name="similar_artists">Mga Katulad na Artista</string>
     <string name="playlists_you_might_like">Mga playlist na maaaring ma-gustuhan mo</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">I-restore</string>
     <string name="import_the_database">I-import ang database mula sa inyong external storage</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Huwag ikalimutan i-buksan ang \"Unknown sources\" sa Developer Settings ng Android Auto.</string>
+    <string name="enable_unknown_sources">Huwag ikalimutan i-buksan ang \&quot;Unknown sources\&quot; sa Developer Settings ng Android Auto.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Buksan ang Android Auto support</string>
     <string name="search_history">SEARCH HISTORY</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Walang nilalaman ang history</string>
     <string name="service_lifetime">LIFETIME NG SERBISYO</string>
     <string name="battery_optimizations_applied">Kung naka-apply ang battery optimization, pwedeng biglang mawala ang playback notification kapag naka-pause ito.</string>
-    <string name="is_android12">Mula noong Android 12, kailangan i-disable ang battery optimizations upang gumana ang \"Invincibke service\" option.</string>
+    <string name="is_android12">Mula noong Android 12, kailangan i-disable ang battery optimizations upang gumana ang \&quot;Invincibke service\&quot; option.</string>
     <string name="ignore_battery_optimizations">Huwag pansinin ang battery optimization</string>
     <string name="already_unrestricted">Hindi na pinaghihigpitan</string>
     <string name="disable_background_restrictions">I-disable ang background restrictions</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Location folder</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Mula sa Android 10, hindi available ang feature na ito</string>
     <string name="reset_cache_location_folder">BURAHIN ANG CACHE LOCATION FOLDER</string>
-    <string name="used">" gamit"</string>
+    <string name="used">&quot; gamit&quot;</string>
     <string name="close_background_player">Sarahin ang background player</string>
     <string name="when_app_swipe_out_from_task_manager">Kapag nag-swipe out ang app mula sa task manager</string>
     <string name="opening_url">ay nag-loload...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Mood</string>
     <string name="new_albums">Bagong album</string>
     <string name="moods_and_genres">Mga mood at genre</string>
-    <string name="search_queries">" mga search query"</string>
+    <string name="search_queries">&quot; mga search query&quot;</string>
     <string name="not_find_battery_optimization_settings">Hindi namin mahanap ang battery optimization settings, kailangan i-whitelist manually</string>
     <string name="search">Search</string>
     <string name="no">Hindi</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">I-set ang custom cache</string>
     <string name="enter_value_in_mb">Ilagay ang value in MB</string>
     <string name="value_cannot_be_empty">Hindi maaaring empty ang value na ito</string>
-    <string name="value_must_be_greater_than">"Kailangang mas malaki ang value na ito sa "</string>
+    <string name="value_must_be_greater_than">&quot;Kailangang mas malaki ang value na ito sa &quot;</string>
     <string name="custom">Custom</string>
     <string name="custom_cache_size">Custom cache size</string>
     <string name="listen_on">Pakinggan sa</string>
@@ -269,7 +269,7 @@
     <string name="persian">Persyano</string>
     <string name="hungarian">Hungarian</string>
     <string name="korean">Koreano</string>
-    <string name="background_player">"BACKGROUND PLAYER "</string>
+    <string name="background_player">&quot;BACKGROUND PLAYER &quot;</string>
     <string name="show_favorite_button">Ipakita ang Favorite button</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Ipakita ang Favorite button sa lock screen at notification area</string>
     <string name="show_download_button">Ipakita ang download button</string>
@@ -665,7 +665,7 @@
     <string name="playlistindicatorinfo">Nag-iindicate kapang naka add na ang kanta sa playlist</string>
     <string name="deleted">Binura</string>
     <string name="playlistindicatorinfo2">Naka add na ang kanta sa isang playlist</string>
-    <string name="statsfornerdsplayer">Ipakita ang \"stats for nerds\" sa player</string>
+    <string name="statsfornerdsplayer">Ipakita ang \&quot;stats for nerds\&quot; sa player</string>
     <string name="discover">Discover</string>
     <string name="discoverinfo">Nag-reremove ng Liked at Playlist na kanta sa queue</string>
     <string name="controls_header_customize">I-customize</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

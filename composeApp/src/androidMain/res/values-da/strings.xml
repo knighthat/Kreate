@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Annuller</string>
     <string name="done">Færdig</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Fjern fra kø</string>
     <string name="remove_from_playlist">Fjern fra playliste</string>
     <string name="hide">Skjul</string>
-    <string name="hide_from_quick_picks">Skjul fra \"Hurtige valg\"</string>
+    <string name="hide_from_quick_picks">Skjul fra \&quot;Hurtige valg\&quot;</string>
     <string name="related_albums">Relaterede album</string>
     <string name="similar_artists">Lignende kunstnere</string>
     <string name="playlists_you_might_like">Playlister, du måske kan lide</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Gendan</string>
     <string name="import_the_database">Importér databasen fra det eksterne lager</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Husk at aktivere \"Ukendte kilder\" i udviklerindstillinger for Android Auto.</string>
+    <string name="enable_unknown_sources">Husk at aktivere \&quot;Ukendte kilder\&quot; i udviklerindstillinger for Android Auto.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Aktivér Android Auto-understøttelse</string>
     <string name="search_history">SØGEHISTORIK</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Historik er tom</string>
     <string name="service_lifetime">TJENESTE LEVETID</string>
     <string name="battery_optimizations_applied">Hvis batterioptimeringer er aktiveret, kan afspilningsnotifikationen forsvinde, når den er på pause.</string>
-    <string name="is_android12">Siden Android 12 er det nødvendigt at deaktivere batterioptimeringer for, at indstillingen \"Uovervindelig tjeneste\" kan træde i kraft.</string>
+    <string name="is_android12">Siden Android 12 er det nødvendigt at deaktivere batterioptimeringer for, at indstillingen \&quot;Uovervindelig tjeneste\&quot; kan træde i kraft.</string>
     <string name="ignore_battery_optimizations">Ignorér batterioptimeringer</string>
     <string name="already_unrestricted">Allerede ubegrænset</string>
     <string name="disable_background_restrictions">Deaktivér baggrundsrestriktioner</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Placeringsmappe</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Fra Android 10 vil denne funktion muligvis ikke være tilgængelig</string>
     <string name="reset_cache_location_folder">NULSTIL CACHEPLACERING</string>
-    <string name="used">" brugt"</string>
+    <string name="used">&quot; brugt&quot;</string>
     <string name="close_background_player">Luk baggrundsafspiller</string>
     <string name="when_app_swipe_out_from_task_manager">Når appen stryges ud af seneste apps</string>
     <string name="opening_url">indlæser...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Humør</string>
     <string name="new_albums">Nye album</string>
     <string name="moods_and_genres">Humør og genrer</string>
-    <string name="search_queries">" søgninger"</string>
+    <string name="search_queries">&quot; søgninger&quot;</string>
     <string name="not_find_battery_optimization_settings">Kunne ikke finde batterioptimeringsindstillinger; hvidlist venligst manuelt</string>
     <string name="search">Søg...</string>
     <string name="no">Nej</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Tilpas cache</string>
     <string name="enter_value_in_mb">Indtast værdi i MB</string>
     <string name="value_cannot_be_empty">Værdi må ikke være tom</string>
-    <string name="value_must_be_greater_than">"Værdi skal være større end "</string>
+    <string name="value_must_be_greater_than">&quot;Værdi skal være større end &quot;</string>
     <string name="custom">Tilpasset</string>
     <string name="custom_cache_size">Tilpasset cachestørrelse</string>
     <string name="listen_on">Lyt på</string>
@@ -269,7 +269,7 @@
     <string name="persian">Persisk</string>
     <string name="hungarian">Ungarsk</string>
     <string name="korean">Koreansk</string>
-    <string name="background_player">"BAGGRUNDSAFSPILLER"</string>
+    <string name="background_player">&quot;BAGGRUNDSAFSPILLER&quot;</string>
     <string name="show_favorite_button">Vis Favorit-knap</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Vis Favorit-knap på låseskærm og i notifikationsområde</string>
     <string name="show_download_button">Vis Hent-knap</string>
@@ -571,7 +571,7 @@
     <string name="player_swap_controls_with_timeline">Byt kontrolelementer med tidslinje</string>
     <string name="player_enable_lyrics_popup_message">Aktivér pop op-besked om sangtekst</string>
     <string name="exclude_songs_with_duration_limit">Ekskluder sange med varighedsgrænse</string>
-    <string name="exclude_songs_with_duration_limit_description">Hvis aktiveret, ekskluderes sange over tidsgrænsen fra \"Mine top\" og afspilningskøen</string>
+    <string name="exclude_songs_with_duration_limit_description">Hvis aktiveret, ekskluderes sange over tidsgrænsen fra \&quot;Mine top\&quot; og afspilningskøen</string>
     <string name="no_log_available">Ingen log tilgængelig</string>
     <string name="enable_quick_picks_page">Aktivér Hurtige Valg-side</string>
     <string name="lang_vietnamese">Vietnamesisk</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Gem dine indstillinger i en enkelt fil</string>
     <string name="description_exclude_credentials">Oplysninger såsom YouTube-login er ekskluderet af sikkerhedsmæssige årsager</string>
     <string name="title_import_settings">Importindstillinger</string>
-    <string name="restore_settings_from_file">Gendan dine indstillinger fra fil oprettet af \"%s\"</string>
+    <string name="restore_settings_from_file">Gendan dine indstillinger fra fil oprettet af \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Importér migrationsfil</string>
     <string name="description_import_migration_file">For gamle brugere før konvertering. \nBrug gammel app til at lave en sikkerhedskopi til migrering</string>
     <string name="description_app_not_installed_by_apk">App installeret af en APK-distributør bør lade sin distributør opdatere appen!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Juster, hvor langsomt/hurtigt sangen går</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

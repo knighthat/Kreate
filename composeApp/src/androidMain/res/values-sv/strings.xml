@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Avbryt</string>
     <string name="done">Klar</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Ta bort från kö</string>
     <string name="remove_from_playlist">Ta bort från spellista</string>
     <string name="hide">Dölj</string>
-    <string name="hide_from_quick_picks">Dölj från \"Snabbval\"</string>
+    <string name="hide_from_quick_picks">Dölj från \&quot;Snabbval\&quot;</string>
     <string name="related_albums">Relaterade album</string>
     <string name="similar_artists">Liknande artister</string>
     <string name="playlists_you_might_like">Spellistor du kanske gillar</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Återställ</string>
     <string name="import_the_database">Importera databasen från extern lagring</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Kom ihåg att aktivera \"Okända källor\" i utvecklarinställningarna för Android Auto.</string>
+    <string name="enable_unknown_sources">Kom ihåg att aktivera \&quot;Okända källor\&quot; i utvecklarinställningarna för Android Auto.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Aktivera stöd för Android Auto</string>
     <string name="search_history">SÖKHISTORIK</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Ingen historik</string>
     <string name="service_lifetime">SERVICE LIFETIME</string>
     <string name="battery_optimizations_applied">Om batterioptimering är aktiverad kan uppspelningsaviseringen försvinna när musiken pausas.</string>
-    <string name="is_android12">Sedan Android 12 så måste man inaktivera batterioptimeringar för att alternativet \"oövervinnerlig service\" ska träda i kraft.</string>
+    <string name="is_android12">Sedan Android 12 så måste man inaktivera batterioptimeringar för att alternativet \&quot;oövervinnerlig service\&quot; ska träda i kraft.</string>
     <string name="ignore_battery_optimizations">Ignorera batterioptimeringar</string>
     <string name="already_unrestricted">Redan obegränsad</string>
     <string name="disable_background_restrictions">Inaktivera bakgrundsbegränsningar</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Mappens plats</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Den här funktionen kanske inte är tillgänglig efter Android 10</string>
     <string name="reset_cache_location_folder">ÅTERSTÄLL CACHE-MAPPEN TILL URSPRUNGLIG PLATS</string>
-    <string name="used">" används"</string>
+    <string name="used">&quot; används&quot;</string>
     <string name="close_background_player">Stäng bakgrundsspelare</string>
     <string name="when_app_swipe_out_from_task_manager">När appen sveps bort från aktivitetshanteraren</string>
     <string name="opening_url">laddar...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Humör</string>
     <string name="new_albums">Nya album</string>
     <string name="moods_and_genres">Humör och genrer</string>
-    <string name="search_queries">" search queries"</string>
+    <string name="search_queries">&quot; search queries&quot;</string>
     <string name="not_find_battery_optimization_settings">Det gick inte att hitta batterioptimeringsinställningar, vänligen vitlista manuellt</string>
     <string name="search">Sök</string>
     <string name="no">Nej</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Ange anpassad cache</string>
     <string name="enter_value_in_mb">Ange värde i MB</string>
     <string name="value_cannot_be_empty">Du måste ange ett värde</string>
-    <string name="value_must_be_greater_than">"Värdet måste vara större än "</string>
+    <string name="value_must_be_greater_than">&quot;Värdet måste vara större än &quot;</string>
     <string name="custom">Anpassad</string>
     <string name="custom_cache_size">Anpassad cachestorlek</string>
     <string name="listen_on">Lyssna på</string>
@@ -269,7 +269,7 @@
     <string name="persian">Persiska</string>
     <string name="hungarian">Ungerska</string>
     <string name="korean">Koreanska</string>
-    <string name="background_player">"BAKGRUNDSSPELARE "</string>
+    <string name="background_player">&quot;BAKGRUNDSSPELARE &quot;</string>
     <string name="show_favorite_button">Visa favoritknapp</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Visa favoritknappen på låsskärmen och aviseringsområdet</string>
     <string name="show_download_button">Visa nedladdningsknapp</string>
@@ -418,7 +418,7 @@
     <string name="max_songs_in_queue">Max antal låtar i kö</string>
     <string name="back">Tillbaka</string>
     <string name="folders">Mappar</string>
-    <string name="show_folders_in_on_device_page">Visa mappar i \"På enhet\"</string>
+    <string name="show_folders_in_on_device_page">Visa mappar i \&quot;På enhet\&quot;</string>
     <string name="lang_danish">Danska</string>
     <string name="lang_serbian_latin">Serbiska (Latin)</string>
     <string name="item_deselect">Avmarkera</string>
@@ -426,7 +426,7 @@
     <string name="show_remaining_song_time">Visa återstående låttid</string>
     <string name="full_screen">Fullskärm</string>
     <string name="click_lyrics_text">Klicka på låttext</string>
-    <string name="folder_that_will_show_when_you_open_on_device_page">Mapp som visas när du öppnar \"På enhet\".</string>
+    <string name="folder_that_will_show_when_you_open_on_device_page">Mapp som visas när du öppnar \&quot;På enhet\&quot;.</string>
     <string name="folder_was_not_found">Mappen hittades inte</string>
     <string name="direction_top">Direction Top</string>
     <string name="pick_from">Välj från</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

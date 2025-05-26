@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">取消</string>
     <string name="done">完成</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">從播放佇列中移除</string>
     <string name="remove_from_playlist">從播放清單中移除</string>
     <string name="hide">隱藏</string>
-    <string name="hide_from_quick_picks">從\"精選\"中隱藏</string>
+    <string name="hide_from_quick_picks">從\&quot;精選\&quot;中隱藏</string>
     <string name="related_albums">相關的專輯</string>
     <string name="similar_artists">類似的藝人</string>
     <string name="playlists_you_might_like">你可能喜歡的播放清單</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">還原</string>
     <string name="import_the_database">從外部空間匯入資料</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">記得在Android Auto的開發者設定中啟用\"未知來源\".</string>
+    <string name="enable_unknown_sources">記得在Android Auto的開發者設定中啟用\&quot;未知來源\&quot;.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">啟用Android Auto支援</string>
     <string name="search_history">搜尋記錄</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">搜尋紀錄空空如也</string>
     <string name="service_lifetime">系統播放</string>
     <string name="battery_optimizations_applied">如果啟用了電池優化, 暫停音樂時的撥放通知可能會消失.</string>
-    <string name="is_android12">從安卓12開始, \"強制背景播放\"選項需要禁用電池優化才能運作.</string>
+    <string name="is_android12">從安卓12開始, \&quot;強制背景播放\&quot;選項需要禁用電池優化才能運作.</string>
     <string name="ignore_battery_optimizations">忽略電池優化</string>
     <string name="already_unrestricted">已經解除限制</string>
     <string name="disable_background_restrictions">禁用背景播放限制</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">位置文件夾</string>
     <string name="custom_cache_from_android_10_may_not_be_available">自從安卓10以後, 此功能可能無法使用</string>
     <string name="reset_cache_location_folder">重置暫存位置文件夾</string>
-    <string name="used">" 已使用"</string>
+    <string name="used">&quot; 已使用&quot;</string>
     <string name="close_background_player">關閉背景播放</string>
     <string name="when_app_swipe_out_from_task_manager">當App從背景關閉時</string>
     <string name="opening_url">正在加載…</string>
@@ -193,7 +193,7 @@
     <string name="mood">情境</string>
     <string name="new_albums">新推出的專輯</string>
     <string name="moods_and_genres">氣氛與類型</string>
-    <string name="search_queries">" 關鍵字詞"</string>
+    <string name="search_queries">&quot; 關鍵字詞&quot;</string>
     <string name="not_find_battery_optimization_settings">请手动将其添加到电池优化设置的白名单中，我们未能找到电池优化设置。</string>
     <string name="search">搜尋</string>
     <string name="no">否</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">自定義暫存</string>
     <string name="enter_value_in_mb">請輸入MB的大小</string>
     <string name="value_cannot_be_empty">值不能為空</string>
-    <string name="value_must_be_greater_than">"值必須大於 "</string>
+    <string name="value_must_be_greater_than">&quot;值必須大於 &quot;</string>
     <string name="custom">自定義</string>
     <string name="custom_cache_size">自定義暫存大小</string>
     <string name="listen_on">在其它平台上收聽</string>
@@ -269,11 +269,11 @@
     <string name="persian">波斯語 (فارسی)</string>
     <string name="hungarian">匈牙利語 (Magyar)</string>
     <string name="korean">韓語 (한국인)</string>
-    <string name="background_player">"背景播放器 "</string>
-    <string name="show_favorite_button">顯示 \"已按讚\" 的歌曲按鈕</string>
-    <string name="show_favorite_button_in_lock_screen_and_notification_area">在鎖定螢幕和通知顯示 \"已按讚\" 的歌曲按鈕</string>
-    <string name="show_download_button">顯示 \"下載\" 按鈕</string>
-    <string name="show_download_button_in_lock_screen_and_notification_area">在鎖定螢幕和通知顯示 \"已下載\" 的歌曲按鈕</string>
+    <string name="background_player">&quot;背景播放器 &quot;</string>
+    <string name="show_favorite_button">顯示 \&quot;已按讚\&quot; 的歌曲按鈕</string>
+    <string name="show_favorite_button_in_lock_screen_and_notification_area">在鎖定螢幕和通知顯示 \&quot;已按讚\&quot; 的歌曲按鈕</string>
+    <string name="show_download_button">顯示 \&quot;下載\&quot; 按鈕</string>
+    <string name="show_download_button_in_lock_screen_and_notification_area">在鎖定螢幕和通知顯示 \&quot;已下載\&quot; 的歌曲按鈕</string>
     <string name="by_most_played_song">最常播放的歌曲</string>
     <string name="by_last_played_song">播放次數最少的歌曲</string>
     <string name="audio_quality_automatic">自動</string>
@@ -304,18 +304,18 @@
     <string name="paste_or_type_a_valid_url">貼上或輸入有效網址</string>
     <string name="you_can_put_a_complete_link">你可以放入連結至播放清單､專輯､頻道或單曲至YouTube / YouTube Music上</string>
     <string name="go_to_link">前往連結</string>
-    <string name="action_bar_show_download_button">顯示 \"下載\" 按鈕</string>
-    <string name="action_bar_show_add_to_playlist_button">顯示 \"新增到播放清單\" 按鈕</string>
-    <string name="action_bar_show_loop_button">顯示 \"重複播放\" 按鈕</string>
-    <string name="action_bar_show_shuffle_button">顯示 \"隨機播放\" 按鈕</string>
-    <string name="action_bar_show_lyrics_button">顯示 \"歌詞\" 按鈕</string>
-    <string name="action_bar_show_arrow_button_to_open_queue">顯示 \"箭頭\" 按鈕</string>
+    <string name="action_bar_show_download_button">顯示 \&quot;下載\&quot; 按鈕</string>
+    <string name="action_bar_show_add_to_playlist_button">顯示 \&quot;新增到播放清單\&quot; 按鈕</string>
+    <string name="action_bar_show_loop_button">顯示 \&quot;重複播放\&quot; 按鈕</string>
+    <string name="action_bar_show_shuffle_button">顯示 \&quot;隨機播放\&quot; 按鈕</string>
+    <string name="action_bar_show_lyrics_button">顯示 \&quot;歌詞\&quot; 按鈕</string>
+    <string name="action_bar_show_arrow_button_to_open_queue">顯示 \&quot;箭頭\&quot; 按鈕</string>
     <string name="lang_finnish">芬蘭文 (Suomalainen)</string>
     <string name="listening_time">收聽時間</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">顯示聽過的歌曲數量和他們的收聽時間</string>
     <string name="app_update_dialog_new">新的 %s 版本可下載了!</string>
-    <string name="enable_language_in_discovery">在\"搜索\"頁面中啟用語言</string>
-    <string name="if_possible_allows_discovery_content_language">如果啟用, \"搜索\" 頁面會顯示你自己的語言.</string>
+    <string name="enable_language_in_discovery">在\&quot;搜索\&quot;頁面中啟用語言</string>
+    <string name="if_possible_allows_discovery_content_language">如果啟用, \&quot;搜索\&quot; 頁面會顯示你自己的語言.</string>
     <string name="set_to">設定至</string>
     <string name="end_of_song">歌曲結尾</string>
     <string name="restore_completed">回復完畢!</string>
@@ -342,7 +342,7 @@
     <string name="default_page">預設頁面</string>
     <string name="keep_screen_on">保持螢幕開啟</string>
     <string name="prevents_screen_timeout">關閉螢幕睡眠</string>
-    <string name="action_bar_show_sleep_timer_button">顯示 \"睡眠計時器\" 按鈕</string>
+    <string name="action_bar_show_sleep_timer_button">顯示 \&quot;睡眠計時器\&quot; 按鈕</string>
     <string name="sort_album_year">專輯年份</string>
     <string name="sort_position">位置</string>
     <string name="sort_title">標題</string>
@@ -367,7 +367,7 @@
     <string name="ask">詢問</string>
     <string name="item_select">選擇</string>
     <string name="blacklisted_folders">列入黑名單的資料夾</string>
-    <string name="edit_blacklist_for_on_device_songs">編輯\"在裝置上\"的歌曲黑名單</string>
+    <string name="edit_blacklist_for_on_device_songs">編輯\&quot;在裝置上\&quot;的歌曲黑名單</string>
     <string name="add_folder">新增資料夾</string>
     <string name="this_folder_already_exists">此資料夾已經存在.</string>
     <string name="are_you_sure_you_want_to_remove_this_folder_from_the_blacklist">你確定要從黑名單中移除此資料夾嗎?</string>
@@ -418,7 +418,7 @@
     <string name="max_songs_in_queue">佇列歌曲上限</string>
     <string name="back">返回</string>
     <string name="folders">資料夾</string>
-    <string name="show_folders_in_on_device_page">在 \"在裝置上\" 的歌曲頁面顯示資料夾</string>
+    <string name="show_folders_in_on_device_page">在 \&quot;在裝置上\&quot; 的歌曲頁面顯示資料夾</string>
     <string name="lang_danish">丹麥語 (Dansk)</string>
     <string name="lang_serbian_latin">塞爾維亞語 (Српски)</string>
     <string name="item_deselect">取消選取</string>
@@ -426,7 +426,7 @@
     <string name="show_remaining_song_time">顯示歌曲剩餘時間</string>
     <string name="full_screen">全螢幕顯示</string>
     <string name="click_lyrics_text">可點擊歌詞文字</string>
-    <string name="folder_that_will_show_when_you_open_on_device_page">在 \"\'在裝置上\" 的歌曲頁面顯示的資料夾</string>
+    <string name="folder_that_will_show_when_you_open_on_device_page">在 \&quot;\'在裝置上\&quot; 的歌曲頁面顯示的資料夾</string>
     <string name="folder_was_not_found">找不到資料夾</string>
     <string name="direction_top">上方</string>
     <string name="pick_from">挑選</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Batal</string>
     <string name="done">Selesai</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Pulihkan</string>
     <string name="import_the_database">Impor basis data dari penyimpanan eksternal</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Ingatlah untuk mengaktifkan \"Sumber yang tidak diketahui\" di Setelan Pengembang Android Auto.</string>
+    <string name="enable_unknown_sources">Ingatlah untuk mengaktifkan \&quot;Sumber yang tidak diketahui\&quot; di Setelan Pengembang Android Auto.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Aktifkan dukungan bagi Android Auto</string>
     <string name="search_history">RIWAYAT PENELUSURAN</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Tidak ada riwayat penelusuran</string>
     <string name="service_lifetime">MASA PAKAI LAYANAN</string>
     <string name="battery_optimizations_applied">Jika pengoptimalan baterai diterapkan, notifikasi pemutaran bisa menghilang secara tiba-tiba saat terjeda.</string>
-    <string name="is_android12">Sejak Android 12, menonaktifkan pengoptimalan baterai diperlukan agar opsi \"Layanan yang tidak terhentikan\" dapat diterapkan.</string>
+    <string name="is_android12">Sejak Android 12, menonaktifkan pengoptimalan baterai diperlukan agar opsi \&quot;Layanan yang tidak terhentikan\&quot; dapat diterapkan.</string>
     <string name="ignore_battery_optimizations">Abaikan pengoptimalan baterai</string>
     <string name="already_unrestricted">Sudah tidak dibatasi</string>
     <string name="disable_background_restrictions">Nonaktifkan pembatasan latar belakang</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Lokasi folder</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Sejak Android 10 keatas, fitur ini mungkin tidak tersedia.</string>
     <string name="reset_cache_location_folder">SETEL ULANG LOKASI FOLDER CACHE</string>
-    <string name="used">" terpakai"</string>
+    <string name="used">&quot; terpakai&quot;</string>
     <string name="close_background_player">Tutup pemutar musik latar belakang</string>
     <string name="when_app_swipe_out_from_task_manager">Saat aplikasi dihapus dari task manager</string>
     <string name="opening_url">sedang memuat...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Suasana Hati</string>
     <string name="new_albums">Album baru</string>
     <string name="moods_and_genres">Genre dan Mood</string>
-    <string name="search_queries">" kueri penelusuran"</string>
+    <string name="search_queries">&quot; kueri penelusuran&quot;</string>
     <string name="not_find_battery_optimization_settings">Tidak dapat menemukan setelan pengoptimalan baterai, mohon untuk mematikan manual untuk aplikasi ini.</string>
     <string name="search">Telusuri</string>
     <string name="no">Tidak</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Atur cache khusus</string>
     <string name="enter_value_in_mb">Masukkan nilai (MB)</string>
     <string name="value_cannot_be_empty">Nilai tidak boleh kosong</string>
-    <string name="value_must_be_greater_than">"Nilai harus lebih besar dari "</string>
+    <string name="value_must_be_greater_than">&quot;Nilai harus lebih besar dari &quot;</string>
     <string name="custom">Khusus</string>
     <string name="custom_cache_size">Ukuran cache khusus</string>
     <string name="listen_on">Dengarkan di</string>
@@ -269,7 +269,7 @@
     <string name="persian">فارسی</string>
     <string name="hungarian">Hungaria (Magyar)</string>
     <string name="korean">Korea (한국어)</string>
-    <string name="background_player">"PEMUTAR LATAR BELAKANG"</string>
+    <string name="background_player">&quot;PEMUTAR LATAR BELAKANG&quot;</string>
     <string name="show_favorite_button">Tampilkan tombol Favorit</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Tampilkan tombol Favorit di dalam layar kunci dan notifikasi</string>
     <string name="show_download_button">Tampilkan tombol Unduh</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

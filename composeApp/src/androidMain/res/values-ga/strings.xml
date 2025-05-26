@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Cuir ar Ceal</string>
     <string name="done">Déanta</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Bain as scuaine</string>
     <string name="remove_from_playlist">Bain as seinnliosta</string>
     <string name="hide">Cuir i bhfolach</string>
-    <string name="hide_from_quick_picks">Cuir i bhfolach as \"Rogha Gasta\"</string>
+    <string name="hide_from_quick_picks">Cuir i bhfolach as \&quot;Rogha Gasta\&quot;</string>
     <string name="related_albums">Albaim cosúil leis seo</string>
     <string name="similar_artists">Ceoltóirí cosúil leis seo</string>
     <string name="playlists_you_might_like">B\'fhéidir gur mhaith leat na seinnliostaí seo</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Athbhunaigh</string>
     <string name="import_the_database">Iompórtáil bunachar sonraí ón stóráil sheachtrach</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Cuimhnigh ar \"Foinse anaithnid\" a chuir ar siúl i Socruithe Forbróra.</string>
+    <string name="enable_unknown_sources">Cuimhnigh ar \&quot;Foinse anaithnid\&quot; a chuir ar siúl i Socruithe Forbróra.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Cuir tacaíocht Android Auto ar siúl</string>
     <string name="search_history">STAIRE CUAIRDIGH</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Tá staire folamh</string>
     <string name="service_lifetime">SAOL NA SEIRBHÍSE</string>
     <string name="battery_optimizations_applied">If battery optimizations are applied, the playback notification can suddenly disappear when paused.</string>
-    <string name="is_android12">Since Android 12, disabling battery optimizations is required for the \"Invincible service\" option to take effect.</string>
+    <string name="is_android12">Since Android 12, disabling battery optimizations is required for the \&quot;Invincible service\&quot; option to take effect.</string>
     <string name="ignore_battery_optimizations">Ignore battery optimizations</string>
     <string name="already_unrestricted">Already unrestricted</string>
     <string name="disable_background_restrictions">Disable background restrictions</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Location folder</string>
     <string name="custom_cache_from_android_10_may_not_be_available">From Android 10, this feature may not be available</string>
     <string name="reset_cache_location_folder">RESET CACHE LOCATION FOLDER</string>
-    <string name="used">" used"</string>
+    <string name="used">&quot; used&quot;</string>
     <string name="close_background_player">Close background player</string>
     <string name="when_app_swipe_out_from_task_manager">When app swipe out from task manager</string>
     <string name="opening_url">is loading...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Mood</string>
     <string name="new_albums">New albums</string>
     <string name="moods_and_genres">Moods and genres</string>
-    <string name="search_queries">" search queries"</string>
+    <string name="search_queries">&quot; search queries&quot;</string>
     <string name="not_find_battery_optimization_settings">Couldn\'t find battery optimization settings, please whitelist manually</string>
     <string name="search">Search</string>
     <string name="no">No</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Set custom cache</string>
     <string name="enter_value_in_mb">Enter value in MB</string>
     <string name="value_cannot_be_empty">Value cannot be empty</string>
-    <string name="value_must_be_greater_than">"Value must be greater than "</string>
+    <string name="value_must_be_greater_than">&quot;Value must be greater than &quot;</string>
     <string name="custom">Custom</string>
     <string name="custom_cache_size">Custom cache size</string>
     <string name="listen_on">Listen on</string>
@@ -269,7 +269,7 @@
     <string name="persian">Persian</string>
     <string name="hungarian">Hungarian</string>
     <string name="korean">Korean</string>
-    <string name="background_player">"BACKGROUND PLAYER "</string>
+    <string name="background_player">&quot;BACKGROUND PLAYER &quot;</string>
     <string name="show_favorite_button">Show Favorite button</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Show Favorite button in lock screen and notification area</string>
     <string name="show_download_button">Show Download button</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

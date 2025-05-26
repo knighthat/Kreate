@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Annuler</string>
     <string name="done">Fait</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Supprimer de la file d\'attente</string>
     <string name="remove_from_playlist">Supprimer de la playlist </string>
     <string name="hide">Cacher</string>
-    <string name="hide_from_quick_picks">Cacher de la \"Sélection Rapide\"</string>
+    <string name="hide_from_quick_picks">Cacher de la \&quot;Sélection Rapide\&quot;</string>
     <string name="related_albums">Albums Associés</string>
     <string name="similar_artists">Artistes Similaires</string>
     <string name="playlists_you_might_like">Playlists que vous pourriez aimer</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Restaurer</string>
     <string name="import_the_database">Importer la base de données à partir du stockage</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">N’oubliez pas d’activer \"Sources inconnues\" dans les paramètres développeur d’Android Auto.</string>
+    <string name="enable_unknown_sources">N’oubliez pas d’activer \&quot;Sources inconnues\&quot; dans les paramètres développeur d’Android Auto.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Activer le support pour Android Auto</string>
     <string name="search_history">HISTORIQUE DE RECHERCHE</string>
@@ -95,12 +95,12 @@
     <string name="history_is_empty">L’historique est vide</string>
     <string name="service_lifetime">SERVICE SUPPLEMENTAIRE D\'OPTIMISATION</string>
     <string name="battery_optimizations_applied">Si des optimisations de la batterie sont appliquées, la notification de lecture peut soudainement disparaître en cas de pause.</string>
-    <string name="is_android12">Depuis Android 12, la désactivation des optimisations de la batterie est nécessaire pour que l’option \"Service protégé\" prenne effet.</string>
+    <string name="is_android12">Depuis Android 12, la désactivation des optimisations de la batterie est nécessaire pour que l’option \&quot;Service protégé\&quot; prenne effet.</string>
     <string name="ignore_battery_optimizations">Ignorer les optimisations de la batterie</string>
     <string name="already_unrestricted">Déjà sans restriction</string>
     <string name="disable_background_restrictions">Désactiver les restrictions en arrière-plan</string>
     <string name="invincible_service">Service protégé</string>
-    <string name="turning_off_battery_optimizations_is_not_enough">Quand \"désactiver les optimisations de la batterie\" ne suffit pas</string>
+    <string name="turning_off_battery_optimizations_is_not_enough">Quand \&quot;désactiver les optimisations de la batterie\&quot; ne suffit pas</string>
     <string name="player">Lecteur</string>
     <string name="persistent_queue">Lecteur persistant</string>
     <string name="save_and_restore_playing_songs">Enregistrer et restaurer la lecture des titres</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Emplacement du dossier</string>
     <string name="custom_cache_from_android_10_may_not_be_available">À partir d\'Android 10, cette fonctionnalité peut ne plus être disponible</string>
     <string name="reset_cache_location_folder">RÉINITIALISER LE CACHE</string>
-    <string name="used">" utilisé"</string>
+    <string name="used">&quot; utilisé&quot;</string>
     <string name="close_background_player">Effacer le lecteur en arrière plan</string>
     <string name="when_app_swipe_out_from_task_manager">Lorsque vous faites glisser en dehors du gestionnaire des applications récentes</string>
     <string name="opening_url">est entrain de charger...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Humeur</string>
     <string name="new_albums">Nouveaux Albums</string>
     <string name="moods_and_genres">Humeurs et Genres</string>
-    <string name="search_queries">" requêtes de recherche"</string>
+    <string name="search_queries">&quot; requêtes de recherche&quot;</string>
     <string name="not_find_battery_optimization_settings">Impossible de trouver les paramètres d\'optimisation de la batterie, veuillez les ajouter manuellement à la liste blanche</string>
     <string name="search">Rechercher</string>
     <string name="no">Non</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Définir un cache personnalisé</string>
     <string name="enter_value_in_mb">Entrez la valeur en Mo</string>
     <string name="value_cannot_be_empty">La valeur ne peut pas être vide</string>
-    <string name="value_must_be_greater_than">"La valeur doit être supérieure à "</string>
+    <string name="value_must_be_greater_than">&quot;La valeur doit être supérieure à &quot;</string>
     <string name="custom">Personnalisé</string>
     <string name="custom_cache_size">Taille du cache personnalisé</string>
     <string name="listen_on">Écouter sur</string>
@@ -269,7 +269,7 @@
     <string name="persian">Persan (فارسی)</string>
     <string name="hungarian">Hongrois (Magyar)</string>
     <string name="korean">Coréen (한국인)</string>
-    <string name="background_player">"LECTEUR D'ARRIÈRE PLAN "</string>
+    <string name="background_player">&quot;LECTEUR D'ARRIÈRE PLAN &quot;</string>
     <string name="show_favorite_button">Afficher le bouton des favoris</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Afficher le bouton des favoris dans l\'écran de verrouillage et la zone des notifications</string>
     <string name="show_download_button">Affiche le bouton de téléchargement</string>
@@ -445,7 +445,6 @@
     <string name="by_casual_played_song">En mode aléatoire</string>
     <string name="theme_material_you">Material You</string>
     <string name="show_statistics_in_navigation_bar">Afficher les statistiques dans la barre de navigation.
- 
 (Uniquement avec l\'interface de ViMusic, avec la barre de navigation gauche ou droite !)</string>
     <string name="settings">Paramètres</string>
     <string name="page_not_been_loaded">La page n\'a pas été chargée correctement, essayez de rafraîchir la page.</string>
@@ -954,7 +953,7 @@ Volume BAS : titre précédent</string>
     <string name="store_settings_in_a_file">Stocker vos paramètres dans un seul fichier</string>
     <string name="description_exclude_credentials">Les identifiants comme la connexion à YouTube sont exclus pour des raisons de sécurité</string>
     <string name="title_import_settings">Paramètres d\'importation</string>
-    <string name="restore_settings_from_file">Restaurer vos paramètres à partir du fichier créé par \"%s\"</string>
+    <string name="restore_settings_from_file">Restaurer vos paramètres à partir du fichier créé par \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Importer le fichier de migration</string>
     <string name="description_import_migration_file">Pour les anciens utilisateurs avant la conversion. \nUtiliser l\'ancienne application pour effectuer une sauvegarde en vue de la migration</string>
     <string name="description_app_not_installed_by_apk">L\'application installée par un distributeur APK doit permettre à son distributeur de mettre à jour l\'application !</string>
@@ -969,4 +968,6 @@ Volume BAS : titre précédent</string>
     <string name="description_playback_speed">Ajuster la vitesse / la lenteur du titre</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

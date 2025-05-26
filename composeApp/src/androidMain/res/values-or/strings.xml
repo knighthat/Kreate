@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">ବାତିଲ୍ କରନ୍ତୁ</string>
     <string name="done">ସମ୍ପନ୍ନ</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">ଧାଡ଼ିରୁ ହଟାନ୍ତୁ</string>
     <string name="remove_from_playlist">ପ୍ଲେଲିଷ୍ଟ‌ରୁ ଅପସାରଣ କରନ୍ତୁ</string>
     <string name="hide">ଲୁଚାନ୍ତୁ</string>
-    <string name="hide_from_quick_picks">\"Quick picks\" ରୁ ଲୁଚାନ୍ତୁ</string>
+    <string name="hide_from_quick_picks">\&quot;Quick picks\&quot; ରୁ ଲୁଚାନ୍ତୁ</string>
     <string name="related_albums">ସମ୍ବନ୍ଧିତ ଆଲବମଗୁଡ଼ିକ</string>
     <string name="similar_artists">ଅନୁରୂପ କଳାକାର</string>
     <string name="playlists_you_might_like">ପ୍ଲେ-ଲିଷ୍ଟ ଯାହା ଆପଣଙ୍କୁ ପସନ୍ଦ ଆସିପାରେ</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">ପୁନଃସ୍ଥାପନ କରନ୍ତୁ</string>
     <string name="import_the_database">ବାହ୍ୟ ଭଣ୍ଡାରରୁ ଡାଟାବେସ ଆମଦାନୀ କରନ୍ତୁ</string>
     <string name="android_auto">ଆଣ୍ଡ୍ରଏଡ ଅଟୋ</string>
-    <string name="enable_unknown_sources">ଆଣ୍ଡ୍ରଏଡ ଅଟୋର ଡେଭଲପର୍ ସେଟିଙ୍ଗରେ \"ଅଜଣା ଉତ୍ସଗୁଡ଼ିକୁ\" ସକ୍ରିୟ କରିବାକୁ ମନେରଖନ୍ତୁ ।.</string>
+    <string name="enable_unknown_sources">ଆଣ୍ଡ୍ରଏଡ ଅଟୋର ଡେଭଲପର୍ ସେଟିଙ୍ଗରେ \&quot;ଅଜଣା ଉତ୍ସଗୁଡ଼ିକୁ\&quot; ସକ୍ରିୟ କରିବାକୁ ମନେରଖନ୍ତୁ ।.</string>
     <string name="android_auto_1">ଆଣ୍ଡ୍ରଏଡ ଅଟୋ</string>
     <string name="enable_android_auto_support">ଆଣ୍ଡ୍ରଏଡ ସ୍ୱୟଂଚାଳିତ ସମର୍ଥନକୁ ସକ୍ରିୟ କରନ୍ତୁ</string>
     <string name="search_history">ଇତିହାସକୁ ଖୋଜନ୍ତୁ</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">ଇତିହାସ ଖାଲି ଅଛି</string>
     <string name="service_lifetime">ସେବା ଜୀବନ</string>
     <string name="battery_optimizations_applied">ଯଦି ବ୍ୟାଟେରୀ ଅପ୍ଟିମାଇଜେସନ୍ ପ୍ରୟୋଗ କରାଯାଏ, ତେବେ ବିରତି ସମୟରେ ପ୍ଲେବ୍ୟାକ୍ ବିଜ୍ଞପ୍ତି ହଠାତ୍ ଅଦୃଶ୍ୟ ହୋଇପାରେ ।.</string>
-    <string name="is_android12">ଆଣ୍ଡ୍ରଏଡ 12 ଠାରୁ, \"ଅଦୃଶ୍ୟ ସେବା\" ବିକଳ୍ପକୁ କାର୍ଯ୍ୟକାରୀ କରିବା ପାଇଁ ବ୍ୟାଟେରୀ ଅପ୍ଟିମାଇଜେସନକୁ ନିଷ୍କ୍ରିୟ କରିବା ଆବଶ୍ୟକ ।.</string>
+    <string name="is_android12">ଆଣ୍ଡ୍ରଏଡ 12 ଠାରୁ, \&quot;ଅଦୃଶ୍ୟ ସେବା\&quot; ବିକଳ୍ପକୁ କାର୍ଯ୍ୟକାରୀ କରିବା ପାଇଁ ବ୍ୟାଟେରୀ ଅପ୍ଟିମାଇଜେସନକୁ ନିଷ୍କ୍ରିୟ କରିବା ଆବଶ୍ୟକ ।.</string>
     <string name="ignore_battery_optimizations">ବ୍ୟାଟେରୀ ଅପ୍ଟିମାଇଜେସନକୁ ଅଗ୍ରାହ୍ୟ କରନ୍ତୁ</string>
     <string name="already_unrestricted">ପୂର୍ବରୁ ଅସୀମିତ</string>
     <string name="disable_background_restrictions">ପୃଷ୍ଠଭୂମି ପ୍ରତିବନ୍ଧକକୁ ନିଷ୍କ୍ରିୟ କରନ୍ତୁ</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">ଅବସ୍ଥାନ ଫୋଲଡର</string>
     <string name="custom_cache_from_android_10_may_not_be_available">ଆଣ୍ଡ୍ରଏଡ 10ରୁ ଏହି ଫିଚର ଉପଲବ୍ଧ ହୋଇନପାରେ</string>
     <string name="reset_cache_location_folder">କ୍ୟାଶେ ଅବସ୍ଥାନ ଫୋଲଡରକୁ ପୁନଃସ୍ଥାପନ କରନ୍ତୁ</string>
-    <string name="used">" ବ୍ୟବହୃତ"</string>
+    <string name="used">&quot; ବ୍ୟବହୃତ&quot;</string>
     <string name="close_background_player">ପୃଷ୍ଠଭୂମି ଚାଳକକୁ ବନ୍ଦ କରନ୍ତୁ</string>
     <string name="when_app_swipe_out_from_task_manager">ଟାସ୍କ ମ୍ୟାନେଜରରୁ ଆପକୁ ସ୍ୱାଇପ କରିବା ସମୟରେ</string>
     <string name="opening_url">ଧାରଣ କରୁଅଛି...</string>
@@ -193,7 +193,7 @@
     <string name="mood">ମନ</string>
     <string name="new_albums">ନୂତନ ଆଲବମ୍</string>
     <string name="moods_and_genres">ମନୋବଳ ଏବଂ ଧାରା</string>
-    <string name="search_queries">" ସନ୍ଧାନ ଜିଜ୍ଞାସା"</string>
+    <string name="search_queries">&quot; ସନ୍ଧାନ ଜିଜ୍ଞାସା&quot;</string>
     <string name="not_find_battery_optimization_settings">ବ୍ୟାଟେରୀ ଅପ୍ଟିମାଇଜେସନ ସେଟିଙ୍ଗକୁ ପାଇପାରିଲା ନାହିଁ, ଦୟାକରି ହସ୍ତକୃତ ଭାବରେ ଧଳା ତାଲିକାକୁ ଧଳା କରନ୍ତୁ</string>
     <string name="search">ଖୋଜନ୍ତୁ</string>
     <string name="no">ନାଁ</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">କଷ୍ଟମ୍ କ୍ୟାଚ୍ ସେଟ୍ କରନ୍ତୁ</string>
     <string name="enter_value_in_mb">MB ରେ ଭାଲ୍ୟୁ ଏଣ୍ଟର୍ କରନ୍ତୁ</string>
     <string name="value_cannot_be_empty">ମୂଲ୍ୟ ଖାଲି ହୋଇପାରିବ ନାହିଁ</string>
-    <string name="value_must_be_greater_than">"ମୂଲ୍ୟଠାରୁ ଅଧିକ ହେବା ଜରୁରୀ "</string>
+    <string name="value_must_be_greater_than">&quot;ମୂଲ୍ୟଠାରୁ ଅଧିକ ହେବା ଜରୁରୀ &quot;</string>
     <string name="custom">କଷ୍ଟମ୍</string>
     <string name="custom_cache_size">କଷ୍ଟମ୍ କ୍ୟାଚ୍ ଆକାର</string>
     <string name="listen_on">ଶୁଣ</string>
@@ -269,7 +269,7 @@
     <string name="persian">ପାର୍ସୀ</string>
     <string name="hungarian">ହଙ୍ଗେରୀ</string>
     <string name="korean">କୋରିଆନ୍</string>
-    <string name="background_player">"ପୃଷ୍ଠଭୂମି ଚାଳକ "</string>
+    <string name="background_player">&quot;ପୃଷ୍ଠଭୂମି ଚାଳକ &quot;</string>
     <string name="show_favorite_button">ମନପସନ୍ଦ ବଟନ ଦର୍ଶାନ୍ତୁ</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">ଲକ ପରଦା ଏବଂ ବିଜ୍ଞପ୍ତି କ୍ଷେତ୍ର ରେ ପ୍ରିୟ ବଟନକୁ ଦର୍ଶାନ୍ତୁ</string>
     <string name="show_download_button">ଆହରଣ ବଟନ୍ ଦର୍ଶାନ୍ତୁ</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

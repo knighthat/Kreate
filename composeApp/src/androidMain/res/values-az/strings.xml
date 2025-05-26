@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Ləğv et</string>
     <string name="done">Bitdi</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Növbədən təmizlə</string>
     <string name="remove_from_playlist">Dinləmə siyahısından sil</string>
     <string name="hide">Gizlət</string>
-    <string name="hide_from_quick_picks">\"Cəld seçimlər\"-dən gizlət</string>
+    <string name="hide_from_quick_picks">\&quot;Cəld seçimlər\&quot;-dən gizlət</string>
     <string name="related_albums">Əlaqəli albomlar</string>
     <string name="similar_artists">Uyğun Sənətkarlar</string>
     <string name="playlists_you_might_like">Bəyənə biləcəyiniz pleylistlər</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Bərpa et</string>
     <string name="import_the_database">Məlumat bazasını xarici yaddaşdan idxal et</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Android Auto Tərtibatçı Seçimlərində \"Naməlum Mənbələr-i Aktivləşdirməyi Unutmayın.</string>
+    <string name="enable_unknown_sources">Android Auto Tərtibatçı Seçimlərində \&quot;Naməlum Mənbələr-i Aktivləşdirməyi Unutmayın.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Android Auto dəstəyini aktivləşdir</string>
     <string name="search_history">AXTARIŞ TARİXÇƏSİ</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Tarixçə boşdur</string>
     <string name="service_lifetime">XİDMƏT ÖMRÜ</string>
     <string name="battery_optimizations_applied">Batareya optimallaşması istifadə edilərsə, dinləmə bildirişi, dayandırıldıqda ansız itə bilər.</string>
-    <string name="is_android12">Android 12-dən bəri \"Yenilməz xidmət\" seçiminin təsirli olması üçün batareya optimallaşmasın qapatmaq tələb olunur.</string>
+    <string name="is_android12">Android 12-dən bəri \&quot;Yenilməz xidmət\&quot; seçiminin təsirli olması üçün batareya optimallaşmasın qapatmaq tələb olunur.</string>
     <string name="ignore_battery_optimizations">Batareya optimallaşmasına məhəl qoyma</string>
     <string name="already_unrestricted">Daha məhdudiyyətsiz</string>
     <string name="disable_background_restrictions">Arxa plan məhdudiyyətlərini qapat</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Qovluq yeri</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Android 10-dan bu xüsusiyyət mövcud olmaya bilər</string>
     <string name="reset_cache_location_folder">QALIQ QOVLUQ YERİN SIFIRLA</string>
-    <string name="used">" işlədilən"</string>
+    <string name="used">&quot; işlədilən&quot;</string>
     <string name="close_background_player">Arxa plan səsləndiricini qapat</string>
     <string name="when_app_swipe_out_from_task_manager">Tətbiq tapşırıq idarəedicidən sürüşdürüldükdə</string>
     <string name="opening_url">yüklənir...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Əhvali-ruhiyyə</string>
     <string name="new_albums">Yeni albomlar</string>
     <string name="moods_and_genres">Əhvali-ruhiyyə və janrlar</string>
-    <string name="search_queries">" axtarış sorğusu"</string>
+    <string name="search_queries">&quot; axtarış sorğusu&quot;</string>
     <string name="not_find_battery_optimization_settings">Batareya optimallaşması seçimlərini tapmaq olmadı, lütfən, əl ilə ağ siyahıya salın</string>
     <string name="search">Axtarış</string>
     <string name="no">Xeyr</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Fərdi qalıq təyin et</string>
     <string name="enter_value_in_mb">Dəyəri MB ilə daxil et</string>
     <string name="value_cannot_be_empty">Dəyər boş ola bilməz</string>
-    <string name="value_must_be_greater_than">"Dəyər bundan böyük olmalıdır "</string>
+    <string name="value_must_be_greater_than">&quot;Dəyər bundan böyük olmalıdır &quot;</string>
     <string name="custom">Fərdi</string>
     <string name="custom_cache_size">Fərdi qalıq həcmi</string>
     <string name="listen_on">Bununla Dinlə</string>
@@ -269,7 +269,7 @@
     <string name="persian">Farsca (Persian)</string>
     <string name="hungarian">Macarca (Hungarian)</string>
     <string name="korean">Koreyaca (Korean)</string>
-    <string name="background_player">"ARXA PLAN SƏSLƏNDİRİCİ "</string>
+    <string name="background_player">&quot;ARXA PLAN SƏSLƏNDİRİCİ &quot;</string>
     <string name="show_favorite_button">Sevimli düyməsin göstər</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Sevimli düyməsin kilid ekranı və bildiriş sahəsində göstər</string>
     <string name="show_download_button">Yükləmə düyməsin göstər</string>
@@ -418,7 +418,7 @@
     <string name="max_songs_in_queue">Növbədəki maksimum mahnı</string>
     <string name="back">Geri</string>
     <string name="folders">Qovluqlar</string>
-    <string name="show_folders_in_on_device_page">Qovluqları \"Cihazdakı\" səhifəsində göstər</string>
+    <string name="show_folders_in_on_device_page">Qovluqları \&quot;Cihazdakı\&quot; səhifəsində göstər</string>
     <string name="lang_danish">Danimarka dili</string>
     <string name="lang_serbian_latin">Serbcə/latın</string>
     <string name="item_deselect">Seçimi sil</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Tənzimləmələrinizi bir faylda saxlayın</string>
     <string name="description_exclude_credentials">YouTube-a girişi kimi zəmanətlər təhlükəsizlik səbəbi ilə istisna edilir</string>
     <string name="title_import_settings">Tənzimləmələri idxal et</string>
-    <string name="restore_settings_from_file">Tənzimləmələrinizi \"%s\" tərəfindən yaradılan fayldan bərpa edin</string>
+    <string name="restore_settings_from_file">Tənzimləmələrinizi \&quot;%s\&quot; tərəfindən yaradılan fayldan bərpa edin</string>
     <string name="title_import_migration_file">Keçid faylın idxal et</string>
     <string name="description_import_migration_file">Dönüşümdən əvvəl köhnə istifadəçilər üçün. \nKeçiddə nüsxə yaratmaq üçün köhnə tətbiqi istifadə edin</string>
     <string name="description_app_not_installed_by_apk">APK paylayıcı tərəfindən quraşdırılan tətbiq öz paylayıcısına tətbiqi yeniləməyə icazə verməlidir!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

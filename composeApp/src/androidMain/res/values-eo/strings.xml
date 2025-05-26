@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Nuligi</string>
     <string name="done">Fina</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Forigi el la vico</string>
     <string name="remove_from_playlist">Forigi el la ludlisto</string>
     <string name="hide">Kaŝi</string>
-    <string name="hide_from_quick_picks">Kaŝi el \"Rapidaj elektoj\"</string>
+    <string name="hide_from_quick_picks">Kaŝi el \&quot;Rapidaj elektoj\&quot;</string>
     <string name="related_albums">Rilataj albumoj</string>
     <string name="similar_artists">Similaj artistoj</string>
     <string name="playlists_you_might_like">Ludlistoj, kiujn vi eble ŝatos</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Restarigi</string>
     <string name="import_the_database">Importi la datumbazon el la ekstera stokado</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Memoru ebligi \"Nekonatajn fontojn\" en la Programisto-Agordoj de Android Auto.</string>
+    <string name="enable_unknown_sources">Memoru ebligi \&quot;Nekonatajn fontojn\&quot; en la Programisto-Agordoj de Android Auto.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Ebligi Android Auto subtenon</string>
     <string name="search_history">SERĈHISTORIO</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Historio estas malplena</string>
     <string name="service_lifetime">VIVODAŬRO DE SERVO</string>
     <string name="battery_optimizations_applied">Se oni aplikas bateriajn optimumojn, la ludada sciigo povas subite malaperi kiam paŭzite.</string>
-    <string name="is_android12">Ekde Android 12, malŝalti bateriajn optimumojn necesas por ke la opcio \"Nevenkebla servo\" efektiviĝu.</string>
+    <string name="is_android12">Ekde Android 12, malŝalti bateriajn optimumojn necesas por ke la opcio \&quot;Nevenkebla servo\&quot; efektiviĝu.</string>
     <string name="ignore_battery_optimizations">Ignori bateriajn optimumojn</string>
     <string name="already_unrestricted">Jam nelimigita</string>
     <string name="disable_background_restrictions">Malebligu fonajn limigojn</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Loka dosierujo</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Ekde Android 10, ĉi tiu funkcio eble ne estas disponebla</string>
     <string name="reset_cache_location_folder">REKOMENCIGI KAŜMEMORO-LOKAN DOSIERUJON</string>
-    <string name="used">" uzata"</string>
+    <string name="used">&quot; uzata&quot;</string>
     <string name="close_background_player">Fermi fonan ludilon</string>
     <string name="when_app_swipe_out_from_task_manager">Kiam la aplikaĵo ŝovumas el tasko-administrilo</string>
     <string name="opening_url">ŝarĝas...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Humoro</string>
     <string name="new_albums">Novaj albumoj</string>
     <string name="moods_and_genres">Humoroj kaj ĝenroj</string>
-    <string name="search_queries">" serĉdemandoj"</string>
+    <string name="search_queries">&quot; serĉdemandoj&quot;</string>
     <string name="not_find_battery_optimization_settings">Ne eblis trovi bateriajn optimumigajn agordojn, bonvolu enlistigi permane</string>
     <string name="search">Serĉi</string>
     <string name="no">Ne</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Agordi propran kaŝmemoron</string>
     <string name="enter_value_in_mb">Enigu valoron en MB</string>
     <string name="value_cannot_be_empty">Valoro ne povas esti malplena</string>
-    <string name="value_must_be_greater_than">"Valoro devas esti pli granda ol "</string>
+    <string name="value_must_be_greater_than">&quot;Valoro devas esti pli granda ol &quot;</string>
     <string name="custom">Propra</string>
     <string name="custom_cache_size">Propra kaŝmemora grandeco</string>
     <string name="listen_on">Aŭskulti ĉe</string>
@@ -269,7 +269,7 @@
     <string name="persian">Persian</string>
     <string name="hungarian">Hungarian</string>
     <string name="korean">Korean</string>
-    <string name="background_player">"BACKGROUND PLAYER "</string>
+    <string name="background_player">&quot;BACKGROUND PLAYER &quot;</string>
     <string name="show_favorite_button">Show Favorite button</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Show Favorite button in lock screen and notification area</string>
     <string name="show_download_button">Show Download button</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

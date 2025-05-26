@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Скасовувати</string>
     <string name="done">Зроблено</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Видалити з черги</string>
     <string name="remove_from_playlist">Видалити з плейлиста</string>
     <string name="hide">Приховати</string>
-    <string name="hide_from_quick_picks">Приховати від \"Швидкі добірки\"</string>
+    <string name="hide_from_quick_picks">Приховати від \&quot;Швидкі добірки\&quot;</string>
     <string name="related_albums">Схожі альбоми</string>
     <string name="similar_artists">Схожі артисти</string>
     <string name="playlists_you_might_like">Плейлисти які можуть вам сподобатися</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Відновити</string>
     <string name="import_the_database">Імпортуйте базу даних із зовнішнього сховища</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Не забудьте увімкнути \"Невідомі джерела\" в Налаштуваннях розробника Android Auto.</string>
+    <string name="enable_unknown_sources">Не забудьте увімкнути \&quot;Невідомі джерела\&quot; в Налаштуваннях розробника Android Auto.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Увімкнути підтримку Android Auto</string>
     <string name="search_history">ІСТОРІЯ ПОШУКУ</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Історія порожня</string>
     <string name="service_lifetime">ТЕРМІН СЛУЖБИ</string>
     <string name="battery_optimizations_applied">Якщо застосовано оптимізацію заряду акумулятора, сповіщення про відтворення може раптово зникати під час паузи.</string>
-    <string name="is_android12">Починаючи з Android 12, для того, щоб функція \"Непереможний сервіс\" набула чинності, необхідно вимкнути оптимізацію акумулятора.</string>
+    <string name="is_android12">Починаючи з Android 12, для того, щоб функція \&quot;Непереможний сервіс\&quot; набула чинності, необхідно вимкнути оптимізацію акумулятора.</string>
     <string name="ignore_battery_optimizations">Ігноруйте оптимізацію акумулятора</string>
     <string name="already_unrestricted">Вже без обмежень</string>
     <string name="disable_background_restrictions">Вимкнути фонові обмеження</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Папка розташування</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Починаючи з Android 10, ця функція може бути недоступною</string>
     <string name="reset_cache_location_folder">СКИНУТИ ПАПКУ РОЗТАШУВАННЯ КЕШУ</string>
-    <string name="used">" зайнято"</string>
+    <string name="used">&quot; зайнято&quot;</string>
     <string name="close_background_player">Закрийте фоновий програвач</string>
     <string name="when_app_swipe_out_from_task_manager">Коли програма вилучається з диспетчера завдань</string>
     <string name="opening_url">завантажується...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Настрій</string>
     <string name="new_albums">Нові альбоми</string>
     <string name="moods_and_genres">Настрої та жанри</string>
-    <string name="search_queries">" пошукові запити"</string>
+    <string name="search_queries">&quot; пошукові запити&quot;</string>
     <string name="not_find_battery_optimization_settings">Не вдалося знайти налаштування оптимізації батареї, будь ласка, додайте до білого списку вручну</string>
     <string name="search">Пошук</string>
     <string name="no">Ні</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Встановіть власний кеш</string>
     <string name="enter_value_in_mb">Введіть значення в МБ</string>
     <string name="value_cannot_be_empty">Значення не може бути порожнім</string>
-    <string name="value_must_be_greater_than">"Значення повинно бути більше, ніж "</string>
+    <string name="value_must_be_greater_than">&quot;Значення повинно бути більше, ніж &quot;</string>
     <string name="custom">Користувальницькі</string>
     <string name="custom_cache_size">Користувацький розмір кешу</string>
     <string name="listen_on">Слухайте на</string>
@@ -269,7 +269,7 @@
     <string name="persian">Фарсі (فارْسِى)</string>
     <string name="hungarian">Угорська (Magyar)</string>
     <string name="korean">Корейська (한국어)</string>
-    <string name="background_player">"ФОНОВИЙ ПРОГРАВАЧ "</string>
+    <string name="background_player">&quot;ФОНОВИЙ ПРОГРАВАЧ &quot;</string>
     <string name="show_favorite_button">Показати кнопку Вибране</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Показати кнопку Вибране на екрані блокування та в області сповіщень</string>
     <string name="show_download_button">Показати кнопку завантаження</string>
@@ -561,7 +561,7 @@
     <string name="pinfo_type">Тип інформації</string>
     <string name="pinfo_album_and_artist_name">Альбом та ім\'я виконавця</string>
     <string name="show_player_top_actions_bar">Показувати верхню панель дій</string>
-    <string name="icon_like_button">Кнопка \"Мені подобається\"</string>
+    <string name="icon_like_button">Кнопка \&quot;Мені подобається\&quot;</string>
     <string name="icon_like_apple">Яблуко</string>
     <string name="icon_like_breaked">Зламана</string>
     <string name="icon_like_gift">Подарунок</string>
@@ -697,9 +697,9 @@
     <string name="message_type_modern">Сучасний</string>
     <string name="message_type_essential">Необхідний</string>
     <string name="discoverinforadio">Видаляє пісні, які сподобалися, і пісні зі списку відтворення з радіо</string>
-    <string name="discover_has_been_applied_to_radio">\"Відкриття\" були застосовані до радіо, видалені пісні: %s</string>
+    <string name="discover_has_been_applied_to_radio">\&quot;Відкриття\&quot; були застосовані до радіо, видалені пісні: %s</string>
     <string name="songs_number_to_show">Кількість пісень для показу</string>
-    <string name="discover_has_been_applied_to_queue">\"Відкриття\" були застосовані до черги, видалені пісні: %s</string>
+    <string name="discover_has_been_applied_to_queue">\&quot;Відкриття\&quot; були застосовані до черги, видалені пісні: %s</string>
     <string name="player_pause_on_volume_zero">Пауза при нульовій гучності</string>
     <string name="info_pauses_player_when_volume_zero">Призупиняє відтворення, коли гучність досягає 0, і відновлює, коли гучність перевищує 0</string>
     <string name="quality">Якість</string>
@@ -727,7 +727,7 @@
     <string name="lang_norwegian">Норвезька (Norsk)</string>
     <string name="translate_to">Перекласти на %s</string>
     <string name="translate_to_other_language">Перекласти іншою мовою</string>
-    <string name="action_bar_show_video_button">Показати кнопку \"Відео\"</string>
+    <string name="action_bar_show_video_button">Показати кнопку \&quot;Відео\&quot;</string>
     <string name="social_telegram">Telegram</string>
     <string name="social_telegram_info">Приєднатися до групи в Telegram</string>
     <string name="social_github">GitHub</string>
@@ -781,8 +781,8 @@
     <string name="no_thumbnail_present">Мініатюра відсутня</string>
     <string name="removed_thumbnail">Мініатюру видалено</string>
     <string name="failed_to_remove_thumbnail">Не вдалося видалити мініатюру</string>
-    <string name="settings_enable_pip">Увімкнути \"Картинку в картинці\"</string>
-    <string name="settings_enable_pip_auto">Увімкнути автоматично \"Картинка в картинці\"</string>
+    <string name="settings_enable_pip">Увімкнути \&quot;Картинку в картинці\&quot;</string>
+    <string name="settings_enable_pip_auto">Увімкнути автоматично \&quot;Картинка в картинці\&quot;</string>
     <string name="pipmodule_cover">Обкладинка</string>
     <string name="settings_pip_module">Модуль Pip</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
@@ -815,8 +815,8 @@
     <string name="enable_youtube_music_login">Увімкнути вхід у YouTube Music</string>
     <string name="show_cover_thumbnail_animation">Показувати анімацію мініатюр обкладинки</string>
     <string name="cover_thumbnail_animation_type">Тип анімації обкладинки</string>
-    <string name="jump_previous">Кнопка \"Попередня\" перезапустить поточну пісню після наступних секунд</string>
-    <string name="jump_previous_blank">Залишіть поле порожнім або 0 для кнопки \"Назад\", щоб завжди відтворювати попередню пісню</string>
+    <string name="jump_previous">Кнопка \&quot;Попередня\&quot; перезапустить поточну пісню після наступних секунд</string>
+    <string name="jump_previous_blank">Залишіть поле порожнім або 0 для кнопки \&quot;Назад\&quot;, щоб завжди відтворювати попередню пісню</string>
     <string name="delete_hidden_songs">Ви дійсно хочете видалити всі приховані пісні з бази даних? Ця дія необоротна.</string>
     <string name="delete_hidden_songs_message">Видалити приховані пісні</string>
     <string name="cover_type_vinyl">Вініл</string>
@@ -918,8 +918,8 @@
     <string name="songs_liked_yt">Пісня(і) подобається у YouTube</string>
     <string name="song_unliked_yt">Пісня не подобається у YouTube</string>
     <string name="add_rimusic_to_ytm_favorites">Вподобані пісні RiMusic в Youtube</string>
-    <string name="do_you_really_want_to_like_all_rimusictoytmusic">(розрахунковий час) необхідно, щоб поставити позначку \"Подобається\" всім пісням. Ця дія не може бути відновлена, якщо скасовано у процесі. Щоб скасувати цей процес, необхідно закрити програму. Бажаєте продовжити?</string>
-    <string name="do_you_really_want_to_like_all">(розрахунковий час) необхідно, щоб поставити позначку \"Подобається\" всім пісням. Щоб скасувати цей процес, необхідно закрити програму. Бажаєте продовжити?</string>
+    <string name="do_you_really_want_to_like_all_rimusictoytmusic">(розрахунковий час) необхідно, щоб поставити позначку \&quot;Подобається\&quot; всім пісням. Ця дія не може бути відновлена, якщо скасовано у процесі. Щоб скасувати цей процес, необхідно закрити програму. Бажаєте продовжити?</string>
+    <string name="do_you_really_want_to_like_all">(розрахунковий час) необхідно, щоб поставити позначку \&quot;Подобається\&quot; всім пісням. Щоб скасувати цей процес, необхідно закрити програму. Бажаєте продовжити?</string>
     <string name="songs_liked_yt_failed">Не вдалося поставити відмітку «Подобається» під піснею на YouTube</string>
     <string name="songs_unliked_yt_failed">Не вдалося прибрати відмітку «Подобається» під піснею на YouTube</string>
     <string name="adding_yt_to_pl_failed">Виникла помилка для наступних 50 пісень. Додавання пісень до плейлисту по одній. Додайте пісні в плейлист по одній</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

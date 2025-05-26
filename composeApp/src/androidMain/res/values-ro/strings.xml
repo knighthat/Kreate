@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Anulează</string>
     <string name="done">Finalizat</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Folderul locației</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Începând cu Android 10, această funcție poate să nu fie disponibilă</string>
     <string name="reset_cache_location_folder">RESETARE FOLDERUL LOCATIEI CACHE</string>
-    <string name="used">" folosit"</string>
+    <string name="used">&quot; folosit&quot;</string>
     <string name="close_background_player">Închide playerul de fundal</string>
     <string name="when_app_swipe_out_from_task_manager">Când aplicația este închisă din fundal</string>
     <string name="opening_url">se încarcă...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Stare</string>
     <string name="new_albums">Albume noi</string>
     <string name="moods_and_genres">Stări și genuri</string>
-    <string name="search_queries">" căutări"</string>
+    <string name="search_queries">&quot; căutări&quot;</string>
     <string name="not_find_battery_optimization_settings">Nu s-au găsit setările de optimizare a bateriei, te rugăm să le adaugi manual în lista albă</string>
     <string name="search">Căutare</string>
     <string name="no">Nu</string>
@@ -225,7 +225,7 @@
     <string name="listen_on_invidious">Ascultă pe Invidious</string>
     <string name="disable_horizontal_swipe">Dezactivează glisarea orizontală</string>
     <string name="disable_vertical_swipe">Dezactivează trecerea melodiilor prin glisare verticală</string>
-    <string name="disable_vertical_swipe_secondary">Afectează doar când \"Player-ul extins\" este oprit</string>
+    <string name="disable_vertical_swipe_secondary">Afectează doar când \&quot;Player-ul extins\&quot; este oprit</string>
     <string name="disable_song_switching_via_swipe">Dezactivează schimbarea melodiei prin glisare</string>
     <string name="interface_in_use">Interfața utilizată</string>
     <string name="user_interface">Interfața utilizatorului</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Setează cache personalizat</string>
     <string name="enter_value_in_mb">Introdu valoarea în MB</string>
     <string name="value_cannot_be_empty">Valoarea nu poate fi goală</string>
-    <string name="value_must_be_greater_than">"Valoarea trebuie să fie mai mare decât "</string>
+    <string name="value_must_be_greater_than">&quot;Valoarea trebuie să fie mai mare decât &quot;</string>
     <string name="custom">Personalizat</string>
     <string name="custom_cache_size">Mărimea cache-ului personalizat</string>
     <string name="listen_on">Ascultă pe</string>
@@ -269,7 +269,7 @@
     <string name="persian">Persană (فارسی)</string>
     <string name="hungarian">Maghiară (Magyar)</string>
     <string name="korean">Coreeană (한국어)</string>
-    <string name="background_player">"PLAYER ÎN FUNDAL "</string>
+    <string name="background_player">&quot;PLAYER ÎN FUNDAL &quot;</string>
     <string name="show_favorite_button">Afișează butonul „Apreciază”</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Afișează butonul „Apreciază” pe ecranul de blocare și în zona de notificări</string>
     <string name="show_download_button">Afișează butonul „Descarcă”</string>
@@ -874,10 +874,10 @@
     <string name="use_ytm_login_only_for_browse">Folosește YTM doar pentru navigare</string>
     <string name="info_use_ytm_login_only_for_browse">A se utiliza în cazul în care melodiile nu sunt redate când sunteți conectat</string>
     <string name="disliked_this_song">Nu se poate efectua această acțiune cu melodiile neplacute</string>
-    <string name="removed_from_disliked">Eliminat din \"Dislike\"</string>
+    <string name="removed_from_disliked">Eliminat din \&quot;Dislike\&quot;</string>
     <string name="disliked_this_collection">Nu se poate efectua această acțiune când toate melodiile nu sunt apreciate</string>
     <string name="toggle_controls_landscape">Activează /Dezactivează controalele pe ecran</string>
-    <string name="delete_songs_not_in_library">Şterge melodiile care nu sunt în \"Bibliotecă\"</string>
+    <string name="delete_songs_not_in_library">Şterge melodiile care nu sunt în \&quot;Bibliotecă\&quot;</string>
     <string name="delete_in_process">Șterge melodiile care nu sun în biblioteca ta. Aplicația se va închide după ce procesul s-a terminat</string>
     <string name="nothing_to_delete">Nimic de șters</string>
     <string name="get_album_version">Potrivește versiunea Album/Audio a melodiilor</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

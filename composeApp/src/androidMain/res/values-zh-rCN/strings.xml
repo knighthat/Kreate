@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">取消</string>
     <string name="done">完成</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">从队列中删除</string>
     <string name="remove_from_playlist">从播放列表中删除</string>
     <string name="hide">隐藏</string>
-    <string name="hide_from_quick_picks">从\"快速选择\"中隐藏</string>
+    <string name="hide_from_quick_picks">从\&quot;快速选择\&quot;中隐藏</string>
     <string name="related_albums">相关专辑</string>
     <string name="similar_artists">类似的艺术家</string>
     <string name="playlists_you_might_like">您可能喜欢的播放列表</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">位置文件夹</string>
     <string name="custom_cache_from_android_10_may_not_be_available">从Android 10，此功能可能不可用</string>
     <string name="reset_cache_location_folder">重置缓存位置文件夹</string>
-    <string name="used">" 已使用"</string>
+    <string name="used">&quot; 已使用&quot;</string>
     <string name="close_background_player">关闭后台播放</string>
     <string name="when_app_swipe_out_from_task_manager">当APP从任务管理器关闭时</string>
     <string name="opening_url">正在加载……</string>
@@ -193,7 +193,7 @@
     <string name="mood">情绪</string>
     <string name="new_albums">新专辑</string>
     <string name="moods_and_genres">情绪和流派</string>
-    <string name="search_queries">" 搜索查询"</string>
+    <string name="search_queries">&quot; 搜索查询&quot;</string>
     <string name="not_find_battery_optimization_settings">请手动将其添加到电池优化设置的白名单中，我们未能找到电池优化设置。</string>
     <string name="search">搜索中</string>
     <string name="no">否</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">设置自定义缓存</string>
     <string name="enter_value_in_mb">输入MB的值</string>
     <string name="value_cannot_be_empty">值不能为空</string>
-    <string name="value_must_be_greater_than">"值必须于 "</string>
+    <string name="value_must_be_greater_than">&quot;值必须于 &quot;</string>
     <string name="custom">自定义</string>
     <string name="custom_cache_size">自定义缓存大小</string>
     <string name="listen_on">收听</string>
@@ -269,7 +269,7 @@
     <string name="persian">波斯语</string>
     <string name="hungarian">匈牙利语</string>
     <string name="korean">韩语</string>
-    <string name="background_player">"背景播放器 "</string>
+    <string name="background_player">&quot;背景播放器 &quot;</string>
     <string name="show_favorite_button">显示收藏夹按钮</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">在锁定屏幕和通知区域显示收藏夹按钮</string>
     <string name="show_download_button">显示下载按钮</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

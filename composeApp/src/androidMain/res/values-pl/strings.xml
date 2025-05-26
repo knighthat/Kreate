@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Anuluj</string>
     <string name="done">Zatwierdź</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Usuń z kolejki</string>
     <string name="remove_from_playlist">Usuń z playlisty</string>
     <string name="hide">Ukryj</string>
-    <string name="hide_from_quick_picks">Ukryj z \"Szybkiego wyboru\"</string>
+    <string name="hide_from_quick_picks">Ukryj z \&quot;Szybkiego wyboru\&quot;</string>
     <string name="related_albums">Powiązane albumy</string>
     <string name="similar_artists">Podobni wykonawcy</string>
     <string name="playlists_you_might_like">Playlisty, które mogą ci się spodobać</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Przywracanie</string>
     <string name="import_the_database">Importuj bazę danych z pamięci zewnętrznej</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Pamiętaj, aby włączyć \"Nieznane źródła\" w ustawieniach programisty Android Auto</string>
+    <string name="enable_unknown_sources">Pamiętaj, aby włączyć \&quot;Nieznane źródła\&quot; w ustawieniach programisty Android Auto</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Włącz obsługę Android Auto</string>
     <string name="search_history">HISTORIA WYSZUKIWANIA</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Historia jest pusta</string>
     <string name="service_lifetime">ŻYWOTNOŚĆ USŁUGI</string>
     <string name="battery_optimizations_applied">Jeśli optymalizacje baterii są włączone, powiadomienie odtwarzacza może nagle zniknąć po spauzowaniu.</string>
-    <string name="is_android12">W systemie Android 12 lub nowszym wyłączenie optymalizacji baterii jest wymagane, żeby opcja \"Stała usługa\" zadziałała.</string>
+    <string name="is_android12">W systemie Android 12 lub nowszym wyłączenie optymalizacji baterii jest wymagane, żeby opcja \&quot;Stała usługa\&quot; zadziałała.</string>
     <string name="ignore_battery_optimizations">Ignoruj optymalizacje baterii</string>
     <string name="already_unrestricted">Są już wyłączone</string>
     <string name="disable_background_restrictions">Wyłącz ograniczenia działania aplikacji w tle</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Lokalizacja folderu</string>
     <string name="custom_cache_from_android_10_may_not_be_available">W systemie Android 10 lub nowszym ta funkcja może nie być dostępna</string>
     <string name="reset_cache_location_folder">ZRESETUJ LOKALIZACJĘ FOLDERU PAMIĘCI PODRĘCZNEJ</string>
-    <string name="used">"w użyciu"</string>
+    <string name="used">&quot;w użyciu&quot;</string>
     <string name="close_background_player">Zamknij odtwarzacz w tle</string>
     <string name="when_app_swipe_out_from_task_manager">Kiedy aplikacja zostanie zamknięta menadżerem zadań</string>
     <string name="opening_url">ładuje się...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Nastrój</string>
     <string name="new_albums">Nowe albumy</string>
     <string name="moods_and_genres">Nastroje i gatunki</string>
-    <string name="search_queries">" zapytania"</string>
+    <string name="search_queries">&quot; zapytania&quot;</string>
     <string name="not_find_battery_optimization_settings">Nie udało się znaleźć ustawień optymalizacji baterii. Ręcznie dodaj aplikację do białej listy.</string>
     <string name="search">Szukaj</string>
     <string name="no">Anuluj</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Ustaw własną pamięć podreczną</string>
     <string name="enter_value_in_mb">Wprowadź wartość w MB</string>
     <string name="value_cannot_be_empty">Wartość nie może być pusta</string>
-    <string name="value_must_be_greater_than">"Wartość musi być większa niż "</string>
+    <string name="value_must_be_greater_than">&quot;Wartość musi być większa niż &quot;</string>
     <string name="custom">Niestandardowy</string>
     <string name="custom_cache_size">Niestandardowy rozmiar pamięci podręcznej</string>
     <string name="listen_on">Posłuchaj na</string>
@@ -269,7 +269,7 @@
     <string name="persian">Perski</string>
     <string name="hungarian">Węgierski</string>
     <string name="korean">Koreański</string>
-    <string name="background_player">"GRANIE W TLE "</string>
+    <string name="background_player">&quot;GRANIE W TLE &quot;</string>
     <string name="show_favorite_button">Pokaż przycisk Ulubione</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Pokaż przycisk Ulubiony na ekranie blokady i obszarze powiadomień</string>
     <string name="show_download_button">Pokaż przycisk Pobierania</string>
@@ -315,7 +315,7 @@
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">Pokazuje liczbę utworów i czas ich słuchania</string>
     <string name="app_update_dialog_new">Nowa wersja %s może zostać pobrana!</string>
     <string name="enable_language_in_discovery">Włącz język w Odkrywaniu</string>
-    <string name="if_possible_allows_discovery_content_language">Treści w zakładce \"Odkrywanie\" będą wyświetlane w twoim języku, jeśli to możliwe.</string>
+    <string name="if_possible_allows_discovery_content_language">Treści w zakładce \&quot;Odkrywanie\&quot; będą wyświetlane w twoim języku, jeśli to możliwe.</string>
     <string name="set_to">Wyłącz za</string>
     <string name="end_of_song">(koniec utworu)</string>
     <string name="restore_completed">Przywracanie ukończone!</string>
@@ -561,7 +561,7 @@
     <string name="pinfo_type">Typ informacji</string>
     <string name="pinfo_album_and_artist_name">Nazwa albumu i wykonawcy</string>
     <string name="show_player_top_actions_bar">Pokaż pasek akcji</string>
-    <string name="icon_like_button">Przycisk \"Lubię to\"</string>
+    <string name="icon_like_button">Przycisk \&quot;Lubię to\&quot;</string>
     <string name="icon_like_apple">Apple</string>
     <string name="icon_like_breaked">Zniszczone</string>
     <string name="icon_like_gift">Prezent</string>
@@ -682,7 +682,7 @@
     <string name="event_volumekeysinfo">GÓRNY (następny utwór) i DOLNY (poprzedni utwór)</string>
     <string name="paste">Wklej</string>
     <string name="searches_no_suggestions">Brak sugestii</string>
-    <string name="action_bar_show_discover_button">Pokaż przycisk \"Odkrywaj\"</string>
+    <string name="action_bar_show_discover_button">Pokaż przycisk \&quot;Odkrywaj\&quot;</string>
     <string name="playertype">Typ odtwarzacza</string>
     <string name="noblur">Brak rozmycia, gdy tekst jest wyłączony</string>
     <string name="fadingedge">Krawędź zanikania</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

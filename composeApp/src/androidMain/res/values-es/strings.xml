@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Cancelar</string>
     <string name="done">Hecho</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Eliminar de la cola</string>
     <string name="remove_from_playlist">Eliminar de la lista de reproducción</string>
     <string name="hide">Ocultar</string>
-    <string name="hide_from_quick_picks">Ocultar de \"Selecciones rápidas\"</string>
+    <string name="hide_from_quick_picks">Ocultar de \&quot;Selecciones rápidas\&quot;</string>
     <string name="related_albums">Álbumes relacionados</string>
     <string name="similar_artists">Artistas similares</string>
     <string name="playlists_you_might_like">Listas de reproducción que podrían gustarte</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Restaurar</string>
     <string name="import_the_database">Importar base de datos desde un almacenamiento externo</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Recuerda habilitar \"Orígenes desconocidos\" en las opciones para desarrolladores de Android Auto.</string>
+    <string name="enable_unknown_sources">Recuerda habilitar \&quot;Orígenes desconocidos\&quot; en las opciones para desarrolladores de Android Auto.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Habilitar soporte para Android Auto</string>
     <string name="search_history">HISTORIAL DE BÚSQUEDA</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">El historial está vacío</string>
     <string name="service_lifetime">SERVICIO INVENCIBLE</string>
     <string name="battery_optimizations_applied">Si se aplican las optimizaciones de la batería, la notificación de reproducción puede desaparecer repentinamente cuando se pausa la aplicación.</string>
-    <string name="is_android12">A partir de Android 12, es necesario deshabilitar las optimizaciones de la batería para que la opción \"Servicio invencible\" surta efecto.</string>
+    <string name="is_android12">A partir de Android 12, es necesario deshabilitar las optimizaciones de la batería para que la opción \&quot;Servicio invencible\&quot; surta efecto.</string>
     <string name="ignore_battery_optimizations">Ignorar optimizaciones de la batería</string>
     <string name="already_unrestricted">Ya sin restricciones</string>
     <string name="disable_background_restrictions">Deshabilitar restricciones en segundo plano</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Ubicación de carpeta</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Es posible que esta función no esté disponible a partir de Android 10</string>
     <string name="reset_cache_location_folder">RESTABLECER UBICACIÓN DE CARPETA DE CACHÉ</string>
-    <string name="used">" usado"</string>
+    <string name="used">&quot; usado&quot;</string>
     <string name="close_background_player">Cerrar reproductor en segundo plano</string>
     <string name="when_app_swipe_out_from_task_manager">Cuando se cierra la aplicación desde el administrador de tareas</string>
     <string name="opening_url">está cargando…</string>
@@ -193,7 +193,7 @@
     <string name="mood">Estado de ánimo</string>
     <string name="new_albums">Nuevos álbumes</string>
     <string name="moods_and_genres">Estados de ánimo y géneros</string>
-    <string name="search_queries">" entradas de búsqueda"</string>
+    <string name="search_queries">&quot; entradas de búsqueda&quot;</string>
     <string name="not_find_battery_optimization_settings">No se pudieron encontrar los ajustes de optimización de la batería. Por favor, otorga los permisos manualmente</string>
     <string name="search">Buscar</string>
     <string name="no">No</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Establecer caché personalizado</string>
     <string name="enter_value_in_mb">Ingresar valor en MB</string>
     <string name="value_cannot_be_empty">El valor no puede estar vacío</string>
-    <string name="value_must_be_greater_than">"El valor debe ser mayor que "</string>
+    <string name="value_must_be_greater_than">&quot;El valor debe ser mayor que &quot;</string>
     <string name="custom">Personalizado</string>
     <string name="custom_cache_size">Tamaño de caché personalizado</string>
     <string name="listen_on">Escuchar en</string>
@@ -269,7 +269,7 @@
     <string name="persian">Persa</string>
     <string name="hungarian">Húngaro</string>
     <string name="korean">Coreano</string>
-    <string name="background_player">"REPRODUCTOR EN SEGUNDO PLANO "</string>
+    <string name="background_player">&quot;REPRODUCTOR EN SEGUNDO PLANO &quot;</string>
     <string name="show_favorite_button">Mostrar botón favoritos</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Mostrar botón favoritos en la pantalla de bloqueo y en el área de notificaciones</string>
     <string name="show_download_button">Mostrar botón descargar</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Guarda tus ajustes en un solo archivo</string>
     <string name="description_exclude_credentials">Credenciales como el inicio de sesión en YouTube están excluidas por razones de seguridad</string>
     <string name="title_import_settings">Importar ajustes</string>
-    <string name="restore_settings_from_file">Restaura tus ajustes desde el archivo creado por \"%s\"</string>
+    <string name="restore_settings_from_file">Restaura tus ajustes desde el archivo creado por \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Importar archivo de migración</string>
     <string name="description_import_migration_file">Para usuarios antiguos antes de la conversión. \nUtiliza la aplicación antigua para hacer un respaldo para la migración</string>
     <string name="description_app_not_installed_by_apk">¡La aplicación instalada por un distribuidor APK debería permitirle a su distribuidor actualizar la aplicación!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Ajusta qué tan lenta/rápida va la canción</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

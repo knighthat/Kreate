@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">Abbrechen</string>
     <string name="done">Fertig</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">Aus der Warteschlange entfernen</string>
     <string name="remove_from_playlist">Aus der Wiedergabeliste entfernen</string>
     <string name="hide">Ausblenden</string>
-    <string name="hide_from_quick_picks">Bei \"Empfehlungen\" ausblenden</string>
+    <string name="hide_from_quick_picks">Bei \&quot;Empfehlungen\&quot; ausblenden</string>
     <string name="related_albums">Ähnliche Alben</string>
     <string name="similar_artists">Ähnliche Künstler</string>
     <string name="playlists_you_might_like">Wiedergabelisten, die dir gefallen könnten</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">Wiederherstellen</string>
     <string name="import_the_database">Die Musik-Datenbank aus dem externen Speicher wiederherstellen</string>
     <string name="android_auto">ANDROID AUTO</string>
-    <string name="enable_unknown_sources">Denke daran, \"Unbekannte Quellen\" in den Entwicklereinstellungen von Android Auto zu aktivieren.</string>
+    <string name="enable_unknown_sources">Denke daran, \&quot;Unbekannte Quellen\&quot; in den Entwicklereinstellungen von Android Auto zu aktivieren.</string>
     <string name="android_auto_1">Android Auto</string>
     <string name="enable_android_auto_support">Unterstützung für Android Auto aktivieren</string>
     <string name="search_history">SUCHVERLAUF</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">Verlauf ist leer</string>
     <string name="service_lifetime">HINTERGRUNDAKTIVITÄT</string>
     <string name="battery_optimizations_applied">Wenn Akku-Optimierungen angewendet werden, kann die Wiedergabebenachrichtigung verschwinden, wenn die Wiedergabe gestoppt wird.</string>
-    <string name="is_android12">Seit Android 12 ist das Deaktivieren von Akku-Optimierungen erforderlich, damit die Option \"Unbezwingbarer Dienst\" wirksam wird.</string>
+    <string name="is_android12">Seit Android 12 ist das Deaktivieren von Akku-Optimierungen erforderlich, damit die Option \&quot;Unbezwingbarer Dienst\&quot; wirksam wird.</string>
     <string name="ignore_battery_optimizations">Akku-Optimierungen ignorieren</string>
     <string name="already_unrestricted">Bereits uneingeschränkt</string>
     <string name="disable_background_restrictions">Akkuoptimierung im Hintergrund deaktivieren</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">Ordnerpfad</string>
     <string name="custom_cache_from_android_10_may_not_be_available">Ab Android 10 ist diese Funktion möglicherweise nicht mehr verfügbar</string>
     <string name="reset_cache_location_folder">Zwischenspeicher-Ordner Zurücksetzen</string>
-    <string name="used">" verwendet"</string>
+    <string name="used">&quot; verwendet&quot;</string>
     <string name="close_background_player">Hintergrund-Player schließen</string>
     <string name="when_app_swipe_out_from_task_manager">Wenn die Anwendung im Task-Manager geschlossen wird</string>
     <string name="opening_url">wird geladen...</string>
@@ -193,7 +193,7 @@
     <string name="mood">Stimmung</string>
     <string name="new_albums">Neue Alben</string>
     <string name="moods_and_genres">Stimmungen und Genres</string>
-    <string name="search_queries">" Suchanfragen"</string>
+    <string name="search_queries">&quot; Suchanfragen&quot;</string>
     <string name="not_find_battery_optimization_settings">Konnte die Einstellungen für die Batterieoptimierung nicht finden, bitte manuell auf die Whitelist setzen</string>
     <string name="search">Suche</string>
     <string name="no">Nein</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">Eigene Größe des Zwischenspeichers festlegen</string>
     <string name="enter_value_in_mb">Wert in MB eingeben</string>
     <string name="value_cannot_be_empty">Wert darf nicht leer sein</string>
-    <string name="value_must_be_greater_than">"Der Wert muss größer sein als "</string>
+    <string name="value_must_be_greater_than">&quot;Der Wert muss größer sein als &quot;</string>
     <string name="custom">Benutzerdefiniert</string>
     <string name="custom_cache_size">Benutzerdefinierte Größe des Zwischenspeichers</string>
     <string name="listen_on">Anhören auf</string>
@@ -252,8 +252,8 @@
     <string name="odia">Odia (ଓଡିଆ)</string>
     <string name="bashkir">Baschkirisch (Башҡурт)</string>
     <string name="esperanto">Esperanto</string>
-    <string name="close_app_with_back_button">App mit \"Zurück\" schließen</string>
-    <string name="when_you_use_the_back_button_from_the_home_page">Wenn die \"Zurück\" Taste/Geste auf der Startseite betätigt wird</string>
+    <string name="close_app_with_back_button">App mit \&quot;Zurück\&quot; schließen</string>
+    <string name="when_you_use_the_back_button_from_the_home_page">Wenn die \&quot;Zurück\&quot; Taste/Geste auf der Startseite betätigt wird</string>
     <string name="audio_quality_format_high">Hoch</string>
     <string name="audio_quality_format_medium">Mittel</string>
     <string name="audio_quality_format_low">Niedrig</string>
@@ -269,8 +269,8 @@
     <string name="persian">Persisch (فارسی)</string>
     <string name="hungarian">Ungarisch (Magyar)</string>
     <string name="korean">Koreanisch (한국어 / 조선말)</string>
-    <string name="background_player">"HINTERGRUND-PLAYER "</string>
-    <string name="show_favorite_button">Schaltfläche \"Favoriten\" anzeigen</string>
+    <string name="background_player">&quot;HINTERGRUND-PLAYER &quot;</string>
+    <string name="show_favorite_button">Schaltfläche \&quot;Favoriten\&quot; anzeigen</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Favoriten-Schaltfläche auf dem Sperrbildschirm und im Benachrichtigungsbereich anzeigen</string>
     <string name="show_download_button">Download-Button anzeigen</string>
     <string name="show_download_button_in_lock_screen_and_notification_area">Download-Button im Sperrbildschirm und Benachrichtigungsbereich anzeigen</string>
@@ -305,7 +305,7 @@
     <string name="you_can_put_a_complete_link">Du kannst einen vollständigen Link zu einer Playlist, einem Album, einem Kanal oder einem einzelnen Song auf YouTube oder YouTube Music einfügen</string>
     <string name="go_to_link">Link</string>
     <string name="action_bar_show_download_button">Herunterladen-Schaltfläche anzeigen</string>
-    <string name="action_bar_show_add_to_playlist_button">\"Zur Wiedergabeliste hinzufügen\" Schaltfläche anzeigen</string>
+    <string name="action_bar_show_add_to_playlist_button">\&quot;Zur Wiedergabeliste hinzufügen\&quot; Schaltfläche anzeigen</string>
     <string name="action_bar_show_loop_button">Wiederholungsschaltfläche anzeigen</string>
     <string name="action_bar_show_shuffle_button">Zufallswiedergabe-Schaltfläche anzeigen</string>
     <string name="action_bar_show_lyrics_button">Songtext-Schaltfläche anzeigen</string>
@@ -314,8 +314,8 @@
     <string name="listening_time">Wiedergabedauer</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">Zeigt die Wiedergabedauer und die Anzahl der gehörten Titel an</string>
     <string name="app_update_dialog_new">Die neue Version %s kann heruntergeladen werden!</string>
-    <string name="enable_language_in_discovery">Übersetzung in \"Entdecken\" aktivieren</string>
-    <string name="if_possible_allows_discovery_content_language">Wenn möglich, können die Inhalte in \"Entdecken\" in der eingestellten Sprache angezeigt werden.</string>
+    <string name="enable_language_in_discovery">Übersetzung in \&quot;Entdecken\&quot; aktivieren</string>
+    <string name="if_possible_allows_discovery_content_language">Wenn möglich, können die Inhalte in \&quot;Entdecken\&quot; in der eingestellten Sprache angezeigt werden.</string>
     <string name="set_to">Festlegen auf</string>
     <string name="end_of_song">(Ende des Liedes)</string>
     <string name="restore_completed">Wiederherstellen abgeschlossen!</string>
@@ -418,7 +418,7 @@
     <string name="max_songs_in_queue">Maximale Titel in der Warteschlange</string>
     <string name="back">Zurück</string>
     <string name="folders">Ordner</string>
-    <string name="show_folders_in_on_device_page">Zeige Ordner unter \"Lokal\" im Register \"Bibliothek\" an</string>
+    <string name="show_folders_in_on_device_page">Zeige Ordner unter \&quot;Lokal\&quot; im Register \&quot;Bibliothek\&quot; an</string>
     <string name="lang_danish">Dänisch (Dansk)</string>
     <string name="lang_serbian_latin">Serbisch - Latein (srpski)</string>
     <string name="item_deselect">Auswahl aufheben</string>
@@ -426,7 +426,7 @@
     <string name="show_remaining_song_time">Verbleibende Songzeit anzeigen</string>
     <string name="full_screen">Vollbild</string>
     <string name="click_lyrics_text">Tippe auf Songtext</string>
-    <string name="folder_that_will_show_when_you_open_on_device_page">Ordner, der auf der Seite \"Lokal\" angezeigt werden soll.</string>
+    <string name="folder_that_will_show_when_you_open_on_device_page">Ordner, der auf der Seite \&quot;Lokal\&quot; angezeigt werden soll.</string>
     <string name="folder_was_not_found">Ordner wurde nicht gefunden</string>
     <string name="direction_top">Oben</string>
     <string name="pick_from">Auswählen von</string>
@@ -561,7 +561,7 @@
     <string name="pinfo_type">Kopfzeilen-Stil</string>
     <string name="pinfo_album_and_artist_name">Album und Interpreten Header</string>
     <string name="show_player_top_actions_bar">Obere Aktionsleiste anzeigen</string>
-    <string name="icon_like_button">\"Gefällt mir\" Button</string>
+    <string name="icon_like_button">\&quot;Gefällt mir\&quot; Button</string>
     <string name="icon_like_apple">Apfel</string>
     <string name="icon_like_breaked">Zerbrochen</string>
     <string name="icon_like_gift">Geschenk</string>
@@ -696,7 +696,7 @@
     <string name="message_type">Nachrichtentyp</string>
     <string name="message_type_modern">Modern</string>
     <string name="message_type_essential">Essenziell</string>
-    <string name="discoverinforadio">Entfernt die mit \"Gefällt mir\" markierten Lieder und die Lieder der Wiedergabelisten aus dem Radio</string>
+    <string name="discoverinforadio">Entfernt die mit \&quot;Gefällt mir\&quot; markierten Lieder und die Lieder der Wiedergabelisten aus dem Radio</string>
     <string name="discover_has_been_applied_to_radio">Entdecken wurde auf das Radio angewendet, entfernte Songs: %s</string>
     <string name="songs_number_to_show">Anzahl der anzuzeigenden Titel</string>
     <string name="discover_has_been_applied_to_queue">Entdecken wurde auf die Warteschlange angewandt, entfernte Songs: %s</string>
@@ -833,7 +833,7 @@
     <string name="tab_accounts">Konten</string>
     <string name="blankspace">Leerer Abstand oben</string>
     <string name="settings_enable_autodownload_song">Automatisches Herunterladen aktivieren</string>
-    <string name="settings_enable_autodownload_song_when_liked">Titel herunterladen, wenn mit \"Gefällt mir\" markiert</string>
+    <string name="settings_enable_autodownload_song_when_liked">Titel herunterladen, wenn mit \&quot;Gefällt mir\&quot; markiert</string>
     <string name="settings_enable_autodownload_song_when_album_bookmarked">Titel herunterladen, wenn Album in Lesezeichen</string>
     <string name="tab_general">Allgemein</string>
     <string name="queue_and_local_playlists_left_swipe">Warteschlange und lokale Wiedergabelisten links wischen</string>
@@ -873,8 +873,8 @@
     <string name="info_enable_connection_metered">Datensparen mindert die Qualität, nur bei Verbindung mit eingeschränkten Daten verwenden</string>
     <string name="use_ytm_login_only_for_browse">Benutze YouTube Music Login nur zum Browsen</string>
     <string name="info_use_ytm_login_only_for_browse">Zu verwenden, wenn Lieder nicht abgespielt werden, während man eingeloggt ist</string>
-    <string name="disliked_this_song">Diese Aktion kann nicht mit den mit \"Mag ich nicht\" markierten Titeln durchgeführt werden</string>
-    <string name="removed_from_disliked">Von \"Gefällt mir nicht\" entfernt</string>
+    <string name="disliked_this_song">Diese Aktion kann nicht mit den mit \&quot;Mag ich nicht\&quot; markierten Titeln durchgeführt werden</string>
+    <string name="removed_from_disliked">Von \&quot;Gefällt mir nicht\&quot; entfernt</string>
     <string name="disliked_this_collection">Cannot Perform this Action when all the Songs are Disliked</string>
     <string name="toggle_controls_landscape">Bildschirmsteuerung Ein-/Ausblenden</string>
     <string name="delete_songs_not_in_library">Titel außerhalb der Bibliothek löschen</string>
@@ -915,13 +915,13 @@
     <string name="settings_audio_focus">Audio Fokus</string>
     <string name="settings_audio_focus_info">Ermöglicht das automatische Anhalten und Fortsetzen der Wiedergabe, z. B. aufgrund eines Anrufs</string>
     <string name="please_wait">Bitte warten</string>
-    <string name="songs_liked_yt">Titel die auf YouTube mit \"Gefällt mir\" markiert sind</string>
-    <string name="song_unliked_yt">Der Titel ist auf YouTube nicht mit \"Gefällt mir\" markiert</string>
-    <string name="add_rimusic_to_ytm_favorites">\"Gefällt mir\" Angaben aus Kreate nach YouTube übertragen</string>
+    <string name="songs_liked_yt">Titel die auf YouTube mit \&quot;Gefällt mir\&quot; markiert sind</string>
+    <string name="song_unliked_yt">Der Titel ist auf YouTube nicht mit \&quot;Gefällt mir\&quot; markiert</string>
+    <string name="add_rimusic_to_ytm_favorites">\&quot;Gefällt mir\&quot; Angaben aus Kreate nach YouTube übertragen</string>
     <string name="do_you_really_want_to_like_all_rimusictoytmusic">(geschätzte Zeit) ist erforderlich, um alle Lieder zu markieren. Dieser Vorgang kann nicht fortgesetzt werden, wenn er zwischendurch abgebrochen wird. Die App muss geschlossen werden, um den Vorgang abzubrechen. Willst du fortfahren?</string>
-    <string name="do_you_really_want_to_like_all">(geschätzte Zeit) ist erforderlich um alle Titel mit \"Gefällt mir\" zu markieren. Um diesen Vorgang abzubrechen, muss die App geschlossen werden. Möchtest du fortfahren?</string>
-    <string name="songs_liked_yt_failed">Der Titel konnte auf YouTube nicht mit \"Gefällt mir\" markiert werden</string>
-    <string name="songs_unliked_yt_failed">\"Gefällt mir\" des Titels konnte auf YouTube nicht entfernt werden</string>
+    <string name="do_you_really_want_to_like_all">(geschätzte Zeit) ist erforderlich um alle Titel mit \&quot;Gefällt mir\&quot; zu markieren. Um diesen Vorgang abzubrechen, muss die App geschlossen werden. Möchtest du fortfahren?</string>
+    <string name="songs_liked_yt_failed">Der Titel konnte auf YouTube nicht mit \&quot;Gefällt mir\&quot; markiert werden</string>
+    <string name="songs_unliked_yt_failed">\&quot;Gefällt mir\&quot; des Titels konnte auf YouTube nicht entfernt werden</string>
     <string name="adding_yt_to_pl_failed">Bei den nächsten 50 Titeln ist ein Fehler aufgetreten. Der Wiedergabeliste einen Titel nach dem anderen hinzufügen</string>
     <string name="songs_add_yt_success">Der Titel wurde der YouTube Wiedergabeliste hinzugefügt</string>
     <string name="songs_add_yt_failed">Hinzufügen des Titels in die YouTube Wiedergabeliste fehlgeschlagen</string>
@@ -951,13 +951,13 @@
     <string name="store_settings_in_a_file">Einstellungen werden in einer Datei gesichert</string>
     <string name="description_exclude_credentials">Anmeldedaten wie zum Beispiel zu YouTube sind aus Sicherheitsgründen ausgeschlossen</string>
     <string name="title_import_settings">Einstellungen importieren</string>
-    <string name="restore_settings_from_file">Wiederherstellen der Einstellungen aus der durch \"%s\" erstellten Datei</string>
+    <string name="restore_settings_from_file">Wiederherstellen der Einstellungen aus der durch \&quot;%s\&quot; erstellten Datei</string>
     <string name="title_import_migration_file">Migrationsdatei importieren</string>
     <string name="description_import_migration_file">Für alte Benutzer vor der Konvertierung. \nDie alte App verwenden, um ein Backup für die Migration zu erstellen</string>
     <string name="description_app_not_installed_by_apk">Eine App, die über einen APK-Verteiler installiert wurde, sollte auch über diesen aktualisiert werden!</string>
     <string name="relative_listening_time">Relative Wiedergabedauer</string>
     <string name="added_to_dislikes">%s gefällt mir nicht</string>
-    <string name="removed_from_dislikes">%s von \"Gefällt mir nicht\" entfernt</string>
+    <string name="removed_from_dislikes">%s von \&quot;Gefällt mir nicht\&quot; entfernt</string>
     <string name="artist_featured_on">Vorgestellt auf</string>
     <string name="artist_fans_might_also_like">Das könnte Fans auch gefallen</string>
     <string name="update_changelogs">%s Änderungsprotokolle</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Festlegen, wie langsam oder schnell der Titel laufen soll</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

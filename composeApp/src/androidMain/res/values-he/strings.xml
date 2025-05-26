@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">ביטול</string>
     <string name="done">בוצע</string>
@@ -13,7 +13,7 @@
     <string name="remove_from_queue">הסרה מהתור</string>
     <string name="remove_from_playlist">הסרה מרשימת ההשמעה</string>
     <string name="hide">הסתרה</string>
-    <string name="hide_from_quick_picks">הסתרה מ\"בחירות מהירות\"</string>
+    <string name="hide_from_quick_picks">הסתרה מ\&quot;בחירות מהירות\&quot;</string>
     <string name="related_albums">אלבומים קשורים</string>
     <string name="similar_artists">אומנים דומים</string>
     <string name="playlists_you_might_like">רשימות השמעה שאולי תאהבו</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">שחזור</string>
     <string name="import_the_database">ייבא את מסד הנתונים מהאחסון החיצוני</string>
     <string name="android_auto">אנדרואיד אוטו</string>
-    <string name="enable_unknown_sources">זכור להפעיל \"מקורות לא ידועים\" בהגדרות המפתחים של Android Auto.</string>
+    <string name="enable_unknown_sources">זכור להפעיל \&quot;מקורות לא ידועים\&quot; בהגדרות המפתחים של Android Auto.</string>
     <string name="android_auto_1">אנדרואיד אוטו</string>
     <string name="enable_android_auto_support">אפשר תמיכה ב Android Auto</string>
     <string name="search_history">חפש היסטוריה</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">ההיסטוריה ריקה</string>
     <string name="service_lifetime">חיי שירות</string>
     <string name="battery_optimizations_applied">אם מוחלים אופטימיזציות של סוללה, התראת ההפעלה יכולה להיעלם לפתע כשהיא מושהית.</string>
-    <string name="is_android12">מאז אנדרואיד 12, השבתת אופטימיזציות הסוללה נדרשת כדי שהאפשרות \"שירות בלתי מנוצח\" תיכנס לתוקף.</string>
+    <string name="is_android12">מאז אנדרואיד 12, השבתת אופטימיזציות הסוללה נדרשת כדי שהאפשרות \&quot;שירות בלתי מנוצח\&quot; תיכנס לתוקף.</string>
     <string name="ignore_battery_optimizations">התעלם מאופטימיזציות של סוללה</string>
     <string name="already_unrestricted">כבר ללא הגבלה</string>
     <string name="disable_background_restrictions">השבת את הגבלות הרקע</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">תיקיית מיקום</string>
     <string name="custom_cache_from_android_10_may_not_be_available">ייתכן שתכונה זו לא תהיה זמינה מ Android 10</string>
     <string name="reset_cache_location_folder">אפס את תיקיית מיקום המטמון</string>
-    <string name="used">" בשימוש"</string>
+    <string name="used">&quot; בשימוש&quot;</string>
     <string name="close_background_player">סגור את נגן הרקע</string>
     <string name="when_app_swipe_out_from_task_manager">כאשר מחליקים החוצה ממנהל המשימות מאפליקציה</string>
     <string name="opening_url">טוען...</string>
@@ -193,7 +193,7 @@
     <string name="mood">מצב רוח</string>
     <string name="new_albums">אלבומים חדשים</string>
     <string name="moods_and_genres">מצבי רוח וז\'אנרים</string>
-    <string name="search_queries">" שאילתות חיפוש"</string>
+    <string name="search_queries">&quot; שאילתות חיפוש&quot;</string>
     <string name="not_find_battery_optimization_settings">לא ניתן היה למצוא את הגדרות אופטימיזציית הסוללה, נא לרשום היתרים באופן ידני</string>
     <string name="search">לחפש</string>
     <string name="no">לא</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">הגדר מטמון מותאם אישית</string>
     <string name="enter_value_in_mb">הזן ערך ב MB</string>
     <string name="value_cannot_be_empty">הערך אינו יכול להיות ריק</string>
-    <string name="value_must_be_greater_than">"הערך חייב להיות גדול מ "</string>
+    <string name="value_must_be_greater_than">&quot;הערך חייב להיות גדול מ &quot;</string>
     <string name="custom">התאמה אישית</string>
     <string name="custom_cache_size">גודל מטמון מותאם אישית</string>
     <string name="listen_on">תקשיב</string>
@@ -269,7 +269,7 @@
     <string name="persian">פרסית</string>
     <string name="hungarian">הונגרית</string>
     <string name="korean">קוריאנית</string>
-    <string name="background_player">"נגן רקע "</string>
+    <string name="background_player">&quot;נגן רקע &quot;</string>
     <string name="show_favorite_button">הצג כפתור מועדף</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">הצג כפתור מועדף במסך הנעילה ובאזור ההודעות</string>
     <string name="show_download_button">הצג כפתור הורדה</string>
@@ -561,7 +561,7 @@
     <string name="pinfo_type">סוג מידע</string>
     <string name="pinfo_album_and_artist_name">אלבום ושם אמן</string>
     <string name="show_player_top_actions_bar">הצג את סרגל הפעולות העליון</string>
-    <string name="icon_like_button">כפתור \"אהבתי\"</string>
+    <string name="icon_like_button">כפתור \&quot;אהבתי\&quot;</string>
     <string name="icon_like_apple">תפוח</string>
     <string name="icon_like_breaked">שבור</string>
     <string name="icon_like_gift">מתנה</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>

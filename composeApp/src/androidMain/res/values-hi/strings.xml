@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <resources>
     <string name="cancel">रद्द करें</string>
     <string name="done">हो गया</string>
@@ -85,7 +85,7 @@
     <string name="restore_1">पुनर्स्थापन_1</string>
     <string name="import_the_database">बाह्य भंडारण से डेटाबेस आयात करें</string>
     <string name="android_auto">एंड्रॉइड ऑटो</string>
-    <string name="enable_unknown_sources">एंड्रॉइड ऑटो की डेवलपर सेटिंग्स में \"अज्ञात स्रोत\" को सक्षम करना याद रखें।</string>
+    <string name="enable_unknown_sources">एंड्रॉइड ऑटो की डेवलपर सेटिंग्स में \&quot;अज्ञात स्रोत\&quot; को सक्षम करना याद रखें।</string>
     <string name="android_auto_1">एंड्रॉइड ऑटो</string>
     <string name="enable_android_auto_support">एंड्रॉइड ऑटो समर्थन सक्षम करें</string>
     <string name="search_history">खोज इतिहास</string>
@@ -95,7 +95,7 @@
     <string name="history_is_empty">इतिहास खोखला है</string>
     <string name="service_lifetime">जीवनकाल सेवा</string>
     <string name="battery_optimizations_applied">यदि बैटरी अनुकूलन लागू किया जाता है, तो रुकने पर प्लेबैक अधिसूचना अचानक गायब हो सकती है।</string>
-    <string name="is_android12">एंड्रॉइड 12 के बाद से, \"अजेय सेवा\" विकल्प को प्रभावी करने के लिए बैटरी अनुकूलन को अक्षम करना आवश्यक है।</string>
+    <string name="is_android12">एंड्रॉइड 12 के बाद से, \&quot;अजेय सेवा\&quot; विकल्प को प्रभावी करने के लिए बैटरी अनुकूलन को अक्षम करना आवश्यक है।</string>
     <string name="ignore_battery_optimizations">बैटरी अनुकूलन पर ध्यान न दें</string>
     <string name="already_unrestricted">पहले से ही अप्रतिबंधित</string>
     <string name="disable_background_restrictions">पृष्ठभूमि प्रतिबंध अक्षम करें</string>
@@ -127,7 +127,7 @@
     <string name="cache_location_folder">फ़ोल्डर स्थान</string>
     <string name="custom_cache_from_android_10_may_not_be_available">एंड्रॉइड 10 से, यह सुविधा उपलब्ध नहीं हो सकती है</string>
     <string name="reset_cache_location_folder">कैश स्थान फ़ोल्डर रीसेट करें</string>
-    <string name="used">" इस्तेमाल किया गया"</string>
+    <string name="used">&quot; इस्तेमाल किया गया&quot;</string>
     <string name="close_background_player">बैकग्राउंड प्लेयर बंद करें</string>
     <string name="when_app_swipe_out_from_task_manager">जब ऐप टास्क मैनेजर से स्वाइप आउट हो जाए</string>
     <string name="opening_url">लोड हो रहा है...</string>
@@ -193,7 +193,7 @@
     <string name="mood">मूड</string>
     <string name="new_albums">नया एल्बम</string>
     <string name="moods_and_genres">मूड और शैली</string>
-    <string name="search_queries">" खोज क्वेरी"</string>
+    <string name="search_queries">&quot; खोज क्वेरी&quot;</string>
     <string name="not_find_battery_optimization_settings">बैटरी अनुकूलन सेटिंग नहीं मिल सकी, कृपया मैन्युअल रूप से श्वेतसूची बनाएं</string>
     <string name="search">ढुंढे</string>
     <string name="no">नहीं</string>
@@ -235,7 +235,7 @@
     <string name="set_custom_cache">सिस्टम कैश सेट करें</string>
     <string name="enter_value_in_mb">एमबी में मान दर्ज करें</string>
     <string name="value_cannot_be_empty">वैल्यू खाली नहीं हो सकती</string>
-    <string name="value_must_be_greater_than">"मान %s से अधिक नहीं होना चाहिए "</string>
+    <string name="value_must_be_greater_than">&quot;मान %s से अधिक नहीं होना चाहिए &quot;</string>
     <string name="custom">कस्टम</string>
     <string name="custom_cache_size">कस्टम कैश आकार</string>
     <string name="listen_on">सुनिए</string>
@@ -269,7 +269,7 @@
     <string name="persian">फ़ारसी</string>
     <string name="hungarian">हंगेरियन</string>
     <string name="korean">कोरियाई</string>
-    <string name="background_player">"बैकग्राउंड प्लेयर "</string>
+    <string name="background_player">&quot;बैकग्राउंड प्लेयर &quot;</string>
     <string name="show_favorite_button">पसंदीदा बटन दिखाएँ</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">लॉक स्क्रीन और अधिसूचना क्षेत्र में पसंदीदा बटन दिखाएं</string>
     <string name="show_download_button">डाउनलोड बटन दिखाएँ</string>
@@ -951,7 +951,7 @@
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">Import settings</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">Restore your settings from file created by \&quot;%s\&quot;</string>
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
@@ -966,4 +966,6 @@
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="title_import_settings_migration">Import migration file.</string>
+    <string name="description_import_settings_migration">For old users before conversion.\nUse old app to make a backup for migration.</string>
 </resources>
