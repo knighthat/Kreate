@@ -963,8 +963,8 @@
     <string name="update_changelogs">%s dəyişiklik qeydləri</string>
     <string name="rotating_cover_title">Rotating album cover</string>
     <string name="title_playback_speed">Səslənmə sürəti</string>
-    <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
+    <string name="description_playback_speed">Mahnının nə qədər yavaş/sürətli getdiyini tənzimlə</string>
     <string name="log_in_to_ytm">Daha çox məzmun üçün YTM hesabınıza daxil olun</string>
-    <string name="word_documentation">Documentation</string>
-    <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="word_documentation">Sənədləşdirmə</string>
+    <string name="opens_link_in_web_browser">Veb brauzerdə link açılır</string>
 </resources>
