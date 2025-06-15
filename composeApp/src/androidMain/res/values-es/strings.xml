@@ -967,8 +967,8 @@
     <string name="log_in_to_ytm">Inicia sesión en tu cuenta de YTM para obtener más contenido</string>
     <string name="word_documentation">Documentación</string>
     <string name="opens_link_in_web_browser">Abrir enlace en el navegador web</string>
-    <string name="setting_entry_smart_rewind">Smart rewind</string>
-    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %s secd seconds</string>
-    <string name="setting_entry_show_chip">Show \"%s\" chip</string>
-    <string name="entry_setting_quick_picks_show_section">Show \"%s\"</string>
+    <string name="setting_entry_smart_rewind">Retroceso inteligente</string>
+    <string name="setting_description_smart_rewind">El botón anterior actuará como botón retroceder después de %s segundos</string>
+    <string name="setting_entry_show_chip">Mostrar chip \"%s\"</string>
+    <string name="entry_setting_quick_picks_show_section">Mostrar \"%s\"</string>
 </resources>
