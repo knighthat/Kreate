@@ -967,8 +967,8 @@
     <string name="log_in_to_ytm">Daha çox məzmun üçün YTM hesabınıza daxil olun</string>
     <string name="word_documentation">Sənədləşdirmə</string>
     <string name="opens_link_in_web_browser">Veb brauzerdə link açılır</string>
-    <string name="setting_entry_smart_rewind">Smart rewind</string>
-    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %s secd seconds</string>
-    <string name="setting_entry_show_chip">Show \"%s\" chip</string>
-    <string name="entry_setting_quick_picks_show_section">Show \"%s\"</string>
+    <string name="setting_entry_smart_rewind">Ağıllı geri çevirmə</string>
+    <string name="setting_description_smart_rewind">Əvvəlki düymə %s saniyə sonra geri çəkmə düyməsi kimi işləyəcək</string>
+    <string name="setting_entry_show_chip">\"%s\" çipin göstər</string>
+    <string name="entry_setting_quick_picks_show_section">\"%s\" göstər</string>
 </resources>

@@ -964,11 +964,11 @@
     <string name="rotating_cover_title">Rotating album cover</string>
     <string name="title_playback_speed">Швидкість відтворення</string>
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
-    <string name="log_in_to_ytm">Log in to your YTM account for more content</string>
+    <string name="log_in_to_ytm">Увійдіть у свій обліковий запис YTM, щоб переглянути більше контенту</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
-    <string name="setting_entry_smart_rewind">Smart rewind</string>
-    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %s secd seconds</string>
-    <string name="setting_entry_show_chip">Show \"%s\" chip</string>
-    <string name="entry_setting_quick_picks_show_section">Show \"%s\"</string>
+    <string name="setting_entry_smart_rewind">Розумне перемотування</string>
+    <string name="setting_description_smart_rewind">Кнопка «Назад» діятиме як кнопка перемотування через %s секунд</string>
+    <string name="setting_entry_show_chip">Показувати чіп \"%s\"</string>
+    <string name="entry_setting_quick_picks_show_section">Показувати \"%s\"</string>
 </resources>

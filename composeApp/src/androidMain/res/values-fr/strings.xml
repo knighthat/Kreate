@@ -970,8 +970,8 @@ Volume BAS : titre précédent</string>
     <string name="log_in_to_ytm">Connectez-vous à votre compte YTM pour plus de contenu</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
-    <string name="setting_entry_smart_rewind">Smart rewind</string>
-    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %s secd seconds</string>
-    <string name="setting_entry_show_chip">Show \"%s\" chip</string>
-    <string name="entry_setting_quick_picks_show_section">Show \"%s\"</string>
+    <string name="setting_entry_smart_rewind">Rembobinage intelligent</string>
+    <string name="setting_description_smart_rewind">Le bouton Précédent agira comme un bouton de retour en arrière après %s secondes</string>
+    <string name="setting_entry_show_chip">Afficher la puce « %s »</string>
+    <string name="entry_setting_quick_picks_show_section">Afficher « %s »</string>
 </resources>
