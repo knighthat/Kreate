@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cancel">Anulează</string>
     <string name="done">Finalizat</string>
@@ -242,7 +242,7 @@
     <string name="error_local_music_not_found">Fișierul muzical local nu a fost găsit</string>
     <string name="bodied_bar">Bară groasă</string>
     <string name="pin_bar">Bară pin</string>
-    <string name="rectangular">Rectangular</string>
+    <string name="rectangular">Dreptunghiular</string>
     <string name="square">Pătrat</string>
     <string name="circular_ribbed">Cerc ondulat</string>
     <string name="play_button">Butonul de redare</string>
@@ -905,23 +905,23 @@
     <string name="no_connection">Nici o conexiune</string>
     <string name="unlink_from_ytm">Deconectează biblioteca Youtube</string>
     <string name="unlink_from_yt">Deconectează de la YouTube</string>
-    <string name="yt_playlist_limited">Youtube Playlists are Limited to 5000 songs</string>
-    <string name="songs_added_in_yt">songs are added in the YouTube Playlist. Repeat the process if there are any Missing Songs</string>
-    <string name="songs_adding_in_yt">songs will be added in the YTM playlist</string>
-    <string name="settings_audio_bass_boost">Audio bass boost</string>
-    <string name="settings_bass_boost_level">Bass boost level</string>
-    <string name="settings_audio_reverb">Audio reverb</string>
-    <string name="settings_audio_reverb_info_apply_a_depth_effect_to_the_audio">Apply a depth effect to the audio</string>
-    <string name="settings_audio_focus">Audio focus</string>
-    <string name="settings_audio_focus_info">Allows automatic pause and resume playback after a call for example</string>
-    <string name="please_wait">Please Wait</string>
-    <string name="songs_liked_yt">Song(s) are Liked in YouTube</string>
-    <string name="song_unliked_yt">Song is Unliked in YouTube</string>
-    <string name="add_rimusic_to_ytm_favorites">Like melodiile \"Liked\" de RiMusic pe YouTube</string>
-    <string name="do_you_really_want_to_like_all_rimusictoytmusic">(estimated time) is required to like all the songs. This action cannot be resumed if cancelled in between. You need to close the app to cancel this process. Do you want to continue?</string>
-    <string name="do_you_really_want_to_like_all">(estimated time) is required to like all the songs. You need to close the app to cancel this process. Do you want to continue?</string>
-    <string name="songs_liked_yt_failed">Failed to like the song in YouTube</string>
-    <string name="songs_unliked_yt_failed">Failed to unlike the song in YouTube</string>
+    <string name="yt_playlist_limited">Playlist-urile YouTube sunt limitate la 5000 melodii</string>
+    <string name="songs_added_in_yt">melodiile sunt adăugate în Playlist-ul YouTube. Repetă procesul dacă lipsesc melodii</string>
+    <string name="songs_adding_in_yt">melodiile vor fi adăugate în Playlist-ul YTM</string>
+    <string name="settings_audio_bass_boost">Amplificare bas audio</string>
+    <string name="settings_bass_boost_level">Nivel amplificare bas</string>
+    <string name="settings_audio_reverb">Reverb audio</string>
+    <string name="settings_audio_reverb_info_apply_a_depth_effect_to_the_audio">Aplică un efect de adâncime audio</string>
+    <string name="settings_audio_focus">Focalizare audio</string>
+    <string name="settings_audio_focus_info">Permite pauza automată și reluarea redării după un apel, de exemplu</string>
+    <string name="please_wait">Vă rugăm să așteptați</string>
+    <string name="songs_liked_yt">Melodiile au fost \"Like\" pe YouTube</string>
+    <string name="song_unliked_yt">Melodia a fost \"Unlike\" pe YouTube</string>
+    <string name="add_rimusic_to_ytm_favorites">Like RiMusic Liked songs in Youtube</string>
+    <string name="do_you_really_want_to_like_all_rimusictoytmusic">(estimated time) este necesară pentru a \"Like\" toate melodiile. Această acțiune nu poate fi reluată dacă este anulată între. Trebuie să închideți aplicația pentru a anula acest proces. Dorești să continui?</string>
+    <string name="do_you_really_want_to_like_all">(estimated time) este necesară pentru a \"Like\" toate melodiile. Trebuie să închideți aplicația pentru a anula acest proces. Dorești să continui?</string>
+    <string name="songs_liked_yt_failed">Nu s-a putut da \"Like\" melodiei pe YouTube</string>
+    <string name="songs_unliked_yt_failed">Nu s-a putut da \"Unlike\" melodiei pe YouTube</string>
     <string name="adding_yt_to_pl_failed">Error occurred for the next 50 songs. Adding songs to the playlist one by one</string>
     <string name="songs_add_yt_success">Added the song in the YouTube Playlist</string>
     <string name="songs_add_yt_failed">Failed to add the song in the YouTube Playlist</string>

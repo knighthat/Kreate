@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cancel">Annuler</string>
     <string name="done">Fait</string>
@@ -11,7 +11,7 @@
     <string name="add_to_playlist">Ajouter à la playlist</string>
     <string name="go_to_album">Aller à l\'album</string>
     <string name="remove_from_queue">Supprimer de la file d\'attente</string>
-    <string name="remove_from_playlist">Supprimer de la playlist </string>
+    <string name="remove_from_playlist">Supprimer de la playlist</string>
     <string name="hide">Cacher</string>
     <string name="hide_from_quick_picks">Cacher de la \"Sélection Rapide\"</string>
     <string name="related_albums">Albums Associés</string>
@@ -62,7 +62,7 @@
     <string name="request_a_feature_or_suggest_an_idea">Demander une fonctionnalité ou nous suggérer une idée</string>
     <string name="theme">Thème</string>
     <string name="theme_mode">Thème Système</string>
-    <string name="thumbnail_roundness">Aspect</string>
+    <string name="thumbnail_roundness">Arrondis des angles</string>
     <string name="use_system_font">Utiliser la police du système</string>
     <string name="use_font_by_the_system">Utiliser la police appliquée par le système</string>
     <string name="apply_font_padding">Appliquer un remplissage</string>
@@ -122,7 +122,7 @@
     <string name="provided_by">Fournies par</string>
     <string name="delete_playback_events">Supprimer %1$s événements de la lecture</string>
     <string name="existing_data_will_be_overwritten">Les données existantes seront écrasées. %1$s se fermera automatiquement après la restauration de la base de données.</string>
-    <string name="folder_cache">CACHE DU DOSSIERS</string>
+    <string name="folder_cache">DOSSIER DU CACHE</string>
     <string name="cache_reset_by_clicking_button">Attention en cliquant sur le bouton ci-dessous, le dossier d\'emplacement du cache sera réinitialisé au paramètre par défaut</string>
     <string name="cache_location_folder">Emplacement du dossier</string>
     <string name="custom_cache_from_android_10_may_not_be_available">À partir d\'Android 10, cette fonctionnalité peut ne plus être disponible</string>
@@ -185,7 +185,7 @@
     <string name="unlimited">Illimité</string>
     <string name="_light">Clair</string>
     <string name="downloaded">Téléchargés</string>
-    <string name="turn_off">Desactivé</string>
+    <string name="turn_off">Désactivé</string>
     <string name="download">Télécharger</string>
     <string name="_default">Par défaut</string>
     <string name="dynamic">Dynamique</string>
@@ -215,7 +215,7 @@
     <string name="vt_double_side_circular">Des deux côté et circulaire</string>
     <string name="vt_full">Complet</string>
     <string name="new_albums_of_your_artists">Nouveaux albums de vos artistes</string>
-    <string name="timeline">Barre de navigation</string>
+    <string name="timeline">Ligne de temps</string>
     <string name="song_cache_by_player">CACHE DE TITRE (Pour le lecteur)</string>
     <string name="song_cache_by_download">CACHE DE TITRE (Pour le télechargement)</string>
     <string name="visualizer">Visualiseur</string>
@@ -265,7 +265,7 @@
     <string name="catalan">Catalan (Català)</string>
     <string name="disable_scrolling_text">Désactiver le défilement du texte</string>
     <string name="scrolling_text_is_used_for_long_texts">Le défilement du texte est utilisé pour les longs textes</string>
-    <string name="audio_quality_format">Format de la qualité audio</string>
+    <string name="audio_quality_format">Qualité audio</string>
     <string name="persian">Persan (فارسی)</string>
     <string name="hungarian">Hongrois (Magyar)</string>
     <string name="korean">Coréen (한국인)</string>
@@ -384,7 +384,7 @@
     <string name="activate_the_action_menu_by_swiping_the_song_left_or_right">Activer le menu d\'action en faisant glisser le titre vers la gauche ou la droite</string>
     <string name="smart_recommendations">RECOMMANDATIONS INTELLIGENTES</string>
     <string name="player_collapsed_disable_swiping_down">Désactiver le glissement vers le bas</string>
-    <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">Éviter de fermer le lecteur et de nettoyer la file en glissant vers le bas pendant qu\'il est minimisé</string>
+    <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">Éviter de fermer le lecteur et de nettoyer la file en balayant vers le bas pendant qu\'il est minimisé</string>
     <string name="sort_date_liked">Date de mise en favoris</string>
     <string name="export_playlist">Exporter la playlist</string>
     <string name="lang_afrikaans">Africain (Afrikaans)</string>
@@ -430,7 +430,7 @@
     <string name="folder_was_not_found">Le dossier n\'a pas été trouvé</string>
     <string name="direction_top">En haut</string>
     <string name="pick_from">Choisir parmi</string>
-    <string name="download_cover">Télécharger l\'album</string>
+    <string name="download_cover">Télécharger la pochette d\'album</string>
     <string name="menu_style">Style du menu</string>
     <string name="style_grid">Grille</string>
     <string name="style_list">Liste</string>
@@ -471,7 +471,7 @@
     <string name="info_not_find_app_create_doc">Impossible de trouver une application pour créer des documents</string>
     <string name="info_not_find_app_browse_internet">Impossible de trouver une application pour naviguer sur Internet</string>
     <string name="show_floating_icon">Afficher l\'icône flottante</string>
-    <string name="show_equalizer">Afficher l\'egaliseur</string>
+    <string name="show_equalizer">Afficher l\'égaliseur</string>
     <string name="theme_pure_black">Noir Pur</string>
     <string name="theme_modern_black">Noir Moderne</string>
     <string name="theme_mode_pitch_black">Noir profond</string>
@@ -545,7 +545,7 @@
     <string name="info_bookmark_album">Marquer l\'album</string>
     <string name="effect_fade_songs">Fondu des titres</string>
     <string name="bg_colors_fluid_gradient_background_from_theme">Fond de gradient fluide à partir du thème</string>
-    <string name="bg_colors_fluid_gradient_background_from_cover">Fond de gradient fluide à partir de la pochette d\'album</string>
+    <string name="bg_colors_fluid_gradient_background_from_cover">Dégradé d\'arrière-plan fluide à partir de la pochette d\'album</string>
     <string name="show_background_in_lyrics">Afficher la couleur d\'arrière-plan dans les paroles</string>
     <string name="bg_colors_blurred_cover_background">Arrière-plan de la pochette d\'album floue</string>
     <string name="lang_estonian">Estonien (eesti keel)</string>
@@ -702,12 +702,12 @@ Volume BAS : titre précédent</string>
     <string name="discoverinforadio">Supprime les titres aimés et les playlists de la file d\'attente</string>
     <string name="discover_has_been_applied_to_radio">La découverte a été appliquée à la radio, titres retirés : %s</string>
     <string name="songs_number_to_show">Nombre de titres à afficher</string>
-    <string name="discover_has_been_applied_to_queue">La découverte a été appliquée à la radio, titres retirés : %s</string>
+    <string name="discover_has_been_applied_to_queue">La découverte a été appliquée à la file d\'attente, titres retirés : %s</string>
     <string name="player_pause_on_volume_zero">Mettre en pause quand le volume est à 0</string>
     <string name="info_pauses_player_when_volume_zero">Met en pause le lecteur lorsque le volume atteint 0 et reprend lorsque le volume est supérieur à 0</string>
     <string name="quality">Qualité</string>
     <string name="value_must_be_ip_address">La valeur doit être une adresse ip</string>
-    <string name="swipe_up_to_open_the_queue">Glisser vers le haut pour ouvrir la file d\'attente</string>
+    <string name="swipe_up_to_open_the_queue">Balayer vers le haut pour ouvrir la file d\'attente</string>
     <string name="pinfo_show_icons">Afficher les informations avec les icônes</string>
     <string name="format_ms">%1$d ms</string>
     <string name="minimum_silence_length">Longueur minimale du silence</string>
@@ -776,7 +776,7 @@ Volume BAS : titre précédent</string>
     <string name="lang_tamil">Tamoul</string>
     <string name="player_auto_load_songs_in_queue">Charger automatiquement les titres dans la file d\'attente</string>
     <string name="player_auto_load_songs_in_queue_description">Ajoute des titres quand la file d\'attente est sur le point de se terminer</string>
-    <string name="show_vinyl_thumbnail_animation">Afficher l\'animation Vinyle comme miniature</string>
+    <string name="show_vinyl_thumbnail_animation">Afficher l\'animation Vinyle au lieu de la pochette</string>
     <string name="toggle_romanization">Activer / Désactiver la romanisation</string>
     <string name="edit_thumbnail">Éditer la miniature</string>
     <string name="thumbnail_not_selected">Miniature non sélectionnée</string>
@@ -790,7 +790,7 @@ Volume BAS : titre précédent</string>
     <string name="settings_pip_module">Module Pip</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">À partir d\'Android 12, PIP peut être activé automatiquement</string>
-    <string name="showsecondline">Afficher la traduction dans une deuxième ligne</string>
+    <string name="showsecondline">Afficher la traduction sur une deuxième ligne</string>
     <string name="enter_the_value">Entrez la valeur</string>
     <string name="resume_playback_on_start">Reprendre la lecture au démarrage</string>
     <string name="resume_automatically_when_app_opens">Reprendre la lecture automatiquement lorsque l\'application est ouverte</string>
@@ -817,7 +817,7 @@ Volume BAS : titre précédent</string>
     <string name="title_youtube_music">YOUTUBE MUSIC</string>
     <string name="enable_youtube_music_login">Activer la connexion à YouTube Music</string>
     <string name="show_cover_thumbnail_animation">Afficher l\'animation de la vignette de couverture</string>
-    <string name="cover_thumbnail_animation_type">Type d\'animation de couverture</string>
+    <string name="cover_thumbnail_animation_type">Type d\'animation de la pochette</string>
     <string name="jump_previous">Le bouton Précédent redémarrera le titre en cours une fois les secondes suivantes écoulées</string>
     <string name="jump_previous_blank">Laissez-le vide ou 0 pour le bouton Précédent pour toujours lire le titre précédent</string>
     <string name="delete_hidden_songs">Voulez-vous vraiment supprimer tous les titres cachés de la base de données ? Cette action est irréversible.</string>
@@ -845,7 +845,7 @@ Volume BAS : titre précédent</string>
     <string name="playlist_right_swipe">Balayage vers la droite de la playlist</string>
     <string name="album_left_swipe">Balayage vers la gauche de l\'album</string>
     <string name="album_right_swipe">Balayage vers la droite de l\'album</string>
-    <string name="bookmark">Signet</string>
+    <string name="bookmark">Favoris</string>
     <string name="downloading_videos_not_supported">Le téléchargement de vidéos n\'est pas pris en charge</string>
     <string name="animatedgradient">Dégradé Animé</string>
     <string name="linear">Dégradé linéaire</string>
@@ -888,7 +888,7 @@ Volume BAS : titre précédent</string>
     <string name="matching_songs">Titres correspondants. Veuillez patienter. Ne réduisez pas ou ne quittez pas l\'application</string>
     <string name="unmatched">Titres incomparables</string>
     <string name="match_song">Rejouer ce titre</string>
-    <string name="match_song_grid">Titre de revanche</string>
+    <string name="match_song_grid">Morceau correspondant</string>
     <string name="songsnotfound">Titres non trouvés</string>
     <string name="swipe_Animation_No_Thumbnail">Animation de balayage</string>
     <string name="do_you_really_want_to_match_all">Voulez-vous vraiment remplacer tous les titres non correspondants par les titres correspondants ? Cette action est irréversible.</string>
@@ -966,13 +966,13 @@ Volume BAS : titre précédent</string>
     <string name="update_changelogs">%s journaux des modifications</string>
     <string name="rotating_cover_title">Pochette d\'album rotative</string>
     <string name="title_playback_speed">Vitesse de lecture</string>
-    <string name="description_playback_speed">Ajuster la vitesse / la lenteur du titre</string>
+    <string name="description_playback_speed">Ajuster la vitesse du titre</string>
     <string name="log_in_to_ytm">Connectez-vous à votre compte YTM pour plus de contenu</string>
     <string name="word_documentation">Documentation</string>
-    <string name="opens_link_in_web_browser">Opens link in web browser</string>
+    <string name="opens_link_in_web_browser">Ouvre le lien dans le navigateur Web</string>
     <string name="setting_entry_smart_rewind">Rembobinage intelligent</string>
     <string name="setting_description_smart_rewind">Le bouton Précédent agira comme un bouton de retour en arrière après %s secondes</string>
-    <string name="setting_entry_show_chip">Afficher la puce « %s »</string>
+    <string name="setting_entry_show_chip">Afficher l\'onglet « %s »</string>
     <string name="entry_setting_quick_picks_show_section">Afficher « %s »</string>
     <string name="setting_entry_crash_log">Crash log</string>
     <string name="setting_entry_logs">Logs</string>

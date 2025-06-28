@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cancel">Cancel·lar</string>
     <string name="done">Fet</string>
@@ -918,7 +918,7 @@
     <string name="songs_liked_yt">Song(s) are Liked in YouTube</string>
     <string name="song_unliked_yt">Song is Unliked in YouTube</string>
     <string name="add_rimusic_to_ytm_favorites">Like RiMusic Liked songs in Youtube</string>
-    <string name="do_you_really_want_to_like_all_rimusictoytmusic">(estimated time) is required to like all the songs. This action cannot be resumed if cancelled in between. You need to close the app to cancel this process. Do you want to continue?</string>
+    <string name="do_you_really_want_to_like_all_rimusictoytmusic">Es requereix (estimated time) per donar-li m\'agrada a totes les cançons. Aquesta acció no és pot resumir si és cancela mentrestant tant. Necessites tancar l\'aplicació per cancel·lar aquest procés. m Vols continuar?</string>
     <string name="do_you_really_want_to_like_all">(estimated time) is required to like all the songs. You need to close the app to cancel this process. Do you want to continue?</string>
     <string name="songs_liked_yt_failed">Failed to like the song in YouTube</string>
     <string name="songs_unliked_yt_failed">Failed to unlike the song in YouTube</string>

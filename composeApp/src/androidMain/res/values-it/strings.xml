@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cancel">Annulla</string>
     <string name="done">Ok</string>
@@ -584,11 +584,11 @@
     <string name="enable_log_debug">Abilita il registro di debug</string>
     <string name="if_enabled_create_a_log_file_to_highlight_errors">Se abilitato, crea un file di registro per evidenziare gli errori</string>
     <string name="copy_log_to_clipboard">Copia il registro negli appunti</string>
-    <string name="piped_account">PIPED</string>
+    <string name="piped_account">Il tuo account pipe</string>
     <string name="enable_piped_syncronization">Abilita sincronizzazione piped</string>
     <string name="piped_change_instance">Cambia istanza</string>
     <string name="piped_username">Nome utente</string>
-    <string name="piped_password">Password</string>
+    <string name="piped_password">La tua password pipe</string>
     <string name="piped_disconnect">Disconnetti</string>
     <string name="piped_connect">Connetti</string>
     <string name="piped_connected_to_s">Connesso a %s</string>
@@ -612,7 +612,7 @@
     <string name="expandedlyrics">Vista espansa delle lyrics</string>
     <string name="expandedlyricsinfo">Funziona solo quando la miniatura delle lyrics è disabilitata</string>
     <string name="info_connect_your_piped_account_first">Connetti prima il tuo account piped o disabilita la sincronizzazione piped</string>
-    <string name="piped_playlists">Piped</string>
+    <string name="piped_playlists">Le playlist di pipe</string>
     <string name="lang_bengali">Bengalese</string>
     <string name="lang_irish">Irlandese</string>
     <string name="lyricsoutline">Contorno lyrics</string>
@@ -963,11 +963,11 @@
     <string name="update_changelogs">%s changelogs</string>
     <string name="rotating_cover_title">Rotating album cover</string>
     <string name="title_playback_speed">Velocità di riproduzione</string>
-    <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
-    <string name="log_in_to_ytm">Log in to your YTM account for more content</string>
-    <string name="word_documentation">Documentation</string>
-    <string name="opens_link_in_web_browser">Opens link in web browser</string>
-    <string name="setting_entry_smart_rewind">Smart rewind</string>
+    <string name="description_playback_speed">Regola la velocità/lentezza della canzone</string>
+    <string name="log_in_to_ytm">Accedi al tuo account YTM</string>
+    <string name="word_documentation">Documentazione</string>
+    <string name="opens_link_in_web_browser">Apri il link nel Browser Esterno</string>
+    <string name="setting_entry_smart_rewind">Riavvolgimento Avanzato</string>
     <string name="setting_description_smart_rewind">Previous button will act like rewind button after %s secd seconds</string>
     <string name="setting_entry_show_chip">Show \"%s\" chip</string>
     <string name="entry_setting_quick_picks_show_section">Show \"%s\"</string>
