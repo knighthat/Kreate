@@ -238,7 +238,7 @@
     <string name="close_app_with_back_button">Fechar aplicativo com o Botão Voltar</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Quando utilizar o botão voltar da página inicial</string>
     <string name="audio_quality_format_high">Alto</string>
-    <string name="audio_quality_format_medium">Médio</string>
+    <string name="audio_quality_format_medium">Medium</string>
     <string name="audio_quality_format_low">Baixo</string>
     <string name="audio_quality_format_unknown">Desconhecido</string>
     <string name="do_you_really_want_to_delete_download">Tem a certeza que quer apagar esta transferência?</string>
@@ -277,7 +277,7 @@
     <string name="paste_or_type_a_valid_url">Cole ou digite uma url válida</string>
     <string name="you_can_put_a_complete_link">Pode colocar um link completo de uma playlist, de um álbum, de um canal, ou de uma música no YouTube ou no YouTube Music</string>
     <string name="go_to_link">Ir para o link</string>
-    <string name="action_bar_show_download_button">Mostrar o botão de Transferir</string>
+    <string name="action_bar_show_download_button">Show Download button</string>
     <string name="action_bar_show_add_to_playlist_button">Mostrar botão Adicionar à lista de reprodução</string>
     <string name="action_bar_show_loop_button">Mostrar botão Loop</string>
     <string name="action_bar_show_shuffle_button">Mostrar botão Aleatório</string>
@@ -413,12 +413,12 @@
     <string name="sorry_tips_are_not_available">Desculpe, as dicas não estão disponíveis por enquanto.</string>
     <string name="library_collections">Coleções</string>
     <string name="info_show_hide_hidden_songs">Mostrar/ocultar músicas ocultas</string>
-    <string name="info_shuffle">Reproduzir aleatoriamente</string>
+    <string name="info_shuffle">Shuffle</string>
     <string name="info_includes_excludes_songs_on_the_device">Incluir/Excluir músicas no dispositivo</string>
     <string name="info_enqueue_songs">Colocar músicas em fila de espera</string>
     <string name="info_download_all_songs">Transferir todas as músicas</string>
     <string name="info_remove_all_downloaded_songs">Remover todas as músicas transferidas</string>
-    <string name="info_start_radio">Iniciar rádio</string>
+    <string name="info_start_radio">Start radio</string>
     <string name="info_translation">Tradução</string>
     <string name="info_find_the_song_that_is_playing">Encontrar a música que está a tocar</string>
     <string name="info_smart_recommendation">Recomendação inteligente</string>
@@ -538,7 +538,7 @@
     <string name="parental_control">Controlo parental</string>
     <string name="info_prevent_play_songs_with_age_limitation">Prevenir reprodução de músicas com restrição de idade</string>
     <string name="cache_location_private">Privado</string>
-    <string name="cache_location_system">Sistema</string>
+    <string name="cache_location_system">System</string>
     <string name="info_cannot_rename_a_monthly_or_piped_playlist">Não é possível renomear uma playlist mensal ou piped</string>
     <string name="debug">DEBUG</string>
     <string name="enable_log_debug">Ativar log de depuração</string>
@@ -562,7 +562,7 @@
     <string name="miniplayertype">Tipo de Mini Leitor</string>
     <string name="expanded">Expandido</string>
     <string name="lyricscolor">Cor das letras</string>
-    <string name="accent">Realçar</string>
+    <string name="accent">Accent</string>
     <string name="lyrics_size">Tamanho das letras</string>
     <string name="translate">Traduzir</string>
     <string name="transparentbar">Barra da Timeline Transparente</string>
@@ -651,8 +651,8 @@
     <string name="effect_fade_audio_description">Desvanecer áudio quando a música é pausada ou reproduzida</string>
     <string name="autosync">Sincronizar Automaticamente Playlists Importadas</string>
     <string name="message_type">Tipo de mensagem</string>
-    <string name="message_type_modern">Moderno</string>
-    <string name="message_type_essential">Essencial</string>
+    <string name="message_type_modern">Modern</string>
+    <string name="message_type_essential">Essential</string>
     <string name="discoverinforadio">Remove as músicas favoritas e da playlist da rádio</string>
     <string name="discover_has_been_applied_to_radio">Descobrir foi aplicado à rádio, músicas removidas: %s</string>
     <string name="songs_number_to_show">Número de músicas a mostrar</string>
@@ -696,8 +696,8 @@
     <string name="social_discord">Discord</string>
     <string name="social_discord_info">Junte-se à comunidade no Discord</string>
     <string name="discord_enable_rich_presence">Ativar a Presença Enriquecida</string>
-    <string name="discord_disconnect">Desconectar</string>
-    <string name="discord_connect">Conectar</string>
+    <string name="discord_disconnect">Disconnect</string>
+    <string name="discord_connect">Connect</string>
     <string name="discord_connected_to_discord_account">Conectado à Conta Discord</string>
     <string name="settings_reset">Reset</string>
     <string name="settings_restore_default_settings">Restaurar configurações padrão</string>
@@ -735,7 +735,7 @@
     <string name="failed_to_remove_thumbnail">Falha ao Remover Miniatura</string>
     <string name="settings_enable_pip">Ativar Picture in Picture</string>
     <string name="settings_enable_pip_auto">Ativar automaticamente Picture in Picture</string>
-    <string name="pipmodule_cover">Capa</string>
+    <string name="pipmodule_cover">Cover</string>
     <string name="settings_pip_module">Módulo Pip</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">A partir do Android 12 o pip é ativado automaticamente</string>
@@ -778,7 +778,7 @@
     <string name="enable_wallpaper">Ativar imagem de fundo</string>
     <string name="set_cover_thumbnail_as_wallpaper">Definir capa do álbum como papel de parede</string>
     <string name="notification_type">Tipo de notificação</string>
-    <string name="notification_type_default">Predefinição</string>
+    <string name="notification_type_default">Default</string>
     <string name="notification_type_advanced">Avançado</string>
     <string name="notification_type_info">A forma como o leitor é gerido na área de notificação e no ecrã de bloqueio.</string>
     <string name="action_bar_show_start_radio_button">Iniciar botão de rádio</string>
@@ -907,14 +907,14 @@
     <string name="title_import_migration_file">Importar ficheiro de migração</string>
     <string name="description_import_migration_file">Antes da conversão para utilizadores antigos. \n Utilizar a aplicação antiga para fazer uma cópia de segurança para a migração</string>
     <string name="description_app_not_installed_by_apk">O app instalado por um distribuidor APK deve permitir que o distribuidor atualize o app!</string>
-    <string name="relative_listening_time">Tempo Relativo de Escuta</string>
+    <string name="relative_listening_time">Relative Listening Time</string>
     <string name="added_to_dislikes">Não gostou %s</string>
     <string name="removed_from_dislikes">Removido %s de não gostar</string>
     <string name="artist_featured_on">Apresentado em</string>
     <string name="artist_fans_might_also_like">Os fãs também podem gostar</string>
     <string name="update_changelogs">%s changelogs</string>
     <string name="rotating_cover_title">Girar capa do álbum</string>
-    <string name="title_playback_speed">Velocidade de reprodução</string>
+    <string name="title_playback_speed">Playback speed</string>
     <string name="description_playback_speed">Ajustar o quão lento/rápida a música vai</string>
     <string name="log_in_to_ytm">Faça o login na sua conta YTM para mais conteúdo</string>
     <string name="word_documentation">Documentação</string>
