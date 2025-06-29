@@ -562,7 +562,7 @@
     <string name="miniplayertype">縮小播放器類型</string>
     <string name="expanded">已展開</string>
     <string name="lyricscolor">歌詞顏色</string>
-    <string name="accent">強調色</string>
+    <string name="accent">Accent</string>
     <string name="lyrics_size">歌詞大小</string>
     <string name="translate">翻譯</string>
     <string name="transparentbar">透明的時間軸</string>
@@ -652,7 +652,7 @@
     <string name="autosync">Auto Sync Imported Playlists</string>
     <string name="message_type">訊息類型</string>
     <string name="message_type_modern">現代風格</string>
-    <string name="message_type_essential">基本</string>
+    <string name="message_type_essential">Essential</string>
     <string name="discoverinforadio">Removes Liked and Playlist songs from Radio</string>
     <string name="discover_has_been_applied_to_radio">探索模式已應用於收音機，已移除歌曲：%s</string>
     <string name="songs_number_to_show">Songs number to show</string>
@@ -735,7 +735,7 @@
     <string name="failed_to_remove_thumbnail">Failed to Remove Thumbnail</string>
     <string name="settings_enable_pip">Enable Picture in Picture</string>
     <string name="settings_enable_pip_auto">Enable Automatic Picture in Picture</string>
-    <string name="pipmodule_cover">封面</string>
+    <string name="pipmodule_cover">Cover</string>
     <string name="settings_pip_module">Pip module</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">From Android 12 pip can be automatically enabled</string>
@@ -914,7 +914,7 @@
     <string name="artist_fans_might_also_like">Fans might also like</string>
     <string name="update_changelogs">%s changelogs</string>
     <string name="rotating_cover_title">Rotating album cover</string>
-    <string name="title_playback_speed">播放速度</string>
+    <string name="title_playback_speed">Playback speed</string>
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="log_in_to_ytm">Log in to your YTM account for more content</string>
     <string name="word_documentation">Documentation</string>
