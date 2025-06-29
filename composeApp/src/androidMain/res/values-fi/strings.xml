@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">Etsi sanoituksia netistä</string>
     <string name="fetch_lyrics_again">Nouda sanoitukset uudelleen</string>
     <string name="id">Tunnus</string>
-    <string name="itag">Itag</string>
     <string name="bitrate">Bittinopeus</string>
     <string name="size">Koko</string>
     <string name="cached">Välimuistissa</string>
@@ -170,16 +169,6 @@
     <string name="contributors">OSALLISTUJAT</string>
     <string name="troubleshooting">ONGELMIEN SELVITTÄMINEN</string>
     <string name="social">SOSIAALINEN</string>
-    <string name="english">englanti</string>
-    <string name="italian">italia</string>
-    <string name="czech">tšekki</string>
-    <string name="german">saksa</string>
-    <string name="spanish">espanja</string>
-    <string name="french">ranska</string>
-    <string name="romanian">romania</string>
-    <string name="russian">venäjä</string>
-    <string name="turkish">turkki</string>
-    <string name="polish">puola</string>
     <string name="dark">Tumma</string>
     <string name="system">Järjestelmä</string>
     <string name="unlimited">Rajoittamaton</string>
@@ -246,12 +235,6 @@
     <string name="square">Neliö</string>
     <string name="circular_ribbed">Pyöreä uritettu</string>
     <string name="play_button">Soita painike</string>
-    <string name="portuguese_brazilian">portugali, Brasilia</string>
-    <string name="portuguese">portugali</string>
-    <string name="indonesian">indonesia</string>
-    <string name="odia">odia</string>
-    <string name="bashkir">baškiiri</string>
-    <string name="esperanto">esperanto</string>
     <string name="close_app_with_back_button">Sulje sovellus takaisinpainikkeella</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Kun takaisinpainiketta/-elettä käytetään kotisivulla</string>
     <string name="audio_quality_format_high">Korkea</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">Haluatko varmasti poistaa latauksen?</string>
     <string name="enqueue_all">Lisää kaikki jonoon</string>
     <string name="enqueue_selected">Lisää valitut jonoon</string>
-    <string name="greek">kreikka</string>
-    <string name="catalan">katalaani</string>
     <string name="disable_scrolling_text">Poista vieritysteksti käytöstä</string>
     <string name="scrolling_text_is_used_for_long_texts">Vieritystekstiä käytetään pitkiin teksteihin</string>
     <string name="audio_quality_format">Äänenlaatu</string>
     <string name="persian">persia</string>
-    <string name="hungarian">unkari</string>
-    <string name="korean">korea</string>
     <string name="background_player">"TAUSTASOITIN "</string>
     <string name="show_favorite_button">Näytä Suosikki -nappi</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Näytä Suosikki -nappi lukitusnäytössä ja ilmoituksissa</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">kuunneltua kappaletta</string>
     <string name="statistics_of_time_taken">aikaa käytetty</string>
     <string name="statistics_max_number_of_items">Suurin määrä kohteita</string>
-    <string name="arabic">arabia</string>
-    <string name="chinese_simplified">kiina yksinkertaistettu</string>
-    <string name="chinese_traditional">kiina perinteinen</string>
     <string name="do_you_really_want_to_download_all">Haluatko varmasti ladata kaikki?</string>
     <string name="import_playlist">Tuo soittolista</string>
-    <string name="lang_ukrainian">ukraina</string>
     <string name="proxy">VÄLITYSPALVELIN</string>
     <string name="enable_proxy">Ota välityspalvelin käyttöön</string>
     <string name="proxy_mode">Välityspalvelimen protokolla</string>
     <string name="proxy_host">Välityspalvelimen isäntänimi</string>
     <string name="proxy_port">Välityspalvelimen portti</string>
     <string name="disable_if_you_do_not_want_to_see">Poista käytöstä, jos et halua nähdä</string>
-    <string name="lang_hebrew">heprea</string>
     <string name="customize_album">Mukauta albumia</string>
     <string name="update_title">Muuta nimi</string>
     <string name="update_authors">Päivitä tekijät</string>
@@ -300,7 +274,6 @@
     <string name="title">Nimi</string>
     <string name="authors">Tekijät</string>
     <string name="cover">Kansi</string>
-    <string name="lang_japanese">japani</string>
     <string name="paste_or_type_a_valid_url">Liitä tai kirjoita kelvollinen url</string>
     <string name="you_can_put_a_complete_link">Täydellinen linkki voidaan asettaa soittolistaan, albumiin, kanavaan tai yksittäiseen kappaleeseen YouTubessa tai YouTube Musicissa</string>
     <string name="go_to_link">Siirry linkkiin</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">Näytä Sekoita -nappi</string>
     <string name="action_bar_show_lyrics_button">Näytä Sanoitukset -nappi</string>
     <string name="action_bar_show_arrow_button_to_open_queue">Näytä Nuoli -nappi</string>
-    <string name="lang_finnish">suomi</string>
     <string name="listening_time">Kuunteluaika</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">Näyttää montako kappaletta on kuunneltu ja niiden keston</string>
     <string name="app_update_dialog_new">Uusi versio %s ladattavissa!</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">kappaleen loppu</string>
     <string name="restore_completed">Palautus on valmis!</string>
     <string name="click_to_close">Sulje napauttamalla</string>
-    <string name="lang_dutch">hollanti</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">Haluatko varmasti muuttaa tämän soittolistan järjestyksen?</string>
     <string name="renumber_songs_positions">Sekoita kappaleiden paikat</string>
     <string name="do_you_really_want_to_delete_all_playback_events">Haluatko varmasti poistaa kaikki toistotapahtumat?</string>
-    <string name="lang_sinhala">sinhala</string>
     <string name="update_available">Päivitys saatavilla</string>
     <string name="actions_you_can_do">Sinulla on seuraavat vaihtoehdot:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">Avaa Github Releases -sivu ja lataa uusin versio</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">Voit aina ottaa sen käyttöön, tai poistaa käytöstä, tekemällä muutokset asetuksissa.</string>
     <string name="enable">Ota käyttöön</string>
     <string name="don_t_enable">Älä ota käyttöön</string>
-    <string name="lang_hindi">hindi</string>
     <string name="default_page">Oletussivu</string>
     <string name="keep_screen_on">Pidä näyttö päällä</string>
     <string name="prevents_screen_timeout">Estää näytön aikakatkaisun</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">Vältä soittimen sulkeminen ja jonon puhdistaminen pyyhkäisemällä alaspäin, kun se on pienennettynä</string>
     <string name="sort_date_liked">Tykkäyspäivämäärä</string>
     <string name="export_playlist">Vie soittolista</string>
-    <string name="lang_afrikaans">afrikaans</string>
     <string name="playlist_top">Soittolistan parhaat</string>
     <string name="my_playlist_top">%s suosikkiani</string>
     <string name="navigation_bar_position">Navigointipalkin sijainti</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">Kopioi sanoitukset</string>
     <string name="value_copied">Kopioitu</string>
     <string name="do_you_really_want_to_delete_cache">Haluatko varmasti tyhjentää välimuistin?</string>
-    <string name="lang_swedish">ruotsi</string>
     <string name="pinned_playlists">Kiinnitetyt soittolistat</string>
     <string name="locked">Lukittu</string>
     <string name="sort_duration">Kesto</string>
-    <string name="lang_serbian_cyrillic">serbia (kyrillinen)</string>
     <string name="pause_between_songs">Tauko kappaleiden välissä</string>
     <string name="navigation_bar_type">Navigointipalkin tyyli</string>
     <string name="icon_and_text">Kuvake ja teksti</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">Albumi</string>
     <string name="use_gradient_background">Käytä liukuväritaustaa</string>
     <string name="show_total_time_of_queue">Näytä jonon kokonaiskesto</string>
-    <string name="lang_telugu">telugu</string>
     <string name="media_permission_required_please_grant">Median käyttöoikeus vaaditaan. Myönnä se.</string>
     <string name="open_permission_settings">Avaa käyttöoikeusasetukset</string>
     <string name="background_progress_bar">Taustan etenemispalkki</string>
@@ -419,8 +384,6 @@
     <string name="back">Takaisin</string>
     <string name="folders">Kansiot</string>
     <string name="show_folders_in_on_device_page">Näytä kansiot Laitteella -sivulla</string>
-    <string name="lang_danish">tanska</string>
-    <string name="lang_serbian_latin">serbia (latinalainen)</string>
     <string name="item_deselect">Poista valinnat</string>
     <string name="show_next_songs_in_player">Näytä seuraavat kappaleet soittimessa</string>
     <string name="show_remaining_song_time">Näytä kappaleen jäljellä oleva aika</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">Nestemäinen liukuväritausta kannen mukaan</string>
     <string name="show_background_in_lyrics">Näytä taustaväri sanoituksissa</string>
     <string name="bg_colors_blurred_cover_background">Epäselvä kansi taustalla</string>
-    <string name="lang_estonian">viro</string>
     <string name="pcontrols_modern">Moderni</string>
     <string name="pcontrols_essential">Perus</string>
     <string name="pcontrols_type">Ohjainten tyyli</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">Alhaalla</string>
     <string name="added_to_favorites">Lisätty suosikkeihin</string>
     <string name="removed_from_favorites">Poistettu suosikeista</string>
-    <string name="lang_filipino">filippiini</string>
     <string name="action_bar_transparent_background">Läpinäkyvä tausta</string>
     <string name="pinfo_type">Tietojen tyyli</string>
     <string name="pinfo_album_and_artist_name">Albumin ja artistin nimi</string>
@@ -574,7 +535,6 @@
     <string name="exclude_songs_with_duration_limit_description">Jos käytössä, kappaleet joiden kesto ylittää rajan, jätetään pois suosikkini- ja toistojonosta</string>
     <string name="no_log_available">Lokia ei ole saatavilla</string>
     <string name="enable_quick_picks_page">Ota pikavalinnat käyttöön</string>
-    <string name="lang_vietnamese">vietnam</string>
     <string name="parental_control">Lapsilukko</string>
     <string name="info_prevent_play_songs_with_age_limitation">Estää soittamasta kappaleita, joissa on ikärajoitus</string>
     <string name="cache_location_private">Yksityinen</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">Laajennettu näkymä toimii vain, kun sanoitukset ovat käytössä</string>
     <string name="info_connect_your_piped_account_first">Yhdistä Piped -tilisi ensin tai poista Piped -synkronointi käytöstä</string>
     <string name="piped_playlists">Piped</string>
-    <string name="lang_bengali">bengali</string>
-    <string name="lang_irish">irlanti</string>
     <string name="lyricsoutline">Sanoitusten ääriviivat</string>
     <string name="fluidrainbow">Nestemäinen sateenkaari</string>
     <string name="fluidtheme">Nestemäinen teema</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">Toiston sävelkorkeus</string>
     <string name="controls_title_playback_volume">Toiston äänenvoimakkuus</string>
     <string name="controls_title_device_volume">Laitteen äänenvoimakkuus</string>
-    <string name="lang_malayalam">malajalam</string>
     <string name="searches_suggestions">Ehdotuksia</string>
     <string name="searches_saved_searches">Tallennetut haut</string>
     <string name="event_volumekeys">Vaihda kappaletta äänenvoimakkuuden näppäimillä</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">Jonon tyyli</string>
     <string name="chart_top_songs">Suosituimmat kappaleet</string>
     <string name="chart_top_artists">Suosituimmat artistit</string>
-    <string name="lang_interlingua">interlingua</string>
     <string name="error_no_internet">Ei verkkoyhteyttä</string>
     <string name="error_timeout">Yhteyden aikakatkaisu</string>
     <string name="error_unknown">Tuntematon virhe</string>
@@ -723,8 +679,6 @@
     <string name="update_album">Albumin päivitys</string>
     <string name="info_check_update_now">Tarkista nyt</string>
     <string name="info_no_update_available">Päivitystä ei ole saatavilla</string>
-    <string name="lang_galician">galicia</string>
-    <string name="lang_norwegian">norja</string>
     <string name="translate_to">Käännä kielelle %s</string>
     <string name="translate_to_other_language">Käännä toiselle kielelle</string>
     <string name="action_bar_show_video_button">Näytä Video -nappi</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">Toimintopalkki</string>
     <string name="center">Keskitetty</string>
     <string name="lyricsalignment">Sanoitusten linjaus</string>
-    <string name="lang_azerbaijani">azeri</string>
     <string name="translators">Kääntäjät</string>
-    <string name="lang_tamil">tamili</string>
     <string name="player_auto_load_songs_in_queue">Lisää kappaleita automaattisesti jonoon</string>
     <string name="player_auto_load_songs_in_queue_description">Lisää jonoon kappaleita, kun jono loppuu</string>
     <string name="show_vinyl_thumbnail_animation">Näytä vinyylianimaatio pienoiskuvana</string>
