@@ -6,5 +6,8 @@ files:
         zh-CN: zh-rCN
         zh-TW: zh-rTW
         pt-BR: pt-rBR
-        sr-Cyrl: b+sr+Cyrl
-        sr-Latn: b+sr+Latn
+        sr: b+sr+Cyrl
+        sr-CS: b+sr+Latn
+  
+  - source: /composeApp/src/androidMain/res/values/strings.xml
+    translation: /composeApp/src/androidMain/res/values-%two_letters_code%/strings.xml
