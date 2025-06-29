@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">Шукати тексти пісень онлайн</string>
     <string name="fetch_lyrics_again">Запитати текст пісні ще раз</string>
     <string name="id">Id</string>
-    <string name="itag">Itag</string>
     <string name="bitrate">Бітрейт</string>
     <string name="size">Розмір</string>
     <string name="cached">Кешовано</string>
@@ -170,16 +169,6 @@
     <string name="contributors">СПІВРОБІТНИКИ</string>
     <string name="troubleshooting">УСУНЕННЯ НЕСПРАВНОСТЕЙ</string>
     <string name="social">СОЦІАЛЬНЕ</string>
-    <string name="english">Англійська (English)</string>
-    <string name="italian">Італійська (Italiano)</string>
-    <string name="czech">Чеська (Чеська)</string>
-    <string name="german">Німецька (Deutsch)</string>
-    <string name="spanish">Іспанська (Español)</string>
-    <string name="french">Французька (Français)</string>
-    <string name="romanian">Румунська (Română)</string>
-    <string name="russian">Російська (Русский)</string>
-    <string name="turkish">Турецька (Türkçe)</string>
-    <string name="polish">Польська (Polski)</string>
     <string name="dark">Темна</string>
     <string name="system">Система</string>
     <string name="unlimited">Необмежено</string>
@@ -246,12 +235,6 @@
     <string name="square">Площа</string>
     <string name="circular_ribbed">Круглий ребристий</string>
     <string name="play_button">Кнопка відтворення</string>
-    <string name="portuguese_brazilian">Бразильська португальська (Português brasileiro)</string>
-    <string name="portuguese">Португальська (Português)</string>
-    <string name="indonesian">Індонезійська (Bahasa Indonesia)</string>
-    <string name="odia">Орія (ଓଡ଼ିଆ)</string>
-    <string name="bashkir">Башкирський (Башорт)</string>
-    <string name="esperanto">Есперанто (Esperanto)</string>
     <string name="close_app_with_back_button">Закрийте програму за допомогою кнопки Назад</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Коли ви використовуєте кнопку Назад з домашньої сторінки</string>
     <string name="audio_quality_format_high">Висока</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">Ви дійсно хочете видалити завантаження?</string>
     <string name="enqueue_all">Поставити всіх в чергу</string>
     <string name="enqueue_selected">Вибрана черга</string>
-    <string name="greek">Вибрана черга</string>
-    <string name="catalan">Каталанський (català)</string>
     <string name="disable_scrolling_text">Вимкнути прокрутку тексту</string>
     <string name="scrolling_text_is_used_for_long_texts">Прокрутка тексту використовується для довгих текстів</string>
     <string name="audio_quality_format">Якість звуку Формат</string>
     <string name="persian">Фарсі (فارْسِى)</string>
-    <string name="hungarian">Угорська (Magyar)</string>
-    <string name="korean">Корейська (한국어)</string>
     <string name="background_player">"ФОНОВИЙ ПРОГРАВАЧ "</string>
     <string name="show_favorite_button">Показати кнопку Вибране</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Показати кнопку Вибране на екрані блокування та в області сповіщень</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">пісні чути</string>
     <string name="statistics_of_time_taken">витраченого часу</string>
     <string name="statistics_max_number_of_items">Максимальна кількість позицій</string>
-    <string name="arabic">Арабська (اَلْعَرَبِيَّةُ)</string>
-    <string name="chinese_simplified">Китайський спрощений (汉语)</string>
-    <string name="chinese_traditional">Китайський традиційний (漢語)</string>
     <string name="do_you_really_want_to_download_all">Ви дійсно хочете завантажити все?</string>
     <string name="import_playlist">Імпортувати плейлист</string>
-    <string name="lang_ukrainian">Ukrainian (Українська)</string>
     <string name="proxy">ПРОКСІ</string>
     <string name="enable_proxy">Використовувати Проксі</string>
     <string name="proxy_mode">Режим проксі</string>
     <string name="proxy_host">Хост</string>
     <string name="proxy_port">Порт проксі</string>
     <string name="disable_if_you_do_not_want_to_see">Вимкніть, якщо ви не хочете бачити</string>
-    <string name="lang_hebrew">Hebrew (עִברִית)</string>
     <string name="customize_album">Налаштування альбому</string>
     <string name="update_title">Оновити назву</string>
     <string name="update_authors">Оновити авторів</string>
@@ -300,7 +274,6 @@
     <string name="title">Назва</string>
     <string name="authors">Автори</string>
     <string name="cover">Обкладинка</string>
-    <string name="lang_japanese">Japanese (日本語)</string>
     <string name="paste_or_type_a_valid_url">Вставити або ввести дійсний url</string>
     <string name="you_can_put_a_complete_link">Ви можете вставити повне посилання на список відтворення, альбом, канал або окрему пісню на YouTube або YouTube Music</string>
     <string name="go_to_link">Перейти за посиланням</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">Показати кнопку перемішати</string>
     <string name="action_bar_show_lyrics_button">Показати кнопку тексту пісні</string>
     <string name="action_bar_show_arrow_button_to_open_queue">Показати стрілки перемикання</string>
-    <string name="lang_finnish">Finnish (Suomalainen)</string>
     <string name="listening_time">Час прослуховування</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">Показує кількість прослуханих пісень і час їх прослуховування</string>
     <string name="app_update_dialog_new">Нову версію %s можна завантажити!</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">кінець пісні</string>
     <string name="restore_completed">Відновлення завершено!</string>
     <string name="click_to_close">Натисніть, щоб закрити</string>
-    <string name="lang_dutch">Нідерландська (Nederlands)</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">Ви справді бажаєте перенумерувати позиції в цьому списку відтворення?</string>
     <string name="renumber_songs_positions">Перенумерувати позиції</string>
     <string name="do_you_really_want_to_delete_all_playback_events">Ви дійсно хочете видалити всі події відтворення?</string>
-    <string name="lang_sinhala">Сингальська</string>
     <string name="update_available">Доступно оновлення</string>
     <string name="actions_you_can_do">Дії, які ви можете виконати:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">Відкрийте вебсторінку Github і завантажте останню стабільну версію</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">Ви можете ввімкнути або вимкнути його в налаштуваннях.</string>
     <string name="enable">Увімкнено</string>
     <string name="don_t_enable">Неактивно</string>
-    <string name="lang_hindi">Хінді (हिन्दी)</string>
     <string name="default_page">Сторінка за замовчуванням</string>
     <string name="keep_screen_on">Не вимикати екран</string>
     <string name="prevents_screen_timeout">Запобігає тайм-ауту екрана</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">Уникайте закриття плеєра та очищення черги, проводячи вниз, коли він згорнутий</string>
     <string name="sort_date_liked">Дата вподобання</string>
     <string name="export_playlist">Експортувати список відтворення</string>
-    <string name="lang_afrikaans">Африканська</string>
     <string name="playlist_top">Топ списку відтворення</string>
     <string name="my_playlist_top">Мій Топ %s</string>
     <string name="navigation_bar_position">Позиція панелі навігації</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">Копіювати текст</string>
     <string name="value_copied">Скопійовано</string>
     <string name="do_you_really_want_to_delete_cache">Ви дійсно хочете очистити кеш?</string>
-    <string name="lang_swedish">Swedish (Svenska)</string>
     <string name="pinned_playlists">Закріплені плейлисти</string>
     <string name="locked">Заблоковано</string>
     <string name="sort_duration">Тривалість</string>
-    <string name="lang_serbian_cyrillic">Serbian Cyrillic (Српски Ћирилица)</string>
     <string name="pause_between_songs">Пауза між треками</string>
     <string name="navigation_bar_type">Тип панелі навігації</string>
     <string name="icon_and_text">Іконка та текст</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">Альбом</string>
     <string name="use_gradient_background">Використовувати градієнт для фону</string>
     <string name="show_total_time_of_queue">Показати загальний час черги</string>
-    <string name="lang_telugu">Telugu (తెలుగు)</string>
     <string name="media_permission_required_please_grant">Потрібен доступ до медіа, будь ласка, надайте його.</string>
     <string name="open_permission_settings">Відкрити налаштування доступу</string>
     <string name="background_progress_bar">Фоновий прогрес бар</string>
@@ -419,8 +384,6 @@
     <string name="back">Назад</string>
     <string name="folders">Теки</string>
     <string name="show_folders_in_on_device_page">Показати папки на сторінці пристрою</string>
-    <string name="lang_danish">Danish (Dansk)</string>
-    <string name="lang_serbian_latin">Serbian Latin (Srpski Latinica)</string>
     <string name="item_deselect">Скасовувати виділення</string>
     <string name="show_next_songs_in_player">Показати наступну пісню в програвачі</string>
     <string name="show_remaining_song_time">Показати час до закінчення пісні</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">Флюїдний градієнт від обкладинки</string>
     <string name="show_background_in_lyrics">Показувати колір тла в текстах пісень</string>
     <string name="bg_colors_blurred_cover_background">Розмитий фон обкладинки</string>
-    <string name="lang_estonian">Естонська</string>
     <string name="pcontrols_modern">Сучасний</string>
     <string name="pcontrols_essential">Основні</string>
     <string name="pcontrols_type">Тип керування</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">Знизу</string>
     <string name="added_to_favorites">Додано до обраного</string>
     <string name="removed_from_favorites">Видалено з обраного</string>
-    <string name="lang_filipino">Філіппінська</string>
     <string name="action_bar_transparent_background">Прозорий фон</string>
     <string name="pinfo_type">Тип інформації</string>
     <string name="pinfo_album_and_artist_name">Альбом та ім\'я виконавця</string>
@@ -574,7 +535,6 @@
     <string name="exclude_songs_with_duration_limit_description">Якщо увімкнено, пісні з обмеженою тривалістю буде виключено, застосовуються до mytop і черги відтворення</string>
     <string name="no_log_available">Журнал відсутній</string>
     <string name="enable_quick_picks_page">Увімкнути сторінку швидкого вибору</string>
-    <string name="lang_vietnamese">В’єтнамська</string>
     <string name="parental_control">Батьківський контроль</string>
     <string name="info_prevent_play_songs_with_age_limitation">Запобігти відтворення пісень з обмеженням віку</string>
     <string name="cache_location_private">Приватний</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">Розширений Програвач працює тільки коли текст увімкнено</string>
     <string name="info_connect_your_piped_account_first">Спочатку під’єднайте свій piped акаунт або вимкніть piped синхронізацію</string>
     <string name="piped_playlists">Piped</string>
-    <string name="lang_bengali">Bengali (বাংলা)</string>
-    <string name="lang_irish">Ірландська (Gaeilge)</string>
     <string name="lyricsoutline">Контур Тексту</string>
     <string name="fluidrainbow">Флюїдна Веселка</string>
     <string name="fluidtheme">Флюїдна Тема</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">Висота відтворення</string>
     <string name="controls_title_playback_volume">Гучність Відтворення</string>
     <string name="controls_title_device_volume">Гучність пристрою</string>
-    <string name="lang_malayalam">Малаялам</string>
     <string name="searches_suggestions">Пропозиції</string>
     <string name="searches_saved_searches">Збережені пошуки</string>
     <string name="event_volumekeys">Змінити пісню клавішами гучності</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">Тип черги</string>
     <string name="chart_top_songs">Топ пісень</string>
     <string name="chart_top_artists">Топ виконавців</string>
-    <string name="lang_interlingua">Інтерлінгва (Interlingua)</string>
     <string name="error_no_internet">Відсутнє мережеве з\'єднання</string>
     <string name="error_timeout">Час очікування підключення закінчився</string>
     <string name="error_unknown">Невідома помилка</string>
@@ -723,8 +679,6 @@
     <string name="update_album">Оновити альбом</string>
     <string name="info_check_update_now">Перевірити</string>
     <string name="info_no_update_available">Немає доступних оновлень</string>
-    <string name="lang_galician">Галісія (Galego)</string>
-    <string name="lang_norwegian">Норвезька (Norsk)</string>
     <string name="translate_to">Перекласти на %s</string>
     <string name="translate_to_other_language">Перекласти іншою мовою</string>
     <string name="action_bar_show_video_button">Показати кнопку \"Відео\"</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">Панель дій</string>
     <string name="center">По центру</string>
     <string name="lyricsalignment">Вирівнювання тексту пісень</string>
-    <string name="lang_azerbaijani">Азербайджанська (Azərbaycan)</string>
     <string name="translators">Перекладачі</string>
-    <string name="lang_tamil">Тамільська (Tamil)</string>
     <string name="player_auto_load_songs_in_queue">Автоматичне завантаження пісень у чергу</string>
     <string name="player_auto_load_songs_in_queue_description">Додає треки, коли черга добігає кінця</string>
     <string name="show_vinyl_thumbnail_animation">Показати анімацію вінілу у вигляді мініатюри</string>
