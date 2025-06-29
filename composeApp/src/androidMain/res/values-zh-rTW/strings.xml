@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cancel">取消</string>
     <string name="done">完成</string>
@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">線上搜尋歌詞</string>
     <string name="fetch_lyrics_again">重新整理歌詞</string>
     <string name="id">ID</string>
-    <string name="itag">iTag</string>
     <string name="bitrate">位元速率</string>
     <string name="size">大小</string>
     <string name="cached">已暫存</string>
@@ -170,16 +169,6 @@
     <string name="contributors">貢獻者</string>
     <string name="troubleshooting">故障排除</string>
     <string name="social">社交</string>
-    <string name="english">英語 (English)</string>
-    <string name="italian">義大利語 (Italiano)</string>
-    <string name="czech">捷克語 (Čeština)</string>
-    <string name="german">德語 (Deutsch)</string>
-    <string name="spanish">西班牙語 (Español)</string>
-    <string name="french">法語 (Français)</string>
-    <string name="romanian">羅馬尼亞語 (Română)</string>
-    <string name="russian">俄語 (Русский)</string>
-    <string name="turkish">土耳其語 (Türkçe)</string>
-    <string name="polish">波蘭語 (Polski)</string>
     <string name="dark">深色主題</string>
     <string name="system">系统</string>
     <string name="unlimited">無限制</string>
@@ -246,12 +235,6 @@
     <string name="square">正方形</string>
     <string name="circular_ribbed">圓形螺紋</string>
     <string name="play_button">播放按鈕</string>
-    <string name="portuguese_brazilian">巴西葡萄牙語 (Português Brasileiro)</string>
-    <string name="portuguese">葡萄牙語 (Português)</string>
-    <string name="indonesian">印度尼西亞語 (Indonesia)</string>
-    <string name="odia">奧里亞語 (ଓଡ଼ିଆ)</string>
-    <string name="bashkir">巴什基爾語 (Башҡурт)</string>
-    <string name="esperanto">世界語 (Esperanto)</string>
     <string name="close_app_with_back_button">返回按鈕關閉App</string>
     <string name="when_you_use_the_back_button_from_the_home_page">當你按下首頁的“返回”按鈕時</string>
     <string name="audio_quality_format_high">高</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">你真的要移除下載嗎?</string>
     <string name="enqueue_all">全部加入佇列</string>
     <string name="enqueue_selected">已選擇的佇列</string>
-    <string name="greek">希臘語 (Ελληνικά)</string>
-    <string name="catalan">加泰隆尼亞語 (Català)</string>
     <string name="disable_scrolling_text">停用捲動文字</string>
     <string name="scrolling_text_is_used_for_long_texts">捲動文字用於長文本當中</string>
     <string name="audio_quality_format">音質格式</string>
     <string name="persian">波斯語 (فارسی)</string>
-    <string name="hungarian">匈牙利語 (Magyar)</string>
-    <string name="korean">韓語 (한국인)</string>
     <string name="background_player">"背景播放器 "</string>
     <string name="show_favorite_button">顯示 \"已按讚\" 的歌曲按鈕</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">在鎖定螢幕和通知顯示 \"已按讚\" 的歌曲按鈕</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">聽過的歌曲</string>
     <string name="statistics_of_time_taken">已經過的時間</string>
     <string name="statistics_max_number_of_items">歌曲數量上限</string>
-    <string name="arabic">阿拉伯語 (العربية)</string>
-    <string name="chinese_simplified">簡體中文 (简体中文)</string>
-    <string name="chinese_traditional">繁體中文</string>
     <string name="do_you_really_want_to_download_all">你真的要全部下載嗎?</string>
     <string name="import_playlist">匯入播放清單</string>
-    <string name="lang_ukrainian">烏克蘭語 (українська)</string>
     <string name="proxy">PROXY</string>
     <string name="enable_proxy">啟用 Proxy</string>
     <string name="proxy_mode">代理模式</string>
     <string name="proxy_host">代理主機</string>
     <string name="proxy_port">代理端口</string>
     <string name="disable_if_you_do_not_want_to_see">不想看到的話, 請停用</string>
-    <string name="lang_hebrew">希伯來語 (עִברִית)</string>
     <string name="customize_album">客製化專輯</string>
     <string name="update_title">更新標題</string>
     <string name="update_authors">更新作者</string>
@@ -300,7 +274,6 @@
     <string name="title">標題</string>
     <string name="authors">作者</string>
     <string name="cover">封面</string>
-    <string name="lang_japanese">日語 (日本語)</string>
     <string name="paste_or_type_a_valid_url">貼上或輸入有效網址</string>
     <string name="you_can_put_a_complete_link">你可以放入連結至播放清單､專輯､頻道或單曲至YouTube / YouTube Music上</string>
     <string name="go_to_link">前往連結</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">顯示 \"隨機播放\" 按鈕</string>
     <string name="action_bar_show_lyrics_button">顯示 \"歌詞\" 按鈕</string>
     <string name="action_bar_show_arrow_button_to_open_queue">顯示 \"箭頭\" 按鈕</string>
-    <string name="lang_finnish">芬蘭文 (Suomalainen)</string>
     <string name="listening_time">收聽時間</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">顯示聽過的歌曲數量和他們的收聽時間</string>
     <string name="app_update_dialog_new">新的 %s 版本可下載了!</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">歌曲結尾</string>
     <string name="restore_completed">回復完畢!</string>
     <string name="click_to_close">點擊以關閉</string>
-    <string name="lang_dutch">荷蘭語 (Nederlands)</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">你真的要重新排列播放清單嗎?</string>
     <string name="renumber_songs_positions">重新排列</string>
     <string name="do_you_really_want_to_delete_all_playback_events">你真的要移除所有重播紀錄嗎?</string>
-    <string name="lang_sinhala">僧伽羅語 (සිංහල)</string>
     <string name="update_available">有可用的更新</string>
     <string name="actions_you_can_do">你可以做的操作:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">開啟GitHub網址並下載最新版本</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">你依然可以從設定中開啟或關閉.</string>
     <string name="enable">啟用</string>
     <string name="don_t_enable">不要啟用</string>
-    <string name="lang_hindi">印地語 (हिन्दी)</string>
     <string name="default_page">預設頁面</string>
     <string name="keep_screen_on">保持螢幕開啟</string>
     <string name="prevents_screen_timeout">關閉螢幕睡眠</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">避免在最小化時下滑關閉播放器或清除佇列</string>
     <string name="sort_date_liked">按讚日期</string>
     <string name="export_playlist">匯出播放清單</string>
-    <string name="lang_afrikaans">南非語 (Afrikaans)</string>
     <string name="playlist_top">播放清單</string>
     <string name="my_playlist_top">我的前 %s</string>
     <string name="navigation_bar_position">導覽列位置</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">複製歌詞</string>
     <string name="value_copied">已複製</string>
     <string name="do_you_really_want_to_delete_cache">你真的要移除快取嗎?</string>
-    <string name="lang_swedish">瑞典語 (Svenska)</string>
     <string name="pinned_playlists">已釘選的播放清單</string>
     <string name="locked">已鎖定</string>
     <string name="sort_duration">時間長度</string>
-    <string name="lang_serbian_cyrillic">塞爾維亞語 (Српски Ћирилица)</string>
     <string name="pause_between_songs">在歌曲之間暫停</string>
     <string name="navigation_bar_type">導覽列樣式</string>
     <string name="icon_and_text">圖示與文字</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">專輯</string>
     <string name="use_gradient_background">使用漸層背景</string>
     <string name="show_total_time_of_queue">顯示佇列的總時間長度</string>
-    <string name="lang_telugu">泰盧固語 (తెలుగు)</string>
     <string name="media_permission_required_please_grant">需要音樂和音訊權限, 請授予.</string>
     <string name="open_permission_settings">開啟權限設定</string>
     <string name="background_progress_bar">背景進度條</string>
@@ -419,8 +384,6 @@
     <string name="back">返回</string>
     <string name="folders">資料夾</string>
     <string name="show_folders_in_on_device_page">在 \"在裝置上\" 的歌曲頁面顯示資料夾</string>
-    <string name="lang_danish">丹麥語 (Dansk)</string>
-    <string name="lang_serbian_latin">塞爾維亞語 (Српски)</string>
     <string name="item_deselect">取消選取</string>
     <string name="show_next_songs_in_player">在播放器底下顯示下兩首歌曲</string>
     <string name="show_remaining_song_time">顯示歌曲剩餘時間</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">Fluid gradient background from cover</string>
     <string name="show_background_in_lyrics">Show background color in Lyrics</string>
     <string name="bg_colors_blurred_cover_background">Blurred cover background</string>
-    <string name="lang_estonian">愛沙尼亞語</string>
     <string name="pcontrols_modern">現代</string>
     <string name="pcontrols_essential">基本</string>
     <string name="pcontrols_type">Controls type</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">底部</string>
     <string name="added_to_favorites">已加到最愛</string>
     <string name="removed_from_favorites">從最愛中移除</string>
-    <string name="lang_filipino">菲律賓語</string>
     <string name="action_bar_transparent_background">透明背景</string>
     <string name="pinfo_type">資訊類別</string>
     <string name="pinfo_album_and_artist_name">專輯及藝人名稱</string>
@@ -574,12 +535,11 @@
     <string name="exclude_songs_with_duration_limit_description">If enabled, songs with duration over the limit will be excluded, applied to mytop and playback queue</string>
     <string name="no_log_available">沒有可用的日誌</string>
     <string name="enable_quick_picks_page">啟用精選頁面</string>
-    <string name="lang_vietnamese">越南語</string>
     <string name="parental_control">家長或監護人設定</string>
     <string name="info_prevent_play_songs_with_age_limitation">防止播放有年齡限制的歌曲</string>
     <string name="cache_location_private">私人的</string>
     <string name="cache_location_system">系統</string>
-    <string name="info_cannot_rename_a_monthly_or_piped_playlist">Cannot rename a monthly or online or piped playlist</string>
+    <string name="info_cannot_rename_a_monthly_or_piped_playlist">Cannot rename a monthly or piped playlist</string>
     <string name="debug">除錯</string>
     <string name="enable_log_debug">啟用除錯記錄</string>
     <string name="if_enabled_create_a_log_file_to_highlight_errors">啟用時會建立記錄檔突顯錯誤</string>
@@ -602,7 +562,7 @@
     <string name="miniplayertype">縮小播放器類型</string>
     <string name="expanded">已展開</string>
     <string name="lyricscolor">歌詞顏色</string>
-    <string name="accent">Accent</string>
+    <string name="accent">強調色</string>
     <string name="lyrics_size">歌詞大小</string>
     <string name="translate">翻譯</string>
     <string name="transparentbar">透明的時間軸</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">Works only when lyrics thumbnail is disabled</string>
     <string name="info_connect_your_piped_account_first">Connect your piped account first or disable piped synchronization</string>
     <string name="piped_playlists">Piped</string>
-    <string name="lang_bengali">孟加拉語</string>
-    <string name="lang_irish">愛爾蘭語</string>
     <string name="lyricsoutline">Lyrics Outline</string>
     <string name="fluidrainbow">Fluid Rainbow</string>
     <string name="fluidtheme">Fluid Theme</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">Playback pitch</string>
     <string name="controls_title_playback_volume">播放音量</string>
     <string name="controls_title_device_volume">裝置音量</string>
-    <string name="lang_malayalam">馬拉雅拉姆語（മലയാളം）</string>
     <string name="searches_suggestions">搜尋建議</string>
     <string name="searches_saved_searches">已儲存的的搜尋記錄</string>
     <string name="event_volumekeys">使用音量鍵來切換歌曲</string>
@@ -687,7 +644,7 @@
     <string name="noblur">No Blur when Lyrics is Disabled</string>
     <string name="fadingedge">Fading Edge</string>
     <string name="carousel">Carousel View</string>
-    <string name="carouselsize">Thumbnail Size in Expanded Mode</string>
+    <string name="carouselsize">Size of Carousel</string>
     <string name="addednext">Added to play next</string>
     <string name="info_paused_with_volume_zero">Paused with volume zero</string>
     <string name="effect_fade_audio">淡出/淡入音效</string>
@@ -695,7 +652,7 @@
     <string name="autosync">Auto Sync Imported Playlists</string>
     <string name="message_type">訊息類型</string>
     <string name="message_type_modern">現代風格</string>
-    <string name="message_type_essential">Essential</string>
+    <string name="message_type_essential">基本</string>
     <string name="discoverinforadio">Removes Liked and Playlist songs from Radio</string>
     <string name="discover_has_been_applied_to_radio">探索模式已應用於收音機，已移除歌曲：%s</string>
     <string name="songs_number_to_show">Songs number to show</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">佇列類型</string>
     <string name="chart_top_songs">Top songs</string>
     <string name="chart_top_artists">熱門藝人</string>
-    <string name="lang_interlingua">國際語（Interlingua）</string>
     <string name="error_no_internet">無網路連線</string>
     <string name="error_timeout">連線逾時</string>
     <string name="error_unknown">未知的錯誤</string>
@@ -723,8 +679,6 @@
     <string name="update_album">Updates the Album</string>
     <string name="info_check_update_now">立即檢查</string>
     <string name="info_no_update_available">沒有可用的更新</string>
-    <string name="lang_galician">加利西亞語</string>
-    <string name="lang_norwegian">挪威文</string>
     <string name="translate_to">翻譯為 %s</string>
     <string name="translate_to_other_language">翻譯成其他語言</string>
     <string name="action_bar_show_video_button">顯示影片按鈕</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">Action Bar</string>
     <string name="center">Center</string>
     <string name="lyricsalignment">Lyrics Alignment</string>
-    <string name="lang_azerbaijani">阿塞拜疆語</string>
     <string name="translators">翻譯人員</string>
-    <string name="lang_tamil">泰米爾語</string>
     <string name="player_auto_load_songs_in_queue">自動加入歌曲到播放佇列中</string>
     <string name="player_auto_load_songs_in_queue_description">當播放佇列即將結束時添加歌曲</string>
     <string name="show_vinyl_thumbnail_animation">Show Vinyl animation as thumbnail</string>
@@ -783,7 +735,7 @@
     <string name="failed_to_remove_thumbnail">Failed to Remove Thumbnail</string>
     <string name="settings_enable_pip">Enable Picture in Picture</string>
     <string name="settings_enable_pip_auto">Enable Automatic Picture in Picture</string>
-    <string name="pipmodule_cover">Cover</string>
+    <string name="pipmodule_cover">封面</string>
     <string name="settings_pip_module">Pip module</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">From Android 12 pip can be automatically enabled</string>
@@ -962,8 +914,9 @@
     <string name="artist_fans_might_also_like">Fans might also like</string>
     <string name="update_changelogs">%s changelogs</string>
     <string name="rotating_cover_title">Rotating album cover</string>
-    <string name="title_playback_speed">Playback speed</string>
+    <string name="title_playback_speed">播放速度</string>
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
+    <string name="log_in_to_ytm">Log in to your YTM account for more content</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
     <string name="setting_entry_smart_rewind">Smart rewind</string>
