@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">Lirikaları onlayn axtar</string>
     <string name="fetch_lyrics_again">Lirikaları təkrar əldə et</string>
     <string name="id">Id</string>
-    <string name="itag">Etiket</string>
     <string name="bitrate">Bit sürəti</string>
     <string name="size">Həcm</string>
     <string name="cached">Toplanan</string>
@@ -170,16 +169,6 @@
     <string name="contributors">TÖHFƏÇİLƏR</string>
     <string name="troubleshooting">NASAZLIQ DÜZƏLDİLMƏSİ</string>
     <string name="social">İCTİMAİ</string>
-    <string name="english">İngiliscə (English)</string>
-    <string name="italian">İtalyanca (Italiano)</string>
-    <string name="czech">Çexcə (Čeština)</string>
-    <string name="german">Almanca (Deutsch)</string>
-    <string name="spanish">İspanca (Español)</string>
-    <string name="french">Fransızca (Français)</string>
-    <string name="romanian">Rumın (Română)</string>
-    <string name="russian">Rusca (Русский)</string>
-    <string name="turkish">Türkcə (Türkçe)</string>
-    <string name="polish">Polyakca (Polski)</string>
     <string name="dark">Qaranlıq</string>
     <string name="system">Sistem</string>
     <string name="unlimited">Hədsiz</string>
@@ -246,12 +235,6 @@
     <string name="square">Kvadrat</string>
     <string name="circular_ribbed">Qıvrılan Dairəvi</string>
     <string name="play_button">Səsləndir düyməsi</string>
-    <string name="portuguese_brazilian">Portuqalca (Portuguese, Brazilian)</string>
-    <string name="portuguese">Portuqalca (Portugal)</string>
-    <string name="indonesian">İndoneziya dili</string>
-    <string name="odia">Oriya</string>
-    <string name="bashkir">Başqırdca</string>
-    <string name="esperanto">Esperanto</string>
     <string name="close_app_with_back_button">Geri düyməsi ilə tətbiqi bağla</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Əsas səhifədən geri düyməsin istifadə edəndə</string>
     <string name="audio_quality_format_high">Yüksək</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">Həqiqətən yükləməni silmək istəyirsiniz?</string>
     <string name="enqueue_all">Hamısını növbələ</string>
     <string name="enqueue_selected">Seçiləni növbələ</string>
-    <string name="greek">Yunanca (Greek)</string>
-    <string name="catalan">Katalanca (Catalan)</string>
     <string name="disable_scrolling_text">Sürüşən mətni qapat</string>
     <string name="scrolling_text_is_used_for_long_texts">Sürüşən mətn uzun mətnlər üçün faydalıdır</string>
     <string name="audio_quality_format">Səs Keyfiyyət Formatı</string>
     <string name="persian">Farsca (Persian)</string>
-    <string name="hungarian">Macarca (Hungarian)</string>
-    <string name="korean">Koreyaca (Korean)</string>
     <string name="background_player">"ARXA PLAN SƏSLƏNDİRİCİ "</string>
     <string name="show_favorite_button">Sevimli düyməsin göstər</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Sevimli düyməsin kilid ekranı və bildiriş sahəsində göstər</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">mahnı dinlənildi</string>
     <string name="statistics_of_time_taken">vaxt keçdi</string>
     <string name="statistics_max_number_of_items">Maksimum element sayı</string>
-    <string name="arabic">Ərəbcə (Arabic)</string>
-    <string name="chinese_simplified">Sadələşdirilmiş Çincə (Chinese Simplified)</string>
-    <string name="chinese_traditional">Ənənəvi Çincə (Chinese Traditional)</string>
     <string name="do_you_really_want_to_download_all">Həqiqətən hamısın yükləmək istəyirsiniz?</string>
     <string name="import_playlist">Pleylisti İdxal Et</string>
-    <string name="lang_ukrainian">Ukrayna dili (Ukrainian)</string>
     <string name="proxy">Proksi</string>
     <string name="enable_proxy">Proxy-ni Aktivləşdir</string>
     <string name="proxy_mode">Proksi Rejimi</string>
     <string name="proxy_host">Proxy Serveri</string>
     <string name="proxy_port">Proxsi Serveri</string>
     <string name="disable_if_you_do_not_want_to_see">Görmək istəmirsinizsə, qapadın</string>
-    <string name="lang_hebrew">İvritcə (Hebrew)</string>
     <string name="customize_album">Albomu fərdiləşdir</string>
     <string name="update_title">Başlığı Yenilə</string>
     <string name="update_authors">Yaradıcıları Yenilə</string>
@@ -300,7 +274,6 @@
     <string name="title">Başlıq</string>
     <string name="authors">Yaradıcılar</string>
     <string name="cover">Cild</string>
-    <string name="lang_japanese">Yaponca (Japanese)</string>
     <string name="paste_or_type_a_valid_url">İşlək url yapışdır və ya yaz</string>
     <string name="you_can_put_a_complete_link">YouTube və ya YouTube Music-dəki pleylist, albom, kanal və ya bir mahnının tam linkin yerləşdirə bilərsiniz</string>
     <string name="go_to_link">Linkə Keç</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">Qarışdır düyməsin göstər</string>
     <string name="action_bar_show_lyrics_button">Lirikalar düyməsin göstər</string>
     <string name="action_bar_show_arrow_button_to_open_queue">Növbəni açmaq üçün Ox düyməsin göstər</string>
-    <string name="lang_finnish">Fincə (Finnish)</string>
     <string name="listening_time">Dinləmə müddəti</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">Dinlənən mahnı sayın və dinlənmə müddətin göstərir</string>
     <string name="app_update_dialog_new">Yeni versiya %s endirilə bilər!</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">mahnının sonu</string>
     <string name="restore_completed">Bərpa tamamlandı!</string>
     <string name="click_to_close">Bağlamaq üçün kliklə</string>
-    <string name="lang_dutch">Hollandca (Dutch)</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">Həqiqətən bu pleylistdəki mövqeləri yenidən nömrələmək istəyirsiniz?</string>
     <string name="renumber_songs_positions">Mövqeləri yenidən nömrələ</string>
     <string name="do_you_really_want_to_delete_all_playback_events">Bütün səsləndirmə fəaliyyətlərin silmək istəyirsiniz?</string>
-    <string name="lang_sinhala">Sinhala dili</string>
     <string name="update_available">Yeniləmə əlçatandır</string>
     <string name="actions_you_can_do">Edə biləcəyiniz fəaliyyətlər:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">Github buraxılışları səhifəsin aç və ən son versiyanı endir</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">Hələ tənzimləmələrdən aça və ya bağlaya bilərsiniz.</string>
     <string name="enable">Aktiv et</string>
     <string name="don_t_enable">Aktiv etmə</string>
-    <string name="lang_hindi">Hindcə (Hindi)</string>
     <string name="default_page">İlkin səhifə</string>
     <string name="keep_screen_on">Ekranı açıq saxla</string>
     <string name="prevents_screen_timeout">Ekran fasiləsinə mane olur</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">Oynadıcı kiçildilibsə, aşağı sürüşdürərək bağlama və növbəni təmizləmə</string>
     <string name="sort_date_liked">Bəyənmə Tarixi</string>
     <string name="export_playlist">Pleylisti ixrac et</string>
-    <string name="lang_afrikaans">Afrikanca (Afrikaans)</string>
     <string name="playlist_top">Ən Yaxşı Pleylist</string>
     <string name="my_playlist_top">Sevimlim %s</string>
     <string name="navigation_bar_position">Fəaliyyət cərgəsi mövqeyi</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">Lirikanı köçür</string>
     <string name="value_copied">Köçürüldü</string>
     <string name="do_you_really_want_to_delete_cache">Həqiqətən qalığı silmək istəyirsiniz?</string>
-    <string name="lang_swedish">İsveçcə (Swedish)</string>
     <string name="pinned_playlists">Sabitlənmiş Pleylistlər</string>
     <string name="locked">Kilidləndi</string>
     <string name="sort_duration">Müddət</string>
-    <string name="lang_serbian_cyrillic">Serb Kiril Əlifbası (Serbian Cyrillic)</string>
     <string name="pause_between_songs">Mahnılar arası fasilə</string>
     <string name="navigation_bar_type">Fəaliyyət cərgəsi növü</string>
     <string name="icon_and_text">İşarə və mətn</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">Albom</string>
     <string name="use_gradient_background">Dəyişkən arxa plan istifadə et</string>
     <string name="show_total_time_of_queue">Növbənin ümumi müddətin göstər</string>
-    <string name="lang_telugu">Teluquca (Telugu)</string>
     <string name="media_permission_required_please_grant">Media icazəsi tələb olundu, lütfən, təsdiqlə.</string>
     <string name="open_permission_settings">İcazə tənzimləmələrin aç</string>
     <string name="background_progress_bar">Arxa plan irəliləyiş cizgisi</string>
@@ -419,8 +384,6 @@
     <string name="back">Geri</string>
     <string name="folders">Qovluqlar</string>
     <string name="show_folders_in_on_device_page">Qovluqları \"Cihazdakı\" səhifəsində göstər</string>
-    <string name="lang_danish">Danimarka dili</string>
-    <string name="lang_serbian_latin">Serbcə/latın</string>
     <string name="item_deselect">Seçimi sil</string>
     <string name="show_next_songs_in_player">Səsləndiricidə Kiçik Növbəni Göstər</string>
     <string name="show_remaining_song_time">Qalan mahnı müddətin göstər</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">Cilddən axıcı dəyişkən arxa plan</string>
     <string name="show_background_in_lyrics">Lirikada arxa rəngi göstər</string>
     <string name="bg_colors_blurred_cover_background">Bulanıq cild arxa planı</string>
-    <string name="lang_estonian">Estonca (Estonian)</string>
     <string name="pcontrols_modern">Müasir</string>
     <string name="pcontrols_essential">Mühüm</string>
     <string name="pcontrols_type">Nəzarət növü</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">Aşağı</string>
     <string name="added_to_favorites">Sevimlilərə əlavə edildi</string>
     <string name="removed_from_favorites">Sevimlilərdən silindi</string>
-    <string name="lang_filipino">Filippincə (Filipino)</string>
     <string name="action_bar_transparent_background">Şəffaf arxa plan</string>
     <string name="pinfo_type">Məlumat növü</string>
     <string name="pinfo_album_and_artist_name">Albom və sənətkar adı</string>
@@ -574,7 +535,6 @@
     <string name="exclude_songs_with_duration_limit_description">Aktiv edilərsə, müddəti həddi keçən mahnılar çıxarılacaq, ən sevdiyim və dinləmə növbəsinə tətbiq ediləcək</string>
     <string name="no_log_available">Qeyd yoxdur</string>
     <string name="enable_quick_picks_page">Cəld Seçimlər Səhifəsini Aktivləşdir</string>
-    <string name="lang_vietnamese">Vyetnamca (Vietnamese)</string>
     <string name="parental_control">Valideyn nəzarəti</string>
     <string name="info_prevent_play_songs_with_age_limitation">Yaş məhdudiyyətli mahnıları səsləndirməyi əngəllə</string>
     <string name="cache_location_private">Şəxsi</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">Genişləndirilən Oynadıcı yalnız Lirika aktivləşdikdə işləyir</string>
     <string name="info_connect_your_piped_account_first">Əvvəlcə piped hesabınızı qoşun və ya piped sinxronizasiyanı bağlayın</string>
     <string name="piped_playlists">Piped</string>
-    <string name="lang_bengali">Benqalca (Bengali)</string>
-    <string name="lang_irish">İrland dili (Irish)</string>
     <string name="lyricsoutline">Lirika Eskizləri</string>
     <string name="fluidrainbow">Axıcı Göy Qurşağı</string>
     <string name="fluidtheme">Axıcı Tema</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">Səslənmə ucalığı</string>
     <string name="controls_title_playback_volume">Səslənmə Səs Səviyyəsi</string>
     <string name="controls_title_device_volume">Cihaz səs səviyyəsi</string>
-    <string name="lang_malayalam">Malayalam dili</string>
     <string name="searches_suggestions">Təkliflər</string>
     <string name="searches_saved_searches">Saxlanılan axtarışlar</string>
     <string name="event_volumekeys">Səs düymələri ilə mahnı dəyişdir</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">Növbə Növü</string>
     <string name="chart_top_songs">Ən yaxşı mahnılar</string>
     <string name="chart_top_artists">Ən yaxşı sənətkarlar</string>
-    <string name="lang_interlingua">İnterlingua</string>
     <string name="error_no_internet">Şəbəkə bağlantısı yoxdur</string>
     <string name="error_timeout">Qoşulma vaxtı bitdi</string>
     <string name="error_unknown">Naməlum xəta</string>
@@ -723,8 +679,6 @@
     <string name="update_album">Albomu Yeniləyir</string>
     <string name="info_check_update_now">İndi Yoxla</string>
     <string name="info_no_update_available">Yeniləmə mövcud deyil</string>
-    <string name="lang_galician">Qalisiya dili (Galician)</string>
-    <string name="lang_norwegian">Norveçcə (Norwegian)</string>
     <string name="translate_to">%s dilinə tərcümə et</string>
     <string name="translate_to_other_language">Başqa dilə tərcümə et</string>
     <string name="action_bar_show_video_button">Video düyməsini göstər</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">Fəaliyyət Cizgisi</string>
     <string name="center">Mərkəz</string>
     <string name="lyricsalignment">Lirikaların Uyğunlaşdırılması</string>
-    <string name="lang_azerbaijani">Azərbaycanca (Azerbaijani)</string>
     <string name="translators">Tərcüməçilər</string>
-    <string name="lang_tamil">Tamilcə (Tamil)</string>
     <string name="player_auto_load_songs_in_queue">Növbədəki mahnıları avtomatik yüklə</string>
     <string name="player_auto_load_songs_in_queue_description">Növbə bitmək üzrə olanda mahnılar əlavə edir</string>
     <string name="show_vinyl_thumbnail_animation">Disk animasiyanı miniatür kimi göstər</string>
