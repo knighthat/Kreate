@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">Cerca la lletra de la cançó a Internet</string>
     <string name="fetch_lyrics_again">Torna a buscar la lletra de la cançó</string>
     <string name="id">Id</string>
-    <string name="itag">Itag</string>
     <string name="bitrate">Relació de bits</string>
     <string name="size">Mida</string>
     <string name="cached">A la memòria cau</string>
@@ -170,16 +169,6 @@
     <string name="contributors">COL·LABORADORS</string>
     <string name="troubleshooting">RESOLUCIÓ DE PROBLEMES</string>
     <string name="social">SOCIAL</string>
-    <string name="english">Anglès</string>
-    <string name="italian">Italià (Italiano)</string>
-    <string name="czech">Txec (Čeština)</string>
-    <string name="german">Alemany (Deutsch)</string>
-    <string name="spanish">Espanyol (Español)</string>
-    <string name="french">Francès (Français)</string>
-    <string name="romanian">Romanès (Română)</string>
-    <string name="russian">Rus (Русский)</string>
-    <string name="turkish">Turc (Türkçe)</string>
-    <string name="polish">Polonès (Polski)</string>
     <string name="dark">Fosc</string>
     <string name="system">Sistema</string>
     <string name="unlimited">Il·limitat</string>
@@ -246,12 +235,6 @@
     <string name="square">Quadrat</string>
     <string name="circular_ribbed">Vora circular</string>
     <string name="play_button">Botó de reproducció</string>
-    <string name="portuguese_brazilian">Portuguès, Brasiler</string>
-    <string name="portuguese">Portuguès</string>
-    <string name="indonesian">Indonesi</string>
-    <string name="odia">Odia</string>
-    <string name="bashkir">Baixkir</string>
-    <string name="esperanto">Esperanto</string>
     <string name="close_app_with_back_button">Tanca l\'aplicació amb el botó Enrere</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Quan utilitzeu el botó enrere de la pàgina d\'inici</string>
     <string name="audio_quality_format_high">Alta</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">Realment voleu suprimir la descàrrega?</string>
     <string name="enqueue_all">Posa-ho tot a la cua</string>
     <string name="enqueue_selected">Cua seleccionada</string>
-    <string name="greek">Grec</string>
-    <string name="catalan">Català</string>
     <string name="disable_scrolling_text">Desactiva el text de desplaçament</string>
     <string name="scrolling_text_is_used_for_long_texts">El text de desplaçament s\'utilitza per a textos llargs</string>
     <string name="audio_quality_format">Format de qualitat d\'àudio</string>
     <string name="persian">Persa</string>
-    <string name="hungarian">Hongarès</string>
-    <string name="korean">Coreà</string>
     <string name="background_player">"REPRODUCTOR DE FONS "</string>
     <string name="show_favorite_button">Mostra el botó Preferits</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Mostra el botó Preferit a la pantalla de bloqueig i a l\'àrea de notificacions</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">cançons escoltades</string>
     <string name="statistics_of_time_taken">de temps ocupat</string>
     <string name="statistics_max_number_of_items">Nombre màxim d\'elements</string>
-    <string name="arabic">Àrab</string>
-    <string name="chinese_simplified">Xinès simplificat</string>
-    <string name="chinese_traditional">Xinès tradicional</string>
     <string name="do_you_really_want_to_download_all">De veritat vols descarregar-ho tot?</string>
     <string name="import_playlist">Importa la llista de reproducció</string>
-    <string name="lang_ukrainian">Ucraïnès</string>
     <string name="proxy">SERVIDOR INTERMEDIARI</string>
     <string name="enable_proxy">Habilita el servidor intermediari</string>
     <string name="proxy_mode">Mode del servidor intermediari</string>
     <string name="proxy_host">Amfitrió del servidor intermediari</string>
     <string name="proxy_port">Port del servidor intermediari</string>
     <string name="disable_if_you_do_not_want_to_see">Desactiva si no vols veure-ho</string>
-    <string name="lang_hebrew">Hebreu</string>
     <string name="customize_album">Personalitza l\'àlbum</string>
     <string name="update_title">Actualitza el Títol</string>
     <string name="update_authors">Actualitza els Autors</string>
@@ -300,7 +274,6 @@
     <string name="title">Títol</string>
     <string name="authors">Autors</string>
     <string name="cover">Coberta</string>
-    <string name="lang_japanese">Japonès</string>
     <string name="paste_or_type_a_valid_url">Enganxeu o escriviu una direcció URL vàlida</string>
     <string name="you_can_put_a_complete_link">Pots posar un enllaç complet d\'una llista de reproducció, un àlbum, un canal o una sola cançó a YouTube o YouTube Music</string>
     <string name="go_to_link">Vés a l\'enllaç</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">Mostra el botó Shuffle</string>
     <string name="action_bar_show_lyrics_button">Mostra el botó de Lletres</string>
     <string name="action_bar_show_arrow_button_to_open_queue">Mostra el botó de Fletxa per obrir la cua</string>
-    <string name="lang_finnish">Finlandès</string>
     <string name="listening_time">Temps d\'escolta</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">Mostra el nombre de cançons escoltades i el seu temps d\'escolta</string>
     <string name="app_update_dialog_new">La nova versió %s es pot descarregar!</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">final de la cançó</string>
     <string name="restore_completed">Restauració completada!</string>
     <string name="click_to_close">Feu clic per tancar</string>
-    <string name="lang_dutch">Holandès</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">Realment vols numerar les posicions d\'aquesta llista de reproducció?</string>
     <string name="renumber_songs_positions">Renumera les posicions</string>
     <string name="do_you_really_want_to_delete_all_playback_events">Realment voleu suprimir tots els esdeveniments de reproducció?</string>
-    <string name="lang_sinhala">Singalès</string>
     <string name="update_available">Actualització disponible</string>
     <string name="actions_you_can_do">Accions que podeu fer:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">Obre la pàgina web de versions de Github i descarregueu la darrera versió</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">Encara podeu activar-lo o desactivar-lo des de la configuració.</string>
     <string name="enable">Habilita</string>
     <string name="don_t_enable">No ho habilitis</string>
-    <string name="lang_hindi">Hindi</string>
     <string name="default_page">Pàgina per defecte</string>
     <string name="keep_screen_on">Mantén la pantalla encesa</string>
     <string name="prevents_screen_timeout">Evita el temps d\'espera de la pantalla</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">Eviteu tancar el reproductor i netejar la cua fent lliscar cap avall mentre estigui minimitzat</string>
     <string name="sort_date_liked">Data de quan et va agradar</string>
     <string name="export_playlist">Exporta la llista de reproducció</string>
-    <string name="lang_afrikaans">Afrikaans</string>
     <string name="playlist_top">Llista de reproducció del Top</string>
     <string name="my_playlist_top">El meu Top %s</string>
     <string name="navigation_bar_position">Posició de la barra de navegació</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">Copia la lletra</string>
     <string name="value_copied">Copiat</string>
     <string name="do_you_really_want_to_delete_cache">Realment voleu suprimir la memòria cau?</string>
-    <string name="lang_swedish">Suec</string>
     <string name="pinned_playlists">Llistes de reproducció fixades</string>
     <string name="locked">Bloquejat</string>
     <string name="sort_duration">Duració</string>
-    <string name="lang_serbian_cyrillic">Serbi Ciríl·lic</string>
     <string name="pause_between_songs">Pausa entre cançons</string>
     <string name="navigation_bar_type">Tipus de barra de navegació</string>
     <string name="icon_and_text">Icones i text</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">Àlbum</string>
     <string name="use_gradient_background">Utilitza el fons degradat</string>
     <string name="show_total_time_of_queue">Mostra el temps total de la cua</string>
-    <string name="lang_telugu">Télugu</string>
     <string name="media_permission_required_please_grant">Cal permís de mitjans, si us plau, concediu-lo.</string>
     <string name="open_permission_settings">Obriu la configuració de permisos</string>
     <string name="background_progress_bar">Barra de progrés de fons</string>
@@ -419,8 +384,6 @@
     <string name="back">Enrere</string>
     <string name="folders">Carpetes</string>
     <string name="show_folders_in_on_device_page">Mostra les carpetes a la pàgina del dispositiu</string>
-    <string name="lang_danish">Danès</string>
-    <string name="lang_serbian_latin">Serbi Llatí</string>
     <string name="item_deselect">Desselecciona</string>
     <string name="show_next_songs_in_player">Mostra la mini cua al reproductor</string>
     <string name="show_remaining_song_time">Mostra el temps restant de la cançó</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">Fons degradat fluid des de la portada</string>
     <string name="show_background_in_lyrics">Mostra el color de fons a la lletra</string>
     <string name="bg_colors_blurred_cover_background">Fons borrós de la portada</string>
-    <string name="lang_estonian">Estonià</string>
     <string name="pcontrols_modern">Modern</string>
     <string name="pcontrols_essential">Essencial</string>
     <string name="pcontrols_type">Tipus de controls</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">A baix</string>
     <string name="added_to_favorites">S\'ha afegit a preferits</string>
     <string name="removed_from_favorites">Eliminat dels preferits</string>
-    <string name="lang_filipino">Filipí</string>
     <string name="action_bar_transparent_background">Fons transparent</string>
     <string name="pinfo_type">Tipus d\'informació</string>
     <string name="pinfo_album_and_artist_name">Àlbum i nom de l\'artista</string>
@@ -574,7 +535,6 @@
     <string name="exclude_songs_with_duration_limit_description">Si està activat, s\'exclouran les cançons amb una durada superior al límit, s\'aplicaran a mytop i a la cua de reproducció</string>
     <string name="no_log_available">No hi ha registre disponible</string>
     <string name="enable_quick_picks_page">Activa la pàgina de selecció ràpida</string>
-    <string name="lang_vietnamese">Vietnamita</string>
     <string name="parental_control">Control parental</string>
     <string name="info_prevent_play_songs_with_age_limitation">Eviteu reproduir cançons amb limitació d\'edat</string>
     <string name="cache_location_private">Privat</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">El reproductor ampliat només funciona quan les lletres estan activades</string>
     <string name="info_connect_your_piped_account_first">Connecteu primer el vostre compte canalitzat o desactiveu la sincronització canalitzada</string>
     <string name="piped_playlists">Marcat</string>
-    <string name="lang_bengali">Bengalí</string>
-    <string name="lang_irish">Irlandès</string>
     <string name="lyricsoutline">Esquema de lletres</string>
     <string name="fluidrainbow">Esquema de l\'arc de Sant Martí fluid</string>
     <string name="fluidtheme">Tema fluid</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">To de reproducció</string>
     <string name="controls_title_playback_volume">Volum de reproducció</string>
     <string name="controls_title_device_volume">Volum del dispositiu</string>
-    <string name="lang_malayalam">Malaiàlam</string>
     <string name="searches_suggestions">Suggeriments</string>
     <string name="searches_saved_searches">Cerques desades</string>
     <string name="event_volumekeys">Canvia la cançó amb les tecles de volum</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">Tipus de cua</string>
     <string name="chart_top_songs">Les millors cançons</string>
     <string name="chart_top_artists">Els millors artistes</string>
-    <string name="lang_interlingua">Interlingua</string>
     <string name="error_no_internet">No hi ha connexió de xarxa</string>
     <string name="error_timeout">Temps d\'espera de connexió</string>
     <string name="error_unknown">Error desconegut</string>
@@ -723,8 +679,6 @@
     <string name="update_album">Actualitza l\'àlbum</string>
     <string name="info_check_update_now">Comprova-ho ara</string>
     <string name="info_no_update_available">No hi ha cap actualització disponible</string>
-    <string name="lang_galician">Gallec</string>
-    <string name="lang_norwegian">Noruec</string>
     <string name="translate_to">Tradueix a %s</string>
     <string name="translate_to_other_language">Tradueix a un altre idioma</string>
     <string name="action_bar_show_video_button">Mostra el botó de vídeo</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">Barra d\'acció</string>
     <string name="center">Centre</string>
     <string name="lyricsalignment">Alineació de lletres</string>
-    <string name="lang_azerbaijani">Azerbaijaní</string>
     <string name="translators">Traductors</string>
-    <string name="lang_tamil">Tàmil</string>
     <string name="player_auto_load_songs_in_queue">Carrega automàtica de cançons a la cua</string>
     <string name="player_auto_load_songs_in_queue_description">Afegeix cançons quan la cua està a punt d\'acabar</string>
     <string name="show_vinyl_thumbnail_animation">Mostra l\'animació de vinil com a miniatura</string>
