@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">Vyhledat písňový text online</string>
     <string name="fetch_lyrics_again">Znovu načíst písňový text</string>
     <string name="id">Id</string>
-    <string name="itag">Itag</string>
     <string name="bitrate">Přenosová rychlost</string>
     <string name="size">Velikost</string>
     <string name="cached">Uloženo do mezipaměti</string>
@@ -170,16 +169,6 @@
     <string name="contributors">PŘISPĚVATELÉ</string>
     <string name="troubleshooting">ODSTRAŇOVÁNÍ PROBLÉMŮ</string>
     <string name="social">SOCIÁLNÍ SÍŤ</string>
-    <string name="english">Angličtina (English)</string>
-    <string name="italian">Italština (Italiano)</string>
-    <string name="czech">Čeština</string>
-    <string name="german">Němčina (Deutsch)</string>
-    <string name="spanish">Španělština (Español)</string>
-    <string name="french">Francouzština (Français)</string>
-    <string name="romanian">Rumunština (Română)</string>
-    <string name="russian">Ruština (Русский)</string>
-    <string name="turkish">Turečtina (Türkçe)</string>
-    <string name="polish">Polština (Polski)</string>
     <string name="dark">Tmavý</string>
     <string name="system">Podle systému</string>
     <string name="unlimited">Neomezený</string>
@@ -246,12 +235,6 @@
     <string name="square">Čtvercový</string>
     <string name="circular_ribbed">Zvlněný kruh</string>
     <string name="play_button">Tlačítko Přehrát</string>
-    <string name="portuguese_brazilian">Portugalština, Brazilština (Português, Brasileiro)</string>
-    <string name="portuguese">Portugalština (Português)</string>
-    <string name="indonesian">Indonéština (Indonesia)</string>
-    <string name="odia">Urijština (ଓଡ଼ିଆ)</string>
-    <string name="bashkir">Baškirština (Башҡурт)</string>
-    <string name="esperanto">Esperanto (Esperanto)</string>
     <string name="close_app_with_back_button">Zavřít aplikaci tlačítkem Zpět</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Když použijete tlačítko zpět z domovské stránky</string>
     <string name="audio_quality_format_high">Vysoká</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">Opravdu chcete odstranit stahování?</string>
     <string name="enqueue_all">Zařadit vše do fronty</string>
     <string name="enqueue_selected">Zařadit vybrané do fronty</string>
-    <string name="greek">Řečtina (Ελληνικά)</string>
-    <string name="catalan">Katalánština (Català)</string>
     <string name="disable_scrolling_text">Zakázat posouvání textu</string>
     <string name="scrolling_text_is_used_for_long_texts">Posouvání textu se používá pro dlouhé texty</string>
     <string name="audio_quality_format">Kvalita zvuku</string>
     <string name="persian">Perština (فارسی)</string>
-    <string name="hungarian">Maďarština (Magyar)</string>
-    <string name="korean">Korejština (한국어)</string>
     <string name="background_player">"PŘEHRÁVAČ NA POZADÍ "</string>
     <string name="show_favorite_button">Zobrazit tlačítko Oblíbené</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Zobrazit tlačítko Oblíbené na uzamčené obrazovce a v oznamovací oblasti</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">poslechnuté skladby</string>
     <string name="statistics_of_time_taken">potřebného času</string>
     <string name="statistics_max_number_of_items">Maximální počet položek</string>
-    <string name="arabic">Arabština (العربية)</string>
-    <string name="chinese_simplified">Zjednodušená čínština (汉语)</string>
-    <string name="chinese_traditional">Tradiční čínština (漢語)</string>
     <string name="do_you_really_want_to_download_all">Opravdu chcete stahovat vše?</string>
     <string name="import_playlist">Importovat playlist</string>
-    <string name="lang_ukrainian">Ukrajinština (Украї́нська)</string>
     <string name="proxy">PROXY</string>
     <string name="enable_proxy">Povolit Proxy</string>
     <string name="proxy_mode">Režim proxy</string>
     <string name="proxy_host">Hostitel proxy</string>
     <string name="proxy_port">Port proxy</string>
     <string name="disable_if_you_do_not_want_to_see">Zakázat, pokud nechcete vidět</string>
-    <string name="lang_hebrew">Hebrejština (עִברִית)</string>
     <string name="customize_album">Přizpůsobit album</string>
     <string name="update_title">Aktualizovat Název</string>
     <string name="update_authors">Aktualizovat Autory</string>
@@ -300,7 +274,6 @@
     <string name="title">Název</string>
     <string name="authors">Autoři</string>
     <string name="cover">Obal</string>
-    <string name="lang_japanese">Japonština (日本語)</string>
     <string name="paste_or_type_a_valid_url">Vložit nebo zadat platnou adresu url</string>
     <string name="you_can_put_a_complete_link">Můžete vložit úplný odkaz na playlist, album, kanál nebo jednu skladbu na YouTube nebo YouTube Music</string>
     <string name="go_to_link">Přejít na odkaz</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">Zobrazit tlačítko Náhodně</string>
     <string name="action_bar_show_lyrics_button">Zobrazit tlačítko Písňový text</string>
     <string name="action_bar_show_arrow_button_to_open_queue">Zobrazit tlačítko Šipky</string>
-    <string name="lang_finnish">Finština (Suomalainen)</string>
     <string name="listening_time">Doba poslechu</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">Zobrazit počet poslechnutých skladeb a dobu jejich poslechu</string>
     <string name="app_update_dialog_new">Novou verzi %s lze stáhnout!</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">konec skladby</string>
     <string name="restore_completed">Obnovení dokončeno!</string>
     <string name="click_to_close">Klikněte pro zavření</string>
-    <string name="lang_dutch">Holandština (Nederlands)</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">Opravdu chcete přečíslovat pozice v tomto playlistu?</string>
     <string name="renumber_songs_positions">Přečíslování pozic</string>
     <string name="do_you_really_want_to_delete_all_playback_events">Opravdu chcete odstranit všechny události přehrávání?</string>
-    <string name="lang_sinhala">Sinhálština (සිංහල)</string>
     <string name="update_available">Aktualizace k dispozici</string>
     <string name="actions_you_can_do">Akce, které můžete provést:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">Otevřít webovou stránku Github releases a stáhnout nejnovější verzi</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">V nastavení ji můžete stále zapnout nebo vypnout.</string>
     <string name="enable">Povolit</string>
     <string name="don_t_enable">Nepovolit</string>
-    <string name="lang_hindi">Hindština (हिंदी)</string>
     <string name="default_page">Výchozí stránka</string>
     <string name="keep_screen_on">Ponechat obrazovku zapnutou</string>
     <string name="prevents_screen_timeout">Zabraňuje časovému limitu obrazovky</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">Vyhněte se zavírání přehrávače a vyčištění fronty přejetím prstem dolů, když je minimalizovaný</string>
     <string name="sort_date_liked">Datum oblíbení</string>
     <string name="export_playlist">Exportovat playlist</string>
-    <string name="lang_afrikaans">Afrikánština (Afrikaans)</string>
     <string name="playlist_top">Top Playlist</string>
     <string name="my_playlist_top">Moje Top %s</string>
     <string name="navigation_bar_position">Pozice navigačního panelu</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">Zkopírovat písňový text</string>
     <string name="value_copied">Zkopírováno</string>
     <string name="do_you_really_want_to_delete_cache">Opravdu chcete odstranit mezipaměť?</string>
-    <string name="lang_swedish">Švědština (Svenska)</string>
     <string name="pinned_playlists">Připnuté playlisty</string>
     <string name="locked">Uzamčeno</string>
     <string name="sort_duration">Trvání</string>
-    <string name="lang_serbian_cyrillic">Srbská cyrilice (Српски Ћирилица)</string>
     <string name="pause_between_songs">Pauza mezi skladbami</string>
     <string name="navigation_bar_type">Typ navigačního panelu</string>
     <string name="icon_and_text">Ikona a text</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">Album</string>
     <string name="use_gradient_background">Použít gradientní pozadí</string>
     <string name="show_total_time_of_queue">Zobrazit celkový čas fronty</string>
-    <string name="lang_telugu">Telugština (తెలుగు)</string>
     <string name="media_permission_required_please_grant">Je vyžadováno oprávnění k médiím, prosím udělte je.</string>
     <string name="open_permission_settings">Otevřít nastavení oprávnění</string>
     <string name="background_progress_bar">Lišta průběhu na pozadí</string>
@@ -419,8 +384,6 @@
     <string name="back">Zpět</string>
     <string name="folders">Složky</string>
     <string name="show_folders_in_on_device_page">Zobrazení složek na stránce V zařízení</string>
-    <string name="lang_danish">Dánština (Dansk)</string>
-    <string name="lang_serbian_latin">Srbská latinka (Srpski latinica)</string>
     <string name="item_deselect">Odznačit</string>
     <string name="show_next_songs_in_player">Zobrazení dalších skladeb v přehrávači</string>
     <string name="show_remaining_song_time">Zobrazit zbývající čas skladby</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">Plynulé gradientní pozadí z obalu</string>
     <string name="show_background_in_lyrics">Zobrazit barvu pozadí v písňovém textu</string>
     <string name="bg_colors_blurred_cover_background">Rozostřené pozadí obalu</string>
-    <string name="lang_estonian">Estonština (eesti keel)</string>
     <string name="pcontrols_modern">Moderní</string>
     <string name="pcontrols_essential">Základní</string>
     <string name="pcontrols_type">Typ ovládání</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">Dole</string>
     <string name="added_to_favorites">Přidáno do oblíbených</string>
     <string name="removed_from_favorites">Odstraněno z oblíbených</string>
-    <string name="lang_filipino">Filipínština (Mga Pilipino)</string>
     <string name="action_bar_transparent_background">Průhledné pozadí</string>
     <string name="pinfo_type">Typ informací</string>
     <string name="pinfo_album_and_artist_name">Název alba a interpreta</string>
@@ -574,7 +535,6 @@
     <string name="exclude_songs_with_duration_limit_description">Skladby, jejichž délka trvání překročí limit, budou vyloučeny z Top skladeb a fronty přehrávání</string>
     <string name="no_log_available">Žádný protokol není k dispozici</string>
     <string name="enable_quick_picks_page">Povolit stránku Rychlý výběr</string>
-    <string name="lang_vietnamese">Vietnamština (tiếng Việt)</string>
     <string name="parental_control">Rodičovská kontrola</string>
     <string name="info_prevent_play_songs_with_age_limitation">Zabránit přehrávání skladeb s věkovým omezením</string>
     <string name="cache_location_private">Soukromé</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">Rozšířený přehrávač funguje pouze při aktivaci písňového textu</string>
     <string name="info_connect_your_piped_account_first">Nejprve připojte svůj účet piped nebo zakažte synchronizaci piped</string>
     <string name="piped_playlists">Piped</string>
-    <string name="lang_bengali">Bengálština (বাংলা)</string>
-    <string name="lang_irish">Irština (Gaeilge)</string>
     <string name="lyricsoutline">Obrys písňového textu</string>
     <string name="fluidrainbow">Fluidní duha</string>
     <string name="fluidtheme">Fluidní motiv</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">Výška přehrávání</string>
     <string name="controls_title_playback_volume">Hlasitost přehrávání</string>
     <string name="controls_title_device_volume">Hlasitost zařízení</string>
-    <string name="lang_malayalam">Malajálamština (മലയാളം)</string>
     <string name="searches_suggestions">Návrhy</string>
     <string name="searches_saved_searches">Uložená hledání</string>
     <string name="event_volumekeys">Změnit skladbu pomocí tlačítek hlasitosti</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">Typ fronty</string>
     <string name="chart_top_songs">Nejlepší skladby</string>
     <string name="chart_top_artists">Nejlepší interpreti</string>
-    <string name="lang_interlingua">Interlingua</string>
     <string name="error_no_internet">Bez připojení k síti</string>
     <string name="error_timeout">Spojení vypršelo</string>
     <string name="error_unknown">Neznámá chyba</string>
@@ -723,8 +679,6 @@
     <string name="update_album">Aktualizace alba</string>
     <string name="info_check_update_now">Zkontrolovat nyní</string>
     <string name="info_no_update_available">Nejsou dostupné žádné aktualizace</string>
-    <string name="lang_galician">Galicijština (Galego)</string>
-    <string name="lang_norwegian">Norština (Norsk)</string>
     <string name="translate_to">Přeložit do %s</string>
     <string name="translate_to_other_language">Přeložit do jiného jazyka</string>
     <string name="action_bar_show_video_button">Zobrazit tlačítko video</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">Ovládací panel</string>
     <string name="center">Střed</string>
     <string name="lyricsalignment">Zarovnání písňových textů</string>
-    <string name="lang_azerbaijani">Ázerbájdžánština (Azərbaycanca)</string>
     <string name="translators">Překladatelé</string>
-    <string name="lang_tamil">Tamilština (தமிழ்)</string>
     <string name="player_auto_load_songs_in_queue">Automatické načítání skladeb ve frontě</string>
     <string name="player_auto_load_songs_in_queue_description">Přidání skladeb, když se fronta blíží ke konci</string>
     <string name="show_vinyl_thumbnail_animation">Zobrazit animaci gramodesky jako miniaturu</string>
