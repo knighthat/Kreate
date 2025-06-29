@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">Søk etter sangtekster på nettet</string>
     <string name="fetch_lyrics_again">Hent sangtekster på ny</string>
     <string name="id">Id</string>
-    <string name="itag">Itag</string>
     <string name="bitrate">Bitrate</string>
     <string name="size">Størrelse</string>
     <string name="cached">Bufret</string>
@@ -170,16 +169,6 @@
     <string name="contributors">BIDRAGERE</string>
     <string name="troubleshooting">FEILSØKING</string>
     <string name="social">SOSIALT</string>
-    <string name="english">Engelsk</string>
-    <string name="italian">Italiensk (Italiano)</string>
-    <string name="czech">Tjekkisk (Čeština)</string>
-    <string name="german">Tysk (Deutsch)</string>
-    <string name="spanish">Spansk (Español)</string>
-    <string name="french">Fransk (Français)</string>
-    <string name="romanian">Rumensk (Română)</string>
-    <string name="russian">Russisk (Русский)</string>
-    <string name="turkish">Tyrkisk (Türkçe)</string>
-    <string name="polish">Polsk (Polski)</string>
     <string name="dark">Mørk</string>
     <string name="system">System</string>
     <string name="unlimited">Ubegrenset</string>
@@ -246,12 +235,6 @@
     <string name="square">Firkantet</string>
     <string name="circular_ribbed">Sirkulært bånd</string>
     <string name="play_button">Avspillingsknapp</string>
-    <string name="portuguese_brazilian">Portugisisk, Brasiliansk</string>
-    <string name="portuguese">Portugisisk</string>
-    <string name="indonesian">Indonesisk</string>
-    <string name="odia">Odia</string>
-    <string name="bashkir">Basjkirsk</string>
-    <string name="esperanto">Esperanto</string>
     <string name="close_app_with_back_button">Avslutt app med Tilbakeknappen</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Når du bruker tilbakeknappen fra hjemmesiden</string>
     <string name="audio_quality_format_high">Høy</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">Vil du virkelig slette nedlastingen?</string>
     <string name="enqueue_all">Legg alle til i kø</string>
     <string name="enqueue_selected">Legg valgte til i kø</string>
-    <string name="greek">Gresk</string>
-    <string name="catalan">Katalansk</string>
     <string name="disable_scrolling_text">Deaktiver rullende tekst</string>
     <string name="scrolling_text_is_used_for_long_texts">Rullende tekst brukes for lange tekster</string>
     <string name="audio_quality_format">Lydkvalitets format</string>
     <string name="persian">Persisk</string>
-    <string name="hungarian">Ungarsk</string>
-    <string name="korean">Koreansk</string>
     <string name="background_player">"BAKGRUNNS SPILLER "</string>
     <string name="show_favorite_button">Vis Favorittknapp</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Vis Favorittknappen på låseskjermen og i varslingsområdet</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">sanger hørt</string>
     <string name="statistics_of_time_taken">av tid tatt</string>
     <string name="statistics_max_number_of_items">Maks antall elementer</string>
-    <string name="arabic">Arabisk</string>
-    <string name="chinese_simplified">Kinesisk (forenklet)</string>
-    <string name="chinese_traditional">Kinesisk (tradisjonell)</string>
     <string name="do_you_really_want_to_download_all">Ønsker du virkelig å laste ned alt?</string>
     <string name="import_playlist">Importer spilleliste</string>
-    <string name="lang_ukrainian">Ukrainsk</string>
     <string name="proxy">PROXY</string>
     <string name="enable_proxy">Aktiver Proxy</string>
     <string name="proxy_mode">Proxy Modus</string>
     <string name="proxy_host">Proxy Vert</string>
     <string name="proxy_port">Proxy Port</string>
     <string name="disable_if_you_do_not_want_to_see">Deaktiver hvis du ikke ønsker å se</string>
-    <string name="lang_hebrew">Hebraisk</string>
     <string name="customize_album">Tilpass album</string>
     <string name="update_title">Oppdater Tittel</string>
     <string name="update_authors">Oppdater Forfattere</string>
@@ -300,7 +274,6 @@
     <string name="title">Tittel</string>
     <string name="authors">Forfattere</string>
     <string name="cover">Omslag</string>
-    <string name="lang_japanese">Japansk</string>
     <string name="paste_or_type_a_valid_url">Lim inn eller skriv en gyldig url</string>
     <string name="you_can_put_a_complete_link">Du kan legge en komplett lenke til en spilleliste, et album, en kanal eller en enkelt sang på YouTube eller YouTube Music</string>
     <string name="go_to_link">Gå til lenke</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">Vis Tilfeldig rekkefølge knapp</string>
     <string name="action_bar_show_lyrics_button">Vis Sangtekst knapp</string>
     <string name="action_bar_show_arrow_button_to_open_queue">Vis Pilknapp for å åpne kø</string>
-    <string name="lang_finnish">Finsk</string>
     <string name="listening_time">Lyttetid</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">Viser antall sanger du har hørt og deres lyttetid</string>
     <string name="app_update_dialog_new">Den nye versjonen %s kan lastes ned!</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">slutten på sangen</string>
     <string name="restore_completed">Gjenoppretting fullført!</string>
     <string name="click_to_close">Klikk for å lukke</string>
-    <string name="lang_dutch">Nederlandsk</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">Vil du virkelig omnummerere posisjonene i denne spillelisten?</string>
     <string name="renumber_songs_positions">Omnummerer posisjonene</string>
     <string name="do_you_really_want_to_delete_all_playback_events">Vil du virkelig slette alle avspillingshendelser?</string>
-    <string name="lang_sinhala">Singalesisk</string>
     <string name="update_available">Oppdatering tilgjengelig</string>
     <string name="actions_you_can_do">Handlinger du kan utføre:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">Åpne Github utgivelsessiden og last ned nyeste versjon</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">Du kan fortsatt skru den på, eller av, fra innstillingene.</string>
     <string name="enable">Aktiver</string>
     <string name="don_t_enable">Ikke aktiver</string>
-    <string name="lang_hindi">Hindi</string>
     <string name="default_page">Standardside</string>
     <string name="keep_screen_on">Behold skjermen på</string>
     <string name="prevents_screen_timeout">Hindrer tidsavbrudd for skjerm</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">Unngå å lukke spilleren og rydde i køen ved å sveipe ned mens den er minimert</string>
     <string name="sort_date_liked">Dato likt</string>
     <string name="export_playlist">Eksporter spilleliste</string>
-    <string name="lang_afrikaans">Afrikansk</string>
     <string name="playlist_top">Topp spilleliste</string>
     <string name="my_playlist_top">Min topp %s</string>
     <string name="navigation_bar_position">Navigasjonsbar plassering</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">Kopier sangtekster</string>
     <string name="value_copied">Kopiert</string>
     <string name="do_you_really_want_to_delete_cache">Vil du virkelig slette buffer?</string>
-    <string name="lang_swedish">Svensk</string>
     <string name="pinned_playlists">Festede Spillelister</string>
     <string name="locked">Låst</string>
     <string name="sort_duration">Varighet</string>
-    <string name="lang_serbian_cyrillic">Serbisk Kyrillisk</string>
     <string name="pause_between_songs">Pause mellom sanger</string>
     <string name="navigation_bar_type">Navigasjonsbar type</string>
     <string name="icon_and_text">Ikon og tekst</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">Album</string>
     <string name="use_gradient_background">Bruk gjennomsiktig bakgrunn</string>
     <string name="show_total_time_of_queue">Vis total tid i kø</string>
-    <string name="lang_telugu">Telugu</string>
     <string name="media_permission_required_please_grant">Mediatillatelse kreves, vennligst gi det.</string>
     <string name="open_permission_settings">Åpne tillatelsesinnstillinger</string>
     <string name="background_progress_bar">Bakgrunns fremdriftslinje</string>
@@ -419,8 +384,6 @@
     <string name="back">Tilbake</string>
     <string name="folders">Mapper</string>
     <string name="show_folders_in_on_device_page">Vis mapper på enhetssiden</string>
-    <string name="lang_danish">Dansk</string>
-    <string name="lang_serbian_latin">Serbisk, Latin</string>
     <string name="item_deselect">Velg bort</string>
     <string name="show_next_songs_in_player">Vis Mini kø i Spilleren</string>
     <string name="show_remaining_song_time">Vis gjenværende sangtid</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">Flytende bakgrunn fra cover</string>
     <string name="show_background_in_lyrics">Vis bakgrunnsfarge i sangtekster</string>
     <string name="bg_colors_blurred_cover_background">Uskarpt coverbakgrunn</string>
-    <string name="lang_estonian">Estisk</string>
     <string name="pcontrols_modern">Moderne</string>
     <string name="pcontrols_essential">Essensiell</string>
     <string name="pcontrols_type">Kontrolltype</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">Bunn</string>
     <string name="added_to_favorites">Lagt til i favoritter</string>
     <string name="removed_from_favorites">Fjernet fra favoritter</string>
-    <string name="lang_filipino">Filippinsk</string>
     <string name="action_bar_transparent_background">Gjennomsiktig bakgrunn</string>
     <string name="pinfo_type">Informasjonstype</string>
     <string name="pinfo_album_and_artist_name">Album - og artistnavn</string>
@@ -574,7 +535,6 @@
     <string name="exclude_songs_with_duration_limit_description">Sanger med varighet som overskrider grensen vil bli ekskludert fra toppsanger og avspillingskøen</string>
     <string name="no_log_available">Ingen logg tilgjengelig</string>
     <string name="enable_quick_picks_page">Aktiver siden for hurtigvalg</string>
-    <string name="lang_vietnamese">Vietnamesisk</string>
     <string name="parental_control">Foreldrekontroll</string>
     <string name="info_prevent_play_songs_with_age_limitation">Hindre avspilling av sanger med aldersbegrensning</string>
     <string name="cache_location_private">Privat</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">Utvidet spiller fungerer bare når sangtekst er aktivert</string>
     <string name="info_connect_your_piped_account_first">Koble til din piped konto først eller deaktiver piped synkronisering</string>
     <string name="piped_playlists">Piped</string>
-    <string name="lang_bengali">Bengalsk</string>
-    <string name="lang_irish">Irsk</string>
     <string name="lyricsoutline">Sangtekstomriss</string>
     <string name="fluidrainbow">Flytende Regnbue</string>
     <string name="fluidtheme">Flytende tema</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">Avspilling tonehøyde</string>
     <string name="controls_title_playback_volume">Avspillingsvolum</string>
     <string name="controls_title_device_volume">Enhetsvolum</string>
-    <string name="lang_malayalam">Malayalam</string>
     <string name="searches_suggestions">Forslag</string>
     <string name="searches_saved_searches">Lagrede søk</string>
     <string name="event_volumekeys">Endre sang med volumtastene</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">Køtype</string>
     <string name="chart_top_songs">Topp sanger</string>
     <string name="chart_top_artists">Topp artister</string>
-    <string name="lang_interlingua">Mellomspråkelig</string>
     <string name="error_no_internet">Ingen nettverksforbindelse</string>
     <string name="error_timeout">Tidsavbrudd for tilkobling</string>
     <string name="error_unknown">Ukjent feil</string>
@@ -723,8 +679,6 @@
     <string name="update_album">Updates the Album</string>
     <string name="info_check_update_now">Sjekk nå</string>
     <string name="info_no_update_available">Ingen oppdatering tilgjengelig</string>
-    <string name="lang_galician">Galisisk</string>
-    <string name="lang_norwegian">Norsk</string>
     <string name="translate_to">Oversett til %s</string>
     <string name="translate_to_other_language">Oversett til et annet språk</string>
     <string name="action_bar_show_video_button">Vis videoknapp</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">Handlingslinje</string>
     <string name="center">Midtstilt</string>
     <string name="lyricsalignment">Sangtekst justering</string>
-    <string name="lang_azerbaijani">Aserbajdsjansk</string>
     <string name="translators">Oversettere</string>
-    <string name="lang_tamil">Tamilsk</string>
     <string name="player_auto_load_songs_in_queue">Auto last sanger i kø</string>
     <string name="player_auto_load_songs_in_queue_description">Legger til sanger når køen er i ferd med å avsluttes</string>
     <string name="show_vinyl_thumbnail_animation">Vis Vinyl animasjon som miniatyrbilde</string>
