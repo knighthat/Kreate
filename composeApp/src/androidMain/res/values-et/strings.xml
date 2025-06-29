@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">Otsi laulusõnu internetist</string>
     <string name="fetch_lyrics_again">Hangi veelkord laulusõnad</string>
     <string name="id">Id</string>
-    <string name="itag">Itag</string>
     <string name="bitrate">Bitikiirus</string>
     <string name="size">Suurus</string>
     <string name="cached">Vahemälus</string>
@@ -170,16 +169,6 @@
     <string name="contributors">KAASTEGIJAD</string>
     <string name="troubleshooting">TÕRKE OTSIMINE</string>
     <string name="social">SOTSIAALNE</string>
-    <string name="english">Inglise</string>
-    <string name="italian">Itaalia</string>
-    <string name="czech">Tšehhi</string>
-    <string name="german">Saksa</string>
-    <string name="spanish">Hispaania</string>
-    <string name="french">Prantsuse</string>
-    <string name="romanian">Rumeenia</string>
-    <string name="russian">Vene</string>
-    <string name="turkish">Türgi</string>
-    <string name="polish">Poola</string>
     <string name="dark">Tume</string>
     <string name="system">Süsteem</string>
     <string name="unlimited">Piiramatu</string>
@@ -246,12 +235,6 @@
     <string name="square">Ruut</string>
     <string name="circular_ribbed">Ümar soonega</string>
     <string name="play_button">Esitamise nupp</string>
-    <string name="portuguese_brazilian">Portugali, Brasiilia</string>
-    <string name="portuguese">Portugali</string>
-    <string name="indonesian">Indoneesia</string>
-    <string name="odia">Oria</string>
-    <string name="bashkir">Baškiiri</string>
-    <string name="esperanto">Esperanto</string>
     <string name="close_app_with_back_button">Sulge rakendus Tagasi nupuga</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Kui te kasutate Tagasi nuppu kodulehelt</string>
     <string name="audio_quality_format_high">Kõrge</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">Kas soovite allalaetud faili kustutada?</string>
     <string name="enqueue_all">Lisa kõik järjekorda</string>
     <string name="enqueue_selected">Lisa valitud järjekorda</string>
-    <string name="greek">Kreeka</string>
-    <string name="catalan">Katalaani</string>
     <string name="disable_scrolling_text">Keela keriv tekst</string>
     <string name="scrolling_text_is_used_for_long_texts">Kerivat teksti kasutatakse pikkade tekstidega</string>
     <string name="audio_quality_format">Heli kvaliteedi vorming</string>
     <string name="persian">Pärsia</string>
-    <string name="hungarian">Ungari</string>
-    <string name="korean">Korea</string>
     <string name="background_player">"TAUSTAPLEIER "</string>
     <string name="show_favorite_button">Kuva lemmikute nupp</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Kuva lemmikute nupp lukustuskuval ja teavituste alal</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">kuuldud lood</string>
     <string name="statistics_of_time_taken">kulunud aeg</string>
     <string name="statistics_max_number_of_items">Maks. üksuste arv</string>
-    <string name="arabic">Araabia</string>
-    <string name="chinese_simplified">Hiina (lihtsustatud)</string>
-    <string name="chinese_traditional">Hiina (Traditsiooniline)</string>
     <string name="do_you_really_want_to_download_all">Kas te soovite kõik alla laadida?</string>
     <string name="import_playlist">Impordi esitusloend</string>
-    <string name="lang_ukrainian">Ukraina</string>
     <string name="proxy">PROKSI</string>
     <string name="enable_proxy">Luba proksi</string>
     <string name="proxy_mode">Proksi režiim</string>
     <string name="proxy_host">Proksi host</string>
     <string name="proxy_port">Proksi port</string>
     <string name="disable_if_you_do_not_want_to_see">Keela, kui ei soovi näha</string>
-    <string name="lang_hebrew">Heebrea</string>
     <string name="customize_album">Kohanda album</string>
     <string name="update_title">Värskenda pealkirja</string>
     <string name="update_authors">Värskenda autoreid</string>
@@ -300,7 +274,6 @@
     <string name="title">Pealkiri</string>
     <string name="authors">Autorid</string>
     <string name="cover">Kaas</string>
-    <string name="lang_japanese">Jaapani</string>
     <string name="paste_or_type_a_valid_url">Kleebi või tipi korrektne URL</string>
     <string name="you_can_put_a_complete_link">Võite panna täieliku lingi esitusloendi, albumi, kanali või üksiku loo juurde YouTube\'is või YouTube Music\'us</string>
     <string name="go_to_link">Mine lingile</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">Kuva Segamise nupp</string>
     <string name="action_bar_show_lyrics_button">Kuva Laulusõnade nupp</string>
     <string name="action_bar_show_arrow_button_to_open_queue">Kuva Noole nupp</string>
-    <string name="lang_finnish">Soome</string>
     <string name="listening_time">Kuulamise aeg</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">Kuvab kuuldud lugude ja nende kuulamise aja numbrid</string>
     <string name="app_update_dialog_new">Uus versioon %s on allalaadimiseks valmis!</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">loo lõpp</string>
     <string name="restore_completed">Taastamine õnnestus!</string>
     <string name="click_to_close">Sulgemiseks klõpsa</string>
-    <string name="lang_dutch">Hollandi</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">Kas soovite segada lugude asukohad selles esitusloendis?</string>
     <string name="renumber_songs_positions">Sega lugude asukohad</string>
     <string name="do_you_really_want_to_delete_all_playback_events">Kas soovite kustutada kõik taasesituse sündmused?</string>
-    <string name="lang_sinhala">Singali</string>
     <string name="update_available">Värskendus saadaval</string>
     <string name="actions_you_can_do">Tegevused mida saate teha:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">Avage Githubi väljalasete veebileht ja laadige alla viimane versioon</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">Võite sätetest ikkagi sisse või välja lülitada.</string>
     <string name="enable">Luba</string>
     <string name="don_t_enable">Ära luba</string>
-    <string name="lang_hindi">Hindi</string>
     <string name="default_page">Vaikeleht</string>
     <string name="keep_screen_on">Hoia ekraan ärkvel</string>
     <string name="prevents_screen_timeout">Väldib ekraani kustumise</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">Kui pleier on minimeeritud, väldi sulgemist ja järjekorra puhastamist alla nipsates</string>
     <string name="sort_date_liked">Meeldimise kuupäev</string>
     <string name="export_playlist">Ekspordi esitusloend</string>
-    <string name="lang_afrikaans">Afrikaani</string>
     <string name="playlist_top">Parim esitusloendis</string>
     <string name="my_playlist_top">Minu lemmikud %s</string>
     <string name="navigation_bar_position">Navigatsiooniriba asukoht</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">Kopeeri laulusõnad</string>
     <string name="value_copied">Kopeeritud</string>
     <string name="do_you_really_want_to_delete_cache">Kas soovite kustutada vahemälu?</string>
-    <string name="lang_swedish">Rootsi</string>
     <string name="pinned_playlists">Kinnitatud esitusloendid</string>
     <string name="locked">Lukus</string>
     <string name="sort_duration">Kestus</string>
-    <string name="lang_serbian_cyrillic">Serbia (kirillitsa)</string>
     <string name="pause_between_songs">Tee lugude vahel paus</string>
     <string name="navigation_bar_type">Navigatsiooniriba liik</string>
     <string name="icon_and_text">Ikoon ja tekst</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">Album</string>
     <string name="use_gradient_background">Kasuta gradiendi tausta</string>
     <string name="show_total_time_of_queue">Kuva järjekorra kogu kestus</string>
-    <string name="lang_telugu">Telugu</string>
     <string name="media_permission_required_please_grant">Meedia ligipääsu on vaja, palun andke.</string>
     <string name="open_permission_settings">Ava lubade sätted</string>
     <string name="background_progress_bar">Tausta edenemisriba</string>
@@ -419,8 +384,6 @@
     <string name="back">Tagasi</string>
     <string name="folders">Kaustad</string>
     <string name="show_folders_in_on_device_page">Kuna kaustad lehel Seadmes asuvad</string>
-    <string name="lang_danish">Taani</string>
-    <string name="lang_serbian_latin">Serbia (ladina)</string>
     <string name="item_deselect">Tühista valik</string>
     <string name="show_next_songs_in_player">Kuva pleieris järgmised lood</string>
     <string name="show_remaining_song_time">Kuva loo kestvuse aeg</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">Sujuva gradiendi taust kaanelt</string>
     <string name="show_background_in_lyrics">Kuva laulusõnadel taustavärv</string>
     <string name="bg_colors_blurred_cover_background">Hägune kaanetaust</string>
-    <string name="lang_estonian">Eesti</string>
     <string name="pcontrols_modern">Kaasaegne</string>
     <string name="pcontrols_essential">Oluline</string>
     <string name="pcontrols_type">Juhtelementide tüüp</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">All</string>
     <string name="added_to_favorites">Lisatud lemmikutesse</string>
     <string name="removed_from_favorites">Eemaldatud lemmikutest</string>
-    <string name="lang_filipino">Filipiini</string>
     <string name="action_bar_transparent_background">Läbipaistev taust</string>
     <string name="pinfo_type">Info liik</string>
     <string name="pinfo_album_and_artist_name">Albumi ja artisti nimi</string>
@@ -574,7 +535,6 @@
     <string name="exclude_songs_with_duration_limit_description">Kui sisse lülitatud, jäetakse välja laulud, mille kestus ületab piirmäära, ning neid rakendatakse mytopis ja esitusjärjekorras</string>
     <string name="no_log_available">Logi puudub</string>
     <string name="enable_quick_picks_page">Lülita sisse kiirvalikute leht</string>
-    <string name="lang_vietnamese">Vietnami</string>
     <string name="parental_control">Vanemlik järelvalve</string>
     <string name="info_prevent_play_songs_with_age_limitation">Väldi vanusepiiranguga laulude mängimist</string>
     <string name="cache_location_private">Privaatne</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">Funktsioneerib ainult kui lüürika pisipilt on välja lülitada</string>
     <string name="info_connect_your_piped_account_first">Ühendage kõigepealt oma Piped konto või lülitage Piped sünkroniseerimine välja</string>
     <string name="piped_playlists">Piped</string>
-    <string name="lang_bengali">Bengaali</string>
-    <string name="lang_irish">Iiri</string>
     <string name="lyricsoutline">Lyrics Outline</string>
     <string name="fluidrainbow">Fluid Rainbow</string>
     <string name="fluidtheme">Fluid Theme</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">Playback pitch</string>
     <string name="controls_title_playback_volume">Playback Volume</string>
     <string name="controls_title_device_volume">Device volume</string>
-    <string name="lang_malayalam">Malayalam</string>
     <string name="searches_suggestions">Suggestions</string>
     <string name="searches_saved_searches">Saved searches</string>
     <string name="event_volumekeys">Change song with the volume keys</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">Queue Type</string>
     <string name="chart_top_songs">Top songs</string>
     <string name="chart_top_artists">Top artists</string>
-    <string name="lang_interlingua">Interlingua</string>
     <string name="error_no_internet">No network connection</string>
     <string name="error_timeout">Connection timeout</string>
     <string name="error_unknown">Unknown error</string>
@@ -723,8 +679,6 @@
     <string name="update_album">Updates the Album</string>
     <string name="info_check_update_now">Check Now</string>
     <string name="info_no_update_available">No update available</string>
-    <string name="lang_galician">Galician</string>
-    <string name="lang_norwegian">Norwegian</string>
     <string name="translate_to">Translate to %s</string>
     <string name="translate_to_other_language">Traslate to other language</string>
     <string name="action_bar_show_video_button">Show video button</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">Action Bar</string>
     <string name="center">Center</string>
     <string name="lyricsalignment">Lyrics Alignment</string>
-    <string name="lang_azerbaijani">Azerbaijani</string>
     <string name="translators">Translators</string>
-    <string name="lang_tamil">Tamil</string>
     <string name="player_auto_load_songs_in_queue">Auto load songs in queue</string>
     <string name="player_auto_load_songs_in_queue_description">Adds songs when the queue is about to end</string>
     <string name="show_vinyl_thumbnail_animation">Show Vinyl animation as thumbnail</string>
