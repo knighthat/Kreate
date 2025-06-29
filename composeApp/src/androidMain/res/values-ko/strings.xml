@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">온라인 가사 검색</string>
     <string name="fetch_lyrics_again">가사 다시 불러오기</string>
     <string name="id">ID</string>
-    <string name="itag">Itag</string>
     <string name="bitrate">비트레이트</string>
     <string name="size">크기</string>
     <string name="cached">캐시됨</string>
@@ -170,16 +169,6 @@
     <string name="contributors">기여자</string>
     <string name="troubleshooting">문제 해결</string>
     <string name="social">소셜</string>
-    <string name="english">영어 (English)</string>
-    <string name="italian">이탈리아어 (Italiano)</string>
-    <string name="czech">체코어 (Čeština)</string>
-    <string name="german">독일어 (Deutsch)</string>
-    <string name="spanish">스페인어 (Español)</string>
-    <string name="french">프랑스어 (Français)</string>
-    <string name="romanian">로마어 (Română)</string>
-    <string name="russian">러시아어 (Русский)</string>
-    <string name="turkish">터키어 (Türkçe)</string>
-    <string name="polish">폴란드어 (Polish)</string>
     <string name="dark">어둡게</string>
     <string name="system">시스템</string>
     <string name="unlimited">무제한</string>
@@ -246,12 +235,6 @@
     <string name="square">정사각형</string>
     <string name="circular_ribbed">원형 골판지</string>
     <string name="play_button">재생 버튼</string>
-    <string name="portuguese_brazilian">포르투갈어, 브라질어</string>
-    <string name="portuguese">포르투갈어</string>
-    <string name="indonesian">인도네시아어</string>
-    <string name="odia">오디아어</string>
-    <string name="bashkir">바쉬르어</string>
-    <string name="esperanto">에스페란토어</string>
     <string name="close_app_with_back_button">이전 버튼으로 앱 종료</string>
     <string name="when_you_use_the_back_button_from_the_home_page">홈 화면에서 이전 버튼을 눌렀을 때</string>
     <string name="audio_quality_format_high">높게</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">정말로 다운로드를 삭제하실건가요?</string>
     <string name="enqueue_all">대기열에 모두 추가</string>
     <string name="enqueue_selected">대기열에 선택 추가</string>
-    <string name="greek">그리스어</string>
-    <string name="catalan">카탈로니아어</string>
     <string name="disable_scrolling_text">텍스트 스크롤 비활성화</string>
     <string name="scrolling_text_is_used_for_long_texts">긴 텍스트를 스크롤 하기</string>
     <string name="audio_quality_format">음악 품질</string>
     <string name="persian">페르시아어</string>
-    <string name="hungarian">헝가리어</string>
-    <string name="korean">한국어</string>
     <string name="background_player">"백그라운드 플레이어 "</string>
     <string name="show_favorite_button">즐겨찾기 버튼 표시</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">잠금화면과 알림창에서 즐겨찾기 버튼 표시하기</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">곡 재생함</string>
     <string name="statistics_of_time_taken">동안 재생함</string>
     <string name="statistics_max_number_of_items">최대 항목 수</string>
-    <string name="arabic">아랍어</string>
-    <string name="chinese_simplified">중국어(간체)</string>
-    <string name="chinese_traditional">중국어(번체)</string>
     <string name="do_you_really_want_to_download_all">정말로 모든 곡을 다운로드하실 건가요?</string>
     <string name="import_playlist">재생목록 가져오기</string>
-    <string name="lang_ukrainian">우크라이나어</string>
     <string name="proxy">프록시</string>
     <string name="enable_proxy">프록시 활성화</string>
     <string name="proxy_mode">프록시 모드</string>
     <string name="proxy_host">프록시 호스트</string>
     <string name="proxy_port">프록시 포트</string>
     <string name="disable_if_you_do_not_want_to_see">보고 싶지 않으면 비활성화:</string>
-    <string name="lang_hebrew">히브리어</string>
     <string name="customize_album">앨범 맞춤 설정</string>
     <string name="update_title">제목 업데이트</string>
     <string name="update_authors">작가 업데이트</string>
@@ -300,7 +274,6 @@
     <string name="title">제목</string>
     <string name="authors">작가</string>
     <string name="cover">커버</string>
-    <string name="lang_japanese">일본어</string>
     <string name="paste_or_type_a_valid_url">올바른 링크 입력</string>
     <string name="you_can_put_a_complete_link">재생목록, 앨범, 채널 또는 단일 곡의 전체 링크를 YouTube 또는 YT Music에 넣을 수 있습니다</string>
     <string name="go_to_link">링크로 이동</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">셔플 버튼 표시</string>
     <string name="action_bar_show_lyrics_button">가사 버튼 표시</string>
     <string name="action_bar_show_arrow_button_to_open_queue">화살표 버튼 표시</string>
-    <string name="lang_finnish">핀란드어</string>
     <string name="listening_time">재생 시간</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">들은 노래의 수와 청취 시간 표시</string>
     <string name="app_update_dialog_new">새로운 버전 %s을 다운로드할 수 있습니다!</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">노래의 끝</string>
     <string name="restore_completed">복구 완료!</string>
     <string name="click_to_close">클릭해서 닫기</string>
-    <string name="lang_dutch">네덜란드어</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">이 재생목록의 위치를 바꾸고 싶으신가요?</string>
     <string name="renumber_songs_positions">재생목록 위치 변경</string>
     <string name="do_you_really_want_to_delete_all_playback_events">정말로 모든 재생 이벤트를 삭제하실건가요?</string>
-    <string name="lang_sinhala">싱할라어</string>
     <string name="update_available">업데이트 가능</string>
     <string name="actions_you_can_do">할 수 있는 작업:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">Github 릴리스 웹 페이지를 열고 최신 버전을 다운로드하세요.</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">설정에서 이 기능을 켜거나 끌 수 있습니다.</string>
     <string name="enable">활성화</string>
     <string name="don_t_enable">활성화하지 마세요.</string>
-    <string name="lang_hindi">힌디어</string>
     <string name="default_page">기본 페이지</string>
     <string name="keep_screen_on">화면 켜짐 유지</string>
     <string name="prevents_screen_timeout">화면 자동 꺼짐 방지</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">플레이어가 최소화된 상태에서 아래로 스와이프하여 플레이어를 닫고 재생목록을 정리하지 마세요.</string>
     <string name="sort_date_liked">좋아요 표시한 날짜</string>
     <string name="export_playlist">재생목록 내보내기</string>
-    <string name="lang_afrikaans">아프리카어</string>
     <string name="playlist_top">재생목록 랭킹</string>
     <string name="my_playlist_top">나만의 랭킹 %s</string>
     <string name="navigation_bar_position">내비게이션 바 위치</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">가사 복사</string>
     <string name="value_copied">복사됨</string>
     <string name="do_you_really_want_to_delete_cache">정말로 캐시를 삭제하실건가요?</string>
-    <string name="lang_swedish">스웨덴어</string>
     <string name="pinned_playlists">고정된 재생목록</string>
     <string name="locked">잠김</string>
     <string name="sort_duration">기간</string>
-    <string name="lang_serbian_cyrillic">세르비아어 (키릴어)</string>
     <string name="pause_between_songs">곡 전환 시 일시중지</string>
     <string name="navigation_bar_type">내비게이션 바 유형</string>
     <string name="icon_and_text">아이콘&amp;텍스트</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">앨범</string>
     <string name="use_gradient_background">그라데이션 색상 배경 사용</string>
     <string name="show_total_time_of_queue">재생목록 전체시간 표시</string>
-    <string name="lang_telugu">텔루구어</string>
     <string name="media_permission_required_please_grant">미디어 접근 권한이 필요하니, 허용해주세요.</string>
     <string name="open_permission_settings">권한 설정 열기</string>
     <string name="background_progress_bar">백그라운드 진행률 표시줄</string>
@@ -419,8 +384,6 @@
     <string name="back">뒤로가기</string>
     <string name="folders">폴더</string>
     <string name="show_folders_in_on_device_page">디바이스 페이지에서 폴더 표시</string>
-    <string name="lang_danish">덴마크어</string>
-    <string name="lang_serbian_latin">세르비아어(라틴어)</string>
     <string name="item_deselect">선택 해제</string>
     <string name="show_next_songs_in_player">플레이어에서 다음 곡 표시</string>
     <string name="show_remaining_song_time">남은 노래 재생 시간 표시</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">(유체 그라데이션) 커버로부터 가져오기</string>
     <string name="show_background_in_lyrics">가사 표시할 때 배경 색상 표시</string>
     <string name="bg_colors_blurred_cover_background">커버 흐릿하게 하기</string>
-    <string name="lang_estonian">에스토니아어</string>
     <string name="pcontrols_modern">깔끔하게</string>
     <string name="pcontrols_essential">다양하게</string>
     <string name="pcontrols_type">컨트롤 유형</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">아래</string>
     <string name="added_to_favorites">즐겨찾기에 추가</string>
     <string name="removed_from_favorites">즐겨찾기에서 제거됨</string>
-    <string name="lang_filipino">필리핀어</string>
     <string name="action_bar_transparent_background">투명 배경</string>
     <string name="pinfo_type">정보 유형</string>
     <string name="pinfo_album_and_artist_name">앨범과 작가명</string>
@@ -574,7 +535,6 @@
     <string name="exclude_songs_with_duration_limit_description">활성화시, 제한을 넘는 곡들은 제외되고, 나만의 랭킹과 재생 대기열에 적용됩니다.</string>
     <string name="no_log_available">로그 없음</string>
     <string name="enable_quick_picks_page">빠른 추천 페이지 활성화</string>
-    <string name="lang_vietnamese">베트남어</string>
     <string name="parental_control">자녀 보호 기능</string>
     <string name="info_prevent_play_songs_with_age_limitation">연령 제한 곡들을 막습니다</string>
     <string name="cache_location_private">비공개</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">가사 썸네일이 비활성화일 때만 작동합니다</string>
     <string name="info_connect_your_piped_account_first">먼저 Piped 계정을 연결하거나 Piped 동기화를 비활성화하세요</string>
     <string name="piped_playlists">Piped</string>
-    <string name="lang_bengali">벵골어</string>
-    <string name="lang_irish">아일랜드어</string>
     <string name="lyricsoutline">가사 윤곽선</string>
     <string name="fluidrainbow">유동적인 무지개</string>
     <string name="fluidtheme">유동적인 테마</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">재생 피치</string>
     <string name="controls_title_playback_volume">재생 볼륨</string>
     <string name="controls_title_device_volume">기기 볼륨</string>
-    <string name="lang_malayalam">말라얄람어</string>
     <string name="searches_suggestions">추천</string>
     <string name="searches_saved_searches">저장된 검색</string>
     <string name="event_volumekeys">볼륨 키로 곡 전환</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">대기열 유형</string>
     <string name="chart_top_songs">인기 곡</string>
     <string name="chart_top_artists">인기 작가</string>
-    <string name="lang_interlingua">인터링구아</string>
     <string name="error_no_internet">인터넷 연결 안됨</string>
     <string name="error_timeout">연결 시간 초과</string>
     <string name="error_unknown">알 수 없는 오류</string>
@@ -723,8 +679,6 @@
     <string name="update_album">앨범 업데이트</string>
     <string name="info_check_update_now">지금 확인</string>
     <string name="info_no_update_available">새로운 업데이트 없음</string>
-    <string name="lang_galician">갈리시아어</string>
-    <string name="lang_norwegian">노르웨이어</string>
     <string name="translate_to">%s로 번역</string>
     <string name="translate_to_other_language">다른 언어로 번역</string>
     <string name="action_bar_show_video_button">동영상 버튼 표시</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">액션바</string>
     <string name="center">중앙</string>
     <string name="lyricsalignment">가사 정렬</string>
-    <string name="lang_azerbaijani">아제르바이잔어</string>
     <string name="translators">번역가들</string>
-    <string name="lang_tamil">타밀어</string>
     <string name="player_auto_load_songs_in_queue">대기열에서 곡 자동 로드</string>
     <string name="player_auto_load_songs_in_queue_description">대기열의 끝에 도달했을 때 곡을 추가합니다</string>
     <string name="show_vinyl_thumbnail_animation">레코드판 애니메이션을 썸네일로 표시</string>
