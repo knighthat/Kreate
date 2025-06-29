@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="cancel">取消</string>
     <string name="done">完成</string>
@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">在线搜索歌词</string>
     <string name="fetch_lyrics_again">重新获取歌词</string>
     <string name="id">ID</string>
-    <string name="itag">iTag</string>
     <string name="bitrate">比特率</string>
     <string name="size">大小</string>
     <string name="cached">缓存</string>
@@ -170,16 +169,6 @@
     <string name="contributors">贡献者</string>
     <string name="troubleshooting">故障排除</string>
     <string name="social">社交</string>
-    <string name="english">英语</string>
-    <string name="italian">意大利语 (Italiano)</string>
-    <string name="czech">捷克语 (Čeština)</string>
-    <string name="german">德语 (Deutsch)</string>
-    <string name="spanish">西班牙语 (Español)</string>
-    <string name="french">法语 (Français)</string>
-    <string name="romanian">罗马尼亚语 (Română)</string>
-    <string name="russian">俄语 (Русский)</string>
-    <string name="turkish">土耳其语 (Türkçe)</string>
-    <string name="polish">波兰语 (Polski)</string>
     <string name="dark">暗色主题</string>
     <string name="system">系统</string>
     <string name="unlimited">无限制</string>
@@ -246,12 +235,6 @@
     <string name="square">正方形</string>
     <string name="circular_ribbed">圆形罗纹</string>
     <string name="play_button">“播放”按钮</string>
-    <string name="portuguese_brazilian">葡萄牙语（巴西）</string>
-    <string name="portuguese">葡萄牙语</string>
-    <string name="indonesian">印度尼西亚语</string>
-    <string name="odia">奥里亚语</string>
-    <string name="bashkir">巴什基尔语</string>
-    <string name="esperanto">世界语</string>
     <string name="close_app_with_back_button">使用“Back”按钮关闭应用程序</string>
     <string name="when_you_use_the_back_button_from_the_home_page">当您使用主页上的“Back”按钮时</string>
     <string name="audio_quality_format_high">高</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">你真的想要删除下载吗？</string>
     <string name="enqueue_all">将所有加入队列</string>
     <string name="enqueue_selected">已选择队列</string>
-    <string name="greek">希腊语</string>
-    <string name="catalan">加泰罗尼亚语</string>
     <string name="disable_scrolling_text">禁用滚动文本</string>
     <string name="scrolling_text_is_used_for_long_texts">滚动文本用于长文本</string>
     <string name="audio_quality_format">音频质量格式</string>
     <string name="persian">波斯语</string>
-    <string name="hungarian">匈牙利语</string>
-    <string name="korean">韩语</string>
     <string name="background_player">"背景播放器 "</string>
     <string name="show_favorite_button">显示收藏夹按钮</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">在锁定屏幕和通知区域显示收藏夹按钮</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">歌曲已收听</string>
     <string name="statistics_of_time_taken">时间已花费</string>
     <string name="statistics_max_number_of_items">最大条目数</string>
-    <string name="arabic">阿拉伯语</string>
-    <string name="chinese_simplified">简体中文</string>
-    <string name="chinese_traditional">繁體中文</string>
     <string name="do_you_really_want_to_download_all">您真的要全部下载吗？</string>
     <string name="import_playlist">导入播放列表</string>
-    <string name="lang_ukrainian">乌克兰语</string>
     <string name="proxy">代理</string>
     <string name="enable_proxy">启用代理</string>
     <string name="proxy_mode">代理模式</string>
     <string name="proxy_host">代理主机</string>
     <string name="proxy_port">代理端口</string>
     <string name="disable_if_you_do_not_want_to_see">如果你不想看到, 请禁用</string>
-    <string name="lang_hebrew">希伯来语</string>
     <string name="customize_album">自定义专辑</string>
     <string name="update_title">更新标题</string>
     <string name="update_authors">更新作者</string>
@@ -300,7 +274,6 @@
     <string name="title">标题</string>
     <string name="authors">作者</string>
     <string name="cover">封面</string>
-    <string name="lang_japanese">日语</string>
     <string name="paste_or_type_a_valid_url">粘贴或输入有效的 url</string>
     <string name="you_can_put_a_complete_link">您可以输入一个在YouTube或者YouTube Music上完整的播放列表、专辑、频道或单首歌的链接</string>
     <string name="go_to_link">访问链接</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">显示随机播放按钮</string>
     <string name="action_bar_show_lyrics_button">显示歌词按钮</string>
     <string name="action_bar_show_arrow_button_to_open_queue">显示箭头按钮</string>
-    <string name="lang_finnish">芬兰语</string>
     <string name="listening_time">收听时间</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">显示所听歌曲的数量和他们的收听时间</string>
     <string name="app_update_dialog_new">新版本 %s 可以下载！</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">歌曲结束</string>
     <string name="restore_completed">修复完成!</string>
     <string name="click_to_close">点击以关闭</string>
-    <string name="lang_dutch">荷兰语</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">你真的要重新排列播放列表中的位置吗?</string>
     <string name="renumber_songs_positions">重新排列</string>
     <string name="do_you_really_want_to_delete_all_playback_events">您真的要删除所有播放事件吗?</string>
-    <string name="lang_sinhala">僧伽罗语</string>
     <string name="update_available">有可用更新</string>
     <string name="actions_you_can_do">你可以做的操作:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">打开Github版本网页, 下载最新版本</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">你仍然可以从设置中打开或关闭它。</string>
     <string name="enable">启用</string>
     <string name="don_t_enable">不启用</string>
-    <string name="lang_hindi">印地语</string>
     <string name="default_page">默认页</string>
     <string name="keep_screen_on">保持屏幕常亮</string>
     <string name="prevents_screen_timeout">防止屏幕超时</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">避免在最小化状态下通过向下滑动来终止播放器和清理队列</string>
     <string name="sort_date_liked">点赞日期</string>
     <string name="export_playlist">导出播放列表</string>
-    <string name="lang_afrikaans">南非荷兰语</string>
     <string name="playlist_top">播放列表顶部</string>
     <string name="my_playlist_top">我最喜欢的 %s</string>
     <string name="navigation_bar_position">导航栏位置</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">复制歌词</string>
     <string name="value_copied">已复制</string>
     <string name="do_you_really_want_to_delete_cache">您真的要删除缓存吗？</string>
-    <string name="lang_swedish">瑞典语</string>
     <string name="pinned_playlists">固定播放列表</string>
     <string name="locked">锁定</string>
     <string name="sort_duration">持续时间</string>
-    <string name="lang_serbian_cyrillic">塞尔维亚西里尔文</string>
     <string name="pause_between_songs">歌曲之间暂停</string>
     <string name="navigation_bar_type">导航栏类型</string>
     <string name="icon_and_text">图标和文本</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">专辑</string>
     <string name="use_gradient_background">使用渐变背景</string>
     <string name="show_total_time_of_queue">显示队列的总时间</string>
-    <string name="lang_telugu">泰卢固语</string>
     <string name="media_permission_required_please_grant">需要媒体许可，请批准。</string>
     <string name="open_permission_settings">打开权限设置</string>
     <string name="background_progress_bar">背景进度条</string>
@@ -419,8 +384,6 @@
     <string name="back">返回</string>
     <string name="folders">文件夹</string>
     <string name="show_folders_in_on_device_page">在设备页面显示文件夹</string>
-    <string name="lang_danish">丹麦语</string>
-    <string name="lang_serbian_latin">塞尔维亚语 (拉丁字母)</string>
     <string name="item_deselect">取消选择</string>
     <string name="show_next_songs_in_player">在播放器中显示下一首歌曲</string>
     <string name="show_remaining_song_time">显示剩余歌曲时间</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">从封面获取液态渐变背景色</string>
     <string name="show_background_in_lyrics">在歌词中显示背景颜色</string>
     <string name="bg_colors_blurred_cover_background">模糊的封面背景</string>
-    <string name="lang_estonian">爱沙尼亚语</string>
     <string name="pcontrols_modern">现代</string>
     <string name="pcontrols_essential">基本</string>
     <string name="pcontrols_type">控制类型</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">底部</string>
     <string name="added_to_favorites">已添加到收藏夹</string>
     <string name="removed_from_favorites">已从收藏夹移除</string>
-    <string name="lang_filipino">菲律宾语</string>
     <string name="action_bar_transparent_background">透明背景</string>
     <string name="pinfo_type">标题样式</string>
     <string name="pinfo_album_and_artist_name">专辑和艺术家名称</string>
@@ -574,7 +535,6 @@
     <string name="exclude_songs_with_duration_limit_description">如果启用，歌曲时长超过限制的歌曲将被排除，应用于置顶和回放队列</string>
     <string name="no_log_available">没有可用的日志</string>
     <string name="enable_quick_picks_page">启用快速精选页面</string>
-    <string name="lang_vietnamese">越南语</string>
     <string name="parental_control">家长控制</string>
     <string name="info_prevent_play_songs_with_age_limitation">防止播放有年龄限制的歌曲</string>
     <string name="cache_location_private">本地</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">只有在歌词缩略图被禁用时才可以执行</string>
     <string name="info_connect_your_piped_account_first">首先连接您的Piped帐户或禁用Piped同步</string>
     <string name="piped_playlists">Piped</string>
-    <string name="lang_bengali">孟加拉语</string>
-    <string name="lang_irish">爱尔兰语</string>
     <string name="lyricsoutline">歌词轮廓</string>
     <string name="fluidrainbow">液态彩虹</string>
     <string name="fluidtheme">液态主题</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">回放音调</string>
     <string name="controls_title_playback_volume">回放音量</string>
     <string name="controls_title_device_volume">设备音量</string>
-    <string name="lang_malayalam">马拉雅拉姆语</string>
     <string name="searches_suggestions">建议</string>
     <string name="searches_saved_searches">已保存的搜索</string>
     <string name="event_volumekeys">用音量键更换歌曲</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">队列类型</string>
     <string name="chart_top_songs">热门歌曲</string>
     <string name="chart_top_artists">热门艺人</string>
-    <string name="lang_interlingua">拉丁国际语</string>
     <string name="error_no_internet">无网络连接</string>
     <string name="error_timeout">连接超时</string>
     <string name="error_unknown">未知错误</string>
@@ -723,8 +679,6 @@
     <string name="update_album">更新专辑</string>
     <string name="info_check_update_now">立即检查</string>
     <string name="info_no_update_available">没有可用更新</string>
-    <string name="lang_galician">加利西亚语</string>
-    <string name="lang_norwegian">挪威语</string>
     <string name="translate_to">翻译到 %s</string>
     <string name="translate_to_other_language">翻译到其他语言</string>
     <string name="action_bar_show_video_button">显示视频按钮</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">快捷操作栏</string>
     <string name="center">居中</string>
     <string name="lyricsalignment">歌词对齐方式</string>
-    <string name="lang_azerbaijani">阿塞拜疆语</string>
     <string name="translators">翻译人员</string>
-    <string name="lang_tamil">泰米尔语</string>
     <string name="player_auto_load_songs_in_queue">在队列中自动加载歌曲</string>
     <string name="player_auto_load_songs_in_queue_description">当播放队列即将结束时添加歌曲</string>
     <string name="show_vinyl_thumbnail_animation">以缩略图形式展示黑胶动画</string>
@@ -955,15 +907,16 @@
     <string name="title_import_migration_file">Import migration file</string>
     <string name="description_import_migration_file">For old users before conversion. \nUse old app to make a backup for migration</string>
     <string name="description_app_not_installed_by_apk">App installed by an APK distributor should let its distributor update the app!</string>
-    <string name="relative_listening_time">Relative Listening Time</string>
+    <string name="relative_listening_time">相对聆听时间</string>
     <string name="added_to_dislikes">Disliked %s</string>
     <string name="removed_from_dislikes">Removed %s from dislikes</string>
     <string name="artist_featured_on">Featured on</string>
     <string name="artist_fans_might_also_like">Fans might also like</string>
     <string name="update_changelogs">%s changelogs</string>
     <string name="rotating_cover_title">Rotating album cover</string>
-    <string name="title_playback_speed">Playback speed</string>
+    <string name="title_playback_speed">回放速度</string>
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
+    <string name="log_in_to_ytm">Log in to your YTM account for more content</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
     <string name="setting_entry_smart_rewind">Smart rewind</string>
