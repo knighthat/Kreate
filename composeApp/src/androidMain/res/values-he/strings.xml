@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">חפש מילים באינטרנט</string>
     <string name="fetch_lyrics_again">תביא שוב את המילים</string>
     <string name="id">מזהה</string>
-    <string name="itag">יציב</string>
     <string name="bitrate">קצב סיביות</string>
     <string name="size">גודל</string>
     <string name="cached">שמור במטמון</string>
@@ -170,16 +169,6 @@
     <string name="contributors">תורמים</string>
     <string name="troubleshooting">פתרון תקלות</string>
     <string name="social">חברתי</string>
-    <string name="english">אנגלית</string>
-    <string name="italian">איטלקית (Italiano)</string>
-    <string name="czech">צ\'כית (Čeština)</string>
-    <string name="german">גרמנית (Deutsch)</string>
-    <string name="spanish">ספרדית (Español)</string>
-    <string name="french">צרפתית (Français)</string>
-    <string name="romanian">רומנית (Română)</string>
-    <string name="russian">רוסית (Русский)</string>
-    <string name="turkish">טורקית (Türkçe)</string>
-    <string name="polish">פולנית (Polski)</string>
     <string name="dark">כהה</string>
     <string name="system">מערכת</string>
     <string name="unlimited">ללא הגבלה</string>
@@ -246,12 +235,6 @@
     <string name="square">מרובע</string>
     <string name="circular_ribbed">צלעות עגולות</string>
     <string name="play_button">לחצן ההפעלה</string>
-    <string name="portuguese_brazilian">פורטוגזית, ברזילאית</string>
-    <string name="portuguese">פורטוגזית</string>
-    <string name="indonesian">אינדונזית</string>
-    <string name="odia">אודייה</string>
-    <string name="bashkir">בשקירית</string>
-    <string name="esperanto">אספרנטו</string>
     <string name="close_app_with_back_button">סגור את האפליקציה עם כפתור חזרה</string>
     <string name="when_you_use_the_back_button_from_the_home_page">כאשר אתה משתמש בכפתור החזרה מדף הבית</string>
     <string name="audio_quality_format_high">גבוה</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">האם אתה באמת רוצה למחוק את ההורדה הזו?</string>
     <string name="enqueue_all">הוסף את כולם לתור</string>
     <string name="enqueue_selected">התור נבחר</string>
-    <string name="greek">יוונית</string>
-    <string name="catalan">קטלאנית</string>
     <string name="disable_scrolling_text">השבת טקסט גלילה</string>
     <string name="scrolling_text_is_used_for_long_texts">טקסט גלילה משמש לטקסטים ארוכים</string>
     <string name="audio_quality_format">פורמט איכות שמע</string>
     <string name="persian">פרסית</string>
-    <string name="hungarian">הונגרית</string>
-    <string name="korean">קוריאנית</string>
     <string name="background_player">"נגן רקע "</string>
     <string name="show_favorite_button">הצג כפתור מועדף</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">הצג כפתור מועדף במסך הנעילה ובאזור ההודעות</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">שירים שנשמעו</string>
     <string name="statistics_of_time_taken">של זמן שלקח</string>
     <string name="statistics_max_number_of_items">מספר פריטים מקסימלי</string>
-    <string name="arabic">ערבית</string>
-    <string name="chinese_simplified">סינית פשוטה</string>
-    <string name="chinese_traditional">סינית מסורתית</string>
     <string name="do_you_really_want_to_download_all">האם אתה באמת רוצה להוריד הכל?</string>
     <string name="import_playlist">ייבוא ​​רשימת השמעה</string>
-    <string name="lang_ukrainian">אוקראינית</string>
     <string name="proxy">פרוקסי</string>
     <string name="enable_proxy">הפעל שרת פרוקסי</string>
     <string name="proxy_mode">מצב פרוקסי</string>
     <string name="proxy_host">מארח פרוקסי</string>
     <string name="proxy_port">יציאת שרת פרוקסי</string>
     <string name="disable_if_you_do_not_want_to_see">השבת אם אינך רוצה לראות</string>
-    <string name="lang_hebrew">עברית</string>
     <string name="customize_album">התאמה אישית של אלבום</string>
     <string name="update_title">עדכן את הכותרת</string>
     <string name="update_authors">עדכן יוצרים</string>
@@ -300,7 +274,6 @@
     <string name="title">כותרת</string>
     <string name="authors">יוצרים</string>
     <string name="cover">כיסוי</string>
-    <string name="lang_japanese">יפנית</string>
     <string name="paste_or_type_a_valid_url">הדבק או הקלד כתובת אתר חוקית</string>
     <string name="you_can_put_a_complete_link">אתה יכול לשים קישור שלם של פלייליסט, אלבום, ערוץ או שיר בודד ביוטיוב או ביוטיוב מיוזיק</string>
     <string name="go_to_link">עבור לקישור</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">הצג את כפתור ערבוב</string>
     <string name="action_bar_show_lyrics_button">הצג את כפתור מילים</string>
     <string name="action_bar_show_arrow_button_to_open_queue">הראה כפתור חץ</string>
-    <string name="lang_finnish">פינית</string>
     <string name="listening_time">זמן האזנה</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">מציג את מספר השירים שנשמעו ואת זמן ההאזנה שלהם</string>
     <string name="app_update_dialog_new">הגרסה החדשה %s ניתן להוריד!</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">סוף השיר</string>
     <string name="restore_completed">השחזור הסתיים!</string>
     <string name="click_to_close">לחץ כדי לסגור</string>
-    <string name="lang_dutch">הולנדית</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">האם אתה באמת רוצה לספור מחדש מיקומים בפלייליסט הזה?</string>
     <string name="renumber_songs_positions">מספור עמדות מחדש</string>
     <string name="do_you_really_want_to_delete_all_playback_events">האם אתה באמת רוצה למחוק את כל אירועי ההשמעה?</string>
-    <string name="lang_sinhala">סינהאלית</string>
     <string name="update_available">עדכון זמין</string>
     <string name="actions_you_can_do">פעולות שאתה יכול לעשות:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">פתח את ה Github בדף אינטרנט והורד את הגרסה האחרונה</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">אתה עדיין יכול להפעיל או לכבות אותו מההגדרות.</string>
     <string name="enable">אפשר</string>
     <string name="don_t_enable">אל תפעיל</string>
-    <string name="lang_hindi">הודית</string>
     <string name="default_page">דף ברירת מחדל</string>
     <string name="keep_screen_on">השאר את המסך דולק</string>
     <string name="prevents_screen_timeout">מונע פסק זמן של מסך</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">הימנע מסגירת הנגן ומניקוי התור על ידי החלקה מטה בזמן שהוא ממוזער</string>
     <string name="sort_date_liked">תאריך סימון לייק</string>
     <string name="export_playlist">ייצוא רשימת השמעה</string>
-    <string name="lang_afrikaans">אפריקאית</string>
     <string name="playlist_top">רשימת השמעה בטופ</string>
     <string name="my_playlist_top">הטופ שלי %s</string>
     <string name="navigation_bar_position">מיקום סרגל הניווט</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">העתק מילים</string>
     <string name="value_copied">הועתק</string>
     <string name="do_you_really_want_to_delete_cache">האם אתה בטוח שברצונך למחוק את המטמון?</string>
-    <string name="lang_swedish">שוודית</string>
     <string name="pinned_playlists">רשימות השמעה מוצמדות</string>
     <string name="locked">נעול</string>
     <string name="sort_duration">משך</string>
-    <string name="lang_serbian_cyrillic">סרבית קירילית</string>
     <string name="pause_between_songs">הפסקה בין השירים</string>
     <string name="navigation_bar_type">סוג סרגל הניווט</string>
     <string name="icon_and_text">אייקון וטקסט</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">אלבום</string>
     <string name="use_gradient_background">השתמש ברקע הדרגתי</string>
     <string name="show_total_time_of_queue">הצג את הזמן הכולל של התור</string>
-    <string name="lang_telugu">טלוגו</string>
     <string name="media_permission_required_please_grant">נדרשת אישור מדיה, אנא הענק.</string>
     <string name="open_permission_settings">פתח את הגדרות ההרשאה</string>
     <string name="background_progress_bar">סרגל התקדמות ברקע</string>
@@ -419,8 +384,6 @@
     <string name="back">חזור</string>
     <string name="folders">תיקיות</string>
     <string name="show_folders_in_on_device_page">הצג תיקיות בדף במכשיר</string>
-    <string name="lang_danish">דנית</string>
-    <string name="lang_serbian_latin">סרבית לטינית</string>
     <string name="item_deselect">ביטול הבחירה</string>
     <string name="show_next_songs_in_player">הצג את השירים הבאים בנגן</string>
     <string name="show_remaining_song_time">הצג את זמן השיר שנותר</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">Fluid gradient background from cover</string>
     <string name="show_background_in_lyrics">הצג צבע רקע במילים</string>
     <string name="bg_colors_blurred_cover_background">רקע כריכה מטושטש</string>
-    <string name="lang_estonian">אסטונית</string>
     <string name="pcontrols_modern">מודרני</string>
     <string name="pcontrols_essential">חיוני</string>
     <string name="pcontrols_type">סוג בקרות</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">למטה</string>
     <string name="added_to_favorites">נוסף למועדפים</string>
     <string name="removed_from_favorites">הוסר ממועדפים</string>
-    <string name="lang_filipino">פיליפינית</string>
     <string name="action_bar_transparent_background">רקע שקוף</string>
     <string name="pinfo_type">סוג מידע</string>
     <string name="pinfo_album_and_artist_name">אלבום ושם אמן</string>
@@ -574,7 +535,6 @@
     <string name="exclude_songs_with_duration_limit_description">אם מופעל, שירים עם משך זמן מעבר למגבלה לא ייכללו, יוחלו על mytop ותור השמעה</string>
     <string name="no_log_available">אין רישומת זמינה</string>
     <string name="enable_quick_picks_page">אפשר דף בחירות מהירות</string>
-    <string name="lang_vietnamese">וייאטנמית</string>
     <string name="parental_control">בקרת הורים</string>
     <string name="info_prevent_play_songs_with_age_limitation">מנע השמעת שירים עם הגבלת גיל</string>
     <string name="cache_location_private">פרטי</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">Works only when lyrics thumbnail is disabled</string>
     <string name="info_connect_your_piped_account_first">Connect your piped account first or disable piped synchronization</string>
     <string name="piped_playlists">Piped</string>
-    <string name="lang_bengali">Bengali</string>
-    <string name="lang_irish">Irish</string>
     <string name="lyricsoutline">Lyrics Outline</string>
     <string name="fluidrainbow">Fluid Rainbow</string>
     <string name="fluidtheme">Fluid Theme</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">Playback pitch</string>
     <string name="controls_title_playback_volume">Playback Volume</string>
     <string name="controls_title_device_volume">Device volume</string>
-    <string name="lang_malayalam">Malayalam</string>
     <string name="searches_suggestions">Suggestions</string>
     <string name="searches_saved_searches">Saved searches</string>
     <string name="event_volumekeys">Change song with the volume keys</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">Queue Type</string>
     <string name="chart_top_songs">Top songs</string>
     <string name="chart_top_artists">Top artists</string>
-    <string name="lang_interlingua">Interlingua</string>
     <string name="error_no_internet">No network connection</string>
     <string name="error_timeout">Connection timeout</string>
     <string name="error_unknown">Unknown error</string>
@@ -723,8 +679,6 @@
     <string name="update_album">Updates the Album</string>
     <string name="info_check_update_now">Check Now</string>
     <string name="info_no_update_available">No update available</string>
-    <string name="lang_galician">Galician</string>
-    <string name="lang_norwegian">Norwegian</string>
     <string name="translate_to">Translate to %s</string>
     <string name="translate_to_other_language">Traslate to other language</string>
     <string name="action_bar_show_video_button">Show video button</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">Action Bar</string>
     <string name="center">Center</string>
     <string name="lyricsalignment">Lyrics Alignment</string>
-    <string name="lang_azerbaijani">Azerbaijani</string>
     <string name="translators">Translators</string>
-    <string name="lang_tamil">Tamil</string>
     <string name="player_auto_load_songs_in_queue">Auto load songs in queue</string>
     <string name="player_auto_load_songs_in_queue_description">Adds songs when the queue is about to end</string>
     <string name="show_vinyl_thumbnail_animation">Show Vinyl animation as thumbnail</string>
