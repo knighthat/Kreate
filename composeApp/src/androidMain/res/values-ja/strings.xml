@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">歌詞をネットで検索</string>
     <string name="fetch_lyrics_again">歌詞を再取得</string>
     <string name="id">ID</string>
-    <string name="itag">iタグ</string>
     <string name="bitrate">ビットレート</string>
     <string name="size">サイズ</string>
     <string name="cached">キャッシュ済み</string>
@@ -170,16 +169,6 @@
     <string name="contributors">貢献者</string>
     <string name="troubleshooting">トラブルシューティング</string>
     <string name="social">ソーシャル</string>
-    <string name="english">英語</string>
-    <string name="italian">イタリア語 (Italiano)</string>
-    <string name="czech">チェコ語 (Čeština)</string>
-    <string name="german">ドイツ語 (Deutsch)</string>
-    <string name="spanish">スペイン語 (Español)</string>
-    <string name="french">フランス語 (Français)</string>
-    <string name="romanian">ルーマニア語 (Română)</string>
-    <string name="russian">ロシア語 (Русский)</string>
-    <string name="turkish">トルコ語 (Türkçe)</string>
-    <string name="polish">ポーランド語 (Polski)</string>
     <string name="dark">ダーク</string>
     <string name="system">システム</string>
     <string name="unlimited">無制限</string>
@@ -246,12 +235,6 @@
     <string name="square">四角</string>
     <string name="circular_ribbed">丸いリブ</string>
     <string name="play_button">再生ボタン</string>
-    <string name="portuguese_brazilian">ポルトガル語ブラジル</string>
-    <string name="portuguese">ポルトガル語</string>
-    <string name="indonesian">インドネシア語</string>
-    <string name="odia">オリヤー語</string>
-    <string name="bashkir">バシキール語</string>
-    <string name="esperanto">エスペラント語</string>
     <string name="close_app_with_back_button">戻るボタンでアプリを閉じる</string>
     <string name="when_you_use_the_back_button_from_the_home_page">ホームページから戻るボタンを使用する場合</string>
     <string name="audio_quality_format_high">高</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">本当にダウンロードを削除しますか？</string>
     <string name="enqueue_all">すべてキューに入れる</string>
     <string name="enqueue_selected">選択したものをキューに追加</string>
-    <string name="greek">ギリシャ語</string>
-    <string name="catalan">カタロニア語</string>
     <string name="disable_scrolling_text">テキストスクロールを無効化</string>
     <string name="scrolling_text_is_used_for_long_texts">長いテキストがスクロールされます</string>
     <string name="audio_quality_format">音質</string>
     <string name="persian">ペルシャ語</string>
-    <string name="hungarian">ハンガリー語</string>
-    <string name="korean">韓国語</string>
     <string name="background_player">"バックグラウンドプレイヤー "</string>
     <string name="show_favorite_button">お気に入りボタンを表示</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">ロック画面と通知領域にお気に入りボタンを表示する</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">曲聴きました</string>
     <string name="statistics_of_time_taken">経過</string>
     <string name="statistics_max_number_of_items">アイテムの最大数</string>
-    <string name="arabic">アラビア語</string>
-    <string name="chinese_simplified">簡体字中国語</string>
-    <string name="chinese_traditional">繁体中国語</string>
     <string name="do_you_really_want_to_download_all">すべてダウンロードしてもよろしいですか？</string>
     <string name="import_playlist">プレイリストをインポート</string>
-    <string name="lang_ukrainian">ウクライナ語</string>
     <string name="proxy">プロキシ</string>
     <string name="enable_proxy">プロキシを有効にする</string>
     <string name="proxy_mode">プロキシの種類</string>
     <string name="proxy_host">プロキシホスト</string>
     <string name="proxy_port">プロキシポート</string>
     <string name="disable_if_you_do_not_want_to_see">無効なら非表示:</string>
-    <string name="lang_hebrew">ヘブライ語</string>
     <string name="customize_album">アルバムのカスタマイズ</string>
     <string name="update_title">題名を更新</string>
     <string name="update_authors">作者を更新</string>
@@ -300,7 +274,6 @@
     <string name="title">題名</string>
     <string name="authors">作者</string>
     <string name="cover">カバー</string>
-    <string name="lang_japanese">日本語</string>
     <string name="paste_or_type_a_valid_url">有効なURLを貼り付けるか入力してください</string>
     <string name="you_can_put_a_complete_link">YouTubeやYouTube Musicのプレイリスト、アルバム、チャンネル、または単一の曲の完全なリンクを入れることができます</string>
     <string name="go_to_link">リンクへ移動</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">シャッフルボタンを表示</string>
     <string name="action_bar_show_lyrics_button">歌詞ボタンを表示</string>
     <string name="action_bar_show_arrow_button_to_open_queue">矢印ボタンを表示</string>
-    <string name="lang_finnish">フィンランド語</string>
     <string name="listening_time">再生時間</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">聴いた曲数と再生時間を表示します</string>
     <string name="app_update_dialog_new">最新のバージョン %s をダウンロードできます！</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">後の曲の終了時</string>
     <string name="restore_completed">復元完了！</string>
     <string name="click_to_close">クリックして閉じる</string>
-    <string name="lang_dutch">オランダ語</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">本当にこのプレイリストで番号の順番を変更しますか？</string>
     <string name="renumber_songs_positions">番号の順番</string>
     <string name="do_you_really_want_to_delete_all_playback_events">本当にすべての再生イベントを削除しますか？</string>
-    <string name="lang_sinhala">シンハラ語</string>
     <string name="update_available">最新版あり</string>
     <string name="actions_you_can_do">実行できる操作:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">Githubのウェブページを開き、最新版をダウンロードする</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">設定からオン/オフを切り替えられます。</string>
     <string name="enable">有効</string>
     <string name="don_t_enable">有効にしない</string>
-    <string name="lang_hindi">ヒンディー語</string>
     <string name="default_page">起動に表示するページ</string>
     <string name="keep_screen_on">画面を常時点灯</string>
     <string name="prevents_screen_timeout">画面のタイムアウトを防止する</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">最小化されている間、下スワイプでプレイヤーを閉じること、キューの除去をしない</string>
     <string name="sort_date_liked">いいねした日付</string>
     <string name="export_playlist">プレイリストのエクスポート</string>
-    <string name="lang_afrikaans">アフリカーンス語</string>
     <string name="playlist_top">上位の再生リスト</string>
     <string name="my_playlist_top">My Top</string>
     <string name="navigation_bar_position">ナビゲーションバーの位置</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">歌詞をコピー</string>
     <string name="value_copied">コピーしました</string>
     <string name="do_you_really_want_to_delete_cache">本当にキャッシュを削除しますか？</string>
-    <string name="lang_swedish">スウェーデン語</string>
     <string name="pinned_playlists">ピン留め済みプレイリスト</string>
     <string name="locked">ロック中</string>
     <string name="sort_duration">長さ</string>
-    <string name="lang_serbian_cyrillic">セルビア語 キリル</string>
     <string name="pause_between_songs">曲間で一時停止</string>
     <string name="navigation_bar_type">ナビゲーションバーの種類</string>
     <string name="icon_and_text">アイコンとテキスト</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">アルバム</string>
     <string name="use_gradient_background">グラデーション背景を使用</string>
     <string name="show_total_time_of_queue">キューの合計時間を表示</string>
-    <string name="lang_telugu">テルグ語</string>
     <string name="media_permission_required_please_grant">メディアへのアクセス権限が必要です。許可してください。</string>
     <string name="open_permission_settings">権限の設定を開く</string>
     <string name="background_progress_bar">バックグラウンドの進行バー</string>
@@ -419,8 +384,6 @@
     <string name="back">戻る</string>
     <string name="folders">フォルダー</string>
     <string name="show_folders_in_on_device_page">デバイス上のページにフォルダを表示</string>
-    <string name="lang_danish">デンマーク語</string>
-    <string name="lang_serbian_latin">セルビア語（ラテン文字）</string>
     <string name="item_deselect">選択を解除</string>
     <string name="show_next_songs_in_player">次の楽曲をプレーヤーに表示</string>
     <string name="show_remaining_song_time">曲の残り時間を表示</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">背景をカバーのなめらかなグラデーションにする</string>
     <string name="show_background_in_lyrics">歌詞に背景色を表示する</string>
     <string name="bg_colors_blurred_cover_background">カバーの背景をぼかす</string>
-    <string name="lang_estonian">エストニア語</string>
     <string name="pcontrols_modern">多機能</string>
     <string name="pcontrols_essential">簡素</string>
     <string name="pcontrols_type">操作の種類</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">下</string>
     <string name="added_to_favorites">お気に入りに追加しました</string>
     <string name="removed_from_favorites">お気に入りから削除しました</string>
-    <string name="lang_filipino">フィリピノ語</string>
     <string name="action_bar_transparent_background">透明な背景</string>
     <string name="pinfo_type">情報の種類</string>
     <string name="pinfo_album_and_artist_name">アルバムとアーティスト名</string>
@@ -574,7 +535,6 @@
     <string name="exclude_songs_with_duration_limit_description">制限時間を超えた曲を除外します。マイトップと再生キューに適用されます</string>
     <string name="no_log_available">ログがありません</string>
     <string name="enable_quick_picks_page">おすすめページを使用</string>
-    <string name="lang_vietnamese">ベトナム語</string>
     <string name="parental_control">保護者による管理</string>
     <string name="info_prevent_play_songs_with_age_limitation">年齢制限のある曲を再生しない</string>
     <string name="cache_location_private">プライベート</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">Works only when lyrics thumbnail is disabled</string>
     <string name="info_connect_your_piped_account_first">最初に Piped アカウントに接続するか、Piped の同期を無効にしてください</string>
     <string name="piped_playlists">Piped</string>
-    <string name="lang_bengali">ベンガル語</string>
-    <string name="lang_irish">アイルランド語</string>
     <string name="lyricsoutline">歌詞の輪郭線</string>
     <string name="fluidrainbow">流れる虹色</string>
     <string name="fluidtheme">流体テーマ</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">再生ピッチ</string>
     <string name="controls_title_playback_volume">再生音量</string>
     <string name="controls_title_device_volume">端末の音量</string>
-    <string name="lang_malayalam">マラヤーラム語</string>
     <string name="searches_suggestions">候補</string>
     <string name="searches_saved_searches">検索履歴</string>
     <string name="event_volumekeys">音量キーで曲を変更</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">キューの種類</string>
     <string name="chart_top_songs">上位の曲</string>
     <string name="chart_top_artists">上位のアーティスト</string>
-    <string name="lang_interlingua">インターリングア語</string>
     <string name="error_no_internet">ネットワーク接続なし</string>
     <string name="error_timeout">接続が時間切れです</string>
     <string name="error_unknown">不明なエラー</string>
@@ -723,8 +679,6 @@
     <string name="update_album">アルバムを更新</string>
     <string name="info_check_update_now">今すぐ確認</string>
     <string name="info_no_update_available">更新なし</string>
-    <string name="lang_galician">ガリシア語</string>
-    <string name="lang_norwegian">ノルウェー語</string>
     <string name="translate_to">%sに翻訳</string>
     <string name="translate_to_other_language">ほかの言語に翻訳</string>
     <string name="action_bar_show_video_button">動画ボタンを表示</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">アクションバー</string>
     <string name="center">中央</string>
     <string name="lyricsalignment">歌詞の配置</string>
-    <string name="lang_azerbaijani">アゼルバイジャン語</string>
     <string name="translators">翻訳者</string>
-    <string name="lang_tamil">タミル語</string>
     <string name="player_auto_load_songs_in_queue">キューにある曲を自動で読み込む</string>
     <string name="player_auto_load_songs_in_queue_description">キューの終了時に曲を追加する</string>
     <string name="show_vinyl_thumbnail_animation">サムネイルにレコードのアニメーションを表示する</string>
