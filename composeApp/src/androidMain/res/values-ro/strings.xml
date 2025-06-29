@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">Căută versurile online</string>
     <string name="fetch_lyrics_again">Reîncarcă versurile</string>
     <string name="id">Id</string>
-    <string name="itag">Itag</string>
     <string name="bitrate">Rată de biți</string>
     <string name="size">Dimensiune</string>
     <string name="cached">În cache</string>
@@ -170,16 +169,6 @@
     <string name="contributors">CONTRIBUITORI</string>
     <string name="troubleshooting">DEPANARE</string>
     <string name="social">SOCIAL</string>
-    <string name="english">Engleză (English)</string>
-    <string name="italian">Italiană (Italiano)</string>
-    <string name="czech">Cehă (Čeština)</string>
-    <string name="german">Germană (Deutsch)</string>
-    <string name="spanish">Spanishă (Español)</string>
-    <string name="french">Franceză (Français)</string>
-    <string name="romanian">Română</string>
-    <string name="russian">Rusă (Русский)</string>
-    <string name="turkish">Turcă (Türkçe)</string>
-    <string name="polish">Poloneză (Polski)</string>
     <string name="dark">Întunecat</string>
     <string name="system">Sistem</string>
     <string name="unlimited">Nelimitat</string>
@@ -246,12 +235,6 @@
     <string name="square">Pătrat</string>
     <string name="circular_ribbed">Cerc ondulat</string>
     <string name="play_button">Butonul de redare</string>
-    <string name="portuguese_brazilian">Portugheză, Brazilia (Português, Brasileiro)</string>
-    <string name="portuguese">Portugheză (Português)</string>
-    <string name="indonesian">Indoneziană (Indonésio)</string>
-    <string name="odia">Odia (ଓଡ଼ିଆ)</string>
-    <string name="bashkir">Bașchiri (Башҡорт)</string>
-    <string name="esperanto">Esperanto (Esperanto)</string>
     <string name="close_app_with_back_button">Închide aplicația cu gestul / butonul „Înapoi”</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Când folosești butonul „Înapoi” de pe pagina principală</string>
     <string name="audio_quality_format_high">Înaltă</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">Vrei cu adevărat să ștergi descărcările?</string>
     <string name="enqueue_all">Adaugă toate în coadă</string>
     <string name="enqueue_selected">Adaugă selecția în coadă</string>
-    <string name="greek">Greacă (Ελληνικά)</string>
-    <string name="catalan">Catalană (Català)</string>
     <string name="disable_scrolling_text">Dezactivează textul derulant</string>
     <string name="scrolling_text_is_used_for_long_texts">Textul derulant este folosit pentru texte lungi</string>
     <string name="audio_quality_format">Format de calitate audio</string>
     <string name="persian">Persană (فارسی)</string>
-    <string name="hungarian">Maghiară (Magyar)</string>
-    <string name="korean">Coreeană (한국어)</string>
     <string name="background_player">"PLAYER ÎN FUNDAL "</string>
     <string name="show_favorite_button">Afișează butonul „Apreciază”</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Afișează butonul „Apreciază” pe ecranul de blocare și în zona de notificări</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">melodii ascultate</string>
     <string name="statistics_of_time_taken">timp petrecut</string>
     <string name="statistics_max_number_of_items">Numărul maxim de elemente</string>
-    <string name="arabic">Arabă (العربية)</string>
-    <string name="chinese_simplified">Chineză Simplificată (简体中文)</string>
-    <string name="chinese_traditional">Chineză Traditională (繁體中文)</string>
     <string name="do_you_really_want_to_download_all">Vrei cu adevărat să descarci toate melodiile?</string>
     <string name="import_playlist">Importă playlist-ul</string>
-    <string name="lang_ukrainian">Ucraineană (Українська)</string>
     <string name="proxy">PROXY</string>
     <string name="enable_proxy">Activează Proxy</string>
     <string name="proxy_mode">Mod Proxy</string>
     <string name="proxy_host">Gazdă Proxy</string>
     <string name="proxy_port">Port Proxy</string>
     <string name="disable_if_you_do_not_want_to_see">Dezactivează dacă nu dorești să vezi</string>
-    <string name="lang_hebrew">Hebrew (Ebraică)</string>
     <string name="customize_album">Personalizează albumul</string>
     <string name="update_title">Schimbă titlul</string>
     <string name="update_authors">Schimbă numele autorilor</string>
@@ -300,7 +274,6 @@
     <string name="title">Titlu</string>
     <string name="authors">Autori</string>
     <string name="cover">Copertă</string>
-    <string name="lang_japanese">Japanese (Japoneză)</string>
     <string name="paste_or_type_a_valid_url">Lipește un Url valid</string>
     <string name="you_can_put_a_complete_link">Poți adăuga linkul complet al unui playlist, album, profil sau melodie de pe YouTube sau YouTube Music</string>
     <string name="go_to_link">Accesează linkul</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">Butonul „Amestecă”</string>
     <string name="action_bar_show_lyrics_button">Butonul „Versuri”</string>
     <string name="action_bar_show_arrow_button_to_open_queue">Butonul „Coadă”</string>
-    <string name="lang_finnish">Finlandeză (Suomalainen)</string>
     <string name="listening_time">Durata redării</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">Afișează numărul total de melodii ascultate și durata redării</string>
     <string name="app_update_dialog_new">Noua versiune %s poate fi descărcată!</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">(sfârșitul melodiei)</string>
     <string name="restore_completed">Restaurare completă!</string>
     <string name="click_to_close">Click pentru a închide</string>
-    <string name="lang_dutch">Olandeză (Nederlands)</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">Vrei cu adevărat să amesteci pozițiile melodiilor în acest playlist?</string>
     <string name="renumber_songs_positions">Amestecă pozițiile melodiilor</string>
     <string name="do_you_really_want_to_delete_all_playback_events">Vrei cu adevărat să ștergi toate evenimentele de redare?</string>
-    <string name="lang_sinhala">Sinhală (සිංහල)</string>
     <string name="update_available">Actualizare disponibilă</string>
     <string name="actions_you_can_do">Acțiuni pe care le poți face:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">Deschide pagina de lansări Github și descarcă cea mai recentă versiune</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">Poți să-l activezi/dezactivezi din setări.</string>
     <string name="enable">Activează</string>
     <string name="don_t_enable">Dezactivează</string>
-    <string name="lang_hindi">Hindi (हिन्दी)</string>
     <string name="default_page">Pagina implicită</string>
     <string name="keep_screen_on">Menține ecranul aprins</string>
     <string name="prevents_screen_timeout">Previne oprirea automată a ecranului</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">Evită închiderea playerului și curățarea cozii prin glisarea în jos când este minimizat</string>
     <string name="sort_date_liked">Data aprecierii</string>
     <string name="export_playlist">Exportă playlist-ul</string>
-    <string name="lang_afrikaans">Afrikană (Afrikaans)</string>
     <string name="playlist_top">Top Playlisturi</string>
     <string name="my_playlist_top">Topul meu %s</string>
     <string name="navigation_bar_position">Poziția barei de navigare</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">Copiază versurile</string>
     <string name="value_copied">Copiat</string>
     <string name="do_you_really_want_to_delete_cache">Ești sigur că vrei să ștergi cache-ul?</string>
-    <string name="lang_swedish">Suedeză (Svenska)</string>
     <string name="pinned_playlists">Fixate</string>
     <string name="locked">Blocat</string>
     <string name="sort_duration">Durată</string>
-    <string name="lang_serbian_cyrillic">Sârba chirilică (Српска)</string>
     <string name="pause_between_songs">Pauză între melodii</string>
     <string name="navigation_bar_type">Stilul barei de navigare</string>
     <string name="icon_and_text">Iconițe și text</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">Album</string>
     <string name="use_gradient_background">Folosește fundalul gradient</string>
     <string name="show_total_time_of_queue">Afișează durata totală a cozii</string>
-    <string name="lang_telugu">Telugu (తెలుగు)</string>
     <string name="media_permission_required_please_grant">Permisiunea media este necesară, acordă te rog.</string>
     <string name="open_permission_settings">Deschide setările de permisiuni</string>
     <string name="background_progress_bar">Bara de progres în fundal</string>
@@ -419,8 +384,6 @@
     <string name="back">Înapoi</string>
     <string name="folders">Dosare</string>
     <string name="show_folders_in_on_device_page">Afișează dosarele în pagina „Pe dispozitiv”</string>
-    <string name="lang_danish">Daneză (Dansk)</string>
-    <string name="lang_serbian_latin">Sârbă Latină (Gajeva latinica)</string>
     <string name="item_deselect">Deselectează</string>
     <string name="show_next_songs_in_player">Afișează următoarele melodii în player</string>
     <string name="show_remaining_song_time">Afișează durata rămasă a melodiei</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">Gradient lichid din coperta melodiei</string>
     <string name="show_background_in_lyrics">Afișează culoarea fundalului versurilor în versuri</string>
     <string name="bg_colors_blurred_cover_background">Copertă melodiei estompată</string>
-    <string name="lang_estonian">Estonă (Eesti keel)</string>
     <string name="pcontrols_modern">Modern</string>
     <string name="pcontrols_essential">Simplu</string>
     <string name="pcontrols_type">Stil de control</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">Jos</string>
     <string name="added_to_favorites">Adăugat la favorite</string>
     <string name="removed_from_favorites">Eliminat din favorite</string>
-    <string name="lang_filipino">Filipino (Tagalog)</string>
     <string name="action_bar_transparent_background">Fundal transparent</string>
     <string name="pinfo_type">Stil antet</string>
     <string name="pinfo_album_and_artist_name">Antet album și artist</string>
@@ -574,7 +535,6 @@
     <string name="exclude_songs_with_duration_limit_description">Melodiile care depășesc limita de durată vor fi excluse din „Topul meu” și din coada de redare</string>
     <string name="no_log_available">Jurnal indisponibil</string>
     <string name="enable_quick_picks_page">Activează pagina „Selecții rapide”</string>
-    <string name="lang_vietnamese">Vietnameză (Tiếng Việt)</string>
     <string name="parental_control">Control parental</string>
     <string name="info_prevent_play_songs_with_age_limitation">Previne redarea melodiilor cu limită de vârstă</string>
     <string name="cache_location_private">Privat</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">Disponibil doar când miniatura versurilor este dezactivată</string>
     <string name="info_connect_your_piped_account_first">Conectează-ți mai întâi contul Piped sau dezactivează sincronizarea Piped</string>
     <string name="piped_playlists">Piped</string>
-    <string name="lang_bengali">Bengali (বাংলা)</string>
-    <string name="lang_irish">Irlandeză (Gaeilge)</string>
     <string name="lyricsoutline">Conturul versurilor</string>
     <string name="fluidrainbow">Curcubeu lichid</string>
     <string name="fluidtheme">Temă lichid</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">Tonul redării</string>
     <string name="controls_title_playback_volume">Volumul redării</string>
     <string name="controls_title_device_volume">Volumul dispozitivului</string>
-    <string name="lang_malayalam">Malayalam (മലയാളം)</string>
     <string name="searches_suggestions">Sugestii</string>
     <string name="searches_saved_searches">Istoricul căutărilor</string>
     <string name="event_volumekeys">Tastele de volum pentru a schimba melodia</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">Tipul cozii</string>
     <string name="chart_top_songs">Top melodii</string>
     <string name="chart_top_artists">Top artiști</string>
-    <string name="lang_interlingua">Interlingua</string>
     <string name="error_no_internet">Fără conexiune la rețea</string>
     <string name="error_timeout">Conexiune expirată</string>
     <string name="error_unknown">Eroare necunoscută</string>
@@ -723,8 +679,6 @@
     <string name="update_album">Actualizează Albumul</string>
     <string name="info_check_update_now">Verifică acum</string>
     <string name="info_no_update_available">Nu sunt actualizări disponibile</string>
-    <string name="lang_galician">Galiciană (Galego)</string>
-    <string name="lang_norwegian">Norvegiană (Norsk)</string>
     <string name="translate_to">Tradu în %s</string>
     <string name="translate_to_other_language">Tradu într-o altă limbă</string>
     <string name="action_bar_show_video_button">Butonul „Video”</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">Bara de acțiuni</string>
     <string name="center">Centru</string>
     <string name="lyricsalignment">Alinierea versurilor</string>
-    <string name="lang_azerbaijani">Azeră (Azərbaycan)</string>
     <string name="translators">Traducători</string>
-    <string name="lang_tamil">Tamilă (தமிழ்)</string>
     <string name="player_auto_load_songs_in_queue">Încarcă automat melodiile în coadă</string>
     <string name="player_auto_load_songs_in_queue_description">Adaugă melodii când coada este pe cale să se termine</string>
     <string name="show_vinyl_thumbnail_animation">Afișează un vinil ca miniatură</string>
