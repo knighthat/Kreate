@@ -971,11 +971,4 @@
     <string name="setting_description_smart_rewind">Tombol Sebelumnya akan berfungsi seperti tombol Mundur setelah %s detik</string>
     <string name="setting_entry_show_chip">Tampilkan \"%s\" kepingan</string>
     <string name="entry_setting_quick_picks_show_section">Tampilkan \"%s\"</string>
-    <string name="setting_entry_crash_log">Crash log</string>
-    <string name="setting_entry_logs">Logs</string>
-    <string name="setting_description_copy_or_export_logs">Tap here to export, tap icon to copy</string>
-    <string name="error_message_unsupported_local_playlist">Unsupported format</string>
-    <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
-    <string name="dialog_title_color_picker">Color picker</string>
-    <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
 </resources>
