@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">Zoek songtekst online</string>
     <string name="fetch_lyrics_again">Herlaad songtekst</string>
     <string name="id">Id</string>
-    <string name="itag">Itag</string>
     <string name="bitrate">Bitrate</string>
     <string name="size">Grootte</string>
     <string name="cached">Gecached</string>
@@ -170,16 +169,6 @@
     <string name="contributors">BIJDRAGERS</string>
     <string name="troubleshooting">FOUTOPLOSSING</string>
     <string name="social">SOCIAAL</string>
-    <string name="english">Engels</string>
-    <string name="italian">Italiaans (Italiano)</string>
-    <string name="czech">Tsjechisch (Čeština)</string>
-    <string name="german">Duits (Deutsch)</string>
-    <string name="spanish">Spaans (Español)</string>
-    <string name="french">Frans (Français)</string>
-    <string name="romanian">Roemeens (Română)</string>
-    <string name="russian">Russisch (Русский)</string>
-    <string name="turkish">Turks (Türkçe)</string>
-    <string name="polish">Pools (Polski)</string>
     <string name="dark">Donker</string>
     <string name="system">Systeem</string>
     <string name="unlimited">Onbeperkt</string>
@@ -246,12 +235,6 @@
     <string name="square">Vierkant</string>
     <string name="circular_ribbed">Rond geribd</string>
     <string name="play_button">Afspeelknop</string>
-    <string name="portuguese_brazilian">Portugees, Braziliaans</string>
-    <string name="portuguese">Portugees</string>
-    <string name="indonesian">Indonesisch</string>
-    <string name="odia">Odia</string>
-    <string name="bashkir">Bashkir</string>
-    <string name="esperanto">Esperanto</string>
     <string name="close_app_with_back_button">App sluiten met de terugknop</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Wanneer je de terugknop van de startpagina gebruikt</string>
     <string name="audio_quality_format_high">Hoog</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">Wil je de download echt verwijderen?</string>
     <string name="enqueue_all">Plaats alles in wachtrij</string>
     <string name="enqueue_selected">Plaats geselectie in wachtrij</string>
-    <string name="greek">Grieks</string>
-    <string name="catalan">Catalaans</string>
     <string name="disable_scrolling_text">Scrollende tekst uitschakelen</string>
     <string name="scrolling_text_is_used_for_long_texts">Scrollende tekst wordt gebruikt voor lange teksten</string>
     <string name="audio_quality_format">Audiokwaliteit formaat</string>
     <string name="persian">Perzisch</string>
-    <string name="hungarian">Hongaars</string>
-    <string name="korean">Koreaans</string>
     <string name="background_player">"ACHTERGRONDSPELER "</string>
     <string name="show_favorite_button">Toon Favoriet-knop</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Toon Favoriet-knop in het vergrendelscherm en het meldingsgebied</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">nummers geluisterd</string>
     <string name="statistics_of_time_taken">totale afspeeltijd</string>
     <string name="statistics_max_number_of_items">Max. aantal artikelen</string>
-    <string name="arabic">Arabisch</string>
-    <string name="chinese_simplified">Chinees (vereenvoudigd)</string>
-    <string name="chinese_traditional">Chinees (traditioneel)</string>
     <string name="do_you_really_want_to_download_all">Wil je echt alles downloaden?</string>
     <string name="import_playlist">Afspeellijst importeren</string>
-    <string name="lang_ukrainian">Oekraïens</string>
     <string name="proxy">PROXY</string>
     <string name="enable_proxy">Proxy inschakelen</string>
     <string name="proxy_mode">Proxymodus</string>
     <string name="proxy_host">Proxyhost</string>
     <string name="proxy_port">Proxypoort</string>
     <string name="disable_if_you_do_not_want_to_see">Uitschakelen als u dit niet wilt zien</string>
-    <string name="lang_hebrew">Hebreeuws</string>
     <string name="customize_album">Album aanpassen</string>
     <string name="update_title">Titel bijwerken</string>
     <string name="update_authors">Update auteurs</string>
@@ -300,7 +274,6 @@
     <string name="title">Titel</string>
     <string name="authors">Auteurs</string>
     <string name="cover">Omslag</string>
-    <string name="lang_japanese">Japans</string>
     <string name="paste_or_type_a_valid_url">Plak of typ een geldige url</string>
     <string name="you_can_put_a_complete_link">Je kunt een volledige link van een afspeellijst, een album, kanaal of één nummer plaatsen op YouTube of YouTube Muziek</string>
     <string name="go_to_link">Ga naar link</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">Toon Shuffle-knop</string>
     <string name="action_bar_show_lyrics_button">Toon Songtekst-knop</string>
     <string name="action_bar_show_arrow_button_to_open_queue">Toon Pijl-knop</string>
-    <string name="lang_finnish">Fins</string>
     <string name="listening_time">Luistertijd</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">Toont het aantal beluisterde nummers en de luistertijd</string>
     <string name="app_update_dialog_new">De nieuwe versie %s kan worden gedownload!</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">einde van nummer</string>
     <string name="restore_completed">Herstel voltooid!</string>
     <string name="click_to_close">Klik om te sluiten</string>
-    <string name="lang_dutch">Nederlands</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">Wil je echt de posities in deze afspeellijst hernummeren?</string>
     <string name="renumber_songs_positions">Posities hernummeren</string>
     <string name="do_you_really_want_to_delete_all_playback_events">Wil je echt alle afspeelgebeurtenissen verwijderen?</string>
-    <string name="lang_sinhala">Singalees</string>
     <string name="update_available">Update beschikbaar</string>
     <string name="actions_you_can_do">Mogelijke handelingen:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">Open de Github releases webpagina en download de laatste versie</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">Je kunt het nog steeds in- of uitschakelen vanuit de instellingen.</string>
     <string name="enable">Inschakelen</string>
     <string name="don_t_enable">Niet inschakelen</string>
-    <string name="lang_hindi">Hindi</string>
     <string name="default_page">Standaardpagina</string>
     <string name="keep_screen_on">Scherm aanhouden</string>
     <string name="prevents_screen_timeout">Voorkomt scherm time-out</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">Vermijd de speler te sluiten en de wachtrij op te ruimen terwijl het geminimaliseerd is</string>
     <string name="sort_date_liked">Datum leuk gevonden</string>
     <string name="export_playlist">Afspeellijst exporteren</string>
-    <string name="lang_afrikaans">Afrikaans</string>
     <string name="playlist_top">Afspeellijst Top</string>
     <string name="my_playlist_top">Mijn Top</string>
     <string name="navigation_bar_position">Navigatiebalkpositie</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">Songtekst kopiëren</string>
     <string name="value_copied">Gekopieerd</string>
     <string name="do_you_really_want_to_delete_cache">Weet je zeker dat je de cache wilt wissen?</string>
-    <string name="lang_swedish">Zweeds</string>
     <string name="pinned_playlists">Vastgezette afspeellijsten</string>
     <string name="locked">Vergrendeld</string>
     <string name="sort_duration">Duur</string>
-    <string name="lang_serbian_cyrillic">Servisch (Cyrillisch)</string>
     <string name="pause_between_songs">Pauze tussen nummers</string>
     <string name="navigation_bar_type">Type navigatiebalk</string>
     <string name="icon_and_text">Icoon en tekst</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">Album</string>
     <string name="use_gradient_background">Gradiëntachtergrond gebruiken</string>
     <string name="show_total_time_of_queue">Toon totale tijd van de wachtrij</string>
-    <string name="lang_telugu">Telugu</string>
     <string name="media_permission_required_please_grant">Mediamachtiging vereist, geef toestemming.</string>
     <string name="open_permission_settings">Open toestemmingsinstellingen</string>
     <string name="background_progress_bar">Achtergrondvoortgangsbalk</string>
@@ -419,8 +384,6 @@
     <string name="back">Terug</string>
     <string name="folders">Mappen</string>
     <string name="show_folders_in_on_device_page">Mappen in \"op dit apparaat\" pagina weergeven</string>
-    <string name="lang_danish">Deens</string>
-    <string name="lang_serbian_latin">Servisch (Latijn)</string>
     <string name="item_deselect">Deselecteer</string>
     <string name="show_next_songs_in_player">Volgende nummers in de speler weergeven</string>
     <string name="show_remaining_song_time">Resterende tijd van het nummer weergeven</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">Fluid gradient background from cover</string>
     <string name="show_background_in_lyrics">Show background color in Lyrics</string>
     <string name="bg_colors_blurred_cover_background">Blurred cover background</string>
-    <string name="lang_estonian">Estonian</string>
     <string name="pcontrols_modern">Modern</string>
     <string name="pcontrols_essential">Essential</string>
     <string name="pcontrols_type">Controls type</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">Direction bottom</string>
     <string name="added_to_favorites">Added to favorites</string>
     <string name="removed_from_favorites">Removed from favorites</string>
-    <string name="lang_filipino">Filipino</string>
     <string name="action_bar_transparent_background">Transparent background</string>
     <string name="pinfo_type">Info type</string>
     <string name="pinfo_album_and_artist_name">Album and artist name</string>
@@ -574,7 +535,6 @@
     <string name="exclude_songs_with_duration_limit_description">If enabled, songs with duration over the limit will be excluded, applied to mytop and playback queue</string>
     <string name="no_log_available">No log available</string>
     <string name="enable_quick_picks_page">Enable Quick Picks page</string>
-    <string name="lang_vietnamese">Vietnamese</string>
     <string name="parental_control">Parental control</string>
     <string name="info_prevent_play_songs_with_age_limitation">Prevent play songs with age limitation</string>
     <string name="cache_location_private">Private</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">Works only when lyrics thumbnail is disabled</string>
     <string name="info_connect_your_piped_account_first">Connect your piped account first or disable piped synchronization</string>
     <string name="piped_playlists">Piped</string>
-    <string name="lang_bengali">Bengali</string>
-    <string name="lang_irish">Irish</string>
     <string name="lyricsoutline">Lyrics Outline</string>
     <string name="fluidrainbow">Fluid Rainbow</string>
     <string name="fluidtheme">Fluid Theme</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">Playback pitch</string>
     <string name="controls_title_playback_volume">Playback Volume</string>
     <string name="controls_title_device_volume">Device volume</string>
-    <string name="lang_malayalam">Malayalam</string>
     <string name="searches_suggestions">Suggestions</string>
     <string name="searches_saved_searches">Saved searches</string>
     <string name="event_volumekeys">Change song with the volume keys</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">Queue Type</string>
     <string name="chart_top_songs">Top songs</string>
     <string name="chart_top_artists">Top artists</string>
-    <string name="lang_interlingua">Interlingua</string>
     <string name="error_no_internet">No network connection</string>
     <string name="error_timeout">Connection timeout</string>
     <string name="error_unknown">Unknown error</string>
@@ -723,8 +679,6 @@
     <string name="update_album">Updates the Album</string>
     <string name="info_check_update_now">Check Now</string>
     <string name="info_no_update_available">No update available</string>
-    <string name="lang_galician">Galician</string>
-    <string name="lang_norwegian">Norwegian</string>
     <string name="translate_to">Translate to %s</string>
     <string name="translate_to_other_language">Traslate to other language</string>
     <string name="action_bar_show_video_button">Show video button</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">Action Bar</string>
     <string name="center">Center</string>
     <string name="lyricsalignment">Lyrics Alignment</string>
-    <string name="lang_azerbaijani">Azerbaijani</string>
     <string name="translators">Translators</string>
-    <string name="lang_tamil">Tamil</string>
     <string name="player_auto_load_songs_in_queue">Auto load songs in queue</string>
     <string name="player_auto_load_songs_in_queue_description">Adds songs when the queue is about to end</string>
     <string name="show_vinyl_thumbnail_animation">Show Vinyl animation as thumbnail</string>
