@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">बोल ऑनलाइन खोजें</string>
     <string name="fetch_lyrics_again">गीत पुनः प्राप्त करें</string>
     <string name="id">आईडी</string>
-    <string name="itag">नियमित</string>
     <string name="bitrate">बिटरेट</string>
     <string name="size">साइज़</string>
     <string name="cached">कैश</string>
@@ -170,16 +169,6 @@
     <string name="contributors">योगदानकर्ताओं</string>
     <string name="troubleshooting">समस्या निवारण</string>
     <string name="social">सामाजिक</string>
-    <string name="english">अंग्रेज़ी (English)</string>
-    <string name="italian">इतालवी (Italiano)</string>
-    <string name="czech">चेक (Čeština)</string>
-    <string name="german">जर्मन (Deutsch)</string>
-    <string name="spanish">स्पैनिश (Español)</string>
-    <string name="french">फ़्रेंच (Français)</string>
-    <string name="romanian">रोमानियाई (Română)</string>
-    <string name="russian">रूसी (Русский)</string>
-    <string name="turkish">तुर्की (Türkçe)</string>
-    <string name="polish">पोलिश (Polski)</string>
     <string name="dark">अँधेरा</string>
     <string name="system">प्रणाली</string>
     <string name="unlimited">असीमित</string>
@@ -246,12 +235,6 @@
     <string name="square">वर्गाकार</string>
     <string name="circular_ribbed">गोलाकार पसली</string>
     <string name="play_button">प्ले बटन</string>
-    <string name="portuguese_brazilian">पुर्तगीज ब्राजीलियन</string>
-    <string name="portuguese">पुर्तगीज</string>
-    <string name="indonesian">इंडोनेशियन</string>
-    <string name="odia">ओड़िया</string>
-    <string name="bashkir">बाश्किर</string>
-    <string name="esperanto">एस्पेरांटो</string>
     <string name="close_app_with_back_button">बैक बटन के साथ ऐप बंद करें</string>
     <string name="when_you_use_the_back_button_from_the_home_page">जब आप होम पेज से बैक बटन का उपयोग करते हैं</string>
     <string name="audio_quality_format_high">उच्च</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">क्या आप वाकई इस प्रविष्टि को हटाना चाहते हैं?</string>
     <string name="enqueue_all">सभी को कतारबद्ध करें</string>
     <string name="enqueue_selected">पंक्ति चयनित</string>
-    <string name="greek">ग्रीक</string>
-    <string name="catalan">कैटलन</string>
     <string name="disable_scrolling_text">स्क्रॉलिंग टेक्स्ट अक्षम करें</string>
     <string name="scrolling_text_is_used_for_long_texts">स्क्रॉलिंग टेक्स्ट का उपयोग लंबे टेक्स्ट के लिए किया जाता है</string>
     <string name="audio_quality_format">ऑडियो गुणवत्ता प्रारूप</string>
     <string name="persian">फ़ारसी</string>
-    <string name="hungarian">हंगेरियन</string>
-    <string name="korean">कोरियाई</string>
     <string name="background_player">"बैकग्राउंड प्लेयर "</string>
     <string name="show_favorite_button">पसंदीदा बटन दिखाएँ</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">लॉक स्क्रीन और अधिसूचना क्षेत्र में पसंदीदा बटन दिखाएं</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">गाने सुने गए</string>
     <string name="statistics_of_time_taken">लगने वाले समय का</string>
     <string name="statistics_max_number_of_items">वस्तुओं की अधिकतम संख्या</string>
-    <string name="arabic">अरबी</string>
-    <string name="chinese_simplified">सरलीकृत चीनी</string>
-    <string name="chinese_traditional">चीनी पारंपरिक</string>
     <string name="do_you_really_want_to_download_all">क्या आप सचमुच सभी डाउनलोड करना चाहते हैं?</string>
     <string name="import_playlist">प्लेलिस्ट आयात करें</string>
-    <string name="lang_ukrainian">युक्रेनियन</string>
     <string name="proxy">प्रतिनिधि</string>
     <string name="enable_proxy">प्राॅक्सी चालू करें?</string>
     <string name="proxy_mode">प्रॉक्सी मोड</string>
     <string name="proxy_host">प्रॉक्सी होस्ट</string>
     <string name="proxy_port">प्रॉक्सी पोर्ट</string>
     <string name="disable_if_you_do_not_want_to_see">यदि आप नहीं देखना चाहते तो अक्षम करें</string>
-    <string name="lang_hebrew">हिब्रू</string>
     <string name="customize_album">एल्बम अनुकूलित करें</string>
     <string name="update_title">शीर्षक अद्यतन करें</string>
     <string name="update_authors">लेखकों को अद्यतन करें</string>
@@ -300,7 +274,6 @@
     <string name="title">शीर्षक</string>
     <string name="authors">रचयिता</string>
     <string name="cover">कवर</string>
-    <string name="lang_japanese">जापानी</string>
     <string name="paste_or_type_a_valid_url">वैध यूआरएल चिपकाएँ या टाइप करें</string>
     <string name="you_can_put_a_complete_link">आप यूट्यूब या यूट्यूब म्यूजिक पर किसी प्लेलिस्ट, एल्बम, चैनल या सिंगल गाने का पूरा लिंक डाल सकते हैं</string>
     <string name="go_to_link">लिंक पर जाएं</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">शफ़ल बटन दिखाएँ</string>
     <string name="action_bar_show_lyrics_button">गीत के बोल बटन दिखाएँ</string>
     <string name="action_bar_show_arrow_button_to_open_queue">तीर बटन दिखाएँ</string>
-    <string name="lang_finnish">फ़िनिश</string>
     <string name="listening_time">सुनने का न्यूनतम समय</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">सुने गए गानों की संख्या और उनके सुनने का समय दर्शाता है</string>
     <string name="app_update_dialog_new">नया संस्करण %s डाउनलोड किया जा सकता है!</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">गाने का अंत</string>
     <string name="restore_completed">रीस्टोर पूरा हुआ</string>
     <string name="click_to_close">बंद करने के लिए क्लिक करें</string>
-    <string name="lang_dutch">डच</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">क्या आप सचमुच इस प्लेलिस्ट में पदों को पुनः क्रमांकित करना चाहते हैं?</string>
     <string name="renumber_songs_positions">पदों को पुनः क्रमांकित करें</string>
     <string name="do_you_really_want_to_delete_all_playback_events">क्या आप सचमुच सभी प्लेबैक ईवेंट हटाना चाहते हैं?</string>
-    <string name="lang_sinhala">सिंहला</string>
     <string name="update_available">अपडेट उपलब्ध</string>
     <string name="actions_you_can_do">क्रियाएँ जो आप कर सकते हैं:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">Github रिलीज़ वेब पेज खोलें और नवीनतम संस्करण डाउनलोड करें</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">आप अभी भी इसे सेटिंग्स से चालू या बंद कर सकते हैं।</string>
     <string name="enable">सक्षम</string>
     <string name="don_t_enable">सक्षम नहीं करे</string>
-    <string name="lang_hindi">हिंदी</string>
     <string name="default_page">डिफ़ॉल्ट पेज</string>
     <string name="keep_screen_on">स्क्रीन चालू रखें</string>
     <string name="prevents_screen_timeout">स्क्रीन टाइमआउट रोकता है</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">नीचे की ओर स्वाइप करके प्लेयर को बंद करने और कतार को न्यूनतम किए जाने से बचें</string>
     <string name="sort_date_liked">जोड़ने की तिथि</string>
     <string name="export_playlist">प्लेलिस्ट निर्यात करें</string>
-    <string name="lang_afrikaans">अफ्रीकांस</string>
     <string name="playlist_top">प्लेलिस्ट शीर्ष</string>
     <string name="my_playlist_top">मेरे टॉप %s</string>
     <string name="navigation_bar_position">नेविगेशन बार स्थिति</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">गीतिकाव्य कॉपी करे</string>
     <string name="value_copied">कॉपी किया गया!</string>
     <string name="do_you_really_want_to_delete_cache">क्या आप सच में कैश हटाना चाहते हैं?</string>
-    <string name="lang_swedish">स्वीडिश</string>
     <string name="pinned_playlists">पिन की गई प्लेलिस्ट</string>
     <string name="locked">बंद</string>
     <string name="sort_duration">अवधि</string>
-    <string name="lang_serbian_cyrillic">सर्बियाई साइरिलिक</string>
     <string name="pause_between_songs">गानों के बीच रुकावट</string>
     <string name="navigation_bar_type">नेविगेशन बार प्रकार</string>
     <string name="icon_and_text">चिह्न और टेक्स्ट</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">एल्बम</string>
     <string name="use_gradient_background">ग्रेडिएंट बैकग्राउंड का उपयोग करें</string>
     <string name="show_total_time_of_queue">कतार का संपूर्ण समय दिखाए</string>
-    <string name="lang_telugu">तेलुगू</string>
     <string name="media_permission_required_please_grant">मीडिया अनुमति आवश्यक है, कृपया प्रदान करें।</string>
     <string name="open_permission_settings">अनुमति सेटिंग खोलें</string>
     <string name="background_progress_bar">पीछे की प्रगति पट्टी</string>
@@ -419,8 +384,6 @@
     <string name="back">वापस</string>
     <string name="folders">फ़ोल्डर्स</string>
     <string name="show_folders_in_on_device_page">डिवाइस पेज पर फोल्डर दिखाए</string>
-    <string name="lang_danish">डैनिश</string>
-    <string name="lang_serbian_latin">सर्बियन लैटिन</string>
     <string name="item_deselect">सिलेक्शन हटायें</string>
     <string name="show_next_songs_in_player">आगे के गाने दिखाए</string>
     <string name="show_remaining_song_time">गीत का शेष समय दिखाएँ</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">Fluid gradient background from cover</string>
     <string name="show_background_in_lyrics">Show background color in Lyrics</string>
     <string name="bg_colors_blurred_cover_background">Blurred cover background</string>
-    <string name="lang_estonian">Estonian</string>
     <string name="pcontrols_modern">Modern</string>
     <string name="pcontrols_essential">Essential</string>
     <string name="pcontrols_type">Controls type</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">नीचे</string>
     <string name="added_to_favorites">पसंदीदा में जोड़ें</string>
     <string name="removed_from_favorites">पसंदीदा से हटाएं</string>
-    <string name="lang_filipino">Filipino</string>
     <string name="action_bar_transparent_background">Transparent background</string>
     <string name="pinfo_type">Info type</string>
     <string name="pinfo_album_and_artist_name">Album and artist name</string>
@@ -574,7 +535,6 @@
     <string name="exclude_songs_with_duration_limit_description">If enabled, songs with duration over the limit will be excluded, applied to mytop and playback queue</string>
     <string name="no_log_available">No log available</string>
     <string name="enable_quick_picks_page">Enable Quick Picks page</string>
-    <string name="lang_vietnamese">Vietnamese</string>
     <string name="parental_control">Parental control</string>
     <string name="info_prevent_play_songs_with_age_limitation">Prevent play songs with age limitation</string>
     <string name="cache_location_private">Private</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">Works only when lyrics thumbnail is disabled</string>
     <string name="info_connect_your_piped_account_first">Connect your piped account first or disable piped synchronization</string>
     <string name="piped_playlists">Piped</string>
-    <string name="lang_bengali">Bengali</string>
-    <string name="lang_irish">Irish</string>
     <string name="lyricsoutline">Lyrics Outline</string>
     <string name="fluidrainbow">Fluid Rainbow</string>
     <string name="fluidtheme">Fluid Theme</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">Playback pitch</string>
     <string name="controls_title_playback_volume">Playback Volume</string>
     <string name="controls_title_device_volume">Device volume</string>
-    <string name="lang_malayalam">Malayalam</string>
     <string name="searches_suggestions">Suggestions</string>
     <string name="searches_saved_searches">Saved searches</string>
     <string name="event_volumekeys">Change song with the volume keys</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">Queue Type</string>
     <string name="chart_top_songs">Top songs</string>
     <string name="chart_top_artists">Top artists</string>
-    <string name="lang_interlingua">Interlingua</string>
     <string name="error_no_internet">No network connection</string>
     <string name="error_timeout">Connection timeout</string>
     <string name="error_unknown">Unknown error</string>
@@ -723,8 +679,6 @@
     <string name="update_album">Updates the Album</string>
     <string name="info_check_update_now">Check Now</string>
     <string name="info_no_update_available">No update available</string>
-    <string name="lang_galician">Galician</string>
-    <string name="lang_norwegian">Norwegian</string>
     <string name="translate_to">Translate to %s</string>
     <string name="translate_to_other_language">Traslate to other language</string>
     <string name="action_bar_show_video_button">Show video button</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">Action Bar</string>
     <string name="center">Center</string>
     <string name="lyricsalignment">Lyrics Alignment</string>
-    <string name="lang_azerbaijani">Azerbaijani</string>
     <string name="translators">Translators</string>
-    <string name="lang_tamil">Tamil</string>
     <string name="player_auto_load_songs_in_queue">Auto load songs in queue</string>
     <string name="player_auto_load_songs_in_queue_description">Adds songs when the queue is about to end</string>
     <string name="show_vinyl_thumbnail_animation">Show Vinyl animation as thumbnail</string>
