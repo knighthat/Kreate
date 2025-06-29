@@ -45,7 +45,6 @@
     <string name="search_lyrics_online">Search lyrics online</string>
     <string name="fetch_lyrics_again">Fetch lyrics again</string>
     <string name="id">Id</string>
-    <string name="itag">Itag</string>
     <string name="bitrate">Bitrate</string>
     <string name="size">Size</string>
     <string name="cached">Cached</string>
@@ -170,16 +169,6 @@
     <string name="contributors">CONTRIBUTORS</string>
     <string name="troubleshooting">TROUBLESHOOTING</string>
     <string name="social">SOCIAL</string>
-    <string name="english">English</string>
-    <string name="italian">Italian (Italiano)</string>
-    <string name="czech">Czech (Čeština)</string>
-    <string name="german">German (Deutsch)</string>
-    <string name="spanish">Spanish (Español)</string>
-    <string name="french">French (Français)</string>
-    <string name="romanian">Romanian (Română)</string>
-    <string name="russian">Russian (Русский)</string>
-    <string name="turkish">Turkish (Türkçe)</string>
-    <string name="polish">Polish (Polski)</string>
     <string name="dark">Dark</string>
     <string name="system">System</string>
     <string name="unlimited">Unlimited</string>
@@ -246,12 +235,6 @@
     <string name="square">Square</string>
     <string name="circular_ribbed">Wavy circle</string>
     <string name="play_button">Play button</string>
-    <string name="portuguese_brazilian">Portuguese, Brazilian (Português, Brasileiro)</string>
-    <string name="portuguese">Portuguese (Português)</string>
-    <string name="indonesian">Indonesian (Indonesia)</string>
-    <string name="odia">Odia (ଓଡ଼ିଆ)</string>
-    <string name="bashkir">Bashkir (Башҡурт)</string>
-    <string name="esperanto">Esperanto (Esperanto)</string>
     <string name="close_app_with_back_button">Close app with Back Button</string>
     <string name="when_you_use_the_back_button_from_the_home_page">When you use the back button from the home page</string>
     <string name="audio_quality_format_high">High</string>
@@ -261,14 +244,10 @@
     <string name="do_you_really_want_to_delete_download">Do you really want to delete download?</string>
     <string name="enqueue_all">Enqueue all</string>
     <string name="enqueue_selected">Enqueue selected</string>
-    <string name="greek">Greek (Ελληνικά)</string>
-    <string name="catalan">Catalan (Catalá)</string>
     <string name="disable_scrolling_text">Disable scrolling text</string>
     <string name="scrolling_text_is_used_for_long_texts">Scrolling text is used for long texts</string>
     <string name="audio_quality_format">Audio quality Format</string>
     <string name="persian">Persian (فارسی)</string>
-    <string name="hungarian">Hungarian (Magyar)</string>
-    <string name="korean">Korean (한국인)</string>
     <string name="background_player">"BACKGROUND PLAYER"</string>
     <string name="show_favorite_button">Show Favorite button</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Show Favorite button in lock screen and notification area</string>
@@ -280,19 +259,14 @@
     <string name="statistics_songs_heard">songs heard</string>
     <string name="statistics_of_time_taken">time spent</string>
     <string name="statistics_max_number_of_items">Max number of items</string>
-    <string name="arabic">Arabic (العربية)</string>
-    <string name="chinese_simplified">Chinese Simplified (汉语)</string>
-    <string name="chinese_traditional">Chinese Traditional (漢語)</string>
     <string name="do_you_really_want_to_download_all">Do you really want to download all?</string>
     <string name="import_playlist">Import playlist</string>
-    <string name="lang_ukrainian">Ukrainian (Українська)</string>
     <string name="proxy">PROXY</string>
     <string name="enable_proxy">Enable Proxy</string>
     <string name="proxy_mode">Proxy Mode</string>
     <string name="proxy_host">Proxy Host</string>
     <string name="proxy_port">Proxy Port</string>
     <string name="disable_if_you_do_not_want_to_see">Disable if you do not want to see</string>
-    <string name="lang_hebrew">Hebrew (עִברִית)</string>
     <string name="customize_album">Customize album</string>
     <string name="update_title">Change Title</string>
     <string name="update_authors">Change Authors name</string>
@@ -300,7 +274,6 @@
     <string name="title">Title</string>
     <string name="authors">Authors</string>
     <string name="cover">Cover</string>
-    <string name="lang_japanese">Japanese (日本語)</string>
     <string name="paste_or_type_a_valid_url">Paste or type a valid url</string>
     <string name="you_can_put_a_complete_link">You can put a complete link of a playlist, an album, a channel or a single song on YouTube or YouTube Music</string>
     <string name="go_to_link">Go to link</string>
@@ -310,7 +283,6 @@
     <string name="action_bar_show_shuffle_button">Shuffle button</string>
     <string name="action_bar_show_lyrics_button">Lyrics button</string>
     <string name="action_bar_show_arrow_button_to_open_queue">Arrow button</string>
-    <string name="lang_finnish">Finnish (Suomalainen)</string>
     <string name="listening_time">Playback duration</string>
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">Show total number of songs heard and playback duration</string>
     <string name="app_update_dialog_new">The new version %s can be downloaded!</string>
@@ -320,11 +292,9 @@
     <string name="end_of_song">(end of song)</string>
     <string name="restore_completed">Restore completed!</string>
     <string name="click_to_close">Click to close</string>
-    <string name="lang_dutch">Dutch (Nederlands)</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">Do you really want to shuffle song positions in this playlist?</string>
     <string name="renumber_songs_positions">Shuffle song positions</string>
     <string name="do_you_really_want_to_delete_all_playback_events">Do you really want to delete all playback events?</string>
-    <string name="lang_sinhala">Sinhala (සිංහල)</string>
     <string name="update_available">Update available</string>
     <string name="actions_you_can_do">Actions you can do:</string>
     <string name="open_the_github_releases_web_page_and_download_latest_version">Open the Github releases web page and download latest version</string>
@@ -338,7 +308,6 @@
     <string name="you_can_still_turn_it_on_or_off_from_the_settings">You can still turn it ON/OFF from the settings.</string>
     <string name="enable">Enable</string>
     <string name="don_t_enable">Disable</string>
-    <string name="lang_hindi">Hindi (हिन्दी)</string>
     <string name="default_page">Default page</string>
     <string name="keep_screen_on">Keep screen on</string>
     <string name="prevents_screen_timeout">Prevents screen timeout</string>
@@ -387,7 +356,6 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">Avoid closing the player and cleaning the queue by swiping down while it is minimized</string>
     <string name="sort_date_liked">Date Favorited</string>
     <string name="export_playlist">Export playlist</string>
-    <string name="lang_afrikaans">Afrikaans (Afrikaans)</string>
     <string name="playlist_top">Top Playlist</string>
     <string name="my_playlist_top">My Top %s</string>
     <string name="navigation_bar_position">Navigation bar position</string>
@@ -396,11 +364,9 @@
     <string name="copy_lyrics">Copy lyrics</string>
     <string name="value_copied">Copied</string>
     <string name="do_you_really_want_to_delete_cache">Do you really want to delete cache?</string>
-    <string name="lang_swedish">Swedish (Svenska)</string>
     <string name="pinned_playlists">Pinned</string>
     <string name="locked">Locked</string>
     <string name="sort_duration">Duration</string>
-    <string name="lang_serbian_cyrillic">Serbian Cyrillic (Српска)</string>
     <string name="pause_between_songs">Pause between songs</string>
     <string name="navigation_bar_type">Navigation bar style</string>
     <string name="icon_and_text">Icon and text</string>
@@ -409,7 +375,6 @@
     <string name="sort_album">Album</string>
     <string name="use_gradient_background">Use gradient background</string>
     <string name="show_total_time_of_queue">Show total queue duration</string>
-    <string name="lang_telugu">Telugu (తెలుగు)</string>
     <string name="media_permission_required_please_grant">Media permission required, please grant.</string>
     <string name="open_permission_settings">Open permission settings</string>
     <string name="background_progress_bar">Background progress bar</string>
@@ -419,8 +384,6 @@
     <string name="back">Back</string>
     <string name="folders">Folders</string>
     <string name="show_folders_in_on_device_page">Show folders in \"On Device\" page</string>
-    <string name="lang_danish">Danish (Dansk)</string>
-    <string name="lang_serbian_latin">Serbian Latin (Gajeva latinica)</string>
     <string name="item_deselect">Deselect</string>
     <string name="show_next_songs_in_player">Show next song queue</string>
     <string name="show_remaining_song_time">Show remaining song duration</string>
@@ -546,7 +509,6 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">Fluid gradient from song cover</string>
     <string name="show_background_in_lyrics">Match Lyrics background color with Player</string>
     <string name="bg_colors_blurred_cover_background">Blurred song cover</string>
-    <string name="lang_estonian">Estonian (eesti keel)</string>
     <string name="pcontrols_modern">Modern</string>
     <string name="pcontrols_essential">Essential</string>
     <string name="pcontrols_type">Control style</string>
@@ -556,7 +518,6 @@
     <string name="position_bottom">Bottom</string>
     <string name="added_to_favorites">Added to favorites</string>
     <string name="removed_from_favorites">Removed from favorites</string>
-    <string name="lang_filipino">Filipino (Tagalog)</string>
     <string name="action_bar_transparent_background">Transparent background</string>
     <string name="pinfo_type">Header style</string>
     <string name="pinfo_album_and_artist_name">Album and Artist header</string>
@@ -574,7 +535,6 @@
     <string name="exclude_songs_with_duration_limit_description">Songs with duration exceeding the limit will be excluded from the Top songs and playback queue</string>
     <string name="no_log_available">Log unavailable</string>
     <string name="enable_quick_picks_page">Enable Quick Picks page</string>
-    <string name="lang_vietnamese">Vietnamese (tiếng Việt)</string>
     <string name="parental_control">Parental control</string>
     <string name="info_prevent_play_songs_with_age_limitation">Prevent play songs with age limitation</string>
     <string name="cache_location_private">Private</string>
@@ -613,8 +573,6 @@
     <string name="expandedlyricsinfo">Available when thumbnail for lyrics is disabled</string>
     <string name="info_connect_your_piped_account_first">Connect your piped account first or disable piped synchronization</string>
     <string name="piped_playlists">Piped</string>
-    <string name="lang_bengali">Bengali (বাংলা)</string>
-    <string name="lang_irish">Irish (Gaeilge)</string>
     <string name="lyricsoutline">Lyrics Outline</string>
     <string name="fluidrainbow">Fluid Rainbow</string>
     <string name="fluidtheme">Fluid Theme</string>
@@ -675,7 +633,6 @@
     <string name="controls_title_playback_pitch">Playback pitch</string>
     <string name="controls_title_playback_volume">Playback volume</string>
     <string name="controls_title_device_volume">Device volume</string>
-    <string name="lang_malayalam">Malayam (മലയാളം)</string>
     <string name="searches_suggestions">Suggestions</string>
     <string name="searches_saved_searches">Search history</string>
     <string name="event_volumekeys">Volume keys to change song</string>
@@ -715,7 +672,6 @@
     <string name="queuetype">Queue type</string>
     <string name="chart_top_songs">Top songs</string>
     <string name="chart_top_artists">Top artists</string>
-    <string name="lang_interlingua">Interlingua</string>
     <string name="error_no_internet">No network connection</string>
     <string name="error_timeout">Connection timeout</string>
     <string name="error_unknown">Unknown error</string>
@@ -723,8 +679,6 @@
     <string name="update_album">Updates the Album</string>
     <string name="info_check_update_now">Check now</string>
     <string name="info_no_update_available">No updates available</string>
-    <string name="lang_galician">Galician (galego)</string>
-    <string name="lang_norwegian">Norwegian (norsk)</string>
     <string name="translate_to">Translate to %s</string>
     <string name="translate_to_other_language">Translate to other language</string>
     <string name="action_bar_show_video_button">Show video button</string>
@@ -768,9 +722,7 @@
     <string name="actionbar">Action Bar</string>
     <string name="center">Center</string>
     <string name="lyricsalignment">Lyrics Alignment</string>
-    <string name="lang_azerbaijani">Azerbaijani</string>
     <string name="translators">Translators</string>
-    <string name="lang_tamil">Tamil</string>
     <string name="player_auto_load_songs_in_queue">Auto load songs in queue</string>
     <string name="player_auto_load_songs_in_queue_description">Adds songs when the queue is about to end</string>
     <string name="show_vinyl_thumbnail_animation">Show Vinyl animation as thumbnail</string>
@@ -971,4 +923,11 @@
     <string name="setting_description_smart_rewind">Previous button will act like rewind button after %s secd seconds</string>
     <string name="setting_entry_show_chip">Show \"%s\" chip</string>
     <string name="entry_setting_quick_picks_show_section">Show \"%s\"</string>
+    <string name="setting_entry_crash_log">Crash log</string>
+    <string name="setting_entry_logs">Logs</string>
+    <string name="setting_description_copy_or_export_logs">Tap here to export, tap icon to copy</string>
+    <string name="error_message_unsupported_local_playlist">Unsupported format</string>
+    <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
+    <string name="dialog_title_color_picker">Color picker</string>
+    <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
 </resources>
