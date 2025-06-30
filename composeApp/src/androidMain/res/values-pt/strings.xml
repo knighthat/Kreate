@@ -126,7 +126,7 @@
     <string name="custom_cache_from_android_10_may_not_be_available">A partir do Android 10, esse recurso pode não estar disponível</string>
     <string name="reset_cache_location_folder">REDEFINIR LOCALIZAÇÃO DA PASTA CACHE</string>
     <string name="used">" usado"</string>
-    <string name="close_background_player">Fechar player de fundo</string>
+    <string name="close_background_player">Fechar leitor de fundo</string>
     <string name="when_app_swipe_out_from_task_manager">Quando deslizar a janela da aplicação para fora dos recentes</string>
     <string name="opening_url">está carregando...</string>
     <string name="an_error_has_occurred_while_fetching_the_lyrics">Ocorreu um erro ao buscar a letra</string>
@@ -916,10 +916,10 @@
     <string name="log_in_to_ytm">Faça o login na sua conta YTM para mais conteúdo</string>
     <string name="word_documentation">Documentação</string>
     <string name="opens_link_in_web_browser">Abrir link no navegador da web</string>
-    <string name="setting_entry_smart_rewind">Smart rewind</string>
-    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %s secd seconds</string>
-    <string name="setting_entry_show_chip">Show \"%s\" chip</string>
-    <string name="entry_setting_quick_picks_show_section">Show \"%s\"</string>
+    <string name="setting_entry_smart_rewind">Retroceder inteligente</string>
+    <string name="setting_description_smart_rewind">O botão anterior agirá como um botão de retroceder após %s segundos</string>
+    <string name="setting_entry_show_chip">Mostrar \"%s\" chip</string>
+    <string name="entry_setting_quick_picks_show_section">Mostrar \"%s\"</string>
     <string name="setting_entry_crash_log">Crash log</string>
     <string name="setting_entry_logs">Logs</string>
     <string name="setting_description_copy_or_export_logs">Tap here to export, tap icon to copy</string>
