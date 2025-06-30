@@ -245,6 +245,7 @@
     <string name="disable_scrolling_text">Disable scrolling text</string>
     <string name="scrolling_text_is_used_for_long_texts">Scrolling text is used for long texts</string>
     <string name="audio_quality_format">Format kualitas audio</string>
+    <string name="persian">Persia</string>
     <string name="background_player">"PEMUTAR LATAR BELAKANG "</string>
     <string name="show_favorite_button">Tampilkan tombol Favorit</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Tampilkan tombol Favorit di dalam layar kunci dan area notifikasi</string>
