@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">完成</string>
     <string name="hidesong">你真的想要隐藏这首歌吗？它的播放记录和缓存将会被清除。（这个动作是不可逆的）</string>
@@ -913,6 +913,7 @@
     <string name="rotating_cover_title">Rotating album cover</string>
     <string name="title_playback_speed">Playback speed</string>
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
+    <string name="log_in_to_ytm">Log in to your YTM account for more content</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
     <string name="setting_entry_smart_rewind">Smart rewind</string>
