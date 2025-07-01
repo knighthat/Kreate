@@ -720,7 +720,7 @@
     <string name="center">Ortala</string>
     <string name="lyricsalignment">Şarkı Sözü Hizalaması</string>
     <string name="translators">Çevirmenler</string>
-    <string name="player_auto_load_songs_in_queue">Sıradaki şarkıları otomatik yükle</string>
+    <string name="player_auto_load_songs_in_queue">Şarkıları kuyruğa otomatik olarak yükle</string>
     <string name="player_auto_load_songs_in_queue_description">Sıra bitmek üzereyken şarkı ekler</string>
     <string name="show_vinyl_thumbnail_animation">Küçük resim olarak Plak animasyonunu göster</string>
     <string name="toggle_romanization">Harf çevirisi</string>
@@ -920,13 +920,13 @@
     <string name="setting_description_smart_rewind">Önceki düğmesi, %s saniye sonra geri sarma düğmesi işlevi görecektir</string>
     <string name="setting_entry_show_chip">\"%s\" çipini göster</string>
     <string name="entry_setting_quick_picks_show_section">\"%s\" bölümünü göster</string>
-    <string name="setting_entry_crash_log">Crash log</string>
-    <string name="setting_entry_logs">Logs</string>
-    <string name="setting_description_copy_or_export_logs">Tap here to export, tap icon to copy</string>
-    <string name="error_message_unsupported_local_playlist">Unsupported format</string>
-    <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
-    <string name="dialog_title_color_picker">Color picker</string>
-    <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
+    <string name="setting_entry_crash_log">Çökme günlüğü</string>
+    <string name="setting_entry_logs">Kayıtlar</string>
+    <string name="setting_description_copy_or_export_logs">Buraya dokunarak dışa aktar, simgeye dokunarak kopyala</string>
+    <string name="error_message_unsupported_local_playlist">Desteklenmeyen format</string>
+    <string name="error_message_import_local_playlist_failed">Yerel oynatma listesi içe aktarılırken hata oluştu</string>
+    <string name="dialog_title_color_picker">Renk seçici</string>
+    <string name="setting_description_only_available_in_theme">Yalnızca %s temasında kullanılabilir</string>
     <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
     <string name="currently_selected">Currently selected: %s</string>
 </resources>
