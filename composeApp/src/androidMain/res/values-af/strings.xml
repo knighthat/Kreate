@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cancel">Kanselleer</string>
     <string name="done">Klaar</string>
     <string name="hidesong">Wil jy hierdie liedjie regtig versteek? Sy speeltyd en cache sal uitgevee word. Hierdie aksie is onomkeerbaar.</string>
     <string name="new_playlist">Nuwe speellys</string>
@@ -184,7 +183,6 @@
     <string name="moods_and_genres">Moods and genres</string>
     <string name="search_queries">" search queries"</string>
     <string name="not_find_battery_optimization_settings">Couldn\'t find battery optimization settings, please whitelist manually</string>
-    <string name="search">Soek</string>
     <string name="no">Nee</string>
     <string name="stop">Stop</string>
     <string name="listen_on_youtube">Luister op YouTube</string>
@@ -930,4 +928,6 @@
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
     <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
+    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
+    <string name="currently_selected">Currently selected: %s</string>
 </resources>
