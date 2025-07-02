@@ -927,6 +927,6 @@
     <string name="error_message_import_local_playlist_failed">Yerel oynatma listesi içe aktarılırken hata oluştu</string>
     <string name="dialog_title_color_picker">Renk seçici</string>
     <string name="setting_description_only_available_in_theme">Yalnızca %s temasında kullanılabilir</string>
-    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
-    <string name="currently_selected">Currently selected: %s</string>
+    <string name="setting_description_app_language">Yalnızca uygulamanın dili için geçerlidir; sistem dili etkilenmez</string>
+    <string name="currently_selected">Şu anda seçili: %s</string>
 </resources>
