@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cancel">Annulla</string>
     <string name="done">Ok</string>
     <string name="hidesong">Vuoi davvero nascondere questa canzone? Il tempo di riproduzione e la cache verranno cancellati. Questa azione è irreversibile.</string>
     <string name="new_playlist">Nuova playlist</string>
@@ -184,7 +183,6 @@
     <string name="moods_and_genres">Moods and generi</string>
     <string name="search_queries">" ricerche"</string>
     <string name="not_find_battery_optimization_settings">Impossibile trovare le impostazioni di ottimizzazione della batteria, si prega di farlo manualmente</string>
-    <string name="search">Cerca</string>
     <string name="no">No</string>
     <string name="stop">Interrompi</string>
     <string name="listen_on_youtube">Ascolta su YouTube</string>
@@ -930,4 +928,6 @@
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
     <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
+    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
+    <string name="currently_selected">Currently selected: %s</string>
 </resources>
