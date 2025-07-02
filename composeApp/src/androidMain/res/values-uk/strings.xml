@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cancel">Скасовувати</string>
     <string name="done">Зроблено</string>
     <string name="hidesong">Ви дійсно хочете приховати цю пісню? Час її відтворення та кеш буде витерто. Ця дія є незворотною.</string>
     <string name="new_playlist">Новий плейлист</string>
@@ -184,7 +183,6 @@
     <string name="moods_and_genres">Настрої та жанри</string>
     <string name="search_queries">" пошукові запити"</string>
     <string name="not_find_battery_optimization_settings">Не вдалося знайти налаштування оптимізації батареї, будь ласка, додайте до білого списку вручну</string>
-    <string name="search">Пошук</string>
     <string name="no">Ні</string>
     <string name="stop">Стоп</string>
     <string name="listen_on_youtube">Слухати на YouTube</string>
@@ -930,4 +928,6 @@
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
     <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
+    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
+    <string name="currently_selected">Currently selected: %s</string>
 </resources>
