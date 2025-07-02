@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cancel">বাতিল</string>
     <string name="done">হয়েছে</string>
     <string name="hidesong">আপনি কি সত্যি গানটা লুকাতে চান? এর প্লেব্যাক টাইম আর ক্যাশে মুছে যাবে। \n এটা পুনরুদ্ধার করা যাবে না আর।</string>
     <string name="new_playlist">নতুন প্লে-লিস্ট</string>
@@ -184,7 +183,6 @@
     <string name="moods_and_genres">অনুভূতি ও গানের ধারা গুলো</string>
     <string name="search_queries">"খোঁজার ইতিহাস"</string>
     <string name="not_find_battery_optimization_settings">ব্যাটারি অপ্টিমাইজেশন সেটিংস পাওয়া যায় নি, ম্যানুয়ালি হোয়াইট লিস্ট করুন</string>
-    <string name="search">খুঁজুন</string>
     <string name="no">না</string>
     <string name="stop">থামুন</string>
     <string name="listen_on_youtube">ইউটিউবে শুনুন</string>
@@ -930,4 +928,6 @@
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
     <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
+    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
+    <string name="currently_selected">Currently selected: %s</string>
 </resources>
