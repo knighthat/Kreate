@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cancel">取消</string>
     <string name="done">完成</string>
     <string name="hidesong">你真的要隱藏這首歌曲嗎? 播放記錄和暫存將被清除. \n此動作不可逆.</string>
     <string name="new_playlist">新增播放清單</string>
@@ -184,7 +183,6 @@
     <string name="moods_and_genres">氣氛與類型</string>
     <string name="search_queries">" 關鍵字詞"</string>
     <string name="not_find_battery_optimization_settings">请手动将其添加到电池优化设置的白名单中，我们未能找到电池优化设置。</string>
-    <string name="search">搜尋</string>
     <string name="no">否</string>
     <string name="stop">停止</string>
     <string name="listen_on_youtube">在YouTube上收聽</string>
@@ -930,4 +928,6 @@
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
     <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
+    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
+    <string name="currently_selected">Currently selected: %s</string>
 </resources>
