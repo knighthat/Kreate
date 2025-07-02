@@ -720,7 +720,7 @@
     <string name="center">Mərkəz</string>
     <string name="lyricsalignment">Lirikaların Uyğunlaşdırılması</string>
     <string name="translators">Tərcüməçilər</string>
-    <string name="player_auto_load_songs_in_queue">Növbədəki mahnıları avtomatik yüklə</string>
+    <string name="player_auto_load_songs_in_queue">Növbədəki mahnıları avtomatik gətir</string>
     <string name="player_auto_load_songs_in_queue_description">Növbə bitmək üzrə olanda mahnılar əlavə edir</string>
     <string name="show_vinyl_thumbnail_animation">Disk animasiyanı miniatür kimi göstər</string>
     <string name="toggle_romanization">Romanizm</string>
@@ -920,13 +920,13 @@
     <string name="setting_description_smart_rewind">Əvvəlki düymə %s saniyə sonra geri çəkmə düyməsi kimi işləyəcək</string>
     <string name="setting_entry_show_chip">\"%s\" çipin göstər</string>
     <string name="entry_setting_quick_picks_show_section">\"%s\" göstər</string>
-    <string name="setting_entry_crash_log">Crash log</string>
-    <string name="setting_entry_logs">Logs</string>
-    <string name="setting_description_copy_or_export_logs">Tap here to export, tap icon to copy</string>
-    <string name="error_message_unsupported_local_playlist">Unsupported format</string>
-    <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
-    <string name="dialog_title_color_picker">Color picker</string>
-    <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
-    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
-    <string name="currently_selected">Currently selected: %s</string>
+    <string name="setting_entry_crash_log">Çökmə jurnalı</string>
+    <string name="setting_entry_logs">Qeydlər</string>
+    <string name="setting_description_copy_or_export_logs">İxrac etmək üçün bura, köçürmək üçün işarəyə toxun</string>
+    <string name="error_message_unsupported_local_playlist">Dəstəklənməyən format</string>
+    <string name="error_message_import_local_playlist_failed">Yerli pleylist idxal edilərkən xəta baş verdi</string>
+    <string name="dialog_title_color_picker">Rəng seçici</string>
+    <string name="setting_description_only_available_in_theme">Yalnız %s mövzusunda əlçatandır</string>
+    <string name="setting_description_app_language">Yalnız tətbiq dilinə aiddir; sistem dili təsirlənmir</string>
+    <string name="currently_selected">Hazırda seçilib: %s</string>
 </resources>
