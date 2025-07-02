@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cancel">Άκυρο</string>
     <string name="done">Τέλος</string>
     <string name="hidesong">Θέλετε να διαγράψετε αυτό το τραγούδι; Ο χρόνος ακρόασης και η προσωρινή μνήμη του θα διαγραφούν.\nΑυτή η ενέργεια δεν είναι αναστρέψιμη.</string>
     <string name="new_playlist">Δημιουργία νέου playlist</string>
@@ -184,7 +183,6 @@
     <string name="moods_and_genres">Διαθέσεις και είδη</string>
     <string name="search_queries">" ερωτήματα αναζήτησης"</string>
     <string name="not_find_battery_optimization_settings">Αδυναμία εύρεσης ρυθμίσεων βελτιστοποίησης μπαταρίας, παρακαλώ λευκή λίστα χειροκίνητα</string>
-    <string name="search">Αναζήτηση...</string>
     <string name="no">Όχι</string>
     <string name="stop">Διακοπή</string>
     <string name="listen_on_youtube">Ακούστε στο YouTube</string>
@@ -930,4 +928,6 @@
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
     <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
+    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
+    <string name="currently_selected">Currently selected: %s</string>
 </resources>
