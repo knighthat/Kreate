@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cancel">Otkaži</string>
     <string name="done">Gotovo</string>
     <string name="hidesong">Da li zaista želite da sakrijete ovu pesmu? Njegovo vreme reprodukcije i keš memorija će biti obrisani. Ova radnja je nepovratna.</string>
     <string name="new_playlist">Nova plejlista</string>
@@ -184,7 +183,6 @@
     <string name="moods_and_genres">Raspoloženja i žanrovi</string>
     <string name="search_queries">" upiti za pretragu"</string>
     <string name="not_find_battery_optimization_settings">Nismo uspeli da pronađemo podešavanja za optimizaciju baterije, ručno stavite na belu listu</string>
-    <string name="search">Pretraga</string>
     <string name="no">Ne</string>
     <string name="stop">Zaustavi</string>
     <string name="listen_on_youtube">Slušaj na YouTube</string>
@@ -930,4 +928,6 @@
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
     <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
+    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
+    <string name="currently_selected">Currently selected: %s</string>
 </resources>
