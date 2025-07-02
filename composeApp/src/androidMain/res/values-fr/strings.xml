@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cancel">Annuler</string>
     <string name="done">Fait</string>
     <string name="hidesong">Voulez-vous vraiment masquer ce titre ? Son temps de lecture et son cache seront effacés. Cette action est irréversible.</string>
     <string name="new_playlist">Nouvelle playlist</string>
@@ -184,7 +183,6 @@
     <string name="moods_and_genres">Humeurs et Genres</string>
     <string name="search_queries">" requêtes de recherche"</string>
     <string name="not_find_battery_optimization_settings">Impossible de trouver les paramètres d\'optimisation de la batterie, veuillez les ajouter manuellement à la liste blanche</string>
-    <string name="search">Rechercher</string>
     <string name="no">Non</string>
     <string name="stop">Arrêter</string>
     <string name="listen_on_youtube">Écouter sur YouTube</string>
@@ -933,4 +931,6 @@ Volume BAS : titre précédent</string>
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
     <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
+    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
+    <string name="currently_selected">Currently selected: %s</string>
 </resources>
