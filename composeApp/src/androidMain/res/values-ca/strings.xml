@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cancel">Cancel·lar</string>
     <string name="done">Fet</string>
     <string name="hidesong">Vols amagar aquesta cançó? El seu temps de reproducció i la memòria cau s\'esborrarà. Aquesta acció no es pot desfer.</string>
     <string name="new_playlist">Nova llista de reproducció</string>
@@ -184,7 +183,6 @@
     <string name="moods_and_genres">Estats d\'ànim i gèneres</string>
     <string name="search_queries">" consultes de cerca"</string>
     <string name="not_find_battery_optimization_settings">No s\'ha pogut trobar la configuració d\'optimització de la bateria, si us plau, afegiu la llista blanca manualment</string>
-    <string name="search">Search...</string>
     <string name="no">No</string>
     <string name="stop">Atura</string>
     <string name="listen_on_youtube">Escolta a YouTube</string>
@@ -930,4 +928,6 @@
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
     <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
+    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
+    <string name="currently_selected">Currently selected: %s</string>
 </resources>
