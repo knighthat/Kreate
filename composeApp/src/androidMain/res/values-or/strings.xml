@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cancel">ବାତିଲ୍ କରନ୍ତୁ</string>
     <string name="done">ସମ୍ପନ୍ନ</string>
     <string name="hidesong">ଆପଣ ପ୍ରକୃତରେ ଏହି ଗୀତକୁ ଲୁଚାଇବାକୁ ଚାହୁଁଛନ୍ତି କି? ଏହାର ଚଲାଇବା ସମୟ ଏବଂ କ୍ୟାଶେ ବିଲୋପ ହୋଇଯିବ ।\nଏହି କାର୍ଯ୍ୟଟି ଅପରିବର୍ତ୍ତନୀୟ ଅଟେ ।.</string>
     <string name="new_playlist">ନୂତନ ପ୍ଲେଲିଷ୍ଟ</string>
@@ -184,7 +183,6 @@
     <string name="moods_and_genres">ମନୋବଳ ଏବଂ ଧାରା</string>
     <string name="search_queries">" ସନ୍ଧାନ ଜିଜ୍ଞାସା"</string>
     <string name="not_find_battery_optimization_settings">ବ୍ୟାଟେରୀ ଅପ୍ଟିମାଇଜେସନ ସେଟିଙ୍ଗକୁ ପାଇପାରିଲା ନାହିଁ, ଦୟାକରି ହସ୍ତକୃତ ଭାବରେ ଧଳା ତାଲିକାକୁ ଧଳା କରନ୍ତୁ</string>
-    <string name="search">ଖୋଜନ୍ତୁ</string>
     <string name="no">ନାଁ</string>
     <string name="stop">ଅଟକାନ୍ତୁ</string>
     <string name="listen_on_youtube">ୟୁଟ୍ୟୁବରେ ଶୁଣନ୍ତୁ</string>
@@ -930,4 +928,6 @@
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
     <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
+    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
+    <string name="currently_selected">Currently selected: %s</string>
 </resources>
