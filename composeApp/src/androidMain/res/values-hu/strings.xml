@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cancel">Vissza</string>
     <string name="done">Kész</string>
     <string name="hidesong">Biztosan el szeretnéd rejteni ezt a zenét? Törölve lesz a lejátszási ideje, valamint a gyorsítótárból is eltűnik. Ez a művelet visszavonhatatlan.</string>
     <string name="new_playlist">Új lejátszási lista</string>
@@ -184,7 +183,6 @@
     <string name="moods_and_genres">Hangulatok és műfajok</string>
     <string name="search_queries">" keresési lekérdezések"</string>
     <string name="not_find_battery_optimization_settings">Nem találhatók az akkumulátor-optimalizálási beállítások, kérjük, tegye fel manuálisan az engedélyezési listára</string>
-    <string name="search">Keresés</string>
     <string name="no">Nem</string>
     <string name="stop">Megállít</string>
     <string name="listen_on_youtube">Hallgasd meg a YouTube-on</string>
@@ -930,4 +928,6 @@
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
     <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
+    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
+    <string name="currently_selected">Currently selected: %s</string>
 </resources>
