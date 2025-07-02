@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cancel">취소</string>
     <string name="done">완료</string>
     <string name="hidesong">정말로 이 곡을 숨기실건가요? 재생 시간과 캐시는 지워집니다.\n이 작업은 되돌릴 수 없습니다.</string>
     <string name="new_playlist">새 재생목록</string>
@@ -184,7 +183,6 @@
     <string name="moods_and_genres">분위기 및 장르</string>
     <string name="search_queries">" 검색어"</string>
     <string name="not_find_battery_optimization_settings">배터리 최적화 설정을 찾지 못했습니다, 수동으로 해제해주세요</string>
-    <string name="search">검색</string>
     <string name="no">아니요</string>
     <string name="stop">중지</string>
     <string name="listen_on_youtube">YouTube에서 듣기</string>
@@ -930,4 +928,6 @@
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
     <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
+    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
+    <string name="currently_selected">Currently selected: %s</string>
 </resources>
