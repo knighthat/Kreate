@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cancel">Annuleer</string>
     <string name="done">Klaar</string>
     <string name="hidesong">Wil je dit nummer echt verbergen? De afspeeltijd en de cache zullen worden gewist. Deze actie is onomkeerbaar.</string>
     <string name="new_playlist">Nieuwe afspeellijst</string>
@@ -184,7 +183,6 @@
     <string name="moods_and_genres">Stemmingen en genres</string>
     <string name="search_queries">" zoekopdrachten"</string>
     <string name="not_find_battery_optimization_settings">Kon de accuoptimalisatie-instellingen niet vinden, gelieve handmatig whitelisten</string>
-    <string name="search">Zoeken</string>
     <string name="no">Nee</string>
     <string name="stop">Stoppen</string>
     <string name="listen_on_youtube">Luister op YouTube</string>
@@ -930,4 +928,6 @@
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
     <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
+    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
+    <string name="currently_selected">Currently selected: %s</string>
 </resources>
