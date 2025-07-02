@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cancel">Afbryd</string>
     <string name="done">Færdig</string>
     <string name="hidesong">Skal denne sang virkelig skjules? Dens afspilningstid og cache slettes. Dette er irreversibelt.</string>
     <string name="new_playlist">Ny playliste</string>
@@ -184,7 +183,6 @@
     <string name="moods_and_genres">Humør og genrer</string>
     <string name="search_queries">" søgninger"</string>
     <string name="not_find_battery_optimization_settings">Kunne ikke finde batterioptimeringsindstillinger; hvidlist venligst manuelt</string>
-    <string name="search">Søg...</string>
     <string name="no">Nej</string>
     <string name="stop">Stop</string>
     <string name="listen_on_youtube">Lyt på YouTube</string>
@@ -930,4 +928,6 @@
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
     <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
+    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
+    <string name="currently_selected">Currently selected: %s</string>
 </resources>
