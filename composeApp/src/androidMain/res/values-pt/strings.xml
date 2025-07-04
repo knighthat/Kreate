@@ -920,13 +920,13 @@
     <string name="setting_description_smart_rewind">O botão anterior agirá como um botão de retroceder após %s segundos</string>
     <string name="setting_entry_show_chip">Mostrar \"%s\" chip</string>
     <string name="entry_setting_quick_picks_show_section">Mostrar \"%s\"</string>
-    <string name="setting_entry_crash_log">Crash log</string>
-    <string name="setting_entry_logs">Logs</string>
-    <string name="setting_description_copy_or_export_logs">Tap here to export, tap icon to copy</string>
-    <string name="error_message_unsupported_local_playlist">Unsupported format</string>
-    <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
-    <string name="dialog_title_color_picker">Color picker</string>
-    <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
-    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
-    <string name="currently_selected">Currently selected: %s</string>
+    <string name="setting_entry_crash_log">Registo de falhas</string>
+    <string name="setting_entry_logs">Registos</string>
+    <string name="setting_description_copy_or_export_logs">Toque aqui para exportar, toque no ícone para copiar</string>
+    <string name="error_message_unsupported_local_playlist">Formato não suportado</string>
+    <string name="error_message_import_local_playlist_failed">Ocorreu um erro ao importar uma playlist local</string>
+    <string name="dialog_title_color_picker">Seleção de cores</string>
+    <string name="setting_description_only_available_in_theme">Apenas disponível em %s temas</string>
+    <string name="setting_description_app_language">Aplica-se apenas ao idioma da aplicação; o idioma do sistema não é afetado</string>
+    <string name="currently_selected">Atualmente selecionado: %s</string>
 </resources>
