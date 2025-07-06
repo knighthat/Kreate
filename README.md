@@ -62,15 +62,15 @@
 # 📷 Screenshots
 
 <div align="center">
-  <img alt="Screenshot 1" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot1.png" width="120" />
-  <img alt="Screenshot 2" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot2.png" width="120" />
-  <img alt="Screenshot 3" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot3.png" width="120" />
-  <img alt="Screenshot 4" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot4.png" width="120" />
-  <img alt="Screenshot 5" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot5.png" width="120" />
-  <img alt="Screenshot 6" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot6.png" width="120" />
-  <img alt="Screenshot 7" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot7.png" width="120" />
-  <img alt="Screenshot 8" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot8.png" width="120" />
-  <img alt="Screenshot 9" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot9.png" width="120" />
+  <img alt="Screenshot 1" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot1.png" />
+  <img alt="Screenshot 2" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot2.png" />
+  <img alt="Screenshot 3" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot3.png" />
+  <img alt="Screenshot 4" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot4.png" />
+  <img alt="Screenshot 5" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot5.png" />
+  <img alt="Screenshot 6" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot6.png" />
+  <img alt="Screenshot 7" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot7.png" />
+  <img alt="Screenshot 8" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot8.png" />
+  <img alt="Screenshot 9" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot9.png" />
 </div>
 
 # 🌐 Supported languages
