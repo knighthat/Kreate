@@ -61,13 +61,21 @@
 
 # 📷 Screenshots
 
-<div align="center" style="overflow-x: auto; white-space: nowrap;">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot1.png" alt="Screenshot 1" width="200" style="display: inline-block; margin: 0 6px;" />
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot2.png" alt="Screenshot 2" width="200" style="display: inline-block; margin: 0 6px;" />
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot3.png" alt="Screenshot 3" width="200" style="display: inline-block; margin: 0 6px;" />
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot4.png" alt="Screenshot 4" width="200" style="display: inline-block; margin: 0 6px;" />
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot5.png" alt="Screenshot 5" width="200" style="display: inline-block; margin: 0 6px;" />
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot6.png" alt="Screenshot 6" width="200" style="display: inline-block; margin: 0 6px;" />
+<div align="center">
+  <table>
+    <tr>
+      <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot1.png" alt="Screenshot 1" width="200"/></td>
+      <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot2.png" alt="Screenshot 2" width="200"/></td>
+    </tr>
+    <tr>
+      <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot3.png" alt="Screenshot 3" width="200"/></td>
+      <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot4.png" alt="Screenshot 4" width="200"/></td>
+    </tr>
+    <tr>
+      <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot5.png" alt="Screenshot 5" width="200"/></td>
+      <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot6.png" alt="Screenshot 6" width="200"/></td>
+    </tr>
+  </table>
 </div>
 
 # 🌐 Supported languages
