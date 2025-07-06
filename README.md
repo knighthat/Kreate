@@ -62,14 +62,12 @@
 # 📷 Screenshots
 
 <div align="center">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot1.png" alt="Screenshot 1" width="200" />
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot2.png" alt="Screenshot 2" width="200" />
-  <br>
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot3.png" alt="Screenshot 3" width="200" />
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot4.png" alt="Screenshot 4" width="200" />
-  <br>
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot5.png" alt="Screenshot 5" width="200" />
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot6.png" alt="Screenshot 6" width="200" />
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot1.png" width="120" alt="1"/>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot2.png" width="120" alt="2"/>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot3.png" width="120" alt="3"/>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot4.png" width="120" alt="4"/>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot5.png" width="120" alt="5"/>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot6.png" width="120" alt="6"/>
 </div>
 
 # 🌐 Supported languages
