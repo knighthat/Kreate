@@ -62,12 +62,15 @@
 # 📷 Screenshots
 
 <div align="center">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot1.png" width="120" alt="1"/>
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot2.png" width="120" alt="2"/>
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot3.png" width="120" alt="3"/>
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot4.png" width="120" alt="4"/>
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot5.png" width="120" alt="5"/>
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot6.png" width="120" alt="6"/>
+  <img alt="Screenshot 1" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot1.png" width="120" />
+  <img alt="Screenshot 2" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot2.png" width="120" />
+  <img alt="Screenshot 3" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot3.png" width="120" />
+  <img alt="Screenshot 4" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot4.png" width="120" />
+  <img alt="Screenshot 5" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot5.png" width="120" />
+  <img alt="Screenshot 6" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot6.png" width="120" />
+  <img alt="Screenshot 7" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot7.png" width="120" />
+  <img alt="Screenshot 8" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot8.png" width="120" />
+  <img alt="Screenshot 9" src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot9.png" width="120" />
 </div>
 
 # 🌐 Supported languages
@@ -126,9 +129,10 @@
 
 ## To improve functionalities
 
-> Pull requests are welcome
+ > [!NOTE]
+ > Contributions are welcome — feel free to open a PR!
 
-> [!NOTE]
+> [!TIP]
 > To **develop new functions** or **fix a bug**, fork the repository, open a pull request.
 
 For more details, please refer to [the documentation](https://kreate.knighthat.me/dev/getting_started).
@@ -145,10 +149,9 @@ To help others understand the app, please visit [knighthat/Kreate-docs](https://
 
 ## If you are good at designing
 
-> Whether UI/UX are welcomed
-
-Submit your designs by [opening a ticket](https://github.com/knighthat/Kreate/issues/new?template=feature_request.yaml)
-
+>[!TIP]
+> **UI/UX designers are welcome!**  
+> Submit your design ideas by [opening a ticket](https://github.com/knighthat/Kreate/issues/new?template=feature_request.yaml)
 
 # 🫂 Acknowledgements
 
