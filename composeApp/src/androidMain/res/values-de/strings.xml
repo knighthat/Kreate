@@ -916,7 +916,7 @@
     <string name="log_in_to_ytm">Melde dich bei Youtube Music an für mehr Content</string>
     <string name="word_documentation">Dokumentation</string>
     <string name="opens_link_in_web_browser">Öffnet den Link im Webbrowser</string>
-    <string name="setting_entry_smart_rewind">Smart rewind</string>
+    <string name="setting_entry_smart_rewind">Elegantes Zurückspulen</string>
     <string name="setting_description_smart_rewind">Zurück Knopf springt nicht zum vorherigen Song, sondern spult zurück nach %s Sekunden</string>
     <string name="setting_entry_show_chip">Show \"%s\" chip</string>
     <string name="entry_setting_quick_picks_show_section">Show \"%s\"</string>
