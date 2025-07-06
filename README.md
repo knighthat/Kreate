@@ -122,12 +122,13 @@
 - **Ukrainian:** thanks to [Avin](https://crowdin.com/profile/avinateachip), [Michael Müller](https://crowdin.com/profile/xqzme1337), [NiXT0y](https://crowdin.com/profile/nixt0y), [Crayz310](https://github.com/Crayz310)
 - **Vietnamese:** thanks to [teaminh](https://crowdin.com/profile/teaminh)
 
+> [!TIP]
 > Don't see your langague here? [Request one](https://translate.kreate.knighthat.me/project/kreate) now.
 
 
 # 🤝 Contributing
 
-## To improve functionalities
+### To improve functionalities
 
  > [!NOTE]
  > Contributions are welcome — feel free to open a PR!
