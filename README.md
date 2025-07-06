@@ -62,15 +62,23 @@
 # 📷 Screenshots
 
 <div align="center">
-    <img alt="Screenshot 1" src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" height="350px"/>
-    <img alt="Screenshot 2" src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" height="350px" />
-    <img alt="Screenshot 3" src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" height="350px" />
-    <img alt="Screenshot 4" src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" height="350px" />
-    <img alt="Screenshot 5" src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" height="350px" />
-    <img alt="Screenshot 6" src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.png" height="350px" />
-    <img alt="Screenshot 7" src="fastlane/metadata/android/en-US/images/phoneScreenshots/7.png" height="350px" />
-    <img alt="Screenshot 8" src="fastlane/metadata/android/en-US/images/phoneScreenshots/8.png" height="350px" />
-    <img alt="Screenshot 9" src="fastlane/metadata/android/en-US/images/phoneScreenshots/9.png" height="350px" />
+  <table>
+    <tr>
+      <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot1.png" alt="Screenshot 1" width="200"/></td>
+      <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot2.png" alt="Screenshot 2" width="200"/></td>
+      <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot3.png" alt="Screenshot 3" width="200"/></td>
+    </tr>
+    <tr>
+      <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot4.png" alt="Screenshot 4" width="200"/></td>
+      <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot5.png" alt="Screenshot 5" width="200"/></td>
+      <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot6.png" alt="Screenshot 6" width="200"/></td>
+    </tr>
+    <tr>
+      <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot7.png" alt="Screenshot 7" width="200"/></td>
+      <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot8.png" alt="Screenshot 8" width="200"/></td>
+      <td><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/screenshot9.png" alt="Screenshot 9" width="200"/></td>
+    </tr>
+  </table>
 </div>
 
 # 🌐 Supported languages
