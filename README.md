@@ -131,7 +131,8 @@
 
 > Pull requests are welcome
 
-To **develop new functions** or **fix a bug**, fork the repository, open a pull request.
+> [!NOTE]
+> To **develop new functions** or **fix a bug**, fork the repository, open a pull request.
 
 For more details, please refer to [the documentation](https://kreate.knighthat.me/dev/getting_started).
 
