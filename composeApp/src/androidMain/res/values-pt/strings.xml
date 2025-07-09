@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="done">Terminar</string>
+    <string name="done">Concluído</string>
     <string name="hidesong">Tem a certeza que quer esconder esta música? O tempo de reprodução e o cache serão apagados. Esta ação é irreversível.</string>
     <string name="new_playlist">Nova playlist</string>
     <string name="start_radio">Iniciar rádio</string>
