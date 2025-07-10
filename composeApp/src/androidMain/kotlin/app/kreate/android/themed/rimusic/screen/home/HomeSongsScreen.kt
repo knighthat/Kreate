@@ -219,13 +219,13 @@ fun HomeSongsScreen(navController: NavController ) {
             MultiFloatingActionsContainer(
                 iconId = R.drawable.search,
                 onClick = {
-                    navController.navigate(NavRoutes.search.name)
+                    NavRoutes.search.navigateHere( navController )
                 },
                 onClickSettings = {
-                    navController.navigate(NavRoutes.settings.name)
+                    NavRoutes.settings.navigateHere( navController )
                 },
                 onClickSearch = {
-                    navController.navigate(NavRoutes.search.name)
+                    NavRoutes.search.navigateHere( navController )
                 }
             )
     }

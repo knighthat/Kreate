@@ -156,18 +156,16 @@ To help others understand the app, please visit [knighthat/Kreate-docs](https://
 
 # 🫂 Acknowledgements
 
-- [**RiMusic**](https://github.com/fast4x/RiMusic)
-- RiMusic previous Logo, many current icons from [jaimtres](https://github.com/jaimtres)
-- Player designed by [aneesh1122](https://github.com/aneesh1122)
-- [**YouTube-Internal-Clients**](https://github.com/zerodytrash/YouTube-Internal-Clients): A python script that discovers hidden YouTube API clients. Just a research project.
-- [**Ionicons**](https://github.com/ionic-team/ionicons): Premium hand-crafted icons built by Ionic, for Ionic apps, web apps everywhere.
-- [**FlatIcon.com**](https://www.flaticon.com/): Download Free Icons, Stickers for your projects. Resources made by, for designers.
-- [**Translator**](https://github.com/therealbush/translator): A simple, free Google Translate library for Kotlin/JVM, Java.
-- [**KuGou**](https://www.kugou.com): Lyrics provider
-- [**LrcLib**](https://lrclib.net): Lyrics provider
-- [**HypnoticCanvas**](https://mikepenz.github.io/HypnoticCanvas/): A shader modifier for Compose Multiplatform / Jetpack Compose
-- [**MedieroAF**](https://github.com/MedieroAF): App logo
-
+| Type                                                          | Authors                                                                                                                                | Notes                                                         |
+|---------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
+| [RiMusic](https://github.com/fast4x/RiMusic)                  | [fast4x](https://github.com/fast4x)                                                                                                    |                                                               |
+| Player design                                                 | [aneesh1122](https://github.com/aneesh1122)                                                                                            |                                                               |
+| Icons                                                         | [Ionicons](https://github.com/ionic-team/ionicons), [FlatIcon.com](https://www.flaticon.com/), [jaimtres](https://github.com/jaimtres) | **jaimtres** designed RiMusic's Logo, many current icons      |
+| Translators library                                           | [therealbush/translator](https://github.com/therealbush/translator)                                                                    |                                                               |
+| Lyrics provider                                               | [KuGou](https://www.kugou.com), [LrcLib](https://lrclib.net)                                                                           |                                                               |
+| [HypnoticCanvas](https://github.com/mikepenz/HypnoticCanvas/) | [mikepenz](https://github.com/mikepenz)                                                                                                | A shader modifier for Compose Multiplatform / Jetpack Compose |
+| App logo                                                      | [MedieroAF](https://github.com/MedieroAF)                                                                                              | MedieroAF's logo since 1.3.0                                  |
+| Badges                                                        | [Shields.IO](https://shields.io/), [dcbadge](https://github.com/gitlimes/dcbadge)                                                      |                                                               |
 
 # 💸 Donation
 
@@ -175,7 +173,7 @@ To help others understand the app, please visit [knighthat/Kreate-docs](https://
 > This is completely optional, you don't have to pay to use/unlock any feature.
 
 | Platform  | Address                                                                                         |
-| --------- | ----------------------------------------------------------------------------------------------- |
+|-----------|-------------------------------------------------------------------------------------------------|
 | Liberapay | https://liberapay.com/knighthat                                                                 |
 | Patreon   | https://patreon.com/knighthat                                                                   |
 | Monero    | 44G5dUFTbFWYfZAk69irnDUCTNZzP5viNTmkGpCNCLHjjYQq7jjRTWoYTH1aY8P841hExP31Qxg2hXPtxreKu11zCYdxQUj |

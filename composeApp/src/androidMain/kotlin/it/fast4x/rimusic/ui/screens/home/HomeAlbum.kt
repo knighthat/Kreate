@@ -453,7 +453,7 @@ fun HomeAlbums(
 
                                                 },
                                                 onGoToPlaylist = {
-                                                    navController.navigate("${NavRoutes.localPlaylist.name}/$it")
+                                                    NavRoutes.localPlaylist.navigateHere( navController, it )
                                                 },
                                                 disableScrollingText = disableScrollingText
                                             )

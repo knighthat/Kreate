@@ -115,6 +115,7 @@ import me.knighthat.component.tab.Radio
 import me.knighthat.component.tab.SongShuffler
 import me.knighthat.component.ui.screens.DynamicOrientationLayout
 import me.knighthat.component.ui.screens.album.Translate
+import me.knighthat.innertube.Constants
 import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubePlaylist
 import me.knighthat.innertube.model.InnertubeSong
@@ -160,7 +161,7 @@ fun YouTubePlaylist(
         val search = remember { Search(lazyListState) }
         val shuffle = SongShuffler ( ::getSongs )
         val exportDialog = ExportSongsToCSVDialog(
-            playlistBrowseId = playlistPage?.browseId.orEmpty(),
+            playlistBrowseId = playlistPage?.id.orEmpty(),
             playlistName = playlistPage?.name.orEmpty(),
             songs = ::getSongs
         )
@@ -222,22 +223,30 @@ fun YouTubePlaylist(
         //</editor-fold>
 
         val pageProvider: suspend (String?) -> Unit by rememberUpdatedState {
-            if (it.isNullOrBlank())
+            if ( it.isNullOrBlank() )
                 Innertube.browsePlaylist( browseId, Localization.EN_US )
-                         .ifPresent { page ->
+                         .onSuccess { page ->
                              playlistPage = page
 
                              items.addAll( playlistPage!!.songs.map( InnertubeSong::toSong ) )
                              continuation = playlistPage!!.songContinuation
                          }
-            else if (playlistPage?.visitorData != null)
+                         .onFailure { err ->
+                             err.printStackTrace()
+                             err.message?.also( Toaster::e )
+                         }
+            else if ( playlistPage?.visitorData != null )
                 Innertube.playlistContinued( playlistPage!!.visitorData!!, it, Localization.EN_US, params )
-                         .ifPresent { continued ->
+                         .onSuccess { continued ->
                              items.addAll(
                                  continued.songs
                                           .map( InnertubeSong::toSong )
                              )
                              continuation = continued.continuation
+                         }
+                         .onFailure { err ->
+                             err.printStackTrace()
+                             err.message?.also( Toaster::e )
                          }
         }
 
@@ -318,7 +327,7 @@ fun YouTubePlaylist(
                                                        )
                                 )
 
-                            if( playlistPage?.browseId?.startsWith( "VL", true ) == true ) {
+                            if( playlistPage?.id?.startsWith( "VL", true ) == true ) {
                                 Icon(
                                     painter = painterResource( R.drawable.ytmusic ),
                                     contentDescription = null,
@@ -338,7 +347,7 @@ fun YouTubePlaylist(
                                                        .size( 40.dp )
                                                        .align( Alignment.TopEnd )
                                                        .clickable {
-                                                           playlistPage?.youTubeMusicShareUrl?.let { url ->
+                                                           playlistPage?.shareUrl( Constants.YOUTUBE_MUSIC_URL )?.also { url ->
                                                                val sendIntent = Intent().apply {
                                                                    action = Intent.ACTION_SEND
                                                                    type = "text/plain"

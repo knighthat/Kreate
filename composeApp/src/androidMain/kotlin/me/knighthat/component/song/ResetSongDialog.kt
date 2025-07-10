@@ -8,20 +8,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.util.fastAny
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
-import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.models.bodies.NextBody
-import it.fast4x.innertube.requests.nextPage
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
-import it.fast4x.rimusic.utils.asSong
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.component.dialog.CheckboxDialog
+import me.knighthat.innertube.Innertube
+import me.knighthat.innertube.model.InnertubeSong
+import me.knighthat.innertube.request.Localization
 import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Contract
 import java.util.Optional
@@ -115,20 +114,21 @@ class ResetSongDialog private constructor(
 
             val fetchIds = arrayOf(TITLE_CHECKBOX_ID, AUTHORS_CHECKBOX_ID, THUMBNAIL_CHECKBOX_ID)
             if( items.fastAny { it.id in fetchIds && it.selected } ) {
-                val fetchedSong: Song? = Innertube.nextPage( NextBody(videoId = song.id) )
-                                                  ?.getOrNull()
-                                                  ?.itemsPage
-                                                  ?.items
-                                                  ?.firstOrNull()
-                                                  ?.asSong
+                var innertubeSong: InnertubeSong? = null
+                Innertube.songBasicInfo( song.id, Localization.EN_US )
+                         .onSuccess { innertubeSong = it }
+                         .onFailure {
+                             it.printStackTrace()
+                             it.message?.also( Toaster::e )
+                         }
 
                 @Contract("_,null->null")
                 fun <T> getProperty( itemId: String, result: T? ): T? =
                     if ( items.first { it.id == itemId }.selected ) result else null
 
-                val title = getProperty( TITLE_CHECKBOX_ID, fetchedSong?.title )
-                val authors = getProperty( AUTHORS_CHECKBOX_ID, fetchedSong?.artistsText )
-                val thumbnailUrl = getProperty( THUMBNAIL_CHECKBOX_ID, fetchedSong?.thumbnailUrl )
+                val title = getProperty( TITLE_CHECKBOX_ID, innertubeSong?.name )
+                val authors = getProperty( AUTHORS_CHECKBOX_ID, innertubeSong?.artistsText )
+                val thumbnailUrl = getProperty( THUMBNAIL_CHECKBOX_ID, innertubeSong?.thumbnails?.firstOrNull()?.url )
 
                 song = song.copy(
                     title = title ?: song.title,

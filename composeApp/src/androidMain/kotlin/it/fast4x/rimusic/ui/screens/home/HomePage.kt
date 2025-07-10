@@ -253,7 +253,7 @@ fun HomePage(
                                         thumbnailSizeDp = albumThumbnailSizeDp,
                                         disableScrollingText = disableScrollingText,
                                         modifier = Modifier.clickable(onClick = {
-                                            navController.navigate("${NavRoutes.album.name}/${item.key}")
+                                            NavRoutes.YT_ALBUM.navigateHere( navController, item.key )
                                         })
 
                                     )
@@ -265,9 +265,9 @@ fun HomePage(
                                         thumbnailSizePx = artistThumbnailSizePx,
                                         thumbnailSizeDp = artistThumbnailSizeDp,
                                         disableScrollingText = disableScrollingText,
-                                        modifier = Modifier.clickable(onClick = {
-                                            navController.navigate("${NavRoutes.artist.name}/${item.key}")
-                                        })
+                                        modifier = Modifier.clickable {
+                                            NavRoutes.YT_ARTIST.navigateHere( navController, item.key )
+                                        }
                                     )
                                 }
                                 is Innertube.PlaylistItem -> {

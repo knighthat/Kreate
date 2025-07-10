@@ -288,7 +288,7 @@ fun PlaylistsItemMenu(
                                                     onGoToPlaylist(playlistPreview.playlist.id)
                                                     onDismiss()
                                               }
-                                                navController.navigate(route = "${NavRoutes.localPlaylist.name}/${playlistPreview.playlist.id}")
+                                                NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
                                             },
                                             modifier = Modifier
                                                 .size(24.dp)
@@ -330,7 +330,7 @@ fun PlaylistsItemMenu(
                                                     onGoToPlaylist(playlistPreview.playlist.id)
                                                     onDismiss()
                                                 }
-                                                navController.navigate(route = "${NavRoutes.localPlaylist.name}/${playlistPreview.playlist.id}")
+                                                NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
                                             },
                                             modifier = Modifier
                                                 .size(24.dp)
@@ -383,7 +383,7 @@ fun PlaylistsItemMenu(
                                                     onGoToPlaylist(playlistPreview.playlist.id)
                                                     onDismiss()
                                                 }
-                                                navController.navigate(route = "${NavRoutes.localPlaylist.name}/${playlistPreview.playlist.id}")
+                                                NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
                                             },
                                             modifier = Modifier
                                                 .size(24.dp)

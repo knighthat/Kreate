@@ -19,8 +19,6 @@ import io.ktor.client.statement.bodyAsText
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.Innertube.createPoTokenChallenge
 import it.fast4x.innertube.models.PlayerResponse
-import it.fast4x.innertube.models.bodies.NextBody
-import it.fast4x.innertube.requests.nextPage
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.AudioQualityFormat
@@ -32,6 +30,7 @@ import it.fast4x.rimusic.service.UnknownException
 import it.fast4x.rimusic.service.UnplayableException
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.utils.isConnectionMetered
+import it.fast4x.rimusic.utils.isNetworkAvailable
 import it.fast4x.rimusic.utils.okHttpDataSourceFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +46,8 @@ import org.schabi.newpipe.extractor.localization.Localization
 import org.schabi.newpipe.extractor.services.youtube.PoTokenResult
 import org.schabi.newpipe.extractor.services.youtube.YoutubeJavaScriptPlayerManager
 import org.schabi.newpipe.extractor.services.youtube.YoutubeStreamHelper
-import java.net.UnknownHostException
+import me.knighthat.innertube.Innertube as NewInnertube
+import me.knighthat.innertube.request.Localization as InnertubeLocalization
 
 private const val CHUNK_LENGTH = 512 * 1024L     // 512Kb
 
@@ -80,22 +80,14 @@ private var justInserted: String = ""
 @Blocking
 private fun upsertSongInfo( videoId: String ) = runBlocking {       // Use this to prevent suspension of thread while waiting for response from YT
     // Skip adding if it's just added in previous call
-    if( videoId == justInserted ) return@runBlocking
+    if( videoId == justInserted || !isNetworkAvailable( appContext() ) ) return@runBlocking
 
-    Innertube.nextPage( NextBody(videoId = videoId) )?.fold(
-        onSuccess = { nextPage ->
-            val songItem = nextPage.itemsPage?.items?.firstOrNull() ?: return@fold
-            Database.upsert( songItem )
-        },
-        onFailure = {
-            when( it ) {
-                // [UnknownHostException] means no internet connection in most cases
-                // Set [justInserted] to this video will skip subsequence calls
-                is UnknownHostException -> justInserted = videoId
-                else                    -> Toaster.e( R.string.failed_to_fetch_original_property )
-            }
-        }
-    )
+    NewInnertube.songBasicInfo( videoId, InnertubeLocalization.EN_US )
+                .onSuccess( Database::upsert )
+                .onFailure {
+                    Toaster.e( R.string.failed_to_fetch_original_property )
+                    it.message?.also( Toaster::e )
+                }
 
     // Must not modify [JustInserted] to [upsertSongFormat] let execute later
 }

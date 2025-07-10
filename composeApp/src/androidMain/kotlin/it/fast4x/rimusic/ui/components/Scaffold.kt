@@ -35,8 +35,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import app.kreate.android.R
 import app.kreate.android.Preferences
+import app.kreate.android.R
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -66,7 +66,7 @@ fun Scaffold(
     onTabChanged: (Int) -> Unit = {},
     showTopActions: Boolean = false,
     tabColumnContent: @Composable (@Composable (Int, String, Int) -> Unit) -> Unit,
-    onHomeClick: () -> Unit = { navController.navigate( NavRoutes.home.name ) },
+    onHomeClick: () -> Unit = { NavRoutes.home.navigateHere( navController ) },
     onSettingsClick: (() -> Unit)? = {},
     onStatisticsClick: (() -> Unit)? = {},
     onHistoryClick: (() -> Unit)? = {},

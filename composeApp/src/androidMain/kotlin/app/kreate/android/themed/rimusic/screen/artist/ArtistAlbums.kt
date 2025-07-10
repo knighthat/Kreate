@@ -118,7 +118,7 @@ fun ArtistAlbums(
                         thumbnailSizeDp = thumbnailSizeDp,
                         alternative = true,
                         modifier = Modifier.clickable(onClick = {
-                            NavRoutes.album.navigateHere( navController, it.key )
+                            NavRoutes.YT_ALBUM.navigateHere( navController, it.key )
                         }),
                         disableScrollingText = disableScrollingText
                     )

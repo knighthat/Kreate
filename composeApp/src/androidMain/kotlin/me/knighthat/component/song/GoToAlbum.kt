@@ -4,9 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import app.kreate.android.R
-import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.models.bodies.NextBody
-import it.fast4x.innertube.requests.nextPage
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.models.Song
@@ -16,8 +13,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import me.knighthat.innertube.Innertube
+import me.knighthat.innertube.request.Localization
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 import java.util.Optional
 
 class GoToAlbum(
@@ -46,27 +44,29 @@ class GoToAlbum(
 
     override fun onShortClick() {
         albumId.ifPresentOrElse(
-            { NavRoutes.album.navigateHere( navController, it ) },
+            { NavRoutes.YT_ALBUM.navigateHere( navController, it ) },
             {
                 Toaster.n( R.string.looking_up_album_from_the_internet )
 
                 CoroutineScope( Dispatchers.IO ).launch {
-                    Innertube.nextPage(NextBody(videoId = song.id))
-                             ?.onFailure {
-                                 Timber.tag("go_to_album").e(it)
-                                 Toaster.e( R.string.failed_to_fetch_original_property )
-                             }
-                             ?.getOrNull()
-                             ?.itemsPage
-                             ?.items
-                             ?.firstOrNull()
-                             ?.album
-                             ?.endpoint
-                             ?.takeIf { !it.browseId.isNullOrBlank() }
-                             ?.let {
-                                 val path = "${it.browseId}?params=${it.params.orEmpty()}"
-                                 NavRoutes.album.navigateHere( navController, path )
-                             }
+                    Innertube.songBasicInfo( song.id, Localization.EN_US )
+                             .fold(
+                                 onSuccess = { song ->
+                                     song.album
+                                         ?.navigationEndpoint
+                                         ?.browseEndpoint
+                                         ?.also {
+                                             NavRoutes.YT_ALBUM.navigateHere(
+                                                 navController,
+                                                 "${it.browseId}?params=${it.params}"
+                                             )
+                                         }
+                                 },
+                                 onFailure = {
+                                     it.printStackTrace()
+                                     it.message?.also( Toaster::e )
+                                 }
+                             )
                 }
             }
         )

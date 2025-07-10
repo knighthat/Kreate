@@ -126,7 +126,7 @@ fun SearchTypeScreen(
                             navController = navController,
                             textFieldValue = textFieldValue,
                             onTextFieldValueChanged = onTextFieldValueChanged,
-                            onSearch = { navController.navigate("${NavRoutes.searchResults.name}/$it") },
+                            onSearch = { NavRoutes.searchResults.navigateHere( navController, it ) },
                             decorationBox = decorationBox
                         )
 
@@ -138,7 +138,7 @@ fun SearchTypeScreen(
                             onAction1 = { onTabChanged(0) },
                             onAction2 = { onTabChanged(1) },
                             onAction3 = { onTabChanged(2) },
-                            onAction4 = { navController.navigate(NavRoutes.home.name) }
+                            onAction4 = { NavRoutes.home.navigateHere( navController ) }
                         )
 
                         2 -> GoToLink(
@@ -149,7 +149,7 @@ fun SearchTypeScreen(
                             onAction1 = { onTabChanged(0) },
                             onAction2 = { onTabChanged(1) },
                             onAction3 = { onTabChanged(2) },
-                            onAction4 = { navController.navigate(NavRoutes.home.name) }
+                            onAction4 = { NavRoutes.home.navigateHere( navController ) }
                         )
                     }
                 }

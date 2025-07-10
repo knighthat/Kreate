@@ -173,13 +173,14 @@ fun BaseMediaItemGridMenu(
         onRemoveFromPlaylist = onRemoveFromPlaylist,
         onRemoveFromQueue = onRemoveFromQueue,
         onGoToAlbum =   {
-            navController.navigate(route = "${NavRoutes.album.name}/${it}")
+            NavRoutes.YT_ALBUM.navigateHere( navController, it )
             if (onClosePlayer != null) {
                 onClosePlayer()
             }
         }, //albumRoute::global,
         onGoToArtist = {
-            navController.navigate(route = "${NavRoutes.artist.name}/${it}")
+            NavRoutes.YT_ARTIST.navigateHere( navController, it )
+
             if (onClosePlayer != null) {
                 onClosePlayer()
             }
@@ -200,7 +201,7 @@ fun BaseMediaItemGridMenu(
          */
         onRemoveFromQuickPicks = onRemoveFromQuickPicks,
         onGoToPlaylist = {
-            navController.navigate(route = "${NavRoutes.localPlaylist.name}/$it")
+            NavRoutes.localPlaylist.navigateHere( navController, it )
         },
         modifier = modifier,
         disableScrollingText = disableScrollingText
@@ -237,7 +238,7 @@ fun MiniMediaItemGridMenu(
             onDismiss()
         },
         onGoToPlaylist = {
-            navController.navigate(route = "${NavRoutes.localPlaylist.name}/$it")
+            NavRoutes.localPlaylist.navigateHere( navController, it )
             if (onGoToPlaylist != null) {
                 onGoToPlaylist(it)
             }
@@ -717,7 +718,7 @@ fun MediaItemGridMenu (
                                                 onGoToPlaylist(playlistPreview.playlist.id)
                                                 onDismiss()
                                             }
-                                            navController.navigate(route = "${NavRoutes.localPlaylist.name}/${playlistPreview.playlist.id}")
+                                            NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
                                         },
                                         modifier = Modifier
                                             .size(24.dp)
@@ -766,7 +767,7 @@ fun MediaItemGridMenu (
                                                 onGoToPlaylist(playlistPreview.playlist.id)
                                                 onDismiss()
                                             }
-                                            navController.navigate(route = "${NavRoutes.localPlaylist.name}/${playlistPreview.playlist.id}")
+                                            NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
                                         },
                                         modifier = Modifier
                                             .size(24.dp)

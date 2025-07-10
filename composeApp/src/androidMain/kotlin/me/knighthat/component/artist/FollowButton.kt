@@ -34,12 +34,12 @@ import kotlinx.coroutines.launch
 import me.knighthat.utils.Toaster
 
 class FollowButton private constructor(
-    private val getArtist: () -> Artist
+    private val getArtist: () -> Artist?
 ): Button, Descriptive {
 
     companion object {
         @Composable
-        operator fun invoke( getArtist: () -> Artist ): FollowButton =
+        operator fun invoke( getArtist: () -> Artist? ): FollowButton =
             FollowButton(getArtist)
     }
 
@@ -49,7 +49,7 @@ class FollowButton private constructor(
         if ( isYouTubeSyncEnabled() && !isNetworkConnected( appContext() ) ){
             Toaster.noInternet()
         } else {
-            val artist = getArtist()
+            val artist = getArtist() ?: return
 
             Database.asyncTransaction {
                 artistTable.toggleFollow( artist.id )
@@ -68,9 +68,10 @@ class FollowButton private constructor(
 
     @Composable
     override fun ToolBarButton() {
+        val artist = getArtist() ?: return
         val isFollowed by remember {
             Database.artistTable
-                    .isFollowing( getArtist().id )
+                    .isFollowing( artist.id )
         }.collectAsState( false, Dispatchers.IO )
         val colorPalette = colorPalette()
 

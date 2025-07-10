@@ -68,7 +68,6 @@ import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BackgroundProgress
 import it.fast4x.rimusic.enums.MiniPlayerType
-import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.typography
@@ -255,7 +254,6 @@ fun MiniPlayer(
             modifier = Modifier
                 .combinedClickable(
                     onLongClick = {
-                        navController?.navigate(NavRoutes.queue.name);
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                     },
                     onClick = {

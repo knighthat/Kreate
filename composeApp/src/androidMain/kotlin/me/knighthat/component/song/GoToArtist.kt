@@ -3,9 +3,6 @@ package me.knighthat.component.song
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import app.kreate.android.R
-import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.models.bodies.NextBody
-import it.fast4x.innertube.requests.nextPage
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.NavRoutes
@@ -16,8 +13,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import me.knighthat.innertube.Innertube
+import me.knighthat.innertube.request.Localization
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 import java.util.Optional
 
 class GoToArtist(
@@ -47,27 +45,27 @@ class GoToArtist(
 
     override fun onShortClick() {
         channelId.ifPresentOrElse(
-            { NavRoutes.artist.navigateHere( navController, it ) },
+            { NavRoutes.YT_ARTIST.navigateHere( navController, it ) },
             {
                 Toaster.n( R.string.looking_up_artist_online, song.cleanArtistsText() )
 
                 CoroutineScope( Dispatchers.IO ).launch {
-                    Innertube.nextPage(NextBody(videoId = song.id))
-                             ?.onFailure {
-                                 Timber.tag("go_to_artist").e( it )
-                                 Toaster.e( R.string.failed_to_fetch_artist )
+                    Innertube.songBasicInfo( song.id, Localization.EN_US )
+                             .onSuccess { song ->
+                                 song.artists
+                                     .firstOrNull()
+                                     ?.navigationEndpoint
+                                     ?.browseEndpoint
+                                     ?.also {
+                                         NavRoutes.YT_ARTIST.navigateHere(
+                                             navController,
+                                             "${it.browseId}?params=${it.params}"
+                                         )
+                                     }
                              }
-                             ?.getOrNull()
-                             ?.itemsPage
-                             ?.items
-                             ?.firstOrNull()
-                             ?.authors
-                             ?.firstOrNull()
-                             ?.endpoint
-                             ?.takeIf { !it.browseId.isNullOrBlank() }
-                             ?.let {
-                                 val path = "${it.browseId}?params=${it.params.orEmpty()}"
-                                 NavRoutes.artist.navigateHere( navController, path )
+                             .onFailure {
+                                 it.printStackTrace()
+                                 it.message?.also( Toaster::e )
                              }
                 }
             }

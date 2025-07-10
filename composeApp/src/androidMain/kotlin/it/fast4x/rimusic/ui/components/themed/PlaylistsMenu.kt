@@ -101,7 +101,7 @@ class PlaylistsMenu private constructor(
                     color = colorPalette().text,
                     onClick = {
                         menuState.hide()
-                        navController.navigate(route = "${NavRoutes.localPlaylist.name}/${playlist.id}")
+                        NavRoutes.localPlaylist.navigateHere( navController, playlist.id )
                     },
                     modifier = Modifier.size( 24.dp )
                 )

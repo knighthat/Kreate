@@ -1,7 +1,6 @@
 package it.fast4x.rimusic
 
 import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.util.fastMapNotNull
 import androidx.compose.ui.util.fastZip
 import androidx.media3.common.MediaItem
 import androidx.room.AutoMigration
@@ -9,7 +8,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SimpleSQLiteQuery
-import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.models.Album
 import it.fast4x.rimusic.models.Artist
 import it.fast4x.rimusic.models.Event
@@ -52,6 +50,7 @@ import me.knighthat.database.migration.From26To27Migration
 import me.knighthat.database.migration.From3To4Migration
 import me.knighthat.database.migration.From7To8Migration
 import me.knighthat.database.migration.From8To9Migration
+import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.PropUtils
 
 object Database {
@@ -87,73 +86,6 @@ object Database {
 
     //**********************************************
 
-    fun upsert( songItem: Innertube.SongItem ) = asyncTransaction {
-        val song =  songItem.asSong
-
-        //<editor-fold defaultstate="collapsed" desc="Upsert song">
-        val dbSong = runBlocking {
-            songTable.findById( song.id ).first()
-        }
-        songTable.upsert(Song(
-            id = song.id,
-            title = PropUtils.retainIfModified( dbSong?.title, song.title ).orEmpty(),
-            artistsText = PropUtils.retainIfModified( dbSong?.artistsText, song.artistsText ),
-            durationText = song.durationText,       // Force update to new duration text
-            thumbnailUrl = PropUtils.retainIfModified( dbSong?.thumbnailUrl, song.thumbnailUrl ),
-            likedAt = dbSong?.likedAt,
-            totalPlayTimeMs = dbSong?.totalPlayTimeMs ?: 0
-        ))
-        //</editor-fold>
-
-        //<editor-fold defaultstate="collapsed" desc="Upsert artists">
-        songItem.authors
-                ?.fastMapNotNull {
-                    val browseId = it.endpoint?.browseId ?: return@fastMapNotNull null
-
-                    val dbArtist = runBlocking {
-                        artistTable.findById( browseId ).first()
-                    }
-
-                    Artist(
-                        id = browseId,
-                        name = PropUtils.retainIfModified( dbArtist?.name, it.name ),
-                        thumbnailUrl = dbArtist?.thumbnailUrl,
-                        timestamp = dbArtist?.timestamp,
-                        bookmarkedAt = dbArtist?.bookmarkedAt,
-                        isYoutubeArtist = dbArtist?.isYoutubeArtist == true
-                    )
-                }
-                ?.also( artistTable::upsert )
-                ?.fastForEach { mapIgnore( it, song ) }
-        //</editor-fold>
-
-        //<editor-fold defaultstate="collapsed" desc="Upsert album">
-        songItem.album
-                ?.let {
-                    val browseId = it.endpoint?.browseId ?: return@let
-
-                    val dbAlbum = runBlocking {
-                        albumTable.findById( browseId ).first()
-                    }
-
-                    val fetchedAlbum = Album(
-                        id = browseId,
-                        title = PropUtils.retainIfModified( dbAlbum?.title, it.name ),
-                        thumbnailUrl = PropUtils.retainIfModified( dbAlbum?.thumbnailUrl, song.thumbnailUrl ),
-                        year = dbAlbum?.year,
-                        authorsText = PropUtils.retainIfModified( dbAlbum?.title, it.name ),
-                        shareUrl = dbAlbum?.shareUrl,
-                        timestamp = dbAlbum?.timestamp,
-                        bookmarkedAt = dbAlbum?.bookmarkedAt,
-                        isYoutubeAlbum = dbAlbum?.isYoutubeAlbum == true
-                    )
-
-                    albumTable.upsert( fetchedAlbum )
-                    mapIgnore( fetchedAlbum, song )
-                }
-        //</editor-fold>
-    }
-
     /**
      * Attempt to insert a [MediaItem] into `Song` table
      *
@@ -187,6 +119,52 @@ object Database {
                     .also( artistTable::insertIgnore )
                     .map { SongArtistMap(mediaItem.mediaId, it.id) }
                     .also( songArtistMapTable::insertIgnore )
+    }
+
+    fun upsert( innertubeSong: InnertubeSong ) = asyncTransaction {
+        //<editor-fold desc="Insert song">
+        val dbSong = runBlocking {
+            songTable.findById( innertubeSong.id ).first()
+        }
+        songTable.upsert(Song(
+            id = innertubeSong.id,
+            title = PropUtils.retainIfModified( dbSong?.title, innertubeSong.name ).orEmpty(),
+            artistsText = PropUtils.retainIfModified( dbSong?.artistsText, innertubeSong.artistsText ),
+            durationText = innertubeSong.durationText,       // Force update to new duration text
+            thumbnailUrl = PropUtils.retainIfModified( dbSong?.thumbnailUrl, innertubeSong.thumbnails.firstOrNull()?.url ),
+            likedAt = dbSong?.likedAt,
+            totalPlayTimeMs = dbSong?.totalPlayTimeMs ?: 0
+        ))
+        //</editor-fold>
+
+        // Insert album
+        innertubeSong.album?.let { run ->
+            run.navigationEndpoint
+               ?.browseEndpoint
+               ?.browseId
+               ?.let { Album(it, run.text) }
+               ?.also {
+                   // Upsert will cause existing album to be overridden
+                   // with only [Album.id] and [Album.title].
+                   // We only need album to be existed in the database
+                   albumTable.insertIgnore( it )
+                   songAlbumMapTable.map( innertubeSong.id, it.id )
+               }
+        }
+
+        // Insert artist
+        innertubeSong.artists.fastForEach { run ->
+            run.navigationEndpoint
+                ?.browseEndpoint
+                ?.browseId
+                ?.let { Artist(it, run.text) }
+                // Upsert will cause existing album to be overridden
+                // with only [Artist.id] and [Artist.name].
+                // We only need artist to be existed in the database
+                ?.also( artistTable::insertIgnore )
+                ?.let { SongArtistMap(innertubeSong.id, it.id) }
+                ?.also( songArtistMapTable::insertIgnore )
+        }
     }
 
     /**

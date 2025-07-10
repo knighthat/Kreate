@@ -128,9 +128,7 @@ fun InfoAlbumAndArtistModern(
                     enabled = albumId != null,
                     onClick = {
                         if (albumId != null) {
-                            //onGoToAlbum(albumId)
-                            navController.navigate(route = "${NavRoutes.album.name}/${albumId}")
-                            //layoutState.collapseSoft()
+                            NavRoutes.YT_ALBUM.navigateHere( navController, albumId )
                             onCollapse()
                         }
                     },
@@ -150,7 +148,7 @@ fun InfoAlbumAndArtistModern(
                     interactionSource = remember { MutableInteractionSource() },
                     onClick = {
                         if (albumId != null) {
-                            navController.navigate(route = "${NavRoutes.album.name}/${albumId}")
+                            NavRoutes.YT_ALBUM.navigateHere( navController, albumId )
                             onCollapse()
                         }
                     },
@@ -269,10 +267,8 @@ fun InfoAlbumAndArtistModern(
                 onDismiss = { showSelectDialog = false },
                 values = artistIds,
                 onValueSelected = {
-                    //onGoToArtist(it)
-                    navController.navigate(route = "${NavRoutes.artist.name}/${it}")
+                    NavRoutes.YT_ARTIST.navigateHere( navController, it )
                     showSelectDialog = false
-                    //layoutState.collapseSoft()
                     onCollapse()
                 }
             )
@@ -286,9 +282,7 @@ fun InfoAlbumAndArtistModern(
                     if (artistIds?.isNotEmpty() == true && artistIds.size > 1)
                         showSelectDialog = true
                     if (artistIds?.isNotEmpty() == true && artistIds.size == 1) {
-                        //onGoToArtist( artistIds[0].id )
-                        navController.navigate(route = "${NavRoutes.artist.name}/${artistIds[0].id}")
-                        //layoutState.collapseSoft()
+                        NavRoutes.YT_ARTIST.navigateHere( navController, artistIds[0].id )
                         onCollapse()
                     }
                 },
@@ -311,7 +305,7 @@ fun InfoAlbumAndArtistModern(
                     if (artistIds?.isNotEmpty() == true && artistIds.size > 1)
                         showSelectDialog = true
                     if (artistIds?.isNotEmpty() == true && artistIds.size == 1) {
-                        navController.navigate(route = "${NavRoutes.artist.name}/${artistIds[0].id}")
+                        NavRoutes.YT_ARTIST.navigateHere( navController, artistIds[0].id )
                         onCollapse()
                     }
                 },
