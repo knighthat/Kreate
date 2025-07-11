@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">Kaydırılan metni devre dışı bırak</string>
     <string name="scrolling_text_is_used_for_long_texts">Uzun metinler için kaydırılan metin kullanılır</string>
     <string name="audio_quality_format">Ses kalitesi Formatı</string>
-    <string name="persian">Farsça</string>
     <string name="background_player">"ARKA PLAN OYNATICISI "</string>
     <string name="show_favorite_button">Favori düğmesini göster</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Kilit ekranı ve bildirim alanında Favori düğmesini göster</string>
