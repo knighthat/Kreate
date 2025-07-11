@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">Lauftext deaktivieren</string>
     <string name="scrolling_text_is_used_for_long_texts">Lauftext wird für lange Texte verwendet</string>
     <string name="audio_quality_format">Audioqualität</string>
-    <string name="persian">Persisch (فارسی)</string>
     <string name="background_player">"HINTERGRUND-PLAYER "</string>
     <string name="show_favorite_button">Schaltfläche \"Favoriten\" anzeigen</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Favoriten-Schaltfläche auf dem Sperrbildschirm und im Benachrichtigungsbereich anzeigen</string>
