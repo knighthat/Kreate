@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">Desativar rolagem do texto</string>
     <string name="scrolling_text_is_used_for_long_texts">Rolagem de texto é usado para textos longos</string>
     <string name="audio_quality_format">Formato de qualidade de áudio</string>
-    <string name="persian">Persa</string>
     <string name="background_player">"Reprodutor no fundo de tela "</string>
     <string name="show_favorite_button">Mostrar botão de Favoritos</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Mostrar botão de Favoritos na tela de bloqueio e na área de notificação</string>
