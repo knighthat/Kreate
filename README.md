@@ -128,8 +128,7 @@
 
 ## To improve functionalities
 
-> [!Note]  
-> Contributions are welcome! To develop new features or fix bugs, please fork the repository and open a pull request.
+Contributions are welcome! To develop new features or fix bugs, please fork the repository and open a pull request.
 
 **For more details, please refer to** [the documentation](https://kreate.knighthat.me/dev/getting_started).
 
@@ -145,10 +144,7 @@ To **translate** or **improve a translation**, **fix typo**, or to **request new
 
 ## If you are good at designing
 
-> [!Note]
-> UI/UX designers are welcome!  
-> Submit your design ideas by [opening a ticket](https://github.com/knighthat/Kreate/issues/new?template=feature_request.yaml).
-
+UI/UX designers are welcome!  
 
 **Submit your designs by** [opening a ticket](https://github.com/knighthat/Kreate/issues/new?template=feature_request.yaml)
 
