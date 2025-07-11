@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">Disable scrolling text</string>
     <string name="scrolling_text_is_used_for_long_texts">Scrolling text is used for long texts</string>
     <string name="audio_quality_format">Audio quality Format</string>
-    <string name="persian">Persian (فارسی)</string>
     <string name="background_player">"BACKGROUND PLAYER"</string>
     <string name="show_favorite_button">Show Favorite button</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Show Favorite button in lock screen and notification area</string>
@@ -721,7 +720,7 @@
     <string name="center">Center</string>
     <string name="lyricsalignment">Lyrics Alignment</string>
     <string name="translators">Translators</string>
-    <string name="player_auto_load_songs_in_queue">Auto load songs in queue</string>
+    <string name="player_auto_load_songs_in_queue">Automatically load songs in queue</string>
     <string name="player_auto_load_songs_in_queue_description">Adds songs when the queue is about to end</string>
     <string name="show_vinyl_thumbnail_animation">Show Vinyl animation as thumbnail</string>
     <string name="toggle_romanization">Toggle Romanization</string>
