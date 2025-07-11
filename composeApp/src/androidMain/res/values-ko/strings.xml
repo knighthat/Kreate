@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">텍스트 스크롤 비활성화</string>
     <string name="scrolling_text_is_used_for_long_texts">긴 텍스트를 스크롤 하기</string>
     <string name="audio_quality_format">음악 품질</string>
-    <string name="persian">페르시아어</string>
     <string name="background_player">"백그라운드 플레이어 "</string>
     <string name="show_favorite_button">즐겨찾기 버튼 표시</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">잠금화면과 알림창에서 즐겨찾기 버튼 표시하기</string>
