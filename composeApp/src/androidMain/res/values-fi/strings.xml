@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">Poista vieritysteksti käytöstä</string>
     <string name="scrolling_text_is_used_for_long_texts">Vieritystekstiä käytetään pitkiin teksteihin</string>
     <string name="audio_quality_format">Äänenlaatu</string>
-    <string name="persian">persia</string>
     <string name="background_player">"TAUSTASOITIN "</string>
     <string name="show_favorite_button">Näytä Suosikki -nappi</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Näytä Suosikki -nappi lukitusnäytössä ja ilmoituksissa</string>
