@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">स्क्रॉलिंग टेक्स्ट अक्षम करें</string>
     <string name="scrolling_text_is_used_for_long_texts">स्क्रॉलिंग टेक्स्ट का उपयोग लंबे टेक्स्ट के लिए किया जाता है</string>
     <string name="audio_quality_format">ऑडियो गुणवत्ता प्रारूप</string>
-    <string name="persian">फ़ारसी</string>
     <string name="background_player">"बैकग्राउंड प्लेयर "</string>
     <string name="show_favorite_button">पसंदीदा बटन दिखाएँ</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">लॉक स्क्रीन और अधिसूचना क्षेत्र में पसंदीदा बटन दिखाएं</string>
