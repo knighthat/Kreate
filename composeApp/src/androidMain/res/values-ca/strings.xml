@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">Desactiva el text de desplaçament</string>
     <string name="scrolling_text_is_used_for_long_texts">El text de desplaçament s\'utilitza per a textos llargs</string>
     <string name="audio_quality_format">Format de qualitat d\'àudio</string>
-    <string name="persian">Persa</string>
     <string name="background_player">"REPRODUCTOR DE FONS "</string>
     <string name="show_favorite_button">Mostra el botó Preferits</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Mostra el botó Preferit a la pantalla de bloqueig i a l\'àrea de notificacions</string>
