@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">Sürüşən mətni qapat</string>
     <string name="scrolling_text_is_used_for_long_texts">Sürüşən mətn uzun mətnlər üçün faydalıdır</string>
     <string name="audio_quality_format">Səs Keyfiyyət Formatı</string>
-    <string name="persian">Farsca (Persian)</string>
     <string name="background_player">"ARXA PLAN SƏSLƏNDİRİCİ "</string>
     <string name="show_favorite_button">Sevimli düyməsin göstər</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Sevimli düyməsin kilid ekranı və bildiriş sahəsində göstər</string>
