@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">禁用滚动文本</string>
     <string name="scrolling_text_is_used_for_long_texts">滚动文本用于长文本</string>
     <string name="audio_quality_format">音频质量格式</string>
-    <string name="persian">波斯语</string>
     <string name="background_player">"背景播放器 "</string>
     <string name="show_favorite_button">显示收藏夹按钮</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">在锁定屏幕和通知区域显示收藏夹按钮</string>
