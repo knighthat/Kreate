@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">Désactiver le défilement du texte</string>
     <string name="scrolling_text_is_used_for_long_texts">Le défilement du texte est utilisé pour les longs textes</string>
     <string name="audio_quality_format">Qualité audio</string>
-    <string name="persian">Persan (فارسی)</string>
     <string name="background_player">"LECTEUR D'ARRIÈRE PLAN "</string>
     <string name="show_favorite_button">Afficher le bouton des favoris</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Afficher le bouton des favoris dans l\'écran de verrouillage et la zone des notifications</string>
