@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">テキストスクロールを無効化</string>
     <string name="scrolling_text_is_used_for_long_texts">長いテキストがスクロールされます</string>
     <string name="audio_quality_format">音質</string>
-    <string name="persian">ペルシャ語</string>
     <string name="background_player">"バックグラウンドプレイヤー "</string>
     <string name="show_favorite_button">お気に入りボタンを表示</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">ロック画面と通知領域にお気に入りボタンを表示する</string>
