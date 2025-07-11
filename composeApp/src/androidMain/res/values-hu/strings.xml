@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">Szöveggörgetés letiltása</string>
     <string name="scrolling_text_is_used_for_long_texts">A szöveg görgetése hosszú szövegekhez használatos</string>
     <string name="audio_quality_format">Hangminőség formátuma</string>
-    <string name="persian">Perzsa</string>
     <string name="background_player">"HÁTTÉR LEJÁTSZÓ "</string>
     <string name="show_favorite_button">Kedvencek gomb megjelenítése</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">A Kedvenc gomb megjelenítése a lezárt képernyőn és az értesítési felületen</string>
