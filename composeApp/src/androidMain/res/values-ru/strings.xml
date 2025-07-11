@@ -246,7 +246,6 @@
     <string name="disable_scrolling_text">Отключить прокрутку текста</string>
     <string name="scrolling_text_is_used_for_long_texts">Прокрутка текста используется для длинных текстов</string>
     <string name="audio_quality_format">Формат качества аудио</string>
-    <string name="persian">Фарси (فارْسِى)</string>
     <string name="background_player">"ФОНОВЫЙ ПЛЕЕР "</string>
     <string name="show_favorite_button">Показать кнопку Мне нравится</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Показывать кнопку Избранное на экране блокировки и области уведомлений</string>
