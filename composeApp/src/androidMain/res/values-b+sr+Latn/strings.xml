@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">Onemogući pomeranje teksta</string>
     <string name="scrolling_text_is_used_for_long_texts">Pomeranje teksta se koristi za dugačke tekstove</string>
     <string name="audio_quality_format">Format kvaliteta Zvuka</string>
-    <string name="persian">Persijski</string>
     <string name="background_player">"POZADINSKI PLEJER "</string>
     <string name="show_favorite_button">Prikaži dugme Omiljeno</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Prikaži dugme Omiljeno na zaključanom ekranu i polju za obaveštenja</string>
