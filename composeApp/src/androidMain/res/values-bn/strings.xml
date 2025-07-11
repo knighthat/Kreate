@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">টেক্সট স্ক্রোল করা বাতিল করুন</string>
     <string name="scrolling_text_is_used_for_long_texts">বড় লেখার জন্য টেক্সট স্ক্রোল ব্যাবহার করা হয়</string>
     <string name="audio_quality_format">অডিও কোয়ালিটি ফরমেট</string>
-    <string name="persian">ফার্সি</string>
     <string name="background_player">"ব্যাকগ্রাউন্ড প্লেয়ার"</string>
     <string name="show_favorite_button">\"প্রিয়\" বাটন দেখান</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">লক স্ক্রিন আর নোটিফিকেশন এরিয়াতে প্রিয় বাটন দেখান</string>
