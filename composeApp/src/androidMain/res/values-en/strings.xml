@@ -720,7 +720,7 @@
     <string name="center">Center</string>
     <string name="lyricsalignment">Lyrics Alignment</string>
     <string name="translators">Translators</string>
-    <string name="player_auto_load_songs_in_queue">Auto load songs in queue</string>
+    <string name="player_auto_load_songs_in_queue">Automatically load songs in queue</string>
     <string name="player_auto_load_songs_in_queue_description">Adds songs when the queue is about to end</string>
     <string name="show_vinyl_thumbnail_animation">Show Vinyl animation as thumbnail</string>
     <string name="toggle_romanization">Toggle Romanization</string>
