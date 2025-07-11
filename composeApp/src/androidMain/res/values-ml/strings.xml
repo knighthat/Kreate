@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">സ്ക്രോളിംഗ് ടെക്സ്റ്റ് അപ്രാപ്തമാക്കുക</string>
     <string name="scrolling_text_is_used_for_long_texts">സ്ക്രോളിംഗ് ടെക്സ്റ്റ് ദൈർഘ്യമേറിയ ടെക്സ്റ്റുകൾക്ക് ഉപയോഗിക്കുന്നു</string>
     <string name="audio_quality_format">ഓഡിയോ ക്വാളിറ്റി ഫോർമാറ്റ്</string>
-    <string name="persian">പേർഷ്യൻ</string>
     <string name="background_player">"ബാക്ക്‌ഗ്രൗണ്ട് പ്ലെയർ "</string>
     <string name="show_favorite_button">പ്രിയപ്പെട്ട ബട്ടൺ പ്രദർശിപ്പിക്കുക</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">ലോക്ക്സ്ക്രീനിലും അറിയിപ്പ് മേഖലയിലും പ്രിയപ്പെട്ട ബട്ടൺ പ്രദർശിപ്പിക്കുക</string>
