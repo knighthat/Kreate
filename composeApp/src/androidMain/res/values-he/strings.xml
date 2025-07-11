@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">השבת טקסט גלילה</string>
     <string name="scrolling_text_is_used_for_long_texts">טקסט גלילה משמש לטקסטים ארוכים</string>
     <string name="audio_quality_format">פורמט איכות שמע</string>
-    <string name="persian">פרסית</string>
     <string name="background_player">"נגן רקע "</string>
     <string name="show_favorite_button">הצג כפתור מועדף</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">הצג כפתור מועדף במסך הנעילה ובאזור ההודעות</string>
