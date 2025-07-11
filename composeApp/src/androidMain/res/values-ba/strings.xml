@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">Текстың бороуон һүндерергә</string>
     <string name="scrolling_text_is_used_for_long_texts">Текс бороуы тик оҙон текстарға ҡулланыла</string>
     <string name="audio_quality_format">Аудио сифатың форматы</string>
-    <string name="persian">Фарсы</string>
     <string name="background_player">"Фон плееры "</string>
     <string name="show_favorite_button">\"Яратҡан\" тигән төймәне күрһәтергә</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Яратҡандар төймәне блокировка экранында һәм белдереү урында күрһәтергә</string>
