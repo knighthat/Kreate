@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">Disable scrolling text</string>
     <string name="scrolling_text_is_used_for_long_texts">Scrolling text is used for long texts</string>
     <string name="audio_quality_format">Audio quality Format</string>
-    <string name="persian">Persies</string>
     <string name="background_player">"AGTERGROND SPELER "</string>
     <string name="show_favorite_button">Wys Gunsteling-knoppie</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Show Favorite button in lock screen and notification area</string>
