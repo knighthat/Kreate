@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">Dezactivează textul derulant</string>
     <string name="scrolling_text_is_used_for_long_texts">Textul derulant este folosit pentru texte lungi</string>
     <string name="audio_quality_format">Format de calitate audio</string>
-    <string name="persian">Persană (فارسی)</string>
     <string name="background_player">"PLAYER ÎN FUNDAL "</string>
     <string name="show_favorite_button">Afișează butonul „Apreciază”</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Afișează butonul „Apreciază” pe ecranul de blocare și în zona de notificări</string>
