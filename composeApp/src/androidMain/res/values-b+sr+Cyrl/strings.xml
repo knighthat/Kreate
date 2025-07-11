@@ -245,7 +245,6 @@
     <string name="disable_scrolling_text">Онемогући померање текста</string>
     <string name="scrolling_text_is_used_for_long_texts">Померајући текст се користи за дугачке текстове</string>
     <string name="audio_quality_format">Формат квалитета Звука</string>
-    <string name="persian">Персијски</string>
     <string name="background_player">"ПЛЕЈЕР У ПОЗАДИНИ "</string>
     <string name="show_favorite_button">Прикажи дугме Омиљено</string>
     <string name="show_favorite_button_in_lock_screen_and_notification_area">Прикажи дугме Омиљено на закључаном екрану и пољу за обавештења</string>
