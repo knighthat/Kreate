@@ -82,7 +82,7 @@ fun ActionBar(
     var expanded by remember { mutableStateOf(false) }
 
     // Search Icon
-    HeaderIcon( R.drawable.search) { navController.navigate(NavRoutes.search.name) }
+    HeaderIcon( R.drawable.search) { NavRoutes.search.navigateHere( navController ) }
 
     if (isYouTubeLoggedIn()) {
         if (ytAccountThumbnail() != "")
@@ -101,7 +101,7 @@ fun ActionBar(
     // and when user clicks on places other than the menu (dismiss)
     val onItemClick: (NavRoutes) -> Unit = {
         expanded = false
-        navController.navigate(it.name)
+        it.navigateHere( navController )
     }
     val onDismissRequest: () -> Unit = { expanded = false }
 

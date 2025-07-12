@@ -63,8 +63,8 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
-import app.kreate.android.R
 import app.kreate.android.Preferences
+import app.kreate.android.R
 import coil.compose.AsyncImage
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.Innertube
@@ -543,7 +543,7 @@ fun Podcast(
                                                         }
                                                     },
                                                     onGoToPlaylist = {
-                                                        navController.navigate("${NavRoutes.localPlaylist.name}/$it")
+                                                        NavRoutes.localPlaylist.navigateHere( navController, it )
                                                     },
                                                     disableScrollingText = disableScrollingText
                                                 )
@@ -638,7 +638,7 @@ fun Podcast(
                                             exit = fadeOut(tween(100)),
                                         ) {
                                             BasicText(
-                                                text = stringResource(R.string.search),
+                                                text = stringResource( android.R.string.search_go ),
                                                 maxLines = 1,
                                                 overflow = TextOverflow.Ellipsis,
                                                 style = typography().xs.semiBold.secondary.copy(color = colorPalette().textDisabled)

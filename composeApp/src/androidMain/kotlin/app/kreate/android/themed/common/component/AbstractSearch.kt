@@ -58,7 +58,7 @@ abstract class AbstractSearch(
     @Composable
     protected fun Placeholder() =
         BasicText(
-            text = stringResource( R.string.search ),
+            text = stringResource( android.R.string.search_go ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = typography().xs

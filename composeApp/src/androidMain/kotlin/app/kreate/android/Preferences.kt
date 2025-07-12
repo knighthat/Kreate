@@ -980,9 +980,6 @@ sealed class Preferences<T>(
         val MONTHLY_PLAYLIST_COMPILATION by lazy {
             Boolean( preferences, "MonthlyPlaylistCompilation", "enableCreateMonthlyPlaylists", true )
         }
-        val SHOW_PIPED_PLAYLISTS by lazy {
-            Boolean( preferences, "ShowPipedPlaylists", "showPipedPlaylists", true )
-        }
         val SHOW_MONTHLY_PLAYLISTS by lazy {
             Boolean( preferences, "ShowMonthlyPlaylists", "showMonthlyPlaylists", true )
         }

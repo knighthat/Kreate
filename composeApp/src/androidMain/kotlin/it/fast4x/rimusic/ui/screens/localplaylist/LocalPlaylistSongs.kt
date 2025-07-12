@@ -69,7 +69,6 @@ import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.EXPLICIT_PREFIX
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.MONTHLY_PREFIX
-import it.fast4x.rimusic.PIPED_PREFIX
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.colorPalette
@@ -105,27 +104,22 @@ import it.fast4x.rimusic.ui.styling.overlay
 import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.DeletePlaylist
 import it.fast4x.rimusic.utils.addNext
-import it.fast4x.rimusic.utils.addToPipedPlaylist
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.checkFileExists
 import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.completed
 import it.fast4x.rimusic.utils.deleteFileIfExists
-import it.fast4x.rimusic.utils.deletePipedPlaylist
 import it.fast4x.rimusic.utils.durationTextToMillis
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.forcePlayAtIndex
 import it.fast4x.rimusic.utils.forcePlayFromBeginning
 import it.fast4x.rimusic.utils.formatAsTime
-import it.fast4x.rimusic.utils.getPipedSession
 import it.fast4x.rimusic.utils.isAtLeastAndroid14
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.manageDownload
-import it.fast4x.rimusic.utils.removeFromPipedPlaylist
 import it.fast4x.rimusic.utils.saveImageToInternalStorage
 import it.fast4x.rimusic.utils.semiBold
-import it.fast4x.rimusic.utils.syncSongsInPipedPlaylist
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -145,7 +139,6 @@ import me.knighthat.component.tab.Locator
 import me.knighthat.component.tab.SongShuffler
 import me.knighthat.utils.Toaster
 import timber.log.Timber
-import java.util.UUID
 
 
 @KotlinCsvExperimental
@@ -176,7 +169,6 @@ fun LocalPlaylistSongs(
     var isRecommendationEnabled by Preferences.LOCAL_PLAYLIST_SMART_RECOMMENDATION
 
     // Non-vital
-    val pipedSession = getPipedSession()
     val thumbnailUrl = remember { mutableStateOf("") }
 
     val playlist by remember {
@@ -212,18 +204,6 @@ fun LocalPlaylistSongs(
         Database.asyncTransaction {
             playlist?.let( playlistTable::delete )
         }
-
-        if (
-            playlist?.name?.startsWith(PIPED_PREFIX) == true
-            && isPipedEnabled
-            && pipedSession.token.isNotEmpty()
-        )
-            deletePipedPlaylist(
-                context = context,
-                coroutineScope = coroutineScope,
-                pipedSession = pipedSession.toApiSession(),
-                id = UUID.fromString(playlist?.browseId)
-            )
 
         onDismiss()
 
@@ -279,21 +259,7 @@ fun LocalPlaylistSongs(
 
     val addToPlaylist = PlaylistsMenu.init(
         navController,
-        {
-            if( it.playlist.name.startsWith(PIPED_PREFIX)
-                && isPipedEnabled
-                && pipedSession.token.isNotEmpty()
-            )
-                addToPipedPlaylist(
-                    context = context,
-                    coroutineScope = coroutineScope,
-                    pipedSession = pipedSession.toApiSession(),
-                    id = UUID.fromString(it.playlist.browseId),
-                    videos = getSongs().map( Song::id )
-                )
-
-            getMediaItems()
-        },
+        { getMediaItems() },
         { throwable, preview ->
             Timber.e( "Failed to add songs to playlist ${preview.playlist.name} on LocalPlaylistSongs" )
             throwable.printStackTrace()
@@ -306,40 +272,27 @@ fun LocalPlaylistSongs(
 
     fun sync() {
         playlist?.let {
-            if ( !it.name.startsWith(PIPED_PREFIX, true) ) {
-                Database.asyncTransaction {
-                    runBlocking(Dispatchers.IO) {
-                        withContext(Dispatchers.IO) {
-                            Innertube.playlistPage(
-                                BrowseBody(
-                                    browseId = it.browseId
-                                        ?: ""
-                                )
+            Database.asyncTransaction {
+                runBlocking(Dispatchers.IO) {
+                    withContext(Dispatchers.IO) {
+                        Innertube.playlistPage(
+                            BrowseBody(
+                                browseId = it.browseId
+                                    ?: ""
                             )
-                                ?.completed()
-                        }
-                    }?.getOrNull()?.let { remotePlaylist ->
-                        songPlaylistMapTable.clear( playlistId )
-
-                        remotePlaylist.songsPage
-                                      ?.items
-                                      ?.map(Innertube.SongItem::asMediaItem)
-                                      ?.let { mediaItems ->
-                                          mapIgnore( it, *mediaItems.toTypedArray() )
-                                      }
+                        )
+                            ?.completed()
                     }
-                }
-            } else {
-                syncSongsInPipedPlaylist(
-                    context = context,
-                    coroutineScope = coroutineScope,
-                    pipedSession = pipedSession.toApiSession(),
-                    idPipedPlaylist = UUID.fromString(
-                        it.browseId
-                    ),
-                    playlistId = it.id
+                }?.getOrNull()?.let { remotePlaylist ->
+                    songPlaylistMapTable.clear( playlistId )
 
-                )
+                    remotePlaylist.songsPage
+                        ?.items
+                        ?.map(Innertube.SongItem::asMediaItem)
+                        ?.let { mediaItems ->
+                            mapIgnore( it, *mediaItems.toTypedArray() )
+                        }
+                }
             }
         }
     }
@@ -754,18 +707,6 @@ fun LocalPlaylistSongs(
                         onRemoveFromQueue = {
                             Database.asyncTransaction {
                                 songPlaylistMapTable.deleteBySongId( song.id, playlistId )
-                            }
-
-
-                            if (playlist?.name?.startsWith(PIPED_PREFIX) == true && isPipedEnabled && pipedSession.token.isNotEmpty()) {
-                                Timber.d("MediaItemMenu LocalPlaylistSongs onSwipeToLeft browseId ${playlist?.browseId}")
-                                removeFromPipedPlaylist(
-                                    context = context,
-                                    coroutineScope = coroutineScope,
-                                    pipedSession = pipedSession.toApiSession(),
-                                    id = UUID.fromString(playlist?.browseId),
-                                    index
-                                )
                             }
 
                             Toaster.s(

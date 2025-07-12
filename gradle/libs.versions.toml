@@ -1,9 +1,9 @@
 
 [versions]
 compose-plugin = "1.8.2"
-agp = "8.11.0"
-kotlin = "2.1.0"
-kotlin-ksp = "2.1.0-1.0.29"
+agp = "8.11.1"
+kotlin = "2.2.0"
+kotlin-ksp = "2.2.0-2.0.2"
 kotlin-datetime = "0.7.0-0.6.x-compat"
 compose = "1.8.3"
 compose-activity = "1.10.1"
@@ -51,7 +51,6 @@ newpipe-extractor = "0.24.6"
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-guava = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-guava", version = "kotlinxCoroutines" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swings", version = "kotlinxCoroutines" }
-kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlin-datetime" }
 
 # Compose
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "compose" }
@@ -128,6 +127,7 @@ jetbrains-annotations = { group = "org.jetbrains", name = "annotations", version
 ui-tooling-preview-android = { group = "androidx.compose.ui", name = "ui-tooling-preview-android", version.ref = "compose" }
 junit5-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit5" }
 junit5-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit5" }
+junit5-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit5" }
 
 # MonetCompat
 monetcompat = {  group = "com.github.KieronQuinn", name = "MonetCompat", version.ref = "monetcompat" }
@@ -161,5 +161,6 @@ room = { id = "androidx.room", version.ref = "room" }
 # Others
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 
 

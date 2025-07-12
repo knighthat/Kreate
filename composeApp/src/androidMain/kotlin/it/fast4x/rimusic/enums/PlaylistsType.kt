@@ -4,6 +4,5 @@ enum class PlaylistsType {
     Playlist,
     PinnedPlaylist,
     MonthlyPlaylist,
-    PipedPlaylist,
     YTPlaylist
 }

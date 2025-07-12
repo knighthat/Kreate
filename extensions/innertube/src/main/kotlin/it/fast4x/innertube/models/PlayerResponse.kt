@@ -1,6 +1,5 @@
 package it.fast4x.innertube.models
 
-import it.fast4x.invidious.models.AdaptiveFormat
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

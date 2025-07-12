@@ -2,14 +2,7 @@ package app.kreate.android.themed.common.screens.settings
 
 import android.webkit.CookieManager
 import android.webkit.WebStorage
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,14 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +32,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import app.kreate.android.Preferences
@@ -51,32 +40,17 @@ import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.section
 import coil.compose.AsyncImage
-import io.ktor.http.Url
-import it.fast4x.compose.persist.persistList
 import it.fast4x.innertube.utils.parseCookieString
-import it.fast4x.piped.Piped
-import it.fast4x.piped.models.Instance
-import it.fast4x.piped.models.Session
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.extensions.discord.DiscordLoginAndGetToken
 import it.fast4x.rimusic.extensions.youtubelogin.YouTubeLogin
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.ui.components.CustomModalBottomSheet
-import it.fast4x.rimusic.ui.components.LocalMenuState
-import it.fast4x.rimusic.ui.components.themed.DefaultDialog
-import it.fast4x.rimusic.ui.components.themed.Menu
-import it.fast4x.rimusic.ui.components.themed.MenuEntry
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.utils.RestartPlayerService
-import it.fast4x.rimusic.utils.isAtLeastAndroid7
 import it.fast4x.rimusic.utils.isAtLeastAndroid81
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import me.knighthat.component.dialog.InputDialogConstraints
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 @ExperimentalMaterial3Api
 @Composable
@@ -243,228 +217,6 @@ fun AccountSettings( paddingValues: PaddingValues ) {
                             )
                     }
                 }
-            }
-
-            if( isAtLeastAndroid7 )
-                section( R.string.piped_account ) {
-                    val menuState = LocalMenuState.current
-
-                    var pipedUsername by Preferences.PIPED_USERNAME
-                    var pipedPassword by Preferences.PIPED_PASSWORD
-                    var pipedInstanceName by Preferences.PIPED_INSTANCE_NAME
-                    var pipedApiBaseUrl by Preferences.PIPED_API_BASE_URL
-                    var pipedApiToken by Preferences.PIPED_API_TOKEN
-
-                    var isLoading by remember { mutableStateOf(false) }
-                    if (isLoading)
-                        DefaultDialog(
-                            onDismiss = {
-                                isLoading = false
-                            }
-                        ) {
-                            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-                        }
-
-                    var instances by persistList<Instance>(tag = "otherSettings/pipedInstances")
-                    var noInstances by remember { mutableStateOf(false) }
-                    var loadInstances by remember { mutableStateOf(false) }
-                    var showInstances by remember { mutableStateOf(false) }
-                    if (loadInstances) {
-                        LaunchedEffect(Unit) {
-                            isLoading = true
-                            Piped.getInstances()?.getOrNull()?.let {
-                                instances = it
-                                //println("mediaItem Instances $it")
-                            } ?: run { noInstances = true }
-                            isLoading = false
-                            showInstances = true
-                        }
-                    }
-
-                    if (noInstances)
-                        Toaster.i( "No instances found" )
-
-                    var executeLogin by remember { mutableStateOf(false) }
-                    var session by remember {
-                        mutableStateOf<Result<Session>?>( null )
-                    }
-                    if (executeLogin) {
-                        LaunchedEffect(Unit) {
-                            CoroutineScope( Dispatchers.IO ).launch {
-                                isLoading = true
-                                session = Piped.login(
-                                    apiBaseUrl = Url(pipedApiBaseUrl), //instances[instanceSelected!!].apiBaseUrl,
-                                    username = pipedUsername,
-                                    password = pipedPassword
-                                )?.onFailure {
-                                    Timber.e("Failed piped login ${it.stackTraceToString()}")
-                                    isLoading = false
-                                    Toaster.e( "Piped login failed" )
-                                    loadInstances = false
-                                    session = null
-                                    executeLogin = false
-                                }
-                                if (session?.isSuccess == false)
-                                    return@launch
-
-                                Toaster.s( "Piped login successful" )
-                                Timber.i("Piped login successful")
-
-                                session.let {
-                                    it?.getOrNull()?.token?.let { it1 ->
-                                        pipedApiToken = it1
-                                        pipedApiBaseUrl = it.getOrNull()!!.apiBaseUrl.toString()
-                                    }
-                                }
-
-                                isLoading = false
-                                loadInstances = false
-                                executeLogin = false
-                            }
-                        }
-                    }
-
-                    if (showInstances && instances.isNotEmpty()) {
-                        menuState.display {
-                            Menu {
-                                MenuEntry(
-                                    icon = R.drawable.chevron_back,
-                                    text = stringResource(R.string.cancel),
-                                    onClick = {
-                                        loadInstances = false
-                                        showInstances = false
-                                        menuState.hide()
-                                    }
-                                )
-                                instances.forEach {
-                                    MenuEntry(
-                                        icon = R.drawable.server,
-                                        text = it.name,
-                                        secondaryText = "${it.locationsFormatted} Users: ${it.userCount}",
-                                        onClick = {
-                                            menuState.hide()
-                                            pipedApiBaseUrl = it.apiBaseUrl.toString()
-                                            pipedInstanceName = it.name
-                                            /*
-                                            instances.indexOf(it).let { index ->
-                                                //instances[index].apiBaseUrl
-                                                instanceSelected = index
-                                                //println("mediaItem Instance ${instances[index].apiBaseUrl}")
-                                            }
-                                             */
-                                            loadInstances = false
-                                            showInstances = false
-                                        }
-                                    )
-                                }
-                                MenuEntry(
-                                    icon = R.drawable.chevron_back,
-                                    text = stringResource(R.string.cancel),
-                                    onClick = {
-                                        loadInstances = false
-                                        showInstances = false
-                                        menuState.hide()
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    if( search appearsIn R.string.enable_piped_syncronization )
-                        SettingComponents.BooleanEntry(
-                            Preferences.ENABLE_PIPED,
-                            R.string.enable_piped_syncronization
-                        )
-
-                    AnimatedVisibility( Preferences.ENABLE_PIPED.value ) {
-                        Column(
-                            modifier = Modifier.padding(start = 25.dp)
-                        ) {
-                            if( search appearsIn R.string.piped_custom_instance )
-                                SettingComponents.BooleanEntry(
-                                    Preferences.IS_CUSTOM_PIPED,
-                                    R.string.piped_custom_instance
-                                )
-
-                            AnimatedContent(
-                                targetState = Preferences.IS_CUSTOM_PIPED.value,
-                                transitionSpec = {
-                                    if ( targetState ) {
-                                        slideInVertically { height -> height } + fadeIn() togetherWith
-                                                slideOutVertically { height -> -height } + fadeOut()
-                                    } else {
-                                        slideInVertically { height -> -height } + fadeIn() togetherWith
-                                                slideOutVertically { height -> height } + fadeOut()
-                                    }.using(
-                                        // Disable clipping since the faded slide-in/out should
-                                        // be displayed out of bounds.
-                                        SizeTransform(clip = false)
-                                    )
-                                },
-                                label = "animated header and search bar"
-                            ) { target ->
-                                if( target && search appearsIn R.string.piped_custom_instance )
-                                    SettingComponents.InputDialogEntry(
-                                        Preferences.PIPED_API_BASE_URL,
-                                        R.string.piped_custom_instance,
-                                        InputDialogConstraints.URL
-                                    )
-                                else if( search appearsIn R.string.piped_change_instance )
-                                    SettingComponents.Text(
-                                        title = stringResource( R.string.piped_change_instance ),
-                                        subtitle = pipedInstanceName,
-                                        onClick = { loadInstances = true }
-                                    ) {
-                                        Icon(
-                                            painter = painterResource( R.drawable.open ),
-                                            contentDescription = null,
-                                            tint = colorPalette().text,
-                                            modifier = Modifier.size( 24.dp )
-                                        )
-                                    }
-                            }
-
-                            if( search appearsIn R.string.piped_username )
-                                SettingComponents.InputDialogEntry(
-                                    Preferences.PIPED_USERNAME,
-                                    R.string.piped_username,
-                                    InputDialogConstraints.ALL
-                                )
-                            if( search appearsIn R.string.piped_password )
-                                SettingComponents.InputDialogEntry(
-                                    Preferences.PIPED_PASSWORD,
-                                    R.string.piped_password,
-                                    InputDialogConstraints.ALL,
-                                    keyboardOption = KeyboardOptions(keyboardType = KeyboardType.Password)
-                                )
-
-                            val (titleId, subtitle) = remember {
-                                if( Preferences.PIPED_API_TOKEN.value.isBlank() )
-                                    R.string.piped_connect to ""
-                                else
-                                    R.string.piped_disconnect to context.getString( R.string.piped_connected_to_s, Preferences.PIPED_INSTANCE_NAME.value )
-                            }
-                            if( search appearsIn titleId )
-                                SettingComponents.Text(
-                                    title = stringResource( titleId ),
-                                    subtitle = subtitle.format( pipedInstanceName ),
-                                    isEnabled = pipedPassword.isNotEmpty() && pipedUsername.isNotEmpty() && pipedApiBaseUrl.isNotEmpty(),
-                                    onClick = {
-                                        if (pipedApiToken.isNotEmpty()) {
-                                            pipedApiToken = ""
-                                            executeLogin = false
-                                        } else
-                                            executeLogin = true
-                                    }
-                                ) {
-                                    Image(
-                                        painter = painterResource( R.drawable.piped_logo ),
-                                        contentDescription = null,
-                                        modifier = Modifier.size( 24.dp )
-                                    )
-                                }
-                        }
-                    }
             }
 
             if( isAtLeastAndroid81 )

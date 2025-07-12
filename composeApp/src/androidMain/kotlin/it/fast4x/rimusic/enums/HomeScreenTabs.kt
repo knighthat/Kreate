@@ -21,5 +21,5 @@ enum class HomeScreenTabs(
 
     Playlists( 4, R.string.playlists ),
 
-    Search( 5, R.string.search );
+    Search( 5, android.R.string.search_go );
 }

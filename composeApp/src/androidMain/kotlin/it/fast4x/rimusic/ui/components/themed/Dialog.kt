@@ -169,7 +169,7 @@ fun TextFieldDialog(
     onDismiss: () -> Unit,
     onDone: (String) -> Unit,
     modifier: Modifier = Modifier,
-    cancelText: String = stringResource(R.string.cancel),
+    cancelText: String = stringResource( android.R.string.cancel ),
     doneText: String = stringResource(R.string.done),
     initialTextInput: String = "",
     singleLine: Boolean = true,
@@ -275,7 +275,7 @@ fun ConfirmationDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
-    cancelText: String = stringResource(R.string.cancel),
+    cancelText: String = stringResource( android.R.string.cancel ),
     confirmText: String = stringResource(R.string.confirm),
     onCancel: () -> Unit = onDismiss,
     cancelBackgroundPrimary: Boolean = false,
@@ -438,7 +438,7 @@ fun <T> ValueSelectorDialog(
                     .padding(end = 24.dp)
             ) {
                 DialogTextButton(
-                    text = stringResource(R.string.cancel),
+                    text = stringResource( android.R.string.cancel ),
                     onClick = onDismiss,
                     modifier = Modifier
                 )
@@ -514,7 +514,7 @@ inline fun SelectorDialog(
                     .padding(end = 24.dp)
             ) {
                 DialogTextButton(
-                    text = stringResource(R.string.cancel),
+                    text = stringResource( android.R.string.cancel ),
                     onClick = onDismiss,
                     modifier = Modifier
                 )
@@ -768,7 +768,7 @@ inline fun InputNumericDialog(
                 )
 
                 DialogTextButton(
-                    text = stringResource(R.string.cancel),
+                    text = stringResource( android.R.string.cancel ),
                     onClick = onDismiss,
                     modifier = Modifier
                 )
@@ -889,7 +889,7 @@ inline fun InputTextDialog(
                     .fillMaxWidth()
             ) {
                 DialogTextButton(
-                    text = stringResource(R.string.cancel),
+                    text = stringResource( android.R.string.cancel ),
                     onClick = onDismiss,
                     modifier = Modifier
                 )
@@ -1077,7 +1077,7 @@ inline fun GenericDialog(
     modifier: Modifier = Modifier,
     noinline onDismiss: () -> Unit,
     title: String,
-    textButton: String = stringResource(R.string.cancel),
+    textButton: String = stringResource( android.R.string.cancel ),
     crossinline content: @Composable () -> Unit,
 ) {
     Dialog(onDismissRequest = onDismiss) {
@@ -2942,7 +2942,7 @@ fun <T> ValueSelectorDialogBody(
             .padding(end = 24.dp)
     ) {
         DialogTextButton(
-            text = stringResource(R.string.cancel),
+            text = stringResource( android.R.string.cancel ),
             onClick = onDismiss
         )
     }

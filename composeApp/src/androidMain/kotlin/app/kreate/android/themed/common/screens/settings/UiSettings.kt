@@ -315,13 +315,6 @@ fun UiSettings( paddingValues: PaddingValues ) {
                     )
             }
             section( R.string.playlists ) {
-                val showPiped = stringResource( R.string.setting_entry_show_chip, stringResource( R.string.piped_playlists ) )
-                if ( search appearsIn showPiped )
-                    SettingComponents.BooleanEntry(
-                        Preferences.SHOW_PIPED_PLAYLISTS,
-                        showPiped
-                    )
-
                 val showPinned = stringResource( R.string.setting_entry_show_chip, stringResource( R.string.pinned_playlists ) )
                 if ( search appearsIn showPinned )
                     SettingComponents.BooleanEntry(

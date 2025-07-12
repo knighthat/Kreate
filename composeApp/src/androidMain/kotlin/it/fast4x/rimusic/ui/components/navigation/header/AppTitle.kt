@@ -40,7 +40,7 @@ private fun appIconClickAction(
         when( countToReveal.intValue ) {
             10 -> {
                 countToReveal.intValue = 0
-                navController.navigate( NavRoutes.gamePacman.name )
+                NavRoutes.gamePacman.navigateHere( navController )
                 ""
             }
             3 -> "Do you like clicking? Then continue..."
@@ -57,7 +57,7 @@ private fun appIconLongClickAction(
     context: Context
 ) {
     Toaster.n( "You are a number one, click and enjoy the surprise", Toast.LENGTH_LONG )
-    navController.navigate( NavRoutes.gameSnake.name )
+    NavRoutes.gameSnake.navigateHere( navController )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -83,7 +83,7 @@ private fun AppLogo(
 private fun AppLogoText( navController: NavController ) {
     val iconTextClick: () -> Unit = {
         if ( NavRoutes.home.isNotHere( navController ) )
-            navController.navigate(NavRoutes.home.name)
+            NavRoutes.home.navigateHere( navController )
     }
 
 
@@ -131,7 +131,8 @@ fun AppTitle(
                 modifier = Modifier
                     .clickable {
                         Toaster.s( R.string.info_debug_mode_is_enabled )
-                        navController.navigate(NavRoutes.settings.name)
+
+                        NavRoutes.settings.navigateHere( navController )
                     }
             )
     }

@@ -45,6 +45,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.themed.common.screens.album.YouTubeAlbum
+import app.kreate.android.themed.common.screens.artist.YouTubeArtist
 import app.kreate.android.themed.rimusic.screen.artist.ArtistAlbums
 import app.kreate.android.themed.rimusic.screen.playlist.YouTubePlaylist
 import it.fast4x.rimusic.Database
@@ -57,8 +59,6 @@ import it.fast4x.rimusic.extensions.games.snake.SnakeGame
 import it.fast4x.rimusic.models.Mood
 import it.fast4x.rimusic.models.SearchQuery
 import it.fast4x.rimusic.ui.components.CustomModalBottomSheet
-import it.fast4x.rimusic.ui.screens.album.AlbumScreen
-import it.fast4x.rimusic.ui.screens.artist.ArtistScreenModern
 import it.fast4x.rimusic.ui.screens.history.HistoryScreen
 import it.fast4x.rimusic.ui.screens.home.HomeScreen
 import it.fast4x.rimusic.ui.screens.localplaylist.LocalPlaylistScreen
@@ -77,6 +77,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.knighthat.utils.Toaster
 import kotlin.system.exitProcess
+
+private val BROWSE_ID_ARG = navArgument( "browseId" ) {
+    type = NavType.StringType
+}
+private val PARAM_ARG = navArgument( "params" ) {
+    type = NavType.StringType
+    // Use default value to make it optional
+    nullable = true
+}
 
 @androidx.annotation.OptIn()
 @OptIn(
@@ -163,7 +172,7 @@ fun AppNavigation(
         popExitTransition = exitTransition
     ) {
         val navigateToPlaylist =
-            { browseId: String -> navController.navigate("${NavRoutes.YT_PLAYLIST.name}/$browseId") }
+            { browseId: String -> NavRoutes.YT_PLAYLIST.navigateHere( navController, browseId ) }
 
         composable(route = NavRoutes.home.name) {
             HomeScreen(
@@ -198,52 +207,33 @@ fun AppNavigation(
         }
 
         composable(
-            route = "${NavRoutes.artist.name}/{id}",
-            arguments = listOf(
-                navArgument(
-                    name = "id",
-                    builder = { type = NavType.StringType }
-                )
-            )
-        ) { navBackStackEntry ->
-            val id = navBackStackEntry.arguments?.getString("id") ?: ""
-            ArtistScreenModern(
-                navController = navController,
-                browseId = id,
-                miniPlayer = miniPlayer,
-            )
+            route = "${NavRoutes.YT_ARTIST}/{browseId}?params={params}",
+            arguments = listOf( BROWSE_ID_ARG, PARAM_ARG )
+        ) {
+            // browseId must not be empty or null in any case
+            val browseId = it.arguments!!.getString( "browseId" )!!
+            val params = it.arguments!!.getString( "params" )
+
+            YouTubeArtist( navController, browseId, params, miniPlayer )
         }
 
         composable(
-            route = "${NavRoutes.album.name}/{id}",
-            arguments = listOf(
-                navArgument(
-                    name = "id",
-                    builder = { type = NavType.StringType }
-                )
-            )
-        ) { navBackStackEntry ->
-            val id = navBackStackEntry.arguments?.getString("id") ?: ""
-            AlbumScreen(
-                navController = navController,
-                browseId = id,
-                miniPlayer = miniPlayer,
-            )
+            route = "${NavRoutes.YT_ALBUM}/{browseId}?params={params}",
+            arguments = listOf( BROWSE_ID_ARG, PARAM_ARG )
+        ) {
+            // browseId must not be empty or null in any case
+            val browseId = it.arguments!!.getString( "browseId" )!!
+            val params = it.arguments!!.getString( "params" )
+
+            YouTubeAlbum( navController, browseId, params, miniPlayer )
         }
 
         composable(
             route = "${NavRoutes.YT_PLAYLIST}/{browseId}?params={params}",
-            arguments = listOf(
-                navArgument( "browseId" ) { type = NavType.StringType },
-                navArgument( "params" ) {
-                    type = NavType.StringType
-                    // Use default value to make it optional
-                    defaultValue = ""
-                }
-            )
+            arguments = listOf( BROWSE_ID_ARG, PARAM_ARG )
         ) {
             // browseId must not be empty or null in any case
-            val browseId = it.arguments?.getString( "browseId" )!!
+            val browseId = it.arguments!!.getString( "browseId" )!!
             val params = it.arguments!!.getString( "params" )
 
             YouTubePlaylist( navController, browseId, params, miniPlayer )
@@ -312,8 +302,9 @@ fun AppNavigation(
                 onSearch = { query ->
                     println("onSearch: $query")
 
-                    navController.navigate(
-                        route = "${NavRoutes.searchResults.name}/${Uri.encode( query )}",
+                    NavRoutes.searchResults.navigateHere(
+                        navController,
+                        Uri.encode( query )
                     )
 
                     if ( !Preferences.PAUSE_SEARCH_HISTORY.value )

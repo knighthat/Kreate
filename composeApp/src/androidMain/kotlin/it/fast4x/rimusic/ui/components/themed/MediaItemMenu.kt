@@ -67,7 +67,6 @@ import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.MODIFIED_PREFIX
 import it.fast4x.rimusic.MONTHLY_PREFIX
 import it.fast4x.rimusic.PINNED_PREFIX
-import it.fast4x.rimusic.PIPED_PREFIX
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.colorPalette
@@ -88,7 +87,6 @@ import it.fast4x.rimusic.ui.styling.favoritesIcon
 import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.addSongToYtPlaylist
-import it.fast4x.rimusic.utils.addToPipedPlaylist
 import it.fast4x.rimusic.utils.addToYtLikedSong
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
@@ -96,13 +94,11 @@ import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.formatAsDuration
 import it.fast4x.rimusic.utils.getDownloadState
 import it.fast4x.rimusic.utils.getLikeState
-import it.fast4x.rimusic.utils.getPipedSession
 import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isNetworkConnected
 import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.positionAndDurationState
-import it.fast4x.rimusic.utils.removeFromPipedPlaylist
 import it.fast4x.rimusic.utils.removeYTSongFromPlaylist
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.thumbnail
@@ -112,10 +108,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 import java.time.LocalTime.now
 import java.time.format.DateTimeFormatter
-import java.util.UUID
 
 @ExperimentalTextApi
 @ExperimentalAnimationApi
@@ -174,7 +168,6 @@ fun InPlaylistMediaItemMenu(
 ) {
     val isPipedEnabled by Preferences.ENABLE_PIPED
     val coroutineScope = rememberCoroutineScope()
-    val pipedSession = getPipedSession()
     val context = LocalContext.current
 
     NonQueuedMediaItemMenu(
@@ -200,17 +193,6 @@ fun InPlaylistMediaItemMenu(
                             }
                         }
                     }
-                }
-
-                if (playlist.playlist.name.startsWith(PIPED_PREFIX) && isPipedEnabled && pipedSession.token.isNotEmpty()) {
-                    Timber.d("MediaItemMenu InPlaylistMediaItemMenu onRemoveFromPlaylist browseId ${playlist.playlist.browseId}")
-                    removeFromPipedPlaylist(
-                        context = context,
-                        coroutineScope = coroutineScope,
-                        pipedSession = pipedSession.toApiSession(),
-                        id = UUID.fromString(cleanPrefix(playlist.playlist.browseId ?: "")),
-                        positionInPlaylist
-                    )
                 }
             }else {
                 Toaster.w( R.string.cannot_delete_from_online_playlists )
@@ -452,7 +434,7 @@ fun QueuedMediaItemMenu(
             },
             modifier = modifier,
             onGoToPlaylist = {
-                navController.navigate(route = "${NavRoutes.localPlaylist.name}/$it")
+                NavRoutes.localPlaylist.navigateHere( navController, it )
             },
             onAddToPreferites = {
                 if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
@@ -539,7 +521,6 @@ fun BaseMediaItemMenu(
 
     val coroutineScope = rememberCoroutineScope()
     val isPipedEnabled by Preferences.ENABLE_PIPED
-    val pipedSession = getPipedSession()
 
     //println("mediaItem in BaseMediaItemMenu albumId ${mediaItem.mediaMetadata.extras?.getString("albumId")}")
 
@@ -566,32 +547,20 @@ fun BaseMediaItemMenu(
                     addSongToYtPlaylist(playlist.id, position, playlist.browseId ?: "", mediaItem)
                 }
             }
-            if (playlist.name.startsWith(PIPED_PREFIX) && isPipedEnabled && pipedSession.token.isNotEmpty()) {
-                Timber.d("BaseMediaItemMenu onAddToPlaylist mediaItem ${mediaItem.mediaId}")
-                addToPipedPlaylist(
-                    context = context,
-                    coroutineScope = coroutineScope,
-                    pipedSession = pipedSession.toApiSession(),
-                    id = UUID.fromString(cleanPrefix(playlist.browseId ?: "")),
-                    videos = listOf(mediaItem.mediaId)
-                )
-            }
-
-
-
         },
         onHideFromDatabase = onHideFromDatabase,
         onDeleteFromDatabase = onDeleteFromDatabase,
         onRemoveFromPlaylist = onRemoveFromPlaylist,
         onRemoveFromQueue = onRemoveFromQueue,
         onGoToAlbum = {
-            navController.navigate(route = "${NavRoutes.album.name}/${it}")
+            NavRoutes.YT_ALBUM.navigateHere( navController, it )
             if (onClosePlayer != null) {
                 onClosePlayer()
             }
         },
         onGoToArtist = {
-            navController.navigate(route = "${NavRoutes.artist.name}/${it}")
+            NavRoutes.YT_ARTIST.navigateHere( navController, it )
+
             if (onClosePlayer != null) {
                 onClosePlayer()
             }
@@ -610,7 +579,7 @@ fun BaseMediaItemMenu(
         },
         onRemoveFromQuickPicks = onRemoveFromQuickPicks,
         onGoToPlaylist = {
-            navController.navigate(route = "${NavRoutes.localPlaylist.name}/$it")
+            NavRoutes.localPlaylist.navigateHere( navController, it )
         },
         modifier = modifier,
         disableScrollingText = disableScrollingText
@@ -650,7 +619,7 @@ fun MiniMediaItemMenu(
             onDismiss()
         },
         onGoToPlaylist = {
-            navController.navigate(route = "${NavRoutes.localPlaylist.name}/$it")
+            NavRoutes.localPlaylist.navigateHere( navController, it )
             if (onGoToPlaylist != null) {
                 onGoToPlaylist(it)
             }
@@ -897,14 +866,6 @@ fun MediaItemMenu(
                                     onAddToPlaylist(playlistPreview.playlist, playlistPreview.songCount)
                                 },
                                 trailingContent = {
-                                    if (playlistPreview.playlist.name.startsWith(PIPED_PREFIX, 0, true))
-                                        Image(
-                                            painter = painterResource(R.drawable.piped_logo),
-                                            contentDescription = null,
-                                            colorFilter = ColorFilter.tint(colorPalette().red),
-                                            modifier = Modifier
-                                                .size(18.dp)
-                                        )
                                     if (playlistPreview.playlist.isYoutubePlaylist) {
                                         Image(
                                             painter = painterResource(R.drawable.ytmusic),
@@ -924,7 +885,7 @@ fun MediaItemMenu(
                                                 onGoToPlaylist(playlistPreview.playlist.id)
                                                 onDismiss()
                                             }
-                                            navController.navigate(route = "${NavRoutes.localPlaylist.name}/${playlistPreview.playlist.id}")
+                                            NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
                                         },
                                         modifier = Modifier
                                             .size(24.dp)
@@ -961,7 +922,7 @@ fun MediaItemMenu(
                                                 onGoToPlaylist(playlistPreview.playlist.id)
                                                 onDismiss()
                                             }
-                                            navController.navigate(route = "${NavRoutes.localPlaylist.name}/${playlistPreview.playlist.id}")
+                                            NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
                                         },
                                         modifier = Modifier
                                             .size(24.dp)
@@ -990,15 +951,6 @@ fun MediaItemMenu(
                                     onAddToPlaylist(playlistPreview.playlist, playlistPreview.songCount)
                                 },
                                 trailingContent = {
-                                    if (playlistPreview.playlist.name.startsWith(PIPED_PREFIX, 0, true))
-                                        Image(
-                                            painter = painterResource(R.drawable.piped_logo),
-                                            contentDescription = null,
-                                            colorFilter = ColorFilter.tint(colorPalette().red),
-                                            modifier = Modifier
-                                                .size(18.dp)
-                                        )
-
                                     IconButton(
                                         icon = R.drawable.open,
                                         color = colorPalette().text,
@@ -1007,7 +959,7 @@ fun MediaItemMenu(
                                                 onGoToPlaylist(playlistPreview.playlist.id)
                                                 onDismiss()
                                             }
-                                            navController.navigate(route = "${NavRoutes.localPlaylist.name}/${playlistPreview.playlist.id}")
+                                            NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
                                         },
                                         modifier = Modifier
                                             .size(24.dp)
@@ -1730,14 +1682,6 @@ fun AddToPlaylistItemMenu(
                             } else onAddToPlaylist(playlistPreview.playlist, playlistPreview.songCount)
                         },
                         trailingContent = {
-                            if (playlistPreview.playlist.name.startsWith(PIPED_PREFIX, 0, true))
-                                Image(
-                                    painter = painterResource(R.drawable.piped_logo),
-                                    contentDescription = null,
-                                    colorFilter = ColorFilter.tint(colorPalette().red),
-                                    modifier = Modifier
-                                        .size(18.dp)
-                                )
                             if (playlistPreview.playlist.isYoutubePlaylist) {
                                 Image(
                                     painter = painterResource(R.drawable.ytmusic),
@@ -1757,7 +1701,7 @@ fun AddToPlaylistItemMenu(
                                         onGoToPlaylist(playlistPreview.playlist.id)
                                         onDismiss()
                                     }
-                                    navController.navigate(route = "${NavRoutes.localPlaylist.name}/${playlistPreview.playlist.id}")
+                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
                                 },
                                 modifier = Modifier
                                     .size(24.dp)
@@ -1795,7 +1739,7 @@ fun AddToPlaylistItemMenu(
                                         onGoToPlaylist(playlistPreview.playlist.id)
                                         onDismiss()
                                     }
-                                    navController.navigate(route = "${NavRoutes.localPlaylist.name}/${playlistPreview.playlist.id}")
+                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
                                 },
                                 modifier = Modifier
                                     .size(24.dp)
@@ -1825,15 +1769,6 @@ fun AddToPlaylistItemMenu(
                             } else onAddToPlaylist(playlistPreview.playlist, playlistPreview.songCount)
                         },
                         trailingContent = {
-                            if (playlistPreview.playlist.name.startsWith(PIPED_PREFIX, 0, true))
-                                Image(
-                                    painter = painterResource(R.drawable.piped_logo),
-                                    contentDescription = null,
-                                    colorFilter = ColorFilter.tint(colorPalette().red),
-                                    modifier = Modifier
-                                        .size(18.dp)
-                                )
-
                             IconButton(
                                 icon = R.drawable.open,
                                 color = colorPalette().text,
@@ -1842,7 +1777,7 @@ fun AddToPlaylistItemMenu(
                                         onGoToPlaylist(playlistPreview.playlist.id)
                                         onDismiss()
                                     }
-                                    navController.navigate(route = "${NavRoutes.localPlaylist.name}/${playlistPreview.playlist.id}")
+                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
                                 },
                                 modifier = Modifier
                                     .size(24.dp)
@@ -1965,14 +1900,6 @@ fun AddToPlaylistArtistSongsMenu(
                             )
                         },
                         trailingContent = {
-                            if (playlistPreview.playlist.name.startsWith(PIPED_PREFIX, 0, true))
-                                Image(
-                                    painter = painterResource(R.drawable.piped_logo),
-                                    contentDescription = null,
-                                    colorFilter = ColorFilter.tint(colorPalette().red),
-                                    modifier = Modifier
-                                        .size(18.dp)
-                                )
                             if (playlistPreview.playlist.isYoutubePlaylist) {
                                 Image(
                                     painter = painterResource(R.drawable.ytmusic),
@@ -1992,7 +1919,7 @@ fun AddToPlaylistArtistSongsMenu(
                                         onGoToPlaylist(playlistPreview.playlist.id)
                                         onDismiss()
                                     }
-                                    navController.navigate(route = "${NavRoutes.localPlaylist.name}/${playlistPreview.playlist.id}")
+                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
                                 },
                                 modifier = Modifier
                                     .size(24.dp)
@@ -2034,7 +1961,7 @@ fun AddToPlaylistArtistSongsMenu(
                                         onGoToPlaylist(playlistPreview.playlist.id)
                                         onDismiss()
                                     }
-                                    navController.navigate(route = "${NavRoutes.localPlaylist.name}/${playlistPreview.playlist.id}")
+                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
                                 },
                                 modifier = Modifier
                                     .size(24.dp)
@@ -2068,15 +1995,6 @@ fun AddToPlaylistArtistSongsMenu(
                             )
                         },
                         trailingContent = {
-                            if (playlistPreview.playlist.name.startsWith(PIPED_PREFIX, 0, true))
-                                Image(
-                                    painter = painterResource(R.drawable.piped_logo),
-                                    contentDescription = null,
-                                    colorFilter = ColorFilter.tint(colorPalette().red),
-                                    modifier = Modifier
-                                        .size(18.dp)
-                                )
-
                             IconButton(
                                 icon = R.drawable.open,
                                 color = colorPalette().text,
@@ -2085,7 +2003,7 @@ fun AddToPlaylistArtistSongsMenu(
                                         onGoToPlaylist(playlistPreview.playlist.id)
                                         onDismiss()
                                     }
-                                    navController.navigate(route = "${NavRoutes.localPlaylist.name}/${playlistPreview.playlist.id}")
+                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
                                 },
                                 modifier = Modifier
                                     .size(24.dp)

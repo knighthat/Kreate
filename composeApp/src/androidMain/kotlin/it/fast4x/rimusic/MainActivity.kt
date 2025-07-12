@@ -341,7 +341,7 @@ class MainActivity :
         ExperimentalMaterial3Api::class
     )
     fun startApp() {
-        me.knighthat.innertube.Innertube.setClient( InnertubeProvider() )
+        me.knighthat.innertube.Innertube.client = InnertubeProvider()
 
         // Used in QuickPics for load data from remote instead of last saved in SharedPreferences
         Preferences.IS_DATA_KEY_LOADED.value = false
@@ -1058,8 +1058,7 @@ class MainActivity :
                                 Innertube.playlistPage(BrowseBody(browseId = browseId))
                                     ?.getOrNull()?.let {
                                         it.songsPage?.items?.firstOrNull()?.album?.endpoint?.browseId?.let { browseId ->
-                                            navController.navigate(route = "${NavRoutes.album.name}/$browseId")
-
+                                            NavRoutes.YT_ALBUM.navigateHere( navController, browseId )
                                         }
                                     }
                             } else {
@@ -1068,15 +1067,11 @@ class MainActivity :
                         }
 
                         "channel", "c" -> uri.lastPathSegment?.let { channelId ->
-                            try {
-                                navController.navigate(route = "${NavRoutes.artist.name}/$channelId")
-                            } catch (e: Exception) {
-                                Timber.e("MainActivity.onCreate intentUriData ${e.stackTraceToString()}")
-                            }
+                            NavRoutes.YT_ARTIST.navigateHere( navController, channelId )
                         }
 
                         "search" -> uri.getQueryParameter("q")?.let { query ->
-                            navController.navigate(route = "${NavRoutes.searchResults.name}/$query")
+                            NavRoutes.searchResults.navigateHere( navController, query )
                         }
 
                         else -> when {

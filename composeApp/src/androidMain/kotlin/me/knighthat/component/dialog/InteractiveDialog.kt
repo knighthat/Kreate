@@ -47,7 +47,7 @@ interface InteractiveDialog: Dialog {
             modifier: Modifier = ButtonModifier(),
             onCancel: () -> Unit
         ) = BasicText(
-            text = stringResource( R.string.cancel ),
+            text = stringResource( android.R.string.cancel ),
             style = typography().xs
                                 .medium
                                 .copy(

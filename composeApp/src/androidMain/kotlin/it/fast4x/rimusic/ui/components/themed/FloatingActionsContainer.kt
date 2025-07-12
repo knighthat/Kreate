@@ -94,7 +94,7 @@ fun BoxScope.MultiFloatingActionsContainer(
                     ),
                     FabItem(
                         icon = painterResource(R.drawable.search),
-                        label = stringResource(R.string.search),
+                        label = stringResource( android.R.string.search_go ),
                         onFabItemClicked = {
                             if (onClickSearch != null) {
                                 onClickSearch()

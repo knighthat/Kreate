@@ -41,15 +41,12 @@ import database.entities.SongEntity
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.MONTHLY_PREFIX
 import it.fast4x.rimusic.PINNED_PREFIX
-import it.fast4x.rimusic.PIPED_PREFIX
 import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.enums.ThumbnailRoundness
 import it.fast4x.rimusic.utils.LoadImage
 import it.fast4x.rimusic.utils.getTitleMonthlyPlaylist
 import org.jetbrains.compose.resources.painterResource
 import rimusic.composeapp.generated.resources.Res
-import rimusic.composeapp.generated.resources.pin
-import rimusic.composeapp.generated.resources.piped_logo
 import rimusic.composeapp.generated.resources.stat_month
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -461,27 +458,6 @@ fun PlaylistItem(
             )
 
             name?.let {
-                if (it.startsWith(PIPED_PREFIX,0,true)) {
-                    Image(
-                        painter = painterResource(Res.drawable.piped_logo),
-                        colorFilter = ColorFilter.tint(Color.White),
-                        modifier = Modifier
-                            .size(40.dp)
-                            .padding(all = 5.dp),
-                        contentDescription = "Background Image"
-                    )
-                }
-                if (it.startsWith(PINNED_PREFIX,0,true)) {
-                    Image(
-                        painter = painterResource(Res.drawable.pin),
-                        colorFilter = ColorFilter.tint(Color.White),
-                        modifier = Modifier
-                            .size(40.dp)
-                            .padding(all = 5.dp),
-                        contentDescription = "Background Image",
-                        contentScale = ContentScale.Fit
-                    )
-                }
                 if (it.startsWith(MONTHLY_PREFIX,0,true)) {
                     Image(
                         painter = painterResource(Res.drawable.stat_month),
@@ -528,11 +504,10 @@ fun PlaylistItem(
                     BasicText(
                         //text = name.substringAfter(PINNED_PREFIX) ?: "",
                         text = if (name.startsWith(PINNED_PREFIX,0,true))
-                            name.substringAfter(PINNED_PREFIX) else
-                            if (name.startsWith(MONTHLY_PREFIX,0,true))
-                                getTitleMonthlyPlaylist(name.substringAfter(MONTHLY_PREFIX)) else
-                                if (name.startsWith(PIPED_PREFIX,0,true))
-                                    name.substringAfter(PIPED_PREFIX) else name,
+                            name.substringAfter(PINNED_PREFIX)
+                        else if (name.startsWith(MONTHLY_PREFIX,0,true))
+                            getTitleMonthlyPlaylist(name.substringAfter(MONTHLY_PREFIX))
+                        else name,
                         style = TextStyle(
                             color = Color.White,
                             fontSize = typography.titleSmall.fontSize,

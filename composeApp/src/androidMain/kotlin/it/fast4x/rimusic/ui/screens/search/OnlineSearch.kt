@@ -383,7 +383,7 @@ fun OnlineSearch(
                                 thumbnailSizeDp = songThumbnailSizeDp,
                                 modifier = Modifier
                                     .clickable {
-                                        navController.navigate(route = "${NavRoutes.album.name}/${album.key}")
+                                        NavRoutes.YT_ALBUM.navigateHere( navController, album.key )
                                     },
                                 disableScrollingText = disableScrollingText
                             )
@@ -397,10 +397,9 @@ fun OnlineSearch(
                                 artist = artist,
                                 thumbnailSizePx = songThumbnailSizePx,
                                 thumbnailSizeDp = songThumbnailSizeDp,
-                                modifier = Modifier
-                                    .clickable {
-                                        navController.navigate(route = "${NavRoutes.artist.name}/${artist.key}")
-                                    },
+                                modifier = Modifier.clickable {
+                                    NavRoutes.YT_ARTIST.navigateHere( navController, artist.key )
+                                },
                                 disableScrollingText = disableScrollingText
                             )
                         }

@@ -17,6 +17,9 @@ import io.ktor.http.parametersOf
 import io.ktor.util.toMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.ClassDiscriminatorMode
+import kotlinx.serialization.json.Json
 import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.request.Request
 import me.knighthat.innertube.response.Response
@@ -25,6 +28,17 @@ import org.jetbrains.annotations.Blocking
 
 
 class InnertubeProvider: Innertube.Provider {
+
+    @OptIn(ExperimentalSerializationApi::class)
+    private val JSON: Json = Json {
+        ignoreUnknownKeys = true
+        explicitNulls = false
+
+        // Exclude ("type": "me.knighthat.innertube.*")
+        // since there's no intention to deserialize json
+        // string back to the class
+        classDiscriminatorMode = ClassDiscriminatorMode.NONE
+    }
 
     private val CLIENT = HttpClient(OkHttp) {
         expectSuccess = true
@@ -59,18 +73,14 @@ class InnertubeProvider: Innertube.Provider {
         val result = CLIENT.request( request.url ) {
             method = HttpMethod.parse( request.httpMethod )
             // Only setBody when it's not null
-            request.dataToSend?.toJsonString()?.also( this::setBody )
+            JSON.encodeToString( request.dataToSend ).also( this::setBody )
             // Disable pretty print - potentially save data
             url {
                 parameters.append( "prettyPrint", "false" )
             }
             // Add headers
             request.headers
-                   // Turn Map<String, List<String>> into Map<String, String> by flattening values
-                   .mapValues { (_, v) ->
-                       v.joinToString(", ") { it }
-                   }
-                   .forEach( headers::append )
+                   .forEach( headers::appendAll )
         }
 
         Response(

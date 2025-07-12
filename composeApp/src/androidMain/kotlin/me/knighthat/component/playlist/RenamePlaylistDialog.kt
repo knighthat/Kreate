@@ -7,19 +7,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import app.kreate.android.R
 import app.kreate.android.Preferences
+import app.kreate.android.R
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.PIPED_PREFIX
-import it.fast4x.rimusic.appContext
-import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.models.Playlist
-import it.fast4x.rimusic.utils.getPipedSession
-import it.fast4x.rimusic.utils.renamePipedPlaylist
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import me.knighthat.component.RenameDialog
-import java.util.UUID
 
 class RenamePlaylistDialog private constructor(
     activeState: MutableState<Boolean>,
@@ -64,26 +56,10 @@ class RenamePlaylistDialog private constructor(
 
         val playlist = getPlaylist() ?: return
 
-        val pipedSession = getPipedSession()
-        val isPipedPlaylist =
-            playlist.name.startsWith( PIPED_PREFIX, true )
-                    && pipedActiveState.value
-                    && pipedSession.token.isNotEmpty()
-        val prefix = if( isPipedPlaylist ) PIPED_PREFIX else ""
-
         Database.asyncTransaction {
-            playlist.copy( name = "$prefix$newValue" )
+            playlist.copy( name = newValue )
                     .let( playlistTable::update )
         }
-
-        if ( isPipedPlaylist )
-            renamePipedPlaylist(
-                context = appContext(),
-                coroutineScope = CoroutineScope( Dispatchers.IO ),
-                pipedSession = pipedSession.toApiSession(),
-                id = UUID.fromString( cleanPrefix(playlist.browseId ?: "") ),
-                name = "$PIPED_PREFIX$newValue"
-            )
 
         hideDialog()
     }

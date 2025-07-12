@@ -1,3 +1,6 @@
-[submodule "innertube-java"]
+[submodule "modules/innertube"]
 	path = modules/innertube
-	url = https://github.com/knighthat/innertube-java
+	url = https://gitlab.com/tannguyen047/innertube-kotlin.git
+[submodule "scripts/strings-modifier"]
+	path = scripts/strings-modifier
+	url = https://gitlab.com/tannguyen047/string-modifier

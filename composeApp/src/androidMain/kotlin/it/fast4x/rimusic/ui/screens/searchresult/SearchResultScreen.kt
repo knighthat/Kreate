@@ -105,7 +105,7 @@ fun SearchResultScreen(
             title = query,
             icon = R.drawable.pencil,
             onClick = {
-                navController.navigate("${NavRoutes.search.name}?text=${Uri.encode( query )}")
+                NavRoutes.search.navigateHere( navController, "?text=${Uri.encode( query )}" )
             },
             verticalPadding = 4.dp
         )
@@ -380,7 +380,10 @@ fun SearchResultScreen(
                                     modifier = Modifier
                                         .combinedClickable(
                                             onClick = {
-                                                navController.navigate("${NavRoutes.album.name}/${album.key}")
+                                                NavRoutes.YT_ALBUM.navigateHere(
+                                                    navController,
+                                                    album.key
+                                                )
                                             },
                                             onLongClick = {}
 
@@ -424,10 +427,9 @@ fun SearchResultScreen(
                                 artist = artist,
                                 thumbnailSizePx = thumbnailSizePx,
                                 thumbnailSizeDp = thumbnailSizeDp,
-                                modifier = Modifier
-                                    .clickable(onClick = {
-                                        navController.navigate("${NavRoutes.artist.name}/${artist.key}")
-                                    }),
+                                modifier = Modifier.clickable {
+                                    NavRoutes.YT_ARTIST.navigateHere( navController, artist.key )
+                                },
                                 disableScrollingText = disableScrollingText
                             )
                         },
@@ -595,11 +597,10 @@ fun SearchResultScreen(
                                 thumbnailSizePx = thumbnailSizePx,
                                 thumbnailSizeDp = thumbnailSizeDp,
                                 showSongsCount = false,
-                                modifier = Modifier
-                                    .clickable(onClick = {
-                                        println("mediaItem searchResultScreen playlist key ${playlist.key}")
-                                        navController.navigate("${NavRoutes.podcast.name}/${playlist.key}")
-                                    }),
+                                modifier = Modifier.clickable {
+                                    println("mediaItem searchResultScreen playlist key ${playlist.key}")
+                                    NavRoutes.podcast.navigateHere( navController, playlist.key )
+                                },
                                 disableScrollingText = disableScrollingText
                             )
                         },

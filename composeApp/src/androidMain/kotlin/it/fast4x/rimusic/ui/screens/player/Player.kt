@@ -1809,7 +1809,7 @@ fun Player(
                             modifier = Modifier.size( 24.dp )
                                                .clickable {
                                                    onDismiss()
-                                                   navController.navigate(NavRoutes.home.name)
+                                                   NavRoutes.home.navigateHere( navController )
                                                }
                         )
 

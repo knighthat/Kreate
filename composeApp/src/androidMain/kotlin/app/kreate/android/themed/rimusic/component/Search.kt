@@ -34,7 +34,7 @@ class Search(
 ): AbstractSearch(), MenuIcon, Descriptive {
 
     override val iconId: Int = R.drawable.search_circle
-    override val messageId: Int = R.string.search
+    override val messageId: Int = android.R.string.search_go
     override val menuIconTitle: String
         @Composable
         get() = stringResource( messageId )
@@ -62,7 +62,7 @@ class Search(
         ) {
             Icon(
                 painter = painterResource( R.drawable.search ),
-                contentDescription = stringResource( R.string.search ),
+                contentDescription = stringResource( android.R.string.search_go ),
                 tint = colorPalette().favoritesIcon,
                 modifier = Modifier.size( DECO_BOX_ICON_SIZE.dp )
             )

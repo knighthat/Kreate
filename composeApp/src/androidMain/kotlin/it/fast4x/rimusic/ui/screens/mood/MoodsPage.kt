@@ -119,7 +119,7 @@ fun MoodsPage(
                                     mood = it,
                                     onClick = { it.endpoint.browseId?.let { _ ->
                                         navController.currentBackStackEntry?.savedStateHandle?.set("mood", it.toUiMood())
-                                        navController.navigate(NavRoutes.mood.name)
+                                        NavRoutes.mood.navigateHere( navController )
                                     } },
                                     thumbnailSizeDp = thumbnailSizeDp,
                                     modifier = Modifier

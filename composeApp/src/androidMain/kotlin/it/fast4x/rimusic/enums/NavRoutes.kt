@@ -5,11 +5,10 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 enum class NavRoutes {
     home,
-    album,
-    artist,
     games,
     gamePacman,
     gameSnake,
@@ -25,9 +24,13 @@ enum class NavRoutes {
     moodsPage,
     podcast,
     artistAlbums,
-    YT_PLAYLIST;
+    YT_PLAYLIST,
+    YT_ARTIST,
+    YT_ALBUM;
 
     companion object {
+
+        private val ESCAPED_SEQUENCES_REGEX = Regex("^((\\[ntrbf])+)|((\\[ntrbf])+\$)")
 
         fun current( navController: NavController ) = navController.currentBackStackEntry?.destination?.route
     }
@@ -43,12 +46,17 @@ enum class NavRoutes {
      * main thread, so you can safely call it from other threads
      */
     @AnyThread
-    fun navigateHere( navController: NavController, path: String = "" ) {
-        CoroutineScope( Dispatchers.Main ).launch {
-            if( path.isBlank() )
-                navController.navigate( name )
-            else
-                navController.navigate( "$name/$path" )
+    fun navigateHere( navController: NavController, path: Any? = null ) {
+        CoroutineScope( Dispatchers.Default ).launch {
+            val cleanPath: String = path?.toString()
+                                        .orEmpty()
+                                        .trim()
+                                        .replace( ESCAPED_SEQUENCES_REGEX, "" )
+            val fullPath = "$name%s".format( if( cleanPath.isBlank() ) "" else "/$cleanPath" )
+
+            withContext( Dispatchers.Main ) {
+                navController.navigate( fullPath )
+            }
         }
     }
 }

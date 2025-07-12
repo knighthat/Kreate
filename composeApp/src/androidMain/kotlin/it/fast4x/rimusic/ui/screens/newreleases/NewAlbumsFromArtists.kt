@@ -140,7 +140,7 @@ fun NewAlbumsFromArtists(
                             thumbnailSizeDp = thumbnailSizeDp,
                             alternative = true,
                             modifier = Modifier.clickable(onClick = {
-                                navController.navigate(route = "${NavRoutes.album.name}/${it.key}")
+                                NavRoutes.YT_ALBUM.navigateHere( navController, it.key )
                             }),
                             disableScrollingText = disableScrollingText
                         )

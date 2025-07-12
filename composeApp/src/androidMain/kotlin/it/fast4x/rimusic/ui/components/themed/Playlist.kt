@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import app.kreate.android.R
 import coil.compose.AsyncImage
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.PIPED_PREFIX
 import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.models.Playlist
@@ -95,9 +94,7 @@ fun Playlist(
                     }
                 }
             }
-            if (playlist.browseId?.isNotEmpty() == true && !playlist.name.startsWith(
-                    PIPED_PREFIX)
-            ) {
+            if ( playlist.browseId?.isNotEmpty() == true ) {
                 Image(
                     painter = painterResource(R.drawable.ytmusic),
                     colorFilter = ColorFilter.tint(if (playlist.isYoutubePlaylist) Color.Red.copy(0.75f).compositeOver(

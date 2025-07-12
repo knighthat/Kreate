@@ -11,7 +11,6 @@ import androidx.room.Update
 import androidx.room.Upsert
 import it.fast4x.rimusic.MONTHLY_PREFIX
 import it.fast4x.rimusic.PINNED_PREFIX
-import it.fast4x.rimusic.PIPED_PREFIX
 import it.fast4x.rimusic.enums.PlaylistSortBy
 import it.fast4x.rimusic.enums.SortOrder
 import it.fast4x.rimusic.models.Artist
@@ -51,20 +50,6 @@ interface PlaylistTable {
         LIMIT :limit
     """)
     fun allPinnedSongs( limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
-
-    /**
-     * @return list of songs that belong to Piped
-     */
-    @Query("""
-        SELECT DISTINCT S.*
-        FROM SongPlaylistMap spm
-        JOIN Song S ON S.id = spm.songId
-        JOIN Playlist P ON P.id = spm.playlistId
-        WHERE P.name LIKE '$PIPED_PREFIX%' COLLATE NOCASE
-        ORDER BY S.ROWID
-        LIMIT :limit
-    """)
-    fun allPipedSongs( limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
 
     /**
      * @return list of songs that belong YouTube private playlist

@@ -11,8 +11,6 @@ sourceSets.all {
 
 dependencies {
     implementation(projects.ktorClientBrotli)
-    implementation(projects.piped)
-    implementation(projects.invidious)
 
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)

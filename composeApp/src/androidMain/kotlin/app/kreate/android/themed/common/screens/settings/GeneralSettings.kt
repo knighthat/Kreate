@@ -15,7 +15,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.core.os.LocaleListCompat
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
@@ -53,8 +52,7 @@ fun GeneralSettings( paddingValues: PaddingValues ) {
     ) {
         search.ToolBarButton()
 
-        val sysLocale = LocaleListCompat.getDefault()[0].toString()
-        val sysLocaleText = "${stringResource( R.string.system_language )}: $sysLocale"
+        val sysLocaleText = stringResource( R.string.currently_selected, Preferences.APP_LANGUAGE.value.text )
 
         LazyColumn(
             state = scrollState,
@@ -70,7 +68,8 @@ fun GeneralSettings( paddingValues: PaddingValues ) {
                 if( search appearsIn R.string.app_language )
                     SettingComponents.EnumEntry(
                         Preferences.APP_LANGUAGE,
-                        R.string.app_language,
+                        titleId = R.string.app_language,
+                        subtitleId = R.string.setting_description_app_language,
                         action = SettingComponents.Action.RESTART_APP
                     )
             }

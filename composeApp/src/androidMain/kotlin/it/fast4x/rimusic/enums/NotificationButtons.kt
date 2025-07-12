@@ -34,7 +34,7 @@ enum class NotificationButtons(
 
     Radio( R.string.start_radio, R.drawable.radio ),
 
-    Search( R.string.search, R.drawable.search );
+    Search( android.R.string.search_go, R.drawable.search );
 
     val sessionCommand: SessionCommand
     get() = when (this) {

@@ -125,7 +125,7 @@ inline fun InputTextField(
                 .fillMaxWidth()
         ) {
             DialogTextButton(
-                text = stringResource(R.string.search),
+                text = stringResource( android.R.string.search_go ),
                 onClick = {
                     if (txtField.value.isEmpty()) {
                         txtFieldError.value = value_cannot_empty
@@ -137,7 +137,7 @@ inline fun InputTextField(
             )
 
             DialogTextButton(
-                text = stringResource(R.string.paste),
+                text = stringResource( android.R.string.paste ),
                 onClick = {
                     //txtField.value = ""
                     copyText = true

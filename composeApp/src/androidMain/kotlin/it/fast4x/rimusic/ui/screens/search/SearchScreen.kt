@@ -27,15 +27,15 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import it.fast4x.compose.persist.PersistMapCleanup
 import app.kreate.android.R
+import it.fast4x.compose.persist.PersistMapCleanup
+import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.UiType
+import it.fast4x.rimusic.typography
+import it.fast4x.rimusic.ui.components.Skeleton
 import it.fast4x.rimusic.ui.components.themed.IconButton
 import it.fast4x.rimusic.ui.styling.favoritesIcon
 import it.fast4x.rimusic.utils.secondary
-import it.fast4x.rimusic.ui.components.Skeleton
-import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.typography
 
 @ExperimentalTextApi
 @ExperimentalFoundationApi
@@ -109,7 +109,7 @@ fun SearchScreen(
                             .align(Alignment.Center)
                     ) {
                         BasicText(
-                            text = stringResource(R.string.search), //stringResource(R.string.enter_a_name),
+                            text = stringResource( android.R.string.search_go ),
                             maxLines = 1,
                             style = typography().l.secondary,
 

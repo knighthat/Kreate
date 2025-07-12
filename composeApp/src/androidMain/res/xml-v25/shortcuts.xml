@@ -4,7 +4,7 @@
         android:shortcutId="search"
         android:enabled="true"
         android:icon="@drawable/search"
-        android:shortcutShortLabel="@string/search">
+        android:shortcutShortLabel="@android:string/search_go">
         <intent
             android:targetClass="it.fast4x.rimusic.MainActivity"
             android:targetPackage="me.knighthat.kreate"

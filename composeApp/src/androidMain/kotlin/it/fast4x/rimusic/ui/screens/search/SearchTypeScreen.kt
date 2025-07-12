@@ -26,16 +26,16 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import it.fast4x.compose.persist.PersistMapCleanup
 import app.kreate.android.R
+import it.fast4x.compose.persist.PersistMapCleanup
+import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.SearchType
+import it.fast4x.rimusic.typography
+import it.fast4x.rimusic.ui.components.Skeleton
 import it.fast4x.rimusic.ui.components.themed.IconButton
 import it.fast4x.rimusic.ui.styling.favoritesIcon
 import it.fast4x.rimusic.utils.secondary
-import it.fast4x.rimusic.ui.components.Skeleton
-import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.typography
 
 @ExperimentalTextApi
 @ExperimentalFoundationApi
@@ -99,7 +99,7 @@ fun SearchTypeScreen(
                             .align(Alignment.Center)
                     ) {
                         BasicText(
-                            text = stringResource(R.string.search), //stringResource(R.string.enter_a_name),
+                            text = stringResource( android.R.string.search_go ),
                             maxLines = 1,
                             style = typography().l.secondary,
 
@@ -126,7 +126,7 @@ fun SearchTypeScreen(
                             navController = navController,
                             textFieldValue = textFieldValue,
                             onTextFieldValueChanged = onTextFieldValueChanged,
-                            onSearch = { navController.navigate("${NavRoutes.searchResults.name}/$it") },
+                            onSearch = { NavRoutes.searchResults.navigateHere( navController, it ) },
                             decorationBox = decorationBox
                         )
 
@@ -138,7 +138,7 @@ fun SearchTypeScreen(
                             onAction1 = { onTabChanged(0) },
                             onAction2 = { onTabChanged(1) },
                             onAction3 = { onTabChanged(2) },
-                            onAction4 = { navController.navigate(NavRoutes.home.name) }
+                            onAction4 = { NavRoutes.home.navigateHere( navController ) }
                         )
 
                         2 -> GoToLink(
@@ -149,7 +149,7 @@ fun SearchTypeScreen(
                             onAction1 = { onTabChanged(0) },
                             onAction2 = { onTabChanged(1) },
                             onAction3 = { onTabChanged(2) },
-                            onAction4 = { navController.navigate(NavRoutes.home.name) }
+                            onAction4 = { NavRoutes.home.navigateHere( navController ) }
                         )
                     }
                 }

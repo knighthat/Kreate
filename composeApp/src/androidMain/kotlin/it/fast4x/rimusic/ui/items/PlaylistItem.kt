@@ -38,7 +38,6 @@ import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MONTHLY_PREFIX
 import it.fast4x.rimusic.PINNED_PREFIX
-import it.fast4x.rimusic.PIPED_PREFIX
 import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.models.PlaylistPreview
@@ -256,9 +255,6 @@ fun PlaylistItem(
 
             name ?: return@BoxWithConstraints
             val (icon, color) = when {
-                name.startsWith( PIPED_PREFIX, true ) ->
-                    painterResource( R.drawable.piped_logo ) to colorPalette().red
-
                 name.startsWith( PINNED_PREFIX, true ) ->
                     painterResource( R.drawable.pin_filled ) to colorPalette().accent
 

@@ -19,8 +19,6 @@ import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.PIPED_PREFIX
-import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.context
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.service.MyDownloadHelper
@@ -28,21 +26,16 @@ import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.utils.addSongToYtPlaylist
-import it.fast4x.rimusic.utils.addToPipedPlaylist
 import it.fast4x.rimusic.utils.addToYtLikedSong
 import it.fast4x.rimusic.utils.addToYtPlaylist
 import it.fast4x.rimusic.utils.asSong
-import it.fast4x.rimusic.utils.getPipedSession
 import it.fast4x.rimusic.utils.isNetworkConnected
 import it.fast4x.rimusic.utils.rememberEqualizerLauncher
-import it.fast4x.rimusic.utils.removeFromPipedPlaylist
 import it.fast4x.rimusic.utils.removeYTSongFromPlaylist
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.utils.Toaster
-import timber.log.Timber
-import java.util.UUID
 
 @ExperimentalTextApi
 @ExperimentalAnimationApi
@@ -235,7 +228,6 @@ fun AddToPlaylistPlayerMenu(
     onClosePlayer: () -> Unit,
 ) {
     val isPipedEnabled by Preferences.ENABLE_PIPED
-    val pipedSession = getPipedSession()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     AddToPlaylistItemMenu(
@@ -255,33 +247,8 @@ fun AddToPlaylistPlayerMenu(
                     addSongToYtPlaylist(playlist.id, position, playlist.browseId ?: "", mediaItem)
                 }
             }
-            if (playlist.name.startsWith(PIPED_PREFIX) && isPipedEnabled && pipedSession.token.isNotEmpty()) {
-                Timber.d("BaseMediaItemMenu onAddToPlaylist mediaItem ${mediaItem.mediaId}")
-                addToPipedPlaylist(
-                    context = context,
-                    coroutineScope = coroutineScope,
-                    pipedSession = pipedSession.toApiSession(),
-                    id = UUID.fromString(playlist.browseId),
-                    videos = listOf(mediaItem.mediaId)
-                )
-            }
         },
         onRemoveFromPlaylist = { playlist ->
-            Database.asyncTransaction {
-                val position = songPlaylistMapTable.findPositionOf( mediaItem.mediaId, playlist.id )
-                if( position == -1 ) return@asyncTransaction
-
-                if (playlist.name.startsWith(PIPED_PREFIX) && isPipedEnabled && pipedSession.token.isNotEmpty()) {
-                    Timber.d("MediaItemMenu InPlaylistMediaItemMenu onRemoveFromPlaylist browseId ${playlist.browseId}")
-                    removeFromPipedPlaylist(
-                        context = context,
-                        coroutineScope = coroutineScope,
-                        pipedSession = pipedSession.toApiSession(),
-                        id = UUID.fromString(cleanPrefix(playlist.browseId ?: "")),
-                        idx = position
-                    )
-                }
-            }
             if(isYouTubeSyncEnabled() && playlist.isYoutubePlaylist && playlist.isEditable) {
                 Database.asyncTransaction {
                     CoroutineScope(Dispatchers.IO).launch {
@@ -315,7 +282,6 @@ fun AddToPlaylistArtistSongs(
     onClosePlayer: () -> Unit,
 ) {
     val isPipedEnabled by Preferences.ENABLE_PIPED
-    val pipedSession = getPipedSession()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var position by remember {
@@ -337,18 +303,6 @@ fun AddToPlaylistArtistSongs(
                     CoroutineScope(Dispatchers.IO).launch {
                         addToYtPlaylist(playlistPreview.playlist.id, position, playlistPreview.playlist.browseId ?: "", mediaItems)
                     }
-
-                if ( playlistPreview.playlist.name.startsWith(PIPED_PREFIX)
-                    && isPipedEnabled
-                    && pipedSession.token.isNotEmpty()
-                )
-                    addToPipedPlaylist(
-                        context = context,
-                        coroutineScope = coroutineScope,
-                        pipedSession = pipedSession.toApiSession(),
-                        id = UUID.fromString(playlistPreview.playlist.browseId),
-                        videos = mediaItems.map( MediaItem::mediaId )
-                    )
             }
 
             onDismiss()

@@ -34,11 +34,7 @@
 - Download songs or entire playlists for offline playback (not cache)
 - Background playback
 - Listening statistics
-- Audio visualizer on player with many type of effects.
-
-> [!NOTE]
-> THIS FEATURE REQUIRES MIC PERMISSION, ONLY AVAILABLE IF ACTIVATED FROM SETTINGS. Full list of permissions (available soon)
-
+- **Audio visualizer on player with many type of effects**.
 - News, mood, musical genres, new albums from favourite artists
 - Import/Export online, RiMusic playlists, can be shared with friends
 - Fetch, display, edit, translate synchronized, or not, songs lyrics
@@ -53,6 +49,8 @@
 - Weekly update
 - Plays music even with no internet connection
 
+> [!NOTE]
+> THIS FEATURE (**Audio visualizer on playback with many type of effetcs**) REQUIRES MIC PERMISSION, ONLY AVAILABLE IF ACTIVATED FROM SETTINGS. Full list of permissions (availble soon).
 
 # Social media
 
@@ -122,6 +120,7 @@
 - **Ukrainian:** thanks to [Avin](https://crowdin.com/profile/avinateachip), [Michael Müller](https://crowdin.com/profile/xqzme1337), [NiXT0y](https://crowdin.com/profile/nixt0y), [Crayz310](https://github.com/Crayz310)
 - **Vietnamese:** thanks to [teaminh](https://crowdin.com/profile/teaminh)
 
+> [!TIP]
 > Don't see your langague here? [Request one](https://translate.kreate.knighthat.me/project/kreate) now.
 
 
@@ -129,11 +128,9 @@
 
 ## To improve functionalities
 
-> Pull requests are welcome
+Contributions are welcome! To develop new features or fix bugs, please fork the repository and open a pull request.
 
-To **develop new functions** or **fix a bug**, fork the repository, open a pull request.
-
-For more details, please refer to [the documentation](https://kreate.knighthat.me/dev/getting_started).
+**For more details, please refer to** [the documentation](https://kreate.knighthat.me/dev/getting_started).
 
 ## To translate app
 
@@ -143,29 +140,27 @@ To **translate** or **improve a translation**, **fix typo**, or to **request new
 
 ## To write documentation
 
-To help others understand the app, please visit [knighthat/Kreate-docs](https://github.com/knighthat/Kreate-docs) repository.
+**To help others understand the app, please visit** [knighthat/Kreate-docs](https://github.com/knighthat/Kreate-docs) repository.
 
 ## If you are good at designing
 
-> Whether UI/UX are welcomed
+UI/UX designers are welcome!  
 
-Submit your designs by [opening a ticket](https://github.com/knighthat/Kreate/issues/new?template=feature_request.yaml)
+**Submit your designs by** [opening a ticket](https://github.com/knighthat/Kreate/issues/new?template=feature_request.yaml)
 
 
 # 🫂 Acknowledgements
 
-- [**RiMusic**](https://github.com/fast4x/RiMusic)
-- RiMusic previous Logo, many current icons from [jaimtres](https://github.com/jaimtres)
-- Player designed by [aneesh1122](https://github.com/aneesh1122)
-- [**YouTube-Internal-Clients**](https://github.com/zerodytrash/YouTube-Internal-Clients): A python script that discovers hidden YouTube API clients. Just a research project.
-- [**Ionicons**](https://github.com/ionic-team/ionicons): Premium hand-crafted icons built by Ionic, for Ionic apps, web apps everywhere.
-- [**FlatIcon.com**](https://www.flaticon.com/): Download Free Icons, Stickers for your projects. Resources made by, for designers.
-- [**Translator**](https://github.com/therealbush/translator): A simple, free Google Translate library for Kotlin/JVM, Java.
-- [**KuGou**](https://www.kugou.com): Lyrics provider
-- [**LrcLib**](https://lrclib.net): Lyrics provider
-- [**HypnoticCanvas**](https://mikepenz.github.io/HypnoticCanvas/): A shader modifier for Compose Multiplatform / Jetpack Compose
-- [**MedieroAF**](https://github.com/MedieroAF): App logo
-
+| Type                                                          | Authors                                                                                                                                | Notes                                                         |
+|---------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
+| [RiMusic](https://github.com/fast4x/RiMusic)                  | [fast4x](https://github.com/fast4x)                                                                                                    |                                                               |
+| Player design                                                 | [aneesh1122](https://github.com/aneesh1122)                                                                                            |                                                               |
+| Icons                                                         | [Ionicons](https://github.com/ionic-team/ionicons), [FlatIcon.com](https://www.flaticon.com/), [jaimtres](https://github.com/jaimtres) | **jaimtres** designed RiMusic's Logo, many current icons      |
+| Translators library                                           | [therealbush/translator](https://github.com/therealbush/translator)                                                                    |                                                               |
+| Lyrics provider                                               | [KuGou](https://www.kugou.com), [LrcLib](https://lrclib.net)                                                                           |                                                               |
+| [HypnoticCanvas](https://github.com/mikepenz/HypnoticCanvas/) | [mikepenz](https://github.com/mikepenz)                                                                                                | A shader modifier for Compose Multiplatform / Jetpack Compose |
+| App logo                                                      | [MedieroAF](https://github.com/MedieroAF)                                                                                              | MedieroAF's logo since 1.3.0                                  |
+| Badges                                                        | [Shields.IO](https://shields.io/), [dcbadge](https://github.com/gitlimes/dcbadge)                                                      |                                                               |
 
 # 💸 Donation
 
@@ -173,7 +168,7 @@ Submit your designs by [opening a ticket](https://github.com/knighthat/Kreate/is
 > This is completely optional, you don't have to pay to use/unlock any feature.
 
 | Platform  | Address                                                                                         |
-| --------- | ----------------------------------------------------------------------------------------------- |
+|-----------|-------------------------------------------------------------------------------------------------|
 | Liberapay | https://liberapay.com/knighthat                                                                 |
 | Patreon   | https://patreon.com/knighthat                                                                   |
 | Monero    | 44G5dUFTbFWYfZAk69irnDUCTNZzP5viNTmkGpCNCLHjjYQq7jjRTWoYTH1aY8P841hExP31Qxg2hXPtxreKu11zCYdxQUj |

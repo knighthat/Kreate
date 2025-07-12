@@ -91,8 +91,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
 
             implementation(projects.innertube)
-            implementation(projects.piped)
-            implementation(projects.invidious)
+            implementation(projects.oldtube)
 
             implementation(libs.room)
             implementation(libs.room.runtime)
@@ -157,14 +156,9 @@ android {
             buildConfigField( "Boolean", "IS_AUTOUPDATE", "false" )
         }
 
-        create( "full" ) {
-            // App's properties
-            versionNameSuffix = "-f"
-        }
-
-        create( "minified" ) {
-            // App's properties
-            versionNameSuffix = "-m"
+        // To test compatibility after minification process
+        create( "debugR8" ) {
+            initWith( maybeCreate( "debug" ) )
 
             // Package optimization
             isMinifyEnabled = true
@@ -175,22 +169,20 @@ android {
             )
         }
 
-        create( "izzy" ) {
-            initWith( maybeCreate("minified") )
-
-            // App's properties
-            versionNameSuffix = "-izzy"
-
-            buildConfigField( "Boolean", "IS_AUTOUPDATE", "false" )
-        }
-
-        // Specifically tailored to F-Droid build
-        // inherited from minified build type
         release {
-            initWith( maybeCreate("noAutoUpdate") )
+            isDefault = true
 
+            // Package optimization
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        create( "uncompressed" ) {
             // App's properties
-            versionNameSuffix = "-fdroid"
+            versionNameSuffix = "-f"
         }
 
         /**
@@ -203,17 +195,34 @@ android {
         }
     }
 
+    flavorDimensions += listOf( "prod" )
+    productFlavors {
+        create("github") {
+            dimension = "prod"
+        }
+
+        create( "fdroid" ) {
+            dimension = "prod"
+
+            // App's properties
+            versionNameSuffix = "-fdroid"
+
+            buildConfigField( "Boolean", "IS_AUTOUPDATE", "false" )
+        }
+
+        create( "izzy" ) {
+            dimension = "prod"
+
+            // App's properties
+            versionNameSuffix = "-izzy"
+
+            buildConfigField( "Boolean", "IS_AUTOUPDATE", "false" )
+        }
+    }
+
     applicationVariants.all {
         outputs.map { it as BaseVariantOutputImpl }
-               .forEach { output ->
-                   val typeName =
-                       if( buildType.name == "noAutoUpdate" )
-                           "no-autoupdate"
-                       else
-                           buildType.name
-
-                   output.outputFileName = "$APP_NAME-$typeName.apk"
-               }
+               .forEach { it.outputFileName = "$APP_NAME-${buildType.name}.apk" }
     }
 
     sourceSets.all {
@@ -303,7 +312,6 @@ dependencies {
     implementation(projects.oldtube)
     implementation(projects.kugou)
     implementation(projects.lrclib)
-    implementation(projects.piped)
 
     coreLibraryDesugaring(libs.desugaring.nio)
 

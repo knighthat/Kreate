@@ -120,7 +120,7 @@ object CheckForUpdateDialog: Dialog {
                 ) {
                     // Cancel (skip this time)
                     Button(
-                        textId = R.string.cancel,
+                        textId = android.R.string.cancel,
                         onClick = ::onDismiss,
                         modifier = Modifier.weight( 1f )
                     )

@@ -327,14 +327,6 @@ object MyDownloadHelper {
             removeDownload( context, mediaItem )
     }
 
-    fun autoDownloadWhenAlbumBookmarked(context: Context, mediaItems: List<MediaItem>) {
-        if ( Preferences.AUTO_DOWNLOAD_ON_LIKE.value ) {
-            mediaItems.forEach { mediaItem ->
-                autoDownload(context, mediaItem)
-            }
-        }
-    }
-
     fun handleDownload(context: Context, song: Song, removeIfDownloaded: Boolean = false ) {
         if( song.isLocal ) return
 

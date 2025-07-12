@@ -73,7 +73,7 @@ fun HomeSearch(
             item(key = "header", contentType = 0, span = { GridItemSpan(maxLineSpan) }) {
 
                 HeaderWithIcon(
-                    title = stringResource(R.string.search),
+                    title = stringResource( android.R.string.search_go ),
                     iconId = R.drawable.search,
                     enabled = false,
                     showIcon = false,
@@ -87,7 +87,7 @@ fun HomeSearch(
                 PlaylistItem(
                     icon = R.drawable.globe,
                     colorTint = colorPalette().favoritesIcon,
-                    name = "${stringResource(R.string.search)} ${stringResource(R.string.online)}",
+                    name = "${stringResource( android.R.string.search_go )} ${stringResource(R.string.online)}",
                     songCount = null,
                     thumbnailSizeDp = thumbnailSizeDp,
                     alternative = true,
@@ -103,7 +103,7 @@ fun HomeSearch(
                 PlaylistItem(
                     icon = R.drawable.library,
                     colorTint = colorPalette().favoritesIcon,
-                    name = "${stringResource(R.string.search)} ${stringResource(R.string.library)}",
+                    name = "${stringResource( android.R.string.search_go )} ${stringResource(R.string.library)}",
                     songCount = null,
                     thumbnailSizeDp = thumbnailSizeDp,
                     alternative = true,

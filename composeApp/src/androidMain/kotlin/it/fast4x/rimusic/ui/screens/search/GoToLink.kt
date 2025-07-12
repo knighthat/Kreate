@@ -201,21 +201,20 @@ fun GoToLink(
                                         Innertube.playlistPage(BrowseBody(browseId = browseId))
                                             ?.getOrNull()?.let {
                                                 it.songsPage?.items?.firstOrNull()?.album?.endpoint?.browseId?.let { browseId ->
-                                                    //albumRoute.ensureGlobal(browseId)
-                                                    navController.navigate(route = "${NavRoutes.album.name}/$browseId")
+                                                    NavRoutes.YT_ALBUM.navigateHere( navController, browseId )
                                                 }
                                             }
                                     } else {
-                                        navController.navigate( "${NavRoutes.YT_PLAYLIST.name}/$browseId" )
+                                        NavRoutes.YT_PLAYLIST.navigateHere( navController, browseId )
                                     }
                                 }
 
                                 "channel", "c" -> uri.lastPathSegment?.let { channelId ->
-                                    navController.navigate(route = "${NavRoutes.artist.name}/$channelId")
+                                    NavRoutes.YT_ARTIST.navigateHere( navController, channelId )
                                 }
 
                                 "search" -> uri.getQueryParameter("q")?.let { query ->
-                                        navController.navigate(route = "${NavRoutes.searchResults.name}/$query")
+                                    NavRoutes.searchResults.navigateHere( navController, query )
                                 }
 
                                 else -> when {

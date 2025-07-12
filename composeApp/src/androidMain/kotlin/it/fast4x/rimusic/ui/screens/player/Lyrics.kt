@@ -605,7 +605,7 @@ fun Lyrics(
                 Menu {
                     MenuEntry(
                         icon = R.drawable.chevron_back,
-                        text = stringResource(R.string.cancel),
+                        text = stringResource( android.R.string.cancel ),
                         onClick = { menuState.hide() }
                     )
                     Row{
@@ -672,7 +672,7 @@ fun Lyrics(
                     }
                     MenuEntry(
                         icon = R.drawable.chevron_back,
-                        text = stringResource(R.string.cancel),
+                        text = stringResource( android.R.string.cancel ),
                         onClick = { menuState.hide() }
                     )
                 }
@@ -714,7 +714,7 @@ fun Lyrics(
                                 Menu {
                                     MenuEntry(
                                         icon = R.drawable.chevron_back,
-                                        text = stringResource(R.string.cancel),
+                                        text = stringResource( android.R.string.cancel ),
                                         onClick = { menuState.hide() }
                                     )
                                     Row {

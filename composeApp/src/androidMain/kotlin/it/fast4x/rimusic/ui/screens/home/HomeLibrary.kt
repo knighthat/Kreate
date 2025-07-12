@@ -41,7 +41,6 @@ import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MONTHLY_PREFIX
 import it.fast4x.rimusic.PINNED_PREFIX
-import it.fast4x.rimusic.PIPED_PREFIX
 import it.fast4x.rimusic.YTP_PREFIX
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -114,7 +113,6 @@ fun HomeLibrary(
             PlaylistsType.Playlist          -> Database.playlistTable::allSongs
             PlaylistsType.PinnedPlaylist    -> Database.playlistTable::allPinnedSongs
             PlaylistsType.MonthlyPlaylist   -> Database.playlistTable::allMonthlySongs
-            PlaylistsType.PipedPlaylist     -> Database.playlistTable::allPipedSongs
             PlaylistsType.YTPlaylist        -> Database.playlistTable::allYTPlaylistSongs
         },
         key = arrayOf( playlistType )
@@ -141,12 +139,9 @@ fun HomeLibrary(
     // START: Additional playlists
     val showPinnedPlaylists by Preferences.SHOW_PINNED_PLAYLISTS
     val showMonthlyPlaylists by Preferences.SHOW_MONTHLY_PLAYLISTS
-    val showPipedPlaylists by Preferences.SHOW_PIPED_PLAYLISTS
 
     val buttonsList = mutableListOf(PlaylistsType.Playlist to stringResource(R.string.playlists))
     buttonsList += PlaylistsType.YTPlaylist to stringResource(R.string.yt_playlists)
-    if (showPipedPlaylists) buttonsList +=
-        PlaylistsType.PipedPlaylist to stringResource(R.string.piped_playlists)
     if (showPinnedPlaylists) buttonsList +=
         PlaylistsType.PinnedPlaylist to stringResource(R.string.pinned_playlists)
     if (showMonthlyPlaylists) buttonsList +=
@@ -230,7 +225,6 @@ fun HomeLibrary(
                             PlaylistsType.Playlist -> ""    // Matches everything
                             PlaylistsType.PinnedPlaylist -> PINNED_PREFIX
                             PlaylistsType.MonthlyPlaylist -> MONTHLY_PREFIX
-                            PlaylistsType.PipedPlaylist -> PIPED_PREFIX
                             PlaylistsType.YTPlaylist -> YTP_PREFIX
                         }
                     val condition: (PlaylistPreview) -> Boolean = {

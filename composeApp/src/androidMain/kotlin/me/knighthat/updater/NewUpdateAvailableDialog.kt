@@ -173,7 +173,7 @@ object NewUpdateAvailableDialog: Dialog {
                                    .clickable { onDismiss() }
             ) {
                 BasicText(
-                    text = stringResource( R.string.cancel ),
+                    text = stringResource( android.R.string.cancel ),
                     style = typography().xs.medium.color( colorPalette().text ),
                     modifier = Modifier.padding( vertical = 16.dp )
                 )

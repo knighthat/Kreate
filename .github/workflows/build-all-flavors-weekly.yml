@@ -89,9 +89,9 @@ jobs:
             exit 1
           fi
 
-  build-full:
+  build-uncompressed:
     needs: [versioning, verify-version]
-    name: Build full version
+    name: Build uncompressed version
     runs-on: ubuntu-latest
     timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
 
@@ -123,18 +123,18 @@ jobs:
           restore-keys: gradle-${{ runner.os }}-
 
       - name: Build with Gradle
-        run: ./gradlew assembleFull
+        run: ./gradlew assembleGithubUncompressed
 
       - name: Upload artifacts for signing
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: unsigned-full
+          name: unsigned-uncompressed
           path: |
-            composeApp/build/outputs/apk/full/*.apk
+            composeApp/build/outputs/apk/github/uncompressed/*.apk
 
-  build-minified:
+  build-release:
     needs: [versioning, verify-version]
-    name: Build minified version
+    name: Build release version
     runs-on: ubuntu-latest
     timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
 
@@ -166,14 +166,14 @@ jobs:
           restore-keys: gradle-${{ runner.os }}-
 
       - name: Build with Gradle
-        run: ./gradlew assembleMinified
+        run: ./gradlew assembleGithubRelease
 
       - name: Upload artifacts for signing
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: unsigned-minified
+          name: unsigned-release
           path: |
-            composeApp/build/outputs/apk/minified/*.apk
+            composeApp/build/outputs/apk/github.release/*.apk
 
   build-izzy:
     needs: [versioning, verify-version]
@@ -209,20 +209,20 @@ jobs:
           restore-keys: gradle-${{ runner.os }}-
 
       - name: Build with Gradle
-        run: ./gradlew assembleIzzy
+        run: ./gradlew assembleIzzyRelease
 
       - name: Upload artifacts for signing
         uses: actions/upload-artifact@v4.6.2
         with:
           name: unsigned-izzy
           path: |
-            composeApp/build/outputs/apk/izzy/*.apk
+            composeApp/build/outputs/apk/izzy/release/*.apk
 
   sign-apks:
     name: Sign all built APKs
     needs:
-      - build-full
-      - build-minified
+      - build-uncompressed
+      - build-release
       - build-izzy
     runs-on: ubuntu-latest
 
@@ -282,26 +282,10 @@ jobs:
           tag_name: v${{ needs.versioning.outputs.downstream }}
           make-latest: "true"
           body: |
-            <div align="center">
-              <img alt="app-logo" src="https://raw.githubusercontent.com/knighthat/Kreate/refs/heads/main/fastlane/metadata/android/en-US/images/featureGraphic.png" />
-              <p><b>Kreate</b> - by @knighthat</p>
-            </div>
-            
-            ## 📲 Installation
-  
-            Download and install `minified` version of the app (because the size is smaller).\
-            Only install `full` version when `minified` exhibits problems during installation.\
-            If you have trouble using the app, report it with the link below.
-            
-            > **If Android says that data will be wiped, cancel and report it [HERE](https://github.com/knighthat/Kreate/issues/new?assignees=&labels=bug&template=bug_report.yaml)**
-
             ## What's the difference between `Kreate-minified.apk` and `Kreate-full.apk`
 
-            No difference.
-
-            `minified` version strips unused code at compile time, making the APK smaller to download.
-            `full` version is still uploaded to help people who have trouble installing `minified` version.
-
+            TL;DR: **No difference.**
+            
             > [This article](https://kreate.knighthat.me/usr/faq/minified_and_full) explains this matter in detail.
             
             ## What's `Kreate-izzy.apk`
