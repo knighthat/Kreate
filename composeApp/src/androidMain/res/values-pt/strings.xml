@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Concluído</string>
     <string name="hidesong">Tem a certeza que quer esconder esta música? O tempo de reprodução e o cache serão apagados. Esta ação é irreversível.</string>
@@ -926,18 +926,18 @@
     <string name="setting_description_only_available_in_theme">Apenas disponível em %s temas</string>
     <string name="setting_description_app_language">Aplica-se apenas ao idioma da aplicação; o idioma do sistema não é afetado</string>
     <string name="currently_selected">Atualmente selecionado: %s</string>
-    <string name="setting_description_update_checker_ask">Prompt when a new version is available to download</string>
-    <string name="setting_description_update_checker_disabled">%s will not notify you about new updates</string>
+    <string name="setting_description_update_checker_ask">Avisar quando uma nova versão estiver disponível para transferir</string>
+    <string name="setting_description_update_checker_disabled">%s não irá notificar sobre novas atualizações</string>
     <string name="setting_description_update_checker_automatic">Automatically download \&amp; install new version when available</string>
-    <string name="setting_title_update_checker_automatic">Download and install automatically</string>
-    <string name="setting_entry_update_checker">App update</string>
-    <string name="update_dialog_init_status">Initializing</string>
-    <string name="update_dialog_downloading_status">Downloading</string>
-    <string name="update_dialog_verifying_status">Verifying</string>
-    <string name="update_dialog_installing_status">Installing</string>
-    <string name="update_dialog_error_status">Error</string>
-    <string name="word_updating">Updating</string>
-    <string name="error_downloaded_file_not_found">Downloaded file not found</string>
-    <string name="error_download_manager_init_failed">Failed to initialize DownloadManager to download update</string>
-    <string name="error_failed_to_verify_download_file">Failed to verify downloaded file</string>
+    <string name="setting_title_update_checker_automatic">Transferir e instalar automaticamente</string>
+    <string name="setting_entry_update_checker">Atualização da aplicação</string>
+    <string name="update_dialog_init_status">A inicializar</string>
+    <string name="update_dialog_downloading_status">A transferir</string>
+    <string name="update_dialog_verifying_status">A verificar</string>
+    <string name="update_dialog_installing_status">A instalar</string>
+    <string name="update_dialog_error_status">Erro</string>
+    <string name="word_updating">A atualizar</string>
+    <string name="error_downloaded_file_not_found">Arquivo transferido não encontrado</string>
+    <string name="error_download_manager_init_failed">Falha ao inicializar o DownloadManager para transferir as atualizações</string>
+    <string name="error_failed_to_verify_download_file">Falha ao verificar o arquivo transferido</string>
 </resources>
