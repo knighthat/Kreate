@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">完成</string>
     <string name="hidesong">你真的想要隐藏这首歌吗？它的播放记录和缓存将会被清除。（这个动作是不可逆的）</string>
@@ -940,4 +940,7 @@
     <string name="error_downloaded_file_not_found">Downloaded file not found</string>
     <string name="error_download_manager_init_failed">Failed to initialize DownloadManager to download update</string>
     <string name="error_failed_to_verify_download_file">Failed to verify downloaded file</string>
+    <string name="setting_entry_view_changelogs">View changelogs</string>
+    <string name="get_app">Get %s</string>
+    <string name="error_failed_to_extract_discord_acess_token">Failed to extract Discord access token</string>
 </resources>
