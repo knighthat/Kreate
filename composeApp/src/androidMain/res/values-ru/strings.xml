@@ -942,4 +942,7 @@
     <string name="error_downloaded_file_not_found">Загруженный файл не найден</string>
     <string name="error_download_manager_init_failed">Failed to initialize DownloadManager to download update</string>
     <string name="error_failed_to_verify_download_file">Не удалось проверить загруженный файл</string>
+    <string name="setting_entry_view_changelogs">View changelogs</string>
+    <string name="get_app">Get %s</string>
+    <string name="error_failed_to_extract_discord_acess_token">Failed to extract Discord access token</string>
 </resources>
