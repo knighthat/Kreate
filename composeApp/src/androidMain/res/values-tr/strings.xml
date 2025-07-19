@@ -940,7 +940,9 @@
     <string name="error_downloaded_file_not_found">İndirilen dosya bulunamadı</string>
     <string name="error_download_manager_init_failed">Güncellemeyi indirmek için DownloadManager başlatılamadı</string>
     <string name="error_failed_to_verify_download_file">İndirilen dosya doğrulanamadı</string>
-    <string name="setting_entry_view_changelogs">View changelogs</string>
-    <string name="get_app">Get %s</string>
-    <string name="error_failed_to_extract_discord_acess_token">Failed to extract Discord access token</string>
+    <string name="setting_entry_view_changelogs">Değişiklikleri görüntüle</string>
+    <string name="get_app">%s\'yi al</string>
+    <string name="error_failed_to_extract_discord_acess_token">Discord erişim anahtarı alınamadı</string>
+    <string name="setting_entry_app_region">Uygulama bölgesi</string>
+    <string name="setting_description_app_region">Grafik sonuçlarını, yeni çıkan albümleri, çalma listelerini, sanatçıları ve daha fazlasını etkiler.</string>
 </resources>
