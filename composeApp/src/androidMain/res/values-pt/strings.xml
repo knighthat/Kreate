@@ -940,7 +940,9 @@
     <string name="error_downloaded_file_not_found">Arquivo transferido não encontrado</string>
     <string name="error_download_manager_init_failed">Falha ao inicializar o DownloadManager para transferir as atualizações</string>
     <string name="error_failed_to_verify_download_file">Falha ao verificar o arquivo transferido</string>
-    <string name="setting_entry_view_changelogs">View changelogs</string>
-    <string name="get_app">Get %s</string>
-    <string name="error_failed_to_extract_discord_acess_token">Failed to extract Discord access token</string>
+    <string name="setting_entry_view_changelogs">Ver lista de alterações</string>
+    <string name="get_app">Obter %s</string>
+    <string name="error_failed_to_extract_discord_acess_token">Falha ao extrair o token de acesso ao Discord</string>
+    <string name="setting_entry_app_region">Região do aplicativo</string>
+    <string name="setting_description_app_region">Afecta os resultados das tabelas, os álbuns recém-lançados, as listas de reprodução, os artistas e muito mais.</string>
 </resources>
