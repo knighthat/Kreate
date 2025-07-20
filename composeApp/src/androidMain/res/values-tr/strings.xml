@@ -767,9 +767,9 @@
     <string name="error_failed_to_extract_discord_acess_token">Discord erişim anahtarı alınamadı</string>
     <string name="setting_entry_app_region">Uygulama bölgesi</string>
     <string name="setting_description_app_region">Grafik sonuçlarını, yeni çıkan albümleri, çalma listelerini, sanatçıları ve daha fazlasını etkiler.</string>
-    <string name="setting_description_show_no_update_available_yes">Notify update status on startup</string>
-    <string name="setting_description_show_no_update_available_no">Will not annoy you with this message on startup</string>
-    <string name="error_no_build_matches_this_version">Could not find any build matches this version</string>
+    <string name="setting_description_show_no_update_available_yes">Başlangıçta güncelleme durumunu bildir</string>
+    <string name="setting_description_show_no_update_available_no">Bu mesaj, başlangıçta bir daha gösterilmeyecek</string>
+    <string name="error_no_build_matches_this_version">Bu sürüme uygun bir derleme bulunamadı</string>
     <string name="dialog_title_are_you_sure">Are you sure?</string>
     <string name="this_action_is_irreversible">This action is irreversible</string>
     <string name="dialog_text_download_all_warning">You might get blocked for downloading multiple songs at once, making them unplayable in offline mode.</string>
