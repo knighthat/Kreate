@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">أكتمل</string>
     <string name="hidesong">هل تريد حقا أخفاء هذه الأغنية؟ كافية البيانات المحفوظة ستمسح من الجهاز.\nهذا الإجراء لا يمكن التراجع عنه.</string>
@@ -762,6 +762,7 @@
     <string name="error_downloaded_file_not_found">Downloaded file not found</string>
     <string name="error_download_manager_init_failed">Failed to initialize DownloadManager to download update</string>
     <string name="error_failed_to_verify_download_file">Failed to verify downloaded file</string>
+    <string name="setting_entry_view_changelogs">View changelogs</string>
     <string name="get_app">Get %s</string>
     <string name="error_failed_to_extract_discord_acess_token">Failed to extract Discord access token</string>
     <string name="setting_entry_app_region">App region</string>
