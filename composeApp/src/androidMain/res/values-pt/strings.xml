@@ -767,9 +767,9 @@
     <string name="error_failed_to_extract_discord_acess_token">Falha ao extrair o token de acesso ao Discord</string>
     <string name="setting_entry_app_region">Região do aplicativo</string>
     <string name="setting_description_app_region">Afecta os resultados das tabelas, os álbuns recém-lançados, as listas de reprodução, os artistas e muito mais.</string>
-    <string name="setting_description_show_no_update_available_yes">Notify update status on startup</string>
-    <string name="setting_description_show_no_update_available_no">Will not annoy you with this message on startup</string>
-    <string name="error_no_build_matches_this_version">Could not find any build matches this version</string>
+    <string name="setting_description_show_no_update_available_yes">Notificar status de atualização na inicialização</string>
+    <string name="setting_description_show_no_update_available_no">Não o incomodará com esta mensagem na inicialização</string>
+    <string name="error_no_build_matches_this_version">Não foi possível encontrar nenhuma compilação que corresponda a esta versão</string>
     <string name="dialog_title_are_you_sure">Are you sure?</string>
     <string name="this_action_is_irreversible">This action is irreversible</string>
     <string name="dialog_text_download_all_warning">You might get blocked for downloading multiple songs at once, making them unplayable in offline mode.</string>
