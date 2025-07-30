@@ -779,8 +779,4 @@
     <string name="setting_entry_youtube_sync_data">Sync account to %s</string>
     <string name="setting_description_youtube_sync_data">Automatically load playlists in \"%s\" tab</string>
     <string name="setting_description_delete_search_history">Delete %s</string>
-    <string name="setting_entry_live_wallpaper">Live wallpaper</string>
-    <string name="setting_description_live_wallpaper">Set your wallpaper to the thumbnail of the currently playing song</string>
-    <string name="word_lockscreen">Lockscreen</string>
-    <string name="warning_only_available_on_android_and_above">Only available on Android %1$s+ (%2$d)</string>
 </resources>
