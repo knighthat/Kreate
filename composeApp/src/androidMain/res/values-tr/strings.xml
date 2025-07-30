@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Tamam</string>
     <string name="hidesong">Bu şarkıyı gerçekten gizlemek istiyor musunuz? Çalma süresi ve önbelleği silinecektir. Bu işlem geri alınamaz.</string>
@@ -736,7 +736,7 @@
     <string name="word_documentation">Belgelendirme</string>
     <string name="opens_link_in_web_browser">Bağlantıyı web tarayıcısında açar</string>
     <string name="setting_entry_smart_rewind">Akıllı geri sarma</string>
-    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %s</string>
+    <string name="setting_description_smart_rewind">Önceki düğmesi %s\'den sonra geri sarma butonu gibi çalışacaktır</string>
     <string name="setting_entry_show_chip">\"%s\" çipini göster</string>
     <string name="show_quotes">\"%s\" bölümünü göster</string>
     <string name="setting_entry_crash_log">Çökme günlüğü</string>
@@ -770,15 +770,15 @@
     <string name="setting_description_show_no_update_available_yes">Başlangıçta güncelleme durumunu bildir</string>
     <string name="setting_description_show_no_update_available_no">Bu mesaj, başlangıçta bir daha gösterilmeyecek</string>
     <string name="error_no_build_matches_this_version">Bu sürüme uygun bir derleme bulunamadı</string>
-    <string name="dialog_title_are_you_sure">Are you sure?</string>
-    <string name="this_action_is_irreversible">This action is irreversible</string>
-    <string name="dialog_text_download_all_warning">You might get blocked for downloading multiple songs at once, making them unplayable in offline mode.</string>
-    <string name="error_invalid_proxy">Invalid proxy</string>
-    <string name="info_restart_player_service">Restart player service</string>
-    <string name="setting_entry_youtube_login">Log in to your YouTube account</string>
-    <string name="setting_entry_youtube_sync_data">Sync account to %s</string>
-    <string name="setting_description_youtube_sync_data">Automatically load playlists in \"%s\" tab</string>
-    <string name="setting_description_delete_search_history">Delete %s</string>
+    <string name="dialog_title_are_you_sure">Emin misiniz?</string>
+    <string name="this_action_is_irreversible">Bu işlem geri alınamaz</string>
+    <string name="dialog_text_download_all_warning">Aynı anda birden fazla şarkı indirirseniz engellenebilirsiniz, ve bu şarkılar çevrimdışı modda çalınamaz hale gelebilir.</string>
+    <string name="error_invalid_proxy">Geçersiz proxy</string>
+    <string name="info_restart_player_service">Oynatıcı servisini yeniden başlat</string>
+    <string name="setting_entry_youtube_login">YouTube hesabınıza giriş yapın</string>
+    <string name="setting_entry_youtube_sync_data">Hesabı %s ile eşitle</string>
+    <string name="setting_description_youtube_sync_data">\"%s\" sekmesinde çalma listelerini otomatik olarak yükle</string>
+    <string name="setting_description_delete_search_history">%s eklentisini sil</string>
     <string name="setting_entry_live_wallpaper">Live wallpaper</string>
     <string name="setting_description_live_wallpaper">Set your wallpaper to the thumbnail of the currently playing song</string>
     <string name="word_lockscreen">Lockscreen</string>
