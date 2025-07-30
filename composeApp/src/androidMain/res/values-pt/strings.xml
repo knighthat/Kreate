@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Concluído</string>
     <string name="hidesong">Tem a certeza que quer esconder esta música? O tempo de reprodução e o cache serão apagados. Esta ação é irreversível.</string>
@@ -736,7 +736,7 @@
     <string name="word_documentation">Documentação</string>
     <string name="opens_link_in_web_browser">Abrir link no navegador da web</string>
     <string name="setting_entry_smart_rewind">Retroceder inteligente</string>
-    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %s</string>
+    <string name="setting_description_smart_rewind">O botão anterior funcionará como um botão de retroceder após %s</string>
     <string name="setting_entry_show_chip">Mostrar \"%s\" chip</string>
     <string name="show_quotes">Mostrar \"%s\"</string>
     <string name="setting_entry_crash_log">Registo de falhas</string>
@@ -770,15 +770,15 @@
     <string name="setting_description_show_no_update_available_yes">Notificar status de atualização na inicialização</string>
     <string name="setting_description_show_no_update_available_no">Não o incomodará com esta mensagem na inicialização</string>
     <string name="error_no_build_matches_this_version">Não foi possível encontrar nenhuma compilação que corresponda a esta versão</string>
-    <string name="dialog_title_are_you_sure">Are you sure?</string>
-    <string name="this_action_is_irreversible">This action is irreversible</string>
-    <string name="dialog_text_download_all_warning">You might get blocked for downloading multiple songs at once, making them unplayable in offline mode.</string>
-    <string name="error_invalid_proxy">Invalid proxy</string>
-    <string name="info_restart_player_service">Restart player service</string>
-    <string name="setting_entry_youtube_login">Log in to your YouTube account</string>
-    <string name="setting_entry_youtube_sync_data">Sync account to %s</string>
-    <string name="setting_description_youtube_sync_data">Automatically load playlists in \"%s\" tab</string>
-    <string name="setting_description_delete_search_history">Delete %s</string>
+    <string name="dialog_title_are_you_sure">Tem a certeza?</string>
+    <string name="this_action_is_irreversible">Esta ação é irreversível</string>
+    <string name="dialog_text_download_all_warning">Poderá ser bloqueado por descarregar várias músicas de uma só vez, tornando-as impossíveis de reproduzir no modo offline.</string>
+    <string name="error_invalid_proxy">Proxy inválido</string>
+    <string name="info_restart_player_service">Reiniciar serviço do leitor</string>
+    <string name="setting_entry_youtube_login">Faça login na sua conta do YouTube</string>
+    <string name="setting_entry_youtube_sync_data">Sincronizar conta com %s</string>
+    <string name="setting_description_youtube_sync_data">Carregar automaticamente as playlists em \"%s\" aba</string>
+    <string name="setting_description_delete_search_history">Eliminar %s</string>
     <string name="setting_entry_live_wallpaper">Live wallpaper</string>
     <string name="setting_description_live_wallpaper">Set your wallpaper to the thumbnail of the currently playing song</string>
     <string name="word_lockscreen">Lockscreen</string>
