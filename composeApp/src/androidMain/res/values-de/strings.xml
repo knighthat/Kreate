@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Fertig</string>
     <string name="hidesong">Soll der Titel wirklich ausblendet werden? Die Wiedergabezeit und der Cache werden zurückgesetzt. Diese Aktion kann nicht rückgängig gemacht werden.</string>
