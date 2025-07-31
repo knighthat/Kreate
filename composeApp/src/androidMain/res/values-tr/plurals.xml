@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="second">
-        <item quantity="one">%d second</item>
-        <item quantity="other">%d second</item>
+        <item quantity="one">%d saniye</item>
+        <item quantity="other">%d saniye</item>
     </plurals>
     <plurals name="query">
-        <item quantity="one">%d query</item>
-        <item quantity="other">%d query</item>
+        <item quantity="one">%d sorgusu</item>
+        <item quantity="other">%d sorgusu</item>
     </plurals>
 </resources>
