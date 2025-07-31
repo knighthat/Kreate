@@ -372,7 +372,7 @@
     <string name="month_december_s">Décembre %s</string>
     <string name="info_reorder_is_possible_only_in_ascending_sort">La réorganisation est possible uniquement dans le tri ascendant</string>
     <string name="info_lyrics_found_on_s">Paroles trouvées sur %s</string>
-    <string name="info_lyrics_not_found_on_s_try_on_s">Paroles introuvables sur %s, essayez sur %s</string>
+    <string name="info_lyrics_not_found_on_s_try_on_s">Paroles introuvables sur %s, recherche sur %s</string>
     <string name="info_lyrics_not_found_on_s">Paroles introuvables sur %s</string>
     <string name="info_lyrics_tracks_found_on_s">Paroles de chansons trouvées sur %s</string>
     <string name="background_colors">Couleur d\'arrière-plan</string>
