@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="second">
-        <item quantity="other">%d second</item>
+        <item quantity="other">%d giây</item>
     </plurals>
     <plurals name="query">
-        <item quantity="other">%d query</item>
+        <item quantity="other">%d tìm kiếm</item>
     </plurals>
 </resources>
