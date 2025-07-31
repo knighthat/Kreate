@@ -2,7 +2,7 @@
 <resources>
     <plurals name="second">
         <item quantity="one">%d second</item>
-        <item quantity="other">%d second</item>
+        <item quantity="other">%d secondes</item>
     </plurals>
     <plurals name="query">
         <item quantity="one">%d query</item>
