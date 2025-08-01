@@ -779,8 +779,10 @@
     <string name="setting_entry_youtube_sync_data">Hesabı %s ilə sinxronlaşdır</string>
     <string name="setting_description_youtube_sync_data">\"%s\" panelində pleylistləri avtomatik yüklə</string>
     <string name="setting_description_delete_search_history">%s sil</string>
-    <string name="setting_entry_live_wallpaper">Live wallpaper</string>
-    <string name="setting_description_live_wallpaper">Set your wallpaper to the thumbnail of the currently playing song</string>
-    <string name="word_lockscreen">Lockscreen</string>
-    <string name="warning_only_available_on_android_and_above">Only available on Android %1$s+ (%2$d)</string>
+    <string name="setting_entry_live_wallpaper">Canlı divar kağızı</string>
+    <string name="setting_description_live_wallpaper">Divar kağızınızı hazırda səslənən mahnı miniatürünə uyğunlaşdırın</string>
+    <string name="word_lockscreen">Kilid ekranı</string>
+    <string name="warning_only_available_on_android_and_above">Yalnız Android %1$s+ (%2$d) versiyasında mövcuddur</string>
+    <string name="setting_entry_single_back_from_search">Tək geriyə</string>
+    <string name="setting_description_single_back_from_search">Axtarış işarəsinə kliklədiyiniz zaman oxşar axtarış səhifələrinin qarşısını alın</string>
 </resources>
