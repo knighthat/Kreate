@@ -783,4 +783,6 @@
     <string name="setting_description_live_wallpaper">Geçerli çalan şarkının küçük resmini duvar kağıdı olarak ayarla</string>
     <string name="word_lockscreen">Kilit ekranı</string>
     <string name="warning_only_available_on_android_and_above">Yalnızca Android %1$s+ (%2$d) sürümünde kullanılabilir</string>
+    <string name="setting_entry_single_back_from_search">Single back</string>
+    <string name="setting_description_single_back_from_search">Prevent duplicate search pages when you click search icon</string>
 </resources>
