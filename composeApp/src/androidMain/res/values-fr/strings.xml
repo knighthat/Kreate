@@ -35,7 +35,7 @@
     <string name="enter_the_lyrics">Entrer les paroles</string>
     <string name="edit_lyrics">Modifier les paroles</string>
     <string name="search_lyrics_online">Rechercher les paroles en ligne</string>
-    <string name="fetch_lyrics_again">Récupérer les paroles</string>
+    <string name="fetch_lyrics_again">Récupérer les paroles à nouveau</string>
     <string name="id">Identifiant</string>
     <string name="bitrate">Débit</string>
     <string name="size">Taille</string>
@@ -753,7 +753,7 @@ Volume BAS : titre précédent</string>
     <string name="currently_selected">Actuellement sélectionné : %s</string>
     <string name="setting_description_update_checker_ask">Demander quand une nouvelle version est disponible au téléchargement</string>
     <string name="setting_description_update_checker_disabled">%s ne vous informera pas des nouvelles mises à jour</string>
-    <string name="setting_description_update_checker_automatic">Automatically download \&amp; install new version when available</string>
+    <string name="setting_description_update_checker_automatic">Télécharger et installer automatiquement la nouvelle version au démarrage</string>
     <string name="setting_title_update_checker_automatic">Télécharger et installer automatiquement</string>
     <string name="setting_entry_update_checker">Mise à jour de l\'application</string>
     <string name="update_dialog_init_status">Initialisation en cours</string>
@@ -782,8 +782,10 @@ Volume BAS : titre précédent</string>
     <string name="setting_entry_youtube_sync_data">Synchroniser le compte avec %s</string>
     <string name="setting_description_youtube_sync_data">Charger automatiquement les playlists dans l\'onglet « %s »</string>
     <string name="setting_description_delete_search_history">Supprimer %s</string>
-    <string name="setting_entry_live_wallpaper">Live wallpaper</string>
-    <string name="setting_description_live_wallpaper">Set your wallpaper to the thumbnail of the currently playing song</string>
-    <string name="word_lockscreen">Lockscreen</string>
-    <string name="warning_only_available_on_android_and_above">Only available on Android %1$s+ (%2$d)</string>
+    <string name="setting_entry_live_wallpaper">Fond d\'écran animé</string>
+    <string name="setting_description_live_wallpaper">Définissez votre fond d\'écran sur la miniature du titre en cours de lecture</string>
+    <string name="word_lockscreen">Écran de verrouillage</string>
+    <string name="warning_only_available_on_android_and_above">Disponible uniquement sur Android %1$s+ (%2$d)</string>
+    <string name="setting_entry_single_back_from_search">Retour unique</string>
+    <string name="setting_description_single_back_from_search">Empêcher les pages de recherche en double lorsque vous cliquez sur l\'icône de recherche</string>
 </resources>
