@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Finalizat</string>
     <string name="hidesong">Chiar vrei să ascunzi această melodie? Timpul de redare și memoria cache vor fi șterse. Această acțiune este ireversibilă.</string>
