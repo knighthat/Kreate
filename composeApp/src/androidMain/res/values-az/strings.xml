@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Bitdi</string>
     <string name="hidesong">Həqiqətən bu mahnını gizlətmək istəyirsiz? Onun dinlənmə vaxtı və qalığı silinəcək. Bu tələb geri dönməzdir.</string>
@@ -785,8 +785,8 @@
     <string name="warning_only_available_on_android_and_above">Yalnız Android %1$s+ (%2$d) versiyasında mövcuddur</string>
     <string name="setting_entry_single_back_from_search">Tək geriyə</string>
     <string name="setting_description_single_back_from_search">Axtarış işarəsinə kliklədiyiniz zaman oxşar axtarış səhifələrinin qarşısını alın</string>
-    <string name="tab_network">Network</string>
-    <string name="proxy_mode_direct">No proxy</string>
-    <string name="setting_entry_monthly_playlist_compilation">Compile monthly playlist</string>
-    <string name="setting_description_monthly_playlist_compilation">Compile a playlist at the beginning of the month based on what you\'ve listened to in the past month</string>
+    <string name="tab_network">Şəbəkə</string>
+    <string name="proxy_mode_direct">Proksi yoxdur</string>
+    <string name="setting_entry_monthly_playlist_compilation">Aylıq pleylist topla</string>
+    <string name="setting_description_monthly_playlist_compilation">Keçən ay dinlədikləriniz əsasında ayın əvvəlində pleylist topla</string>
 </resources>
