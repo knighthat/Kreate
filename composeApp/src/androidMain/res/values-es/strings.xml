@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Hecho</string>
     <string name="hidesong">¿Seguro que quieres ocultar esta canción? El tiempo de reproducción y la caché se eliminarán. Esta acción es irreversible.</string>
@@ -779,14 +779,14 @@
     <string name="setting_entry_youtube_sync_data">Sincronizar cuenta con %s</string>
     <string name="setting_description_youtube_sync_data">Cargar automáticamente listas de reproducción en la pestaña \"%s\"</string>
     <string name="setting_description_delete_search_history">Eliminar %s</string>
-    <string name="setting_entry_live_wallpaper">Live wallpaper</string>
-    <string name="setting_description_live_wallpaper">Set your wallpaper to the thumbnail of the currently playing song</string>
-    <string name="word_lockscreen">Lockscreen</string>
-    <string name="warning_only_available_on_android_and_above">Only available on Android %1$s+ (%2$d)</string>
+    <string name="setting_entry_live_wallpaper">Fondo de pantalla en vivo</string>
+    <string name="setting_description_live_wallpaper">Establece la miniatura de la canción en reproducción como fondo de pantalla</string>
+    <string name="word_lockscreen">Pantalla de bloqueo</string>
+    <string name="warning_only_available_on_android_and_above">Solo disponible en Android %1$s+ (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Single back</string>
-    <string name="setting_description_single_back_from_search">Prevent duplicate search pages when you click search icon</string>
-    <string name="tab_network">Network</string>
-    <string name="proxy_mode_direct">No proxy</string>
-    <string name="setting_entry_monthly_playlist_compilation">Compile monthly playlist</string>
-    <string name="setting_description_monthly_playlist_compilation">Compile a playlist at the beginning of the month based on what you\'ve listened to in the past month</string>
+    <string name="setting_description_single_back_from_search">Evitar páginas de búsqueda duplicadas al hacer clic en el icono de búsqueda</string>
+    <string name="tab_network">Red</string>
+    <string name="proxy_mode_direct">Sin proxy</string>
+    <string name="setting_entry_monthly_playlist_compilation">Crear lista de reproducción mensual</string>
+    <string name="setting_description_monthly_playlist_compilation">Crea una lista de reproducción al principio del mes en base a lo que has escuchado el mes anterior</string>
 </resources>
