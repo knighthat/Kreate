@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Concluído</string>
     <string name="hidesong">Tem a certeza que quer esconder esta música? O tempo de reprodução e o cache serão apagados. Esta ação é irreversível.</string>
@@ -779,14 +779,14 @@
     <string name="setting_entry_youtube_sync_data">Sincronizar conta com %s</string>
     <string name="setting_description_youtube_sync_data">Carregar automaticamente as playlists em \"%s\" aba</string>
     <string name="setting_description_delete_search_history">Eliminar %s</string>
-    <string name="setting_entry_live_wallpaper">Live wallpaper</string>
-    <string name="setting_description_live_wallpaper">Set your wallpaper to the thumbnail of the currently playing song</string>
-    <string name="word_lockscreen">Lockscreen</string>
-    <string name="warning_only_available_on_android_and_above">Only available on Android %1$s+ (%2$d)</string>
-    <string name="setting_entry_single_back_from_search">Single back</string>
-    <string name="setting_description_single_back_from_search">Prevent duplicate search pages when you click search icon</string>
-    <string name="tab_network">Network</string>
-    <string name="proxy_mode_direct">No proxy</string>
-    <string name="setting_entry_monthly_playlist_compilation">Compile monthly playlist</string>
-    <string name="setting_description_monthly_playlist_compilation">Compile a playlist at the beginning of the month based on what you\'ve listened to in the past month</string>
+    <string name="setting_entry_live_wallpaper">Papel de parede animado</string>
+    <string name="setting_description_live_wallpaper">Defina seu papel de parede para a miniatura da música que está sendo reproduzida atualmente</string>
+    <string name="word_lockscreen">Ecrã de bloqueio</string>
+    <string name="warning_only_available_on_android_and_above">Disponível apenas no Android %1$s+ (%2$d)</string>
+    <string name="setting_entry_single_back_from_search">Retorno único</string>
+    <string name="setting_description_single_back_from_search">Evitar páginas de pesquisa duplicadas quando você clica no ícone de pesquisa</string>
+    <string name="tab_network">Internet</string>
+    <string name="proxy_mode_direct">Sem proxy</string>
+    <string name="setting_entry_monthly_playlist_compilation">Compilar playlist mensal</string>
+    <string name="setting_description_monthly_playlist_compilation">Compilar uma playlist no início do mês com base no que ouviu no último mês</string>
 </resources>
