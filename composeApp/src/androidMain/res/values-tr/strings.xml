@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Tamam</string>
     <string name="hidesong">Bu şarkıyı gerçekten gizlemek istiyor musunuz? Çalma süresi ve önbelleği silinecektir. Bu işlem geri alınamaz.</string>
@@ -783,10 +783,10 @@
     <string name="setting_description_live_wallpaper">Geçerli çalan şarkının küçük resmini duvar kağıdı olarak ayarla</string>
     <string name="word_lockscreen">Kilit ekranı</string>
     <string name="warning_only_available_on_android_and_above">Yalnızca Android %1$s+ (%2$d) sürümünde kullanılabilir</string>
-    <string name="setting_entry_single_back_from_search">Single back</string>
-    <string name="setting_description_single_back_from_search">Prevent duplicate search pages when you click search icon</string>
-    <string name="tab_network">Network</string>
-    <string name="proxy_mode_direct">No proxy</string>
-    <string name="setting_entry_monthly_playlist_compilation">Compile monthly playlist</string>
-    <string name="setting_description_monthly_playlist_compilation">Compile a playlist at the beginning of the month based on what you\'ve listened to in the past month</string>
+    <string name="setting_entry_single_back_from_search">Bir defa geri</string>
+    <string name="setting_description_single_back_from_search">Arama simgesine tıklayınca aynı arama sayfalarının açılmasını engelle</string>
+    <string name="tab_network">Ağ</string>
+    <string name="proxy_mode_direct">Proxy yok</string>
+    <string name="setting_entry_monthly_playlist_compilation">Aylık çalma listesi oluştur</string>
+    <string name="setting_description_monthly_playlist_compilation">Geçen ay dinlediklerine göre ayın başında bir çalma listesi oluştur</string>
 </resources>
