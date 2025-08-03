@@ -788,8 +788,8 @@ Volume BAS : titre précédent</string>
     <string name="warning_only_available_on_android_and_above">Disponible uniquement sur Android %1$s+ (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Retour unique</string>
     <string name="setting_description_single_back_from_search">Empêcher les pages de recherche en double lorsque vous cliquez sur l\'icône de recherche</string>
-    <string name="tab_network">Network</string>
-    <string name="proxy_mode_direct">No proxy</string>
-    <string name="setting_entry_monthly_playlist_compilation">Compile monthly playlist</string>
-    <string name="setting_description_monthly_playlist_compilation">Compile a playlist at the beginning of the month based on what you\'ve listened to in the past month</string>
+    <string name="tab_network">Réseau</string>
+    <string name="proxy_mode_direct">Aucun proxy</string>
+    <string name="setting_entry_monthly_playlist_compilation">Compiler une playlist mensuelle</string>
+    <string name="setting_description_monthly_playlist_compilation">Compilez une playlist au début du mois en fonction de ce que vous avez écouté le mois dernier</string>
 </resources>
