@@ -426,7 +426,7 @@
     <string name="player_swap_controls_with_timeline">Steuerelemente mit Zeitleiste tauschen</string>
     <string name="player_enable_lyrics_popup_message">Liedtext-Popup-Nachricht aktivieren</string>
     <string name="exclude_songs_with_duration_limit">Schließe Titel über ein Zeitlimit aus</string>
-    <string name="exclude_songs_with_duration_limit_description">Titel, deren Dauer das Limit überschreitet, werden aus der Liste der Top-Titel und der Wiedergabewarteschlange ausgeschlossen</string>
+    <string name="exclude_songs_with_duration_limit_description">Titel, die das Zeitlimit überschreiten, werden bei Top-Titeln und Warteschlange ausgeschlossen</string>
     <string name="no_log_available">Protokoll nicht vorhanden</string>
     <string name="enable_quick_picks_page">Schnellauswahl-Seite aktiveren</string>
     <string name="parental_control">Jugendschutz</string>
@@ -541,7 +541,7 @@
     <string name="action_bar_show_video_button">Video-Schaltfläche anzeigen</string>
     <string name="update">Aktualisieren</string>
     <string name="update_song">Soll der Titel wirklich aktualisiert werden? Die Wiedergabezeit und der Cache werden zurückgesetzt. Diese Aktion kann nicht rückgängig gemacht werden.</string>
-    <string name="player_pause_listen_history_info">Speichert keine Wiedergabe-Ereignisse, die für die Statistik, den Verlauf und Vorschläge in Entdecken verwendet werden</string>
+    <string name="player_pause_listen_history_info">Speichert keine Wiedergabeereignisse für Statistiken, Verlauf und Vorschläge</string>
     <string name="vertical_widget">Vertikales Widget</string>
     <string name="horizontal_widget">Horizontales Widget</string>
     <string name="sleep_timer_ended">Einschlaftimer beendet</string>
