@@ -155,13 +155,13 @@
     <string name="play_next">Play next</string>
     <string name="toggle_lyrics">Toggle lyrics</string>
     <string name="by_tapping_on_the_thumbnail">By tapping on the thumbnail</string>
-    <string name="require_mic_permission">Visualizer effect require mic permission, grant please.</string>
+    <string name="require_mic_permission">Visualizer effect requires mic permission, please grant.</string>
     <string name="vt_circular">Circular</string>
     <string name="vt_disabled">Disabled</string>
     <string name="new_albums_of_your_artists">New albums from your artists</string>
     <string name="timeline">Timeline</string>
     <string name="visualizer">Visualizer</string>
-    <string name="visualizer_require_mic_permission">Visualizer REQUIRE MIC PERMISSION</string>
+    <string name="visualizer_require_mic_permission">Visualizer REQUIRES MIC PERMISSION</string>
     <string name="listen_on_piped">Listen on Piped</string>
     <string name="listen_on_invidious">Listen on Invidious</string>
     <string name="disable_horizontal_swipe">Disable horizontal swipe</string>
@@ -195,7 +195,7 @@
     <string name="do_you_really_want_to_delete_download">Do you really want to delete download?</string>
     <string name="disable_scrolling_text">Disable scrolling text</string>
     <string name="scrolling_text_is_used_for_long_texts">Scrolling text is used for long texts</string>
-    <string name="audio_quality_format">Audio quality Format</string>
+    <string name="audio_quality_format">Audio quality format</string>
     <string name="by_most_played_song">By Most played song</string>
     <string name="by_last_played_song">By Last played song</string>
     <string name="audio_quality_automatic">Automatic</string>
@@ -215,7 +215,7 @@
     <string name="title">Title</string>
     <string name="authors">Authors</string>
     <string name="cover">Cover</string>
-    <string name="paste_or_type_a_valid_url">Paste or type a valid url</string>
+    <string name="paste_or_type_a_valid_url">Paste or type a valid URL</string>
     <string name="you_can_put_a_complete_link">You can put a complete link of a playlist, an album, a channel or a single song on YouTube or YouTube Music</string>
     <string name="go_to_link">Go to link</string>
     <string name="action_bar_show_download_button">Download button</string>
@@ -255,7 +255,7 @@
     <string name="following">Following</string>
     <string name="sleeptimer_stop">stop</string>
     <string name="player_keep_minimized">Keep minimized</string>
-    <string name="when_click_on_a_song_player_start_minimized">When clicking on a song, player start minimized</string>
+    <string name="when_click_on_a_song_player_start_minimized">When clicking on a song, player will start minimized</string>
     <string name="settings_use_font_type">Font type</string>
     <string name="ask">Ask</string>
     <string name="item_select">Select</string>
@@ -306,7 +306,7 @@
     <string name="folders">Folders</string>
     <string name="show_folders_in_on_device_page">Show folders in \"On Device\" page</string>
     <string name="item_deselect">Deselect</string>
-    <string name="show_next_songs_in_player">Show next song queue</string>
+    <string name="show_next_songs_in_player">Show next song in queue</string>
     <string name="show_remaining_song_time">Show remaining song duration</string>
     <string name="click_lyrics_text">Jump to lyrics by pressing the line</string>
     <string name="folder_that_will_show_when_you_open_on_device_page">Folder shown for on device songs.</string>
@@ -435,7 +435,7 @@
     <string name="cache_location_system">System</string>
     <string name="debug">DEBUG</string>
     <string name="enable_log_debug">Enable debug logs</string>
-    <string name="if_enabled_create_a_log_file_to_highlight_errors">If enabled, create a log file to highlight errors</string>
+    <string name="if_enabled_create_a_log_file_to_highlight_errors">If enabled, creates a log file to highlight errors</string>
     <string name="copy_log_to_clipboard">Copy log to clipboard</string>
     <string name="fake_audio_bar">Fake Waveform</string>
     <string name="copy_crash_log_to_clipboard">Copy crash log to clipboard</string>
@@ -475,7 +475,7 @@
     <string name="thin_bar">Thin bar</string>
     <string name="buttonzoomout">Button zoom-out animation</string>
     <string name="thumbnailpause">Shrink thumbnail when paused</string>
-    <string name="showtwosongs">Show Next two Songs in Queue</string>
+    <string name="showtwosongs">Show next two songs in queue</string>
     <string name="showalbumcover">Show album cover</string>
     <string name="do_not_translate">Do not translate</string>
     <string name="info_sleep_timer_delayed_at_end_of_song">Sleep timer set to the end of this song</string>
@@ -518,7 +518,7 @@
     <string name="songs_number_to_show">Songs displayed</string>
     <string name="discover_has_been_applied_to_queue">Discover has been applied to queue, removed songs: %s</string>
     <string name="player_pause_on_volume_zero">Pause on volume zero</string>
-    <string name="info_pauses_player_when_volume_zero">Pause the song when the volume reaches 0 and resume it when the volume is greater than 0</string>
+    <string name="info_pauses_player_when_volume_zero">Pauses the song when the volume is 0 and resumes when it\'s more than 0</string>
     <string name="quality">Quality</string>
     <string name="value_must_be_ip_address">Value must be an IP address</string>
     <string name="swipe_up_to_open_the_queue">Swipe up to open queue</string>
@@ -541,7 +541,7 @@
     <string name="action_bar_show_video_button">Show video button</string>
     <string name="update">Update</string>
     <string name="update_song">Do you really want to refetch this song? Playback time and cached data will be wiped. This action is irreversible.</string>
-    <string name="player_pause_listen_history_info">Does not save playback events used for statistics, history and suggestions in quick pics</string>
+    <string name="player_pause_listen_history_info">Won\'t save playback events in statistics, history or quick pick suggestions</string>
     <string name="vertical_widget">Vertical widget</string>
     <string name="horizontal_widget">Horizontal widget</string>
     <string name="sleep_timer_ended">Sleep timer ended</string>
@@ -556,7 +556,7 @@
     <string name="error_media_cannot_be_played">Song cannot be played</string>
     <string name="full_screen_lyrics_components">Fullscreen lyrics components</string>
     <string name="titleartist">Title and Artists</string>
-    <string name="miniqueue">Next song queue</string>
+    <string name="miniqueue">Next song in the queue</string>
     <string name="controls">Controls</string>
     <string name="add_to_favorites">Add to favorites</string>
     <string name="import_favorites">Import favorites</string>
