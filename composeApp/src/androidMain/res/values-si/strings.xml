@@ -790,4 +790,6 @@ CC-BY-SA 3.0</string>
     <string name="proxy_mode_direct">No proxy</string>
     <string name="setting_entry_monthly_playlist_compilation">Compile monthly playlist</string>
     <string name="setting_description_monthly_playlist_compilation">Compile a playlist at the beginning of the month based on what you\'ve listened to in the past month</string>
+    <string name="setting_entry_marquee_effect">Marquee effect</string>
+    <string name="setting_description_marquee_effect">Apply scrolling text if it exceeds viewable area</string>
 </resources>
