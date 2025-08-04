@@ -789,4 +789,6 @@
     <string name="proxy_mode_direct">Sin proxy</string>
     <string name="setting_entry_monthly_playlist_compilation">Crear lista de reproducción mensual</string>
     <string name="setting_description_monthly_playlist_compilation">Crea una lista de reproducción al principio del mes en base a lo que has escuchado el mes anterior</string>
+    <string name="setting_entry_marquee_effect">Marquee effect</string>
+    <string name="setting_description_marquee_effect">Apply scrolling text if it exceeds viewable area</string>
 </resources>
