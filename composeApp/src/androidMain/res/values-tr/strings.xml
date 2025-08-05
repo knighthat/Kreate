@@ -789,6 +789,6 @@
     <string name="proxy_mode_direct">Proxy yok</string>
     <string name="setting_entry_monthly_playlist_compilation">Aylık çalma listesi oluştur</string>
     <string name="setting_description_monthly_playlist_compilation">Geçen ay dinlediklerine göre ayın başında bir çalma listesi oluştur</string>
-    <string name="setting_entry_marquee_effect">Marquee effect</string>
-    <string name="setting_description_marquee_effect">Apply scrolling text if it exceeds viewable area</string>
+    <string name="setting_entry_marquee_effect">Kayan yazı efekti</string>
+    <string name="setting_description_marquee_effect">Görüntülenebilir alanı aşarsa kayan yazı uygula</string>
 </resources>
