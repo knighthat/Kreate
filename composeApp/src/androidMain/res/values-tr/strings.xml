@@ -791,4 +791,6 @@
     <string name="setting_description_monthly_playlist_compilation">Geçen ay dinlediklerine göre ayın başında bir çalma listesi oluştur</string>
     <string name="setting_entry_marquee_effect">Kayan yazı efekti</string>
     <string name="setting_description_marquee_effect">Görüntülenebilir alanı aşarsa kayan yazı uygula</string>
+    <string name="info_explicit_song">Bu şarkı her yaşa uygun olmayabilir</string>
+    <string name="info_added_by_smart_recommendations">Akıllı öneriler tarafından eklendi</string>
 </resources>
