@@ -793,4 +793,6 @@
     <string name="setting_description_monthly_playlist_compilation">Compile a playlist at the beginning of the month based on what you\'ve listened to in the past month</string>
     <string name="setting_entry_marquee_effect">Marquee effect</string>
     <string name="setting_description_marquee_effect">Apply scrolling text if it exceeds viewable area</string>
+    <string name="info_explicit_song">This song may not be suitable for all ages</string>
+    <string name="info_added_by_smart_recommendations">Added by smart recommendations</string>
 </resources>
