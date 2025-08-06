@@ -789,6 +789,8 @@
     <string name="proxy_mode_direct">Sem proxy</string>
     <string name="setting_entry_monthly_playlist_compilation">Compilar playlist mensal</string>
     <string name="setting_description_monthly_playlist_compilation">Compilar uma playlist no início do mês com base no que ouviu no último mês</string>
-    <string name="setting_entry_marquee_effect">Marquee effect</string>
-    <string name="setting_description_marquee_effect">Apply scrolling text if it exceeds viewable area</string>
+    <string name="setting_entry_marquee_effect">Efeito de marquee</string>
+    <string name="setting_description_marquee_effect">Aplicar texto de rolagem se exceder a área visível</string>
+    <string name="info_explicit_song">Esta música pode não ser adequada para todas as idades</string>
+    <string name="info_added_by_smart_recommendations">Adicionado por recomendações inteligentes</string>
 </resources>
