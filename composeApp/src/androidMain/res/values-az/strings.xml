@@ -789,6 +789,8 @@
     <string name="proxy_mode_direct">Proksi yoxdur</string>
     <string name="setting_entry_monthly_playlist_compilation">Aylıq pleylist topla</string>
     <string name="setting_description_monthly_playlist_compilation">Keçən ay dinlədikləriniz əsasında ayın əvvəlində pleylist topla</string>
-    <string name="setting_entry_marquee_effect">Marquee effect</string>
-    <string name="setting_description_marquee_effect">Apply scrolling text if it exceeds viewable area</string>
+    <string name="setting_entry_marquee_effect">Marquee effekti</string>
+    <string name="setting_description_marquee_effect">Sürüşən mətn görünən sahəni keçərsə, tətbiq et</string>
+    <string name="info_explicit_song">This song may not be suitable for all ages</string>
+    <string name="info_added_by_smart_recommendations">Added by smart recommendations</string>
 </resources>
