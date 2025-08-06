@@ -794,4 +794,6 @@ Volume BAS : titre précédent</string>
     <string name="setting_description_monthly_playlist_compilation">Compilez une playlist au début du mois en fonction de ce que vous avez écouté le mois dernier</string>
     <string name="setting_entry_marquee_effect">Marquee effect</string>
     <string name="setting_description_marquee_effect">Apply scrolling text if it exceeds viewable area</string>
+    <string name="info_explicit_song">This song may not be suitable for all ages</string>
+    <string name="info_added_by_smart_recommendations">Added by smart recommendations</string>
 </resources>
