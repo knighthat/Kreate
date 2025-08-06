@@ -791,4 +791,6 @@
     <string name="setting_description_monthly_playlist_compilation">Minden hónap elején elkészül egy új lejátszási lista az alapján amit az elmúlt hónapban hallgatott</string>
     <string name="setting_entry_marquee_effect">Kiúsztatás effekt</string>
     <string name="setting_description_marquee_effect">Ha nem fér be a szöveg a képernyőre, akkor görgetődik</string>
+    <string name="info_explicit_song">This song may not be suitable for all ages</string>
+    <string name="info_added_by_smart_recommendations">Added by smart recommendations</string>
 </resources>
