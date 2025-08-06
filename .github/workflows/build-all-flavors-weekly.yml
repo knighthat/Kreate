@@ -216,7 +216,7 @@ jobs:
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v4.3.0
+        uses: actions/download-artifact@v5.0.0
         with:
           # Destination path. Supports basic tilde expansion.
           # Optional. Default is $GITHUB_WORKSPACE
@@ -257,7 +257,7 @@ jobs:
 
     steps:
       - name: Download signed APKs
-        uses: actions/download-artifact@v4.3.0
+        uses: actions/download-artifact@v5.0.0
         with:
           name: signed-apks
 
