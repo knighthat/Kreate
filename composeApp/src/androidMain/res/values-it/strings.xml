@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Ok</string>
     <string name="hidesong">Vuoi davvero nascondere questa canzone? Il tempo di riproduzione e la cache verranno cancellati. Questa azione è irreversibile.</string>
