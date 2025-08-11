@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Fait</string>
     <string name="hidesong">Voulez-vous vraiment masquer ce titre ? Son temps de lecture et son cache seront effacés. Cette action est irréversible.</string>
@@ -792,10 +792,10 @@ Volume BAS : titre précédent</string>
     <string name="proxy_mode_direct">Aucun proxy</string>
     <string name="setting_entry_monthly_playlist_compilation">Compiler une playlist mensuelle</string>
     <string name="setting_description_monthly_playlist_compilation">Compilez une playlist au début du mois en fonction de ce que vous avez écouté le mois dernier</string>
-    <string name="setting_entry_marquee_effect">Marquee effect</string>
-    <string name="setting_description_marquee_effect">Apply scrolling text if it exceeds viewable area</string>
-    <string name="info_explicit_song">This song may not be suitable for all ages</string>
-    <string name="info_added_by_smart_recommendations">Added by smart recommendations</string>
+    <string name="setting_entry_marquee_effect">Effet de chapiteau</string>
+    <string name="setting_description_marquee_effect">Appliquer le texte défilant s\'il dépasse la zone visible</string>
+    <string name="info_explicit_song">Ce titre peut ne pas convenir à tous les âges</string>
+    <string name="info_added_by_smart_recommendations">Ajouté par les recommandations intelligentes</string>
     <string name="info_delete_cache">Delete cache</string>
     <string name="setting_description_storage_usage">%1$s - %2$s used (%3$d%%)</string>
 </resources>
