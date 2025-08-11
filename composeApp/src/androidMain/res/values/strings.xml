@@ -370,7 +370,7 @@
     <string name="month_december_s">December %s</string>
     <string name="info_reorder_is_possible_only_in_ascending_sort">Reorder is possible only in ascending sort</string>
     <string name="info_lyrics_found_on_s">Lyrics found on %s</string>
-    <string name="info_lyrics_not_found_on_s_try_on_s">Lyrics not found on %1$s, try on %2$s</string>
+    <string name="info_lyrics_not_found_on_s_try_on_s">Lyrics not found on %s, try on %s</string>
     <string name="info_lyrics_not_found_on_s">Lyrics not found on %s</string>
     <string name="info_lyrics_tracks_found_on_s">Lyrics tracks found on %s</string>
     <string name="background_colors">Background colors</string>
@@ -771,7 +771,7 @@
     <string name="setting_description_show_no_update_available_no">Will not annoy you with this message on startup</string>
     <string name="error_no_build_matches_this_version">Could not find any build matches this version</string>
     <string name="dialog_title_are_you_sure">Are you sure?</string>
-    <string name="dialog_text_this_action_is_irreversible">This action is irreversible</string>
+    <string name="this_action_is_irreversible">This action is irreversible</string>
     <string name="dialog_text_download_all_warning">You might get blocked for downloading multiple songs at once, making them unplayable in offline mode.</string>
     <string name="error_invalid_proxy">Invalid proxy</string>
     <string name="info_restart_player_service">Restart player service</string>
@@ -793,6 +793,4 @@
     <string name="setting_description_marquee_effect">Apply scrolling text if it exceeds viewable area</string>
     <string name="info_explicit_song">This song may not be suitable for all ages</string>
     <string name="info_added_by_smart_recommendations">Added by smart recommendations</string>
-    <string name="info_delete_cache">Delete cache</string>
-    <string name="setting_description_storage_usage">%1$s - %2$s used (%3$d%%)</string>
 </resources>
