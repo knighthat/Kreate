@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">අවසන්</string>
     <string name="hidesong">ඔබට මෙම සින්දුව සැඟවීමට අවශ්‍යද? එය ඇසූ කාලය මකාදැමෙන අතර කැෂයෙන්ද ඉවත් වේ.\nමෙය ආපසු හැරවීමට නොහැකි යි.</string>
@@ -796,4 +796,8 @@ CC-BY-SA 3.0</string>
     <string name="info_added_by_smart_recommendations">Added by smart recommendations</string>
     <string name="info_delete_cache">Delete cache</string>
     <string name="setting_description_storage_usage">%1$s - %2$s used (%3$d%%)</string>
+    <string name="word_license">License</string>
+    <string name="word_licenses">Licenses</string>
+    <string name="view_license">View license</string>
+    <string name="word_version">Version</string>
 </resources>
