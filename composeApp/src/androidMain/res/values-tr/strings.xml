@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Tamam</string>
     <string name="hidesong">Bu şarkıyı gerçekten gizlemek istiyor musunuz? Çalma süresi ve önbelleği silinecektir. Bu işlem geri alınamaz.</string>
@@ -370,7 +370,7 @@
     <string name="month_december_s">Aralık %s</string>
     <string name="info_reorder_is_possible_only_in_ascending_sort">Yeniden sıralama sadece artan sıralamada mümkündür</string>
     <string name="info_lyrics_found_on_s">Şarkı sözleri %s üzerinde bulundu</string>
-    <string name="info_lyrics_not_found_on_s_try_on_s">Lyrics not found on %1$s, try on %2$s</string>
+    <string name="info_lyrics_not_found_on_s_try_on_s">%1$s\'de şarkı sözü bulunamadı, %2$s\'e bakın</string>
     <string name="info_lyrics_not_found_on_s">Şarkı sözleri %s üzerinde bulunamadı</string>
     <string name="info_lyrics_tracks_found_on_s">Şarkı sözü parçaları %s üzerinde bulundu</string>
     <string name="background_colors">Arka plan renkleri</string>
@@ -793,6 +793,10 @@
     <string name="setting_description_marquee_effect">Görüntülenebilir alanı aşarsa kayan yazı uygula</string>
     <string name="info_explicit_song">Bu şarkı her yaşa uygun olmayabilir</string>
     <string name="info_added_by_smart_recommendations">Akıllı öneriler tarafından eklendi</string>
-    <string name="info_delete_cache">Delete cache</string>
-    <string name="setting_description_storage_usage">%1$s - %2$s used (%3$d%%)</string>
+    <string name="info_delete_cache">Önbelleği sil</string>
+    <string name="setting_description_storage_usage">%1$s - %2$s kullanıldı (%3$d%%)</string>
+    <string name="word_license">License</string>
+    <string name="word_licenses">Licenses</string>
+    <string name="view_license">View license</string>
+    <string name="word_version">Version</string>
 </resources>
