@@ -42,7 +42,7 @@ jobs:
       GITHUB_REPOSITORY: ${{ github.action_repository }}
 
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v5
         with:
           submodules: true
 
@@ -79,7 +79,7 @@ jobs:
             exit 1
           fi
 
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v5
         with:
           submodules: true
 
@@ -96,7 +96,7 @@ jobs:
     timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
 
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v5
         with:
           submodules: true
 
@@ -135,7 +135,7 @@ jobs:
     timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
 
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v5
         with:
           submodules: true
 
@@ -174,7 +174,7 @@ jobs:
     timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
 
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v5
         with:
           submodules: true
 

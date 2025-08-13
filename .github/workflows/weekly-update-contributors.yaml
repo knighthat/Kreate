@@ -24,7 +24,7 @@ jobs:
       - name: Install BeautifulSoup4 dependency
         run: pip install beautifulsoup4 requests
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Run get_developers.py script
         env:
