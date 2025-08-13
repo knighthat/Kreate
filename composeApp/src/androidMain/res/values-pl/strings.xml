@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Zatwierdź</string>
     <string name="hidesong">Na pewno chcesz ukryć ten utwór? Jego czas odtwarzania zostanie usunięty oraz zostanie on wymazany z pamięci podręcznej. Tego działania nie da się cofnąć.</string>
@@ -795,4 +795,8 @@
     <string name="info_added_by_smart_recommendations">Added by smart recommendations</string>
     <string name="info_delete_cache">Delete cache</string>
     <string name="setting_description_storage_usage">%1$s - %2$s used (%3$d%%)</string>
+    <string name="word_license">License</string>
+    <string name="word_licenses">Licenses</string>
+    <string name="view_license">View license</string>
+    <string name="word_version">Version</string>
 </resources>
