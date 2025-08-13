@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Зроблено</string>
     <string name="hidesong">Ви дійсно хочете приховати цю пісню? Час її відтворення та кеш буде витерто. Ця дія є незворотною.</string>
@@ -36,7 +36,7 @@
     <string name="edit_lyrics">Редагувати текст пісні</string>
     <string name="search_lyrics_online">Шукати тексти пісень онлайн</string>
     <string name="fetch_lyrics_again">Запитати текст пісні ще раз</string>
-    <string name="id">Id</string>
+    <string name="id">ID</string>
     <string name="bitrate">Бітрейт</string>
     <string name="size">Розмір</string>
     <string name="cached">Кешовано</string>
@@ -733,7 +733,7 @@
     <string name="title_playback_speed">Швидкість відтворення</string>
     <string name="description_playback_speed">Adjust how slow/fast the song goes</string>
     <string name="log_in_to_ytm">Увійдіть у свій обліковий запис YTM, щоб переглянути більше контенту</string>
-    <string name="word_documentation">Documentation</string>
+    <string name="word_documentation">Документація</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
     <string name="setting_entry_smart_rewind">Розумне перемотування</string>
     <string name="setting_description_smart_rewind">Previous button will act like rewind button after %s</string>
@@ -757,7 +757,7 @@
     <string name="update_dialog_downloading_status">Downloading</string>
     <string name="update_dialog_verifying_status">Verifying</string>
     <string name="update_dialog_installing_status">Installing</string>
-    <string name="update_dialog_error_status">Error</string>
+    <string name="update_dialog_error_status">Помилка</string>
     <string name="word_updating">Updating</string>
     <string name="error_downloaded_file_not_found">Downloaded file not found</string>
     <string name="error_download_manager_init_failed">Failed to initialize DownloadManager to download update</string>
@@ -778,7 +778,7 @@
     <string name="setting_entry_youtube_login">Log in to your YouTube account</string>
     <string name="setting_entry_youtube_sync_data">Sync account to %s</string>
     <string name="setting_description_youtube_sync_data">Automatically load playlists in \"%s\" tab</string>
-    <string name="setting_description_delete_search_history">Delete %s</string>
+    <string name="setting_description_delete_search_history">Видалити %s</string>
     <string name="setting_entry_live_wallpaper">Live wallpaper</string>
     <string name="setting_description_live_wallpaper">Set your wallpaper to the thumbnail of the currently playing song</string>
     <string name="word_lockscreen">Lockscreen</string>
@@ -795,4 +795,8 @@
     <string name="info_added_by_smart_recommendations">Added by smart recommendations</string>
     <string name="info_delete_cache">Delete cache</string>
     <string name="setting_description_storage_usage">%1$s - %2$s used (%3$d%%)</string>
+    <string name="word_license">License</string>
+    <string name="word_licenses">Licenses</string>
+    <string name="view_license">View license</string>
+    <string name="word_version">Version</string>
 </resources>
