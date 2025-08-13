@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Bitdi</string>
     <string name="hidesong">Həqiqətən bu mahnını gizlətmək istəyirsiz? Onun dinlənmə vaxtı və qalığı silinəcək. Bu tələb geri dönməzdir.</string>
@@ -370,7 +370,7 @@
     <string name="month_december_s">Dekabr %s</string>
     <string name="info_reorder_is_possible_only_in_ascending_sort">Yenidən düzülmə yalnız artan sırada mümkündür</string>
     <string name="info_lyrics_found_on_s">Lirika burada tapıldı: %s</string>
-    <string name="info_lyrics_not_found_on_s_try_on_s">Lyrics not found on %1$s, try on %2$s</string>
+    <string name="info_lyrics_not_found_on_s_try_on_s">Lirika %1$s üçün tapılmadı, %2$s ilə cəhd et</string>
     <string name="info_lyrics_not_found_on_s">Lirika %s üçün tapılmadı</string>
     <string name="info_lyrics_tracks_found_on_s">Lirika %s üçün tapıldı</string>
     <string name="background_colors">Arxa plan rəngləri</string>
@@ -791,8 +791,12 @@
     <string name="setting_description_monthly_playlist_compilation">Keçən ay dinlədikləriniz əsasında ayın əvvəlində pleylist topla</string>
     <string name="setting_entry_marquee_effect">Marquee effekti</string>
     <string name="setting_description_marquee_effect">Sürüşən mətn görünən sahəni keçərsə, tətbiq et</string>
-    <string name="info_explicit_song">This song may not be suitable for all ages</string>
-    <string name="info_added_by_smart_recommendations">Added by smart recommendations</string>
-    <string name="info_delete_cache">Delete cache</string>
-    <string name="setting_description_storage_usage">%1$s - %2$s used (%3$d%%)</string>
+    <string name="info_explicit_song">Bu mahnı bütün yaşlar üçün uyğun olmaya bilər</string>
+    <string name="info_added_by_smart_recommendations">Ağıllı tövsiyələrlə əlavə edilib</string>
+    <string name="info_delete_cache">Keşkəni sıfırla</string>
+    <string name="setting_description_storage_usage">%1$s - %2$s istifadə olunub (%3$d%%)</string>
+    <string name="word_license">License</string>
+    <string name="word_licenses">Licenses</string>
+    <string name="view_license">View license</string>
+    <string name="word_version">Version</string>
 </resources>
