@@ -798,4 +798,8 @@ Volume BAS : titre précédent</string>
     <string name="info_added_by_smart_recommendations">Ajouté par les recommandations intelligentes</string>
     <string name="info_delete_cache">Supprimer le cache</string>
     <string name="setting_description_storage_usage">%1$s - %2$s utilisé (%3$d%%)</string>
+    <string name="word_license">License</string>
+    <string name="word_licenses">Licenses</string>
+    <string name="view_license">View license</string>
+    <string name="word_version">Version</string>
 </resources>
