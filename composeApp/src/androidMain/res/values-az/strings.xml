@@ -795,8 +795,8 @@
     <string name="info_added_by_smart_recommendations">Ağıllı tövsiyələrlə əlavə edilib</string>
     <string name="info_delete_cache">Keşkəni sıfırla</string>
     <string name="setting_description_storage_usage">%1$s - %2$s istifadə olunub (%3$d%%)</string>
-    <string name="word_license">License</string>
-    <string name="word_licenses">Licenses</string>
-    <string name="view_license">View license</string>
-    <string name="word_version">Version</string>
+    <string name="word_license">Lisenziya</string>
+    <string name="word_licenses">Lisenziyalar</string>
+    <string name="view_license">Lisenziyaya bax</string>
+    <string name="word_version">Versiya</string>
 </resources>
