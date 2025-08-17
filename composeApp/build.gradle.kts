@@ -315,7 +315,7 @@ room {
 }
 
 dependencies {
-    ksp( libs.room.compiler )
+    kspAndroidTestRelease( libs.room.compiler )
 
     coreLibraryDesugaring(libs.desugaring.nio)
 }
