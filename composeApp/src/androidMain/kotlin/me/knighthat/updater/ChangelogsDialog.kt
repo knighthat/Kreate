@@ -2,11 +2,11 @@ package me.knighthat.updater
 
 import android.content.Context
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -14,33 +14,32 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.kreate.android.BuildConfig
 import app.kreate.android.R
+import app.kreate.android.themed.common.component.dialog.Dialog
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import me.knighthat.component.dialog.Dialog
+import it.fast4x.rimusic.utils.bold
+import kotlinx.coroutines.launch
 
-open class ChangelogsDialog(context: Context): Dialog {
+open class ChangelogsDialog(context: Context): Dialog() {
 
     override val dialogTitle: String
         @Composable
         get() = stringResource( R.string.update_changelogs, BuildConfig.VERSION_NAME )
 
+    private lateinit var pagerState: PagerState
     private var sections: SnapshotStateList<Section> = mutableStateListOf()
-    private var selectedTab: Int by mutableIntStateOf( 0 )
     override var isActive: Boolean by mutableStateOf( false )
 
     init {
@@ -79,24 +78,38 @@ open class ChangelogsDialog(context: Context): Dialog {
 
     @Composable
     override fun Render() {
-        if( !BuildConfig.DEBUG )
-            super.Render()
+//        if( BuildConfig.DEBUG ) return
+
+        // Initialize this ASAP
+        if( !::pagerState.isInitialized )
+            this.pagerState = rememberPagerState { sections.size }
+
+        super.Render()
     }
 
     @Composable
-    override fun DialogBody() {
+    override fun DialogHeader() {
+        val scope = rememberCoroutineScope()
         val (colorPalette, typography) = LocalAppearance.current
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
+            // "vX.X.X changelogs" title
+            BasicText(
+                text = dialogTitle,
+                style = typography.m.bold,
+                modifier = Modifier.padding( bottom = VERTICAL_PADDING.dp )
+                                   .fillMaxWidth( .9f )
+            )
+
             TabRow(
-                selectedTabIndex = selectedTab,
+                selectedTabIndex = pagerState.targetPage,
                 containerColor = colorPalette.background0,
                 contentColor = colorPalette.text,
                 indicator = { tabPositions ->
-                    val selectedPosition = tabPositions[selectedTab]
+                    val selectedPosition = tabPositions[pagerState.targetPage]
                     TabRowDefaults.PrimaryIndicator(
                         modifier = Modifier.tabIndicatorOffset( selectedPosition ),
                         color = colorPalette.accent,
@@ -105,45 +118,42 @@ open class ChangelogsDialog(context: Context): Dialog {
                 }
             ) {
                 sections.forEachIndexed { index, section ->
+                    val isSelected = index == pagerState.targetPage
                     Tab(
-                        selected = index == selectedTab,
-                        onClick = { selectedTab = index }
+                        selected = isSelected,
+                        onClick = {
+                            scope.launch {
+                                this@ChangelogsDialog.pagerState.animateScrollToPage( index )
+                            }
+                        }
                     ) {
                         Text(
                             text = section.title,
                             style = typography.m,
-                            color = if( index == selectedTab ) colorPalette.text else colorPalette.textSecondary,
-                            fontWeight = if( index == selectedTab ) FontWeight.Bold else FontWeight.Normal
+                            color = if( isSelected ) colorPalette.text else colorPalette.textSecondary,
+                            fontWeight = if( isSelected ) FontWeight.Bold else FontWeight.Normal
                         )
                     }
                 }
             }
+        }
+    }
 
-            val configuration = LocalWindowInfo.current
-            val changesBoxHeight by remember {
-                derivedStateOf {
-                    val aThirdScreenHeight = (configuration.containerSize.height * .3f).toInt()
+    @Composable
+    override fun DialogBody() {
+        val sectionTextStyle = LocalAppearance.current.typography.xs
 
-                    sections.maxOf { it.changes.size }
-                            // Make-up number, seems to be appropriate for the height of `xs`
-                            .times( 22 )
-                            // Ensure box's height can't go above 30% of screen
-                            .coerceAtMost( aThirdScreenHeight )
-                }
-            }
-
-            LazyColumn(
-                contentPadding = PaddingValues( top = 10.dp ),
-                modifier = Modifier.fillMaxWidth( .9f )
-                    .requiredHeight( changesBoxHeight.dp )
-            ) {
-                items(
-                    items = sections[selectedTab].changes,
-                    key = null      // Lines aren't going to change so key should be null
-                ) {
+        HorizontalPager(
+            state = pagerState,
+            beyondViewportPageCount = sections.size,
+            verticalAlignment = Alignment.Top,
+            modifier = Modifier.fillMaxWidth( .9f )
+        ) { selectedTab ->
+            Column {
+                sections[selectedTab].changes.forEach { line ->
                     BasicText(
-                        text = it,
-                        style = typography.xs
+                        text = line,
+                        style = sectionTextStyle
                     )
                 }
             }
