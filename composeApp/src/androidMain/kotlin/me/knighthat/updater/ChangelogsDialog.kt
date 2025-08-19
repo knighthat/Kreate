@@ -1,5 +1,6 @@
 package me.knighthat.updater
 
+import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,12 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -29,18 +31,18 @@ import app.kreate.android.R
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.bold
 import me.knighthat.component.dialog.Dialog
-import java.util.stream.Stream
 
-open class ChangelogsDialog: Dialog {
+open class ChangelogsDialog(context: Context): Dialog {
 
     override val dialogTitle: String
         @Composable
         get() = stringResource( R.string.update_changelogs, BuildConfig.VERSION_NAME )
 
+    private var sections: SnapshotStateList<Section> = mutableStateListOf()
+    private var selectedTab: Int by mutableIntStateOf( 0 )
     override var isActive: Boolean by mutableStateOf( false )
 
-    private fun parseReleaseNotes( lines: Stream<String> ): List<Section> {
-        val sections = mutableListOf<Section>()
+    init {
         var currentTitle: String? = null
         val currentChanges = mutableListOf<String>()
 
@@ -52,24 +54,26 @@ open class ChangelogsDialog: Dialog {
             currentChanges.clear()
         }
 
-        lines.forEach { line ->
-            when {
-                line.endsWith( ":" ) -> {
-                    // If [currentTitle] is not null, it means another section is reached.
-                    // Therefore, pack last section to a [Section]
-                    currentTitle?.let( ::packSection )
+        context.resources
+               .openRawResource( R.raw.release_notes )
+               .bufferedReader( Charsets.UTF_8 )
+               .lines()
+               .forEach { line ->
+                   when {
+                       line.endsWith( ":" ) -> {
+                           // If [currentTitle] is not null, it means another section is reached.
+                           // Therefore, pack last section to a [Section]
+                           currentTitle?.let( ::packSection )
 
-                    currentTitle = line.removeSuffix(":")
-                }
-                line.trim().startsWith("-") -> {
-                    if( line.isNotBlank() )
-                        currentChanges.add( line.trim() )
-                }
-            }
-        }
+                           currentTitle = line.removeSuffix(":")
+                       }
+                       line.trim().startsWith("-") -> {
+                           if( line.isNotBlank() )
+                               currentChanges.add( line.trim() )
+                       }
+                   }
+               }
         currentTitle?.let( ::packSection )
-
-        return sections
     }
 
     @Composable
@@ -80,22 +84,11 @@ open class ChangelogsDialog: Dialog {
 
     @Composable
     override fun DialogBody() {
-        val context = LocalContext.current
         val (colorPalette, typography) = LocalAppearance.current
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val sections = remember {
-                parseReleaseNotes(
-                    lines = context.resources
-                                .openRawResource( R.raw.release_notes )
-                                .bufferedReader( Charsets.UTF_8 )
-                                .lines()
-                )
-            }
-            var selectedTab by remember { mutableIntStateOf(0) }
-
             TabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = colorPalette.background0,
@@ -156,5 +149,5 @@ open class ChangelogsDialog: Dialog {
         }
     }
 
-    data class Section( val title: String, val changes: List<String> )
+    private data class Section( val title: String, val changes: List<String> )
 }

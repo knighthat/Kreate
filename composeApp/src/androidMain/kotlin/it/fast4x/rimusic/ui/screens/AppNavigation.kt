@@ -108,6 +108,8 @@ fun AppNavigation(
     startPage: HomeScreenTabs,
     miniPlayer: @Composable () -> Unit = {}
 ) {
+    val context = LocalContext.current
+
     // Flavor-specific implementation
     UpdateHandler()
 
@@ -422,7 +424,7 @@ fun AppNavigation(
 
     if( Preferences.SEEN_CHANGELOGS_VERSION.value != BuildConfig.VERSION_NAME ) {
         val changelogs = remember {
-            object: ChangelogsDialog() {
+            object: ChangelogsDialog(context) {
                 // Automatically enable dialog when this class is init
                 override var isActive: Boolean by mutableStateOf( true )
 
@@ -436,7 +438,6 @@ fun AppNavigation(
     }
 
     // Exit app when user uses back
-    val context = LocalContext.current
     var isWarned by remember { mutableStateOf( false ) }
     LaunchedEffect( isWarned ) {
         if( !isWarned ) return@LaunchedEffect

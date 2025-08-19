@@ -7,6 +7,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
@@ -46,7 +47,8 @@ fun LazyListScope.updateSection( search: SettingEntrySearch ) {
         )
     }
     entry( search, R.string.setting_entry_view_changelogs ) {
-        val changelogs = remember { ChangelogsDialog() }
+        val context = LocalContext.current
+        val changelogs = remember { ChangelogsDialog(context) }
         changelogs.Render()
 
         SettingComponents.Text(
