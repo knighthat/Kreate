@@ -12,6 +12,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -25,11 +26,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.utils.bold
 import me.knighthat.component.dialog.Dialog
 
 open class ChangelogsDialog(context: Context): Dialog {
@@ -87,32 +88,32 @@ open class ChangelogsDialog(context: Context): Dialog {
         val (colorPalette, typography) = LocalAppearance.current
 
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
         ) {
             TabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = colorPalette.background0,
                 contentColor = colorPalette.text,
                 indicator = { tabPositions ->
-                    val selectedPosition by remember {
-                        derivedStateOf { tabPositions[selectedTab] }
-                    }
+                    val selectedPosition = tabPositions[selectedTab]
                     TabRowDefaults.PrimaryIndicator(
                         modifier = Modifier.tabIndicatorOffset( selectedPosition ),
                         color = colorPalette.accent,
                         width = selectedPosition.width
                     )
-                },
-                modifier = Modifier.fillMaxWidth( .9f )
+                }
             ) {
                 sections.forEachIndexed { index, section ->
                     Tab(
                         selected = index == selectedTab,
                         onClick = { selectedTab = index }
                     ) {
-                        BasicText(
+                        Text(
                             text = section.title,
-                            style = typography.m.bold.copy( color = colorPalette.text )
+                            style = typography.m,
+                            color = if( index == selectedTab ) colorPalette.text else colorPalette.textSecondary,
+                            fontWeight = if( index == selectedTab ) FontWeight.Bold else FontWeight.Normal
                         )
                     }
                 }
