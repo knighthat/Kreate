@@ -78,7 +78,7 @@ open class ChangelogsDialog(context: Context): Dialog() {
 
     @Composable
     override fun Render() {
-//        if( BuildConfig.DEBUG ) return
+        if( BuildConfig.DEBUG ) return
 
         // Initialize this ASAP
         if( !::pagerState.isInitialized )
