@@ -131,7 +131,6 @@ import it.fast4x.rimusic.ui.styling.dynamicColorPaletteOf
 import it.fast4x.rimusic.ui.styling.typographyOf
 import it.fast4x.rimusic.utils.InitDownloader
 import it.fast4x.rimusic.utils.LocalMonetCompat
-import it.fast4x.rimusic.utils.OkHttpRequest
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.getEnum
@@ -156,7 +155,6 @@ import kotlinx.coroutines.withContext
 import me.knighthat.invidious.Invidious
 import me.knighthat.piped.Piped
 import me.knighthat.utils.Toaster
-import okhttp3.OkHttpClient
 import timber.log.Timber
 import java.util.Locale
 import java.util.Objects
@@ -170,11 +168,6 @@ class MainActivity :
     MonetColorsChangedListener
 //,PersistMapOwner
 {
-    var downloadHelper = MyDownloadHelper
-
-    var client = OkHttpClient()
-    var request = OkHttpRequest(client)
-
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             if (service is PlayerServiceModern.Binder) {
@@ -190,8 +183,6 @@ class MainActivity :
 
     private var binder by mutableStateOf<PlayerServiceModern.Binder?>(null)
     private var intentUriData by mutableStateOf<Uri?>(null)
-
-    //override lateinit var persistMap: PersistMap
 
     private var sensorManager: SensorManager? = null
     private var acceleration = 0f
@@ -292,17 +283,6 @@ class MainActivity :
     }
 
 
-    /*
-    @Suppress("DEPRECATION")
-    override fun onUserLeaveHint() {
-        super.onUserLeaveHint()
-        if (isAtLeastAndroid8 && !isInPictureInPictureMode) {
-            enterPictureInPictureMode()
-            println("MainActivity.onUserLeaveHint isInPictureInPictureMode: $isInPictureInPictureMode")
-        }
-    }
-    */
-
     @Composable
     fun ThemeApp(
         isDark: Boolean = false,
@@ -364,8 +344,6 @@ class MainActivity :
         setContent {
             val colorPaletteMode by Preferences.THEME_MODE
             val isPicthBlack = colorPaletteMode == ColorPaletteMode.PitchBlack
-//            val isDark =
-//                colorPaletteMode == ColorPaletteMode.Dark || isPicthBlack || (colorPaletteMode == ColorPaletteMode.System && isSystemInDarkTheme())
 
             // Valid to get log when app crash
             if (intent.action == action_copy_crash_log) {
@@ -378,11 +356,6 @@ class MainActivity :
                     exitProcess(0)
                 }
             }
-
-            //TODO: Check internet connection
-//            val internetConnectivityObserver = InternetConnectivityObserver(this)
-//            val internetConnected by internetConnectivityObserver.networkStatus.collectAsState(false)
-//            if (internetConnected) downloadHelper.resumeDownloads(this)
 
             val coroutineScope = rememberCoroutineScope()
             val isSystemInDarkTheme = isSystemInDarkTheme()
@@ -502,48 +475,6 @@ class MainActivity :
 
 
             DisposableEffect(binder, !lightTheme) {
-                /*
-            var bitmapListenerJob: Job? = null
-
-            fun setDynamicPalette(colorPaletteMode: ColorPaletteMode) {
-                val isDark =
-                    colorPaletteMode == ColorPaletteMode.Dark || (colorPaletteMode == ColorPaletteMode.System && isSystemInDarkTheme)
-                val isPicthBlack = colorPaletteMode == ColorPaletteMode.PitchBlack
-
-                binder?.setBitmapListener { bitmap: Bitmap? ->
-                    if (bitmap == null) {
-                        val colorPalette =
-                            colorPaletteOf(
-                                ColorPaletteName.Dynamic,
-                                colorPaletteMode,
-                                isSystemInDarkTheme
-                            )
-
-                        setSystemBarAppearance(colorPalette.isDark)
-
-                        appearance = appearance.copy(
-                            colorPalette = colorPalette,
-                            typography = appearance.typography.copy(colorPalette.text)
-                        )
-
-                        return@setBitmapListener
-                    }
-
-                    bitmapListenerJob = coroutineScope.launch(Dispatchers.IO) {
-                        dynamicColorPaletteOf(bitmap, isDark, isPicthBlack)?.let {
-                            withContext(Dispatchers.Main) {
-                                setSystemBarAppearance(it.isDark)
-                            }
-                            appearance = appearance.copy(
-                                colorPalette = it,
-                                typography = appearance.typography.copy(it.text)
-                            )
-                        }
-                    }
-                }
-            }
-            */
-
                 val listener =
                     SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
                         when (key) {
@@ -614,8 +545,6 @@ class MainActivity :
                                     }
 
                                 } else {
-                                    //bitmapListenerJob?.cancel()
-                                    //binder?.setBitmapListener(null)
 
                                     if (colorPaletteName == ColorPaletteName.MaterialYou) {
                                         colorPalette = dynamicColorPaletteOf(
@@ -694,8 +623,6 @@ class MainActivity :
                     }
 
                     onDispose {
-                        //bitmapListenerJob?.cancel()
-                        //binder?.setBitmapListener(null)
                         unregisterOnSharedPreferenceChangeListener(listener)
                     }
                 }
@@ -803,7 +730,7 @@ class MainActivity :
                             LocalPlayerServiceBinder provides binder,
                             LocalPlayerAwareWindowInsets provides playerAwareWindowInsets,
                             LocalLayoutDirection provides LayoutDirection.Ltr,
-                            LocalDownloadHelper provides downloadHelper,
+                            LocalDownloadHelper provides MyDownloadHelper,
                             LocalPlayerSheetState provides playerState,
                             LocalMonetCompat provides monet,
                         ) {
@@ -1179,6 +1106,3 @@ val LocalDownloadHelper = staticCompositionLocalOf<MyDownloadHelper> { error("No
 @OptIn(ExperimentalMaterial3Api::class)
 val LocalPlayerSheetState =
     staticCompositionLocalOf<SheetState> { error("No player sheet state provided") }
-
-//val LocalInternetConnected = staticCompositionLocalOf<Boolean> { error("No Network Status provided") }
-
