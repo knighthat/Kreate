@@ -971,9 +971,6 @@ sealed class Preferences<T>(
         val PAUSE_HISTORY by lazy {
             Boolean( preferences, "PauseHistory", "pauseListenHistory", false )
         }
-        val RESTART_ACTIVITY by lazy {
-            Boolean( preferences, "RestartActivity", "restartActivity", false )
-        }
         val IS_PIP_ENABLED by lazy {
             Boolean( preferences, "IsPiPEnabled", "enablePicturInPicture", false )
         }

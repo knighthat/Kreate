@@ -547,19 +547,10 @@ class MainActivity :
                 val listener =
                     SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
                         when (key) {
-                            Preferences.PLAYER_PORTRAIT_THUMBNAIL_SIZE.key,
                             Preferences.MAIN_THEME.key,
-                            Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED.key,
-                            Preferences.MINI_DISABLE_SWIPE_DOWN_TO_DISMISS.key,
                             Preferences.NAVIGATION_BAR_POSITION.key,
                             Preferences.NAVIGATION_BAR_TYPE.key,
-                            Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.key,
-                            Preferences.MINI_PLAYER_PROGRESS_BAR.key,
-                            Preferences.TRANSITION_EFFECT.key,
-                            Preferences.PLAYER_BACKGROUND.key,
-                            Preferences.MINI_PLAYER_TYPE.key,
-                            Preferences.RESTART_ACTIVITY.key
-                                -> {
+                            Preferences.MINI_PLAYER_TYPE.key -> {
                                 this@MainActivity.recreate()
                                 println("MainActivity.recreate()")
                             }
@@ -585,8 +576,7 @@ class MainActivity :
                             Preferences.CUSTOM_DARK_TEXT_SECONDARY.key,
                             Preferences.CUSTOM_DARK_TEXT_DISABLED.key,
                             Preferences.CUSTOM_DARK_PLAY_BUTTON.key,
-                            Preferences.CUSTOM_DARK_ACCENT.key,
-                                -> {
+                            Preferences.CUSTOM_DARK_ACCENT.key -> {
                                 val colorPaletteName = sharedPreferences.getEnum( Preferences.COLOR_PALETTE.key, Preferences.COLOR_PALETTE.defaultValue )
                                 val colorPaletteMode = sharedPreferences.getEnum( Preferences.THEME_MODE.key, Preferences.THEME_MODE.defaultValue )
 
