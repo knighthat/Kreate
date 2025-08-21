@@ -1,6 +1,5 @@
 package app.kreate.android.themed.common.component.dialog
 
-import android.content.res.Configuration
 import androidx.annotation.CallSuper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,10 +17,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.bold
+import it.fast4x.rimusic.utils.isLandscape
 import me.knighthat.innertube.Localized
 
 abstract class Dialog {
@@ -118,13 +119,10 @@ abstract class Dialog {
     open fun Render() {
         if( !isActive ) return
 
-        val configuration = LocalConfiguration.current
-        val colorPalette = LocalAppearance.current.colorPalette
-        val (isLandscape, screenWidthDp, screenHeightDp) = Triple(
-            configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
-            configuration.screenWidthDp.dp,
-            configuration.screenHeightDp.dp
-        )
+        val containerSize = LocalWindowInfo.current.containerSize
+        val (screenWidthDp, screenHeightDp) = with( LocalDensity.current ) {
+            containerSize.width.toDp() to containerSize.height.toDp()
+        }
         val (maxWidth, maxHeight) = if( isLandscape ) {
             MAX_WIDTH_LANDSCAPE to MAX_HEIGHT_LANDSCAPE
         } else {
@@ -132,6 +130,8 @@ abstract class Dialog {
         }
 
         androidx.compose.ui.window.Dialog( ::hideDialog ) dialogComp@ {
+            val colorPalette = LocalAppearance.current.colorPalette
+
             Column(
                 verticalArrangement = Arrangement.spacedBy( SPACE_BETWEEN_SECTIONS.dp ),
                 horizontalAlignment = Alignment.CenterHorizontally,
