@@ -141,7 +141,7 @@ abstract class Dialog {
                                        maxHeight = screenHeightDp * maxHeight
                                    )
                                    .background(
-                                       color = colorPalette.background0,
+                                       color = colorPalette.background1,
                                        shape = RoundedCornerShape( 8.dp )
                                    )
                                    .padding( vertical = VERTICAL_PADDING.dp )
