@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Готово</string>
     <string name="hidesong">Да ли заиста желите да сакријете ову песму? Његово време репродукције и кеш меморија ће бити обрисани. Ова радња је неповратна.</string>
@@ -799,4 +799,9 @@
     <string name="word_licenses">Licenses</string>
     <string name="view_license">View license</string>
     <string name="word_version">Version</string>
+    <string name="dialog_title_crash_report">Crash report</string>
+    <string name="error_failed_to_read_crashlog">Failed to read crash log</string>
+    <string name="dialog_button_open_report_ticket">Open report ticket</string>
+    <string name="dialog_button_dont_report">Don\'t report</string>
+    <string name="error_failed_to_export_logs">Failed to export logs</string>
 </resources>
