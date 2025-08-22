@@ -164,8 +164,11 @@ fun About(
                     title = stringResource( R.string.report_an_issue ),
                     subtitle = stringResource( R.string.you_will_be_redirected_to_github ),
                     onClick = {
-                        val issuePath = "/issues/new?assignees=&labels=bug&template=bug_report.yaml"
-                        uriHandler.openUri( Repository.REPO_URL.plus(issuePath) )
+                        uriHandler.openUri(
+                            with(Repository ) {
+                                "$REPO_URL$ISSUE_TEMPLATE_PATH"
+                            }
+                        )
                     }
                 )
             }
@@ -174,8 +177,11 @@ fun About(
                     title = stringResource( R.string.request_a_feature_or_suggest_an_idea ),
                     subtitle = stringResource( R.string.you_will_be_redirected_to_github ),
                     onClick = {
-                        val issuePath = "/issues/new?assignees=&labels=feature_request&template=feature_request.yaml"
-                        uriHandler.openUri( Repository.REPO_URL.plus(issuePath) )
+                        uriHandler.openUri(
+                            with(Repository ) {
+                                "$REPO_URL$FEATURE_REQUEST_TEMPLATE_PATH"
+                            }
+                        )
                     }
                 )
             }
