@@ -46,6 +46,7 @@ import androidx.navigation.navArgument
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.android.themed.common.screens.album.YouTubeAlbum
 import app.kreate.android.themed.common.screens.artist.YouTubeArtist
 import app.kreate.android.themed.common.screens.settings.about.Licenses
@@ -74,6 +75,7 @@ import it.fast4x.rimusic.ui.screens.searchresult.SearchResultScreen
 import it.fast4x.rimusic.ui.screens.settings.SettingsScreen
 import it.fast4x.rimusic.ui.screens.statistics.StatisticsScreen
 import kotlinx.coroutines.delay
+import me.knighthat.component.dialog.Dialog
 import me.knighthat.updater.ChangelogsDialog
 import me.knighthat.updater.UpdateHandler
 import me.knighthat.utils.Toaster
@@ -420,11 +422,17 @@ fun AppNavigation(
         }
     }
 
+    val context = LocalContext.current
+    val crashReportDialog = remember( context ) {
+        CrashReportDialog(context).apply( Dialog::showDialog )
+    }
+    crashReportDialog.Render()
+
     if( Preferences.SEEN_CHANGELOGS_VERSION.value != BuildConfig.VERSION_NAME ) {
         val changelogs = remember {
             object: ChangelogsDialog() {
                 // Automatically enable dialog when this class is init
-                override var isActive: Boolean by mutableStateOf( true )
+                override var isActive: Boolean by mutableStateOf( !crashReportDialog.isActive )
 
                 override fun hideDialog() {
                     super.hideDialog()
@@ -436,7 +444,6 @@ fun AppNavigation(
     }
 
     // Exit app when user uses back
-    val context = LocalContext.current
     var isWarned by remember { mutableStateOf( false ) }
     LaunchedEffect( isWarned ) {
         if( !isWarned ) return@LaunchedEffect

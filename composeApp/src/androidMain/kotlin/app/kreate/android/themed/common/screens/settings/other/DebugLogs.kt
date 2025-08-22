@@ -16,9 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
+import androidx.core.net.toUri
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import it.fast4x.rimusic.colorPalette
@@ -27,98 +28,99 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.utils.Toaster
+import timber.log.Timber
 import java.io.File
 
-private const val RUNTIME_LOGS_FILENAME = "runtime.log"
-private const val CRASH_LOGS_FILENAME =  "crash.log"
-
-private fun readLogs( context: Context, isCrashLog: Boolean ): List<String> {
-    val filename = if( isCrashLog ) "RiMusic_crash_log.txt" else "RiMusic_log.txt"
-    val file = File(context.filesDir.resolve( "logs" ), filename)
-
-    return if ( file.exists() && file.canRead() )
-        file.readLines()
-    else
-        emptyList()
-}
+const val RUNTIME_LOGS_FILENAME = "runtime.log"
 
 @Composable
 private fun Entry(
     context: Context,
     @StringRes titleId: Int,
     @StringRes subtitleId: Int,
+    isEnabled: Boolean,
     onExport: () -> Unit,
-    onReadLogs: () -> List<String>
+    logText: () -> String
 ) =
     SettingComponents.Text(
-        stringResource( titleId ),
-        onExport,
+        title = stringResource( titleId ),
+        onClick = onExport,
         subtitle = stringResource( subtitleId ),
-        isEnabled = Preferences.DEBUG_LOG.value
+        isEnabled = isEnabled
     ) {
         Icon(
             painter = painterResource( R.drawable.copy ),
             contentDescription = stringResource( R.string.copy_log_to_clipboard ),
             tint = colorPalette().background4,
             modifier = Modifier.size( 24.dp )
-                               .clickable( enabled = Preferences.DEBUG_LOG.value ) {
-                                   val logs = onReadLogs()
-                                   if ( logs.isEmpty() )
+                               .clickable( enabled = isEnabled ) {
+                                   val text = logText()
+                                   if ( text.isEmpty() )
                                        Toaster.w( R.string.no_log_available )
                                    else
-                                       textCopyToClipboard( logs.joinToString( "\n" ), context )
+                                       textCopyToClipboard( text, context )
                                }
         )
     }
 
 @Composable
 fun DebugLogs( context: Context, search: SettingEntrySearch ) {
-    var isCrashLog by remember { mutableStateOf( false ) }
+    var from by remember { mutableStateOf<File?>( null ) }
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument( "text/plain" )
-    ) {
-        if( it == null ) return@rememberLauncherForActivityResult
+    ) { uri ->
+        if( from == null || uri == null ) {
+            Timber.tag( "Logs" ).e( "Can't export from `null` or to `null` file" )
+            Toaster.e( R.string.error_failed_to_export_logs )
+            return@rememberLauncherForActivityResult
+        }
 
         // Write in background to prevent UI from freezing up when there's a large file
         CoroutineScope( Dispatchers.IO ).launch {
-            val logs = readLogs( context, isCrashLog )
-            if( logs.isEmpty() ) {
-                Toaster.w( R.string.no_log_available )
-                // Delete file if no log available
-                context.contentResolver.delete( it, null, null )
-            } else
-                context.contentResolver.openOutputStream( it )?.use { outStream ->
-                    outStream.writer().use { writer ->
-                        logs.fastForEach { line ->
-                            writer.write( line )
-                            writer.write( "\n" )
-                        }
-                    }
+            context.contentResolver.openInputStream( from!!.toUri() )?.use { inputStream ->
+                context.contentResolver.openOutputStream( uri )?.use { outputStream ->
+                    inputStream.copyTo( outputStream )
                 }
+            }
+
+            Toaster.done()
         }
     }
 
-    if( search appearsIn R.string.setting_entry_logs )
+    if( search appearsIn R.string.setting_entry_logs ) {
+        val logFile = File(context.filesDir.resolve( "logs" ), RUNTIME_LOGS_FILENAME)
         Entry(
-            context,
-            R.string.setting_entry_logs,
-            R.string.setting_description_copy_or_export_logs,
-            {
-                isCrashLog = false
+            context = context,
+            titleId = R.string.setting_entry_logs,
+            subtitleId = R.string.setting_description_copy_or_export_logs,
+            isEnabled = Preferences.DEBUG_LOG.value,
+            onExport = {
+                from = logFile
                 launcher.launch( RUNTIME_LOGS_FILENAME )
             },
-            { readLogs( context, false ) }
-        )
+            logText = {
+                val lines = if ( logFile.exists() && logFile.canRead() )
+                    logFile.readLines()
+                else
+                    emptyList()
 
-    if( search appearsIn R.string.setting_entry_crash_log )
-        Entry(
-            context,
-            R.string.setting_entry_crash_log,
-            R.string.setting_description_copy_or_export_logs,
-            {
-                isCrashLog = true
-                launcher.launch( CRASH_LOGS_FILENAME )
-            },
-            { readLogs( context, true ) }
+                lines.joinToString( "\n" )
+            }
         )
+    }
+
+    if( search appearsIn R.string.setting_entry_crash_log ) {
+        val crashReportDialog = remember( context ) { CrashReportDialog(context) }
+        Entry(
+            context = context,
+            titleId = R.string.setting_entry_crash_log,
+            subtitleId = R.string.setting_description_copy_or_export_logs,
+            isEnabled = crashReportDialog.isAvailable(),
+            onExport = {
+                from = crashReportDialog.crashlogFile
+                launcher.launch( crashReportDialog.crashlogFile.name )
+            },
+            logText = crashReportDialog::crashlogText
+        )
+    }
 }

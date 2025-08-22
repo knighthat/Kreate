@@ -3,7 +3,7 @@ package it.fast4x.rimusic
 import android.app.Application
 import androidx.compose.runtime.getValue
 import app.kreate.android.Preferences
-import it.fast4x.rimusic.utils.CaptureCrash
+import app.kreate.android.utils.CrashHandler
 import it.fast4x.rimusic.utils.FileLoggingTree
 import timber.log.Timber
 import java.io.File
@@ -17,6 +17,8 @@ class MainApplication : Application() {
         //DatabaseInitializer()
         Dependencies.init(this)
 
+        Thread.setDefaultUncaughtExceptionHandler( CrashHandler(this) )
+
         /**** LOG *********/
         val logEnabled by Preferences.DEBUG_LOG
         if (logEnabled) {
@@ -24,8 +26,6 @@ class MainApplication : Application() {
                 if (it.exists()) return@also
                 it.mkdir()
             }
-
-            Thread.setDefaultUncaughtExceptionHandler(CaptureCrash(dir.absolutePath))
 
             Timber.plant(FileLoggingTree(File(dir, "RiMusic_log.txt")))
             Timber.d("Log enabled at ${dir.absolutePath}")
