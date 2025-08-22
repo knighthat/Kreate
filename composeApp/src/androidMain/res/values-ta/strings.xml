@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">முடிந்தது</string>
     <string name="hidesong">நீங்கள் இந்தப் பாடல்களை மறைக்க விரும்புகிறீர்களா? இதன் வாசிப்பு நேரமும் தற்காலிக சேமிப்பும் அழிக்கப்படும். இந்தச் செயல் திரும்பப் பெற முடியாது.</string>
@@ -799,4 +799,9 @@
     <string name="word_licenses">Licenses</string>
     <string name="view_license">View license</string>
     <string name="word_version">Version</string>
+    <string name="dialog_title_crash_report">Crash report</string>
+    <string name="error_failed_to_read_crashlog">Failed to read crash log</string>
+    <string name="dialog_button_open_report_ticket">Open report ticket</string>
+    <string name="dialog_button_dont_report">Don\'t report</string>
+    <string name="error_failed_to_export_logs">Failed to export logs</string>
 </resources>
