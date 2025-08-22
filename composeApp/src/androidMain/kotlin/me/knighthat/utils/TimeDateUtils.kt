@@ -1,5 +1,6 @@
 package me.knighthat.utils
 
+import me.knighthat.utils.TimeDateUtils.localizedDate
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -53,4 +54,7 @@ object TimeDateUtils {
      */
     fun toStartDateMillis( date: LocalDate ): Long =
         date.atStartOfDay( ZoneId.systemDefault() ).toInstant().toEpochMilli()
+
+    fun crashLogLocalizedDateTime(): DateFormat =
+        SimpleDateFormat( "yyyy-MM-dd_HH-mm-ss", Locale.getDefault() )
 }
