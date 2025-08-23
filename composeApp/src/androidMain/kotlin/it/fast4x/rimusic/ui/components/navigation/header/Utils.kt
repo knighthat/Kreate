@@ -40,7 +40,7 @@ internal class Preference {
         fun parentalControl(): Boolean = Preferences.PARENTAL_CONTROL.value
 
         @Composable
-        fun debugLog(): Boolean = Preferences.DEBUG_LOG.value
+        fun debugLog(): Boolean = Preferences.RUNTIME_LOG.value
 
         @Composable
         fun colorTheme(): ColorPaletteMode = Preferences.THEME_MODE.value

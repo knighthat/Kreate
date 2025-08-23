@@ -208,7 +208,7 @@ fun OtherSettings( paddingValues: PaddingValues ) {
             )
             entry( search, R.string.enable_log_debug ) {
                 SettingComponents.BooleanEntry(
-                    Preferences.DEBUG_LOG,
+                    Preferences.RUNTIME_LOG,
                     R.string.enable_log_debug,
                     R.string.if_enabled_create_a_log_file_to_highlight_errors
                 ) {

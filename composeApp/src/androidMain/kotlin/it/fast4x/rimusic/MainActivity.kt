@@ -347,7 +347,7 @@ class MainActivity :
 
             // Valid to get log when app crash
             if (intent.action == action_copy_crash_log) {
-                Preferences.DEBUG_LOG.value = true
+                Preferences.RUNTIME_LOG.value = true
                 loadAppLog(this@MainActivity, type = LogType.Crash).let {
                     if (it != null) textCopyToClipboard(it, this@MainActivity)
                 }

@@ -1,6 +1,7 @@
 package it.fast4x.rimusic
 
 import android.app.Application
+import androidx.compose.runtime.getValue
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.utils.CrashHandler
@@ -17,7 +18,9 @@ class MainApplication : Application() {
         Dependencies.init(this)
 
         Thread.setDefaultUncaughtExceptionHandler( CrashHandler(this) )
-        if( Preferences.DEBUG_LOG.value )
+
+        val isRuntimeLogEnabled by Preferences.RUNTIME_LOG
+        if( isRuntimeLogEnabled )
             Timber.plant( RollingFileLoggingTree(cacheDir) )
 
         if( BuildConfig.DEBUG )

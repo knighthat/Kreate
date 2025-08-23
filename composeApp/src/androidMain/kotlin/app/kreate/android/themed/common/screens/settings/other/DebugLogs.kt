@@ -93,7 +93,7 @@ fun DebugLogs( context: Context, search: SettingEntrySearch ) {
             context = context,
             titleId = R.string.setting_entry_logs,
             subtitleId = R.string.setting_description_copy_or_export_logs,
-            isEnabled = Preferences.DEBUG_LOG.value,
+            isEnabled = Preferences.RUNTIME_LOG.value,
             onExport = {
                 from = logFile
                 launcher.launch( RUNTIME_LOGS_FILENAME )

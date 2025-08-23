@@ -989,8 +989,8 @@ sealed class Preferences<T>(
         val KEEP_SCREEN_ON by lazy {
             Boolean( preferences, "KeepScreenOn", "isKeepScreenOnEnabled", false )
         }
-        val DEBUG_LOG by lazy {
-            Boolean( preferences, "DebugLog", "logDebugEnabled", false )
+        val RUNTIME_LOG by lazy {
+            Boolean(preferences, "DebugLog", "logDebugEnabled", false)
         }
         val AUTO_SYNC by lazy {
             Boolean( preferences, "AutoSync", "autosync", false )
