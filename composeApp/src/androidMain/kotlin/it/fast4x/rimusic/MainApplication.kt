@@ -23,7 +23,7 @@ class MainApplication : Application() {
         if( isRuntimeLogEnabled )
             Timber.plant( RollingFileLoggingTree(cacheDir) )
 
-        if( BuildConfig.DEBUG )
+        if( BuildConfig.DEBUG || (isRuntimeLogEnabled && Preferences.RUNTIME_LOG_SHARED.value) )
             Timber.plant( Timber.DebugTree() )
     }
 

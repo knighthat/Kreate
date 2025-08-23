@@ -992,6 +992,9 @@ sealed class Preferences<T>(
         val RUNTIME_LOG by lazy {
             Boolean(preferences, "DebugLog", "logDebugEnabled", false)
         }
+        val RUNTIME_LOG_SHARED by lazy {
+            Boolean(preferences, "DebugLogShared", "", true)
+        }
         val AUTO_SYNC by lazy {
             Boolean( preferences, "AutoSync", "autosync", false )
         }

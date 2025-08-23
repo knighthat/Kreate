@@ -32,7 +32,7 @@ import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
-import app.kreate.android.themed.common.screens.settings.other.DebugLogs
+import app.kreate.android.themed.common.screens.settings.other.debugSection
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.ui.screens.settings.StringListValueSelectorSettingsEntry
@@ -202,27 +202,7 @@ fun OtherSettings( paddingValues: PaddingValues ) {
                 )
             }
 
-            header(
-                titleId = R.string.debug,
-                subtitle = { stringResource( R.string.restarting_rimusic_is_required ) }
-            )
-            entry( search, R.string.enable_log_debug ) {
-                SettingComponents.BooleanEntry(
-                    Preferences.RUNTIME_LOG,
-                    R.string.enable_log_debug,
-                    R.string.if_enabled_create_a_log_file_to_highlight_errors
-                ) {
-                    if ( !it ) {
-                        val file = File(context.filesDir.resolve("logs"), "RiMusic_log.txt")
-                        if ( file.exists() ) file.delete()
-
-                        val filec = File(context.filesDir.resolve("logs"), "RiMusic_crash_log.txt")
-                        if ( filec.exists() ) filec.delete()
-                    } else
-                        Toaster.i( R.string.restarting_rimusic_is_required )
-                }
-            }
-            item( "logs" ) { DebugLogs( context, search ) }
+            debugSection( search )
         }
     }
 }
