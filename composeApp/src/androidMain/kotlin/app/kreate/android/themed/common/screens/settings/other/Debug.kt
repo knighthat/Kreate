@@ -133,58 +133,64 @@ fun LazyListScope.debugSection(search: SettingEntrySearch ) {
             modifier = Modifier.padding( start = SettingComponents.CHILDREN_PADDING.dp )
         ) {
             Column {
-                SettingComponents.BooleanEntry(
-                    preference = Preferences.RUNTIME_LOG_SHARED,
-                    title = stringResource( R.string.setting_entry_enable_runtime_log_share ),
-                    subtitle = stringResource( 
-                        if( Preferences.RUNTIME_LOG_SHARED.value )
-                            R.string.setting_description_runtime_log_share_on
-                        else
-                            R.string.setting_description_runtime_log_share_off
-                    ),
-                    action = SettingComponents.Action.RESTART_APP
-                )
+                if( search appearsIn R.string.setting_entry_enable_runtime_log_share )
+                    SettingComponents.BooleanEntry(
+                        preference = Preferences.RUNTIME_LOG_SHARED,
+                        title = stringResource( R.string.setting_entry_enable_runtime_log_share ),
+                        subtitle = stringResource(
+                            if( Preferences.RUNTIME_LOG_SHARED.value )
+                                R.string.setting_description_runtime_log_share_on
+                            else
+                                R.string.setting_description_runtime_log_share_off
+                        ),
+                        action = SettingComponents.Action.RESTART_APP
+                    )
 
-                SettingComponents.ListEntry(
-                    preference = Preferences.RUNTIME_LOG_LEVEL,
-                    title = stringResource( R.string.setting_entry_runtime_log_level ),
-                    getName = {
-                        RollingFileLoggingTree.levelStringMapping[it]!!
-                                              .lowercase()
-                                              .replaceFirstChar( Char::uppercase )
-                    },
-                    getList = {
-                        RollingFileLoggingTree.levelStringMapping.keys.sorted().toTypedArray()
-                    },
-                    subtitle = RollingFileLoggingTree.levelStringMapping[Preferences.RUNTIME_LOG_LEVEL.value]!!,
-                    action = SettingComponents.Action.NONE
-                )
+                if( search appearsIn R.string.setting_entry_runtime_log_level )
+                    SettingComponents.ListEntry(
+                        preference = Preferences.RUNTIME_LOG_LEVEL,
+                        title = stringResource( R.string.setting_entry_runtime_log_level ),
+                        getName = {
+                            RollingFileLoggingTree.levelStringMapping[it]!!
+                                                  .lowercase()
+                                                  .replaceFirstChar( Char::uppercase )
+                        },
+                        getList = {
+                            RollingFileLoggingTree.levelStringMapping.keys.sorted().toTypedArray()
+                        },
+                        subtitle = RollingFileLoggingTree.levelStringMapping[Preferences.RUNTIME_LOG_LEVEL.value]!!,
+                        action = SettingComponents.Action.NONE
+                    )
 
-                val fileCount by Preferences.RUNTIME_LOG_FILE_COUNT
-                SettingComponents.InputDialogEntry(
-                    preference = Preferences.RUNTIME_LOG_FILE_COUNT,
-                    title = stringResource( R.string.setting_entry_runtime_log_file_count ),
-                    subtitle = stringResource(
-                        R.string.string_description_runtime_log_file_count,
-                        pluralStringResource( R.plurals.file, fileCount, fileCount )
-                    ),
-                    constraint = InputDialogConstraints.POSITIVE_INTEGER,
-                    keyboardOption = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    action = SettingComponents.Action.RESTART_APP
-                )
+                if( search appearsIn R.string.setting_entry_runtime_log_file_count ) {
+                    val fileCount by Preferences.RUNTIME_LOG_FILE_COUNT
+                    SettingComponents.InputDialogEntry(
+                        preference = Preferences.RUNTIME_LOG_FILE_COUNT,
+                        title = stringResource( R.string.setting_entry_runtime_log_file_count ),
+                        subtitle = stringResource(
+                            R.string.string_description_runtime_log_file_count,
+                            pluralStringResource( R.plurals.file, fileCount, fileCount )
+                        ),
+                        constraint = InputDialogConstraints.POSITIVE_INTEGER,
+                        keyboardOption = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        action = SettingComponents.Action.RESTART_APP
+                    )
+                }
 
-                val maxSizePerFile by Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE
-                val sizeString by remember { derivedStateOf {
-                    Formatter.formatShortFileSize(context, maxSizePerFile)
-                } }
-                SettingComponents.StorageSizeEntry(
-                    context = context,
-                    preference = Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE,
-                    title = stringResource( R.string.settings_entry_runtime_log_max_size_per_file ),
-                    subtitle = stringResource( R.string.setting_description_runtime_log_max_size_per_file, sizeString ),
-                    currentValue = maxSizePerFile,
-                    action = SettingComponents.Action.RESTART_APP
-                )
+                if( search appearsIn R.string.settings_entry_runtime_log_max_size_per_file ) {
+                    val maxSizePerFile by Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE
+                    val sizeString by remember { derivedStateOf {
+                        Formatter.formatShortFileSize(context, maxSizePerFile)
+                    } }
+                    SettingComponents.StorageSizeEntry(
+                        context = context,
+                        preference = Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE,
+                        title = stringResource( R.string.settings_entry_runtime_log_max_size_per_file ),
+                        subtitle = stringResource( R.string.setting_description_runtime_log_max_size_per_file, sizeString ),
+                        currentValue = maxSizePerFile,
+                        action = SettingComponents.Action.RESTART_APP
+                    )
+                }
             }
         }
     }
