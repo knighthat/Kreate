@@ -42,7 +42,7 @@ class CrashReportDialog(private val context: Context): Dialog() {
     lateinit var crashlogFile: File
 
     init {
-        val dateFormat = TimeDateUtils.crashLogLocalizedDateTime()
+        val dateFormat = TimeDateUtils.logFileName()
         val dateFileMapping = CrashHandler.getDir( context ).listFiles()?.associateBy {
             val matchResult = CrashHandler.fileNameRegex.find( it.name )
 

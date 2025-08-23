@@ -55,6 +55,6 @@ object TimeDateUtils {
     fun toStartDateMillis( date: LocalDate ): Long =
         date.atStartOfDay( ZoneId.systemDefault() ).toInstant().toEpochMilli()
 
-    fun crashLogLocalizedDateTime(): DateFormat =
+    fun logFileName(): DateFormat =
         SimpleDateFormat( "yyyy-MM-dd_HH-mm-ss", Locale.getDefault() )
 }

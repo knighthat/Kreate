@@ -37,7 +37,7 @@ class CrashHandler(
         if( !crashlogsDir.exists() )
             crashlogsDir.mkdirs()
 
-        val datetime = TimeDateUtils.crashLogLocalizedDateTime().format( Date() )
+        val datetime = TimeDateUtils.logFileName().format( Date() )
         val logFile = crashlogsDir.resolve(
             "${BuildConfig.APP_NAME}_crashlog_$datetime.log"
         )
