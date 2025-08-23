@@ -16,4 +16,12 @@
         <item quantity="many">%d query</item>
         <item quantity="other">%d query</item>
     </plurals>
+    <plurals name="file">
+        <item quantity="one">%d file</item>
+        <item quantity="zero">%d file</item>
+        <item quantity="two">%d file</item>
+        <item quantity="many">%d file</item>
+        <item quantity="other">%d file</item>
+        <item quantity="few">%d file</item>
+    </plurals>
 </resources>

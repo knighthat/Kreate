@@ -20,8 +20,10 @@ class MainApplication : Application() {
         Thread.setDefaultUncaughtExceptionHandler( CrashHandler(this) )
 
         val isRuntimeLogEnabled by Preferences.RUNTIME_LOG
-        if( isRuntimeLogEnabled )
-            Timber.plant( RollingFileLoggingTree(cacheDir) )
+        val fileCount by Preferences.RUNTIME_LOG_FILE_COUNT
+        val maxSizePerFile by Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE
+        if( isRuntimeLogEnabled && fileCount > 0 && maxSizePerFile > 0 )
+            Timber.plant( RollingFileLoggingTree(cacheDir, fileCount, maxSizePerFile) )
 
         if( BuildConfig.DEBUG || (isRuntimeLogEnabled && Preferences.RUNTIME_LOG_SHARED.value) )
             Timber.plant( Timber.DebugTree() )

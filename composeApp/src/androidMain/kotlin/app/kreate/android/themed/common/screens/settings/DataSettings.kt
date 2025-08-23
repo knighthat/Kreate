@@ -52,7 +52,7 @@ import me.knighthat.utils.Toaster
 import kotlin.math.roundToInt
 
 @Composable
-private fun SettingComponents.StorageSizeEntry(
+fun SettingComponents.StorageSizeEntry(
     context: Context,
     preference: Preferences.Long,
     title: String,

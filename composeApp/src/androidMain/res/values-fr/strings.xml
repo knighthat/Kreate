@@ -810,4 +810,9 @@ Volume BAS : titre précédent</string>
     <string name="setting_entry_enable_runtime_log_share">Share logs</string>
     <string name="setting_description_runtime_log_share_on">Other log reader can see all logs of this app</string>
     <string name="setting_description_runtime_log_share_off">Some logs aren\'t visible to log reader apps</string>
+    <string name="setting_entry_runtime_log_level">Log level</string>
+    <string name="setting_entry_runtime_log_file_count">File count</string>
+    <string name="string_description_runtime_log_file_count">%s will be kept at any given time</string>
+    <string name="settings_entry_runtime_log_max_size_per_file">Max size per file</string>
+    <string name="setting_description_runtime_log_max_size_per_file">Must be at least %s before rolling over</string>
 </resources>

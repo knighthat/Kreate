@@ -2,6 +2,7 @@ package app.kreate.android.utils.logging
 
 import android.util.Log
 import androidx.compose.ui.util.fastForEach
+import app.kreate.android.Preferences
 import me.knighthat.utils.TimeDateUtils
 import timber.log.Timber
 import java.io.Closeable
@@ -13,14 +14,12 @@ import java.util.Date
 
 class RollingFileLoggingTree(
     cacheDir: File,
-    private val captureLevel: Int = Log.INFO,
-    private val fileCount: Int = 5
+    private val fileCount: Int,
+    private val maxSizePerFile: Long
 ): Timber.DebugTree(), Closeable {
 
     companion object {
-        private const val MAX_LOG_FILE_SIZE = 5L * 1024 * 1024       // 5 MB
-
-        private val levelStringMapping = mapOf(
+        val levelStringMapping = mapOf(
             Log.VERBOSE to "VERBOSE",
             Log.DEBUG   to "DEBUG",
             Log.INFO    to "INFO",
@@ -39,6 +38,13 @@ class RollingFileLoggingTree(
     private var writer: PrintWriter
 
     init {
+        require( fileCount > 0 ) {
+            "${Preferences.RUNTIME_LOG_FILE_COUNT.key} must be a positive number! ${Preferences.RUNTIME_LOG_FILE_COUNT.value}"
+        }
+        require( maxSizePerFile > 0L ) {
+            "${Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE.key} must be a positive number! ${Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE.value}"
+        }
+
         if( !logDir.exists() ) logDir.mkdirs()
 
         this.logFile = createLogFile()
@@ -75,7 +81,7 @@ class RollingFileLoggingTree(
         return logFile
     }
 
-    private fun canRollOver(): Boolean = this.logFile.length() >= MAX_LOG_FILE_SIZE
+    private fun canRollOver(): Boolean = this.logFile.length() >= maxSizePerFile
 
     override fun close() = this.writer.close()
 
@@ -85,7 +91,7 @@ class RollingFileLoggingTree(
         message: String,
         t: Throwable?
     ) {
-        if( priority < captureLevel ) return
+        if( priority < Preferences.RUNTIME_LOG_LEVEL.value) return
 
         this.writer.format(
             // [15:03:00/DEBUG] Main: Log message goes here

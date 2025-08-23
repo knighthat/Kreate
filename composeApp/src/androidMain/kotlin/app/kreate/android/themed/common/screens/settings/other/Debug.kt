@@ -1,6 +1,7 @@
 package app.kreate.android.themed.common.screens.settings.other
 
 import android.content.Context
+import android.text.format.Formatter
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -10,8 +11,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,7 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import app.kreate.android.Preferences
@@ -28,12 +33,15 @@ import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.header
+import app.kreate.android.themed.common.screens.settings.StorageSizeEntry
+import app.kreate.android.utils.logging.RollingFileLoggingTree
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.utils.textCopyToClipboard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
+import me.knighthat.component.dialog.InputDialogConstraints
 import me.knighthat.utils.Toaster
 import timber.log.Timber
 import java.io.File
@@ -137,6 +145,46 @@ fun LazyListScope.debugSection(search: SettingEntrySearch ) {
                     action = SettingComponents.Action.RESTART_APP
                 )
 
+                SettingComponents.ListEntry(
+                    preference = Preferences.RUNTIME_LOG_LEVEL,
+                    title = stringResource( R.string.setting_entry_runtime_log_level ),
+                    getName = {
+                        RollingFileLoggingTree.levelStringMapping[it]!!
+                                              .lowercase()
+                                              .replaceFirstChar( Char::uppercase )
+                    },
+                    getList = {
+                        RollingFileLoggingTree.levelStringMapping.keys.sorted().toTypedArray()
+                    },
+                    subtitle = RollingFileLoggingTree.levelStringMapping[Preferences.RUNTIME_LOG_LEVEL.value]!!,
+                    action = SettingComponents.Action.NONE
+                )
+
+                val fileCount by Preferences.RUNTIME_LOG_FILE_COUNT
+                SettingComponents.InputDialogEntry(
+                    preference = Preferences.RUNTIME_LOG_FILE_COUNT,
+                    title = stringResource( R.string.setting_entry_runtime_log_file_count ),
+                    subtitle = stringResource(
+                        R.string.string_description_runtime_log_file_count,
+                        pluralStringResource( R.plurals.file, fileCount, fileCount )
+                    ),
+                    constraint = InputDialogConstraints.POSITIVE_INTEGER,
+                    keyboardOption = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    action = SettingComponents.Action.RESTART_APP
+                )
+
+                val maxSizePerFile by Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE
+                val sizeString by remember { derivedStateOf {
+                    Formatter.formatShortFileSize(context, maxSizePerFile)
+                } }
+                SettingComponents.StorageSizeEntry(
+                    context = context,
+                    preference = Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE,
+                    title = stringResource( R.string.settings_entry_runtime_log_max_size_per_file ),
+                    subtitle = stringResource( R.string.setting_description_runtime_log_max_size_per_file, sizeString ),
+                    currentValue = maxSizePerFile,
+                    action = SettingComponents.Action.RESTART_APP
+                )
             }
         }
     }

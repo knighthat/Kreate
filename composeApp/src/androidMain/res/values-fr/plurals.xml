@@ -8,4 +8,9 @@
         <item quantity="one">%d requête</item>
         <item quantity="other">%d requêtes</item>
     </plurals>
+    <plurals name="file">
+        <item quantity="one">%d file</item>
+        <item quantity="many">%d file</item>
+        <item quantity="other">%d file</item>
+    </plurals>
 </resources>

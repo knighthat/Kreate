@@ -8,4 +8,8 @@
         <item quantity="one">%d sorgusu</item>
         <item quantity="other">%d sorgusu</item>
     </plurals>
+    <plurals name="file">
+        <item quantity="one">%d file</item>
+        <item quantity="other">%d file</item>
+    </plurals>
 </resources>

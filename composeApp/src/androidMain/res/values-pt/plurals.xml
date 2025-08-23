@@ -8,4 +8,9 @@
         <item quantity="one">%d pesquisa</item>
         <item quantity="other">%d pesquisas</item>
     </plurals>
+    <plurals name="file">
+        <item quantity="one">%d file</item>
+        <item quantity="many">%d file</item>
+        <item quantity="other">%d file</item>
+    </plurals>
 </resources>
