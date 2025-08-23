@@ -26,7 +26,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -398,8 +397,22 @@ object SettingComponents {
         isEnabled: Boolean = true,
         action: Action = Action.NONE,
     ) {
-        val dialog = remember( preference.value ) {
-            SettingInputDialog(constraint, preference, title, onValueChanged, keyboardOption)
+        val dialog = remember( constraint, title, keyboardOption, onValueChanged, action ) {
+            SettingInputDialog(
+                constraint = constraint,
+                preference = preference,
+                title = title,
+                keyboardOption = keyboardOption,
+                onValueSet = {
+                    onValueChanged( it )
+
+                    when( action ) {
+                        Action.NONE                     -> { /* Does nothing */ }
+                        Action.RESTART_APP              -> RestartAppDialog.showDialog()
+                        Action.RESTART_PLAYER_SERVICE   -> RestartPlayerService.requestRestart()
+                    }
+                }
+            )
         }
         dialog.Render()
 
@@ -410,14 +423,6 @@ object SettingComponents {
             subtitle = subtitle.ifBlank { preference.value.toString() },
             isEnabled = isEnabled
         )
-
-        LaunchedEffect( preference.value ) {
-            when( action ) {
-                Action.NONE                     -> { /* Does nothing */ }
-                Action.RESTART_APP              -> RestartAppDialog.showDialog()
-                Action.RESTART_PLAYER_SERVICE   -> RestartPlayerService.requestRestart()
-            }
-        }
     }
 
     @Composable
