@@ -97,7 +97,7 @@ fun NetworkSettings( paddingValues: PaddingValues ) {
                         SettingComponents.InputDialogEntry(
                             preference = Preferences.PROXY_PORT,
                             titleId = R.string.proxy_port,
-                            constraint = "^\\d*$",
+                            constraint = InputDialogConstraints.POSITIVE_INTEGER,
                             keyboardOption = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )
                 }
