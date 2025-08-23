@@ -19,7 +19,15 @@ object UpdatePlugins {
                ?.deleteRecursively()
     }
 
+    private fun versionCode115( filesDir: File ) {
+        // Deleting old logs
+        filesDir.resolve( "logs" )
+                .takeIf( File::exists )
+                ?.deleteRecursively()
+    }
+
     fun execute( context: Context ) {
         versionCode111( context )
+        versionCode115( context.filesDir )
     }
 }
