@@ -8,4 +8,8 @@
         <item quantity="one">%d query</item>
         <item quantity="other">%d queries</item>
     </plurals>
+    <plurals name="file">
+        <item quantity="one">%d file</item>
+        <item quantity="other">%d files</item>
+    </plurals>
 </resources>
