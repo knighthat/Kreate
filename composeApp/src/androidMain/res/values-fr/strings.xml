@@ -802,9 +802,17 @@ Volume BAS : titre précédent</string>
     <string name="word_licenses">Licences</string>
     <string name="view_license">Voir la licence</string>
     <string name="word_version">Version</string>
-    <string name="dialog_title_crash_report">Crash report</string>
-    <string name="error_failed_to_read_crashlog">Failed to read crash log</string>
-    <string name="dialog_button_open_report_ticket">Open report ticket</string>
-    <string name="dialog_button_dont_report">Don\'t report</string>
-    <string name="error_failed_to_export_logs">Failed to export logs</string>
+    <string name="dialog_title_crash_report">Rapport d\'erreur</string>
+    <string name="error_failed_to_read_crashlog">Échec de la lecture du journal des plantages</string>
+    <string name="dialog_button_open_report_ticket">Ouvrir un ticket de rapport</string>
+    <string name="dialog_button_dont_report">Ne pas signaler</string>
+    <string name="error_failed_to_export_logs">Échec de l\'exportation des journaux</string>
+    <string name="setting_entry_enable_runtime_log_share">Partager les journaux</string>
+    <string name="setting_description_runtime_log_share_on">Les autres lecteurs de journaux peuvent voir tous les journaux de cette application</string>
+    <string name="setting_description_runtime_log_share_off">Certains journaux ne sont pas visibles pour les applications de lecture de journaux</string>
+    <string name="setting_entry_runtime_log_level">Niveau de journalisation</string>
+    <string name="setting_entry_runtime_log_file_count">Nombre de fichiers</string>
+    <string name="string_description_runtime_log_file_count">%s sera conservé à tout moment</string>
+    <string name="settings_entry_runtime_log_max_size_per_file">Taille maximale par fichier</string>
+    <string name="setting_description_runtime_log_max_size_per_file">Doit être au moins %s avant de rouler</string>
 </resources>
