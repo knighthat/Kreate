@@ -434,8 +434,8 @@
     <string name="cache_location_private">Privát</string>
     <string name="cache_location_system">Rendszer</string>
     <string name="debug">Hibakeresés</string>
-    <string name="enable_log_debug">A hibakeresés naplózásának engedélyezése</string>
-    <string name="if_enabled_create_a_log_file_to_highlight_errors">Ha engedélyezve van, létrehoz egy naplófájlt a hibák kiemeléséhez</string>
+    <string name="setting_entry_runtime_log">Runtime log</string>
+    <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Napló másolása a vágólapra</string>
     <string name="fake_audio_bar">Hamis hangsáv</string>
     <string name="copy_crash_log_to_clipboard">Összeomlási napló másolása a vágólapra</string>
