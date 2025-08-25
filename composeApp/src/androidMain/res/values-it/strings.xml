@@ -434,8 +434,8 @@
     <string name="cache_location_private">Privato</string>
     <string name="cache_location_system">Sistema</string>
     <string name="debug">Debug</string>
-    <string name="enable_log_debug">Abilita il registro di debug</string>
-    <string name="if_enabled_create_a_log_file_to_highlight_errors">Se abilitato, crea un file di registro per evidenziare gli errori</string>
+    <string name="setting_entry_runtime_log">Runtime log</string>
+    <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Copia il registro negli appunti</string>
     <string name="fake_audio_bar">Barra Audio Falso</string>
     <string name="copy_crash_log_to_clipboard">Copia il registro dei crash negli appunti</string>
