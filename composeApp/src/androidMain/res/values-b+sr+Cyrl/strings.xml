@@ -434,8 +434,8 @@
     <string name="cache_location_private">Приватно</string>
     <string name="cache_location_system">Систем</string>
     <string name="debug">Отклањање грешака</string>
-    <string name="enable_log_debug">Омогући запис отклањања грешака</string>
-    <string name="if_enabled_create_a_log_file_to_highlight_errors">Ако је омогућено, креирајте датотеку записа да бисте истакли грешке</string>
+    <string name="setting_entry_runtime_log">Runtime log</string>
+    <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Копирајте запис у привремену меморију</string>
     <string name="fake_audio_bar">Лажни Аудио Бар</string>
     <string name="copy_crash_log_to_clipboard">Копирајте запис грешке у привремену меморију</string>
