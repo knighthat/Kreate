@@ -170,7 +170,7 @@
     <string name="disable_song_switching_via_swipe">Kaydırarak şarkı değiştirmeyi devre dışı bırak</string>
     <string name="interface_in_use">Kullanılan arayüz</string>
     <string name="user_interface">Kullanıcı arayüzü</string>
-    <string name="ui_tab">ARAYÜZ</string>
+    <string name="ui_tab">Arayüz</string>
     <string name="system_language">Sistem dili</string>
     <string name="biggest">En Büyük</string>
     <string name="set_custom_cache">Özel önbellek ayarla</string>
@@ -804,12 +804,12 @@
     <string name="dialog_button_open_report_ticket">Destek talebi oluştur</string>
     <string name="dialog_button_dont_report">Rapor etme</string>
     <string name="error_failed_to_export_logs">Günlükler dışa aktarılamadı</string>
-    <string name="setting_entry_enable_runtime_log_share">Share logs</string>
-    <string name="setting_description_runtime_log_share_on">Other log reader can see all logs of this app</string>
-    <string name="setting_description_runtime_log_share_off">Some logs aren\'t visible to log reader apps</string>
-    <string name="setting_entry_runtime_log_level">Log level</string>
-    <string name="setting_entry_runtime_log_file_count">File count</string>
-    <string name="string_description_runtime_log_file_count">%s will be kept at any given time</string>
-    <string name="settings_entry_runtime_log_max_size_per_file">Max size per file</string>
-    <string name="setting_description_runtime_log_max_size_per_file">Must be at least %s before rolling over</string>
+    <string name="setting_entry_enable_runtime_log_share">Kayıtları paylaş</string>
+    <string name="setting_description_runtime_log_share_on">Bu uygulamanın tüm günlüklerini diğer günlük okuyucu görebilir</string>
+    <string name="setting_description_runtime_log_share_off">Bazı günlükler günlük okuyucu uygulamalar tarafından görüntülenemiyor</string>
+    <string name="setting_entry_runtime_log_level">Kayıt seviyesi</string>
+    <string name="setting_entry_runtime_log_file_count">Dosya sayısı</string>
+    <string name="string_description_runtime_log_file_count">Herhangi bir anda %s tutulacaktır</string>
+    <string name="settings_entry_runtime_log_max_size_per_file">Dosya başına maksimum boyut</string>
+    <string name="setting_description_runtime_log_max_size_per_file">Devrilmeden (yeni dosyaya geçmeden) önce en az %s olmalı</string>
 </resources>
