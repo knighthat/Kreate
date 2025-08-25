@@ -434,8 +434,8 @@
     <string name="cache_location_private">Privat</string>
     <string name="cache_location_system">System</string>
     <string name="debug">FEILSØKING</string>
-    <string name="enable_log_debug">Aktiver feilsøkingslogg</string>
-    <string name="if_enabled_create_a_log_file_to_highlight_errors">Hvis aktivert, opprett en loggfil for å utheve feil</string>
+    <string name="setting_entry_runtime_log">Runtime log</string>
+    <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Kopier logg til utklippstavlen</string>
     <string name="fake_audio_bar">Falsk lydlinje</string>
     <string name="copy_crash_log_to_clipboard">Kopier krasjlogg til utklippstavlen</string>
