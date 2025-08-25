@@ -434,8 +434,8 @@
     <string name="cache_location_private">Şəxsi</string>
     <string name="cache_location_system">Sistem</string>
     <string name="debug">SINAQ</string>
-    <string name="enable_log_debug">Sınaq jurnalın aktivləşdir</string>
-    <string name="if_enabled_create_a_log_file_to_highlight_errors">Aktivdirsə, xətaları vurğulamaq üçün jurnal faylı yarat</string>
+    <string name="setting_entry_runtime_log">Runtime log</string>
+    <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Jurnalı buferə köçür</string>
     <string name="fake_audio_bar">Saxta Səs Cizgisi</string>
     <string name="copy_crash_log_to_clipboard">Çökmə jurnalın buferə köçür</string>
