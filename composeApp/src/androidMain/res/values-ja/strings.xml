@@ -434,8 +434,8 @@
     <string name="cache_location_private">プライベート</string>
     <string name="cache_location_system">システム</string>
     <string name="debug">デバッグ</string>
-    <string name="enable_log_debug">ログのデバッグを有効化</string>
-    <string name="if_enabled_create_a_log_file_to_highlight_errors">有効なら、エラーに焦点を当てたログファイルを作成します</string>
+    <string name="setting_entry_runtime_log">Runtime log</string>
+    <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">ログをクリップボードにコピー</string>
     <string name="fake_audio_bar">偽の音声バー</string>
     <string name="copy_crash_log_to_clipboard">クラッシュのログをクリップボードにコピー</string>
