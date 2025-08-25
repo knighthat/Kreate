@@ -436,8 +436,8 @@
     <string name="cache_location_private">Privé</string>
     <string name="cache_location_system">Système</string>
     <string name="debug">DÉBOGAGE</string>
-    <string name="enable_log_debug">Activer le journal du débogage</string>
-    <string name="if_enabled_create_a_log_file_to_highlight_errors">Si activé, crée un fichier journal pour y lister les erreurs</string>
+    <string name="setting_entry_runtime_log">Runtime log</string>
+    <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Copier les journaux dans le presse-papiers</string>
     <string name="fake_audio_bar">Fausse barre audio</string>
     <string name="copy_crash_log_to_clipboard">Copier le journal des plantages dans le presse-papiers</string>
