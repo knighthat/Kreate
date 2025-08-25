@@ -434,8 +434,8 @@
     <string name="cache_location_private">비공개</string>
     <string name="cache_location_system">시스템</string>
     <string name="debug">디버그</string>
-    <string name="enable_log_debug">디버그 로그 활성화</string>
-    <string name="if_enabled_create_a_log_file_to_highlight_errors">활성화시, 오류를 강조하는 로그 파일이 생성됩니다</string>
+    <string name="setting_entry_runtime_log">Runtime log</string>
+    <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">클립보드에 로그 복사</string>
     <string name="fake_audio_bar">가짜 오디오 바</string>
     <string name="copy_crash_log_to_clipboard">클립보드에 충돌 로그 복사</string>
