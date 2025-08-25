@@ -434,8 +434,8 @@
     <string name="cache_location_private">ব্যক্তিগত</string>
     <string name="cache_location_system">সিস্টেম</string>
     <string name="debug">ডিবাগ</string>
-    <string name="enable_log_debug">লগ ডিবাগ চালু</string>
-    <string name="if_enabled_create_a_log_file_to_highlight_errors">চালু করলে, ত্রুটি হাইলাইট করে লগ ফাইল বানানো হবে</string>
+    <string name="setting_entry_runtime_log">Runtime log</string>
+    <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">ক্লিপবোর্ডে লগ কপি করুন</string>
     <string name="fake_audio_bar">ফেইক অডিও বার</string>
     <string name="copy_crash_log_to_clipboard">ক্লিপ বোর্ডে ক্র‍্যাশ লগ কপি করুন</string>
