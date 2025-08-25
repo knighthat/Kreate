@@ -434,8 +434,8 @@
     <string name="cache_location_private">Private</string>
     <string name="cache_location_system">Systema</string>
     <string name="debug">DEPURATION</string>
-    <string name="enable_log_debug">Activar registro de depuration</string>
-    <string name="if_enabled_create_a_log_file_to_highlight_errors">Si es activate, crea un file de registro pro evidentiar le errores</string>
+    <string name="setting_entry_runtime_log">Runtime log</string>
+    <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Copiar registro al area de transferentia</string>
     <string name="fake_audio_bar">Barra de audio false</string>
     <string name="copy_crash_log_to_clipboard">Copiar le registro de fallimento al area de transferentia</string>
