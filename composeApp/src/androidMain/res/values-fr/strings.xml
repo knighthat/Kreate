@@ -815,4 +815,5 @@ Volume BAS : titre précédent</string>
     <string name="string_description_runtime_log_file_count">%s sera conservé à tout moment</string>
     <string name="settings_entry_runtime_log_max_size_per_file">Taille maximale par fichier</string>
     <string name="setting_description_runtime_log_max_size_per_file">Doit être au moins %s avant de rouler</string>
+    <string name="setting_entry_sync_quotes">Sync \"%s\"</string>
 </resources>
