@@ -26,7 +26,7 @@
     <string name="songs">Titres</string>
     <string name="enqueue">Mettre en file d\'attente</string>
     <string name="shuffle">Aléatoire</string>
-    <string name="from_wikipedia_cca">De Wikipedia sous license Creative Commons CC-BY-SA 3.0</string>
+    <string name="from_wikipedia_cca">De Wikipédia sous licence Creative Commons CC-BY-SA 3.0</string>
     <string name="library">Bibliothèque</string>
     <string name="delete_playlist">Voulez-vous vraiment supprimer cette playlist ?</string>
     <string name="sync">Synchroniser</string>
@@ -436,7 +436,7 @@
     <string name="cache_location_private">Privé</string>
     <string name="cache_location_system">Système</string>
     <string name="debug">DÉBOGAGE</string>
-    <string name="setting_entry_runtime_log">Runtime log</string>
+    <string name="setting_entry_runtime_log">Journal d\'exécution</string>
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Copier les journaux dans le presse-papiers</string>
     <string name="fake_audio_bar">Fausse barre audio</string>
