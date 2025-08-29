@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="second">
-        <item quantity="zero">%d second</item>
-        <item quantity="one">%d second</item>
-        <item quantity="two">%d second</item>
-        <item quantity="few">%d second</item>
-        <item quantity="many">%d second</item>
-        <item quantity="other">%d second</item>
+        <item quantity="zero">%d ثانية</item>
+        <item quantity="one">%d ثانية</item>
+        <item quantity="two">%d ثانيتان</item>
+        <item quantity="few">%d ثوانٍ</item>
+        <item quantity="many">%d ثانية</item>
+        <item quantity="other">%d ثانية</item>
     </plurals>
     <plurals name="query">
-        <item quantity="zero">%d query</item>
-        <item quantity="one">%d query</item>
-        <item quantity="two">%d query</item>
-        <item quantity="few">%d query</item>
-        <item quantity="many">%d query</item>
-        <item quantity="other">%d query</item>
+        <item quantity="zero">%d استعلام</item>
+        <item quantity="one">%d استعلام</item>
+        <item quantity="two">%d استعلامان</item>
+        <item quantity="few">%d استعلامات</item>
+        <item quantity="many">%d استعلام</item>
+        <item quantity="other">%d استعلام</item>
     </plurals>
     <plurals name="file">
-        <item quantity="zero">%d file</item>
-        <item quantity="one">%d file</item>
-        <item quantity="two">%d file</item>
-        <item quantity="few">%d file</item>
-        <item quantity="many">%d file</item>
-        <item quantity="other">%d file</item>
+        <item quantity="zero">%d ملف</item>
+        <item quantity="one">%d ملف</item>
+        <item quantity="two">%d ملفان</item>
+        <item quantity="few">%d ملفات</item>
+        <item quantity="many">%d ملف</item>
+        <item quantity="other">%d ملف</item>
     </plurals>
 </resources>
