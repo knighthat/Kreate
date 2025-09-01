@@ -21,6 +21,7 @@ plugins {
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias( libs.plugins.license.report )
+    alias( libs.plugins.hilt )
 }
 
 repositories {
@@ -80,6 +81,9 @@ kotlin {
             implementation( libs.timber )
 
             implementation( libs.toasty )
+
+            // Dependency injection
+            implementation( libs.android.hilt )
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -299,6 +303,7 @@ room {
 
 dependencies {
     add( "kspAndroid", libs.room.compiler )
+    add( "kspAndroid", libs.android.hilt.compiler )
 
     coreLibraryDesugaring(libs.desugaring.nio)
 }

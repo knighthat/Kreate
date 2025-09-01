@@ -8,9 +8,11 @@ import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.innertube.InnertubeProvider
 import app.kreate.android.utils.CrashHandler
 import app.kreate.android.utils.logging.RollingFileLoggingTree
+import dagger.hilt.android.HiltAndroidApp
 import me.knighthat.innertube.Innertube
 import timber.log.Timber
 
+@HiltAndroidApp
 class MainApplication : Application() {
 
     override fun onCreate() {

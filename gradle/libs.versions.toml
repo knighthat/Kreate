@@ -39,6 +39,7 @@ webkit = "1.14.0"
 newpipe-extractor = "0.24.8"
 compose-kmp = "1.8.2"
 license-report = "2.9"
+hilt = "2.57.1"
 
 
 [libraries]
@@ -115,6 +116,10 @@ junit-platform = { group = "org.junit.platform", name = "junit-platform-launcher
 monetcompat = {  group = "com.github.KieronQuinn", name = "MonetCompat", version.ref = "monetcompat" }
 androidmaterial = { group = "com.google.android.material", name = "material", version.ref = "androidmaterial" }     # Required by MonetCompat for some reason
 
+# Dependency injection
+android-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+android-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+
 # Extras
 translator = {  group = "com.github.therealbush", name = "translator", version.ref = "translator" }
 kotlin-csv = {  group = "com.jsoizo", name = "kotlin-csv-jvm", version.ref = "kotlin-csv" }
@@ -143,6 +148,7 @@ kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 license-report = { id = "com.github.jk1.dependency-license-report", version.ref = "license-report" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 
 
 [bundles]
