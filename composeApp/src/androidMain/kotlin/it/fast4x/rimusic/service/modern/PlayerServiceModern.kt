@@ -156,7 +156,10 @@ val Song.isLocal get() = id.startsWith(LOCAL_KEY_PREFIX)
 class PlayerServiceModern:
     MediaLibraryService(),
     PlaybackStatsListener.Callback,
-    SharedPreferences.OnSharedPreferenceChangeListener {
+    SharedPreferences.OnSharedPreferenceChangeListener
+{
+
+    @Inject lateinit var cache: Cache
 
     private lateinit var listener: ExoPlayerListener
     private lateinit var volumeFader: VolumeFader
@@ -167,7 +170,6 @@ class PlayerServiceModern:
     private var mediaLibrarySessionCallback: MediaLibrarySessionCallback =
         MediaLibrarySessionCallback(this, Database, MyDownloadHelper)
     lateinit var player: ExoPlayer
-    lateinit var cache: Cache
     lateinit var downloadCache: Cache
     private lateinit var bitmapProvider: BitmapProvider
     private var isPersistentQueueEnabled: Boolean = false
@@ -201,34 +203,6 @@ class PlayerServiceModern:
     private var notificationManager: NotificationManager? = null
 
     private lateinit var notificationActionReceiver: NotificationActionReceiver
-
-    private fun initCache(): Cache {
-        val fromSetting by Preferences.EXO_CACHE_SIZE
-
-        val cacheEvictor = when( fromSetting ) {
-            0L, Long.MAX_VALUE -> NoOpCacheEvictor()
-            else -> LeastRecentlyUsedCacheEvictor( fromSetting )
-        }
-        val cacheDir = when( fromSetting ) {
-            // Temporary directory deletes itself after close
-            // It means songs remain on device as long as it's open
-            0L -> createTempDirectory( CACHE_DIRNAME ).toFile()
-
-            // Looks a bit ugly but what it does is
-            // check location set by user and return
-            // appropriate path with [CACHE_DIRNAME] appended.
-            else -> when( Preferences.EXO_CACHE_LOCATION.value ) {
-                ExoPlayerCacheLocation.System,
-                ExoPlayerCacheLocation.SPLIT    -> cacheDir
-                ExoPlayerCacheLocation.Private  -> filesDir
-            }.resolve( CACHE_DIRNAME )
-        }
-
-        // Ensure this location exists
-        cacheDir.mkdirs()
-
-        return SimpleCache( cacheDir, cacheEvictor, StandaloneDatabaseProvider(this) )
-    }
 
     private fun onMediaItemTransition( mediaItem: MediaItem? ) {
         updateBitmap()
@@ -301,7 +275,6 @@ class PlayerServiceModern:
 
         audioQualityFormat = Preferences.AUDIO_QUALITY.value
 
-        cache = initCache()
         downloadCache = MyDownloadHelper.getDownloadCache( applicationContext )
 
         player = ExoPlayer.Builder(this)
