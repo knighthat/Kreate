@@ -13,6 +13,7 @@ import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.datasource.cache.CacheDataSink
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR
+import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.utils.CharUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
@@ -26,7 +27,6 @@ import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.isConnectionMeteredEnabled
 import it.fast4x.rimusic.models.Format
 import it.fast4x.rimusic.service.LoginRequiredException
-import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.UnknownException
 import it.fast4x.rimusic.service.UnplayableException
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
@@ -42,6 +42,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.json.Json
+import me.knighthat.impl.DownloadHelperImpl
 import me.knighthat.innertube.Endpoints
 import me.knighthat.innertube.response.PlayerResponse
 import me.knighthat.utils.Toaster
@@ -444,10 +445,10 @@ fun PlayerServiceModern.createDataSourceFactory( context: Context ): DataSource.
 
 @OptIn(ExperimentalSerializationApi::class)
 @UnstableApi
-fun MyDownloadHelper.createDataSourceFactory( context: Context ): DataSource.Factory =
+fun DownloadHelperImpl.createDataSourceFactory( context: Context ): DataSource.Factory =
     ResolvingDataSource.Factory(
         CacheDataSource.Factory()
-                       .setCache( getDownloadCache(context) )
+                       .setCache( downloadCache )
                        .apply {
                            setUpstreamDataSourceFactory(
                                upstreamDatasourceFactory( context )
@@ -467,7 +468,7 @@ fun MyDownloadHelper.createDataSourceFactory( context: Context ): DataSource.Fac
             // No need to fetch online for already cached data
             dataSpec.subrange( dataSpec.uriPositionOffset, C.LENGTH_UNSET.toLong() )
         }else
-            dataSpec.process( videoId, audioQualityFormat, context.isConnectionMetered() )
+            dataSpec.process( videoId, Preferences.AUDIO_QUALITY.value, context.isConnectionMetered() )
     }
 //</editor-fold>
 
