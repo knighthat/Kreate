@@ -342,7 +342,7 @@ class MediaLibrarySessionCallback(
                                         )
                             ID_ONDEVICE -> database.songTable.allOnDevice()
                             ID_DOWNLOADED -> {
-                                val downloads = downloadHelper.downloads.value
+                                val downloads = downloadHelper.instance.downloads.value
                                 database.songTable
                                         .all( excludeHidden = true )
                                         .flowOn( Dispatchers.IO )
@@ -444,7 +444,7 @@ class MediaLibrarySessionCallback(
                                            )
                         ID_ONDEVICE -> database.songTable.allOnDevice()
                         ID_DOWNLOADED -> {
-                            val downloads = downloadHelper.downloads.value
+                            val downloads = downloadHelper.instance.downloads.value
                             database.songTable
                                     .all( excludeHidden = false )
                                     .map { songs ->
@@ -574,7 +574,7 @@ class MediaLibrarySessionCallback(
                         .size
                 }
 
-    private fun getCountDownloadedSongs() = downloadHelper.downloads.map {
+    private fun getCountDownloadedSongs() = downloadHelper.instance.downloads.map {
         it.filter {
             it.value.state == Download.STATE_COMPLETED
         }.size

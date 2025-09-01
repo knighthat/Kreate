@@ -125,7 +125,7 @@ fun PlayerMenu(
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(context(),mediaItem)
+                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
                 else {
@@ -169,7 +169,7 @@ fun MiniPlayerMenu(
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(context(),mediaItem)
+                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
                 else {
@@ -193,7 +193,7 @@ fun MiniPlayerMenu(
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(context(),mediaItem)
+                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
                 else {

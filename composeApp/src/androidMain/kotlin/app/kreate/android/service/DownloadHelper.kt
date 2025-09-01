@@ -22,8 +22,6 @@ interface DownloadHelper {
 
     fun getDownload( songId: String ): Flow<Download?>
 
-    fun getDownloads()
-
     fun getDownloadNotificationHelper(): DownloadNotificationHelper
 
     fun addDownload( mediaItem: MediaItem )
@@ -37,6 +35,4 @@ interface DownloadHelper {
     fun downloadOnLike( mediaItem: MediaItem, likeState: Boolean? )
 
     fun handleDownload( song: Song, removeIfDownloaded: Boolean = false )
-
-    fun handleDownload( mediaItem: MediaItem, removeIfDownloaded: Boolean = false )
 }

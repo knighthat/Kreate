@@ -29,9 +29,9 @@ class MyDownloadService : DownloadService(
 
         // This will only happen once, because getDownloadManager is guaranteed to be called only once
         // in the life cycle of the process.
-        val downloadManager: DownloadManager = MyDownloadHelper.getDownloadManager(this)
+        val downloadManager: DownloadManager = MyDownloadHelper.instance.downloadManager
         val downloadNotificationHelper: DownloadNotificationHelper =
-            MyDownloadHelper.getDownloadNotificationHelper(this)
+            MyDownloadHelper.getDownloadNotificationHelper()
         downloadManager.addListener(
             TerminalStateNotificationHelper(
                 this,
@@ -53,7 +53,7 @@ class MyDownloadService : DownloadService(
         .Builder(
             /* context = */ this,
             /* notification = */ MyDownloadHelper
-                .getDownloadNotificationHelper(this)
+                .getDownloadNotificationHelper()
                 .buildProgressNotification(
                 /* context            = */ this,
                 /* smallIcon          = */ R.drawable.download_progress,

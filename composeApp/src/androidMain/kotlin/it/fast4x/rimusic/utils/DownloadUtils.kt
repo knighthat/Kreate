@@ -91,11 +91,11 @@ fun manageDownload(
     if (mediaItem.isLocal) return
 
     if (downloadState) {
-        MyDownloadHelper.removeDownload(context = context, mediaItem = mediaItem)
+        MyDownloadHelper.removeDownload(mediaItem = mediaItem)
     }
     else {
         if (isNetworkAvailable(context)) {
-            MyDownloadHelper.addDownload(context = context, mediaItem = mediaItem)
+            MyDownloadHelper.addDownload(mediaItem = mediaItem)
         }
     }
 

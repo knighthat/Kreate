@@ -40,7 +40,6 @@ import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.EXPLICIT_PREFIX
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.cleanPrefix
-import it.fast4x.rimusic.context
 import it.fast4x.rimusic.models.Album
 import it.fast4x.rimusic.models.Artist
 import it.fast4x.rimusic.models.Lyrics
@@ -669,10 +668,7 @@ suspend fun addToYtLikedSongs(mediaItems: List<MediaItem>){
                 Database.asyncTransaction {
                     insertIgnore( item )
                     songTable.likeState( item.mediaId, true )
-                    MyDownloadHelper.autoDownloadWhenLiked(
-                        context(),
-                        item
-                    )
+                    MyDownloadHelper.autoDownloadWhenLiked(item)
 
                     Toaster.s(
                         "${index + 1}/${mediaItems.size} " + appContext().resources.getString(R.string.songs_liked_yt)

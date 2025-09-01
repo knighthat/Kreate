@@ -176,11 +176,10 @@ object SongItem {
     @UnstableApi
     @Composable
     private fun <T> CacheAndDownloadIcon(
-        context: Context,
         songId: String,
         song: T,
         values: Values,
-        handler: (Context, T, Boolean) -> Unit,
+        handler: (T, Boolean) -> Unit,
         modifier: Modifier = Modifier,
         onClick: () -> Unit = {}
     ) {
@@ -210,7 +209,7 @@ object SongItem {
                                        formatTable.deleteBySongId( songId )
                                    }
 
-                                   handler( context, song, true )
+                                   handler( song, true )
                                }
         )
     }
@@ -218,24 +217,12 @@ object SongItem {
     @OptIn(UnstableApi::class)
     @Composable
     fun CacheAndDownloadIcon(
-        context: Context,
         song: Song,
         values: Values,
         modifier: Modifier = Modifier,
         onClick: () -> Unit = {}
     ) =
-        CacheAndDownloadIcon( context, song.id, song, values, MyDownloadHelper::handleDownload , modifier, onClick )
-
-    @OptIn(UnstableApi::class)
-    @Composable
-    fun CacheAndDownloadIcon(
-        context: Context,
-        mediaItem: MediaItem,
-        values: Values,
-        modifier: Modifier = Modifier,
-        onClick: () -> Unit = {}
-    ) =
-        CacheAndDownloadIcon( context, mediaItem.mediaId, mediaItem, values, MyDownloadHelper::handleDownload , modifier, onClick )
+        CacheAndDownloadIcon( song.id, song, values, MyDownloadHelper::handleDownload , modifier, onClick )
 
     /**
      * Display badges such as "playlist", "explicit", etc.
@@ -486,7 +473,7 @@ object SongItem {
                                        // it to the bottom for better view
                                        .align( Alignment.Bottom )
                 )
-                CacheAndDownloadIcon( context, song, values ) {
+                CacheAndDownloadIcon( song, values ) {
                     binder.cache.removeResource( song.id )
                 }
             },

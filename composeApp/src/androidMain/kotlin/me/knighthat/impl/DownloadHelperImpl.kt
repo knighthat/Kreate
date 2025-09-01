@@ -125,15 +125,6 @@ class DownloadHelperImpl @Inject constructor(
 
     override fun getDownload(songId: String): Flow<Download?> = downloads.map { it[songId] }
 
-    override fun getDownloads() {
-        val result = mutableMapOf<String, Download>()
-        val cursor = downloadManager.downloadIndex.getDownloads()
-        while (cursor.moveToNext()) {
-            result[cursor.download.request.id] = cursor.download
-        }
-        downloads.value = result
-    }
-
     override fun getDownloadNotificationHelper(): DownloadNotificationHelper {
         if (!::downloadNotificationHelper.isInitialized) {
             downloadNotificationHelper =
@@ -245,17 +236,5 @@ class DownloadHelperImpl @Inject constructor(
             removeDownload( song.asMediaItem )
         else if( !isDownloaded )
             addDownload( song.asMediaItem )
-    }
-
-    override fun handleDownload( mediaItem: MediaItem, removeIfDownloaded: Boolean ) {
-        if( mediaItem.isLocal ) return
-
-        val isDownloaded =
-            downloads.value.values.any{ it.state == Download.STATE_COMPLETED && it.request.id == mediaItem.mediaId }
-
-        if( isDownloaded && removeIfDownloaded )
-            removeDownload( mediaItem)
-        else if( !isDownloaded )
-            addDownload( mediaItem)
     }
 }
