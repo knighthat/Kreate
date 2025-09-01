@@ -813,6 +813,6 @@
     <string name="settings_entry_runtime_log_max_size_per_file">Dosya başına maksimum boyut</string>
     <string name="setting_description_runtime_log_max_size_per_file">Devrilmeden (yeni dosyaya geçmeden) önce en az %s olmalı</string>
     <string name="setting_entry_sync_quotes">\"%s\"\'i Eşitle</string>
-    <string name="setting_entry_test_proxy">Test proxy</string>
-    <string name="info_proxy_verified">Proxy is correctly configured</string>
+    <string name="setting_entry_test_proxy">Proxy testi</string>
+    <string name="info_proxy_verified">Proxy doğru şekilde yapılandırılmış</string>
 </resources>
