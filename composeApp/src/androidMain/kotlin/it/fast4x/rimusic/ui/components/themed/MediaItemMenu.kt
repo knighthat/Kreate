@@ -137,7 +137,7 @@ fun InHistoryMediaItemMenu(
             } else if (!isYouTubeSyncEnabled()){
                 Database.asyncTransaction {
                     songTable.likeState( song.id, true )
-                    MyDownloadHelper.autoDownloadWhenLiked(context(),song.asMediaItem)
+                    MyDownloadHelper.autoDownloadWhenLiked(song.asMediaItem)
                 }
             }
             else {
@@ -200,7 +200,7 @@ fun InPlaylistMediaItemMenu(
             } else if (!isYouTubeSyncEnabled()){
                 Database.asyncTransaction {
                     songTable.likeState( song.id, true )
-                    MyDownloadHelper.autoDownloadWhenLiked(context(),song.asMediaItem)
+                    MyDownloadHelper.autoDownloadWhenLiked(song.asMediaItem)
                 }
             }
             else {
@@ -276,7 +276,7 @@ fun NonQueuedMediaItemMenuLibrary(
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(context(),mediaItem)
+                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
                 else {
@@ -308,7 +308,7 @@ fun NonQueuedMediaItemMenuLibrary(
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(context(),mediaItem)
+                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
                 else {
@@ -430,7 +430,7 @@ fun QueuedMediaItemMenu(
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(context(),mediaItem)
+                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
                 else {
@@ -463,7 +463,7 @@ fun QueuedMediaItemMenu(
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(context(),mediaItem)
+                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
                 else {

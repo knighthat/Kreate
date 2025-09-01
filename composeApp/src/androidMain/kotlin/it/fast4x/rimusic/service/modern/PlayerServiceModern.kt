@@ -393,7 +393,7 @@ class PlayerServiceModern:
                 updateDownloadedState()
             }
         }
-        MyDownloadHelper.getDownloadManager(this).addListener(downloadListener)
+        MyDownloadHelper.instance.downloadManager.addListener(downloadListener)
 
         notificationActionReceiver = NotificationActionReceiver(player)
 
@@ -528,7 +528,7 @@ class PlayerServiceModern:
             mediaSession.release()
             cache.release()
             //downloadCache.release()
-            MyDownloadHelper.getDownloadManager(this).removeListener(downloadListener)
+            MyDownloadHelper.instance.downloadManager.removeListener(downloadListener)
 
             loudnessEnhancer?.release()
 
@@ -851,7 +851,7 @@ class PlayerServiceModern:
     fun updateDownloadedState() {
         if (currentSong.value == null) return
         val mediaId = currentSong.value!!.id
-        val downloads = MyDownloadHelper.downloads.value
+        val downloads = MyDownloadHelper.instance.downloads.value
         currentSongStateDownload.value = downloads[mediaId]?.state ?: Download.STATE_STOPPED
         /*
         if (downloads[currentSong.value?.id]?.state == Download.STATE_COMPLETED) {
@@ -1120,7 +1120,7 @@ class PlayerServiceModern:
             }
 
             currentSong.value
-                ?.let { MyDownloadHelper.autoDownloadWhenLiked(this@PlayerServiceModern, it.asMediaItem) }
+                ?.let { MyDownloadHelper.autoDownloadWhenLiked(it.asMediaItem) }
         }
 
         fun toggleDownload() {

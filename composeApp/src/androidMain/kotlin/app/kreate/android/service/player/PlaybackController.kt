@@ -29,7 +29,7 @@ object PlaybackController {
 
     @OptIn(UnstableApi::class)
     private fun getDownloadIconId( songId: String ): Int {
-        val state = MyDownloadHelper.downloads.value[songId]?.state ?: Download.STATE_STOPPED
+        val state = MyDownloadHelper.instance.downloads.value[songId]?.state ?: Download.STATE_STOPPED
         return when( state ) {
             Download.STATE_COMPLETED    -> R.drawable.downloaded
             Download.STATE_DOWNLOADING,

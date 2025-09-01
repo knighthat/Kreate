@@ -14,7 +14,6 @@ import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.MyDownloadHelper
@@ -53,7 +52,7 @@ class Bookmark(
                 .first()
                 .fastMap( Song::asMediaItem )
                 .fastForEach {
-                    MyDownloadHelper.autoDownload( appContext(), it )
+                    MyDownloadHelper.autoDownload( it )
                 }
     }
 

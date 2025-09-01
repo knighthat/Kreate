@@ -65,7 +65,7 @@ class DownloadAllDialog(
 
         CoroutineScope( Dispatchers.Default ).launch {
             getSongs().fastMap( Song::asMediaItem )
-                      .onEach { MyDownloadHelper.addDownload( context, it ) }
+                      .onEach { MyDownloadHelper.addDownload( it ) }
         }
     }
 

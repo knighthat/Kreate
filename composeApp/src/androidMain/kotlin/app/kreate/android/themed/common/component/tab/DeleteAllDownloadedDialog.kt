@@ -55,7 +55,7 @@ class DeleteAllDownloadedDialog(
 
         CoroutineScope( Dispatchers.Default ).launch {
             getSongs().fastMap( Song::asMediaItem )
-                      .onEach { MyDownloadHelper.removeDownload( context, it ) }
+                      .onEach { MyDownloadHelper.removeDownload( it ) }
         }
     }
 

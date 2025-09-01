@@ -325,7 +325,7 @@ fun HomeQuickPicks(
     val showSearchTab by Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR
 
     val downloadedSongs = remember {
-        MyDownloadHelper.downloads.value.filter {
+        MyDownloadHelper.instance.downloads.value.filter {
             it.value.state == Download.STATE_COMPLETED
         }.keys.toList()
     }

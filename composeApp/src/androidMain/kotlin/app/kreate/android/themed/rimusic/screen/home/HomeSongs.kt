@@ -157,7 +157,8 @@ fun HomeSongs(
             BuiltInPlaylist.Downloaded -> {
                 // [MyDownloadHelper] provide a list of downloaded songs, which is faster to retrieve
                 // than using `Cache.isCached()` call
-                val downloaded: List<String> = MyDownloadHelper.downloads
+                val downloaded: List<String> = MyDownloadHelper.instance
+                                                               .downloads
                                                                .value
                                                                .values
                                                                .filter { it.state == Download.STATE_COMPLETED }

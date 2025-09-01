@@ -47,7 +47,7 @@ object YouTubeSync {
         val likeState = runBlocking {
             Database.songTable.likeState( mediaItem.mediaId ).first()
         }
-        MyDownloadHelper.downloadOnLike( mediaItem, likeState, context )
+        MyDownloadHelper.downloadOnLike( mediaItem, likeState )
 
 
         // Stop here if it's not enabled
