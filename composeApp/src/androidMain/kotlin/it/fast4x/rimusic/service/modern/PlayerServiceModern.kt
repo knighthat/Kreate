@@ -66,7 +66,8 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.service.createDataSourceFactory
+import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.DownloadHelper
 import app.kreate.android.service.newpipe.NewPipeDownloader
 import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.VolumeFader
@@ -140,6 +141,7 @@ import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Named
 import kotlin.math.roundToInt
 import kotlin.system.exitProcess
 import android.os.Binder as AndroidBinder
@@ -159,7 +161,14 @@ class PlayerServiceModern:
     SharedPreferences.OnSharedPreferenceChangeListener
 {
 
-    @Inject lateinit var cache: Cache
+    @Inject
+    @Named("cache")
+    lateinit var cache: Cache
+    @Inject
+    lateinit var downloadHelper: DownloadHelper
+    @Inject
+    @Named("downloadCache")
+    lateinit var downloadCache: Cache
 
     private lateinit var listener: ExoPlayerListener
     private lateinit var volumeFader: VolumeFader
@@ -170,7 +179,6 @@ class PlayerServiceModern:
     private var mediaLibrarySessionCallback: MediaLibrarySessionCallback =
         MediaLibrarySessionCallback(this, Database, MyDownloadHelper)
     lateinit var player: ExoPlayer
-    lateinit var downloadCache: Cache
     private lateinit var bitmapProvider: BitmapProvider
     private var isPersistentQueueEnabled: Boolean = false
     private var isclosebackgroundPlayerEnabled = false
@@ -275,7 +283,7 @@ class PlayerServiceModern:
 
         audioQualityFormat = Preferences.AUDIO_QUALITY.value
 
-        downloadCache = MyDownloadHelper.getDownloadCache( applicationContext )
+        MyDownloadHelper.instance = this.downloadHelper
 
         player = ExoPlayer.Builder(this)
             .setMediaSourceFactory(createMediaSourceFactory())

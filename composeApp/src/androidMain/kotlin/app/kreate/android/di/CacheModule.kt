@@ -10,12 +10,15 @@ import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import app.kreate.android.Preferences
+import app.kreate.android.service.DownloadHelper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import it.fast4x.rimusic.enums.ExoPlayerCacheLocation
+import me.knighthat.impl.DownloadHelperImpl
+import javax.inject.Named
 import javax.inject.Singleton
 import kotlin.io.path.createTempDirectory
 
@@ -26,6 +29,7 @@ import kotlin.io.path.createTempDirectory
 object CacheModule {
 
     private const val CACHE_DIRNAME = "exo_cache"
+    private const val DOWNLOAD_CACHE_DIRNAME = "exo_downloads"
 
     private fun initCache(
         context: Context,
@@ -47,9 +51,9 @@ object CacheModule {
             // check location set by user and return
             // appropriate path with [cacheDirName] appended.
             else -> when( Preferences.EXO_CACHE_LOCATION.value ) {
-                ExoPlayerCacheLocation.System,
-                ExoPlayerCacheLocation.SPLIT    -> context.cacheDir
+                ExoPlayerCacheLocation.System   -> context.cacheDir
                 ExoPlayerCacheLocation.Private  -> context.filesDir
+                ExoPlayerCacheLocation.SPLIT    -> if( cacheDirName == DOWNLOAD_CACHE_DIRNAME ) context.filesDir else context.cacheDir
             }.resolve( cacheDirName )
         }
 
@@ -61,10 +65,28 @@ object CacheModule {
 
     @Provides
     @Singleton
+    @Named("cache")
     fun providesCache( @ApplicationContext context: Context ): Cache {
         // This call should only run once
         Preferences.load( context )
 
         return initCache( context, Preferences.EXO_CACHE_SIZE, CACHE_DIRNAME )
     }
+
+    @Provides
+    @Singleton
+    @Named("downloadCache")
+    fun providesDownloadCache( @ApplicationContext context: Context ): Cache {
+        // This call should only run once
+        Preferences.load( context )
+
+        return initCache( context, Preferences.EXO_DOWNLOAD_SIZE, DOWNLOAD_CACHE_DIRNAME )
+    }
+
+    @Provides
+    @Singleton
+    fun providesDownloadHelper(
+        @ApplicationContext context: Context,
+        @Named("downloadCache") downloadCache: Cache
+    ): DownloadHelper = DownloadHelperImpl(context, downloadCache)
 }
