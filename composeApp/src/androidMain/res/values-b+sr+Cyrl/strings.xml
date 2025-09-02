@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Готово</string>
     <string name="hidesong">Да ли заиста желите да сакријете ову песму? Његово време репродукције и кеш меморија ће бити обрисани. Ова радња је неповратна.</string>

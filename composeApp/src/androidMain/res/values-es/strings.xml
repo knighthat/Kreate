@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Hecho</string>
     <string name="hidesong">¿Seguro que quieres ocultar esta canción? El tiempo de reproducción y la caché se eliminarán. Esta acción es irreversible.</string>
@@ -812,7 +812,7 @@
     <string name="string_description_runtime_log_file_count">Se conservarán %s en todo momento</string>
     <string name="settings_entry_runtime_log_max_size_per_file">Tamaño máximo por archivo</string>
     <string name="setting_description_runtime_log_max_size_per_file">Debe tener al menos %s antes de renovar</string>
-    <string name="setting_entry_sync_quotes">Sync \"%s\"</string>
+    <string name="setting_entry_sync_quotes">Sincronizar \"%s\"</string>
     <string name="setting_entry_test_proxy">Test proxy</string>
     <string name="info_proxy_verified">Proxy is correctly configured</string>
 </resources>
