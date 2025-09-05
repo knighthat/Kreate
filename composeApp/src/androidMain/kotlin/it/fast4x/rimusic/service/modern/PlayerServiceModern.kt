@@ -35,7 +35,6 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import androidx.media3.common.AudioAttributes
 import androidx.media3.common.AuxEffectInfo
 import androidx.media3.common.C
 import androidx.media3.common.ForwardingPlayer
@@ -43,24 +42,14 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
-import androidx.media3.common.audio.SonicAudioProcessor
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
-import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.PlaybackStats
 import androidx.media3.exoplayer.analytics.PlaybackStatsListener
-import androidx.media3.exoplayer.audio.AudioSink
-import androidx.media3.exoplayer.audio.DefaultAudioOffloadSupportProvider
-import androidx.media3.exoplayer.audio.DefaultAudioSink
-import androidx.media3.exoplayer.audio.DefaultAudioSink.DefaultAudioProcessorChain
-import androidx.media3.exoplayer.audio.SilenceSkippingAudioProcessor
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
-import androidx.media3.extractor.DefaultExtractorsFactory
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.MediaController
 import androidx.media3.session.MediaLibraryService
@@ -69,6 +58,7 @@ import androidx.media3.session.SessionToken
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.innertube.InnertubeProvider
 import app.kreate.android.service.Discord
 import app.kreate.android.service.DownloadHelper
 import app.kreate.android.service.newpipe.NewPipeDownloader
@@ -90,6 +80,7 @@ import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.enums.PresetsReverb
 import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
+import it.fast4x.rimusic.extensions.discord.updateDiscordPresence
 import it.fast4x.rimusic.isHandleAudioFocusEnabled
 import it.fast4x.rimusic.models.Event
 import it.fast4x.rimusic.models.Song
@@ -104,7 +95,6 @@ import it.fast4x.rimusic.utils.collect
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.getEnum
 import it.fast4x.rimusic.utils.intent
-import it.fast4x.rimusic.utils.isAtLeastAndroid10
 import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isAtLeastAndroid7
 import it.fast4x.rimusic.utils.manageDownload
@@ -139,7 +129,6 @@ import org.schabi.newpipe.extractor.NewPipe
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -171,6 +160,8 @@ class PlayerServiceModern:
     @Inject
     @Named("downloadCache")
     lateinit var downloadCache: Cache
+    @Inject
+    lateinit var player: ExoPlayer
 
     @RequiresApi(Build.VERSION_CODES.M)
     private val discord: Discord = Discord(this)
@@ -183,7 +174,6 @@ class PlayerServiceModern:
     private lateinit var mediaSession: MediaLibrarySession
     private var mediaLibrarySessionCallback: MediaLibrarySessionCallback =
         MediaLibrarySessionCallback(this, Database, MyDownloadHelper)
-    lateinit var player: ExoPlayer
     private lateinit var bitmapProvider: BitmapProvider
     private var isPersistentQueueEnabled: Boolean = false
     private var isclosebackgroundPlayerEnabled = false
@@ -284,25 +274,10 @@ class PlayerServiceModern:
 
         MyDownloadHelper.instance = this.downloadHelper
 
-        player = ExoPlayer.Builder(this)
-            .setMediaSourceFactory(createMediaSourceFactory())
-            .setRenderersFactory(createRendersFactory())
-            .setHandleAudioBecomingNoisy(true)
-            .setWakeMode(C.WAKE_MODE_NETWORK)
-            .setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(C.USAGE_MEDIA)
-                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-                    .build(),
-                isHandleAudioFocusEnabled()
-            )
-            .setUsePlatformDiagnostics(false)
-            .build()
-            .apply {
-                sleepTimer = SleepTimer(coroutineScope, this)
-                addListener(sleepTimer)
-                addAnalyticsListener(PlaybackStatsListener(false, this@PlayerServiceModern))
-            }
+        sleepTimer = SleepTimer(coroutineScope, player).also( player::addListener )
+
+        PlaybackStatsListener(false, this@PlayerServiceModern)
+            .also( player::addAnalyticsListener )
         volumeFader = VolumeFader(player)
 
         preferences.registerOnSharedPreferenceChangeListener(this)
@@ -671,51 +646,6 @@ class PlayerServiceModern:
             audioDeviceCallback = null
         }
     }
-
-    private fun createRendersFactory() = object : DefaultRenderersFactory(this) {
-        override fun buildAudioSink(
-            context: Context,
-            enableFloatOutput: Boolean,
-            enableAudioTrackPlaybackParams: Boolean
-        ): AudioSink {
-            val minimumSilenceDuration: Long = Preferences.AUDIO_SKIP_SILENCE_LENGTH
-                                                       .value
-                                                       .coerceIn( 1_000L..2_000_000L )
-
-            return DefaultAudioSink.Builder(applicationContext)
-                .setEnableFloatOutput(enableFloatOutput)
-                .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
-                .setAudioOffloadSupportProvider(
-                    DefaultAudioOffloadSupportProvider(applicationContext)
-                )
-                .setAudioProcessorChain(
-                    DefaultAudioProcessorChain(
-                        arrayOf(),
-                        SilenceSkippingAudioProcessor(
-                            /* minimumSilenceDurationUs = */ minimumSilenceDuration,
-                            /* silenceRetentionRatio = */ 0.01f,
-                            /* maxSilenceToKeepDurationUs = */ minimumSilenceDuration,
-                            /* minVolumeToKeepPercentageWhenMuting = */ 0,
-                            /* silenceThresholdLevel = */ 256
-                        ),
-                        SonicAudioProcessor()
-                    )
-                )
-                .build()
-                .apply {
-                    if (isAtLeastAndroid10) setOffloadMode(AudioSink.OFFLOAD_MODE_DISABLED)
-                }
-        }
-    }
-
-    private fun createMediaSourceFactory() = DefaultMediaSourceFactory(
-        createDataSourceFactory( this ),
-        DefaultExtractorsFactory()
-    ).setLoadErrorHandlingPolicy(
-        object : DefaultLoadErrorHandlingPolicy() {
-            override fun isEligibleForFallback(exception: IOException) = true
-        }
-    )
 
     private fun updateWallpaper( bitmap: Bitmap ) {
         val type by Preferences.LIVE_WALLPAPER

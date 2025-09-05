@@ -15,6 +15,7 @@ import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.di.PlayerModule
 import app.kreate.android.utils.CharUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import com.grack.nanojson.JsonWriter
@@ -442,6 +443,57 @@ fun PlayerServiceModern.createDataSourceFactory( context: Context ): DataSource.
         }else
             dataSpec.process( videoId, audioQualityFormat, applicationContext.isConnectionMetered() )
     }
+
+@ExperimentalSerializationApi
+@UnstableApi
+fun PlayerModule.createDataSourceFactory(
+    context: Context,
+    cache: androidx.media3.datasource.cache.Cache,
+    downloadCache: androidx.media3.datasource.cache.Cache
+) = ResolvingDataSource.Factory(
+    CacheDataSource.Factory()
+        .setCache( downloadCache )
+        .setUpstreamDataSourceFactory(
+            CacheDataSource.Factory()
+                .setCache( cache )
+                .setUpstreamDataSourceFactory(
+                    upstreamDatasourceFactory( context )
+                )
+                .setCacheWriteDataSinkFactory(
+                    CacheDataSink.Factory()
+                        .setCache( cache )
+                        .setFragmentSize( CHUNK_LENGTH )
+                )
+                .setFlags( FLAG_IGNORE_CACHE_ON_ERROR )
+        )
+        .setCacheWriteDataSinkFactory( null )
+        .setFlags( FLAG_IGNORE_CACHE_ON_ERROR )
+) { dataSpec ->
+//    Database.asyncTransaction {
+//        runBlocking( Dispatchers.Main ) {
+//            player.currentMediaItem
+//        }?.also( ::insertIgnore )
+//    }
+
+    val videoId = dataSpec.uri.toString().substringAfter("watch?v=")
+
+    fun isCached() =
+        cache.isCached( videoId, dataSpec.position, CHUNK_LENGTH )
+    fun isDownloaded() =
+        downloadCache.isCached( videoId, dataSpec.position, CHUNK_LENGTH )
+
+    val isLocal = dataSpec.uri.scheme == ContentResolver.SCHEME_CONTENT || dataSpec.uri.scheme == ContentResolver.SCHEME_FILE
+
+    if( !isLocal )
+        upsertSongInfo( videoId )
+
+    return@Factory if( isLocal || isCached() || isDownloaded() ){
+        Timber.tag( LOG_TAG ).d( "$videoId exists in cache, proceeding to use from cache" )
+        // No need to fetch online for already cached data
+        dataSpec.subrange( dataSpec.uriPositionOffset, C.LENGTH_UNSET.toLong() )
+    }else
+        dataSpec.process( videoId, Preferences.AUDIO_QUALITY.value, context.isConnectionMetered() )
+}
 
 @OptIn(ExperimentalSerializationApi::class)
 @UnstableApi
