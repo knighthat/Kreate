@@ -5,6 +5,7 @@ import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.database.StandaloneDatabaseProvider
+import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.NoOpCacheEvictor
@@ -87,6 +88,7 @@ object CacheModule {
     @Singleton
     fun providesDownloadHelper(
         @ApplicationContext context: Context,
-        @Named("downloadCache") downloadCache: Cache
-    ): DownloadHelper = DownloadHelperImpl(context, downloadCache)
+        @Named("downloadCache") downloadCache: Cache,
+        @Named("downloadDataSource") dataSourceFactory: DataSource.Factory
+    ): DownloadHelper = DownloadHelperImpl(context, downloadCache, dataSourceFactory)
 }

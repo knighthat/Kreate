@@ -12,7 +12,9 @@ import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.datasource.cache.Cache
+import androidx.media3.datasource.cache.CacheDataSink
 import androidx.media3.datasource.cache.CacheDataSource
+import androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.audio.AudioSink
@@ -29,7 +31,6 @@ import app.kreate.android.di.PlayerModule.upsertSongFormat
 import app.kreate.android.di.PlayerModule.upsertSongInfo
 import app.kreate.android.service.KtorHttpDatasource
 import app.kreate.android.service.NetworkService
-import app.kreate.android.service.createDataSourceFactory
 import app.kreate.android.utils.CharUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import com.grack.nanojson.JsonObject
@@ -44,7 +45,6 @@ import io.ktor.client.request.head
 import io.ktor.http.URLBuilder
 import io.ktor.http.parseQueryString
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.isHandleAudioFocusEnabled
 import it.fast4x.rimusic.models.Format
@@ -145,19 +145,19 @@ object PlayerModule {
 
         databaseWorker = CoroutineScope(Dispatchers.IO ).launch {
             Innertube.songBasicInfo( videoId, CURRENT_LOCALE )
-                .onSuccess{
-                    Timber.tag( LOG_TAG ).v( "$videoId's information successfully found and parsed" )
+                     .onSuccess{
+                         Timber.tag( LOG_TAG ).v( "$videoId's information successfully found and parsed" )
 
-                    Database.upsert( it )
+                         Database.upsert( it )
 
-                    Timber.tag( LOG_TAG ).d( "$videoId's information successfully upserted to the database" )
-                }
-                .onFailure {
-                    Timber.tag( LOG_TAG ).e( it, "failed to upsert $videoId's information to database" )
+                         Timber.tag( LOG_TAG ).d( "$videoId's information successfully upserted to the database" )
+                     }
+                     .onFailure {
+                         Timber.tag( LOG_TAG ).e( it, "failed to upsert $videoId's information to database" )
 
-                    val message= it.message ?: appContext().getString( R.string.failed_to_fetch_original_property )
-                    Toaster.e( message )
-                }
+                         val message= it.message ?: context.getString( R.string.failed_to_fetch_original_property )
+                         Toaster.e( message )
+                     }
         }
 
         // Must not modify [JustInserted] to [upsertSongFormat] let execute later
@@ -458,9 +458,54 @@ object PlayerModule {
     fun dataSourceFactoryFrom( cache: Cache ): CacheDataSource.Factory =
         CacheDataSource.Factory().setCache( cache )
 
+    @Provides
+    @Named("ktorDataSource")
     @androidx.annotation.OptIn(UnstableApi::class)
     fun providesKtorUpstreamDataSourceFactory(): DataSource.Factory =
         KtorHttpDatasource.Factory(NetworkService.client )
+
+    @Provides
+    @Named("downloadDataSource")
+    @androidx.annotation.OptIn(UnstableApi::class)
+    @OptIn(ExperimentalSerializationApi::class)
+    fun providesDownloadDataSource(
+        @ApplicationContext context: Context,
+        @Named("downloadCache") downloadCache: Cache,
+        @Named("ktorDataSource") ktorDataSource: DataSource.Factory
+    ): DataSource.Factory =
+        ResolvingDataSource.Factory(
+            dataSourceFactoryFrom( downloadCache )
+                .setUpstreamDataSourceFactory( ktorDataSource )
+                .setCacheWriteDataSinkFactory( null ),
+            resolver( context, downloadCache )
+        )
+
+    @Provides
+    @Named("playerDataSource")
+    @androidx.annotation.OptIn(UnstableApi::class)
+    @OptIn(ExperimentalSerializationApi::class)
+    fun providesPlayerDataSource(
+        @ApplicationContext context: Context,
+        @Named("cache") cache: Cache,
+        @Named("downloadCache") downloadCache: Cache,
+        @Named("ktorDataSource") ktorDataSource: DataSource.Factory
+    ): DataSource.Factory =
+        ResolvingDataSource.Factory(
+            dataSourceFactoryFrom( downloadCache )
+                .setCacheWriteDataSinkFactory( null )
+                .setFlags( FLAG_IGNORE_CACHE_ON_ERROR )
+                .setUpstreamDataSourceFactory(
+                    dataSourceFactoryFrom( cache )
+                        .setUpstreamDataSourceFactory( ktorDataSource )
+                        .setCacheWriteDataSinkFactory(
+                            CacheDataSink.Factory()
+                                         .setCache( cache )
+                                         .setFragmentSize( CHUNK_LENGTH )
+                        )
+                        .setFlags( FLAG_IGNORE_CACHE_ON_ERROR )
+                ),
+            resolver( context, cache, downloadCache )
+        )
 
     @Provides
     @androidx.annotation.OptIn(UnstableApi::class)
@@ -468,11 +513,10 @@ object PlayerModule {
     @Singleton
     fun providesPlayer(
         @ApplicationContext context: Context,
-        @Named("cache") cache: Cache,
-        @Named("downloadCache") downloadCache: Cache
+        @Named("playerDataSource") dataSourceFactory: DataSource.Factory
     ): ExoPlayer {
         val datasourceFactory = DefaultMediaSourceFactory(
-            createDataSourceFactory( context, cache, downloadCache ),
+            dataSourceFactory,
             DefaultExtractorsFactory()
         ).setLoadErrorHandlingPolicy(
             object : DefaultLoadErrorHandlingPolicy() {

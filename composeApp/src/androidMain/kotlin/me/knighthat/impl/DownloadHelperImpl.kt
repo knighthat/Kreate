@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.database.StandaloneDatabaseProvider
+import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
@@ -17,10 +18,8 @@ import androidx.media3.exoplayer.scheduler.Requirements
 import app.kreate.android.Preferences
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.DownloadHelper
-import app.kreate.android.service.createDataSourceFactory
 import coil3.request.allowHardware
 import coil3.request.bitmapConfig
-import dagger.hilt.android.qualifiers.ApplicationContext
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.MyDownloadService
@@ -47,16 +46,13 @@ import kotlinx.coroutines.runBlocking
 import me.knighthat.utils.Toaster
 import timber.log.Timber
 import java.util.concurrent.Executors
-import javax.inject.Inject
-import javax.inject.Named
-import javax.inject.Singleton
 
 
-@Singleton
 @OptIn(UnstableApi::class)
-class DownloadHelperImpl @Inject constructor(
-    @param:ApplicationContext private val context: Context,
-    @param:Named("downloadCache") val downloadCache: Cache
+class DownloadHelperImpl(
+    private val context: Context,
+    val downloadCache: Cache,
+    dataSourceFactory: DataSource.Factory
 ): DownloadHelper {
 
     companion object {
@@ -92,7 +88,7 @@ class DownloadHelperImpl @Inject constructor(
             context,
             StandaloneDatabaseProvider(context),
             downloadCache,
-            createDataSourceFactory( context ),
+            dataSourceFactory,
             executor
         )
 
