@@ -818,4 +818,8 @@ Volume BAS : titre précédent</string>
     <string name="setting_entry_sync_quotes">Synchroniser « %s »</string>
     <string name="setting_entry_test_proxy">Test proxy</string>
     <string name="info_proxy_verified">Proxy is correctly configured</string>
+    <string name="cache_location_split">Split</string>
+    <string name="setting_description_cache_location_system">Store both cached and downloaded in the app\'s cache, which can be deleted by clearing the cache in settings</string>
+    <string name="setting_description_cache_location_private">Store both cached and downloaded songs in the app\'s private storage, which can only be deleted if the app\'s data is wiped</string>
+    <string name="setting_description_cache_location_split">Cached songs live in app\'s cache, and downloaded songs live in app\'s private storage</string>
 </resources>
