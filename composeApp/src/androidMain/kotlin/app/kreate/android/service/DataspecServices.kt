@@ -3,10 +3,9 @@ package app.kreate.android.service
 import android.content.Context
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
-import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.ResolvingDataSource
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheDataSink
-import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR
 import app.kreate.android.di.PlayerModule
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -14,26 +13,22 @@ import me.knighthat.impl.DownloadHelperImpl
 
 private const val CHUNK_LENGTH = 128 * 1024L     // 128Kb
 
-@UnstableApi
-private fun upstreamDatasourceFactory( context: Context ): DataSource.Factory =
-    DefaultDataSource.Factory( context, KtorHttpDatasource.Factory(NetworkService.client ) )
-
 //<editor-fold defaultstate="collapsed" desc="Data source factories">
 @OptIn(ExperimentalSerializationApi::class)
 @UnstableApi
 fun PlayerModule.createDataSourceFactory(
     context: Context,
-    cache: androidx.media3.datasource.cache.Cache,
-    downloadCache: androidx.media3.datasource.cache.Cache
+    cache: Cache,
+    downloadCache: Cache
 ): DataSource.Factory =
     ResolvingDataSource.Factory(
-        CacheDataSource.Factory()
-                       .setCache( downloadCache )
+        PlayerModule.dataSourceFactoryFrom( downloadCache )
+            .setCacheWriteDataSinkFactory( null )
+            .setFlags( FLAG_IGNORE_CACHE_ON_ERROR )
                        .setUpstreamDataSourceFactory(
-                           CacheDataSource.Factory()
-                                          .setCache( cache )
+                           PlayerModule.dataSourceFactoryFrom( cache )
                                           .setUpstreamDataSourceFactory(
-                                              PlayerModule.providesKtorUpstreamDatasourceFactory()
+                                              PlayerModule.providesKtorUpstreamDataSourceFactory()
                                           )
                                           .setCacheWriteDataSinkFactory(
                                               CacheDataSink.Factory()
@@ -41,9 +36,7 @@ fun PlayerModule.createDataSourceFactory(
                                                            .setFragmentSize( CHUNK_LENGTH )
                                           )
                                           .setFlags( FLAG_IGNORE_CACHE_ON_ERROR )
-                       )
-                       .setCacheWriteDataSinkFactory( null )
-                       .setFlags( FLAG_IGNORE_CACHE_ON_ERROR ),
+                       ),
         PlayerModule.resolver( context, cache, downloadCache )
     )
 
@@ -51,14 +44,11 @@ fun PlayerModule.createDataSourceFactory(
 @UnstableApi
 fun DownloadHelperImpl.createDataSourceFactory( context: Context ): DataSource.Factory =
     ResolvingDataSource.Factory(
-        CacheDataSource.Factory()
-                       .setCache( downloadCache )
-                       .apply {
-                           setUpstreamDataSourceFactory(
-                               PlayerModule.providesKtorUpstreamDatasourceFactory()
-                           )
-                           setCacheWriteDataSinkFactory( null )
-                       },
+        PlayerModule.dataSourceFactoryFrom( downloadCache )
+                       .setUpstreamDataSourceFactory(
+                           PlayerModule.providesKtorUpstreamDataSourceFactory()
+                       )
+                       .setCacheWriteDataSinkFactory( null ),
         PlayerModule.resolver( context, downloadCache )
     )
 //</editor-fold>

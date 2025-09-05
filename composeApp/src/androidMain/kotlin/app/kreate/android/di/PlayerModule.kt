@@ -12,6 +12,7 @@ import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.datasource.cache.Cache
+import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.audio.AudioSink
@@ -449,8 +450,16 @@ object PlayerModule {
             dataSpec.process( videoId, Preferences.AUDIO_QUALITY.value, context.isConnectionMetered() )
     }
 
+    /**
+     * Short-circuit function to quickly make a [DataSource.Factory] from
+     * designated [cache]
+     */
     @androidx.annotation.OptIn(UnstableApi::class)
-    fun providesKtorUpstreamDatasourceFactory(): DataSource.Factory =
+    fun dataSourceFactoryFrom( cache: Cache ): CacheDataSource.Factory =
+        CacheDataSource.Factory().setCache( cache )
+
+    @androidx.annotation.OptIn(UnstableApi::class)
+    fun providesKtorUpstreamDataSourceFactory(): DataSource.Factory =
         KtorHttpDatasource.Factory(NetworkService.client )
 
     @Provides
