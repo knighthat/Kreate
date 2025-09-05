@@ -30,7 +30,6 @@ import it.fast4x.rimusic.models.Format
 import it.fast4x.rimusic.service.LoginRequiredException
 import it.fast4x.rimusic.service.UnknownException
 import it.fast4x.rimusic.service.UnplayableException
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.utils.isConnectionMetered
 import it.fast4x.rimusic.utils.isNetworkAvailable
 import kotlinx.coroutines.CancellationException
@@ -398,7 +397,11 @@ fun DataSpec.process(
 //<editor-fold defaultstate="collapsed" desc="Data source factories">
 @OptIn(ExperimentalSerializationApi::class)
 @UnstableApi
-fun PlayerServiceModern.createDataSourceFactory( context: Context ): DataSource.Factory =
+fun PlayerModule.createDataSourceFactory(
+    context: Context,
+    cache: androidx.media3.datasource.cache.Cache,
+    downloadCache: androidx.media3.datasource.cache.Cache
+): DataSource.Factory =
     ResolvingDataSource.Factory(
         CacheDataSource.Factory()
                        .setCache( downloadCache )
@@ -418,12 +421,6 @@ fun PlayerServiceModern.createDataSourceFactory( context: Context ): DataSource.
                        .setCacheWriteDataSinkFactory( null )
                        .setFlags( FLAG_IGNORE_CACHE_ON_ERROR )
     ) { dataSpec ->
-        Database.asyncTransaction {
-            runBlocking( Dispatchers.Main ) {
-                player.currentMediaItem
-            }?.also( ::insertIgnore )
-        }
-
         val videoId = dataSpec.uri.toString().substringAfter("watch?v=")
 
         fun isCached() =
@@ -434,66 +431,15 @@ fun PlayerServiceModern.createDataSourceFactory( context: Context ): DataSource.
         val isLocal = dataSpec.uri.scheme == ContentResolver.SCHEME_CONTENT || dataSpec.uri.scheme == ContentResolver.SCHEME_FILE
 
         if( !isLocal )
-            upsertSongInfo( applicationContext, videoId )
+            upsertSongInfo( context, videoId )
 
         return@Factory if( isLocal || isCached() || isDownloaded() ){
             Timber.tag( LOG_TAG ).d( "$videoId exists in cache, proceeding to use from cache" )
             // No need to fetch online for already cached data
             dataSpec.subrange( dataSpec.uriPositionOffset, C.LENGTH_UNSET.toLong() )
-        }else
-            dataSpec.process( videoId, audioQualityFormat, applicationContext.isConnectionMetered() )
+        } else
+            dataSpec.process( videoId, Preferences.AUDIO_QUALITY.value, context.isConnectionMetered() )
     }
-
-@ExperimentalSerializationApi
-@UnstableApi
-fun PlayerModule.createDataSourceFactory(
-    context: Context,
-    cache: androidx.media3.datasource.cache.Cache,
-    downloadCache: androidx.media3.datasource.cache.Cache
-) = ResolvingDataSource.Factory(
-    CacheDataSource.Factory()
-        .setCache( downloadCache )
-        .setUpstreamDataSourceFactory(
-            CacheDataSource.Factory()
-                .setCache( cache )
-                .setUpstreamDataSourceFactory(
-                    upstreamDatasourceFactory( context )
-                )
-                .setCacheWriteDataSinkFactory(
-                    CacheDataSink.Factory()
-                        .setCache( cache )
-                        .setFragmentSize( CHUNK_LENGTH )
-                )
-                .setFlags( FLAG_IGNORE_CACHE_ON_ERROR )
-        )
-        .setCacheWriteDataSinkFactory( null )
-        .setFlags( FLAG_IGNORE_CACHE_ON_ERROR )
-) { dataSpec ->
-//    Database.asyncTransaction {
-//        runBlocking( Dispatchers.Main ) {
-//            player.currentMediaItem
-//        }?.also( ::insertIgnore )
-//    }
-
-    val videoId = dataSpec.uri.toString().substringAfter("watch?v=")
-
-    fun isCached() =
-        cache.isCached( videoId, dataSpec.position, CHUNK_LENGTH )
-    fun isDownloaded() =
-        downloadCache.isCached( videoId, dataSpec.position, CHUNK_LENGTH )
-
-    val isLocal = dataSpec.uri.scheme == ContentResolver.SCHEME_CONTENT || dataSpec.uri.scheme == ContentResolver.SCHEME_FILE
-
-    if( !isLocal )
-        upsertSongInfo( videoId )
-
-    return@Factory if( isLocal || isCached() || isDownloaded() ){
-        Timber.tag( LOG_TAG ).d( "$videoId exists in cache, proceeding to use from cache" )
-        // No need to fetch online for already cached data
-        dataSpec.subrange( dataSpec.uriPositionOffset, C.LENGTH_UNSET.toLong() )
-    }else
-        dataSpec.process( videoId, Preferences.AUDIO_QUALITY.value, context.isConnectionMetered() )
-}
 
 @OptIn(ExperimentalSerializationApi::class)
 @UnstableApi
