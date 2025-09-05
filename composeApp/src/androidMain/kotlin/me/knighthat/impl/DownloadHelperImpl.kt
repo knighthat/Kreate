@@ -20,6 +20,7 @@ import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.DownloadHelper
 import coil3.request.allowHardware
 import coil3.request.bitmapConfig
+import dagger.hilt.android.qualifiers.ApplicationContext
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.MyDownloadService
@@ -46,13 +47,15 @@ import kotlinx.coroutines.runBlocking
 import me.knighthat.utils.Toaster
 import timber.log.Timber
 import java.util.concurrent.Executors
+import javax.inject.Inject
+import javax.inject.Named
 
 
 @OptIn(UnstableApi::class)
-class DownloadHelperImpl(
-    private val context: Context,
-    val downloadCache: Cache,
-    dataSourceFactory: DataSource.Factory
+class DownloadHelperImpl @Inject constructor(
+    @param:ApplicationContext private val context: Context,
+    @param:Named("downloadCache") val downloadCache: Cache,
+    @Named("downloadDataSource") dataSourceFactory: DataSource.Factory
 ): DownloadHelper {
 
     companion object {

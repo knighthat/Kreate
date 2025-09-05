@@ -424,9 +424,9 @@ object PlayerModule {
      * Used to determined whether the song can be played from cached,
      * or a call to online service must be made to get needed data.
      */
-    @androidx.annotation.OptIn(UnstableApi::class)
-    @OptIn(ExperimentalSerializationApi::class)
-    fun resolver(
+    @ExperimentalSerializationApi
+    @UnstableApi
+    private fun resolver(
         context: Context,
         vararg cashes: Cache
     ) = ResolvingDataSource.Resolver { dataSpec ->
@@ -454,13 +454,13 @@ object PlayerModule {
      * Short-circuit function to quickly make a [DataSource.Factory] from
      * designated [cache]
      */
-    @androidx.annotation.OptIn(UnstableApi::class)
+    @UnstableApi
     fun dataSourceFactoryFrom( cache: Cache ): CacheDataSource.Factory =
         CacheDataSource.Factory().setCache( cache )
 
     @Provides
     @Named("ktorDataSource")
-    @androidx.annotation.OptIn(UnstableApi::class)
+    @UnstableApi
     fun providesKtorUpstreamDataSourceFactory(): DataSource.Factory =
         KtorHttpDatasource.Factory(NetworkService.client )
 
