@@ -33,7 +33,7 @@ fun PlayerModule.createDataSourceFactory(
                            CacheDataSource.Factory()
                                           .setCache( cache )
                                           .setUpstreamDataSourceFactory(
-                                              upstreamDatasourceFactory( context )
+                                              PlayerModule.providesKtorUpstreamDatasourceFactory()
                                           )
                                           .setCacheWriteDataSinkFactory(
                                               CacheDataSink.Factory()
@@ -55,7 +55,7 @@ fun DownloadHelperImpl.createDataSourceFactory( context: Context ): DataSource.F
                        .setCache( downloadCache )
                        .apply {
                            setUpstreamDataSourceFactory(
-                               upstreamDatasourceFactory( context )
+                               PlayerModule.providesKtorUpstreamDatasourceFactory()
                            )
                            setCacheWriteDataSinkFactory( null )
                        },

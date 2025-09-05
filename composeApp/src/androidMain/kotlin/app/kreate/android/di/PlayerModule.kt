@@ -8,6 +8,7 @@ import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.audio.SonicAudioProcessor
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.datasource.cache.Cache
@@ -25,6 +26,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.di.PlayerModule.upsertSongFormat
 import app.kreate.android.di.PlayerModule.upsertSongInfo
+import app.kreate.android.service.KtorHttpDatasource
 import app.kreate.android.service.NetworkService
 import app.kreate.android.service.createDataSourceFactory
 import app.kreate.android.utils.CharUtils
@@ -446,6 +448,10 @@ object PlayerModule {
         } else
             dataSpec.process( videoId, Preferences.AUDIO_QUALITY.value, context.isConnectionMetered() )
     }
+
+    @androidx.annotation.OptIn(UnstableApi::class)
+    fun providesKtorUpstreamDatasourceFactory(): DataSource.Factory =
+        KtorHttpDatasource.Factory(NetworkService.client )
 
     @Provides
     @androidx.annotation.OptIn(UnstableApi::class)
