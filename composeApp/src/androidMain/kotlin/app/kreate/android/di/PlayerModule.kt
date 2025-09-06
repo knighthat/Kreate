@@ -2,6 +2,7 @@ package app.kreate.android.di
 
 import android.content.ContentResolver
 import android.content.Context
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastFilter
 import androidx.core.net.toUri
 import androidx.media3.common.AudioAttributes
@@ -46,7 +47,6 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.parseQueryString
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.AudioQualityFormat
-import it.fast4x.rimusic.isHandleAudioFocusEnabled
 import it.fast4x.rimusic.models.Format
 import it.fast4x.rimusic.service.LoginRequiredException
 import it.fast4x.rimusic.service.UnknownException
@@ -558,21 +558,20 @@ object PlayerModule {
                     }
             }
         }
+        val audioAttributes: AudioAttributes = AudioAttributes.Builder()
+                                                              .setUsage( C.USAGE_MEDIA )
+                                                              .setContentType( C.AUDIO_CONTENT_TYPE_MUSIC )
+                                                              .build()
+        val handleAudioFocus by Preferences.AUDIO_SMART_PAUSE_DURING_CALLS
 
         return ExoPlayer.Builder(context)
-            .setMediaSourceFactory( datasourceFactory )
-            .setRenderersFactory( renderFactory )
-            .setHandleAudioBecomingNoisy(true)
-            .setWakeMode(C.WAKE_MODE_NETWORK)
-            .setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(C.USAGE_MEDIA)
-                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-                    .build(),
-                isHandleAudioFocusEnabled()
-            )
-            .setUsePlatformDiagnostics(false)
-            .build()
+                        .setMediaSourceFactory( datasourceFactory )
+                        .setRenderersFactory( renderFactory )
+                        .setHandleAudioBecomingNoisy( true )
+                        .setWakeMode( C.WAKE_MODE_NETWORK )
+                        .setAudioAttributes( audioAttributes, handleAudioFocus )
+                        .setUsePlatformDiagnostics( false )
+                        .build()
     }
 
     private data class StreamCache(
