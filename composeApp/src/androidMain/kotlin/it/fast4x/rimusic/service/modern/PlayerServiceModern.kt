@@ -234,12 +234,12 @@ class PlayerServiceModern:
     }
 
     private fun onMediaItemTransition( mediaItem: MediaItem? ) {
-        updateBitmap()
         listener.updateMediaControl( this, player )
-        updateDownloadedState()
-        updateWidgets()
 
         mediaItem?.also {
+            updateBitmap()
+            updateDownloadedState()
+
             if( !isAtLeastAndroid6 || !Preferences.DISCORD_LOGIN.value ) return@also
 
             val startTime = System.currentTimeMillis() - player.currentPosition
