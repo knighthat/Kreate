@@ -36,7 +36,7 @@
     <string name="edit_lyrics">Edytuj tekst</string>
     <string name="search_lyrics_online">Wyszukaj tekst online</string>
     <string name="fetch_lyrics_again">Załaduj ponownie tekst</string>
-    <string name="id">Id</string>
+    <string name="id">Numer ID</string>
     <string name="bitrate">Szybkość transferu</string>
     <string name="size">Rozmiar</string>
     <string name="cached">Zapisane</string>
@@ -629,7 +629,7 @@
     <string name="settings_enable_autodownload_song_when_liked">Pobierz automatycznie, gdy polubiono</string>
     <string name="settings_enable_autodownload_song_when_album_bookmarked">Auto download song when album bookmarked</string>
     <string name="tab_general">Ogólne</string>
-    <string name="queue_and_local_playlists_left_swipe">Queue and Local Playlists Left Swipe</string>
+    <string name="queue_and_local_playlists_left_swipe"></string>
     <string name="queue_and_local_playlists_right_swipe">Queue and Local Playlists Right Swipe</string>
     <string name="playlist_left_swipe">Playlist Left Swipe</string>
     <string name="playlist_right_swipe">Playlist Right Swipe</string>
