@@ -2,6 +2,7 @@ package app.kreate.android.themed.common.component.dialog
 
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,18 +13,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastJoinToString
@@ -36,6 +43,7 @@ import it.fast4x.rimusic.utils.textCopyToClipboard
 import me.knighthat.component.dialog.Dialog
 import me.knighthat.utils.Repository
 import me.knighthat.utils.TimeDateUtils
+import me.knighthat.utils.Toaster
 import java.io.File
 
 class CrashReportDialog(private val context: Context): Dialog {
@@ -97,6 +105,7 @@ class CrashReportDialog(private val context: Context): Dialog {
             Modifier.background( colorPalette.background0 )
                     .fillMaxWidth( .9f )
                     .heightIn( max = 150.dp )
+                    .border( 1.dp, colorPalette.text.copy( .2f ) )
         ) {
             Column(
                 Modifier.verticalScroll(rememberScrollState() )
@@ -112,6 +121,25 @@ class CrashReportDialog(private val context: Context): Dialog {
                                           style = typography.xs
                                       )
                                   }
+            }
+
+            IconButton(
+                onClick = {
+                    textCopyToClipboard( crashlogText(), context )
+
+                    Toaster.s( R.string.value_copied )
+                },
+                modifier = Modifier.padding( 8.dp )
+                                   .align( Alignment.TopEnd )
+            ) {
+                Icon(
+                    painter = painterResource( R.drawable.copy ),
+                    tint = colorPalette.textSecondary,
+                    contentDescription = stringResource( R.string.copy_log_to_clipboard ),
+                    modifier = Modifier.background( colorPalette.background1 )
+                        .padding( 8.dp )
+                        .clip( CircleShape )
+                )
             }
         }
 
