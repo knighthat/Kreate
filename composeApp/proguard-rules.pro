@@ -52,3 +52,7 @@
 
 ## Rules for OkHttp3 - Added since 5.1.0
 -dontwarn okhttp3.internal.Util
+
+## Rules for Coil3
+-keep class * extends coil3.util.DecoderServiceLoaderTarget { *; }
+-keep class * extends coil3.util.FetcherServiceLoaderTarget { *; }
