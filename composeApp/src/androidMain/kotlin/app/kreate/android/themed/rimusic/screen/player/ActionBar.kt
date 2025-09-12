@@ -60,7 +60,6 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
@@ -203,28 +202,11 @@ fun BoxScope.ActionBar(
                         .padding(horizontal = 12.dp)
                         .fillMaxWidth()
                 ) {
-                    val coroutine = rememberCoroutineScope { Dispatchers.Default }
                     var currentIndex by remember { mutableIntStateOf( binder.player.currentMediaItemIndex ) }
                     var nextIndex by remember { mutableIntStateOf( binder.player.nextMediaItemIndex ) }
                     val mediaItems = remember { mutableStateListOf<MediaItem>() }
 
-                    val pagerStateQueue = rememberPagerState { mediaItems.size }
-
-                    suspend fun scrollToNext() {
-                        val page = nextIndex.coerceIn( 0, pagerStateQueue.pageCount )
-                        if(
-                            C.INDEX_UNSET == nextIndex
-                            || (page > pagerStateQueue.currentPage && !pagerStateQueue.canScrollForward)
-                            || (page < pagerStateQueue.currentPage && !pagerStateQueue.canScrollBackward)
-                        )
-                            return
-                        else
-                            pagerStateQueue.animateScrollToPage( page )
-                    }
-                    LaunchedEffect( mediaItems.size ) {
-                        scrollToNext()
-                    }
-
+                    val pagerStateQueue = rememberPagerState( pageCount = { mediaItems.size } )
                     binder.player.DisposableListener {
                         object : Player.Listener {
                             override fun onTimelineChanged(timeline: Timeline, reason: Int) {
@@ -235,8 +217,6 @@ fun BoxScope.ActionBar(
                             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                                 currentIndex = binder.player.currentMediaItemIndex
                                 nextIndex = binder.player.nextMediaItemIndex
-
-                                coroutine.launch { scrollToNext() }
                             }
                         }
                     }
@@ -244,6 +224,10 @@ fun BoxScope.ActionBar(
                     LaunchedEffect( binder.player.mediaItems ) {
                         mediaItems.clear()
                         mediaItems.addAll( binder.player.mediaItems )
+
+                        pagerStateQueue.requestScrollToPage(
+                            nextIndex.coerceIn( 0, pagerStateQueue.pageCount )
+                        )
                     }
 
                     Row(
