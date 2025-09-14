@@ -506,7 +506,7 @@
     <string name="event_volumekeysinfo">按下音量調高鍵切換到下一首歌，按下音量調低鍵切換到上一首歌</string>
     <string name="searches_no_suggestions">No suggestions</string>
     <string name="action_bar_show_discover_button">顯示探索按鈕</string>
-    <string name="playertype">Player Type</string>
+    <string name="playertype">播放器類型</string>
     <string name="noblur">No Blur when Lyrics is Disabled</string>
     <string name="fadingedge">Fading Edge</string>
     <string name="carousel">Carousel View</string>

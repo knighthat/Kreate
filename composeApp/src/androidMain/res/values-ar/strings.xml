@@ -39,7 +39,7 @@
     <string name="id">المعرف</string>
     <string name="bitrate">معدل البت</string>
     <string name="size">الحجم</string>
-    <string name="cached">نسخة مخبأة</string>
+    <string name="cached">مخزن مؤقت</string>
     <string name="loudness">علو الصوت</string>
     <string name="clear">مسح</string>
     <string name="online">مُتّصل</string>
