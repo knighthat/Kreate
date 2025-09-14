@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Bitdi</string>
     <string name="hidesong">Həqiqətən bu mahnını gizlətmək istəyirsiz? Onun dinlənmə vaxtı və qalığı silinəcək. Bu tələb geri dönməzdir.</string>
@@ -815,12 +815,12 @@
     <string name="setting_entry_sync_quotes">\"%s\" sinxronizasiyası</string>
     <string name="setting_entry_test_proxy">Proxy yoxlama</string>
     <string name="info_proxy_verified">Proksi düzgün qurulub</string>
-    <string name="cache_location_split">Split</string>
-    <string name="setting_description_cache_location_system">Store both cached and downloaded in the app\'s cache, which can be deleted by clearing the cache in settings</string>
-    <string name="setting_description_cache_location_private">Store both cached and downloaded songs in the app\'s private storage, which can only be deleted if the app\'s data is wiped</string>
-    <string name="setting_description_cache_location_split">Cached songs live in app\'s cache, and downloaded songs live in app\'s private storage</string>
-    <string name="theme_light">Light</string>
-    <string name="theme_dark">Dark</string>
-    <string name="theme_pitch_black">Pitch black</string>
-    <string name="theme_system">System</string>
+    <string name="cache_location_split">Ayırın</string>
+    <string name="setting_description_cache_location_system">Həm keşkələnən, həm də endirilmiş tətbiqin keşində saxlayın, tənzimləmələrdəki keşkəni silməklə də silinə bilər</string>
+    <string name="setting_description_cache_location_private">Həm keşkələnən, həm də endirilmiş mahnıları tətbiqin fərdi yaddaşında saxlayın, yalnız tətbiq məlumatları təmizləndikdə silinə bilər</string>
+    <string name="setting_description_cache_location_split">Keşkələnmiş mahnılar tətbiq keşkəsi, endirilmiş mahnılar isə tətbiqin fərdi yaddaşında mövcud olur</string>
+    <string name="theme_light">İşıqlı</string>
+    <string name="theme_dark">Qara</string>
+    <string name="theme_pitch_black">Qatran qarası</string>
+    <string name="theme_system">Sistem</string>
 </resources>
