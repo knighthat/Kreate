@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">تم</string>
     <string name="hidesong">هل تريد حقا أخفاء هذه الأغنية؟ كافة البيانات المحفوظة ستمسح من الجهاز. هذا الإجراء لا يمكن التراجع عنه.</string>
@@ -39,7 +39,7 @@
     <string name="id">المعرف</string>
     <string name="bitrate">معدل البت</string>
     <string name="size">الحجم</string>
-    <string name="cached">نسخة مخبأة</string>
+    <string name="cached">مخزن مؤقت</string>
     <string name="loudness">علو الصوت</string>
     <string name="clear">مسح</string>
     <string name="online">مُتّصل</string>
