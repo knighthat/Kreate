@@ -31,3 +31,5 @@ project(":lrclib").projectDir = file("extensions/lrclib")
 // Submodules
 include(":innertube")
 project(":innertube").projectDir = file("modules/innertube")
+include("discord")
+project(":discord").projectDir = file("modules/discord")

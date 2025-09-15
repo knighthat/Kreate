@@ -45,6 +45,7 @@ license-report = "2.9"
 # Kotlinx
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-guava = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-guava", version = "kotlinxCoroutines" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 
 # Room
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
@@ -71,6 +72,7 @@ ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-nego
 ktor-encoding = { group = "io.ktor", name = "ktor-client-encoding", version.ref = "ktor" }
 ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-serialization-protobuf = { group = "io.ktor", name = "ktor-serialization-kotlinx-protobuf", version.ref = "ktor" }
+ktor-websockets = { group = "io.ktor", name = "ktor-client-websockets", version.ref = "ktor" }
 
 # Jetbrains Compose
 material-icon-desktop = { group = "org.jetbrains.compose.material", name = "material-icons-extended-desktop", version.ref = "materialdesktop" }
@@ -145,5 +147,5 @@ license-report = { id = "com.github.jk1.dependency-license-report", version.ref 
 
 [bundles]
 compose-kmp = ['compose-kmp-animation', 'compose-kmp-foundation', 'compose-kmp-material3', 'compose-kmp-ui']
-ktor = ['ktor-core', 'ktor-encoding', 'ktor-content-negotiation', 'ktor-serialization-json', 'ktor-serialization-protobuf', 'ktor-okhttp']
+ktor = ['ktor-core', 'ktor-encoding', 'ktor-content-negotiation', 'ktor-serialization-json', 'ktor-serialization-protobuf', 'ktor-okhttp', 'ktor-websockets']
 junit5 = ["junit5-jupiter-params", "junit5-jupiter-engine", "junit5-jupiter-api"]
