@@ -157,8 +157,9 @@ class PlayerServiceModern:
     @Inject
     lateinit var player: ExoPlayer
 
-    private lateinit var listener: ExoPlayerListener
-    private lateinit var volumeFader: VolumeFader
+    @Inject
+    lateinit var volumeFader: VolumeFader
+    @Inject
     private lateinit var volumeObserver: VolumeObserver
     private val coroutineScope = CoroutineScope(Dispatchers.IO) + Job()
     private val handler = Handler(Looper.getMainLooper())
@@ -275,7 +276,6 @@ class PlayerServiceModern:
 
         PlaybackStatsListener(false, this@PlayerServiceModern)
             .also( player::addAnalyticsListener )
-        volumeFader = VolumeFader(player)
 
         preferences.registerOnSharedPreferenceChangeListener(this)
 
