@@ -160,7 +160,9 @@ class PlayerServiceModern:
     @Inject
     lateinit var volumeFader: VolumeFader
     @Inject
-    private lateinit var volumeObserver: VolumeObserver
+    lateinit var volumeObserver: VolumeObserver
+
+    private lateinit var listener: ExoPlayerListener
     private val coroutineScope = CoroutineScope(Dispatchers.IO) + Job()
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var mediaSession: MediaLibrarySession
@@ -226,7 +228,6 @@ class PlayerServiceModern:
 
         super.onCreate()
 
-        volumeObserver = VolumeObserver(this, ::onVolumeChange)
         volumeObserver.register()
 
         // Enable Android Auto if disabled, REQUIRE ENABLING DEV MODE IN ANDROID AUTO
@@ -557,20 +558,6 @@ class PlayerServiceModern:
             Preferences.AUDIO_BASS_BOOSTED.key -> maybeBassBoost()
 
             Preferences.AUDIO_REVERB_PRESET.key -> maybeReverb()
-        }
-    }
-
-    private var pausedByZeroVolume = false
-
-    private fun onVolumeChange( volume: Int ) {
-        if( !Preferences.PAUSE_WHEN_VOLUME_SET_TO_ZERO.value ) return
-
-        if ( player.isPlaying && volume < 1 ) {
-            binder.gracefulPause()
-            pausedByZeroVolume = true
-        } else if ( pausedByZeroVolume && volume >= 1 ) {
-            binder.gracefulPlay()
-            pausedByZeroVolume = false
         }
     }
 
