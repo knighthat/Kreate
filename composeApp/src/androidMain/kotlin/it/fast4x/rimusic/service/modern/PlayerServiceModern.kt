@@ -1,6 +1,5 @@
 package it.fast4x.rimusic.service.modern
 
-import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.WallpaperManager
@@ -178,8 +177,6 @@ class PlayerServiceModern:
     private lateinit var bitmapProvider: BitmapProvider
     private var isPersistentQueueEnabled: Boolean = false
     private var isclosebackgroundPlayerEnabled = false
-    private var audioManager: AudioManager? = null
-    private var audioDeviceCallback: AudioDeviceCallback? = null
     private lateinit var downloadListener: DownloadManager.Listener
 
     var loudnessEnhancer: LoudnessEnhancer? = null
@@ -596,38 +593,42 @@ class PlayerServiceModern:
         }
     }
 
-    @SuppressLint("NewApi")
+    private var audioManager: AudioManager? = null
+    private var audioDeviceCallback: AudioDeviceCallback? = null
+
     private fun maybeResumePlaybackWhenDeviceConnected() {
-        if (!isAtLeastAndroid6) return
+        if ( !isAtLeastAndroid6 ) return
 
         if ( Preferences.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE.value ) {
-            if (audioManager == null) {
-                audioManager = getSystemService(AUDIO_SERVICE) as AudioManager?
-            }
+            if (audioManager == null)
+                audioManager = getSystemService( AUDIO_SERVICE ) as? AudioManager
+
 
             audioDeviceCallback = object : AudioDeviceCallback() {
                 private fun canPlayMusic(audioDeviceInfo: AudioDeviceInfo): Boolean {
-                    if (!audioDeviceInfo.isSink) return false
+                    if ( !audioDeviceInfo.isSink ) return false
 
-                    return audioDeviceInfo.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP ||
-                            audioDeviceInfo.type == AudioDeviceInfo.TYPE_WIRED_HEADSET ||
-                            audioDeviceInfo.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES ||
-                            audioDeviceInfo.type == AudioDeviceInfo.TYPE_USB_HEADSET
-                }
-
-                override fun onAudioDevicesAdded(addedDevices: Array<AudioDeviceInfo>) {
-                    if (!player.isPlaying && addedDevices.any(::canPlayMusic)) {
-                        player.play()
+                    return when( audioDeviceInfo.type ) {
+                        AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
+                        AudioDeviceInfo.TYPE_WIRED_HEADSET,
+                        AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
+                        AudioDeviceInfo.TYPE_USB_HEADSET        -> true
+                        else                                    -> false
                     }
                 }
 
-                override fun onAudioDevicesRemoved(removedDevices: Array<AudioDeviceInfo>) = Unit
+                override fun onAudioDevicesAdded(addedDevices: Array<AudioDeviceInfo>) {
+                    if( player.isPlaying ) return
+
+                    if( addedDevices.any( ::canPlayMusic ) )
+                        player.play()
+                }
             }
 
-            audioManager?.registerAudioDeviceCallback(audioDeviceCallback, handler)
+            audioManager?.registerAudioDeviceCallback( audioDeviceCallback, handler )
 
         } else {
-            audioManager?.unregisterAudioDeviceCallback(audioDeviceCallback)
+            audioManager?.unregisterAudioDeviceCallback( audioDeviceCallback )
             audioDeviceCallback = null
         }
     }
