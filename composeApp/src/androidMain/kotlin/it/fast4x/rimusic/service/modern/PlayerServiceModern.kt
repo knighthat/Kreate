@@ -74,7 +74,6 @@ import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.appContext
-import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.enums.PresetsReverb
 import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
@@ -174,13 +173,10 @@ class PlayerServiceModern:
     private var mediaLibrarySessionCallback: MediaLibrarySessionCallback =
         MediaLibrarySessionCallback(this, Database, MyDownloadHelper)
     private lateinit var bitmapProvider: BitmapProvider
-    private var isPersistentQueueEnabled: Boolean = false
-    private var isclosebackgroundPlayerEnabled = false
     private lateinit var downloadListener: DownloadManager.Listener
 
     private var binder = Binder()
 
-    lateinit var audioQualityFormat: AudioQualityFormat
     lateinit var sleepTimer: SleepTimer
     private var timerJob: TimerJob? = null
 
@@ -261,10 +257,6 @@ class PlayerServiceModern:
         }
 
         val preferences = preferences
-        isPersistentQueueEnabled = Preferences.ENABLE_PERSISTENT_QUEUE.value
-
-        audioQualityFormat = Preferences.AUDIO_QUALITY.value
-
         MyDownloadHelper.instance = this.downloadHelper
 
         sleepTimer = SleepTimer(coroutineScope, player).also( player::addListener )
@@ -406,7 +398,7 @@ class PlayerServiceModern:
 
         /* Queue is saved in events without scheduling it (remove this in future)*/
         // Load persistent queue when start activity and save periodically in background
-        if (isPersistentQueueEnabled) {
+        if ( Preferences.ENABLE_PERSISTENT_QUEUE.value ) {
             maybeResumePlaybackOnStart()
 
             val scheduler = Executors.newScheduledThreadPool(1)
@@ -461,8 +453,7 @@ class PlayerServiceModern:
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        isclosebackgroundPlayerEnabled = Preferences.CLOSE_BACKGROUND_JOB_IN_TASK_MANAGER.value
-        if (isclosebackgroundPlayerEnabled) {
+        if ( Preferences.CLOSE_BACKGROUND_JOB_IN_TASK_MANAGER.value ) {
             broadCastPendingIntent<NotificationDismissReceiver>().send()
             this.stopService(this.intent<MyDownloadService>())
             this.stopService(this.intent<PlayerServiceModern>())
@@ -521,9 +512,6 @@ class PlayerServiceModern:
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         when (key) {
-            Preferences.ENABLE_PERSISTENT_QUEUE.key ->
-                isPersistentQueueEnabled = sharedPreferences.getBoolean( key, Preferences.ENABLE_PERSISTENT_QUEUE.defaultValue )
-
             Preferences.AUDIO_VOLUME_NORMALIZATION.key,
             Preferences.AUDIO_VOLUME_NORMALIZATION_TARGET.key -> listener.maybeNormalizeVolume()
 
@@ -726,15 +714,16 @@ class PlayerServiceModern:
     }
 
     private fun maybeResumePlaybackOnStart() {
-        if( isPersistentQueueEnabled && Preferences.RESUME_PLAYBACK_ON_STARTUP.value )
-            binder.gracefulPlay()
+        if( Preferences.ENABLE_PERSISTENT_QUEUE.value
+            && Preferences.RESUME_PLAYBACK_ON_STARTUP.value
+        ) binder.gracefulPlay()
     }
 
     @ExperimentalCoroutinesApi
     @FlowPreview
     @UnstableApi
     private fun maybeRestorePlayerQueue() {
-        if (!isPersistentQueueEnabled) return
+        if ( !Preferences.ENABLE_PERSISTENT_QUEUE.value ) return
 
         Database.asyncQuery {
             val queuedSong = runBlocking {
