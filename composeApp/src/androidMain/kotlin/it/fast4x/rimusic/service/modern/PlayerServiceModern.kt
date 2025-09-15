@@ -146,14 +146,14 @@ class PlayerServiceModern:
     PlaybackStatsListener.Callback,
     SharedPreferences.OnSharedPreferenceChangeListener
 {
+    @Inject
+    lateinit var player: ExoPlayer
 
     @Inject
     @Named("cache")
     lateinit var cache: Cache
     @Inject
     lateinit var downloadHelper: DownloadHelper
-    @Inject
-    lateinit var player: ExoPlayer
 
     @Inject
     lateinit var volumeFader: VolumeFader
@@ -172,8 +172,6 @@ class PlayerServiceModern:
     private lateinit var downloadListener: DownloadManager.Listener
 
     private var binder = Binder()
-    private var bassBoost: BassBoost? = null
-    private var reverbPreset: PresetReverb? = null
 
     lateinit var audioQualityFormat: AudioQualityFormat
     lateinit var sleepTimer: SleepTimer
@@ -556,6 +554,8 @@ class PlayerServiceModern:
         }
     }
 
+    private var bassBoost: BassBoost? = null
+
     private fun maybeBassBoost() {
         if ( !Preferences.AUDIO_BASS_BOOSTED.value ) {
             runCatching {
@@ -579,6 +579,8 @@ class PlayerServiceModern:
             Toaster.e( "Can't enable bass boost" )
         }
     }
+
+    private var reverbPreset: PresetReverb? = null
 
     private fun maybeReverb() {
         val presetType by Preferences.AUDIO_REVERB_PRESET
