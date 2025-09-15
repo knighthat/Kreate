@@ -119,6 +119,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import me.knighthat.impl.DownloadHelperImpl
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.schabi.newpipe.extractor.NewPipe
@@ -153,9 +154,6 @@ class PlayerServiceModern:
     lateinit var cache: Cache
     @Inject
     lateinit var downloadHelper: DownloadHelper
-    @Inject
-    @Named("downloadCache")
-    lateinit var downloadCache: Cache
     @Inject
     lateinit var player: ExoPlayer
 
@@ -861,7 +859,7 @@ class PlayerServiceModern:
             get() = this@PlayerServiceModern.cache
 
         val downloadCache: Cache
-            get() = this@PlayerServiceModern.downloadCache
+            get() = (this@PlayerServiceModern.downloadHelper as DownloadHelperImpl).downloadCache
 
         val sleepTimerMillisLeft: StateFlow<Long?>?
             get() = timerJob?.millisLeft
