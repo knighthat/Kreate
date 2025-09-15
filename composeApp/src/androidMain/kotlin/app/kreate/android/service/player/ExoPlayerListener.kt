@@ -50,8 +50,10 @@ class ExoPlayerListener(
     private val onMediaTransition: (MediaItem?) -> Unit
 ): Player.Listener {
 
-    private var loudnessEnhancer: LoudnessEnhancer? = null
     private var volumeNormalizationJob: Job = Job()
+
+    var loudnessEnhancer: LoudnessEnhancer? = null
+        private set
 
     /**
      * Requires [Preferences.ENABLE_PERSISTENT_QUEUE] to be **enabled** to work.

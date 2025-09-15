@@ -20,7 +20,6 @@ import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.media.audiofx.AudioEffect
 import android.media.audiofx.BassBoost
-import android.media.audiofx.LoudnessEnhancer
 import android.media.audiofx.PresetReverb
 import android.os.Build
 import android.os.Handler
@@ -179,7 +178,6 @@ class PlayerServiceModern:
     private var isclosebackgroundPlayerEnabled = false
     private lateinit var downloadListener: DownloadManager.Listener
 
-    var loudnessEnhancer: LoudnessEnhancer? = null
     private var binder = Binder()
     private var bassBoost: BassBoost? = null
     private var reverbPreset: PresetReverb? = null
@@ -501,7 +499,7 @@ class PlayerServiceModern:
             //downloadCache.release()
             MyDownloadHelper.instance.downloadManager.removeListener(downloadListener)
 
-            loudnessEnhancer?.release()
+            listener.loudnessEnhancer?.release()
 
             timerJob?.cancel()
             timerJob = null
