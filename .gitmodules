@@ -4,3 +4,6 @@
 [submodule "scripts/strings-modifier"]
 	path = scripts/strings-modifier
 	url = https://gitlab.com/tannguyen047/string-modifier
+[submodule "modules/discord"]
+	path = modules/discord
+	url = https://gitlab.com/tannguyen047/discord-kotlin.git

@@ -96,6 +96,7 @@ kotlin {
             implementation(projects.oldtube)
             implementation(projects.kugou)
             implementation(projects.lrclib)
+            implementation( projects.discord )
 
             implementation( libs.kizzy.rpc )
 
