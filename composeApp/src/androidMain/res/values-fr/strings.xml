@@ -822,8 +822,8 @@ Volume BAS : titre précédent</string>
     <string name="setting_description_cache_location_system">Stockez à la fois les données mises en cache et téléchargées dans le cache de l\'application, qui peut être supprimé en effaçant le cache dans les paramètres</string>
     <string name="setting_description_cache_location_private">Stockez les titres en cache et téléchargés dans le stockage privé de l\'application, qui ne peut être supprimé que si les données de l\'application sont effacées</string>
     <string name="setting_description_cache_location_split">Les titres mis en cache vivent dans le cache de l\'application et les titres téléchargés vivent dans le stockage privé de l\'application</string>
-    <string name="theme_light">Light</string>
-    <string name="theme_dark">Dark</string>
-    <string name="theme_pitch_black">Pitch black</string>
-    <string name="theme_system">System</string>
+    <string name="theme_light">Clair</string>
+    <string name="theme_dark">Sombre</string>
+    <string name="theme_pitch_black">Noir Absolu</string>
+    <string name="theme_system">Système</string>
 </resources>
