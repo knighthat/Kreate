@@ -23,9 +23,11 @@ import android.media.audiofx.AudioEffect
 import android.media.audiofx.BassBoost
 import android.media.audiofx.LoudnessEnhancer
 import android.media.audiofx.PresetReverb
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.MainThread
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -70,6 +72,7 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.Discord
 import app.kreate.android.service.createDataSourceFactory
 import app.kreate.android.service.newpipe.NewPipeDownloader
 import app.kreate.android.service.player.ExoPlayerListener
@@ -90,7 +93,6 @@ import it.fast4x.rimusic.enums.ExoPlayerCacheLocation
 import it.fast4x.rimusic.enums.PresetsReverb
 import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
-import it.fast4x.rimusic.extensions.discord.updateDiscordPresence
 import it.fast4x.rimusic.isHandleAudioFocusEnabled
 import it.fast4x.rimusic.models.Event
 import it.fast4x.rimusic.models.Song
@@ -160,6 +162,9 @@ class PlayerServiceModern:
     MediaLibraryService(),
     PlaybackStatsListener.Callback,
     SharedPreferences.OnSharedPreferenceChangeListener {
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private val discord: Discord = Discord(this)
 
     private lateinit var listener: ExoPlayerListener
     private lateinit var volumeFader: VolumeFader
@@ -243,13 +248,7 @@ class PlayerServiceModern:
             if( !isAtLeastAndroid6 || !Preferences.DISCORD_LOGIN.value ) return@also
 
             val startTime = System.currentTimeMillis() - player.currentPosition
-            val duration = mediaItem.mediaMetadata.durationMs ?: 0
-            updateDiscordPresence(
-                this@PlayerServiceModern,
-                mediaItem = it,
-                timeStart = startTime,
-                timeEnd = startTime + duration
-            )
+            discord.updateMediaItem( mediaItem, startTime )
         }
     }
 
@@ -448,23 +447,6 @@ class PlayerServiceModern:
             println("PlayerServiceModern onCreate currentSongIsDownloaded ${currentSongStateDownload.value}")
 
             withContext(Dispatchers.Main) {
-                player.currentMediaItem?.also {
-                    if( !isAtLeastAndroid6 || !Preferences.DISCORD_LOGIN.value ) return@also
-
-                    updateDiscordPresence(
-                        this@PlayerServiceModern,
-                        mediaItem = it,
-                        timeStart = if (player.isPlaying)
-                            System.currentTimeMillis() - player.currentPosition
-                        else
-                            0L,
-                        timeEnd = if (player.isPlaying)
-                            (System.currentTimeMillis() - player.currentPosition) + player.duration
-                        else
-                            0L
-                    )
-                }
-
                 updateWidgets()
             }
         }
@@ -490,7 +472,8 @@ class PlayerServiceModern:
 
         }
 
-
+        if( isAtLeastAndroid6 )
+            discord.register()
     }
 
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
@@ -579,6 +562,9 @@ class PlayerServiceModern:
             notificationManager = null
 
             coroutineScope.cancel()
+
+            if( isAtLeastAndroid6 )
+                discord.release()
 
             preferences.unregisterOnSharedPreferenceChangeListener(this)
         }.onFailure {
