@@ -95,8 +95,6 @@ kotlin {
             implementation(projects.lrclib)
             implementation( projects.discord )
 
-            implementation( libs.kizzy.rpc )
-
             // Room KMP
             implementation( libs.room.runtime )
             implementation( libs.room.sqlite.bundled )

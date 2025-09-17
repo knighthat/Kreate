@@ -7,6 +7,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.serialization.kotlinx.protobuf.protobuf
 import kotlinx.coroutines.Dispatchers
@@ -55,6 +57,10 @@ object NetworkService {
             install( ContentEncoding ) {
                 gzip( 1f )
                 deflate( 0.9F )
+            }
+
+            install(WebSockets ) {
+                contentConverter = KotlinxWebsocketSerializationConverter(JSON)
             }
 
             engine {
