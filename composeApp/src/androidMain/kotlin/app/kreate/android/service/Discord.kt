@@ -26,14 +26,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.putJsonArray
 import me.knighthat.discord.Status
-import me.knighthat.discord.StatusDisplayType
 import me.knighthat.discord.Type
 import me.knighthat.discord.payload.Activity
 import me.knighthat.discord.payload.Identify
@@ -46,6 +44,7 @@ import org.jetbrains.annotations.Contract
 import me.knighthat.discord.Discord as DiscordLib
 
 
+// TODO: Localize strings
 @RequiresApi(Build.VERSION_CODES.M)
 class Discord(private val context: Context) {
 
@@ -59,10 +58,9 @@ class Discord(private val context: Context) {
     private val templateActivity by lazy {
         Activity(
             name = BuildConfig.APP_NAME,
-            type = Type.CUSTOM,
+            type = Type.LISTENING,
             createdAt = System.currentTimeMillis(),
             applicationId = APPLICATION_ID,
-            statusDisplayType = StatusDisplayType.NAME,
             buttons = listOf( getAppButton )
         )
     }
@@ -111,13 +109,9 @@ class Discord(private val context: Context) {
         CoroutineScope( Dispatchers.IO ).launch {
             DiscordLib.login {
                 val activity = templateActivity.copy(
-                    statusDisplayType = StatusDisplayType.DETAILS,
-                    detailsUrl = getAppButton.url,
-                    emoji = buildJsonObject {
-                        put( "name", JsonPrimitive("Phone emoji") )
-                        put( "id", JsonPrimitive(":mobile_phone: ") )
-                        put( "animated", JsonPrimitive(false) )
-                    },
+                    state = "Browsing",
+                    details = "Music your way",
+                    detailsUrl = getAppButton.url
                 )
 
                 Identify(
