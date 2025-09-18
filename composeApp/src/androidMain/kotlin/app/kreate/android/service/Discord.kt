@@ -20,9 +20,11 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
+import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.cleanPrefix
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.JsonArray
@@ -36,6 +38,7 @@ import me.knighthat.discord.Type
 import me.knighthat.discord.payload.Activity
 import me.knighthat.discord.payload.Identify
 import me.knighthat.discord.payload.Presence
+import me.knighthat.innertube.Constants
 import me.knighthat.logging.Logger
 import me.knighthat.utils.ImageProcessor
 import me.knighthat.utils.Repository
@@ -232,31 +235,45 @@ class Discord(private val context: Context) {
             val token by Preferences.DISCORD_ACCESS_TOKEN
             val metadata = mediaItem.mediaMetadata
 
-            val timeEnd = timeStart + (metadata.durationMs ?: 0L)
+            val title = metadata.title.toString().let( ::cleanPrefix )
+            val timestamp = Activity.Timestamp(
+                start = timeStart,
+                end = timeStart + (metadata.durationMs ?: 0L)
+            )
+            val artists = metadata.artist?.toString()?.let( ::cleanPrefix )
+            val artistUrl: String? = Database.artistTable
+                                             .findBySongId( mediaItem.mediaId )
+                                             .firstOrNull()
+                                             ?.firstOrNull()
+                                             ?.let { "${Constants.YOUTUBE_MUSIC_URL}/channel/${it.id}" }
+            val album = metadata.albumTitle?.toString()?.let( ::cleanPrefix )
+            val assets = Activity.Assets(
+                largeImage = getImageUrl( token, metadata.artworkUri ),
+                largeText = null,
+                largeUrl = metadata.artworkUri.toString(),
+                smallImage = getAppLogoUrl( token ),
+                smallText = null,
+                smallUrl = getAppButton.url
+            )
             val buttons = listOf(
                 getAppButton,
                 Activity.Button(
-                    label = "Listen on YouTube Music",
-                    url = "https://music.youtube.com/watch?v=${mediaItem.mediaId}"
+                    label = "Listen to $title",
+                    url = "${Constants.YOUTUBE_MUSIC_URL}/watch?v=${mediaItem.mediaId}"
                 )
             )
-            val activity = templateActivity.copy(
+
+            val activity = Activity(
+                name = title,
                 type = Type.LISTENING,
-                details = cleanPrefix( metadata.title.toString() ),
-                state = cleanPrefix( metadata.artist.toString() ),
-                timestamp = Activity.Timestamp(timeStart, timeEnd),
-                assets = Activity.Assets(
-                    largeImage = getImageUrl( token, metadata.artworkUri ),
-                    largeText = metadata.albumTitle?.toString(),
-                    largeUrl = metadata.artworkUri.toString(),
-                    smallImage = getAppLogoUrl( token ),
-                    smallText = getAppButton.label,
-                    smallUrl = getAppButton.url
-                ),
-                buttons = buttons.map( Activity.Button::label ),
-                metadata = Activity.Metadata(
-                    buttons.map( Activity.Button::url )
-                )
+                createdAt = timeStart,
+                timestamp = timestamp,
+                applicationId = APPLICATION_ID,
+                details = artists,
+                detailsUrl = artistUrl,
+                state = album,
+                assets = assets,
+                buttons = buttons
             )
 
             DiscordLib.updatePresence {
