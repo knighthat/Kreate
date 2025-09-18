@@ -267,7 +267,7 @@ class Discord(private val context: Context) {
                 name = title,
                 type = Type.LISTENING,
                 createdAt = timeStart,
-                timestamp = timestamp,
+                timestamps = timestamp,
                 applicationId = APPLICATION_ID,
                 details = artists,
                 detailsUrl = artistUrl,
