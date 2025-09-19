@@ -445,7 +445,7 @@ object PlayerModule {
         return@Resolver if( isLocal || isCached() ) {
             Timber.tag( LOG_TAG ).d( "$videoId exists in cache, proceeding to use from cache" )
             // No need to fetch online for already cached data
-            dataSpec.subrange( dataSpec.uriPositionOffset, C.LENGTH_UNSET.toLong() )
+            dataSpec.subrange( absoluteStart, C.LENGTH_UNSET.toLong() )
         } else
             dataSpec.process( videoId, Preferences.AUDIO_QUALITY.value, context.isConnectionMetered() )
     }
