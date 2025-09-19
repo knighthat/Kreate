@@ -17,6 +17,8 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.cleanPrefix
+import it.fast4x.rimusic.models.Artist
+import it.fast4x.rimusic.utils.thumbnail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
@@ -211,18 +213,20 @@ class Discord(private val context: Context) {
                 start = timeStart,
                 end = timeStart + (metadata.durationMs ?: 0L)
             )
-            val artists = metadata.artist?.toString()?.let( ::cleanPrefix )
-            val artistUrl: String? = Database.artistTable
-                                             .findBySongId( mediaItem.mediaId )
-                                             .firstOrNull()
-                                             ?.firstOrNull()
-                                             ?.let { "${Constants.YOUTUBE_MUSIC_URL}/channel/${it.id}" }
+            val artistsText = metadata.artist?.toString()?.let( ::cleanPrefix )
+            val artists: Artist? = Database.artistTable
+                                           .findBySongId( mediaItem.mediaId )
+                                           .firstOrNull()
+                                           ?.firstOrNull()
+            // https://music.youtube.com/channel/[channelId]
+            val artistUrl = artists?.let { "${Constants.YOUTUBE_MUSIC_URL}/channel/${it.id}" }
             val album = metadata.albumTitle?.toString()?.let( ::cleanPrefix )
             val assets = Activity.Assets(
-                largeImage = getImageUrl( metadata.artworkUri ),
+                // [thumbnail] call only modifies youtube's thumbnail urls
+                largeImage = getImageUrl( metadata.artworkUri.thumbnail(MAX_DIMENSION) ),
                 largeText = null,
                 largeUrl = metadata.artworkUri.toString(),
-                smallImage = getAppLogoUrl(),
+                smallImage = artists?.thumbnailUrl.thumbnail( MAX_DIMENSION / 4 ) ?: getAppLogoUrl(),
                 smallText = null,
                 smallUrl = getAppButton.url
             )
@@ -240,7 +244,7 @@ class Discord(private val context: Context) {
                 createdAt = timeStart,
                 timestamps = timestamp,
                 applicationId = APPLICATION_ID,
-                details = artists,
+                details = artistsText,
                 detailsUrl = artistUrl,
                 state = album,
                 assets = assets,
