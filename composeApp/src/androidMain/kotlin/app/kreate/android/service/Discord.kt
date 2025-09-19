@@ -187,6 +187,53 @@ class Discord(private val context: Context) {
                       .getOrNull()
                       ?.also { smallImage = it }
 
+    private suspend fun makeActivity( mediaItem: MediaItem, timeStart: Long ): Activity {
+        val metadata = mediaItem.mediaMetadata
+
+        val title = metadata.title.toString().let( ::cleanPrefix )
+        val timestamp = Activity.Timestamp(
+            start = timeStart,
+            end = timeStart + (metadata.durationMs ?: 0L)
+        )
+        val artistsText = metadata.artist?.toString()?.let( ::cleanPrefix )
+        val artists: Artist? = Database.artistTable
+                                       .findBySongId( mediaItem.mediaId )
+                                       .firstOrNull()
+                                       ?.firstOrNull()
+        // https://music.youtube.com/channel/[channelId]
+        val artistUrl = artists?.let { "${Constants.YOUTUBE_MUSIC_URL}/channel/${it.id}" }
+        val album = metadata.albumTitle?.toString()?.let( ::cleanPrefix )
+        val assets = Activity.Assets(
+            // [thumbnail] call only modifies youtube's thumbnail urls
+            largeImage = getImageUrl( metadata.artworkUri.thumbnail(MAX_DIMENSION) ),
+            largeText = null,
+            largeUrl = metadata.artworkUri.toString(),
+            smallImage = artists?.thumbnailUrl.thumbnail( MAX_DIMENSION / 4 ) ?: getAppLogoUrl(),
+            smallText = null,
+            smallUrl = getAppButton.url
+        )
+        val buttons = listOf(
+            getAppButton,
+            Activity.Button(
+                label = "Listen to $title",
+                url = "${Constants.YOUTUBE_MUSIC_URL}/watch?v=${mediaItem.mediaId}"
+            )
+        )
+
+        return Activity(
+            name = title,
+            type = Type.LISTENING,
+            createdAt = timeStart,
+            timestamps = timestamp,
+            applicationId = APPLICATION_ID,
+            details = artistsText,
+            detailsUrl = artistUrl,
+            state = album,
+            assets = assets,
+            buttons = buttons
+        )
+    }
+
     fun register() {
         val token by Preferences.DISCORD_ACCESS_TOKEN
         if( DiscordLib.isReady()
@@ -206,51 +253,7 @@ class Discord(private val context: Context) {
         if( !DiscordLib.isReady() ) return
 
         CoroutineScope( Dispatchers.IO ).launch {
-            val metadata = mediaItem.mediaMetadata
-
-            val title = metadata.title.toString().let( ::cleanPrefix )
-            val timestamp = Activity.Timestamp(
-                start = timeStart,
-                end = timeStart + (metadata.durationMs ?: 0L)
-            )
-            val artistsText = metadata.artist?.toString()?.let( ::cleanPrefix )
-            val artists: Artist? = Database.artistTable
-                                           .findBySongId( mediaItem.mediaId )
-                                           .firstOrNull()
-                                           ?.firstOrNull()
-            // https://music.youtube.com/channel/[channelId]
-            val artistUrl = artists?.let { "${Constants.YOUTUBE_MUSIC_URL}/channel/${it.id}" }
-            val album = metadata.albumTitle?.toString()?.let( ::cleanPrefix )
-            val assets = Activity.Assets(
-                // [thumbnail] call only modifies youtube's thumbnail urls
-                largeImage = getImageUrl( metadata.artworkUri.thumbnail(MAX_DIMENSION) ),
-                largeText = null,
-                largeUrl = metadata.artworkUri.toString(),
-                smallImage = artists?.thumbnailUrl.thumbnail( MAX_DIMENSION / 4 ) ?: getAppLogoUrl(),
-                smallText = null,
-                smallUrl = getAppButton.url
-            )
-            val buttons = listOf(
-                getAppButton,
-                Activity.Button(
-                    label = "Listen to $title",
-                    url = "${Constants.YOUTUBE_MUSIC_URL}/watch?v=${mediaItem.mediaId}"
-                )
-            )
-
-            val activity = Activity(
-                name = title,
-                type = Type.LISTENING,
-                createdAt = timeStart,
-                timestamps = timestamp,
-                applicationId = APPLICATION_ID,
-                details = artistsText,
-                detailsUrl = artistUrl,
-                state = album,
-                assets = assets,
-                buttons = buttons
-            )
-
+            val activity = makeActivity( mediaItem, timeStart )
             DiscordLib.updatePresence {
                 Presence(null, listOf( activity ), Status.ONLINE, false)
             }
