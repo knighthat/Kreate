@@ -9,7 +9,6 @@ import android.provider.OpenableColumns
 import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 import kotlin.io.path.createTempFile
 import kotlin.math.roundToInt
 
@@ -72,17 +71,16 @@ object ImageProcessor {
     /**
      * Processes an image from a given Uri:
      *
-     * 1. If it's a remote Uri (e.g., http/https), returns it directly.
-     * 2. If it's a local Uri (file/content):
      * a. Verifies if it's an image by its MIME type.
      * b. Checks if dimensions exceed MAX_DIMENSION or file size exceeds MAX_FILE_SIZE_BYTES.
      * c. If limits are exceeded, scales and compresses the image to meet specs.
      * d. If not an image, throws IllegalArgumentException.
      *
      * @param context The application context
-     * @param artworkUri The Uri of the image file (can be local or remote)
+     * @param artworkUri The Uri of the image file (must be a local path)
      * @return A Uri to the processed image (original local, compressed/scaled local, or original remote Uri)
-     * @throws IllegalArgumentException if the local Uri does not point to an image or local processing fails
+     * @throws IllegalArgumentException if [artworkUri] is not a local path,
+     * or the local Uri does not point to an image or local processing fails
      * @throws SecurityException due to lack of permission
      * @throws IOException other read/write related issues
      * @throws OutOfMemoryError when heap is overflown
@@ -94,16 +92,11 @@ object ImageProcessor {
         IOException::class,
         OutOfMemoryError::class
     )
-    fun compressArtwork( context: Context, artworkUri: Uri?, maxWidth: Int, maxHeight: Int, maxSize: Long ): Uri? {
-        contract {
-            returns( null ) implies ( artworkUri == null )
-        }
-        if( artworkUri == null ) return null
-
-        val scheme = artworkUri.scheme
-        if (scheme == "http" || scheme == "https") {
-            return artworkUri
-        }
+    fun compressArtwork( context: Context, artworkUri: Uri, maxWidth: Int, maxHeight: Int, maxSize: Long ): Uri? {
+        require(
+            artworkUri.scheme.equals( ContentResolver.SCHEME_CONTENT, true )
+                    && artworkUri.scheme.equals( ContentResolver.SCHEME_FILE, true )
+        ) { "$artworkUri is NOT a local file!" }
 
         val contentResolver = context.contentResolver
         val mimeType = contentResolver.getType( artworkUri )
