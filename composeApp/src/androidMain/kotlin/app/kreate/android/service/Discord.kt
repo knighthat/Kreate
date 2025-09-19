@@ -1,23 +1,18 @@
 package app.kreate.android.service
 
+import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
-import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.utils.DiscordLogger
-import io.ktor.client.call.body
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import it.fast4x.rimusic.Database
@@ -26,13 +21,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.add
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.putJsonArray
 import me.knighthat.discord.Status
 import me.knighthat.discord.Type
 import me.knighthat.discord.payload.Activity
@@ -44,6 +32,8 @@ import me.knighthat.utils.ImageProcessor
 import me.knighthat.utils.Repository
 import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Contract
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import me.knighthat.discord.Discord as DiscordLib
 
 
@@ -129,8 +119,7 @@ class Discord(private val context: Context) {
             err?.message?.also( Toaster::e )
         }.dispose()
 
-    @OptIn(ExperimentalSerializationApi::class)
-    private suspend fun uploadArtwork( artworkUri: Uri? ): Result<Uri> =
+    private suspend fun uploadArtwork( artworkUri: Uri ): Result<String> =
         runCatching {
             val uploadableUri = ImageProcessor.compressArtwork(
                 context,
@@ -139,9 +128,7 @@ class Discord(private val context: Context) {
                 MAX_DIMENSION,
                 MAX_FILE_SIZE_BYTES
             )!!
-            if( uploadableUri.scheme!!.startsWith( "http" ) )
-                return@runCatching uploadableUri
-            
+
             val formData = formData {
                 val (mimeType, fileData) = with( context.contentResolver ) {
                     getType( uploadableUri )!! to openInputStream( uploadableUri )!!.readBytes()
@@ -158,60 +145,45 @@ class Discord(private val context: Context) {
             NetworkService.client
                           .submitFormWithBinaryData( TEMP_FILE_HOST, formData )
                           .bodyAsText()
-                          .toUri()
         }
 
-    private suspend fun getDiscordAssetUri( imageUrl: String, token: String ): String? {
-        if ( imageUrl.startsWith( "mp:" ) ) return imageUrl
-
-        return runCatching {
-            val postUrl = "https://discord.com/api/v9/applications/${APPLICATION_ID}/external-assets"
-            NetworkService.client
-                          .post( postUrl ) {
-                              header( HttpHeaders.Authorization, token )
-                              // For some reasons, this is required.
-                              // "java.lang.ClassCastException: kotlinx.serialization.json.JsonObject cannot be cast to io.ktor.http.content.OutgoingContent ]
-                              // will be thrown otherwise
-                              header( HttpHeaders.ContentType, ContentType.Application.Json )
-
-                              setBody(
-                                  // Use this to ensure syntax
-                                  // {"urls":[imageUrl]}
-                                  buildJsonObject {
-                                      putJsonArray( "urls" ) { add( imageUrl ) }
-                                  }
-                              )
-                          }
-                          .body<JsonArray>()
-                          .firstOrNull()
-                          ?.jsonObject["external_asset_path"]
-                          ?.jsonPrimitive
-                          ?.content
-                          ?.let { "mp:$it" }
-        }.onFailure {
-            it.printStackTrace()
-            it.message?.also( Toaster::e )
-        }.getOrNull()
-    }
-
     @Contract("_,null->null")
-    private suspend fun getImageUrl( token: String, artworkUri: Uri? ): String? =
-        uploadArtwork( artworkUri ).fold(
-            onSuccess = { getDiscordAssetUri( it.toString(), token ) },
+    @OptIn(ExperimentalContracts::class)
+    private suspend fun getImageUrl( artworkUri: Uri? ): String? {
+        contract {
+            returns( null ) implies( artworkUri == null )
+        }
+        artworkUri ?: return null
+
+        val scheme = artworkUri.scheme?.lowercase().orEmpty()
+        val isLocalArtwork = scheme == ContentResolver.SCHEME_FILE || scheme == ContentResolver.SCHEME_CONTENT
+
+        val result = if( !isLocalArtwork )
+            DiscordLib.getExternalImageUrl( artworkUri.toString(), APPLICATION_ID )
+        else
+            uploadArtwork( artworkUri )
+        return result.fold(
+            onSuccess = { it },
             onFailure = {
                 it.printStackTrace()
                 it.message?.also( Toaster::e )
 
-                getAppLogoUrl( token )
+                getAppLogoUrl()
             }
         )
+    }
 
-    private suspend fun getAppLogoUrl( token: String ): String? =
+    private suspend fun getAppLogoUrl(): String? =
         if ( ::smallImage.isInitialized )
             smallImage
         else
-            getDiscordAssetUri( "https://i.ibb.co/3mLGkPwY/app-logo.png", token )
-                ?.also { smallImage = it }
+            DiscordLib.getExternalImageUrl( "https://i.ibb.co/3mLGkPwY/app-logo.png", APPLICATION_ID )
+                      .onFailure {
+                          it.printStackTrace()
+                          it.message?.also( Toaster::e )
+                      }
+                      .getOrNull()
+                      ?.also { smallImage = it }
 
     fun register() {
         val token by Preferences.DISCORD_ACCESS_TOKEN
@@ -232,7 +204,6 @@ class Discord(private val context: Context) {
         if( !DiscordLib.isReady() ) return
 
         CoroutineScope( Dispatchers.IO ).launch {
-            val token by Preferences.DISCORD_ACCESS_TOKEN
             val metadata = mediaItem.mediaMetadata
 
             val title = metadata.title.toString().let( ::cleanPrefix )
@@ -248,10 +219,10 @@ class Discord(private val context: Context) {
                                              ?.let { "${Constants.YOUTUBE_MUSIC_URL}/channel/${it.id}" }
             val album = metadata.albumTitle?.toString()?.let( ::cleanPrefix )
             val assets = Activity.Assets(
-                largeImage = getImageUrl( token, metadata.artworkUri ),
+                largeImage = getImageUrl( metadata.artworkUri ),
                 largeText = null,
                 largeUrl = metadata.artworkUri.toString(),
-                smallImage = getAppLogoUrl( token ),
+                smallImage = getAppLogoUrl(),
                 smallText = null,
                 smallUrl = getAppButton.url
             )
