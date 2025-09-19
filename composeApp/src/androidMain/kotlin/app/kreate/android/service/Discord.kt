@@ -56,7 +56,9 @@ class Discord(private val context: Context) {
             type = Type.LISTENING,
             createdAt = System.currentTimeMillis(),
             applicationId = APPLICATION_ID,
-            buttons = listOf( getAppButton )
+            buttons = listOf( getAppButton ),
+            state = "Browsing",
+            details = "Music your way",
         )
     }
     private val getAppButton by lazy {
@@ -104,8 +106,6 @@ class Discord(private val context: Context) {
         CoroutineScope( Dispatchers.IO ).launch {
             DiscordLib.login {
                 val activity = templateActivity.copy(
-                    state = "Browsing",
-                    details = "Music your way",
                     detailsUrl = getAppButton.url
                 )
 
