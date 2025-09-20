@@ -55,7 +55,6 @@ kotlin {
             implementation(libs.vlcj)
         }
         androidMain.dependencies {
-            implementation(libs.media3.session)
             implementation(libs.kotlinx.coroutines.guava)
             implementation(libs.newpipe.extractor)
             implementation(libs.nanojson)
@@ -76,6 +75,8 @@ kotlin {
 
             // Player implementations
             implementation( libs.media3.exoplayer )
+            implementation(libs.media3.session)
+            implementation( libs.media3.datasource.okhttp )
             implementation( libs.androidyoutubeplayer )
 
             implementation( libs.timber )

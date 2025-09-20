@@ -16,6 +16,7 @@ import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheDataSink
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR
+import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.audio.AudioSink
@@ -30,7 +31,6 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.di.PlayerModule.upsertSongFormat
 import app.kreate.android.di.PlayerModule.upsertSongInfo
-import app.kreate.android.service.KtorHttpDatasource
 import app.kreate.android.service.NetworkService
 import app.kreate.android.utils.CharUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
@@ -65,6 +65,7 @@ import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.json.Json
 import me.knighthat.innertube.Endpoints
 import me.knighthat.innertube.Innertube
+import me.knighthat.innertube.UserAgents
 import me.knighthat.innertube.response.PlayerResponse
 import me.knighthat.utils.Toaster
 import org.schabi.newpipe.extractor.localization.ContentCountry
@@ -462,7 +463,8 @@ object PlayerModule {
     @Named("ktorDataSource")
     @UnstableApi
     fun providesKtorUpstreamDataSourceFactory(): DataSource.Factory =
-        KtorHttpDatasource.Factory(NetworkService.client )
+        OkHttpDataSource.Factory( NetworkService.engine )
+                        .setUserAgent( UserAgents.CHROME_WINDOWS )
 
     @Provides
     @Named("downloadDataSource")
