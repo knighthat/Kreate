@@ -119,6 +119,7 @@ object PlayerModule {
             explicitNulls = false
         }
 
+    //<editor-fold desc="Database handlers">
     /**
      * Reach out to [Endpoints.NEXT] endpoint for song's information.
      *
@@ -198,6 +199,7 @@ object PlayerModule {
             }
         }
     }
+    //</editor-fold>
 
     //<editor-fold desc="Extractors">
     private fun extractFormat(
@@ -280,6 +282,7 @@ object PlayerModule {
         }
     //</editor-fold>
 
+    //<editor-fold desc="Get response">
     private fun getPlayerResponseFromNewPipe(
         index: Int,
         songId: String,
@@ -380,7 +383,9 @@ object PlayerModule {
             "`streamUrl` is verified but `cache` is still null"
         }
     }
+    //</editor-fold>
 
+    //<editor-fold desc="Resolvers">
     @ExperimentalSerializationApi
     @UnstableApi
     private fun DataSpec.process(
@@ -450,7 +455,9 @@ object PlayerModule {
         } else
             dataSpec.process( videoId, Preferences.AUDIO_QUALITY.value, context.isConnectionMetered() )
     }
+    //</editor-fold>
 
+    //<editor-fold desc="Datasources">
     /**
      * Short-circuit function to quickly make a [DataSource.Factory] from
      * designated [cache]
@@ -508,6 +515,7 @@ object PlayerModule {
                 ),
             resolver( context, cache, downloadCache )
         )
+    //</editor-fold>
 
     @Provides
     @androidx.annotation.OptIn(UnstableApi::class)
