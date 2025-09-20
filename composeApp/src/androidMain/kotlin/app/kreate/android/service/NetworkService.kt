@@ -44,6 +44,22 @@ object NetworkService {
             InetSocketAddress(Preferences.PROXY_HOST.value, Preferences.PROXY_PORT.value)
         )
 
+    val engine by lazy {
+        OkHttpClient.Builder()
+            .apply {
+                if( Preferences.IS_PROXY_ENABLED.value )
+                    runBlocking( Dispatchers.IO ) {
+                        proxy.takeIf( ::verifyProxy ) ?: Proxy.NO_PROXY
+                    }.also( ::proxy )
+
+                if( BuildConfig.DEBUG )
+                    addInterceptor(
+                        HttpLoggingInterceptor().setLevel( HttpLoggingInterceptor.Level.BODY )
+                    )
+            }
+            .build()
+    }
+
     @OptIn(ExperimentalSerializationApi::class)
     val client by lazy {
         HttpClient(OkHttp) {
@@ -64,15 +80,7 @@ object NetworkService {
             }
 
             engine {
-                if( Preferences.IS_PROXY_ENABLED.value )
-                    this.proxy = runBlocking( Dispatchers.IO ) {
-                        NetworkService.proxy.takeIf( ::verifyProxy ) ?: Proxy.NO_PROXY
-                    }
-
-                if( BuildConfig.DEBUG )
-                    addInterceptor(
-                        HttpLoggingInterceptor().setLevel( HttpLoggingInterceptor.Level.BODY )
-                    )
+                preconfigured = engine
             }
         }
     }
