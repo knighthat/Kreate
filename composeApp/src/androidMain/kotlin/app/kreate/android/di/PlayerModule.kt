@@ -99,7 +99,7 @@ object PlayerModule {
      * Store id of song just added to the database.
      * This is created to reduce load to Room
      */
-    @set:Synchronized
+    @Volatile
     private var justInserted: String = ""
 
     private val cachedStreamUrl = mutableMapOf<String, StreamCache>()
