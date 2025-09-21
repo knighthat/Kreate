@@ -819,8 +819,8 @@
     <string name="setting_description_cache_location_system">Hem önbelleğe alınan hem de indirilen içerikler uygulamanın önbelleğinde saklanır ve ayarlardan önbelleği temizleyerek silinebilir</string>
     <string name="setting_description_cache_location_private">Hem önbelleğe alınan hem de indirilen şarkılar uygulamanın özel depolama alanında saklanır ve yalnızca uygulamanın verileri silindiğinde silinebilir</string>
     <string name="setting_description_cache_location_split">Önbelleğe alınan şarkılar uygulamanın önbelleğinde, indirilen şarkılar ise uygulamanın özel depolama alanında saklanır</string>
-    <string name="theme_light">Light</string>
-    <string name="theme_dark">Dark</string>
-    <string name="theme_pitch_black">Pitch black</string>
-    <string name="theme_system">System</string>
+    <string name="theme_light">Aydınlık</string>
+    <string name="theme_dark">Karanlık</string>
+    <string name="theme_pitch_black">Zifiri karanlık</string>
+    <string name="theme_system">Sistem</string>
 </resources>
