@@ -825,4 +825,7 @@
     <string name="theme_dark">Dark</string>
     <string name="theme_pitch_black">Pitch black</string>
     <string name="theme_system">System</string>
+    <string name="setting_entry_show_seek_forward_backward">Show seek forward/backward buttons</string>
+    <string name="setting_entry_platform_indicator">Platform indicator</string>
+    <string name="word_icon">Icon</string>
 </resources>
