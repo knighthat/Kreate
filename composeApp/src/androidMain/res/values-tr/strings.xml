@@ -823,4 +823,7 @@
     <string name="theme_dark">Koyu</string>
     <string name="theme_pitch_black">Simsiyah</string>
     <string name="theme_system">Sistem</string>
+    <string name="setting_entry_show_seek_forward_backward">Show seek forward/backward buttons</string>
+    <string name="setting_entry_platform_indicator">Platform indicator</string>
+    <string name="word_icon">Icon</string>
 </resources>
