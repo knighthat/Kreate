@@ -61,7 +61,6 @@ import app.kreate.android.service.Discord
 import app.kreate.android.service.DownloadHelper
 import app.kreate.android.service.newpipe.NewPipeDownloader
 import app.kreate.android.service.player.ExoPlayerListener
-import app.kreate.android.service.player.VolumeFader
 import app.kreate.android.service.player.VolumeObserver
 import app.kreate.android.utils.centerCropBitmap
 import app.kreate.android.utils.centerCropToMatchScreenSize
@@ -161,8 +160,6 @@ class PlayerServiceModern:
     @RequiresApi(Build.VERSION_CODES.M)
     private val discord: Discord = Discord(this)
 
-    @Inject
-    lateinit var volumeFader: VolumeFader
     @Inject
     lateinit var volumeObserver: VolumeObserver
 
@@ -471,7 +468,6 @@ class PlayerServiceModern:
             stopService(intent<MyDownloadService>())
             stopService(intent<PlayerServiceModern>())
 
-            volumeFader.release()
             player.removeListener( listener )
             player.stop()
             player.release()
@@ -955,54 +951,13 @@ class PlayerServiceModern:
          * Pause with fade out effect
          */
         @MainThread
-        fun gracefulPause() = with( player ) {
-            if( !isPlaying ) return
-
-            val duration = Preferences.AUDIO_FADE_DURATION.value.asMillis
-            if( duration == 0L ) {
-                pause()
-                return
-            }
-
-            val originalVolume = volume
-            volumeFader.startFade(
-                start = volume,
-                end = 0f,
-                durationInMillis = duration,
-                doOnEnd = {
-                    pause()
-                    volume = originalVolume
-                }
-            )
-        }
+        fun gracefulPause() = player.pause()
 
         /**
          * Start playing with fade in effect
          */
         @MainThread
-        fun gracefulPlay() = with( player ) {
-            if( isPlaying ) return
-
-            val duration = Preferences.AUDIO_FADE_DURATION.value.asMillis
-            if( duration == 0L ) {
-                if( playbackState == Player.STATE_IDLE )
-                    prepare()
-                play()
-                return
-            }
-
-            volumeFader.startFade(
-                start = 0f,
-                end = volume,
-                durationInMillis = duration,
-                doOnStart = {
-                    volume = 0f
-                    if ( playbackState == Player.STATE_IDLE )
-                        prepare()
-                    play()
-                }
-            )
-        }
+        fun gracefulPlay() = player.play()
 
         /**
          * This method should ONLY be called when the application (sc. activity) is in the foreground!

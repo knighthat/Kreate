@@ -32,6 +32,7 @@ import app.kreate.android.R
 import app.kreate.android.di.PlayerModule.upsertSongFormat
 import app.kreate.android.di.PlayerModule.upsertSongInfo
 import app.kreate.android.service.NetworkService
+import app.kreate.android.service.player.CustomExoPlayer
 import app.kreate.android.utils.CharUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import com.grack.nanojson.JsonObject
@@ -582,6 +583,7 @@ object PlayerModule {
                         .setAudioAttributes( audioAttributes, handleAudioFocus )
                         .setUsePlatformDiagnostics( false )
                         .build()
+                        .let( ::CustomExoPlayer )
     }
 
     private data class StreamCache(
