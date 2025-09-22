@@ -2,7 +2,6 @@ package app.kreate.android.di
 
 import android.content.Context
 import androidx.media3.exoplayer.ExoPlayer
-import app.kreate.android.service.player.VolumeFader
 import app.kreate.android.service.player.VolumeObserver
 import dagger.Module
 import dagger.Provides
@@ -18,13 +17,8 @@ object AudioModule {
 
     @Provides
     @Singleton
-    fun providesVolumeFader( player: ExoPlayer ): VolumeFader = VolumeFader(player)
-
-    @Provides
-    @Singleton
     fun providesVolumeObserver(
         @ApplicationContext context: Context,
-        player: ExoPlayer,
-        volumeFader: VolumeFader
-    ): VolumeObserver = VolumeObserver(context, player, volumeFader)
+        player: ExoPlayer
+    ): VolumeObserver = VolumeObserver(context, player)
 }
