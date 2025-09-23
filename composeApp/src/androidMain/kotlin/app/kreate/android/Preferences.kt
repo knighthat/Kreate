@@ -1068,6 +1068,9 @@ sealed class Preferences<T>(
         val SINGLE_BACK_FROM_SEARCH by lazy {
             Boolean(preferences, "SingleBackFromSearch", "", true)
         }
+        val SONG_EMPTY_DURATION_PLACEHOLDER by lazy {
+            Boolean(preferences, "SongEmptyDurationPlaceholder", "", false)
+        }
 
         /**
          * Initialize needed properties for settings to use.

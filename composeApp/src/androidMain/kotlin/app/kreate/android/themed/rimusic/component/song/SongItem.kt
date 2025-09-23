@@ -157,8 +157,8 @@ object SongItem {
         modifier: Modifier = Modifier
     ) =
         Text(
-            // TODO: Add setting to allow custom display of duration
-            text = duration ?: "--:--",
+            text = duration
+                ?: if( Preferences.SONG_EMPTY_DURATION_PLACEHOLDER.value ) "--:--" else "",
             style = values.durationTextStyle,
             color = values.durationColor,
             maxLines = 1,

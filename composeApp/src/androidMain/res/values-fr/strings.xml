@@ -829,4 +829,6 @@ Volume BAS : titre précédent</string>
     <string name="setting_entry_show_seek_forward_backward">Show seek forward/backward buttons</string>
     <string name="setting_entry_platform_indicator">Platform indicator</string>
     <string name="word_icon">Icon</string>
+    <string name="setting_entry_song_empty_duration_placeholder">Empty duration placeholder</string>
+    <string name="setting_description_song_empty_duration_placeholder">Display \"--:--\" when duration is unknown</string>
 </resources>

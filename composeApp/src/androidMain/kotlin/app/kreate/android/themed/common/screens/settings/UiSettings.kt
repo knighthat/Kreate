@@ -268,6 +268,13 @@ fun UiSettings( paddingValues: PaddingValues ) {
                         showOnDevice
                     )
             }
+            entry( search, R.string.setting_entry_song_empty_duration_placeholder ) {
+                SettingComponents.BooleanEntry(
+                    preference = Preferences.SONG_EMPTY_DURATION_PLACEHOLDER,
+                    title = stringResource( R.string.setting_entry_song_empty_duration_placeholder ),
+                    subtitle = stringResource( R.string.setting_description_song_empty_duration_placeholder )
+                )
+            }
 
             header( R.string.playlists )
             item {
