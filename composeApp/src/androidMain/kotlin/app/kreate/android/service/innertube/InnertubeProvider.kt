@@ -105,7 +105,7 @@ class InnertubeProvider: Innertube.Provider {
                           .let( ::sha1 )
                           .joinToString("") { "%02x".format(it) }
                           .also { sapisidHash = it }
-                append("Authorization", "SAPISIDHASH ${currentTime}_$sapisidHash")
+                append("Authorization", "SAPISIDHASH ${currentTime}_${sapisidHash} SAPISID1PHASH ${currentTime}_${sapisidHash} SAPISID3PHASH ${currentTime}_${sapisidHash}")
             }
         }
 
