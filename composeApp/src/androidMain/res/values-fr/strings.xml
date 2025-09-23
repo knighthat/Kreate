@@ -826,7 +826,7 @@ Volume BAS : titre précédent</string>
     <string name="theme_dark">Sombre</string>
     <string name="theme_pitch_black">Noir Absolu</string>
     <string name="theme_system">Système</string>
-    <string name="setting_entry_show_seek_forward_backward">Show seek forward/backward buttons</string>
-    <string name="setting_entry_platform_indicator">Platform indicator</string>
-    <string name="word_icon">Icon</string>
+    <string name="setting_entry_show_seek_forward_backward">Afficher les boutons de recherche avant / arrière</string>
+    <string name="setting_entry_platform_indicator">Indicateur de plate-forme</string>
+    <string name="word_icon">Icône</string>
 </resources>
