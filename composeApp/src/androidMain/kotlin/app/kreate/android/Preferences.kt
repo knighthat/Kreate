@@ -798,7 +798,7 @@ sealed class Preferences<T>(
             Long(preferences, "DebugLogMaxSizePerFile", "", 5L * 1024 * 1024)   // 5 Mb
         }
         //</editor-fold>
-
+        //<editor-fold desc="Platform indicator">
         val ALBUMS_PLATFORM_INDICATOR by lazy {
             Enum(preferences, "AlbumPlatformIndicator", "", PlatformIndicatorType.ICON)
         }
@@ -808,6 +808,7 @@ sealed class Preferences<T>(
         val PLAYLISTS_PLATFORM_INDICATOR by lazy {
             Enum(preferences, "PlaylistPlatformIndicator", "", PlatformIndicatorType.ICON)
         }
+        //</editor-fold>
 
         val HOME_SONGS_TOP_PLAYLIST_PERIOD by lazy {
             Enum( preferences, "HomeSongsTopPlaylistPeriod", "", StatisticsType.All )
