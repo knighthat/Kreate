@@ -1,11 +1,14 @@
 package app.kreate.android.themed.common.screens.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.SettingComponents
@@ -24,6 +28,7 @@ import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.android.themed.common.screens.settings.ui.SwipeActionSettings
 import app.kreate.android.themed.common.screens.settings.ui.themeSettingsSection
+import app.kreate.android.themed.rimusic.component.Visual
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.CarouselSize
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -35,6 +40,7 @@ import it.fast4x.rimusic.enums.QueueType
 import it.fast4x.rimusic.enums.ThumbnailType
 import it.fast4x.rimusic.enums.UiType
 import it.fast4x.rimusic.ui.styling.Dimensions
+import it.fast4x.rimusic.ui.styling.LocalAppearance
 import me.knighthat.component.dialog.InputDialogConstraints
 import kotlin.math.roundToInt
 
@@ -64,7 +70,18 @@ private fun ThumbnailRoundnessSlider( preference: Preferences.Int ) =
         onValueChangeFinished = { pref, value ->
             pref.value = (value / 5).roundToInt() * 5
         }
-    )
+    ) {
+        val color = LocalAppearance.current.colorPalette.accent
+        val shape by remember {derivedStateOf {
+            Visual.getShape( preference.value )
+        }}
+
+        Box(
+            Modifier.size( 40.dp )
+                    .border( 2.dp, color, shape )
+                    .background( color.copy( .2f ), shape )
+        )
+    }
 
 @Composable
 fun UiSettings( paddingValues: PaddingValues ) {
