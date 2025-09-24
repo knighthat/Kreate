@@ -74,20 +74,16 @@ class InnertubeProvider: Innertube.Provider {
 
             headers {
                 append( "X-Goog-Api-Format-Version", "1" )
-                append(
-                    "X-Origin",
-                    request.dataToSend?.context?.client?.originalUrl
-                        ?: "${url.protocol.name}://${url.host}" )
-                append(
-                    "Referer",
-                    request.dataToSend?.context?.client?.referer
-                        ?: "${url.protocol.name}://${url.host}"
-                )
 
-                val context = request.dataToSend?.context ?: Context.WEB_REMIX_DEFAULT
+                val client = request.dataToSend?.context?.client
 
-                append( "X-YouTube-Client-Name", context.client.xClientName.toString() )
-                append( "X-YouTube-Client-Version", context.client.clientVersion )
+                val ytUrl = "${url.protocol.name}://${url.host}"
+                append( "X-Origin", client?.originalUrl ?: ytUrl )
+                append( "Referer", client?.referer ?: ytUrl )
+
+                val nonnullClient = client ?: Context.WEB_REMIX_DEFAULT.client
+                append( "X-YouTube-Client-Name", nonnullClient.xClientName.toString() )
+                append( "X-YouTube-Client-Version", nonnullClient.clientVersion )
 
                 // Series of checks, if 1 fails, then don't send login information
                 if (
