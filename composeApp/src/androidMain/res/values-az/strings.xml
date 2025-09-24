@@ -823,7 +823,9 @@
     <string name="theme_dark">Qara</string>
     <string name="theme_pitch_black">Qatran qarası</string>
     <string name="theme_system">Sistem</string>
-    <string name="setting_entry_show_seek_forward_backward">Show seek forward/backward buttons</string>
-    <string name="setting_entry_platform_indicator">Platform indicator</string>
-    <string name="word_icon">Icon</string>
+    <string name="setting_entry_show_seek_forward_backward">İrəli/geri çəkmə düymələrini göstər</string>
+    <string name="setting_entry_platform_indicator">Platforma göstəricisi</string>
+    <string name="word_icon">Simvol</string>
+    <string name="setting_entry_song_empty_duration_placeholder">Boş müddət saxlayıcı</string>
+    <string name="setting_description_song_empty_duration_placeholder">Müddət naməlum olduqda \"--:--\" göstər</string>
 </resources>
