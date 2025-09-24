@@ -554,7 +554,7 @@ object SettingComponents {
         Column (
             verticalArrangement = Arrangement.spacedBy( 5.dp ),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier.padding( HORIZONTAL_PADDING.dp )
+            modifier = modifier.padding( vertical = HORIZONTAL_PADDING.dp )
         ) {
             InputDialogEntry(
                 preference = preference,
@@ -579,9 +579,9 @@ object SettingComponents {
             Slider(
                 value = realtimeValue,
                 onValueChange = { realtimeValue = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(15.dp),
+                modifier = Modifier.padding( horizontal = HORIZONTAL_PADDING.dp )
+                                   .fillMaxWidth()
+                                   .height( 15.dp ),
                 enabled = isEnabled,
                 valueRange = valueRange,
                 steps = steps,
@@ -602,7 +602,8 @@ object SettingComponents {
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding( horizontal = 5.dp )
+                modifier = Modifier.padding( horizontal = HORIZONTAL_PADDING.dp )
+                                   .padding( horizontal = 5.dp )
             ) {
                BasicText(
                    text = onTextDisplay( valueRange.start ),
