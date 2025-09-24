@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
@@ -40,13 +41,13 @@ import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.drawable.APP_ICON_IMAGE_BITMAP
 import app.kreate.android.enums.PlatformIndicatorType
 import app.kreate.android.themed.rimusic.component.MultiplatformItem
+import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.ItemUtils
 import app.kreate.android.utils.scrollingText
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.models.Playlist
-import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.ui.styling.Appearance
 import it.fast4x.rimusic.ui.styling.ColorPalette
 import it.fast4x.rimusic.ui.styling.Typography
@@ -61,7 +62,7 @@ import kotlinx.coroutines.flow.mapLatest
 import me.knighthat.innertube.model.InnertubePlaylist
 import me.knighthat.innertube.response.Runs
 
-object PlaylistItem: MultiplatformItem {
+object PlaylistItem: Visual(), MultiplatformItem {
 
     const val VERTICAL_SPACING = 5
     const val HORIZONTAL_SPACING = 10
@@ -71,6 +72,7 @@ object PlaylistItem: MultiplatformItem {
     val REGEX_PLAYLIST_ID = Regex("^(PL|UU|LL|RD|OL|VL)")
     val CORNERS = listOf( Alignment.TopStart, Alignment.TopEnd, Alignment.BottomStart, Alignment.BottomEnd )
     override val platformIndicatorType: PlatformIndicatorType by Preferences.PLAYLISTS_PLATFORM_INDICATOR
+    override val thumbnailRoundnessPercent: Preferences.Int = Preferences.PLAYLIST_THUMBNAIL_ROUNDNESS_PERCENT
 
     /**
      * Text is clipped if exceeds length limit, plus,
@@ -138,10 +140,7 @@ object PlaylistItem: MultiplatformItem {
             modifier = modifier.requiredSize( widthDp )
                                .padding( bottom = VERTICAL_SPACING.dp ),
         ) {
-            ImageFactory.AsyncImage(
-                thumbnailUrl = thumbnailUrl,
-                contentScale = ContentScale.FillWidth
-            )
+            Thumbnail( thumbnailUrl, ContentScale.FillWidth )
 
             if( showPlatformIcon && browseId?.matches( REGEX_PLAYLIST_ID ) == true )
                 PlatformIndicator()
@@ -180,49 +179,55 @@ object PlaylistItem: MultiplatformItem {
         useRandom: Boolean = true,
         thumbnailContent: @Composable BoxScope.() -> Unit = {}
     ) =
-        if( thumbnailUrls.isEmpty() )
-            Image(
-                bitmap = APP_ICON_IMAGE_BITMAP,
-                contentDescription = null,
-                modifier = modifier.requiredSize( sizeDp ),
-                contentScale = ContentScale.FillBounds,
-            )
-        else if( thumbnailUrls.size < 4 )
-            Box( modifier.requiredSize( sizeDp ) ) {
-                ImageFactory.AsyncImage(
-                    thumbnailUrl = if( useRandom ) thumbnailUrls.random() else thumbnailUrls.first(),
-                    contentScale = ContentScale.Fit
-                )
+        Box(
+            modifier = modifier.requiredSize( sizeDp )
+                               .clip( thumbnailShape )
+        ) {
+            BoxWithConstraints( Modifier.fillMaxSize() ) {
+                val indvModifier = remember( thumbnailUrls.size ) {
+                    val (width, height) = with( thumbnailUrls.size ) {
+                        if( this < 4 )
+                            maxWidth to maxHeight
+                        else
+                            maxWidth / 2 to maxHeight / 2
+                    }
 
-                if( showPlatformIcon && browseId?.matches( REGEX_PLAYLIST_ID ) == true )
-                    PlatformIndicator()
+                    Modifier.size( width, height )
+                }
 
-                thumbnailContent()
+                if( thumbnailUrls.isEmpty() )
+                    Image(
+                        bitmap = APP_ICON_IMAGE_BITMAP,
+                        contentDescription = null,
+                        contentScale = ContentScale.FillHeight,
+                        modifier = indvModifier
+                    )
+                else if( thumbnailUrls.size < 4 )
+                    ImageFactory.AsyncImage(
+                        thumbnailUrl = if( useRandom ) thumbnailUrls.random() else thumbnailUrls.first(),
+                        contentScale = ContentScale.FillHeight,
+                        modifier = indvModifier
+                    )
+                else
+                    CORNERS.fastZip( thumbnailUrls.toList(), Alignment::to )
+                           .fastForEach { (corner, url) ->
+                               ImageFactory.AsyncImage(
+                                   thumbnailUrl = url,
+                                   // Some thumbnails aren't in 1:1 ratio (4:3, 16:9, etc.)
+                                   // Without [contentScale], the image is *squished*
+                                   contentScale = ContentScale.FillHeight,
+                                   contentDescription = corner.toString(),
+                                   modifier = indvModifier.align( corner)
+                               )
+                           }
+
             }
-        else
-            BoxWithConstraints( modifier.requiredSize( sizeDp ) ) {
-                val halfWidth = this.maxWidth / 2
-                val halfHeight = this.maxHeight / 2
 
-                CORNERS.fastZip( thumbnailUrls.toList(), Alignment::to )
-                            .fastForEach { (corner, url) ->
-                                ImageFactory.AsyncImage(
-                                    thumbnailUrl = url,
-                                    // Some thumbnails aren't in 1:1 ratio (4:3, 16:9, etc.)
-                                    // Without [contentScale], the image is *squished*
-                                    contentScale = ContentScale.FillHeight,
-                                    contentDescription = corner.toString(),
-                                    modifier = Modifier
-                                        .size(halfWidth, halfHeight)
-                                        .align(corner)
-                                )
-                            }
+            if( showPlatformIcon && browseId?.matches( REGEX_PLAYLIST_ID ) == true )
+                PlatformIndicator()
 
-                if( showPlatformIcon && browseId?.matches( REGEX_PLAYLIST_ID ) == true )
-                    PlatformIndicator()
-
-                thumbnailContent()
-            }
+            thumbnailContent()
+        }
 
     @ExperimentalCoroutinesApi
     @Composable
@@ -366,7 +371,6 @@ object PlaylistItem: MultiplatformItem {
                     sizeDp = widthDp,
                     showPlatformIcon = showPlatformIcon,
                     modifier = Modifier.padding( bottom = VERTICAL_SPACING.dp )
-                                       .clip( thumbnailShape() )
                 ) thumb@ {
                     if( songCount < 0 || !showSongCount ) return@thumb
 
@@ -514,7 +518,6 @@ object PlaylistItem: MultiplatformItem {
                     showPlatformIcon = showPlatformIcon,
                     useRandom = useRandom,
                     modifier = Modifier.padding( bottom = VERTICAL_SPACING.dp )
-                                       .clip( thumbnailShape() )
                 ) thumb@ {
                     if( songCount < 0 || !showSongCount ) return@thumb
 

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -34,6 +35,36 @@ import it.fast4x.rimusic.enums.QueueType
 import it.fast4x.rimusic.enums.ThumbnailType
 import it.fast4x.rimusic.enums.UiType
 import it.fast4x.rimusic.ui.styling.Dimensions
+import me.knighthat.component.dialog.InputDialogConstraints
+import kotlin.math.roundToInt
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ThumbnailRoundnessSlider( preference: Preferences.Int ) =
+    SettingComponents.SliderEntry(
+        preference = preference,
+        title = stringResource( R.string.thumbnail_roundness ),
+        constraints = InputDialogConstraints.THUMBNAIL_ROUNDNESS_PERCENT,
+        valueRange = 0f..50f,
+        steps = 11,
+        onTextDisplay = {
+            // Small problem with floating-point arithmetic is that
+            // the number doesn't round to the correct number.
+            // [Float.roundToInt()] in this case can be any number besides 5
+            // By rounding to the nearest multiple, increment stays at desired number,
+            // which is 5 per step.
+            val intVal = (it / 5).roundToInt() * 5
+            when( intVal ) {
+                0       -> stringResource( R.string.shape_rectangle )
+                50      -> stringResource( R.string.shape_circle )
+                else    -> intVal.toString()
+            }
+        },
+        onValueChangeFinished = { pref, value ->
+            pref.value = (value / 5).roundToInt() * 5
+        }
+    )
 
 @Composable
 fun UiSettings( paddingValues: PaddingValues ) {
@@ -275,6 +306,9 @@ fun UiSettings( paddingValues: PaddingValues ) {
                     subtitle = stringResource( R.string.setting_description_song_empty_duration_placeholder )
                 )
             }
+            entry( search, R.string.thumbnail_roundness, "songThumbnailRoundness" ) {
+                ThumbnailRoundnessSlider( Preferences.SONG_THUMBNAIL_ROUNDNESS_PERCENT )
+            }
 
             header( R.string.playlists )
             item {
@@ -306,6 +340,9 @@ fun UiSettings( paddingValues: PaddingValues ) {
                     title = stringResource( R.string.setting_entry_platform_indicator )
                 )
             }
+            entry( search, R.string.thumbnail_roundness, "playlistThumbnailRoundness" ) {
+                ThumbnailRoundnessSlider( Preferences.PLAYLIST_THUMBNAIL_ROUNDNESS_PERCENT )
+            }
 
             header( R.string.albums )
             entry( search, R.string.setting_entry_platform_indicator, "albumsPlatformIndicator" ) {
@@ -313,6 +350,9 @@ fun UiSettings( paddingValues: PaddingValues ) {
                     preference = Preferences.ALBUMS_PLATFORM_INDICATOR,
                     title = stringResource( R.string.setting_entry_platform_indicator )
                 )
+            }
+            entry( search, R.string.thumbnail_roundness, "albumThumbnailRoundness" ) {
+                ThumbnailRoundnessSlider( Preferences.ALBUM_THUMBNAIL_ROUNDNESS_PERCENT )
             }
 
 
@@ -322,6 +362,9 @@ fun UiSettings( paddingValues: PaddingValues ) {
                     preference = Preferences.ARTISTS_PLATFORM_INDICATOR,
                     title = stringResource( R.string.setting_entry_platform_indicator )
                 )
+            }
+            entry( search, R.string.thumbnail_roundness, "artistThumbnailRoundness" ) {
+                ThumbnailRoundnessSlider( Preferences.ARTIST_THUMBNAIL_ROUNDNESS_PERCENT )
             }
 
             header( R.string.smart_recommendations )

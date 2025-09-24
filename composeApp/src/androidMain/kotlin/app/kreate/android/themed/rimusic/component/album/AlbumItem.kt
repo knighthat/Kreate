@@ -26,9 +26,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
-import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.enums.PlatformIndicatorType
 import app.kreate.android.themed.rimusic.component.MultiplatformItem
+import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.ItemUtils
 import app.kreate.android.utils.innertube.toAlbum
 import app.kreate.android.utils.scrollingText
@@ -43,7 +43,7 @@ import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shimmerEffect
 import me.knighthat.innertube.model.InnertubeAlbum
 
-object AlbumItem: MultiplatformItem {
+object AlbumItem: Visual(), MultiplatformItem {
 
     const val VERTICAL_SPACING = 5
     const val HORIZONTAL_SPACING = 10
@@ -51,6 +51,7 @@ object AlbumItem: MultiplatformItem {
     const val COLUMN_SPACING = HORIZONTAL_SPACING
 
     override val platformIndicatorType: PlatformIndicatorType by Preferences.ALBUMS_PLATFORM_INDICATOR
+    override val thumbnailRoundnessPercent: Preferences.Int = Preferences.ALBUM_THUMBNAIL_ROUNDNESS_PERCENT
 
     /**
      * Text is clipped if exceeds length limit, plus,
@@ -143,10 +144,7 @@ object AlbumItem: MultiplatformItem {
             modifier.requiredSize( widthDp )
                     .padding( bottom = VERTICAL_SPACING.dp )
         ) {
-            ImageFactory.AsyncImage(
-                thumbnailUrl = thumbnailUrl,
-                contentScale = ContentScale.FillWidth
-            )
+            Thumbnail( thumbnailUrl, ContentScale.FillWidth )
 
             if( albumId.startsWith( "MPREb_" ) )
                 PlatformIndicator()

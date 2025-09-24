@@ -22,9 +22,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
-import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.enums.PlatformIndicatorType
 import app.kreate.android.themed.rimusic.component.MultiplatformItem
+import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.utils.ItemUtils
 import app.kreate.android.utils.innertube.toArtist
@@ -40,13 +40,14 @@ import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shimmerEffect
 import me.knighthat.innertube.model.InnertubeArtist
 
-object ArtistItem: MultiplatformItem {
+object ArtistItem: Visual(), MultiplatformItem {
 
     const val VERTICAL_SPACING = 5
     const val ROW_SPACING = AlbumItem.VERTICAL_SPACING * 4
     const val COLUMN_SPACING = 10
 
     override val platformIndicatorType: PlatformIndicatorType by Preferences.ARTISTS_PLATFORM_INDICATOR
+    override val thumbnailRoundnessPercent: Preferences.Int = Preferences.ARTIST_THUMBNAIL_ROUNDNESS_PERCENT
 
         /**
      * Text is clipped if exceeds length limit, plus,
@@ -87,10 +88,7 @@ object ArtistItem: MultiplatformItem {
             modifier.requiredSize( widthDp )
                                .padding( bottom = VERTICAL_SPACING.dp ),
         ) {
-            ImageFactory.AsyncImage(
-                thumbnailUrl = thumbnailUrl,
-                contentScale = ContentScale.FillWidth
-            )
+            Thumbnail( thumbnailUrl, ContentScale.FillWidth )
 
             if( showPlatformIcon && artistId.startsWith( "UC" ) )
                 PlatformIndicator()

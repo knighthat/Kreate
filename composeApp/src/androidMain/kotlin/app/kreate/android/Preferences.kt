@@ -809,6 +809,20 @@ sealed class Preferences<T>(
             Enum(preferences, "PlaylistPlatformIndicator", "", PlatformIndicatorType.ICON)
         }
         //</editor-fold>
+        //<editor-fold desc="Thumbnail roundness">
+        val SONG_THUMBNAIL_ROUNDNESS_PERCENT by lazy {
+            Int(preferences, "SongThumbnailRoundnessPercent", "", 0)
+        }
+        val ALBUM_THUMBNAIL_ROUNDNESS_PERCENT by lazy {
+            Int(preferences, "AlbumThumbnailRoundnessPercent", "", 10)
+        }
+        val ARTIST_THUMBNAIL_ROUNDNESS_PERCENT by lazy {
+            Int(preferences, "ArtistThumbnailRoundnessPercent", "", 50)
+        }
+        val PLAYLIST_THUMBNAIL_ROUNDNESS_PERCENT by lazy {
+            Int(preferences, "PlaylistThumbnailRoundnessPercent", "", 10)
+        }
+        //</editor-fold>
 
         val HOME_SONGS_TOP_PLAYLIST_PERIOD by lazy {
             Enum( preferences, "HomeSongsTopPlaylistPeriod", "", StatisticsType.All )

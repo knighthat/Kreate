@@ -47,8 +47,8 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.themed.rimusic.component.ItemSelector
+import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.innertube.toSong
 import app.kreate.android.utils.scrollingText
 import it.fast4x.innertube.Innertube
@@ -81,7 +81,7 @@ import me.knighthat.component.menu.song.SongItemMenu
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 
-object SongItem {
+object SongItem: Visual() {
 
     const val DOWNLOAD_ICON_SIZE = 20
     const val BADGE_SIZE = 18
@@ -89,6 +89,7 @@ object SongItem {
     const val LIKE_ICON_SIZE = 12
 
     val itemShape: Shape by lazy { RoundedCornerShape(10.dp) }
+    override val thumbnailRoundnessPercent: Preferences.Int = Preferences.SONG_THUMBNAIL_ROUNDNESS_PERCENT
 
     /**
      * Text is clipped if exceeds length limit, plus,
@@ -326,10 +327,7 @@ object SongItem {
         ) {
             // Actual thumbnail (from cache or fetch from url)
             if( showThumbnail )
-                ImageFactory.AsyncImage(
-                    thumbnailUrl = thumbnailUrl,
-                    contentScale = ContentScale.FillHeight
-                )
+                Thumbnail( thumbnailUrl, ContentScale.FillHeight )
 
             if( isPlaying )
                 MusicAnimation(

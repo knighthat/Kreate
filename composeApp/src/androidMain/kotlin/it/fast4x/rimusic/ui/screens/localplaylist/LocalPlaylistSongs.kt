@@ -36,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -525,8 +524,7 @@ fun LocalPlaylistSongs(
                         PlaylistItem.Thumbnail(
                             playlist = it,
                             sizeDp = playlistThumbnailSizeDp,
-                            modifier = Modifier.padding( all = 14.dp )
-                                               .clip( thumbnailShape() ),
+                            modifier = Modifier.padding( all = 14.dp ),
                             showPlatformIcon = false
                         )
                     }
