@@ -826,4 +826,6 @@
     <string name="setting_entry_show_seek_forward_backward">이전/다음 찾기 버튼 표시</string>
     <string name="setting_entry_platform_indicator">플랫폼 표시</string>
     <string name="word_icon">아이콘</string>
+    <string name="setting_entry_song_empty_duration_placeholder">Empty duration placeholder</string>
+    <string name="setting_description_song_empty_duration_placeholder">Display \"--:--\" when duration is unknown</string>
 </resources>
