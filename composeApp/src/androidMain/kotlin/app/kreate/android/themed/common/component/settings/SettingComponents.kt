@@ -427,6 +427,7 @@ object SettingComponents {
         subtitle: String = "",
         isEnabled: Boolean = true,
         action: Action = Action.NONE,
+        trailingContent: @Composable RowScope.() -> Unit = {}
     ) {
         val dialog = remember( constraint, title, keyboardOption, onValueChanged, action ) {
             SettingInputDialog(
@@ -452,7 +453,8 @@ object SettingComponents {
             onClick = dialog::showDialog,
             modifier = modifier,
             subtitle = subtitle.ifBlank { preference.value.toString() },
-            isEnabled = isEnabled
+            isEnabled = isEnabled,
+            trailingContent = trailingContent
         )
     }
 
@@ -466,9 +468,10 @@ object SettingComponents {
         subtitle: String = "",
         isEnabled: Boolean = true,
         action: Action = Action.NONE,
+        trailingContent: @Composable RowScope.() -> Unit = {}
     ) =
         InputDialogEntry(
-            preference, title, constraint, { preference.value = it }, modifier, keyboardOption, subtitle, isEnabled, action
+            preference, title, constraint, { preference.value = it }, modifier, keyboardOption, subtitle, isEnabled, action, trailingContent
         )
 
     @Composable
@@ -481,9 +484,10 @@ object SettingComponents {
         subtitle: String = "",
         isEnabled: Boolean = true,
         action: Action = Action.NONE,
+        trailingContent: @Composable RowScope.() -> Unit = {}
     ) =
         InputDialogEntry(
-            preference, stringResource( titleId ), constraint, { preference.value = it }, modifier, keyboardOption, subtitle, isEnabled, action
+            preference, stringResource( titleId ), constraint, { preference.value = it }, modifier, keyboardOption, subtitle, isEnabled, action, trailingContent
         )
 
     @Composable
@@ -496,6 +500,7 @@ object SettingComponents {
         subtitle: String = "",
         isEnabled: Boolean = true,
         action: Action = Action.NONE,
+        trailingContent: @Composable RowScope.() -> Unit = {}
     ) {
         fun valueProcessor( newValue: String ) {
             val toSet = newValue.ifBlank( preference.defaultValue::toString )
@@ -510,7 +515,7 @@ object SettingComponents {
         }
 
         InputDialogEntry(
-            preference, title, constraint, ::valueProcessor, modifier, keyboardOption, subtitle, isEnabled, action
+            preference, title, constraint, ::valueProcessor, modifier, keyboardOption, subtitle, isEnabled, action, trailingContent
         )
     }
 
@@ -524,9 +529,10 @@ object SettingComponents {
         subtitle: String = "",
         isEnabled: Boolean = true,
         action: Action = Action.NONE,
+        trailingContent: @Composable RowScope.() -> Unit = {}
     ) =
         InputDialogEntry(
-            preference, stringResource( titleId ), constraint, modifier, keyboardOption, subtitle, isEnabled, action
+            preference, stringResource( titleId ), constraint, modifier, keyboardOption, subtitle, isEnabled, action, trailingContent
         )
 
     @ExperimentalMaterial3Api
@@ -542,7 +548,8 @@ object SettingComponents {
         modifier: Modifier = Modifier,
         subtitle: String = "",
         isEnabled: Boolean = true,
-        action: Action = Action.NONE
+        action: Action = Action.NONE,
+        trailingContent: @Composable RowScope.() -> Unit = {}
     ) where T: Number, T: Comparable<T> =
         Column (
             verticalArrangement = Arrangement.spacedBy( 5.dp ),
@@ -557,6 +564,7 @@ object SettingComponents {
                 keyboardOption = KeyboardOptions(keyboardType = KeyboardType.Number),
                 isEnabled = isEnabled,
                 action = action,
+                trailingContent = trailingContent
             )
 
             /**
@@ -631,7 +639,8 @@ object SettingComponents {
         onValueChangeFinished: (Preferences<T>, Float) -> Unit,
         modifier: Modifier = Modifier,
         isEnabled: Boolean = true,
-        action: Action = Action.NONE
+        action: Action = Action.NONE,
+        trailingContent: @Composable RowScope.() -> Unit = {}
     ) where T: Number, T: Comparable<T> = SliderEntry(
         preference = preference,
         title = stringResource( titleId ),
@@ -643,7 +652,8 @@ object SettingComponents {
         modifier = modifier,
         subtitle = stringResource( subtitleId ),
         isEnabled = isEnabled,
-        action = action
+        action = action,
+        trailingContent = trailingContent
     )
 
     @Composable
