@@ -823,9 +823,9 @@
     <string name="theme_dark">Koyu</string>
     <string name="theme_pitch_black">Simsiyah</string>
     <string name="theme_system">Sistem</string>
-    <string name="setting_entry_show_seek_forward_backward">Show seek forward/backward buttons</string>
-    <string name="setting_entry_platform_indicator">Platform indicator</string>
-    <string name="word_icon">Icon</string>
-    <string name="setting_entry_song_empty_duration_placeholder">Empty duration placeholder</string>
-    <string name="setting_description_song_empty_duration_placeholder">Display \"--:--\" when duration is unknown</string>
+    <string name="setting_entry_show_seek_forward_backward">İleri/geri sarma düğmelerini göster</string>
+    <string name="setting_entry_platform_indicator">Platform göstergesi</string>
+    <string name="word_icon">Simge</string>
+    <string name="setting_entry_song_empty_duration_placeholder">Boş süre yer tutucusu</string>
+    <string name="setting_description_song_empty_duration_placeholder">Süre bilinmediğinde \"--:--\" göster</string>
 </resources>
