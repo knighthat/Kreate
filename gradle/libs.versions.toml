@@ -145,5 +145,5 @@ license-report = { id = "com.github.jk1.dependency-license-report", version.ref 
 
 [bundles]
 compose-kmp = ['compose-kmp-animation', 'compose-kmp-foundation', 'compose-kmp-material3', 'compose-kmp-ui']
-ktor = ['ktor-core', 'ktor-encoding', 'ktor-content-negotiation', 'ktor-serialization-json', 'ktor-serialization-protobuf']
+ktor = ['ktor-core', 'ktor-encoding', 'ktor-content-negotiation', 'ktor-serialization-json', 'ktor-serialization-protobuf', 'ktor-okhttp']
 junit5 = ["junit5-jupiter-params", "junit5-jupiter-engine", "junit5-jupiter-api"]

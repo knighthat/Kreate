@@ -70,9 +70,6 @@ kotlin {
             implementation( libs.monetcompat )
             implementation(libs.androidmaterial)
 
-            implementation(libs.ktor.okhttp)
-            implementation(libs.okhttp3.logging.interceptor)
-
             // Deprecating
             implementation( libs.androidx.crypto )
 
@@ -119,6 +116,7 @@ kotlin {
             implementation( libs.kotlin.csv )
 
             implementation( libs.bundles.ktor )
+            implementation( libs.okhttp3.logging.interceptor )
 
             implementation( libs.math3 )
         }
