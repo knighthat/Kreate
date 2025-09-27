@@ -259,4 +259,14 @@ class Discord(private val context: Context) {
             }
         }
     }
+
+    fun stop() {
+        if( !DiscordLib.isReady() ) return
+
+        CoroutineScope( Dispatchers.IO ).launch {
+            DiscordLib.updatePresence {
+                Presence(null, listOf( templateActivity ), Status.ONLINE, false)
+            }
+        }
+    }
 }

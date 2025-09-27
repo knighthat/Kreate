@@ -202,6 +202,9 @@ class PlayerServiceModern:
             val startTime = System.currentTimeMillis() - player.currentPosition
             discord.updateMediaItem( mediaItem, startTime )
         }
+
+        if( mediaItem == null && isAtLeastAndroid6 && Preferences.DISCORD_LOGIN.value )
+            discord.stop()
     }
 
 
