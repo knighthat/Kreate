@@ -831,4 +831,9 @@ Volume BAS : titre précédent</string>
     <string name="word_icon">Icône</string>
     <string name="setting_entry_song_empty_duration_placeholder">Espace réservé à la durée vide</string>
     <string name="setting_description_song_empty_duration_placeholder">Afficher « --:-- » lorsque la durée est inconnue</string>
+    <string name="shape_rectangle">Rectangle</string>
+    <string name="shape_circle">Circle</string>
+    <string name="word_description">Description</string>
+    <string name="word_information">Information</string>
+    <string name="description_view_song_info">Voir les détails du titre</string>
 </resources>
