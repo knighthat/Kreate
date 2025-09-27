@@ -193,21 +193,20 @@ class PlayerServiceModern:
     private lateinit var notificationActionReceiver: NotificationActionReceiver
 
     private fun onMediaItemTransition( mediaItem: MediaItem? ) {
-        updateBitmap()
         listener.updateMediaControl( this, player )
-        updateDownloadedState()
-        updateWidgets()
 
-        mediaItem?.also {
+        if( mediaItem != null ) {
+            updateBitmap()
+            updateDownloadedState()
+            updateWidgets()
+
             if( !Preferences.isLoggedInToDiscord() )
                 return
 
             val startTime = System.currentTimeMillis() - player.currentPosition
             @SuppressLint("NewApi")     // [Preferences.isLoggedInToDiscord] already verified it
             discord.updateMediaItem( mediaItem, startTime )
-        }
-
-        if( mediaItem == null && Preferences.isLoggedInToDiscord() )
+        } else if( Preferences.isLoggedInToDiscord() )
             discord.stop()
     }
 
