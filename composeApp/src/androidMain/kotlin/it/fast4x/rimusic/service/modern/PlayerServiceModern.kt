@@ -1,5 +1,6 @@
 package it.fast4x.rimusic.service.modern
 
+import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.WallpaperManager
@@ -198,13 +199,15 @@ class PlayerServiceModern:
         updateWidgets()
 
         mediaItem?.also {
-            if( !isAtLeastAndroid6 || !Preferences.DISCORD_LOGIN.value ) return@also
+            if( !Preferences.isLoggedInToDiscord() )
+                return
 
             val startTime = System.currentTimeMillis() - player.currentPosition
+            @SuppressLint("NewApi")     // [Preferences.isLoggedInToDiscord] already verified it
             discord.updateMediaItem( mediaItem, startTime )
         }
 
-        if( mediaItem == null && isAtLeastAndroid6 && Preferences.DISCORD_LOGIN.value )
+        if( mediaItem == null && Preferences.isLoggedInToDiscord() )
             discord.stop()
     }
 
@@ -414,11 +417,12 @@ class PlayerServiceModern:
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
-        if( !isAtLeastAndroid6 || !Preferences.DISCORD_LOGIN.value )
+        if( !Preferences.isLoggedInToDiscord() )
             return
 
         val mediaItem = player.currentMediaItem ?: return
         val startTime = System.currentTimeMillis() - player.currentPosition
+        @SuppressLint("NewApi")     // [Preferences.isLoggedInToDiscord] already verified it
         discord.pause( mediaItem, startTime )
     }
 

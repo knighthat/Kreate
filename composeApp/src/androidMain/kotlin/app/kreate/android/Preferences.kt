@@ -1086,6 +1086,9 @@ sealed class Preferences<T>(
             Boolean(preferences, "SongEmptyDurationPlaceholder", "", false)
         }
 
+        fun isLoggedInToDiscord(): kotlin.Boolean =
+            isAtLeastAndroid6 && DISCORD_LOGIN.value && DISCORD_ACCESS_TOKEN.value.isNotBlank()
+
         /**
          * Initialize needed properties for settings to use.
          *
