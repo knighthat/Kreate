@@ -828,4 +828,9 @@
     <string name="word_icon">Icono</string>
     <string name="setting_entry_song_empty_duration_placeholder">Marcador de duración vacío</string>
     <string name="setting_description_song_empty_duration_placeholder">Mostrar \"--:--\" cuando la duración es desconocida</string>
+    <string name="shape_rectangle">Rectangle</string>
+    <string name="shape_circle">Circle</string>
+    <string name="word_description">Description</string>
+    <string name="word_information">Information</string>
+    <string name="description_view_song_info">View song\'s details</string>
 </resources>
