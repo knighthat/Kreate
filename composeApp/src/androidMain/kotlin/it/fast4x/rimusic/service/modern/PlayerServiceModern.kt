@@ -55,8 +55,6 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.coil3.ImageFactory
-import app.kreate.android.service.innertube.InnertubeProvider
 import app.kreate.android.service.Discord
 import app.kreate.android.service.DownloadHelper
 import app.kreate.android.service.newpipe.NewPipeDownloader
@@ -76,8 +74,6 @@ import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.PresetsReverb
 import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
-import it.fast4x.rimusic.extensions.discord.updateDiscordPresence
-import it.fast4x.rimusic.isHandleAudioFocusEnabled
 import it.fast4x.rimusic.models.Event
 import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.BitmapProvider
