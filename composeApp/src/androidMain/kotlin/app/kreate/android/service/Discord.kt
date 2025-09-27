@@ -269,4 +269,25 @@ class Discord(private val context: Context) {
             }
         }
     }
+
+    fun pause( mediaItem: MediaItem, timeStart: Long ) {
+        if( !DiscordLib.isReady() ) return
+
+        CoroutineScope( Dispatchers.IO ).launch {
+            val generated = makeActivity( mediaItem, timeStart )
+
+            val activity = templateActivity.copy(
+                createdAt = generated.createdAt,
+                timestamps = Activity.Timestamp(timeStart, null),
+                // "title - artist" if artist is not null, "title" otherwise
+                details = generated.name + generated.details?.let { " - $it" },
+                state = "⏸ Paused",
+                assets = generated.assets,
+                buttons = generated.buttons
+            )
+            DiscordLib.updatePresence {
+                Presence(null, listOf( activity ), Status.ONLINE, false)
+            }
+        }
+    }
 }

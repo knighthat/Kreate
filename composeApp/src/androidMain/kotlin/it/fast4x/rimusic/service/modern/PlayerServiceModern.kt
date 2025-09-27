@@ -142,7 +142,8 @@ val Song.isLocal get() = id.startsWith(LOCAL_KEY_PREFIX)
 class PlayerServiceModern:
     MediaLibraryService(),
     PlaybackStatsListener.Callback,
-    SharedPreferences.OnSharedPreferenceChangeListener
+    SharedPreferences.OnSharedPreferenceChangeListener,
+    Player.Listener
 {
     @Inject
     lateinit var player: ExoPlayer
@@ -320,6 +321,7 @@ class PlayerServiceModern:
 
         player.skipSilenceEnabled = Preferences.AUDIO_SKIP_SILENCE.value
         player.addListener( listener )
+        player.addListener( this )
         player.addAnalyticsListener(PlaybackStatsListener(false, this@PlayerServiceModern))
 
         player.repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
@@ -410,6 +412,15 @@ class PlayerServiceModern:
     }
 
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
+
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+        if( !isAtLeastAndroid6 || !Preferences.DISCORD_LOGIN.value )
+            return
+
+        val mediaItem = player.currentMediaItem ?: return
+        val startTime = System.currentTimeMillis() - player.currentPosition
+        discord.pause( mediaItem, startTime )
+    }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession =
         mediaSession
