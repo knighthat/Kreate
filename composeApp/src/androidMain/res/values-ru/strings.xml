@@ -830,4 +830,9 @@
     <string name="word_icon">Icon</string>
     <string name="setting_entry_song_empty_duration_placeholder">Empty duration placeholder</string>
     <string name="setting_description_song_empty_duration_placeholder">Display \"--:--\" when duration is unknown</string>
+    <string name="shape_rectangle">Rectangle</string>
+    <string name="shape_circle">Circle</string>
+    <string name="word_description">Description</string>
+    <string name="word_information">Information</string>
+    <string name="description_view_song_info">View song\'s details</string>
 </resources>
