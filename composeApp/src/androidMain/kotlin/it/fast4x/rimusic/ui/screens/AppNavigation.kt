@@ -50,6 +50,7 @@ import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.android.themed.common.component.dialog.Dialog
 import app.kreate.android.themed.common.screens.album.YouTubeAlbum
 import app.kreate.android.themed.common.screens.artist.YouTubeArtist
+import app.kreate.android.themed.common.screens.details.SongDetailsScreen
 import app.kreate.android.themed.common.screens.settings.about.Licenses
 import app.kreate.android.themed.rimusic.screen.artist.ArtistAlbums
 import app.kreate.android.themed.rimusic.screen.playlist.YouTubePlaylist
@@ -93,6 +94,9 @@ private val USE_LOGIN_ARG = navArgument( "useLogin" ) {
     type = NavType.BoolType
     // Use default value to make it optional
     defaultValue = false
+}
+private val ID = navArgument( "id" ) {
+    type = NavType.StringType
 }
 
 @androidx.annotation.OptIn()
@@ -421,6 +425,15 @@ fun AppNavigation(
 
         composable( NavRoutes.LICENSES.name ) {
             Licenses( navController, miniPlayer )
+        }
+
+        composable(
+            route = "${NavRoutes.SONG_DETAILS}/{id}",
+            arguments = listOf( ID )
+        ) { navBackStackEntry ->
+            val id = navBackStackEntry.arguments?.getString("id").orEmpty()
+
+            SongDetailsScreen( navController, id )
         }
     }
 

@@ -62,6 +62,7 @@ import me.knighthat.component.song.ChangeAuthorDialog
 import me.knighthat.component.song.ExportCacheDialog
 import me.knighthat.component.song.GoToAlbum
 import me.knighthat.component.song.GoToArtist
+import me.knighthat.component.song.Information
 import me.knighthat.component.song.RenameSongDialog
 import me.knighthat.component.song.ResetSongDialog
 import me.knighthat.component.tab.DeleteSongDialog
@@ -155,6 +156,7 @@ class SongItemMenu private constructor(
         }
         val resetDialog = ResetSongDialog( song )
         val exportCacheDialog = ExportCacheDialog( binder ) { song }
+        val info = remember { Information(navController, song.id) }
 
         buttons = mutableListOf<Button>().apply {
             add( renameSong )
@@ -171,6 +173,7 @@ class SongItemMenu private constructor(
             }
             add( deleteSongDialog )
             add( exportCacheDialog )
+            add( info )
         }
         //</editor-fold>
 
