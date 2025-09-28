@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,7 +39,7 @@ import androidx.compose.ui.util.fastZip
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.coil3.ImageFactory
-import app.kreate.android.drawable.APP_ICON_IMAGE_BITMAP
+import app.kreate.android.drawable.AppIcon
 import app.kreate.android.enums.PlatformIndicatorType
 import app.kreate.android.themed.rimusic.component.MultiplatformItem
 import app.kreate.android.themed.rimusic.component.Visual
@@ -197,7 +198,7 @@ object PlaylistItem: Visual(), MultiplatformItem {
 
                 if( thumbnailUrls.isEmpty() )
                     Image(
-                        bitmap = APP_ICON_IMAGE_BITMAP,
+                        bitmap = AppIcon.imageBitmap( LocalContext.current ),
                         contentDescription = null,
                         contentScale = ContentScale.FillHeight,
                         modifier = indvModifier

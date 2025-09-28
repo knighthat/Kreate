@@ -119,7 +119,7 @@ import androidx.palette.graphics.Palette
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
-import app.kreate.android.drawable.APP_ICON_IMAGE_BITMAP
+import app.kreate.android.drawable.AppIcon
 import app.kreate.android.screens.player.background.BlurredCover
 import app.kreate.android.themed.rimusic.screen.player.ActionBar
 import coil3.request.allowHardware
@@ -189,7 +189,6 @@ import it.fast4x.rimusic.utils.positionAndDurationState
 import it.fast4x.rimusic.utils.resize
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shouldBePlaying
-import it.fast4x.rimusic.utils.thumbnail
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -1804,7 +1803,7 @@ fun Player(
                             )
 
                         Image(
-                            bitmap = APP_ICON_IMAGE_BITMAP,
+                            bitmap = AppIcon.imageBitmap( context ),
                             contentDescription = "app icon in player",
                             modifier = Modifier.size( 24.dp )
                                                .clickable {

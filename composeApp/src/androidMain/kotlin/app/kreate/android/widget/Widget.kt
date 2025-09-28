@@ -12,6 +12,7 @@ import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.LocalContext
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
@@ -29,7 +30,7 @@ import androidx.glance.layout.size
 import androidx.glance.text.Text
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
-import app.kreate.android.drawable.APP_ICON_BITMAP
+import app.kreate.android.drawable.AppIcon
 import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.cleanPrefix
 import java.io.File
@@ -51,7 +52,8 @@ sealed class Widget: GlanceAppWidget() {
     @Composable
     @GlanceComposable
     protected fun Thumbnail( modifier: GlanceModifier ) {
-        val bitmap = currentState( bitmapPath )?.let( BitmapFactory::decodeFile ) ?: APP_ICON_BITMAP
+        val bitmap = currentState( bitmapPath )?.let( BitmapFactory::decodeFile )
+            ?: AppIcon.bitmap( LocalContext.current )
         Image(
             provider = ImageProvider( bitmap ),
             contentDescription = "cover",

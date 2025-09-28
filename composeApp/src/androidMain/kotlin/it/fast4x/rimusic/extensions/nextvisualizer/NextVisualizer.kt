@@ -39,7 +39,7 @@ import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
-import app.kreate.android.drawable.APP_ICON_BITMAP
+import app.kreate.android.drawable.AppIcon
 import coil3.request.allowHardware
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
@@ -236,7 +236,9 @@ fun getVisualizers(): List<Painter> {
     val ampR = 3f
     val yR = 0.2f
     val color = colorPalette().text.hashCode()
-    var bitmapCover by remember { mutableStateOf( APP_ICON_BITMAP ) }
+    var bitmapCover by remember {
+        mutableStateOf(AppIcon.Round.bitmap( context ) )
+    }
     val binder = LocalPlayerServiceBinder.current
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {

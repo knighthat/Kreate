@@ -16,13 +16,14 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import app.kreate.android.R
-import app.kreate.android.drawable.APP_ICON_IMAGE_BITMAP
+import app.kreate.android.drawable.AppIcon
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.typography
@@ -74,7 +75,7 @@ private fun AppLogo(
     )
 
     Image(
-        bitmap = APP_ICON_IMAGE_BITMAP,
+        bitmap = AppIcon.Round.imageBitmap( LocalContext.current ),
         contentDescription = "App's icon",
         modifier = modifier.size( 36.dp )
     )

@@ -11,7 +11,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.util.fastCoerceAtLeast
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.drawable.APP_ICON_BITMAP
+import app.kreate.android.drawable.AppIcon
 import app.kreate.android.service.NetworkService
 import coil3.Image
 import coil3.ImageLoader
@@ -78,7 +78,9 @@ object ImageFactory {
             ImageLoader.Builder( context )
                        .crossfade( true )
                        .diskCachePolicy( CachePolicy.ENABLED )
-                       .error( APP_ICON_BITMAP.asImage() )
+                       .error(
+                           AppIcon.bitmap( context ).asImage()
+                       )
                        .components {
                            add(
                                KtorNetworkFetcherFactory(NetworkService.client)
