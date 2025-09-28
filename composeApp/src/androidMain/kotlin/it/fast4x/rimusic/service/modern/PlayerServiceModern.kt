@@ -422,7 +422,10 @@ class PlayerServiceModern:
         val mediaItem = player.currentMediaItem ?: return
         val startTime = System.currentTimeMillis() - player.currentPosition
         @SuppressLint("NewApi")     // [Preferences.isLoggedInToDiscord] already verified it
-        discord.pause( mediaItem, startTime )
+        if( isPlaying )
+            discord.updateMediaItem( mediaItem, startTime )
+        else
+            discord.pause( mediaItem, startTime )
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession =
