@@ -205,11 +205,12 @@ class Discord(private val context: Context) {
         // https://music.youtube.com/channel/[channelId]
         val artistUrl = artists?.let { "${Constants.YOUTUBE_MUSIC_URL}/channel/${it.id}" }
         val album = metadata.albumTitle?.toString()?.let( ::cleanPrefix )
+        val listenToUrl = "${Constants.YOUTUBE_MUSIC_URL}/watch?v=${mediaItem.mediaId}"
         val assets = Activity.Assets(
             // [thumbnail] call only modifies youtube's thumbnail urls
             largeImage = getImageUrl( metadata.artworkUri.thumbnail(MAX_DIMENSION) ),
             largeText = null,
-            largeUrl = metadata.artworkUri.toString(),
+            largeUrl = listenToUrl,
             smallImage = artists?.thumbnailUrl
                                 .thumbnail( MAX_DIMENSION )
                                 ?.let {
@@ -230,7 +231,7 @@ class Discord(private val context: Context) {
             getAppButton,
             Activity.Button(
                 label = "Listen to $title",
-                url = "${Constants.YOUTUBE_MUSIC_URL}/watch?v=${mediaItem.mediaId}"
+                url = listenToUrl
             )
         )
 
