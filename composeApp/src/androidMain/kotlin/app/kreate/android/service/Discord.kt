@@ -113,7 +113,7 @@ class Discord(private val context: Context) {
 
                 Identify(
                     token = token,
-                    properties = Identify.Properties("Android", "discord-kotlin", "discord-kotlin"),
+                    properties = Identify.Properties("Android", "discord-kotlin", Build.DEVICE),
                     intents = 0,
                     presence = Presence(null, listOf( activity ), Status.ONLINE, false)
                 )
