@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
@@ -209,9 +210,21 @@ class Discord(private val context: Context) {
             largeImage = getImageUrl( metadata.artworkUri.thumbnail(MAX_DIMENSION) ),
             largeText = null,
             largeUrl = metadata.artworkUri.toString(),
-            smallImage = artists?.thumbnailUrl.thumbnail( MAX_DIMENSION / 4 ) ?: getAppLogoUrl(),
+            smallImage = artists?.thumbnailUrl
+                                .thumbnail( MAX_DIMENSION )
+                                ?.let {
+                                    try {
+                                        it.toUri()
+                                    } catch ( _: Exception ) {
+                                        null
+                                    }
+                                }
+                                ?.let {
+                                    getImageUrl( it )
+                                }
+                                ?: getAppLogoUrl(),
             smallText = null,
-            smallUrl = getAppButton.url
+            smallUrl = artistUrl ?: getAppButton.url
         )
         val buttons = listOf(
             getAppButton,
