@@ -48,6 +48,7 @@ class Discord(private val context: Context) {
         private const val TEMP_FILE_HOST = "https://litterbox.catbox.moe/resources/internals/api.php"
         private const val MAX_DIMENSION = 1024                           // Per Discord's guidelines
         private const val MAX_FILE_SIZE_BYTES = 2L * 1024 * 1024     // 2 MB in bytes
+        private const val KREATE_IMAGE_URL = "https://i.ibb.co/bgZZ7bFx/discord-rpc-kreate.png"
     }
 
     private val templateActivity by lazy {
@@ -179,7 +180,7 @@ class Discord(private val context: Context) {
         if ( ::smallImage.isInitialized )
             smallImage
         else
-            DiscordLib.getExternalImageUrl( "https://i.ibb.co/3mLGkPwY/app-logo.png", APPLICATION_ID )
+            DiscordLib.getExternalImageUrl( KREATE_IMAGE_URL, APPLICATION_ID )
                       .onFailure {
                           it.printStackTrace()
                           it.message?.also( Toaster::e )
