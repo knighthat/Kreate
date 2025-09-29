@@ -37,9 +37,10 @@ junit5 = "5.13.4"
 junit-platform = "1.13.4"
 webkit = "1.14.0"
 newpipe-extractor = "0.24.8"
-compose-kmp = "1.8.2"
+compose-kmp = "1.9.0"
 license-report = "2.9"
 hilt = "2.57.1"
+material3-kmp = "1.8.2"
 
 
 [libraries]
@@ -81,7 +82,7 @@ material-icon-desktop = { group = "org.jetbrains.compose.material", name = "mate
 navigation-kmp = {  group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigationKMP" }
 compose-kmp-ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref = "compose-kmp" }
 compose-kmp-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "compose-kmp" }
-compose-kmp-material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "compose-kmp" }
+compose-kmp-material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "material3-kmp" }
 compose-kmp-animation = { group = "org.jetbrains.compose.animation", name = "animation", version.ref = "compose-kmp" }
 
 # OkHttp
