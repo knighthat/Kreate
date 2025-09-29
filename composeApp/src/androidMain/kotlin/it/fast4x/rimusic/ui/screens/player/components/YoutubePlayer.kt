@@ -11,13 +11,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.LifecycleOwner
-import app.kreate.android.R
 import app.kreate.android.Preferences
+import app.kreate.android.R
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
@@ -59,6 +60,8 @@ fun YoutubePlayer(
                     .size(24.dp)
             )
         }
+
+        val context = LocalContext.current
         AndroidView(
             modifier = Modifier
                 .fillMaxSize()
@@ -66,7 +69,7 @@ fun YoutubePlayer(
                 //.clip(RoundedCornerShape(10.dp))
                 .zIndex(2f),
             factory = {
-                val iFramePlayerOptions = IFramePlayerOptions.Builder()
+                val iFramePlayerOptions = IFramePlayerOptions.Builder(context)
                     .controls(1)
                     .build()
 
