@@ -5,7 +5,6 @@ kotlin = "2.2.10"
 kotlin-ksp = "2.2.10-2.0.2"
 coil3 = "3.3.0"
 room = "2.7.2"
-sqlite = "2.5.2"
 media3 = "1.8.0"
 ktor = "3.3.0"
 brotli = "0.1.2"
@@ -51,7 +50,6 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 # Room
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-room-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "sqlite" }
 
 # Media
 media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
