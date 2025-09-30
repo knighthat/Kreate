@@ -25,7 +25,6 @@ math3 = "3.6.1"
 toasty = "1.5.2"
 androidyoutubeplayer = "13.0.0"
 glance = "1.1.1"
-kizzyrpc = "1.0.71"
 navigationKMP = "2.9.0"
 vlcj = "4.11.0"
 kotlinxCoroutines = "1.10.2"
@@ -129,7 +128,6 @@ timber = {  group = "com.jakewharton.timber", name = "timber", version.ref = "ti
 math3 = { group = "org.apache.commons", name = "commons-math3", version.ref = "math3" }
 toasty = { group = "com.github.GrenderG", name = "Toasty", version.ref = "toasty" }
 androidyoutubeplayer = { group = "com.pierfrancescosoffritti.androidyoutubeplayer", name = "core", version.ref = "androidyoutubeplayer" }
-kizzy-rpc = { group = "com.github.dead8309", name = "KizzyRPC", version.ref = "kizzyrpc" }
 vlcj = {  group = "uk.co.caprica", name = "vlcj", version.ref = "vlcj" }
 brotli = { group = "org.brotli", name = "dec", version.ref = "brotli" }
 desugaring-nio = { group = "com.android.tools", name = "desugar_jdk_libs_nio", version.ref = "desugaring" }
