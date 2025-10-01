@@ -629,7 +629,7 @@
     <string name="settings_enable_autodownload_song_when_liked">Pobierz automatycznie, gdy polubiono</string>
     <string name="settings_enable_autodownload_song_when_album_bookmarked">Auto download song when album bookmarked</string>
     <string name="tab_general">Ogólne</string>
-    <string name="queue_and_local_playlists_left_swipe" />
+    <string name="queue_and_local_playlists_left_swipe">Queue and Local Playlists Left Swipe</string>
     <string name="queue_and_local_playlists_right_swipe">Queue and Local Playlists Right Swipe</string>
     <string name="playlist_left_swipe">Playlist Left Swipe</string>
     <string name="playlist_right_swipe">Playlist Right Swipe</string>
