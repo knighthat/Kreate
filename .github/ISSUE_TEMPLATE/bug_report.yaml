@@ -1,6 +1,5 @@
 name: 🐛Bug report
 description: Short description of how to trigger this bug
-title: Name captures the problem
 labels:
   - bug
 body:
@@ -74,7 +73,7 @@ body:
       description: >-
         Please specify what version of Kreate are you on. Note: Don't use
         "latest" or similar terms, we have apps on multiple stores with some are
-        lagged behind
+        lagged behind. Tip: Find your app version in Settings > About
       placeholder: v.1.0.0, v.1.1.0, etc.
     validations:
       required: true
@@ -95,6 +94,7 @@ body:
         - 13 [TIRAMISU]
         - 14 [UPSIDE_DOWN_CAKE]
         - 15 [VANILLA_ICE_CREAM]
+        - 16 [BAKLAVA]
         - Other
     validations:
       required: true
@@ -152,11 +152,7 @@ body:
     attributes:
       label: Tell us how to trigger this bug
       description: 'Each step should be on its own line. You can use simple sentences like:'
-      value: |-
-        1. Open Kreate
-        2. Click on A 
-        3. Click on B
-        4. Boom! Crash happens
+      placeholder: 1. Open Kreate 2. Click on A  3. Click on B 4. Boom! Crash happens
     validations:
       required: true
   - type: textarea
@@ -172,31 +168,18 @@ body:
         > Here's an [instruction
         video](https://www.youtube.com/watch?v=h6fOErvWIGI)
   - type: textarea
-    id: expectation
-    attributes:
-      label: What was your expectation?
-      description: What did you expect after completing those steps?
-      placeholder: I clicked on next so obviously it plays random. DUH!!
-    validations:
-      required: true
-  - type: textarea
     id: log
     attributes:
-      label: Logs (Optional)
+      label: Logs
       description: >-
-        Logs can be enabled in Settings > Misc > "Enable debug logs" > "Copy
-        crash log" (only available after you re-trigger the bug)
+        There are 2 types of logs, runtime log and crash log, both can be found
+        in Settings > Misc.
       value: |-
         <details>
           <summary>Logs</summary>
           [If you have multiple logs, please copy "details" for each log, name them appropriately, make sure they are different from each other]
           <Paste your log here>
         </details>
-  - type: markdown
-    attributes:
-      value: >-
-        This template was generated with [Issue Forms
-        Creator](https://issue-forms-creator.netlify.app]
   - type: markdown
     attributes:
       value: >-
