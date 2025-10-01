@@ -1,0 +1,16 @@
+Add:
+- Option to turn off Seek button
+- Option to turn off Platform indicator
+- Option to disable duration placeholder
+- Adjustable thumbnail roundness
+- Song's details button
+- New Discord Rich Presence library
+
+Fixes:
+- App crashes randomly with Conversion exception
+- Playback speed button spacing issue
+- Minor setting entries with slider's indentation
+
+Changes:
+- More meaningful messages instead of "Required value is null"
+- Improve fadein/fadeout effect when play/pause from an external source
