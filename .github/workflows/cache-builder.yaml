@@ -2,14 +2,14 @@ name: Automatic Cache Builder
 
 
 on:
-  # These files are dependencies of this project.
-  # Therefore, when 1 of them changes, everything needs
-  # to be rebuild for up-to-date cache.
   push:
-    
+    # These files are dependencies of this project.
+    # Therefore, when 1 of them changes, everything needs
+    # to be rebuild for up-to-date cache.
     paths:
-      - '**/*.gradle*'
+      - '**/build.gradle.kts'
       - '**/gradle-wrapper.properties'
+      - '**/libs.versions.toml'
     # Don't run on tag creation
     tags-ignore:
       - '**'
