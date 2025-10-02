@@ -117,8 +117,7 @@ jobs:
             ~/.gradle/wrapper
             ./build
             ./composeApp/build
-          # Cache key has flavor's name to prevent override each other
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          # Pulls latest cache artifact
           restore-keys: gradle-${{ runner.os }}-
 
       - name: Build with Gradle
@@ -159,8 +158,7 @@ jobs:
             ~/.gradle/wrapper
             ./build
             ./composeApp/build
-          # Cache key has flavor's name to prevent override each other
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          # Pulls latest cache artifact
           restore-keys: gradle-${{ runner.os }}-
 
       - name: Build with Gradle
@@ -201,8 +199,7 @@ jobs:
             ~/.gradle/wrapper
             ./build
             ./composeApp/build
-          # Cache key has flavor's name to prevent override each other
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          # Pulls latest cache artifact
           restore-keys: gradle-${{ runner.os }}-
 
       - name: Build with Gradle
