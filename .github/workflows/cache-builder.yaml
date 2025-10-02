@@ -79,11 +79,10 @@ jobs:
         with:
           path: |
             ~/.gradle/caches
-            ~/.gradle/wrapper
             ./build
             ./composeApp/build
           # Cache key has flavor's name to prevent override each other
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle.kts', '**/gradle-wrapper.properties', '**/libs.versions.toml) }}
           restore-keys: gradle-${{ runner.os }}-
 
       - name: Build with Gradle (cache only)
