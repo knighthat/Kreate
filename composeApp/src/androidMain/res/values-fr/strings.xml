@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Fait</string>
     <string name="hidesong">Voulez-vous vraiment masquer ce titre ? Son temps de lecture et son cache seront effacés. Cette action est irréversible.</string>
@@ -159,7 +159,7 @@
     <string name="vt_circular">Circulaire</string>
     <string name="vt_disabled">Désactivé</string>
     <string name="new_albums_of_your_artists">Nouveaux albums de vos artistes</string>
-    <string name="timeline">Ligne de temps</string>
+    <string name="timeline">Barre de progression</string>
     <string name="visualizer">Visualiseur</string>
     <string name="visualizer_require_mic_permission">Visualiseur exige L\'AUTORISATION DU MICRO</string>
     <string name="listen_on_piped">Écouter sur Piped</string>
@@ -185,7 +185,7 @@
     <string name="rectangular">Rectangulaire</string>
     <string name="square">Carré</string>
     <string name="circular_ribbed">Cercle ondulé</string>
-    <string name="play_button">Bouton lecture</string>
+    <string name="play_button">Habillage du bouton lecture</string>
     <string name="close_app_with_back_button">Fermer l\'application avec le bouton Retour</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Lorsque vous utilisez le bouton Retour de la page d\'accueil</string>
     <string name="audio_quality_format_high">Élevée</string>
@@ -375,11 +375,11 @@
     <string name="info_lyrics_not_found_on_s_try_on_s">Paroles non trouvées sur %1$s, essayez sur %2$s</string>
     <string name="info_lyrics_not_found_on_s">Paroles introuvables sur %s</string>
     <string name="info_lyrics_tracks_found_on_s">Paroles de chansons trouvées sur %s</string>
-    <string name="background_colors">Couleur d\'arrière-plan</string>
-    <string name="bg_colors_background_from_cover">Arrière-plan à partir de la pochette d\'album</string>
-    <string name="bg_colors_background_from_theme">Arrière-plan à partir du thème</string>
-    <string name="bg_colors_gradient_background_from_cover">Dégradé d\'arrière-plan à partir de la pochette d\'album</string>
-    <string name="bg_colors_gradient_background_from_theme">Dégradé d\'arrière-plan à partir du thème</string>
+    <string name="background_colors">Couleurs de l\'arrière-plan</string>
+    <string name="bg_colors_background_from_cover">Couleur à partir de la pochette d\'album</string>
+    <string name="bg_colors_background_from_theme">Couleur à partir du thème</string>
+    <string name="bg_colors_gradient_background_from_cover">Dégradé à partir de la pochette d\'album</string>
+    <string name="bg_colors_gradient_background_from_theme">Dégradé à partir du thème</string>
     <string name="vimusic_show_search_button_in_navigation_bar">Afficher le bouton de recherche dans la barre de navigation</string>
     <string name="vismusic_only_in_left_right_navigation_bar">Uniquement pour le mode ViMusic ui dans la barre de navigation gauche/droite</string>
     <string name="theme_customized">Personnalisé</string>
@@ -405,7 +405,7 @@
     <string name="bg_colors_fluid_gradient_background_from_theme">Dégradé d\'arrière-plan fluide à partir du thème</string>
     <string name="bg_colors_fluid_gradient_background_from_cover">Dégradé d\'arrière-plan fluide à partir de la pochette d\'album</string>
     <string name="show_background_in_lyrics">Afficher la couleur d\'arrière-plan dans les paroles</string>
-    <string name="bg_colors_blurred_cover_background">Arrière-plan de la pochette d\'album floue</string>
+    <string name="bg_colors_blurred_cover_background">Pochette d\'album floue</string>
     <string name="pcontrols_modern">Moderne</string>
     <string name="pcontrols_essential">Minimale</string>
     <string name="pcontrols_type">Type de contrôle</string>
@@ -425,7 +425,7 @@
     <string name="icon_like_shape">Forme</string>
     <string name="icon_like_striped">Rayé</string>
     <string name="icon_like_brilliant">Brillant</string>
-    <string name="player_swap_controls_with_timeline">Échanger les contrôles avec la barre de lecture</string>
+    <string name="player_swap_controls_with_timeline">Échanger les contrôles avec la barre de progression</string>
     <string name="player_enable_lyrics_popup_message">Activer les messages des paroles</string>
     <string name="exclude_songs_with_duration_limit">Exclure les titres avec une limite de durée</string>
     <string name="exclude_songs_with_duration_limit_description">Si activé, les titres dont la durée dépasse la limite seront exclues, se sera appliqué à la file d\'attente de Mon Top et pour la fille d\'attente</string>
@@ -451,9 +451,9 @@
     <string name="lyricscolor">Couleur des paroles</string>
     <string name="accent">Couleur d\'accentuation</string>
     <string name="lyrics_size">Taille des paroles</string>
-    <string name="transparentbar">Barre de lecture transparente</string>
-    <string name="timelinesize">Taille de la barre de lecture</string>
-    <string name="actionspacedevenly">Espacé uniformément </string>
+    <string name="transparentbar">Barre de progression transparente</string>
+    <string name="timelinesize">Taille de la barre de progression</string>
+    <string name="actionspacedevenly">Espacé uniformément</string>
     <string name="expandedplayer">Lecteur étendu</string>
     <string name="lyricsoutline">Contour des paroles</string>
     <string name="fluidrainbow">Arc en Ciel Fluide</string>
@@ -655,7 +655,7 @@ Volume BAS : titre précédent</string>
     <string name="blackcherrycosmos">Cosmos à la cerise noire</string>
     <string name="gradienttype">Type de dégradé</string>
     <string name="random">Aléatoire</string>
-    <string name="colorpalette">Palette de couleurs</string>
+    <string name="colorpalette">Palette de couleurs depuis la pochette</string>
     <string name="customcolor">Couleur personnalisée</string>
     <string name="lyricsanimate">Taille des paroles animées</string>
     <string name="yt_playlists">YouTube / YouTube Music</string>
@@ -783,7 +783,7 @@ Volume BAS : titre précédent</string>
     <string name="setting_description_youtube_sync_data">Charger automatiquement les playlists dans l\'onglet « %s »</string>
     <string name="setting_description_delete_search_history">Supprimer %s</string>
     <string name="setting_entry_live_wallpaper">Fond d\'écran animé</string>
-    <string name="setting_description_live_wallpaper">Définissez votre fond d\'écran sur la miniature du titre en cours de lecture</string>
+    <string name="setting_description_live_wallpaper">Définissez votre fond d\'écran avec la pochette du titre en cours de lecture</string>
     <string name="word_lockscreen">Écran de verrouillage</string>
     <string name="warning_only_available_on_android_and_above">Disponible uniquement sur Android %1$s+ (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Retour unique</string>
@@ -792,9 +792,9 @@ Volume BAS : titre précédent</string>
     <string name="proxy_mode_direct">Aucun proxy</string>
     <string name="setting_entry_monthly_playlist_compilation">Compiler une playlist mensuelle</string>
     <string name="setting_description_monthly_playlist_compilation">Compilez une playlist au début du mois en fonction de ce que vous avez écouté le mois dernier</string>
-    <string name="setting_entry_marquee_effect">Effet de chapiteau</string>
-    <string name="setting_description_marquee_effect">Appliquer le texte défilant s\'il dépasse la zone visible</string>
-    <string name="info_explicit_song">Ce titre peut ne pas convenir à tous les âges</string>
+    <string name="setting_entry_marquee_effect">Effet de défilement</string>
+    <string name="setting_description_marquee_effect">Fait défiler le texte s\'il est trop grand pour être affiché en entier</string>
+    <string name="info_explicit_song">Ce titre n\'est peut-être pas adapté à tous les âges </string>
     <string name="info_added_by_smart_recommendations">Ajouté par les recommandations intelligentes</string>
     <string name="info_delete_cache">Supprimer le cache</string>
     <string name="setting_description_storage_usage">%1$s - %2$s utilisé (%3$d%%)</string>
@@ -832,8 +832,8 @@ Volume BAS : titre précédent</string>
     <string name="setting_entry_song_empty_duration_placeholder">Espace réservé à la durée vide</string>
     <string name="setting_description_song_empty_duration_placeholder">Afficher « --:-- » lorsque la durée est inconnue</string>
     <string name="shape_rectangle">Rectangle</string>
-    <string name="shape_circle">Circle</string>
+    <string name="shape_circle">Cercle</string>
     <string name="word_description">Description</string>
     <string name="word_information">Information</string>
-    <string name="description_view_song_info">View song\'s details</string>
+    <string name="description_view_song_info">Voir les détails du titre</string>
 </resources>
