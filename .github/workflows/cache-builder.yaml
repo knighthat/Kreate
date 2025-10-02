@@ -22,15 +22,6 @@ on:
 
 
 jobs:
-  #
-  # Topology:
-  # Scan Git's commit logs for any changes in 1 of these locations:
-  # - composeApp/androidMain
-  # - composeApp/androidImprovised
-  # - composeApp/androidUpstream
-  # If any changes detect, mark that flavor to build cache later on.
-  # Any changes made to "androidMain" will cause both flavor to be rebuilt.
-  #
   check-changes:
     name: Check for changes
     runs-on: ubuntu-latest
@@ -49,33 +40,22 @@ jobs:
 
       #
       # Explanations:
-      # git log --since="48 hours ago" --name-only --pretty=format:
-      # - Show all files that were changed withing 48 hrs.
-      # - Show changed file paths in relative (composeApp/androidMain, etc.)
+      # - `git log`: shows commit history
+      # - `--since="1 week ago"`: Show commit up to last week
+      # - `--name-only`: Show name of changed file
+      # - `--pretty=format:` Show nothing but file name
+      # - `|`: Pipe result(s) to next command
+      # - `grep`: Filter out strings matched provided expression
+      # - `-e`: Additional expression, string only needs to match 1 expression to be considered matched
       #
-      # Rebuild all cache if a file in this group has changed:
-      # - composeApp/androidMain
-      # - composeApp/commonMain
-      # - .gradle, .gradle.kts, or gradle-wrapper.properties
-      #
-      - name: Detect changes in last 48 hours
+      - name: Detect changes in the past week
         id: detect-changes
         run: |
-          CHANGES_MADE=false
-          if \
-            git log --since="48 hours ago" --name-only --pretty=format: | grep -q "^composeApp/src/androidMain/" || \
-            git log --since="48 hours ago" --name-only --pretty=format: | grep -q "^composeApp/src/commonMain/" || \
-            git log --since="48 hours ago" --name-only --pretty=format: | grep -q "^.*\.gradle.*" || \
-            git log --since="48 hours ago" --name-only --pretty=format: | grep -q "^gradle-wrapper.properties"; then
-          
-            CHANGES_MADE=true
-          fi
-          
-          echo "changes_made=$CHANGES_MADE" >> $GITHUB_OUTPUT
+          echo "changes_made=$(git log --since="1 week ago" --name-only --pretty=format: | grep -e "build\.gradle\.kts$" -e "libs\.versions\.toml$" -e "gradle-wrapper\.properties$" -e "^composeApp/src/androidMain|commonMain/kotlin|java/")" >> $GITHUB_OUTPUT
 
   build-release:
     needs: check-changes
-    if: needs.check-changes.outputs.changes_made == 'true'
+    if: needs.check-changes.outputs.changes_made != ''
 
     name: Build release
     runs-on: ubuntu-latest
