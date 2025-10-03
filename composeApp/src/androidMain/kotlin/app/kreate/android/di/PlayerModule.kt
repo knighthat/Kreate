@@ -470,10 +470,10 @@ object PlayerModule {
         CacheDataSource.Factory().setCache( cache )
 
     @Provides
-    @Named("ktorDataSource")
+    @Named("defaultDatasource")
     @Singleton
     @UnstableApi
-    fun providesKtorUpstreamDataSourceFactory(
+    fun providesOkHttpDataSourceFactory(
         @ApplicationContext context: Context
     ): DataSource.Factory =
         // [DefaultDataSource.Factory] with [context] is required to read
@@ -492,11 +492,11 @@ object PlayerModule {
     fun providesDownloadDataSource(
         @ApplicationContext context: Context,
         @Named("downloadCache") downloadCache: Cache,
-        @Named("ktorDataSource") ktorDataSource: DataSource.Factory
+        @Named("defaultDatasource") defaultDatasource: DataSource.Factory
     ): DataSource.Factory =
         ResolvingDataSource.Factory(
             dataSourceFactoryFrom( downloadCache )
-                .setUpstreamDataSourceFactory( ktorDataSource )
+                .setUpstreamDataSourceFactory( defaultDatasource )
                 .setCacheWriteDataSinkFactory( null ),
             resolver( context, downloadCache )
         )
@@ -509,7 +509,7 @@ object PlayerModule {
         @ApplicationContext context: Context,
         @Named("cache") cache: Cache,
         @Named("downloadCache") downloadCache: Cache,
-        @Named("ktorDataSource") ktorDataSource: DataSource.Factory
+        @Named("defaultDatasource") defaultDatasource: DataSource.Factory
     ): DataSource.Factory =
         ResolvingDataSource.Factory(
             dataSourceFactoryFrom( downloadCache )
@@ -517,7 +517,7 @@ object PlayerModule {
                 .setFlags( FLAG_IGNORE_CACHE_ON_ERROR )
                 .setUpstreamDataSourceFactory(
                     dataSourceFactoryFrom( cache )
-                        .setUpstreamDataSourceFactory( ktorDataSource )
+                        .setUpstreamDataSourceFactory( defaultDatasource )
                         .setCacheWriteDataSinkFactory(
                             CacheDataSink.Factory()
                                          .setCache( cache )
