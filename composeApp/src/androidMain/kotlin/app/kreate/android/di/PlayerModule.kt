@@ -480,6 +480,7 @@ object PlayerModule {
 
     @Provides
     @Named("downloadDataSource")
+    @Singleton
     fun providesDownloadDataSource(
         @ApplicationContext context: Context,
         @Named("downloadCache") downloadCache: Cache,
@@ -494,6 +495,7 @@ object PlayerModule {
 
     @Provides
     @Named("playerDataSource")
+    @Singleton
     fun providesPlayerDataSource(
         @ApplicationContext context: Context,
         @Named("cache") cache: Cache,
