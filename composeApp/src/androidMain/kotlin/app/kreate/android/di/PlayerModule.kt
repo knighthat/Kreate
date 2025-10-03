@@ -11,6 +11,7 @@ import androidx.media3.common.audio.SonicAudioProcessor
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
+import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheDataSink
@@ -470,10 +471,19 @@ object PlayerModule {
 
     @Provides
     @Named("ktorDataSource")
+    @Singleton
     @UnstableApi
-    fun providesKtorUpstreamDataSourceFactory(): DataSource.Factory =
-        OkHttpDataSource.Factory( NetworkService.engine )
-                        .setUserAgent( UserAgents.CHROME_WINDOWS )
+    fun providesKtorUpstreamDataSourceFactory(
+        @ApplicationContext context: Context
+    ): DataSource.Factory =
+        // [DefaultDataSource.Factory] with [context] is required to read
+        // data from local files.
+        // Normal HTTP requests are handled by [OkHttpDataSource.Factory]
+        DefaultDataSource.Factory(
+            context,
+            OkHttpDataSource.Factory( NetworkService.engine )
+                .setUserAgent( UserAgents.CHROME_WINDOWS )
+        )
 
     @Provides
     @Named("downloadDataSource")
