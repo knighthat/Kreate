@@ -117,6 +117,7 @@ jobs:
             ~/.gradle/wrapper
             ./build
             ./composeApp/build
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle-wrapper.properties', '**/libs.versions.toml') }}
           # Pulls latest cache artifact
           restore-keys: gradle-${{ runner.os }}-
 
@@ -158,6 +159,7 @@ jobs:
             ~/.gradle/wrapper
             ./build
             ./composeApp/build
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle-wrapper.properties', '**/libs.versions.toml') }}
           # Pulls latest cache artifact
           restore-keys: gradle-${{ runner.os }}-
 
@@ -199,6 +201,7 @@ jobs:
             ~/.gradle/wrapper
             ./build
             ./composeApp/build
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle-wrapper.properties', '**/libs.versions.toml') }}
           # Pulls latest cache artifact
           restore-keys: gradle-${{ runner.os }}-
 
