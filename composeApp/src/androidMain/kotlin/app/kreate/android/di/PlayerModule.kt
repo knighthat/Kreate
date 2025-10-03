@@ -86,6 +86,8 @@ import me.knighthat.innertube.request.body.Context as InnertubeContext
 
 @Module
 @InstallIn(SingletonComponent::class)
+@androidx.annotation.OptIn(UnstableApi::class)
+@OptIn(ExperimentalSerializationApi::class)
 object PlayerModule {
 
     private const val LOG_TAG = "dataspec"
@@ -274,7 +276,6 @@ object PlayerModule {
                           Timber.tag( LOG_TAG ).d( "`streamUrl` returns code $it" )
                       } == 200
 
-    @UnstableApi
     private fun checkPlayabilityStatus( playabilityStatus: PlayerResponse.PlayabilityStatus ) =
         when( playabilityStatus.status ) {
             "OK"                -> { Timber.tag( LOG_TAG ).d( "`playabilityStatus` is OK" ) }
@@ -310,8 +311,6 @@ object PlayerModule {
         return parsePlayerResponseViaReflection( jsonResponse )
     }
 
-    @ExperimentalSerializationApi
-    @UnstableApi
     private suspend fun getPlayerResponse(
         songId: String,
         audioQualityFormat: AudioQualityFormat,
@@ -388,8 +387,6 @@ object PlayerModule {
     //</editor-fold>
 
     //<editor-fold desc="Resolvers">
-    @ExperimentalSerializationApi
-    @UnstableApi
     private fun DataSpec.process(
         videoId: String,
         connectionMetered: Boolean
@@ -433,8 +430,6 @@ object PlayerModule {
      * Used to determined whether the song can be played from cached,
      * or a call to online service must be made to get needed data.
      */
-    @ExperimentalSerializationApi
-    @UnstableApi
     private fun resolver(
         context: Context,
         vararg cashes: Cache
@@ -465,14 +460,12 @@ object PlayerModule {
      * Short-circuit function to quickly make a [DataSource.Factory] from
      * designated [cache]
      */
-    @UnstableApi
-    fun dataSourceFactoryFrom( cache: Cache ): CacheDataSource.Factory =
+    private fun dataSourceFactoryFrom( cache: Cache ): CacheDataSource.Factory =
         CacheDataSource.Factory().setCache( cache )
 
     @Provides
     @Named("defaultDatasource")
     @Singleton
-    @UnstableApi
     fun providesOkHttpDataSourceFactory(
         @ApplicationContext context: Context
     ): DataSource.Factory =
@@ -487,8 +480,6 @@ object PlayerModule {
 
     @Provides
     @Named("downloadDataSource")
-    @androidx.annotation.OptIn(UnstableApi::class)
-    @OptIn(ExperimentalSerializationApi::class)
     fun providesDownloadDataSource(
         @ApplicationContext context: Context,
         @Named("downloadCache") downloadCache: Cache,
@@ -503,8 +494,6 @@ object PlayerModule {
 
     @Provides
     @Named("playerDataSource")
-    @androidx.annotation.OptIn(UnstableApi::class)
-    @OptIn(ExperimentalSerializationApi::class)
     fun providesPlayerDataSource(
         @ApplicationContext context: Context,
         @Named("cache") cache: Cache,
@@ -530,8 +519,6 @@ object PlayerModule {
     //</editor-fold>
 
     @Provides
-    @androidx.annotation.OptIn(UnstableApi::class)
-    @OptIn(ExperimentalSerializationApi::class)
     @Singleton
     fun providesPlayer(
         @ApplicationContext context: Context,
