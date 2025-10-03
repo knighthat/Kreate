@@ -391,9 +391,10 @@ object PlayerModule {
     @UnstableApi
     private fun DataSpec.process(
         videoId: String,
-        audioQualityFormat: AudioQualityFormat,
         connectionMetered: Boolean
     ): DataSpec = runBlocking( Dispatchers.IO ) {
+        val audioQualityFormat by Preferences.AUDIO_QUALITY
+
         Timber.tag( LOG_TAG ).v( "processing $videoId at quality $audioQualityFormat with connection metered: $connectionMetered" )
 
         val cache: StreamCache
@@ -408,7 +409,7 @@ object PlayerModule {
 
                 cachedStreamUrl.remove( videoId )
 
-                return@runBlocking process( videoId, audioQualityFormat, connectionMetered )
+                return@runBlocking process( videoId, connectionMetered )
             }
         } else {
             Timber.tag( LOG_TAG ).d( "url for $videoId isn't stored! Fetching new url" )
@@ -417,14 +418,14 @@ object PlayerModule {
             cache = cachedStreamUrl[videoId]!!
         }
 
+        val absolutePosition = uriPositionOffset + position
         YoutubeJavaScriptPlayerManager.getUrlWithThrottlingParameterDeobfuscated( videoId, cache.playableUrl )
                                       .toUri()
                                       .buildUpon()
-                                      .appendQueryParameter( "range", "$uriPositionOffset-${cache.contentLength}" )
+                                      .appendQueryParameter( "range", "$absolutePosition-${cache.contentLength}" )
                                       .appendQueryParameter( "cpn", cache.cpn )
                                       .build()
                                       .let( ::withUri )
-                                      .subrange( uriPositionOffset, C.LENGTH_UNSET.toLong() )
     }
 
     /**
@@ -437,12 +438,12 @@ object PlayerModule {
         context: Context,
         vararg cashes: Cache
     ) = ResolvingDataSource.Resolver { dataSpec ->
-        val absoluteStart = dataSpec.uriPositionOffset + dataSpec.position
         val videoId = dataSpec.uri.toString().substringAfter( "watch?v=" )
 
         // Delay this block until called. Song can be local too
+        val cacheLength = dataSpec.length.takeIf { it != -1L } ?: CHUNK_LENGTH
         fun isCached() = cashes.any {
-            it.isCached( videoId, absoluteStart, CHUNK_LENGTH )
+            it.isCached( videoId, dataSpec.position, cacheLength )
         }
         val isLocal = dataSpec.uri.scheme == ContentResolver.SCHEME_CONTENT || dataSpec.uri.scheme == ContentResolver.SCHEME_FILE
 
@@ -452,9 +453,9 @@ object PlayerModule {
         return@Resolver if( isLocal || isCached() ) {
             Timber.tag( LOG_TAG ).d( "$videoId exists in cache, proceeding to use from cache" )
             // No need to fetch online for already cached data
-            dataSpec.subrange( absoluteStart, C.LENGTH_UNSET.toLong() )
+            dataSpec
         } else
-            dataSpec.process( videoId, Preferences.AUDIO_QUALITY.value, context.isConnectionMetered() )
+            dataSpec.process( videoId, context.isConnectionMetered() )
     }
     //</editor-fold>
 
