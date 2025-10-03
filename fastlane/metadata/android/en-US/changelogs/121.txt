@@ -1,0 +1,5 @@
+Fixes:
+- Infinite load time
+- Local songs fail to load
+- Persistent queue causes battery drain
+- Persistent queue fails to resume local song
