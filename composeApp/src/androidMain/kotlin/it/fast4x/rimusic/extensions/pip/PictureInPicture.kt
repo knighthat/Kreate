@@ -6,7 +6,6 @@ import android.app.RemoteAction
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Rect
-import android.graphics.drawable.Icon
 import android.util.Log
 import android.util.Rational
 import androidx.compose.foundation.layout.Box
@@ -27,9 +26,10 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.OnPictureInPictureModeChangedProvider
 import androidx.core.app.PictureInPictureModeChangedInfo
+import androidx.core.graphics.drawable.toIcon
 import androidx.core.graphics.toRect
 import app.kreate.android.Preferences
-import app.kreate.android.R
+import app.kreate.android.drawable.AppIcon
 import it.fast4x.compose.persist.findActivityNullable
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.utils.ActionReceiver
@@ -161,7 +161,7 @@ fun Modifier.pip(
         if (actions != null) setActions(
             actions.all.values.map {
                 RemoteAction(
-                    it.icon ?: Icon.createWithResource(activity, R.drawable.ic_launcher_foreground_round),
+                    it.icon ?: AppIcon.Round.bitmap( activity ).toIcon(),
                     it.title.orEmpty(),
                     it.contentDescription.orEmpty(),
                     with(activity) { it.pendingIntent }
