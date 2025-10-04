@@ -1803,7 +1803,7 @@ fun Player(
                             )
 
                         Image(
-                            bitmap = AppIcon.imageBitmap( context ),
+                            bitmap = AppIcon.Round.imageBitmap( context ),
                             contentDescription = "app icon in player",
                             modifier = Modifier.size( 24.dp )
                                                .clickable {
