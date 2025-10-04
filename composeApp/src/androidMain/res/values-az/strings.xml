@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Bitdi</string>
     <string name="hidesong">Həqiqətən bu mahnını gizlətmək istəyirsiz? Onun dinlənmə vaxtı və qalığı silinəcək. Bu tələb geri dönməzdir.</string>
@@ -828,9 +828,9 @@
     <string name="word_icon">Simvol</string>
     <string name="setting_entry_song_empty_duration_placeholder">Boş müddət saxlayıcı</string>
     <string name="setting_description_song_empty_duration_placeholder">Müddət naməlum olduqda \"--:--\" göstər</string>
-    <string name="shape_rectangle">Rectangle</string>
-    <string name="shape_circle">Circle</string>
-    <string name="word_description">Description</string>
-    <string name="word_information">Information</string>
-    <string name="description_view_song_info">View song\'s details</string>
+    <string name="shape_rectangle">Düzbucaq</string>
+    <string name="shape_circle">Dairə</string>
+    <string name="word_description">Açıqlama</string>
+    <string name="word_information">Məlumat</string>
+    <string name="description_view_song_info">Mahnı təfsilatlarına bax</string>
 </resources>
