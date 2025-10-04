@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # Repo's path in format {OWNER}/{REPO}
-      GITHUB_REPOSITORY: ${{ github.action_repository }}
+      GITHUB_REPOSITORY: ${{ github.repository }}
 
     # Inspired by this article https://devblog.jpcaparas.com/bulk-delete-github-actions-workflow-runs-with-a-simple-bash-function-b9105009a579
     # Each command is run on separated step for debug purpose
