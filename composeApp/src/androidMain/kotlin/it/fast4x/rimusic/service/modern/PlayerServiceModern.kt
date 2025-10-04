@@ -241,7 +241,7 @@ class PlayerServiceModern:
         }
 
         DefaultMediaNotificationProvider(this)
-            .apply { setSmallIcon( R.drawable.ic_launcher_monochrome ) }
+            .apply { setSmallIcon( R.drawable.ic_launcher_monochrome_round ) }
             .also( ::setMediaNotificationProvider )
 
         runCatching {
@@ -854,7 +854,7 @@ class PlayerServiceModern:
                     .setAutoCancel(true)
                     .setOnlyAlertOnce(true)
                     .setShowWhen(true)
-                    .setSmallIcon(R.drawable.ic_launcher_monochrome)
+                    .setSmallIcon(R.drawable.ic_launcher_monochrome_round)
                     .build()
 
                 notificationManager?.notify(SleepTimerNotificationId, notification)
