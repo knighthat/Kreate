@@ -54,8 +54,11 @@ object ImageFactory {
 
     lateinit var diskCache: DiskCache
     lateinit var imageLoader: ImageLoader
+    lateinit var errorPlaceholder: Bitmap
 
     fun init( context: Context ) {
+        errorPlaceholder = AppIcon.bitmap( context, THUMBNAIL_SIZE )
+
         val cacheSize by Preferences.IMAGE_CACHE_SIZE
         if( !::diskCache.isInitialized )
             DiskCache.Builder()
@@ -79,7 +82,7 @@ object ImageFactory {
                        .crossfade( true )
                        .diskCachePolicy( CachePolicy.ENABLED )
                        .error(
-                           AppIcon.bitmap( context ).asImage()
+                           errorPlaceholder.asImage()
                        )
                        .components {
                            add(
