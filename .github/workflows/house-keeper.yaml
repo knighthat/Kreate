@@ -18,8 +18,6 @@ jobs:
     env:
       # Repo's path in format {OWNER}/{REPO}
       GITHUB_REPOSITORY: ${{ github.action_repository }}
-      # ref/heads/{branch}
-      GITHUB_REF: ${{ github.ref }}
 
     # Inspired by this article https://devblog.jpcaparas.com/bulk-delete-github-actions-workflow-runs-with-a-simple-bash-function-b9105009a579
     # Each command is run on separated step for debug purpose
@@ -27,7 +25,75 @@ jobs:
       - name: Login to Github CLI
         run: echo "${{ secrets.HOUSE_KEEPER_WORKFLOW }}" | gh auth login --with-token
 
-      - uses: actions/checkout@v5
+      # Get all "completed" workflows
+      # - Each response has up to 100 results
+      # - If there's more than 100 results, continue fetching until there's nothing left
+      # - Append result(s) to workflows.json file
+      # https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository
+      - name: Get workflows
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs" \
+            -F "status=completed" \
+            -F "per_page=100" \
+            --paginate > workflows.json
 
-      - name: Run script
-        run: bash .github/delete_success_workflows.sh
+      # Each response has `total_count` shows total available workflows,
+      # pipe this thru `uniq` to get unique value(s) - should be a single value
+      - name:  "DEBUG: Print total queried workflows"
+        run: |
+          total_count=$(jq -r '.total_count' workflows.json | uniq)
+          echo "Queried: $total_count runs"
+
+      # - Must be "success"
+      # - Were updated at least 2 weeks ago
+      #
+      # Each workflow json is reduced to its ID,
+      # and shown on a separate line
+      - name: Filter successful workflows
+        run: |
+          jq -r '
+          .workflow_runs[] |
+          select(
+            .conclusion == "success" and
+            (now - (.updated_at | fromdate)) >= (14 * 86400)
+          ) |
+          .id' workflows.json >> successful_workflows.txt
+
+      - name:  "DEBUG: Print total successful workflows"
+        run: wc -l successful_workflows.txt
+
+      # - Triggered by an issue
+      # - Conclusion is anything but "failure"
+      #
+      # Each workflow json is reduced to its ID,
+      # and shown on a separate line
+      - name: Filter non failure issue-triggered workflows
+        run: |
+          jq -r '
+          .workflow_runs[] |
+          select(
+            .event == "issues" and
+            .conclusion != "failure"
+          ) |
+          .id' workflows.json >> issue_workflows.txt
+
+      - name:  "DEBUG: Print total issue-triggered workflows"
+        run: wc -l issue_workflows.txt
+
+      # Merges 2 filtered files together
+      # Since workflow's id is number, `sort` can be used
+      # with `-u` flag to sort and remove duplicates between the 2.
+      # `head` to only take first `-n` number of lines
+      - name: Merge workflow files
+        run: cat successful_workflows.txt issue_workflows.txt | sort -u | head -n 60 >> process_workflows.txt
+
+      - name: "DEBUG: Print total process workflows"
+        run: wc -l process_workflows.txt
+
+      # This step takes every line from process_workflows.txt
+      # and send delete request to GitHub via cli
+      - name: Delete workflows
+        run: |
+          while IFS= read -r id; do
+            gh api --verbose -X DELETE "repos/$GITHUB_REPOSITORY/actions/runs/$id"
+          done < process_workflows.txt
