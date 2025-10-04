@@ -32,10 +32,10 @@ jobs:
       # https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository
       - name: Get workflows
         run: |
-          gh api "repos/$GITHUB_REPOSITORY/actions/runs" \
-            -F "status=completed" \
-            -F "per_page=100" \
-            --paginate > workflows.json
+          gh api -X GET "repos/$GITHUB_REPOSITORY/actions/runs" \
+          -F "status=completed" \
+          -F "per_page=100" \
+          --paginate
 
       # Each response has `total_count` shows total available workflows,
       # pipe this thru `uniq` to get unique value(s) - should be a single value
