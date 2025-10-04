@@ -35,7 +35,7 @@ jobs:
           gh api -X GET "repos/$GITHUB_REPOSITORY/actions/runs" \
           -F "status=completed" \
           -F "per_page=100" \
-          --paginate
+          --paginate > workflows.json
 
       # Each response has `total_count` shows total available workflows,
       # pipe this thru `uniq` to get unique value(s) - should be a single value
