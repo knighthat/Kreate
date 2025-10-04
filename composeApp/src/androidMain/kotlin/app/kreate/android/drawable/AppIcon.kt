@@ -5,12 +5,12 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.VectorDrawable
 import androidx.annotation.DrawableRes
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
+import androidx.core.graphics.withSave
 import app.kreate.android.R
 import app.kreate.android.drawable.AppIcon.Round.bitmap
 import app.kreate.android.drawable.AppIcon.bitmap
@@ -22,7 +22,7 @@ object AppIcon {
     private lateinit var _bitmap: Bitmap
 
     private fun mipmapToBitmap( context: Context, @DrawableRes res: Int ): Bitmap {
-        val drawable = requireNotNull( AppCompatResources.getDrawable( context, res ) ) {
+        val drawable = requireNotNull(ContextCompat.getDrawable( context, res ) ) {
             "Resource $res doesn't exist!"
         }
         val bitmap: Bitmap
@@ -32,38 +32,33 @@ object AppIcon {
             // This is applicable for older devices (mostly API 25-)
             bitmap = drawable.bitmap
         else {
-            bitmap = createBitmap(
-                width = drawable.intrinsicWidth.takeIf { it > 0 } ?: 1,
-                height = drawable.intrinsicHeight.takeIf { it > 0 } ?: 1
-            )
+            val size = minOf(drawable.intrinsicHeight, drawable.intrinsicWidth).takeIf { it != -1 } ?: 108
+            bitmap = createBitmap(size, size)
             val canvas = Canvas(bitmap)
 
             if( isAtLeastAndroid8
                 && drawable is AdaptiveIconDrawable
                 && res == R.mipmap.ic_launcher
             ) {
-                /*
-                    It gets a little bit interesting here.
-
-                    [ic_launcher_foreground_round] looks good on launcher's icon,
-                    but when rendered through here, the proportion between foreground
-                    and background is so different that they look weird.
-
-                    To combat this, [ic_launcher_foreground] is introduced with increased
-                    size (72x72).
-                 */
-                val foreground = requireNotNull(
-                    AppCompatResources.getDrawable( context, R.drawable.ic_launcher_foreground )
-                ) { "Can't get ic_launcher_foreground" }
-                check( foreground is VectorDrawable ) {
-                    "ic_launcher_foreground isn't VectorDrawable"
-                }
-
                 drawable.background?.setBounds( 0, 0, canvas.width, canvas.height )
                 drawable.background.draw( canvas )
 
-                foreground.setBounds( 0, 0, canvas.width, canvas.height )
-                foreground.draw( canvas )
+                /*
+                   It gets a little bit interesting here.
+
+                   [ic_launcher] looks good on launcher's icon,
+                   but when rendered through here, the proportion between foreground
+                   and background is so different that they look weird.
+
+                   To combat this, the foreground is scaled up to size (80x80).
+                */
+                canvas.withSave {
+                    // 80 is desired foreground size, 55 is it's actual size
+                    val scale = 80f / 55
+                    canvas.scale(  scale, scale, size / 2f, size / 2f )
+                    drawable.foreground.setBounds( 0, 0, width, height )
+                    drawable.foreground.draw( this )
+                }
             } else {
                 drawable.setBounds( 0, 0, canvas.width, canvas.height )
                 drawable.draw( canvas )
