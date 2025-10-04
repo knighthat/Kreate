@@ -21,7 +21,11 @@ object AppIcon {
 
     private lateinit var _bitmap: Bitmap
 
-    private fun mipmapToBitmap( context: Context, @DrawableRes res: Int ): Bitmap {
+    private fun mipmapToBitmap(
+        context: Context,
+        @DrawableRes res: Int,
+        size: Int? = null
+    ): Bitmap {
         val drawable = requireNotNull(ContextCompat.getDrawable( context, res ) ) {
             "Resource $res doesn't exist!"
         }
@@ -32,7 +36,9 @@ object AppIcon {
             // This is applicable for older devices (mostly API 25-)
             bitmap = drawable.bitmap
         else {
-            val size = minOf(drawable.intrinsicHeight, drawable.intrinsicWidth).takeIf { it != -1 } ?: 108
+            val size = (
+                    size ?: minOf(drawable.intrinsicHeight, drawable.intrinsicWidth)
+            ).takeIf { it != -1 } ?: 108
             bitmap = createBitmap(size, size)
             val canvas = Canvas(bitmap)
 
@@ -85,6 +91,26 @@ object AppIcon {
     }
 
     /**
+     * Convert rasterized image (API 23-) or vector image (API 24+)
+     * of [R.mipmap.ic_launcher] to [Bitmap].
+     *
+     * If [R.mipmap.ic_launcher] is a [AdaptiveIconDrawable] (Android 8+),
+     * the bitmap will be resized to match [size]. Otherwise, it stays
+     * as retrieved from the system.
+     *
+     * **This bitmap is immutable**
+     */
+    fun bitmap( context: Context, size: Int ): Bitmap {
+        if( ::_bitmap.isInitialized
+            && _bitmap.height == size
+            && _bitmap.width == size
+        )
+            return _bitmap
+
+        return mipmapToBitmap( context, R.mipmap.ic_launcher, size )
+    }
+
+    /**
      * Create [ImageBitmap] version of [bitmap].
      *
      * Just like [bitmap], this component is **immutable**
@@ -109,6 +135,26 @@ object AppIcon {
                 _bitmap = mipmapToBitmap( context, R.mipmap.ic_launcher_round )
 
             return _bitmap
+        }
+
+        /**
+         * Convert rasterized image (API 23-) or vector image (API 24+)
+         * of [R.mipmap.ic_launcher_round] to [Bitmap].
+         *
+         * If [R.mipmap.ic_launcher_round] is a [AdaptiveIconDrawable] (Android 8+),
+         * the bitmap will be resized to match [size]. Otherwise, it stays
+         * as retrieved from the system.
+         *
+         * **This bitmap is immutable**
+         */
+        fun bitmap( context: Context, size: Int ): Bitmap {
+            if( ::_bitmap.isInitialized
+                && _bitmap.height == size
+                && _bitmap.width == size
+            )
+                return _bitmap
+
+            return mipmapToBitmap( context, R.mipmap.ic_launcher_round, size )
         }
 
         /**
