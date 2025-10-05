@@ -11,14 +11,14 @@ import androidx.media3.common.MediaItem
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.utils.DiscordLogger
+import app.kreate.database.models.Artist
+import app.kreate.util.cleanPrefix
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.cleanPrefix
-import it.fast4x.rimusic.models.Artist
 import it.fast4x.rimusic.utils.thumbnail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -18,11 +18,11 @@ import androidx.media3.exoplayer.scheduler.Requirements
 import app.kreate.android.Preferences
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.DownloadHelper
+import app.kreate.database.models.Song
 import coil3.request.allowHardware
 import coil3.request.bitmapConfig
 import dagger.hilt.android.qualifiers.ApplicationContext
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.utils.asMediaItem

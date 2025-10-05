@@ -31,8 +31,8 @@ import androidx.glance.text.Text
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
 import app.kreate.android.drawable.AppIcon
+import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.MainActivity
-import it.fast4x.rimusic.cleanPrefix
 import java.io.File
 
 sealed class Widget: GlanceAppWidget() {

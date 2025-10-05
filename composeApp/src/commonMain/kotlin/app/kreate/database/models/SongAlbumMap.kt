@@ -1,25 +1,31 @@
-package it.fast4x.rimusic.models
+package app.kreate.database.models
 
 import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+
 
 @Immutable
 @Entity(
+    primaryKeys = ["songId", "albumId"],
     foreignKeys = [
         ForeignKey(
             entity = Song::class,
             parentColumns = ["id"],
             childColumns = ["songId"],
             onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Album::class,
+            parentColumns = ["id"],
+            childColumns = ["albumId"],
+            onDelete = ForeignKey.CASCADE
         )
     ]
 )
-data class Event(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+data class SongAlbumMap(
     @ColumnInfo(index = true) val songId: String,
-    var timestamp: Long,
-    val playTime: Long
+    @ColumnInfo(index = true) val albumId: String,
+    val position: Int?
 )

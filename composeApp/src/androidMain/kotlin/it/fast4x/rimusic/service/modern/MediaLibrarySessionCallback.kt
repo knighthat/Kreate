@@ -22,6 +22,8 @@ import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.database.models.Song
+import app.kreate.util.cleanPrefix
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -31,9 +33,7 @@ import it.fast4x.innertube.models.bodies.SearchBody
 import it.fast4x.innertube.requests.searchPage
 import it.fast4x.innertube.utils.from
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.enums.StatisticsType
-import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.MediaSessionConstants.ID_CACHED
 import it.fast4x.rimusic.service.modern.MediaSessionConstants.ID_DOWNLOADED

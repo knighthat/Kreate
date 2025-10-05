@@ -1,6 +1,6 @@
 package me.knighthat.utils
 
-import it.fast4x.rimusic.MODIFIED_PREFIX
+import app.kreate.util.MODIFIED_PREFIX
 import org.jetbrains.annotations.Contract
 
 object PropUtils {

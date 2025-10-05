@@ -1,7 +1,8 @@
-package it.fast4x.rimusic.models
+package app.kreate.database.models
 
 import androidx.compose.runtime.Immutable
 import androidx.room.Embedded
+
 
 @Immutable
 data class PlaylistPreview(

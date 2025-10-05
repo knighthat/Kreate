@@ -33,6 +33,8 @@ import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
+import app.kreate.database.models.Album
+import app.kreate.database.models.SongAlbumMap
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBody
@@ -44,8 +46,6 @@ import it.fast4x.innertube.utils.from
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.enums.NavRoutes
-import it.fast4x.rimusic.models.Album
-import it.fast4x.rimusic.models.SongAlbumMap
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.Skeleton
 import it.fast4x.rimusic.ui.components.SwipeableAlbumItem

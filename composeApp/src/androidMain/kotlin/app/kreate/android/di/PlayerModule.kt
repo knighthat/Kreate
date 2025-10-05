@@ -38,6 +38,7 @@ import app.kreate.android.service.NetworkService
 import app.kreate.android.service.player.CustomExoPlayer
 import app.kreate.android.utils.CharUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
+import app.kreate.database.models.Format
 import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonWriter
 import dagger.Module
@@ -51,7 +52,6 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.parseQueryString
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.AudioQualityFormat
-import it.fast4x.rimusic.models.Format
 import it.fast4x.rimusic.service.LoginRequiredException
 import it.fast4x.rimusic.service.UnknownException
 import it.fast4x.rimusic.service.UnplayableException

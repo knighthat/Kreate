@@ -7,9 +7,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Upsert
-import it.fast4x.rimusic.models.Artist
-import it.fast4x.rimusic.models.Song
-import it.fast4x.rimusic.models.SongArtistMap
+import app.kreate.database.models.Artist
+import app.kreate.database.models.Song
+import app.kreate.database.models.SongArtistMap
 import kotlinx.coroutines.flow.Flow
 
 @Dao

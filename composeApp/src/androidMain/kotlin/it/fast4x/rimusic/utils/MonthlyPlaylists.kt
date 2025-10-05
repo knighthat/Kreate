@@ -7,9 +7,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import app.kreate.android.R
+import app.kreate.database.models.Playlist
+import app.kreate.util.MONTHLY_PREFIX
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.MONTHLY_PREFIX
-import it.fast4x.rimusic.models.Playlist
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first

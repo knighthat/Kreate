@@ -13,6 +13,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.drawable.AppIcon
 import app.kreate.android.service.NetworkService
+import app.kreate.util.thumbnail
 import coil3.Image
 import coil3.ImageLoader
 import coil3.asImage
@@ -30,7 +31,6 @@ import coil3.request.transformations
 import coil3.toBitmap
 import coil3.transform.Transformation
 import it.fast4x.rimusic.appContext
-import it.fast4x.rimusic.thumbnail
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.annotations.Contract

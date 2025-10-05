@@ -12,8 +12,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
+import app.kreate.database.models.Song
 import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.DynamicColor

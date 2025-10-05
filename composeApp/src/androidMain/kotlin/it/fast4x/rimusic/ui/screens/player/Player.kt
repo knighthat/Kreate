@@ -122,6 +122,7 @@ import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.drawable.AppIcon
 import app.kreate.android.screens.player.background.BlurredCover
 import app.kreate.android.themed.rimusic.screen.player.ActionBar
+import app.kreate.util.cleanPrefix
 import coil3.request.allowHardware
 import com.mikepenz.hypnoticcanvas.shaderBackground
 import com.mikepenz.hypnoticcanvas.shaders.BlackCherryCosmos
@@ -139,7 +140,6 @@ import com.mikepenz.hypnoticcanvas.shaders.Stage
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.appRunningInBackground
-import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.AnimatedGradient
 import it.fast4x.rimusic.enums.BackgroundProgress

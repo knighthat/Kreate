@@ -1,9 +1,10 @@
-package it.fast4x.rimusic.models
+package app.kreate.database.models
 
 import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+
 
 @Immutable
 @Entity(
@@ -12,16 +13,12 @@ import androidx.room.PrimaryKey
             entity = Song::class,
             parentColumns = ["id"],
             childColumns = ["songId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         )
     ]
 )
-data class Format(
+data class Lyrics(
     @PrimaryKey val songId: String,
-    val itag: Int? = null,
-    val mimeType: String? = null,
-    val bitrate: Long? = null,
-    val contentLength: Long? = null,
-    val lastModified: Long? = null,
-    val loudnessDb: Float? = null
+    val fixed: String?,
+    val synced: String?,
 )

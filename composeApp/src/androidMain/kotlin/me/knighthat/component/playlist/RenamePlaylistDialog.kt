@@ -8,8 +8,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import app.kreate.android.R
+import app.kreate.database.models.Playlist
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.models.Playlist
 import me.knighthat.component.RenameDialog
 
 class RenamePlaylistDialog private constructor(

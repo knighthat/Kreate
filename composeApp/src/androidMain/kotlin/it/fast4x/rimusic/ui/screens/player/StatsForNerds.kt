@@ -38,12 +38,12 @@ import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheSpan
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.database.models.Format
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.PlayerBackgroundColors
 import it.fast4x.rimusic.enums.PlayerType
-import it.fast4x.rimusic.models.Format
 import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.IconButton

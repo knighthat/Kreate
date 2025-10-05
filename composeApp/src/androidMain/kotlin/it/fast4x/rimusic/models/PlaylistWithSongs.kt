@@ -4,6 +4,8 @@ import androidx.compose.runtime.Immutable
 import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
+import app.kreate.database.models.Playlist
+import app.kreate.database.models.Song
 
 @Immutable
 data class PlaylistWithSongs(
