@@ -56,3 +56,6 @@
 ## Rules for Coil3
 -keep class * extends coil3.util.DecoderServiceLoaderTarget { *; }
 -keep class * extends coil3.util.FetcherServiceLoaderTarget { *; }
+
+## Rules for Room
+-keep class * extends androidx.room.RoomDatabase { <init>(); }

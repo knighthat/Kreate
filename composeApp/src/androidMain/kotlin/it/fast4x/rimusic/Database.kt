@@ -8,7 +8,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Transaction
 import androidx.room.TypeConverters
-import androidx.sqlite.db.SimpleSQLiteQuery
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.sqlite.execSQL
 import it.fast4x.rimusic.Database.asyncQuery
 import it.fast4x.rimusic.Database.asyncTransaction
 import it.fast4x.rimusic.Database.insertIgnore
@@ -328,10 +329,12 @@ object Database {
             this.block()
         }
 
-    fun checkpoint() = _internal.query( SimpleSQLiteQuery("PRAGMA wal_checkpoint(FULL)") )
-                                     .use {
-                                         if( it.moveToFirst() ) it.getInt( 0 ) else -1
-                                     }
+    fun checkpoint() {
+        BundledSQLiteDriver().open( appContext().getDatabasePath( FILE_NAME ).absolutePath )
+                             .use { conn ->
+                                 conn.execSQL( "PRAGMA wal_checkpoint(FULL);" )
+                             }
+    }
 
     fun close() = _internal.close()
 }
@@ -394,11 +397,11 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
 
     companion object {
         val Instance: DatabaseInitializer by lazy {
-            Room.databaseBuilder(
+            Room.databaseBuilder<DatabaseInitializer>(
                     context = appContext(),
-                    klass = DatabaseInitializer::class.java,
                     name = Database.FILE_NAME
                 )
+                .setDriver( BundledSQLiteDriver() )
                 .addMigrations(
                     From8To9Migration(),
                     From10To11Migration(),
