@@ -89,6 +89,8 @@ kotlin {
 
             // Dependency injection
             implementation( libs.android.hilt )
+
+            implementation( libs.sqlite.android )
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -106,7 +108,6 @@ kotlin {
 
             // Room KMP
             implementation( libs.room.runtime )
-            implementation( libs.room.sqlite.bundled )
 
             implementation(libs.navigation.kmp)
 

@@ -52,3 +52,6 @@
 
 ## Rules for OkHttp3 - Added since 5.1.0
 -dontwarn okhttp3.internal.Util
+
+## Rules for Room
+-keep class * extends androidx.room.RoomDatabase { <init>(); }
