@@ -14,7 +14,6 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.contentType
 import io.ktor.util.sha1
 import io.ktor.util.toMap
-import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import me.knighthat.innertube.Constants
@@ -30,7 +29,7 @@ class InnertubeProvider: Innertube.Provider {
 
     companion object {
         val COOKIE_MAP by derivedStateOf {
-            if( !isAtLeastAndroid6 || Preferences.YOUTUBE_COOKIES.value.isBlank() )
+            if( Preferences.YOUTUBE_COOKIES.value.isBlank() )
                 return@derivedStateOf emptyMap()
 
             runCatching {
@@ -48,12 +47,9 @@ class InnertubeProvider: Innertube.Provider {
         }
     }
 
-    override val cookies: String
-        get() = if( isAtLeastAndroid6 ) Preferences.YOUTUBE_COOKIES.value else ""
-    override val dataSyncId: String
-        get() = if( isAtLeastAndroid6 ) Preferences.YOUTUBE_SYNC_ID.value else ""
-    override val visitorData: String
-        get() = if( isAtLeastAndroid6 ) Preferences.YOUTUBE_VISITOR_DATA.value else ""
+    override val cookies: String by Preferences.YOUTUBE_COOKIES
+    override val dataSyncId: String by Preferences.YOUTUBE_SYNC_ID
+    override val visitorData: String by Preferences.YOUTUBE_VISITOR_DATA
 
     @Blocking
     override fun execute( request: Request ): Response = runBlocking( Dispatchers.IO ) {

@@ -22,11 +22,9 @@ import android.media.AudioManager
 import android.media.audiofx.AudioEffect
 import android.media.audiofx.BassBoost
 import android.media.audiofx.PresetReverb
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.MainThread
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -88,7 +86,6 @@ import it.fast4x.rimusic.utils.collect
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.getEnum
 import it.fast4x.rimusic.utils.intent
-import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isAtLeastAndroid7
 import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.mediaItems
@@ -155,7 +152,6 @@ class PlayerServiceModern:
     @Inject
     lateinit var downloadHelper: DownloadHelper
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private val discord: Discord = Discord(this)
 
     @Inject
@@ -409,8 +405,7 @@ class PlayerServiceModern:
 
         }
 
-        if( isAtLeastAndroid6 )
-            discord.register()
+        discord.register()
     }
 
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
@@ -511,8 +506,7 @@ class PlayerServiceModern:
 
             coroutineScope.cancel()
 
-            if( isAtLeastAndroid6 )
-                discord.release()
+            discord.release()
 
             preferences.unregisterOnSharedPreferenceChangeListener(this)
         }.onFailure {
@@ -597,8 +591,6 @@ class PlayerServiceModern:
     private var audioDeviceCallback: AudioDeviceCallback? = null
 
     private fun maybeResumePlaybackWhenDeviceConnected() {
-        if ( !isAtLeastAndroid6 ) return
-
         if ( Preferences.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE.value ) {
             if (audioManager == null)
                 audioManager = getSystemService( AUDIO_SERVICE ) as? AudioManager
@@ -1030,7 +1022,7 @@ class PlayerServiceModern:
                 appContext(),
                 100,
                 Intent(value).setPackage(appContext().packageName),
-                PendingIntent.FLAG_UPDATE_CURRENT.or(if (isAtLeastAndroid6) PendingIntent.FLAG_IMMUTABLE else 0)
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
         companion object {

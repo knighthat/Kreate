@@ -38,7 +38,6 @@ import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.ui.screens.settings.StringListValueSelectorSettingsEntry
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.utils.isAtLeastAndroid10
-import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isIgnoringBatteryOptimizations
 import me.knighthat.component.dialog.InputDialogConstraints
 import me.knighthat.utils.Toaster
@@ -148,8 +147,7 @@ fun OtherSettings( paddingValues: PaddingValues ) {
             }
             entry(
                 search = search,
-                titleId = R.string.ignore_battery_optimizations,
-                additionalCheck = isAtLeastAndroid6
+                titleId = R.string.ignore_battery_optimizations
             ) {
                 var isIgnoringBatteryOptimizations by remember {
                     mutableStateOf( context.isIgnoringBatteryOptimizations )

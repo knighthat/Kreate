@@ -135,7 +135,6 @@ import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.getEnum
 import it.fast4x.rimusic.utils.intent
 import it.fast4x.rimusic.utils.invokeOnReady
-import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isAtLeastAndroid8
 import it.fast4x.rimusic.utils.isVideo
 import it.fast4x.rimusic.utils.loadAppLog
@@ -1050,10 +1049,8 @@ MainActivity :
             isAppearanceLightNavigationBars = !isDark
         }
 
-        if (!isAtLeastAndroid6) {
-            window.statusBarColor =
-                (if (isDark) Color.Transparent else Color.Black.copy(alpha = 0.2f)).toArgb()
-        }
+        window.statusBarColor =
+            (if (isDark) Color.Transparent else Color.Black.copy(alpha = 0.2f)).toArgb()
 
         if (!isAtLeastAndroid8) {
             window.navigationBarColor =

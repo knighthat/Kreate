@@ -26,8 +26,18 @@ object UpdatePlugins {
                 ?.deleteRecursively()
     }
 
+    private fun versionCode122( context: Context ) {
+        val file = File(
+            context.applicationInfo.dataDir,
+            "shared_prefs/secure_preferences.xml"
+        )
+
+        if( file.exists() ) file.deleteOnExit()
+    }
+
     fun execute( context: Context ) {
         versionCode111( context )
         versionCode115( context.filesDir )
+        versionCode122( context )
     }
 }

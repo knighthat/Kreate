@@ -3,10 +3,8 @@ package app.kreate.android
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Build
 import android.util.Log
 import androidx.annotation.ColorRes
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SnapshotMutationPolicy
 import androidx.compose.runtime.getValue
@@ -16,8 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.util.fastForEach
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 import app.kreate.android.Preferences.Companion.preferences
 import app.kreate.android.enums.PlatformIndicatorType
 import app.kreate.android.utils.innertube.getSystemCountryCode
@@ -99,13 +95,9 @@ import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.ui.styling.DefaultDarkColorPalette
 import it.fast4x.rimusic.ui.styling.DefaultLightColorPalette
 import it.fast4x.rimusic.utils.getDeviceVolume
-import it.fast4x.rimusic.utils.isAtLeastAndroid6
-import it.fast4x.rimusic.utils.isAtLeastAndroid7
 import me.knighthat.innertube.Constants
 import org.jetbrains.annotations.Blocking
 import org.jetbrains.annotations.NonBlocking
-import timber.log.Timber
-import java.io.File
 import java.net.Proxy
 
 /**
@@ -142,12 +134,11 @@ sealed class Preferences<T>(
     companion object {
 
         private const val PREFERENCES_FILENAME = "preferences"
-        private const val ENCRYPTED_PREFERENCES_FILENAME = "secure_preferences"
+        private const val CREDENTIALS_FILENAME = "credentials"
 
         lateinit var preferences: SharedPreferences
             private set
-        @get:RequiresApi(Build.VERSION_CODES.M)
-        private lateinit var encryptedPreferences: SharedPreferences
+        private lateinit var credentials: SharedPreferences
 
         //<editor-fold defaultstate="collapsed" desc="Item size">
         val HOME_ARTIST_ITEM_SIZE by lazy {
@@ -621,33 +612,26 @@ sealed class Preferences<T>(
         val YOUTUBE_ALBUMS_SYNC by lazy {
             Boolean(preferences, "YouTubeAlbumsSync", "", false)
         }
-        @get:RequiresApi(Build.VERSION_CODES.M)
         val YOUTUBE_VISITOR_DATA by lazy {
-            String( encryptedPreferences, "YouTubeVisitorData", "ytVisitorData", Constants.CHROME_WINDOWS_VISITOR_DATA )
+            String( credentials, "YouTubeVisitorData", "ytVisitorData", Constants.CHROME_WINDOWS_VISITOR_DATA )
         }
-        @get:RequiresApi(Build.VERSION_CODES.M)
         val YOUTUBE_SYNC_ID by lazy {
-            String( encryptedPreferences, "YouTubeSyncId", "ytDataSyncIdKey", "" )
+            String( credentials, "YouTubeSyncId", "ytDataSyncIdKey", "" )
         }
-        @get:RequiresApi(Build.VERSION_CODES.M)
         val YOUTUBE_COOKIES by lazy {
-            String( encryptedPreferences, "YouTubeCookies", "ytCookie", "" )
+            String( credentials, "YouTubeCookies", "ytCookie", "" )
         }
-        @get:RequiresApi(Build.VERSION_CODES.M)
         val YOUTUBE_ACCOUNT_NAME by lazy {
-            String( encryptedPreferences, "YouTubeAccountName", "ytAccountNameKey", "" )
+            String( credentials, "YouTubeAccountName", "ytAccountNameKey", "" )
         }
-        @get:RequiresApi(Build.VERSION_CODES.M)
         val YOUTUBE_ACCOUNT_EMAIL by lazy {
-            String( encryptedPreferences, "YouTubeAccountEmail", "ytAccountEmailKey", "" )
+            String( credentials, "YouTubeAccountEmail", "ytAccountEmailKey", "" )
         }
-        @get:RequiresApi(Build.VERSION_CODES.M)
         val YOUTUBE_SELF_CHANNEL_HANDLE by lazy {
-            String( encryptedPreferences, "YouTubeSelfChannelHandle", "ytAccountChannelHandleKey", "" )
+            String( credentials, "YouTubeSelfChannelHandle", "ytAccountChannelHandleKey", "" )
         }
-        @get:RequiresApi(Build.VERSION_CODES.M)
         val YOUTUBE_ACCOUNT_AVATAR by lazy {
-            String( encryptedPreferences, "YouTubeAccountAvatar", "ytAccountThumbnailKey", "" )
+            String( credentials, "YouTubeAccountAvatar", "ytAccountThumbnailKey", "" )
         }
         val YOUTUBE_LAST_VIDEO_ID by lazy {
             String( preferences, "YouTubeLastVideoId", "lastVideoId", "" )
@@ -698,9 +682,8 @@ sealed class Preferences<T>(
         val DISCORD_LOGIN by lazy {
             Boolean( preferences, "DiscordLogin", "isDiscordPresenceEnabled", false )
         }
-        @get:RequiresApi(Build.VERSION_CODES.M)
         val DISCORD_ACCESS_TOKEN by lazy {
-            String( encryptedPreferences, "DiscordPersonalAccessToken", "", "" )
+            String( credentials, "DiscordPersonalAccessToken", "", "" )
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Proxy">
@@ -1087,7 +1070,7 @@ sealed class Preferences<T>(
         }
 
         fun isLoggedInToDiscord(): kotlin.Boolean =
-            isAtLeastAndroid6 && DISCORD_LOGIN.value && DISCORD_ACCESS_TOKEN.value.isNotBlank()
+            DISCORD_LOGIN.value && DISCORD_ACCESS_TOKEN.value.isNotBlank()
 
         /**
          * Initialize needed properties for settings to use.
@@ -1117,49 +1100,8 @@ sealed class Preferences<T>(
                 }
             }
 
-            if( !isAtLeastAndroid6 || ::encryptedPreferences.isInitialized ) return
-
-            try {
-                // TODO: Implement custom encryption method
-                // TODO: maybe compatible with biometric authentication
-                @Suppress("DEPRECATION")
-                val masterKey: MasterKey = MasterKey.Builder( context, MasterKey.DEFAULT_MASTER_KEY_ALIAS )
-                                                    .setKeyScheme( MasterKey.KeyScheme.AES256_GCM )
-                                                    .build()
-                @Suppress("DEPRECATION")
-                encryptedPreferences = EncryptedSharedPreferences.create(
-                    context,
-                    ENCRYPTED_PREFERENCES_FILENAME,
-                    masterKey,
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                )
-                encryptedPreferences.edit {
-                    // Using reflection to get unused keys would be a better
-                    // idea, but it'd force all keys to be initialized, which
-                    // is undesirable.
-                    listOf(
-                        "pipedUsername", "pipedPassword", "pipedInstanceName", "pipedApiBaseUrl",
-                        "pipedApiToken",
-                    ).fastForEach( this::remove )
-                }
-            } catch ( e: Exception ) {
-                e.printStackTrace()
-
-                runCatching {
-                    if( isAtLeastAndroid7 )
-                        context.deleteSharedPreferences( ENCRYPTED_PREFERENCES_FILENAME )
-                    else
-                        File(
-                            context.applicationInfo.dataDir,
-                            "shared_prefs/$ENCRYPTED_PREFERENCES_FILENAME.xml"
-                        ).delete()
-                }.onFailure {
-                    Timber.tag( "Preferences" ).e( it, "Error while deleting encrypted preferences" )
-                }
-
-                load( context )
-            }
+            if( !::credentials.isInitialized )
+                credentials = context.getSharedPreferences( CREDENTIALS_FILENAME, Context.MODE_PRIVATE )
         }
 
         /**

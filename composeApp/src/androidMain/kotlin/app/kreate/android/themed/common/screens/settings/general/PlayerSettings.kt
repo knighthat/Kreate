@@ -24,7 +24,6 @@ import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.enums.AudioQualityFormat
-import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.rememberEqualizerLauncher
 import me.knighthat.component.dialog.InputDialogConstraints
 
@@ -159,7 +158,7 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
             R.string.now_playing_indicator
         )
     }
-    entry( search, R.string.resume_playback, isAtLeastAndroid6 ) {
+    entry( search, R.string.resume_playback ) {
         SettingComponents.BooleanEntry(
             Preferences.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE,
             R.string.resume_playback,
