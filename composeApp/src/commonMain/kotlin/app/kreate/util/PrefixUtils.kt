@@ -1,7 +1,4 @@
-package it.fast4x.rimusic
-
-import coil3.Uri
-import coil3.toUri
+package app.kreate.util
 
 const val PINNED_PREFIX = "pinned:"
 const val MODIFIED_PREFIX = "modified:"
@@ -27,18 +24,4 @@ fun cleanPrefix(text: String): String {
     }
     if(i >= splitText.size) return ""
     return splitText.subList(i, splitText.size).joinToString(":")
-}
-
-fun String?.thumbnail(size: Int): String? {
-    return when {
-        this?.startsWith("https://lh3.googleusercontent.com") == true -> "$this-w$size-h$size"
-        this?.startsWith("https://yt3.ggpht.com") == true -> "$this-w$size-h$size-s$size"
-        else -> this
-    }
-}
-fun String?.thumbnail(): String? {
-    return this
-}
-fun Uri?.thumbnail(size: Int): Uri? {
-    return toString().thumbnail(size)?.toUri()
 }

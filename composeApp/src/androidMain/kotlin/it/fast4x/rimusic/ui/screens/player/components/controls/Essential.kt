@@ -53,8 +53,8 @@ import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.utils.scrollingText
+import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.appContext
-import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName

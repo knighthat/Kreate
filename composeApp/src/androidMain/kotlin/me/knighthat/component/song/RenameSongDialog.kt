@@ -8,9 +8,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import app.kreate.android.R
+import app.kreate.database.models.Song
+import app.kreate.util.MODIFIED_PREFIX
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.MODIFIED_PREFIX
-import it.fast4x.rimusic.models.Song
 import me.knighthat.component.RenameDialog
 import me.knighthat.utils.Toaster
 

@@ -2,8 +2,8 @@ package me.knighthat.database.ext
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import it.fast4x.rimusic.models.Event
-import it.fast4x.rimusic.models.Song
+import app.kreate.database.models.Event
+import app.kreate.database.models.Song
 
 data class EventWithSong(
     @Embedded val event: Event,

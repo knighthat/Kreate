@@ -62,6 +62,7 @@ import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
+import app.kreate.database.models.SearchQuery
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.SearchSuggestionsBody
 import it.fast4x.innertube.requests.searchSuggestionsWithItems
@@ -70,7 +71,6 @@ import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
-import it.fast4x.rimusic.models.SearchQuery
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.themed.FloatingActionsContainerWithScrollToTop

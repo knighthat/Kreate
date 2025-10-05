@@ -69,13 +69,13 @@ import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.renderDescription
 import app.kreate.android.utils.scrollingText
+import app.kreate.database.models.Album
+import app.kreate.database.models.Song
+import app.kreate.database.models.SongAlbumMap
+import app.kreate.util.MODIFIED_PREFIX
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.MODIFIED_PREFIX
 import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.models.Album
-import it.fast4x.rimusic.models.Song
-import it.fast4x.rimusic.models.SongAlbumMap
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.Skeleton
@@ -117,7 +117,7 @@ import me.knighthat.utils.PropUtils
 import me.knighthat.utils.Toaster
 import timber.log.Timber
 
-private fun updateAlbumInDatabase( dbAlbum: Album?, innertubeAlbum: InnertubeAlbum ) = Database.asyncTransaction {
+private fun updateAlbumInDatabase(dbAlbum: Album?, innertubeAlbum: InnertubeAlbum ) = Database.asyncTransaction {
     val onlineAlbum = Album(
         id = innertubeAlbum.id,
         title = PropUtils.retainIfModified( dbAlbum?.title, innertubeAlbum.name ),

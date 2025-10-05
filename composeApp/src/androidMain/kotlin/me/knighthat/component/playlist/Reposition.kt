@@ -8,8 +8,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import app.kreate.android.R
+import app.kreate.database.models.SongPlaylistMap
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.models.SongPlaylistMap
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.MenuState
 import it.fast4x.rimusic.ui.components.tab.toolbar.ConfirmDialog

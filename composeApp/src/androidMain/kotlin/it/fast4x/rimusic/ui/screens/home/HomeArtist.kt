@@ -53,6 +53,7 @@ import app.kreate.android.themed.rimusic.component.tab.ItemSize
 import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.InnertubeUtils
+import app.kreate.database.models.Artist
 import it.fast4x.compose.persist.persistList
 import it.fast4x.innertube.YtMusic
 import it.fast4x.rimusic.Database
@@ -62,7 +63,6 @@ import it.fast4x.rimusic.enums.FilterBy
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.UiType
-import it.fast4x.rimusic.models.Artist
 import it.fast4x.rimusic.ui.components.ButtonsRow
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar

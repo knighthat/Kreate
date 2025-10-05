@@ -69,6 +69,7 @@ import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
+import app.kreate.database.models.Playlist
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBody
@@ -79,7 +80,6 @@ import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.UiType
-import it.fast4x.rimusic.models.Playlist
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState

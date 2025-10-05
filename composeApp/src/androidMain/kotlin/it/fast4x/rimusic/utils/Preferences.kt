@@ -9,9 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.edit
+import app.kreate.database.models.Song
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.requests.HomePage
-import it.fast4x.rimusic.models.Song
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 

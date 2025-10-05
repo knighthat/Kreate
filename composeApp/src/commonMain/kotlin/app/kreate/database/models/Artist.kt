@@ -1,9 +1,10 @@
-package it.fast4x.rimusic.models
+package app.kreate.database.models
 
 import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import it.fast4x.rimusic.cleanPrefix
+import app.kreate.util.cleanPrefix
+
 
 @Immutable
 @Entity
@@ -15,5 +16,6 @@ data class Artist(
     val bookmarkedAt: Long? = null,
     val isYoutubeArtist: Boolean = false,
 ) {
+
     fun cleanName() = cleanPrefix( this.name ?: "" )
 }

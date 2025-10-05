@@ -68,13 +68,13 @@ import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.innertube.toSong
 import app.kreate.android.utils.renderDescription
 import app.kreate.android.utils.scrollingText
+import app.kreate.database.models.Artist
+import app.kreate.database.models.Song
+import app.kreate.database.models.SongArtistMap
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
-import it.fast4x.rimusic.models.Artist
-import it.fast4x.rimusic.models.Song
-import it.fast4x.rimusic.models.SongArtistMap
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.Skeleton
 import it.fast4x.rimusic.ui.components.SwipeablePlaylistItem

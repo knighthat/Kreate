@@ -12,6 +12,9 @@ import app.kreate.android.R
 import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.DiscordLogger
 import app.kreate.android.utils.isLocalFile
+import app.kreate.database.models.Album
+import app.kreate.database.models.Artist
+import app.kreate.util.cleanPrefix
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
@@ -19,9 +22,6 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.cleanPrefix
-import it.fast4x.rimusic.models.Album
-import it.fast4x.rimusic.models.Artist
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.utils.thumbnail
 import kotlinx.coroutines.CoroutineScope

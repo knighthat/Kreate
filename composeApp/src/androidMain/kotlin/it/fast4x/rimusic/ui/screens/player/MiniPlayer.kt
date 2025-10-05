@@ -64,9 +64,9 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.utils.scrollingText
+import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BackgroundProgress
 import it.fast4x.rimusic.enums.MiniPlayerType

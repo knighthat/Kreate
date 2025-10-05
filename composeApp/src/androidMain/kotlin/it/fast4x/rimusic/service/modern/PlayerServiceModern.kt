@@ -63,6 +63,8 @@ import app.kreate.android.utils.centerCropToMatchScreenSize
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.widget.Widget
+import app.kreate.database.models.Event
+import app.kreate.database.models.Song
 import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.AndroidEntryPoint
 import it.fast4x.innertube.models.NavigationEndpoint
@@ -72,8 +74,6 @@ import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.PresetsReverb
 import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
-import it.fast4x.rimusic.models.Event
-import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.BitmapProvider
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.MyDownloadService

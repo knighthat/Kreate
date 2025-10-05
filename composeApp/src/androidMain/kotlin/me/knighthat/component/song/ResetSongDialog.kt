@@ -10,9 +10,9 @@ import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
 import app.kreate.android.di.PlayerModule
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
+import app.kreate.database.models.Song
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon

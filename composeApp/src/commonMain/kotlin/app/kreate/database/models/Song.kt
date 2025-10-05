@@ -1,12 +1,13 @@
-package it.fast4x.rimusic.models
+package app.kreate.database.models
 
 import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import it.fast4x.rimusic.cleanPrefix
-import it.fast4x.rimusic.utils.durationTextToMillis
-import it.fast4x.rimusic.utils.setLikeState
+import app.kreate.util.cleanPrefix
+import app.kreate.util.durationTextToMillis
 import kotlinx.serialization.Serializable
+import org.jetbrains.annotations.Contract
+
 
 @Serializable
 @Immutable
@@ -20,15 +21,6 @@ data class Song(
     val likedAt: Long? = null,
     val totalPlayTimeMs: Long = 0
 ) {
-    companion object {
-        fun makePlaceholder( id: String ) =
-            Song(
-                id = id,
-                title = "",
-                durationText = null,
-                thumbnailUrl = null
-            )
-    }
 
     val formattedTotalPlayTime: String
         get() {
@@ -43,19 +35,21 @@ data class Song(
             }
         }
 
-    fun toggleLike(): Song {
-        return copy(
-            //likedAt = if (likedAt == null) System.currentTimeMillis() else null
-            likedAt = setLikeState(likedAt)
-        )
-    }
+    @Contract("->new")
+    fun toggleLike(): Song = copy(
+        likedAt = when (likedAt) {
+            -1L -> null
+            null -> System.currentTimeMillis()
+            else -> -1L
+        }
+    )
 
     fun cleanTitle() = cleanPrefix( this.title )
 
     fun cleanArtistsText() = cleanPrefix( this.artistsText ?: "" )
 
     fun relativePlayTime(): Double {
-        val totalPlayTimeMs = durationTextToMillis(this.durationText ?: "")
+        val totalPlayTimeMs = durationTextToMillis( this.durationText ?: "" )
         return if(totalPlayTimeMs > 0) this.totalPlayTimeMs.toDouble() / totalPlayTimeMs.toDouble() else 0.0
     }
 }
