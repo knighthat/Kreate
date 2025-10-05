@@ -85,7 +85,6 @@ import it.fast4x.rimusic.utils.collect
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.getEnum
 import it.fast4x.rimusic.utils.intent
-import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isAtLeastAndroid7
 import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.mediaItems
@@ -601,8 +600,6 @@ class PlayerServiceModern:
     private var audioDeviceCallback: AudioDeviceCallback? = null
 
     private fun maybeResumePlaybackWhenDeviceConnected() {
-        if ( !isAtLeastAndroid6 ) return
-
         if ( Preferences.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE.value ) {
             if (audioManager == null)
                 audioManager = getSystemService( AUDIO_SERVICE ) as? AudioManager
@@ -1034,7 +1031,7 @@ class PlayerServiceModern:
                 appContext(),
                 100,
                 Intent(value).setPackage(appContext().packageName),
-                PendingIntent.FLAG_UPDATE_CURRENT.or(if (isAtLeastAndroid6) PendingIntent.FLAG_IMMUTABLE else 0)
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
         companion object {

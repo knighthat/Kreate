@@ -145,7 +145,7 @@ android {
 
     defaultConfig {
         applicationId = "me.knighthat.kreate"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 36
         versionCode = 123
         versionName = "1.8.3"
