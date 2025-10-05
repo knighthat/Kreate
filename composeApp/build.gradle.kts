@@ -99,6 +99,7 @@ kotlin {
 
             // Room KMP
             implementation( libs.room.runtime )
+            implementation( libs.room.sqlite.bundled )
 
             implementation(libs.navigation.kmp)
 
