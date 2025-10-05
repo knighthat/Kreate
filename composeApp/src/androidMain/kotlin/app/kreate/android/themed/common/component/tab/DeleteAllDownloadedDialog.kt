@@ -18,7 +18,7 @@ import androidx.compose.ui.util.fastMap
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.AbstractMediaDownloadDialog
-import it.fast4x.rimusic.models.Song
+import app.kreate.database.models.Song
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.typography

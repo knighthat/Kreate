@@ -7,11 +7,11 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
-import it.fast4x.rimusic.models.Album
-import it.fast4x.rimusic.models.Artist
-import it.fast4x.rimusic.models.Event
-import it.fast4x.rimusic.models.PlaylistPreview
-import it.fast4x.rimusic.models.Song
+import app.kreate.database.models.Album
+import app.kreate.database.models.Artist
+import app.kreate.database.models.Event
+import app.kreate.database.models.PlaylistPreview
+import app.kreate.database.models.Song
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.database.ext.EventWithSong
 

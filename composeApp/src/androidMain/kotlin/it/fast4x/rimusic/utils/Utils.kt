@@ -21,6 +21,12 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
+import app.kreate.database.models.Album
+import app.kreate.database.models.Artist
+import app.kreate.database.models.Lyrics
+import app.kreate.database.models.Song
+import app.kreate.util.EXPLICIT_PREFIX
+import app.kreate.util.cleanPrefix
 import com.zionhuang.innertube.pages.LibraryPage
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ClientRequestException
@@ -37,13 +43,7 @@ import it.fast4x.innertube.utils.getProxy
 import it.fast4x.kugou.KuGou
 import it.fast4x.lrclib.LrcLib
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.EXPLICIT_PREFIX
 import it.fast4x.rimusic.appContext
-import it.fast4x.rimusic.cleanPrefix
-import it.fast4x.rimusic.models.Album
-import it.fast4x.rimusic.models.Artist
-import it.fast4x.rimusic.models.Lyrics
-import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
 import it.fast4x.rimusic.service.modern.isLocal

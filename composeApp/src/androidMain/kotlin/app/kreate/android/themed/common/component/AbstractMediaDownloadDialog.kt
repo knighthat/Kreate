@@ -7,8 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import androidx.media3.common.util.UnstableApi
+import app.kreate.database.models.Song
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import me.knighthat.component.dialog.ConfirmDialog
 

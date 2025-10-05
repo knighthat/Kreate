@@ -4,7 +4,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper
 import app.kreate.android.service.DownloadHelper
-import it.fast4x.rimusic.models.Song
+import app.kreate.database.models.Song
 
 @UnstableApi
 object MyDownloadHelper {

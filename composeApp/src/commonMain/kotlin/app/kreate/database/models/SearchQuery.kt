@@ -1,9 +1,10 @@
-package it.fast4x.rimusic.models
+package app.kreate.database.models
 
 import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+
 
 @Immutable
 @Entity(
@@ -15,6 +16,7 @@ import androidx.room.PrimaryKey
     ]
 )
 data class SearchQuery(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val query: String
+    val query: String,
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0
 )

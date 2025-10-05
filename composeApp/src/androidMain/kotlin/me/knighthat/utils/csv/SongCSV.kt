@@ -1,7 +1,7 @@
 package me.knighthat.utils.csv
 
+import app.kreate.database.models.Song
 import com.github.doyaaaaaken.kotlincsv.client.ICsvFileWriter
-import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.utils.durationTextToMillis
 
 data class SongCSV(

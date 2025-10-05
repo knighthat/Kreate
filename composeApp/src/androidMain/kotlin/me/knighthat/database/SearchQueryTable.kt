@@ -7,7 +7,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
-import it.fast4x.rimusic.models.SearchQuery
+import app.kreate.database.models.SearchQuery
 import kotlinx.coroutines.flow.Flow
 
 @Dao
