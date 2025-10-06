@@ -28,8 +28,8 @@ import androidx.core.app.OnPictureInPictureModeChangedProvider
 import androidx.core.app.PictureInPictureModeChangedInfo
 import androidx.core.graphics.drawable.toIcon
 import androidx.core.graphics.toRect
+import app.kreate.AppIcon
 import app.kreate.android.Preferences
-import app.kreate.android.drawable.AppIcon
 import it.fast4x.compose.persist.findActivityNullable
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.utils.ActionReceiver

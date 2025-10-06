@@ -1,4 +1,4 @@
-package app.kreate.android.drawable
+package app.kreate
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -8,16 +8,18 @@ import android.graphics.drawable.BitmapDrawable
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withSave
+import app.kreate.AppIcon.Round.bitmap
+import app.kreate.AppIcon.bitmap
 import app.kreate.android.R
-import app.kreate.android.drawable.AppIcon.Round.bitmap
-import app.kreate.android.drawable.AppIcon.bitmap
+import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.utils.isAtLeastAndroid8
 
-
-object AppIcon {
+actual object AppIcon {
 
     private lateinit var _bitmap: Bitmap
 
@@ -32,13 +34,13 @@ object AppIcon {
         val bitmap: Bitmap
 
         if ( drawable is BitmapDrawable )
-            // This condition is `true` when rasterized image is used.
-            // This is applicable for older devices (mostly API 25-)
+        // This condition is `true` when rasterized image is used.
+        // This is applicable for older devices (mostly API 25-)
             bitmap = drawable.bitmap
         else {
             val size = (
                     size ?: minOf(drawable.intrinsicHeight, drawable.intrinsicWidth)
-            ).takeIf { it != -1 } ?: 108
+                    ).takeIf { it != -1 } ?: 108
             bitmap = createBitmap(size, size)
             val canvas = Canvas(bitmap)
 
@@ -117,7 +119,9 @@ object AppIcon {
      */
     fun imageBitmap( context: Context ): ImageBitmap = bitmap( context ).asImageBitmap()
 
-    object Round {
+    actual fun painter(): Painter = BitmapPainter( imageBitmap(appContext() ) )
+
+    actual object Round {
 
         private lateinit var _bitmap: Bitmap
 
@@ -163,5 +167,7 @@ object AppIcon {
          * Just like [bitmap], this component is **immutable**
          */
         fun imageBitmap( context: Context ): ImageBitmap = bitmap( context ).asImageBitmap()
+
+        actual fun rememberPainter(): Painter = BitmapPainter( imageBitmap(appContext() ) )
     }
 }

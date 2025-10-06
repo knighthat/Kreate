@@ -9,9 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.util.fastCoerceAtLeast
+import app.kreate.AppIcon
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.drawable.AppIcon
 import app.kreate.android.service.NetworkService
 import coil3.Image
 import coil3.ImageLoader
