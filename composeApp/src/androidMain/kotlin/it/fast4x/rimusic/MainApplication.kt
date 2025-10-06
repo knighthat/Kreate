@@ -1,6 +1,7 @@
 package it.fast4x.rimusic
 
 import android.app.Application
+import android.content.SharedPreferences
 import androidx.compose.runtime.getValue
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
@@ -11,13 +12,15 @@ import app.kreate.android.utils.logging.RollingFileLoggingTree
 import dagger.hilt.android.HiltAndroidApp
 import me.knighthat.innertube.Innertube
 import timber.log.Timber
+import javax.inject.Inject
 
 @HiltAndroidApp
 class MainApplication : Application() {
 
-    override fun onCreate() {
-        Preferences.load( this )
+    @Inject
+    lateinit var preferences: SharedPreferences
 
+    override fun onCreate() {
         super.onCreate()
         //DatabaseInitializer()
         Dependencies.init(this)

@@ -64,20 +64,12 @@ object CacheModule {
     @Provides
     @Singleton
     @Named("cache")
-    fun providesCache( @ApplicationContext context: Context ): Cache {
-        // This call should only run once
-        Preferences.load( context )
-
-        return initCache( context, Preferences.EXO_CACHE_SIZE, CACHE_DIRNAME )
-    }
+    fun providesCache( @ApplicationContext context: Context ): Cache =
+        initCache( context, Preferences.EXO_CACHE_SIZE, CACHE_DIRNAME )
 
     @Provides
     @Singleton
     @Named("downloadCache")
-    fun providesDownloadCache( @ApplicationContext context: Context ): Cache {
-        // This call should only run once
-        Preferences.load( context )
-
-        return initCache( context, Preferences.EXO_DOWNLOAD_SIZE, DOWNLOAD_CACHE_DIRNAME )
-    }
+    fun providesDownloadCache( @ApplicationContext context: Context ): Cache =
+        initCache( context, Preferences.EXO_DOWNLOAD_SIZE, DOWNLOAD_CACHE_DIRNAME )
 }
