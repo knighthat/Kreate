@@ -2,18 +2,23 @@ package it.fast4x.rimusic
 
 import android.app.Application
 import androidx.compose.runtime.getValue
+import app.kreate.Platform
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
-import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.innertube.InnertubeProvider
 import app.kreate.android.utils.CrashHandler
 import app.kreate.android.utils.logging.RollingFileLoggingTree
+import app.kreate.coil3.ImageFactory
 import dagger.hilt.android.HiltAndroidApp
 import me.knighthat.innertube.Innertube
 import timber.log.Timber
+import javax.inject.Inject
 
 @HiltAndroidApp
 class MainApplication : Application() {
+
+    @Inject
+    lateinit var imageFactoryProvider: ImageFactory.Provider
 
     override fun onCreate() {
         Preferences.load( this )
@@ -34,7 +39,7 @@ class MainApplication : Application() {
             Timber.plant( Timber.DebugTree() )
 
         Innertube.setProvider( InnertubeProvider() )
-        ImageFactory.init( this )
+        Platform.imageFactoryProvider = this.imageFactoryProvider
     }
 
     override fun onTerminate() {

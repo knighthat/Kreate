@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import app.kreate.android.Preferences
-import app.kreate.android.coil3.ImageFactory
+import app.kreate.coil3.ImageFactory
 
 abstract class Visual {
 
@@ -39,6 +39,7 @@ abstract class Visual {
     ) =
         ImageFactory.AsyncImage(
             thumbnailUrl = thumbnailUrl,
+            contentDescription = null,
             contentScale = contentScale,
             modifier = modifier.clip( thumbnailShape )
                                .fillMaxSize()

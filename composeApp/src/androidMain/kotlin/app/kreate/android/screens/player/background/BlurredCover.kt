@@ -25,7 +25,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import app.kreate.android.coil3.BlurTransformation
-import app.kreate.android.coil3.ImageFactory
+import app.kreate.coil3.ImageFactory
 import it.fast4x.rimusic.utils.isAtLeastAndroid12
 import me.knighthat.component.player.BlurAdjuster
 import kotlin.math.sqrt

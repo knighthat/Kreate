@@ -37,10 +37,13 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import app.kreate.AppIcon
+import app.kreate.Platform
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.coil3.ImageFactory
+import app.kreate.coil3.ImageFactory
 import coil3.request.allowHardware
+import coil3.request.bitmapConfig
+import coil3.toBitmap
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.extensions.nextvisualizer.painters.Painter
@@ -74,7 +77,6 @@ import it.fast4x.rimusic.utils.isCompositionLaunched
 import it.fast4x.rimusic.utils.resize
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.launch
-import me.knighthat.utils.Toaster
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -249,17 +251,15 @@ fun getVisualizers(): List<Painter> {
                                           ?.artworkUri
                                           .toString()
                                           .resize( 1200, 1200 )
-        ImageFactory.bitmap( thumbnailUrl ) {
-            allowHardware( false )
-        }.fold(
-            onSuccess = {
-                bitmapCover = it
-            },
-            onFailure = { err ->
-                err.printStackTrace()
-                err.message?.also( Toaster::e )
-            }
-        )
+
+        ImageFactory.requestBuilder( thumbnailUrl ) {
+                        bitmapConfig( Bitmap.Config.ARGB_8888 )
+                        allowHardware( false )
+                    }
+                    .let { Platform.imageFactoryProvider.imageLoader.execute( it ) }
+                    .image
+                    ?.toBitmap()
+                    ?.also { bitmapCover = it }
     }
 
     binder?.player?.DisposableListener {
@@ -270,17 +270,14 @@ fun getVisualizers(): List<Painter> {
                                                          ?.artworkUri
                                                          .toString()
                                                          .resize( 1200, 1200 )
-                    ImageFactory.bitmap( thumbnailUrl ) {
-                        allowHardware( false )
-                    }.fold(
-                        onSuccess = {
-                            bitmapCover = it
-                        },
-                        onFailure = { err ->
-                            err.printStackTrace()
-                            err.message?.also( Toaster::e )
-                        }
-                    )
+                    ImageFactory.requestBuilder( thumbnailUrl ) {
+                                    bitmapConfig( Bitmap.Config.ARGB_8888 )
+                                    allowHardware( false )
+                                }
+                                .let { Platform.imageFactoryProvider.imageLoader.execute( it ) }
+                                .image
+                                ?.toBitmap()
+                                ?.also { bitmapCover = it }
                 }
             }
         }
