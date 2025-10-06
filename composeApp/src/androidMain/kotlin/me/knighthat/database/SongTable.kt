@@ -245,8 +245,8 @@ interface SongTable {
      * This query updates the [Song.likedAt] column to
      * cycle through three values in a fixed rotation:
      *
-     * - `-1` to `0`
-     * - `0` to `1`
+     * - `-1` to `null`
+     * - `null` to [System.currentTimeMillis]
      * - `1` to `-1`
      *
      * @param songId of song to be updated
@@ -257,9 +257,8 @@ interface SongTable {
         SET likedAt = 
             CASE  
                 WHEN likedAt = -1 THEN NULL
-                WHEN likedAt IS NULL THEN 1  
-                WHEN likedAt = 1 THEN -1  
-                ELSE likedAt  
+                WHEN likedAt IS NULL THEN strftime('%s','now') * 1000
+                ELSE -1
             END  
         WHERE id = :songId
     """)
