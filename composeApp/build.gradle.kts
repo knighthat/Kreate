@@ -281,7 +281,7 @@ compose.desktop {
 
         //conveyor
         version = "0.0.1"
-        group = "rimusic"
+        group = "me.knighthat.kreate"
 
         //jpackage
         nativeDistributions {
