@@ -724,9 +724,9 @@ fun Lyrics(
                                             },
                                             singleLine = true,
                                             colors = textFieldColors,
-                                            modifier = Modifier
-                                                .padding(horizontal = 6.dp)
-                                                .weight(1f)
+                                            modifier = Modifier.background( colorPalette().background1 )
+                                                               .padding( horizontal = 6.dp )
+                                                               .weight( 1f )
                                         )
                                         TextField(
                                             value = artistName,
@@ -735,9 +735,9 @@ fun Lyrics(
                                             },
                                             singleLine = true,
                                             colors = textFieldColors,
-                                            modifier = Modifier
-                                                .padding(horizontal = 6.dp)
-                                                .weight(1f)
+                                            modifier = Modifier.background( colorPalette().background1 )
+                                                               .padding( horizontal = 6.dp )
+                                                               .weight( 1f )
                                         )
                                         IconButton(
                                             icon = R.drawable.search,
