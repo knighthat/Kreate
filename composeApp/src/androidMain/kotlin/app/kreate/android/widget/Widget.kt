@@ -29,8 +29,8 @@ import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.text.Text
 import androidx.media3.common.util.UnstableApi
+import app.kreate.AppIcon
 import app.kreate.android.R
-import app.kreate.android.drawable.AppIcon
 import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.cleanPrefix
 import java.io.File
