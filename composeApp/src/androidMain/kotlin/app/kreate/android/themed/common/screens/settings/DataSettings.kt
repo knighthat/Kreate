@@ -23,10 +23,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
+import app.kreate.Platform
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.themed.common.component.settings.RestartPlayerService
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
@@ -142,7 +142,7 @@ fun DataSettings( paddingValues: PaddingValues ) {
                 subtitle = { stringResource( R.string.cache_cleared ) }
             )
             entry( search, R.string.image_cache_max_size ) {
-                ImageFactory.diskCache.let { cache ->
+                Platform.imageFactoryProvider.diskCache.let { cache ->
                     val indicator = remember( cache ) {
                         ImageCacheIndicator( cache )
                     }

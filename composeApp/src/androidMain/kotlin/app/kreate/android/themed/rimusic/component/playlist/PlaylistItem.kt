@@ -1,6 +1,5 @@
 package app.kreate.android.themed.rimusic.component.playlist
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -26,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -38,12 +36,12 @@ import androidx.compose.ui.util.fastJoinToString
 import androidx.compose.ui.util.fastZip
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
-import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.enums.PlatformIndicatorType
 import app.kreate.android.themed.rimusic.component.MultiplatformItem
 import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.ItemUtils
 import app.kreate.android.utils.scrollingText
+import app.kreate.coil3.ImageFactory
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.NavRoutes
@@ -195,16 +193,9 @@ object PlaylistItem: Visual(), MultiplatformItem {
                     Modifier.size( width, height )
                 }
 
-                if( thumbnailUrls.isEmpty() )
-                    Image(
-                        bitmap = ImageFactory.errorPlaceholder.asImageBitmap(),
-                        contentDescription = null,
-                        contentScale = ContentScale.FillHeight,
-                        modifier = indvModifier
-                    )
-                else if( thumbnailUrls.size < 4 )
+                if( thumbnailUrls.size < 4 )
                     ImageFactory.AsyncImage(
-                        thumbnailUrl = if( useRandom ) thumbnailUrls.random() else thumbnailUrls.first(),
+                        thumbnailUrl = if( thumbnailUrls.isNotEmpty() && useRandom ) thumbnailUrls.random() else thumbnailUrls.firstOrNull(),
                         contentScale = ContentScale.FillHeight,
                         modifier = indvModifier
                     )

@@ -6,14 +6,15 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.media3.common.util.BitmapLoader
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.coil3.ImageFactory
+import app.kreate.Platform
+import app.kreate.coil3.ImageFactory
 import coil3.request.allowHardware
 import coil3.request.bitmapConfig
+import coil3.toBitmap
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.guava.future
-import me.knighthat.utils.Toaster
 
 @UnstableApi
 class CoilBitmapLoader(
@@ -30,13 +31,13 @@ class CoilBitmapLoader(
 
     override fun loadBitmap(uri: Uri): ListenableFuture<Bitmap> =
         scope.future(Dispatchers.IO) {
-            ImageFactory.bitmap( uri.toString() ) {
-                bitmapConfig( Bitmap.Config.ARGB_8888 )
-                allowHardware( false )
-                size( bitmapSize )
-            }.onFailure { err ->
-                err.printStackTrace()
-                err.message?.also(Toaster::e )
-            }.getOrThrow()
+            ImageFactory.requestBuilder( uri.toString() ) {
+                            bitmapConfig( Bitmap.Config.ARGB_8888 )
+                            allowHardware( false )
+                            size( bitmapSize )
+                        }
+                        .let { Platform.imageFactoryProvider.imageLoader.execute( it ) }
+                        .image!!
+                        .toBitmap()
         }
 }

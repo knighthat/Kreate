@@ -7,13 +7,14 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import androidx.compose.runtime.getValue
 import androidx.core.content.getSystemService
+import app.kreate.Platform
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
-import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.innertube.InnertubeProvider
 import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.CrashHandler
 import app.kreate.android.utils.logging.RollingFileLoggingTree
+import app.kreate.coil3.ImageFactory
 import dagger.hilt.android.HiltAndroidApp
 import me.knighthat.innertube.Innertube
 import timber.log.Timber
@@ -29,6 +30,9 @@ class MainApplication : Application() {
     @Inject
     @Named("private")
     lateinit var encryptedPreferences: SharedPreferences
+
+    @Inject
+    lateinit var imageFactoryProvider: ImageFactory.Provider
 
     override fun onCreate() {
         super.onCreate()
@@ -50,7 +54,7 @@ class MainApplication : Application() {
             Timber.plant( Timber.DebugTree() )
 
         Innertube.setProvider( InnertubeProvider() )
-        ImageFactory.init( this )
+        Platform.imageFactoryProvider = this.imageFactoryProvider
 
         // Register network callback
         getSystemService<ConnectivityManager>()?.run {

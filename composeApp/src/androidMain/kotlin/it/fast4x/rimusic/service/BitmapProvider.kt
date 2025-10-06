@@ -5,7 +5,8 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.core.graphics.applyCanvas
-import app.kreate.android.coil3.ImageFactory
+import app.kreate.Platform
+import app.kreate.coil3.ImageFactory
 import coil3.request.Disposable
 import coil3.request.allowHardware
 import coil3.toBitmap
@@ -87,7 +88,7 @@ class BitmapProvider(
                         //listener?.invoke(lastBitmap)
                     }
                 )
-            }.let(ImageFactory.imageLoader::enqueue )
+            }.let( Platform.imageFactoryProvider.imageLoader::enqueue )
         }.onFailure {
             Timber.e("Failed enqueue in BitmapProvider ${it.stackTraceToString()}")
         }

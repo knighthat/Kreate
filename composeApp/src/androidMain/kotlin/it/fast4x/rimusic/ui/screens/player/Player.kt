@@ -1,6 +1,7 @@
 package it.fast4x.rimusic.ui.screens.player
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.graphics.RenderEffect
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
@@ -117,12 +118,15 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import androidx.palette.graphics.Palette
 import app.kreate.AppIcon
+import app.kreate.Platform
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.screens.player.background.BlurredCover
 import app.kreate.android.themed.rimusic.screen.player.ActionBar
+import app.kreate.coil3.ImageFactory
 import coil3.request.allowHardware
+import coil3.request.bitmapConfig
+import coil3.toBitmap
 import com.mikepenz.hypnoticcanvas.shaderBackground
 import com.mikepenz.hypnoticcanvas.shaders.BlackCherryCosmos
 import com.mikepenz.hypnoticcanvas.shaders.GlossyGradients
@@ -643,25 +647,30 @@ fun Player(
                                               ?.artworkUri
                                               .toString()
                                               .resize( 1200, 1200 )
-            ImageFactory.bitmap( thumbnailUrl ) {
-                allowHardware( false )
-            }.onSuccess { bitmap ->
-                dynamicColorPalette = dynamicColorPaletteOf(
-                    bitmap,
-                    !lightTheme
-                ) ?: color
-                println("Player INSIDE getting dynamic color $dynamicColorPalette")
+            ImageFactory.requestBuilder( thumbnailUrl ) {
+                            bitmapConfig( Bitmap.Config.ARGB_8888 )
+                            allowHardware( false )
+                        }
+                        .let { Platform.imageFactoryProvider.imageLoader.execute( it ) }
+                        .image
+                        ?.toBitmap()
+                        ?.also { bitmap ->
+                            dynamicColorPalette = dynamicColorPaletteOf(
+                                bitmap,
+                                !lightTheme
+                            ) ?: color
+                            println("Player INSIDE getting dynamic color $dynamicColorPalette")
 
-                val palette = Palette.from(bitmap).generate()
+                            val palette = Palette.from(bitmap).generate()
 
-                dominant = palette.getDominantColor( dynamicColorPalette.accent.toArgb() )
-                vibrant = palette.getVibrantColor( dynamicColorPalette.accent.toArgb() )
-                lightVibrant = palette.getLightVibrantColor( dynamicColorPalette.accent.toArgb() )
-                darkVibrant = palette.getDarkVibrantColor( dynamicColorPalette.accent.toArgb() )
-                muted = palette.getMutedColor( dynamicColorPalette.accent.toArgb() )
-                lightMuted = palette.getLightMutedColor( dynamicColorPalette.accent.toArgb() )
-                darkMuted = palette.getDarkMutedColor( dynamicColorPalette.accent.toArgb() )
-            }
+                            dominant = palette.getDominantColor( dynamicColorPalette.accent.toArgb() )
+                            vibrant = palette.getVibrantColor( dynamicColorPalette.accent.toArgb() )
+                            lightVibrant = palette.getLightVibrantColor( dynamicColorPalette.accent.toArgb() )
+                            darkVibrant = palette.getDarkVibrantColor( dynamicColorPalette.accent.toArgb() )
+                            muted = palette.getMutedColor( dynamicColorPalette.accent.toArgb() )
+                            lightMuted = palette.getLightMutedColor( dynamicColorPalette.accent.toArgb() )
+                            darkMuted = palette.getDarkMutedColor( dynamicColorPalette.accent.toArgb() )
+                        }
         }
         println("Player after getting dynamic color $dynamicColorPalette")
     }

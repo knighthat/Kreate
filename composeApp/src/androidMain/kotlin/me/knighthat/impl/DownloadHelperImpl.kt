@@ -16,8 +16,8 @@ import androidx.media3.exoplayer.offline.DownloadNotificationHelper
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.scheduler.Requirements
 import app.kreate.android.Preferences
-import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.DownloadHelper
+import app.kreate.coil3.ImageFactory
 import coil3.request.allowHardware
 import coil3.request.bitmapConfig
 import dagger.hilt.android.qualifiers.ApplicationContext
