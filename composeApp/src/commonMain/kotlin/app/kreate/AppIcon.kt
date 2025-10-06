@@ -9,6 +9,6 @@ expect object AppIcon {
 
     object Round {
 
-        fun rememberPainter(): Painter
+        fun painter(): Painter
     }
 }

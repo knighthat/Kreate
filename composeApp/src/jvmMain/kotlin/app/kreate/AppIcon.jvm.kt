@@ -10,7 +10,7 @@ actual object AppIcon {
 
     actual object Round {
 
-        actual fun rememberPainter(): Painter {
+        actual fun painter(): Painter {
             TODO("Not yet implemented")
         }
     }

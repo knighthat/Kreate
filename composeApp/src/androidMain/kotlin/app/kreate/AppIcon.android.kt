@@ -168,6 +168,6 @@ actual object AppIcon {
          */
         fun imageBitmap( context: Context ): ImageBitmap = bitmap( context ).asImageBitmap()
 
-        actual fun rememberPainter(): Painter = BitmapPainter( imageBitmap(appContext() ) )
+        actual fun painter(): Painter = BitmapPainter( imageBitmap(appContext() ) )
     }
 }
