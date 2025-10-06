@@ -1,8 +1,8 @@
 package app.kreate.android.di
 
 import android.content.Context
-import androidx.media3.exoplayer.ExoPlayer
-import app.kreate.android.service.player.VolumeObserver
+import android.content.SharedPreferences
+import app.kreate.android.Preferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,12 +13,12 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AudioModule {
+object PreferenceModule {
 
     @Provides
     @Singleton
-    fun providesVolumeObserver(
-        @ApplicationContext context: Context,
-        player: ExoPlayer
-    ): VolumeObserver = VolumeObserver(context, player)
+    fun provideSharedPreferences( @ApplicationContext context: Context ): SharedPreferences {
+        Preferences.load( context )
+        return Preferences.preferences
+    }
 }

@@ -1,6 +1,7 @@
 package it.fast4x.rimusic
 
 import android.app.Application
+import android.content.SharedPreferences
 import androidx.compose.runtime.getValue
 import app.kreate.Platform
 import app.kreate.android.BuildConfig
@@ -18,11 +19,12 @@ import javax.inject.Inject
 class MainApplication : Application() {
 
     @Inject
+    lateinit var preferences: SharedPreferences
+
+    @Inject
     lateinit var imageFactoryProvider: ImageFactory.Provider
 
     override fun onCreate() {
-        Preferences.load( this )
-
         super.onCreate()
         //DatabaseInitializer()
         Dependencies.init(this)
