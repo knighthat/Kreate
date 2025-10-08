@@ -167,13 +167,6 @@ android {
         buildConfigField( "String", "APP_NAME", "\"$APP_NAME\"" )
     }
 
-    splits {
-        abi {
-            reset()
-            isUniversalApk = true
-        }
-    }
-
     namespace = "app.kreate.android"
 
     buildTypes {
@@ -221,27 +214,62 @@ android {
         }
     }
 
-    flavorDimensions += listOf( "platform" )
+    flavorDimensions += listOf( "platform", "arch" )
     productFlavors {
+        //<editor-fold desc="Platforms">
         create("github") {
             dimension = "platform"
 
             isDefault = true
         }
-
         create( "fdroid" ) {
             dimension = "platform"
 
             // App's properties
             versionNameSuffix = "-fdroid"
         }
-
         create( "izzy" ) {
             dimension = "platform"
 
             // App's properties
             versionNameSuffix = "-izzy"
         }
+        //</editor-fold>
+        //<editor-fold desc="Architectures">
+        create("universal") {
+            dimension = "arch"
+
+            isDefault = true
+
+            // Build architecture
+            buildConfigField( "String", "ARCH", "\"$name\"" )
+        }
+        create("arm64") {
+            dimension = "arch"
+
+            // Build architecture
+            ndk { abiFilters += "arm64-v8a" }
+            buildConfigField( "String", "ARCH", "\"$name\"" )
+        }
+        create("arm32") {
+            dimension = "arch"
+            ndk { abiFilters += "armeabi-v7a" }
+            buildConfigField( "String", "ARCH", "\"$name\"" )
+        }
+        create("x86") {
+            dimension = "arch"
+
+            ndk { abiFilters += "x86" }
+            buildConfigField( "String", "ARCH", "\"$name\"" )
+        }
+        create("x86_64") {
+            dimension = "arch"
+
+            // Build architecture
+            ndk { abiFilters += "x86_64" }
+            buildConfigField( "String", "ARCH", "\"$name\" ")
+        }
+        //</editor-fold>
     }
 
     applicationVariants.all {
