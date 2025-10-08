@@ -221,23 +221,23 @@ android {
         }
     }
 
-    flavorDimensions += listOf( "prod" )
+    flavorDimensions += listOf( "platform" )
     productFlavors {
         create("github") {
-            dimension = "prod"
+            dimension = "platform"
 
             isDefault = true
         }
 
         create( "fdroid" ) {
-            dimension = "prod"
+            dimension = "platform"
 
             // App's properties
             versionNameSuffix = "-fdroid"
         }
 
         create( "izzy" ) {
-            dimension = "prod"
+            dimension = "platform"
 
             // App's properties
             versionNameSuffix = "-izzy"
