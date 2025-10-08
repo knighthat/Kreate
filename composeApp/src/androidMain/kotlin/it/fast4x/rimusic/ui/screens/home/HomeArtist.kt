@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapNotNull
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
@@ -121,8 +122,10 @@ fun HomeArtists(
 
     var itemsOnDisplay by persistList<Artist>( "home/artists/on_display" )
     val onlineOnDisplay by remember {derivedStateOf {
-        onlineArtists.fastFilter { filterBy === FilterBy.All || filterBy === FilterBy.YoutubeLibrary }
-                       .fastFilter { search appearsIn it.name }
+        val localIds = itemsOnDisplay.fastMap( Artist::id )
+        onlineArtists.fastFilter { it.id !in localIds  }
+                     .fastFilter { filterBy === FilterBy.All || filterBy === FilterBy.YoutubeLibrary }
+                     .fastFilter { search appearsIn it.name }
     }}
 
 
