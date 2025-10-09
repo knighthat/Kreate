@@ -11,36 +11,6 @@
             android:action="it.fast4x.rimusic.action.search" />
     </shortcut>
     <shortcut
-        android:shortcutId="albums"
-        android:enabled="true"
-        android:icon="@drawable/alternative_version"
-        android:shortcutShortLabel="@string/albums">
-        <intent
-            android:targetClass="it.fast4x.rimusic.MainActivity"
-            android:targetPackage="me.knighthat.kreate.debug"
-            android:action="it.fast4x.rimusic.action.albums" />
-    </shortcut>
-    <shortcut
-            android:shortcutId="artists"
-            android:enabled="true"
-            android:icon="@drawable/people"
-            android:shortcutShortLabel="@string/artists">
-        <intent
-                android:targetClass="it.fast4x.rimusic.MainActivity"
-                android:targetPackage="me.knighthat.kreate.debug"
-                android:action="it.fast4x.rimusic.action.artists" />
-    </shortcut>
-    <shortcut
-        android:shortcutId="library"
-        android:enabled="true"
-        android:icon="@drawable/playlist"
-        android:shortcutShortLabel="@string/playlists">
-        <intent
-            android:targetClass="it.fast4x.rimusic.MainActivity"
-            android:targetPackage="me.knighthat.kreate.debug"
-            android:action="it.fast4x.rimusic.action.library" />
-    </shortcut>
-    <shortcut
         android:shortcutId="crashlog"
         android:enabled="true"
         android:icon="@drawable/copy"
