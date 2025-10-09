@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">%s içinde olup biten her şey günlüğe kaydediliyor</string>
     <string name="copy_log_to_clipboard">Günlüğü panoya kopyala</string>
     <string name="fake_audio_bar">Sahte Ses Çubuğu</string>
-    <string name="copy_crash_log_to_clipboard">Çökme günlüğünü panoya kopyala</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">YEDEKLEME VE GERİ YÜKLEME</string>
     <string name="message_excluded_s_songs">%s şarkı hariç tutuldu</string>
     <string name="show_thumbnail">Küçük resmi göster</string>

@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Zkopírovat log do schránky</string>
     <string name="fake_audio_bar">Falešná lišta zvuku</string>
-    <string name="copy_crash_log_to_clipboard">Zkopírovat log pádu do schránky</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">ZÁLOHA A OBNOVENÍ</string>
     <string name="message_excluded_s_songs">Vyloučeno %s skladeb</string>
     <string name="show_thumbnail">Zobrazit miniaturu</string>

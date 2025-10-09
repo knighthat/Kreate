@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Copiar o registro para a área de transferência</string>
     <string name="fake_audio_bar">Barra falsa de áudio</string>
-    <string name="copy_crash_log_to_clipboard">Copiar log de erro para área de transferência</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">BACKUP E RESTAURAR</string>
     <string name="message_excluded_s_songs">%s Músicas excluídas</string>
     <string name="show_thumbnail">Mostrar miniaturas</string>

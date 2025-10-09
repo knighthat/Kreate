@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Скопіювати журнал до буфера обміну</string>
     <string name="fake_audio_bar">Фальшивий аудіо таймлайн</string>
-    <string name="copy_crash_log_to_clipboard">Скопіювати аварійний журнал до буфера обміну</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">РЕЗЕРВНЕ КОПІЮВАННЯ ТА ВІДНОВЛЕННЯ</string>
     <string name="message_excluded_s_songs">Виключено %s пісень</string>
     <string name="show_thumbnail">Показати мініатюри</string>

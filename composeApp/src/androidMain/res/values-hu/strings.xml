@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Napló másolása a vágólapra</string>
     <string name="fake_audio_bar">Hamis hangsáv</string>
-    <string name="copy_crash_log_to_clipboard">Összeomlási napló másolása a vágólapra</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">BIZTONSÁGI MENTÉS ÉS VISSZAÁLLÍTÁS</string>
     <string name="message_excluded_s_songs">Kizárt %s dalok</string>
     <string name="show_thumbnail">Miniatűr megjelenítése</string>

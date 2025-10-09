@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Kopeeri logi lõikelauale</string>
     <string name="fake_audio_bar">Võlts heliriba</string>
-    <string name="copy_crash_log_to_clipboard">Kopeeri kokku jooksmise logi lõikelauale</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">VARUKOOPIAD JA TAASTAMINE</string>
     <string name="message_excluded_s_songs">Välja arvatud %s laulu(d)</string>
     <string name="show_thumbnail">Kuva pisipilt</string>

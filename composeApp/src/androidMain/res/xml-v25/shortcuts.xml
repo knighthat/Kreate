@@ -16,8 +16,8 @@
         android:icon="@drawable/copy"
         android:shortcutShortLabel="@string/copy_crash_log_to_clipboard">
         <intent
-            android:targetClass="it.fast4x.rimusic.MainActivity"
+            android:targetClass="app.kreate.android.CopyCrashlogActivity"
             android:targetPackage="me.knighthat.kreate"
-            android:action="it.fast4x.rimusic.action.copy_crash_log" />
+            android:action="COPY_CRASH_LOG" />
     </shortcut>
 </shortcuts>

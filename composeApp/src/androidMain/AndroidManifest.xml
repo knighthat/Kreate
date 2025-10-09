@@ -144,6 +144,10 @@
             <meta-data android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
+        <activity
+                android:name=".CopyCrashlogActivity"
+                android:theme="@style/Theme.RiMusic"
+                android:exported="true" />
 
         <receiver android:name=".widget.VerticalWidgetReceiver"
             android:exported="true">

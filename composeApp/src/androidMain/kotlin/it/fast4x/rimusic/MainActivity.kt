@@ -162,7 +162,8 @@ import kotlin.system.exitProcess
 
 @AndroidEntryPoint
 @UnstableApi
-class MainActivity :
+class
+MainActivity :
 //MonetCompatActivity(),
     AppCompatActivity(),
     MonetColorsChangedListener

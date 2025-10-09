@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">所有日誌都會儲存在 %s</string>
     <string name="copy_log_to_clipboard">將記錄複製到剪貼簿</string>
     <string name="fake_audio_bar">Fake Audio Bar</string>
-    <string name="copy_crash_log_to_clipboard">將崩潰記錄複製到剪貼簿</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">備份與還原</string>
     <string name="message_excluded_s_songs">排除 %s 歌曲</string>
     <string name="show_thumbnail">顯示縮圖</string>

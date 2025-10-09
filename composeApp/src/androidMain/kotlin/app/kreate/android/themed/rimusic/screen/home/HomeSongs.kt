@@ -81,6 +81,7 @@ import kotlinx.coroutines.flow.onEach
 import me.knighthat.component.tab.ExportSongsToCSVDialog
 import me.knighthat.component.tab.HiddenSongs
 import me.knighthat.database.ext.FormatWithSong
+import okio.IOException
 
 @UnstableApi
 @ExperimentalFoundationApi
@@ -331,6 +332,7 @@ fun HomeSongs(
                         }
                     },
                     onClick = {
+                        throw IOException()
                         search.hideIfEmpty()
 
                         binder?.stopRadio()

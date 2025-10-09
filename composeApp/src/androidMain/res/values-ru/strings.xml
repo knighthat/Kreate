@@ -439,7 +439,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Скопировать логи в буфер обмена</string>
     <string name="fake_audio_bar">\"Фальшивая\" вейвформа</string>
-    <string name="copy_crash_log_to_clipboard">Скопировать логи сбоев в буфер обмена</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">РЕЗЕРВНОЕ КОПИРОВАНИЕ И ВОССТАНОВЛЕНИЕ</string>
     <string name="message_excluded_s_songs">Исключено %s песен</string>
     <string name="show_thumbnail">Показывать превью</string>

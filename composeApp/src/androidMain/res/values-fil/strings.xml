@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Kopyahin ang log sa clipboard</string>
     <string name="fake_audio_bar">Peke na Waveform</string>
-    <string name="copy_crash_log_to_clipboard">Kopyahin ang crash log sa clipboard</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">I-BACKUP AT RESTORE</string>
     <string name="message_excluded_s_songs">Excluded %s songs</string>
     <string name="show_thumbnail">Ipakita ang thumbnail</string>
