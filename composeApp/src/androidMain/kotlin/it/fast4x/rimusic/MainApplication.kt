@@ -28,7 +28,7 @@ class MainApplication : Application() {
         val fileCount by Preferences.RUNTIME_LOG_FILE_COUNT
         val maxSizePerFile by Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE
         if( isRuntimeLogEnabled && fileCount > 0 && maxSizePerFile > 0 )
-            Timber.plant( RollingFileLoggingTree(cacheDir, fileCount, maxSizePerFile) )
+            Timber.plant( RollingFileLoggingTree(this, fileCount, maxSizePerFile) )
 
         if( BuildConfig.DEBUG || (isRuntimeLogEnabled && Preferences.RUNTIME_LOG_SHARED.value) )
             Timber.plant( Timber.DebugTree() )

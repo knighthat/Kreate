@@ -23,8 +23,16 @@ class CrashHandler(
         // Also captures the date & time
         val fileNameRegex = Regex("^${BuildConfig.APP_NAME}_crashlog_(\\d{4}-\\d{2}-\\d{2}_[0-2]\\d-[0-5]\\d-[0-5]\\d).log$")
 
-        fun getDir( context: Context ): File =
-            context.filesDir.resolve( "crashlogs" )
+        fun getDir( context: Context ): File {
+            val dir = requireNotNull(
+                context.getExternalFilesDir( "crashlogs" )
+            ) { "Failed to get crashlogs directory!" }
+
+            if( !dir.canWrite() )
+                dir.setWritable( true )
+
+            return dir
+        }
     }
 
     /**

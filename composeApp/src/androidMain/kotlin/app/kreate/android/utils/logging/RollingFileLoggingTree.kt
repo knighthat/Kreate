@@ -1,5 +1,6 @@
 package app.kreate.android.utils.logging
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.ui.util.fastForEach
 import app.kreate.android.Preferences
@@ -14,7 +15,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 
 class RollingFileLoggingTree(
-    cacheDir: File,
+    private val context: Context,
     private val fileCount: Int,
     private val maxSizePerFile: Long
 ): Timber.DebugTree(), Closeable {
@@ -30,6 +31,20 @@ class RollingFileLoggingTree(
         )
         private val timestampFormat: DateTimeFormatter = DateTimeFormatter.ofPattern( "HH:mm:ss" )
 
+        fun getDir( context: Context): File {
+            val extCacheDir = requireNotNull( context.externalCacheDir ) {
+                "Can't get/create external cache directory!"
+            }
+            val dir = extCacheDir.resolve( "logs" )
+
+            if( !dir.exists() )
+                dir.mkdir()
+            if( !dir.canWrite() )
+                dir.setWritable( true )
+
+            return dir
+        }
+
         fun getLogFiles( logDir: File, fileNameFormat: DateFormat ): Array<out File> =
             logDir.listFiles {
                 try {
@@ -41,7 +56,7 @@ class RollingFileLoggingTree(
             }.orEmpty()
     }
 
-    private val logDir: File = cacheDir.resolve( "logs" )
+    private val logDir: File = getDir( context )
 
     @Volatile
     private var logFile: File

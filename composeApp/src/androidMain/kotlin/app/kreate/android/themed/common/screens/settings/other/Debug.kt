@@ -195,7 +195,7 @@ fun LazyListScope.debugSection(search: SettingEntrySearch ) {
                     )
                 }
 
-                val logDir = context.cacheDir.resolve("logs")
+                val logDir = RollingFileLoggingTree.getDir( context )
                 if( search appearsIn R.string.setting_entry_runtime_log
                     && logDir.exists()
                     && logDir.isDirectory
