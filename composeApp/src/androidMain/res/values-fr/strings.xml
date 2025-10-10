@@ -440,7 +440,7 @@
     <string name="setting_description_runtime_log">Enregistrement de tout ce qui se passe dans %s</string>
     <string name="copy_log_to_clipboard">Copier les journaux dans le presse-papiers</string>
     <string name="fake_audio_bar">Fausse barre audio</string>
-    <string name="copy_crash_log_to_clipboard">Copier le journal des plantages dans le presse-papiers</string>
+    <string name="copy_crash_log_to_clipboard">Copier le journal de plantages</string>
     <string name="title_backup_and_restore">SAUVEGARDE ET RESTAURATION</string>
     <string name="message_excluded_s_songs">Titres %s exclus</string>
     <string name="show_thumbnail">Afficher la pochette d\'album</string>
