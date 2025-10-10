@@ -21,7 +21,6 @@ import app.kreate.database.models.Song
 import app.kreate.database.models.SongAlbumMap
 import app.kreate.database.models.SongArtistMap
 import app.kreate.database.models.SongPlaylistMap
-import app.kreate.util.EXPLICIT_PREFIX
 import it.fast4x.rimusic.Database.asyncQuery
 import it.fast4x.rimusic.Database.asyncTransaction
 import it.fast4x.rimusic.Database.insertIgnore
@@ -53,6 +52,7 @@ import me.knighthat.database.migration.From24To25Migration
 import me.knighthat.database.migration.From25To26Migration
 import me.knighthat.database.migration.From26To27Migration
 import me.knighthat.database.migration.From27To28Migration
+import me.knighthat.database.migration.From28to29
 import me.knighthat.database.migration.From3To4Migration
 import me.knighthat.database.migration.From7To8Migration
 import me.knighthat.database.migration.From8To9Migration
@@ -135,13 +135,14 @@ object Database {
             id = innertubeSong.id,
             title = PropUtils.retainIfModified(
                 dbSong?.title,
-                "%s%s".format( if( innertubeSong.isExplicit ) EXPLICIT_PREFIX else "", innertubeSong.name )
+                innertubeSong.name
             ).orEmpty(),
             artistsText = PropUtils.retainIfModified( dbSong?.artistsText, innertubeSong.artistsText ),
             durationText = innertubeSong.durationText,       // Force update to new duration text
             thumbnailUrl = PropUtils.retainIfModified( dbSong?.thumbnailUrl, innertubeSong.thumbnails.firstOrNull()?.url ),
             likedAt = dbSong?.likedAt,
-            totalPlayTimeMs = dbSong?.totalPlayTimeMs ?: 0
+            totalPlayTimeMs = dbSong?.totalPlayTimeMs ?: 0,
+            isExplicit = innertubeSong.isExplicit
         ))
         //</editor-fold>
 
@@ -358,7 +359,7 @@ object Database {
     views = [
         SortedSongPlaylistMap::class
     ],
-    version = 28,
+    version = 29,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -412,7 +413,8 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
                     From24To25Migration(),
                     From25To26Migration(),
                     From26To27Migration(),
-                    From27To28Migration()
+                    From27To28Migration(),
+                    From28to29()
                 )
                 .build()
         }

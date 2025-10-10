@@ -61,6 +61,10 @@ import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistSongsSort
 import app.kreate.android.themed.rimusic.component.playlist.PositionLock
 import app.kreate.android.themed.rimusic.component.song.SongItem
+import app.kreate.database.models.Song
+import app.kreate.database.models.SongPlaylistMap
+import app.kreate.util.MONTHLY_PREFIX
+import app.kreate.util.cleanPrefix
 import com.github.doyaaaaaken.kotlincsv.client.KotlinCsvExperimental
 import it.fast4x.compose.persist.persistList
 import it.fast4x.compose.reordering.draggedItem
@@ -70,16 +74,11 @@ import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.NextBody
 import it.fast4x.innertube.requests.relatedSongs
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.EXPLICIT_PREFIX
 import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.MONTHLY_PREFIX
-import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.PlaylistSongSortBy
 import it.fast4x.rimusic.enums.UiType
-import it.fast4x.rimusic.models.Song
-import it.fast4x.rimusic.models.SongPlaylistMap
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.typography
@@ -345,18 +344,15 @@ fun LocalPlaylistSongs(
                  ?.take( recommendationsNumber.toInt() )
                  ?.associate { songItem ->
                      with( songItem ) {
-                         // Do NOT use [Utils#Innertube.SongItem.asSong]
-                         // It doesn't have explicit prefix
-                         val prefix = if( explicit ) EXPLICIT_PREFIX else ""
-
                          Song(
                              // Song's ID & title must not be "null". If they are,
                              // Something is wrong with Innertube.
-                             id = "$prefix${info!!.endpoint!!.videoId!!}",
+                             id = info!!.endpoint!!.videoId!!,
                              title = info!!.name!!,
                              artistsText = authors?.joinToString { author -> author.name ?: "" },
                              durationText = durationText,
-                             thumbnailUrl = thumbnail?.url
+                             thumbnailUrl = thumbnail?.url,
+                             isExplicit = explicit
                          ) to (0..items.size).random()      // Map this song with a random position from [items]
                      }
                  }
@@ -379,7 +375,7 @@ fun LocalPlaylistSongs(
                  }
              }
              .distinctBy( Song::id )
-             .filter { !parentalControlEnabled || !it.title.startsWith( EXPLICIT_PREFIX ) }
+             .filter { !parentalControlEnabled || !it.isExplicit }
              .filter { song ->
                  // Without cleaning, user can search explicit songs with "e:"
                  // I kinda want this to be a feature, but it seems unnecessary

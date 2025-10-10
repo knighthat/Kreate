@@ -52,7 +52,6 @@ import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.innertube.toSong
 import app.kreate.android.utils.scrollingText
 import app.kreate.database.models.Song
-import app.kreate.util.EXPLICIT_PREFIX
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
@@ -442,7 +441,7 @@ object SongItem: Visual() {
                     songId = song.id,
                     isRecommended = isRecommended,
                     isInPlaylistScreen = isInPlaylistScreen,
-                    isExplicit = song.title.startsWith(EXPLICIT_PREFIX),
+                    isExplicit = song.isExplicit,
                     values = values
                 )
 

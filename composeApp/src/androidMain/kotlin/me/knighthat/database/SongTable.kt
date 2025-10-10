@@ -13,7 +13,6 @@ import app.kreate.database.models.Song
 import app.kreate.util.MODIFIED_PREFIX
 import it.fast4x.rimusic.enums.SongSortBy
 import it.fast4x.rimusic.enums.SortOrder
-import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
 import it.fast4x.rimusic.utils.durationToMillis
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -54,12 +53,12 @@ interface SongTable {
     ): Flow<List<Song>>
 
     /**
-     * @return all records that have [Song.id] start with [LOCAL_KEY_PREFIX]
+     * @return all records that have [Song.isLocal] equal to true
      */
     @Query("""
         SELECT DISTINCT * 
         FROM Song 
-        WHERE id LIKE '$LOCAL_KEY_PREFIX%'
+        WHERE is_local = 1
         LIMIT :limit
     """)
     fun allOnDevice( limit: Int = Int.MAX_VALUE ): Flow<List<Song>>

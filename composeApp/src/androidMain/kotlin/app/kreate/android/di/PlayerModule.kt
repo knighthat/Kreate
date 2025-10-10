@@ -4,11 +4,16 @@ import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import android.provider.MediaStore
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastFilter
+import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.core.text.isDigitsOnly
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.audio.SonicAudioProcessor
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
@@ -51,6 +56,7 @@ import it.fast4x.rimusic.service.MissingDecipherKeyException
 import it.fast4x.rimusic.service.NoInternetException
 import it.fast4x.rimusic.service.PlayableFormatNotFoundException
 import it.fast4x.rimusic.service.UnplayableException
+import it.fast4x.rimusic.utils.isAtLeastAndroid10
 import it.fast4x.rimusic.utils.isConnectionMetered
 import it.fast4x.rimusic.utils.isNetworkAvailable
 import kotlinx.coroutines.CoroutineScope
@@ -72,6 +78,7 @@ import org.schabi.newpipe.extractor.localization.Localization
 import org.schabi.newpipe.extractor.services.youtube.YoutubeJavaScriptPlayerManager
 import org.schabi.newpipe.extractor.services.youtube.YoutubeStreamHelper
 import timber.log.Timber
+import java.io.FileNotFoundException
 import java.net.UnknownHostException
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Named
@@ -426,6 +433,34 @@ object PlayerModule {
                                       .let( ::withUri )
     }
 
+    private fun resolveUri( context: Context, uri: Uri ): Uri {
+        Timber.tag( LOG_TAG ).v( "Resolving uri $uri" )
+
+        var uri = uri
+
+        if( uri.toString().isDigitsOnly() )
+            // This will turn id to path to that media file
+            // For example: `id` becomes `content:/path/to/media/id`
+            uri = ContentUris.withAppendedId(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                uri.toString().toLong()
+            )
+
+        if( uri.scheme == ContentResolver.SCHEME_CONTENT ) {
+            context.contentResolver
+                   .query( uri, null, null, null, null )
+                   .use {
+                       if( it == null || !it.moveToFirst() )
+                           throw FileNotFoundException(uri.toString())
+                   }
+        } else if( uri.scheme == ContentResolver.SCHEME_FILE && !uri.toFile().exists() )
+            throw FileNotFoundException(uri.toString())
+
+        Timber.tag( LOG_TAG ).d( "Uri resolved: $uri" )
+
+        return uri
+    }
+
     /**
      * Used to determined whether the song can be played from cached,
      * or a call to online service must be made to get needed data.
@@ -434,36 +469,25 @@ object PlayerModule {
         context: Context,
         vararg cashes: Cache
     ) = ResolvingDataSource.Resolver { dataSpec ->
-        val videoId = dataSpec.uri.toString().substringAfter( "watch?v=" )
+        val uri = resolveUri( context, dataSpec.uri )
 
-        // Delay this block until called. Song can be local too
-        val cacheLength = dataSpec.length.takeIf { it != -1L } ?: CHUNK_LENGTH
-        fun isCached() = cashes.any {
-            it.isCached( videoId, dataSpec.position, cacheLength )
-        }
-        // When player resumes from persistent queue, the videoId isn't path to the file,
-        // but the following format: local:id. Therefore, checking for prefix is needed.
-        val isLocal = videoId.startsWith(LOCAL_KEY_PREFIX, true )
-                || dataSpec.uri.isLocalFile()
-
-        if( !isLocal )
-            upsertSongInfo( context, videoId )
-
-        return@Resolver if( isLocal ) {
-            Timber.tag( LOG_TAG ).d( "$videoId is local song" )
-
-            if( videoId.startsWith(LOCAL_KEY_PREFIX, true ) )
-                // This will take id from videoId and return path to that media file
-                // For example: `local:id` becomes `content:/path/to/media/id`
-                ContentUris.withAppendedId(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    videoId.substringAfter(LOCAL_KEY_PREFIX).toLong()
-                ).also {
-                    Timber.tag( LOG_TAG ).v( "Resolved path: $it" )
-                }.let( dataSpec::withUri )
+        // Return immediately if current Uri points to local song
+        if( uri.scheme == ContentResolver.SCHEME_CONTENT
+            || uri.scheme == ContentResolver.SCHEME_FILE)
+            return@Resolver if( uri != dataSpec.uri )
+                dataSpec.withUri( uri )
             else
                 dataSpec
-        } else if( isCached() ) {
+
+        val videoId = uri.toString()
+        upsertSongInfo( context, videoId )
+
+        val cacheLength = dataSpec.length.takeIf { it != -1L } ?: CHUNK_LENGTH
+        val isCached = cashes.any {
+            it.isCached( videoId, dataSpec.position, cacheLength )
+        }
+
+        if( isCached ) {
             Timber.tag( LOG_TAG ).d( "$videoId exists in cache, proceeding to use from cache" )
             // No need to fetch online for already cached data
             dataSpec

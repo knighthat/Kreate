@@ -25,7 +25,6 @@ import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Lyrics
 import app.kreate.database.models.Song
-import app.kreate.util.EXPLICIT_PREFIX
 import app.kreate.util.cleanPrefix
 import com.zionhuang.innertube.pages.LibraryPage
 import io.ktor.client.HttpClient
@@ -45,8 +44,6 @@ import it.fast4x.lrclib.LrcLib
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.service.MyDownloadHelper
-import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
-import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -56,6 +53,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 
 const val EXPLICIT_BUNDLE_TAG = "is_explicit"
+const val LOCAL_BUNDLE_TAG = "is_local"
 
 val Innertube.AlbumItem.asAlbum: Album
     get() = Album (
@@ -124,10 +122,11 @@ val Innertube.SongItem.asMediaItem: MediaItem
 val Innertube.SongItem.asSong: Song
     get() = Song (
         id = key,
-        title = (if( explicit ) EXPLICIT_PREFIX else "").plus( info?.name ?: "" ),
+        title = info?.name.orEmpty(),
         artistsText = authors?.joinToString(", ") { it.name ?: "" },
         durationText = durationText,
-        thumbnailUrl = thumbnail?.url
+        thumbnailUrl = thumbnail?.url,
+        isExplicit = explicit
     )
 
 val Innertube.VideoItem.asMediaItem: MediaItem
@@ -172,17 +171,21 @@ val Song.asMediaItem: MediaItem
                 .setExtras(
                     bundleOf(
                         "durationText" to durationText,
-                        EXPLICIT_BUNDLE_TAG to title.startsWith( EXPLICIT_PREFIX, true )
+                        EXPLICIT_BUNDLE_TAG to isExplicit,
+                        LOCAL_BUNDLE_TAG to isLocal
                     )
                 )
                 .build()
         )
         .setMediaId(id)
         .setUri(
-            if (isLocal) ContentUris.withAppendedId(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                id.substringAfter(LOCAL_KEY_PREFIX).toLong()
-            ) else id.toUri()
+            if ( isLocal )
+                ContentUris.withAppendedId(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    id.toLong()
+                )
+            else
+                id.toUri()
         )
         .setCustomCacheKey(id)
         .build()
@@ -230,7 +233,9 @@ val MediaItem.asSong: Song
         title = mediaMetadata.title.toString(),
         artistsText = mediaMetadata.artist.toString(),
         durationText = mediaMetadata.extras?.getString("durationText"),
-        thumbnailUrl = mediaMetadata.artworkUri.toString()
+        thumbnailUrl = mediaMetadata.artworkUri.toString(),
+        isExplicit = mediaMetadata.extras?.getBoolean( EXPLICIT_BUNDLE_TAG, false ) ?: false,
+        isLocal = mediaMetadata.extras?.getBoolean( LOCAL_BUNDLE_TAG, false ) ?: false
     )
 
 val MediaItem.cleaned: MediaItem
@@ -256,13 +261,7 @@ val MediaItem.isVideo: Boolean
     get() = mediaMetadata.extras?.getBoolean("isVideo") == true
 
 val MediaItem.isExplicit: Boolean
-    get() {
-        val isTitleContain = mediaMetadata.title?.startsWith( EXPLICIT_PREFIX, true )
-        val isBundleContain = mediaMetadata.extras?.getBoolean( EXPLICIT_BUNDLE_TAG )
-
-        return isTitleContain == true || isBundleContain == true
-    }
-
+    get() = mediaMetadata.extras?.getBoolean( EXPLICIT_BUNDLE_TAG, false ) ?: false
 fun String.resize(
     width: Int? = null,
     height: Int? = null,

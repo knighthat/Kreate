@@ -10,7 +10,6 @@ import androidx.media3.common.MediaMetadata
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Song
-import app.kreate.util.EXPLICIT_PREFIX
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.innertube.models.Thumbnail
@@ -23,12 +22,13 @@ import me.knighthat.innertube.model.InnertubeSong
 val InnertubeSong.toSong: Song
     get() = Song(
         id = this.id,
-        title = "%s%s".format( if( isExplicit ) EXPLICIT_PREFIX else "", name ),
+        title = name,
         artistsText = this.artistsText,
         durationText = this.durationText,
         thumbnailUrl = this.thumbnails.firstOrNull()?.url,
         likedAt = null,
-        totalPlayTimeMs = 0
+        totalPlayTimeMs = 0,
+        isExplicit = isExplicit
     )
 
 val InnertubeSong.toMediaItem: MediaItem

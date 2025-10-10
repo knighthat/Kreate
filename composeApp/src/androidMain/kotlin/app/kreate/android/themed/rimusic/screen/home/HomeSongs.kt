@@ -41,7 +41,6 @@ import app.kreate.android.themed.rimusic.component.song.PeriodSelector
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.database.models.Song
-import app.kreate.util.EXPLICIT_PREFIX
 import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
@@ -50,7 +49,6 @@ import it.fast4x.rimusic.enums.BuiltInPlaylist
 import it.fast4x.rimusic.enums.DurationInMinutes
 import it.fast4x.rimusic.enums.SongSortBy
 import it.fast4x.rimusic.service.MyDownloadHelper
-import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.typography
@@ -150,7 +148,7 @@ fun HomeSongs(
                                            .map { list ->
                                                // Include local songs if enabled
                                                list.fastFilter {
-                                                   !includeLocalSongs || !it.id.startsWith( LOCAL_KEY_PREFIX, true )
+                                                   !includeLocalSongs || !it.isLocal
                                                }
                                            }
 
@@ -206,7 +204,7 @@ fun HomeSongs(
     }
 
     LaunchedEffect( items, search.input ) {
-    items.filter { !parentalControlEnabled || !it.title.startsWith( EXPLICIT_PREFIX, true ) }
+    items.filter { !parentalControlEnabled || !it.isExplicit }
          .filter {
              // Without cleaning, user can search explicit songs with "e:"
              // I kinda want this to be a feature, but it seems unnecessary

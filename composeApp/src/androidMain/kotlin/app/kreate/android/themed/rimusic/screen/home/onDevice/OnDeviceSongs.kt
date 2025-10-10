@@ -52,7 +52,6 @@ import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.database.models.Song
-import app.kreate.util.EXPLICIT_PREFIX
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
@@ -148,7 +147,7 @@ fun OnDeviceSong(
                }
     }
     LaunchedEffect( songsOnDevice, search.input, currentPath ) {
-        songsOnDevice.keys.filter { !parentalControlEnabled || !it.title.startsWith( EXPLICIT_PREFIX, true ) }
+        songsOnDevice.keys.filter { !parentalControlEnabled || !it.isExplicit }
                           .filter {
                               // [showFolder4LocalSongs] must be false and
                               // this song must be inside [currentPath] to show song

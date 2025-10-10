@@ -1,6 +1,7 @@
 package app.kreate.database.models
 
 import androidx.compose.runtime.Immutable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import app.kreate.util.cleanPrefix
@@ -19,7 +20,13 @@ data class Song(
     val durationText: String?,
     val thumbnailUrl: String?,
     val likedAt: Long? = null,
-    val totalPlayTimeMs: Long = 0
+    val totalPlayTimeMs: Long = 0,
+
+    @ColumnInfo("is_explicit")
+    val isExplicit: Boolean = false,
+
+    @ColumnInfo("is_local")
+    val isLocal: Boolean = false
 ) {
 
     val formattedTotalPlayTime: String

@@ -78,6 +78,7 @@ import it.fast4x.rimusic.service.BitmapProvider
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.utils.CoilBitmapLoader
+import it.fast4x.rimusic.utils.LOCAL_BUNDLE_TAG
 import it.fast4x.rimusic.utils.TimerJob
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.broadCastPendingIntent
@@ -132,10 +133,8 @@ import android.os.Binder as AndroidBinder
 import me.knighthat.innertube.Innertube as NewInnertube
 
 
-const val LOCAL_KEY_PREFIX = "local:"
-
-val MediaItem.isLocal get() = mediaId.startsWith(LOCAL_KEY_PREFIX)
-val Song.isLocal get() = id.startsWith(LOCAL_KEY_PREFIX)
+val MediaItem.isLocal: Boolean
+    get() = mediaMetadata.extras?.getBoolean(LOCAL_BUNDLE_TAG, false ) ?: false
 
 @AndroidEntryPoint
 @UnstableApi

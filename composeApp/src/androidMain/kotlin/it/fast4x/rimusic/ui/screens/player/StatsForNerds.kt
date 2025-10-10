@@ -44,7 +44,6 @@ import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.PlayerBackgroundColors
 import it.fast4x.rimusic.enums.PlayerType
-import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.IconButton
 import it.fast4x.rimusic.ui.styling.onOverlay
@@ -86,6 +85,9 @@ fun StatsForNerds(
 
         val format by remember {
             Database.formatTable.findBySongId( mediaId )
+        }.collectAsState( null, Dispatchers.IO )
+        val song by remember {
+            Database.songTable.findById( mediaId )
         }.collectAsState( null, Dispatchers.IO )
         val showThumbnail by Preferences.PLAYER_SHOW_THUMBNAIL
         val statsForNerds by Preferences.PLAYER_STATS_FOR_NERDS
@@ -144,7 +146,7 @@ fun StatsForNerds(
                         text = stringResource(R.string.id),
                         style = typography().xs.medium.color(colorPalette().onOverlay)
                     )
-                    if (format?.songId?.startsWith(LOCAL_KEY_PREFIX) == false) {
+                    if ( song?.isLocal == false ) {
                         BasicText(
                             text = "itag",
                             style = typography().xs.medium.color(colorPalette().onOverlay)
@@ -163,13 +165,13 @@ fun StatsForNerds(
                         style = typography().xs.medium.color(colorPalette().onOverlay)
                     )
 
-                    if (format?.songId?.startsWith(LOCAL_KEY_PREFIX) == true)
+                    if ( song?.isLocal == true )
                         BasicText(
                             text = stringResource(R.string.cached),
                             style = typography().xs.medium.color(colorPalette().onOverlay)
                         )
 
-                    if (format?.songId?.startsWith(LOCAL_KEY_PREFIX) == false) {
+                    if ( song?.isLocal == false ) {
                         BasicText(
                             text = if (downloadCachedBytes == 0L) stringResource(R.string.cached)
                             else stringResource(R.string.downloaded),
@@ -190,7 +192,7 @@ fun StatsForNerds(
                         style = typography().xs.medium.color(colorPalette().onOverlay)
                     )
 
-                    if (format?.songId?.startsWith(LOCAL_KEY_PREFIX) == false) {
+                    if ( song?.isLocal == false ) {
                         BasicText(
                             text = format?.itag?.toString()
                                 ?: stringResource(R.string.audio_quality_format_unknown),
@@ -211,7 +213,7 @@ fun StatsForNerds(
                     BasicText(
 //                        text = format?.contentLength
 //                            ?.let { Formatter.formatShortFileSize(context, it) } ?: stringResource(R.string.audio_quality_format_unknown),
-                        text = when (format?.songId?.startsWith(LOCAL_KEY_PREFIX)){
+                        text = when ( song?.isLocal ){
                             true -> "100%"
                             else -> {
                                 if (downloadCachedBytes == 0L)
@@ -236,7 +238,7 @@ fun StatsForNerds(
 //                            style = typography().xs.medium.color(colorPalette().onOverlay)
 //                        )
 //                    }
-                    if (format?.songId?.startsWith(LOCAL_KEY_PREFIX) == false) {
+                    if ( song?.isLocal == false ) {
 //                        BasicText(
 //                            text = if (cachedBytes > downloadCachedBytes)
 //                                Formatter.formatShortFileSize(context, cachedBytes)
@@ -282,7 +284,7 @@ fun StatsForNerds(
                         modifier = modifier.weight(1f)
                             .padding(end = 4.dp)
                     ) {
-                        if (format?.songId?.startsWith(LOCAL_KEY_PREFIX) == false) {
+                        if ( song?.isLocal == false ) {
                             BasicText(
                                 text = stringResource(R.string.quality) + " : " + getQuality(format!!),
                                 maxLines = 1,
@@ -351,7 +353,7 @@ fun StatsForNerds(
                                   style = typography().xs.medium.color(colorPalette().text)
                               )
                           }
-                          if (format?.songId?.startsWith(LOCAL_KEY_PREFIX) == false) {
+                          if ( song?.isLocal == false ) {
                               Box(
                                   contentAlignment = Alignment.Center,
                                   modifier = modifier.weight(1f)
@@ -372,7 +374,7 @@ fun StatsForNerds(
                               .padding(vertical = 5.dp)
                               .fillMaxWidth(if (isLandscape) 0.8f else 1f)
                       ) {
-                          if (format?.songId?.startsWith(LOCAL_KEY_PREFIX) == true) {
+                          if ( song?.isLocal == true ) {
                               Box(
                                   contentAlignment = Alignment.Center,
                                   modifier = modifier.weight(1f)
@@ -384,7 +386,7 @@ fun StatsForNerds(
                                   )
                               }
                           }
-                          if (format?.songId?.startsWith(LOCAL_KEY_PREFIX) == false) {
+                          if ( song?.isLocal == false ) {
                               Box(
                                   contentAlignment = Alignment.Center,
                                   modifier = modifier.weight(1f)
