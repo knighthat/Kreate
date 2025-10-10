@@ -80,6 +80,7 @@ import org.schabi.newpipe.extractor.services.youtube.YoutubeJavaScriptPlayerMana
 import org.schabi.newpipe.extractor.services.youtube.YoutubeStreamHelper
 import timber.log.Timber
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Named
 import javax.inject.Singleton
 import javax.security.auth.login.LoginException
@@ -107,9 +108,7 @@ object PlayerModule {
      * Store id of song just added to the database.
      * This is created to reduce load to Room
      */
-    @Volatile
-    private var justInserted: String = ""
-
+    private val justInserted = AtomicReference("")
     private val cachedStreamUrl = ConcurrentMap<String, StreamCache>()
     private val CONTEXTS = arrayOf(
         InnertubeContext.WEB_REMIX_DEFAULT,
@@ -149,7 +148,8 @@ object PlayerModule {
      */
     private fun upsertSongInfo( context: Context, videoId: String ) {       // Use this to prevent suspension of thread while waiting for response from YT
         // Skip adding if it's just added in previous call
-        if( videoId == justInserted || !isNetworkAvailable( context ) ) return
+        if( videoId == justInserted.get() || !isNetworkAvailable( context ) )
+            return
 
         Timber.tag( LOG_TAG ).v( "fetching and upserting $videoId's information to the database" )
 
@@ -178,7 +178,7 @@ object PlayerModule {
      */
     private fun upsertSongFormat( videoId: String, format: PlayerResponse.StreamingData.Format ) {
         // Skip adding if it's just added in previous call
-        if( videoId == justInserted ) return
+        if( videoId == justInserted.get() ) return
 
         Timber.tag( LOG_TAG ).v( "upserting format ${format.itag} of song $videoId to the database" )
 
@@ -203,7 +203,7 @@ object PlayerModule {
                 Timber.tag( LOG_TAG ).d( "$videoId is successfully upserted to the database" )
 
                 // Format must be added successfully before setting variable
-                justInserted = videoId
+                justInserted.set( videoId )
             }
         }
     }
