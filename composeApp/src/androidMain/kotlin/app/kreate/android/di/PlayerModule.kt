@@ -49,6 +49,7 @@ import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.request.head
 import io.ktor.http.URLBuilder
 import io.ktor.http.parseQueryString
+import io.ktor.util.collections.ConcurrentMap
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.models.Format
@@ -109,7 +110,7 @@ object PlayerModule {
     @Volatile
     private var justInserted: String = ""
 
-    private val cachedStreamUrl = mutableMapOf<String, StreamCache>()
+    private val cachedStreamUrl = ConcurrentMap<String, StreamCache>()
     private val CONTEXTS = arrayOf(
         InnertubeContext.WEB_REMIX_DEFAULT,
         InnertubeContext.ANDROID_VR_DEFAULT,
@@ -606,6 +607,14 @@ object PlayerModule {
                         .build()
                         .let( ::CustomExoPlayer )
     }
+
+    /**
+     * Remove cached url of [songId].
+     *
+     * @return `true` if song's url was cached, and is deleted, `false` otherwise.
+     */
+    fun clearCachedStreamUrlOf( songId: String ): Boolean =
+        cachedStreamUrl.remove( songId ) != null
 
     private data class StreamCache(
         val cpn: String,
