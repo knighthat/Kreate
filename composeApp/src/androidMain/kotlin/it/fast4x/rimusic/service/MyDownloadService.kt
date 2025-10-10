@@ -13,10 +13,14 @@ import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.PlatformScheduler
 import app.kreate.android.R
 import app.kreate.android.service.DownloadHelper
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 private const val JOB_ID = 8888
 private const val FOREGROUND_NOTIFICATION_ID = 8989
 
+
+@AndroidEntryPoint
 @UnstableApi
 class MyDownloadService : DownloadService(
     FOREGROUND_NOTIFICATION_ID,
@@ -25,13 +29,16 @@ class MyDownloadService : DownloadService(
     R.string.download, 0
 ) {
 
+    @Inject
+    lateinit var downloadHelper: DownloadHelper
+
     override fun getDownloadManager(): DownloadManager {
+        MyDownloadHelper.instance = downloadHelper
 
         // This will only happen once, because getDownloadManager is guaranteed to be called only once
         // in the life cycle of the process.
-        val downloadManager: DownloadManager = MyDownloadHelper.instance.downloadManager
-        val downloadNotificationHelper: DownloadNotificationHelper =
-            MyDownloadHelper.getDownloadNotificationHelper()
+        val downloadManager = downloadHelper.downloadManager
+        val downloadNotificationHelper = MyDownloadHelper.getDownloadNotificationHelper()
         downloadManager.addListener(
             TerminalStateNotificationHelper(
                 this,
