@@ -97,12 +97,9 @@ object SearchSuggestionPage {
             }
              */
             renderer.isSong -> {
-                val explicitBadge = if (renderer.badges?.find {
-                        it.musicInlineBadgeRenderer?.icon?.iconType == "MUSIC_EXPLICIT_BADGE"
-                    } != null) "e:" else ""
                 Innertube.SongItem(
                     info = Innertube.Info(
-                        name = "${explicitBadge}${renderer.flexColumns.firstOrNull()?.musicResponsiveListItemFlexColumnRenderer?.text?.runs?.firstOrNull()?.text}",
+                        name = renderer.flexColumns.firstOrNull()?.musicResponsiveListItemFlexColumnRenderer?.text?.runs?.firstOrNull()?.text,
                         endpoint = renderer.navigationEndpoint?.endpoint as NavigationEndpoint.Endpoint.Watch
                     ),
                     authors = renderer.flexColumns.getOrNull(1)?.musicResponsiveListItemFlexColumnRenderer?.text?.runs?.splitBySeparator()
@@ -122,9 +119,9 @@ object SearchSuggestionPage {
                     durationText = null,
                     thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.thumbnail?.thumbnails?.getBestQuality()
                         ?: return null,
-                    explicit = renderer.badges?.find {
+                    explicit = renderer.badges?.any {
                         it.musicInlineBadgeRenderer?.icon?.iconType == "MUSIC_EXPLICIT_BADGE"
-                    } != null
+                    } ?: false
                 )
             }
             renderer.isArtist -> {

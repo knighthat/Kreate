@@ -9,7 +9,6 @@ import app.kreate.database.models.Song
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.OnDeviceSongSortBy
 import it.fast4x.rimusic.enums.SortOrder
-import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
 import it.fast4x.rimusic.utils.isAtLeastAndroid10
 import it.fast4x.rimusic.utils.isAtLeastAndroid11
 import kotlinx.coroutines.CoroutineScope
@@ -135,7 +134,15 @@ fun Context.getLocalSongs(
             val title = cursor.getString( titleColumn ) ?: cursor.getString( nameColumn )
             val artist = cursor.getString( artistColumn )
             val albumUri = ContentUris.withAppendedId( ALBUM_URI, cursor.getLong( albumIdColumn ) )
-            val song = Song( "$LOCAL_KEY_PREFIX$id", title, artist, durationText, albumUri.toString() )
+            val song = Song(
+                id = id.toString(),
+                title = title,
+                artistsText = artist,
+                durationText = durationText,
+                thumbnailUrl = albumUri.toString(),
+                isLocal = true
+            )
+
 
             val mimeType = cursor.getString( mimeTypeColumn )
             val bitrate = if( isAtLeastAndroid11 ) cursor.getLong( bitrateColumn ) else 0

@@ -14,8 +14,6 @@ import it.fast4x.rimusic.LocalDownloadHelper
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.enums.DownloadedStateMedia
 import it.fast4x.rimusic.service.MyDownloadHelper
-import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.service.modern.isLocal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
@@ -46,38 +44,6 @@ fun downloadedStateMedia(mediaId: String): DownloadedStateMedia {
         isDownloaded && !isCached -> DownloadedStateMedia.DOWNLOADED
         !isDownloaded && isCached -> DownloadedStateMedia.CACHED
         else -> DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED
-    }
-}
-
-@UnstableApi
-@Composable
-fun getDownloadStateMedia(
-    binder: PlayerServiceModern.Binder,
-    songId: String
-): DownloadedStateMedia {
-    if( songId.startsWith( LOCAL_KEY_PREFIX, true ) )
-        return DownloadedStateMedia.DOWNLOADED
-
-    val isDownloaded by remember {
-        MyDownloadHelper.getDownload( songId )
-            .map { it?.state == Download.STATE_COMPLETED }
-    }.collectAsState( false, Dispatchers.IO )
-    val isCached by remember {
-        Database.formatTable
-            .findBySongId( songId )
-            .map {
-                if( it?.contentLength == null )
-                    return@map false
-                binder.cache.isCached( it.songId, 0, it.contentLength )
-            }
-    }.collectAsState( false, Dispatchers.IO )
-
-    return when {
-        isDownloaded && isCached  -> DownloadedStateMedia.CACHED_AND_DOWNLOADED
-        isDownloaded && !isCached -> DownloadedStateMedia.DOWNLOADED
-        !isDownloaded && isCached -> DownloadedStateMedia.CACHED
-        // !isDownloaded && !isCached
-        else                      -> DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED
     }
 }
 
