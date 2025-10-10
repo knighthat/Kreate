@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Fet</string>
     <string name="hidesong">Vols amagar aquesta cançó? El seu temps de reproducció i la memòria cau s\'esborrarà. Aquesta acció no es pot desfer.</string>
@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Copia el registre al porta-retalls</string>
     <string name="fake_audio_bar">Barra d\'àudio falsa</string>
-    <string name="copy_crash_log_to_clipboard">Copia el registre d\'errors al porta-retalls</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">CÒPIA DE SEGURETAT I RESTAURACIÓ</string>
     <string name="message_excluded_s_songs">S\'han exclòs %s cançons</string>
     <string name="show_thumbnail">Mostra la miniatura</string>
