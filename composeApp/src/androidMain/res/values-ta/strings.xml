@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">முடிந்தது</string>
     <string name="hidesong">நீங்கள் இந்தப் பாடல்களை மறைக்க விரும்புகிறீர்களா? இதன் வாசிப்பு நேரமும் தற்காலிக சேமிப்பும் அழிக்கப்படும். இந்தச் செயல் திரும்பப் பெற முடியாது.</string>
@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Copy log to clipboard</string>
     <string name="fake_audio_bar">Fake Audio Bar</string>
-    <string name="copy_crash_log_to_clipboard">Copy crash log to clipboard</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">BACKUP AND RESTORE</string>
     <string name="message_excluded_s_songs">Excluded %s songs</string>
     <string name="show_thumbnail">Show thumbnail</string>
