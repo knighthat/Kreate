@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">完了</string>
     <string name="hidesong">この曲を非表示にしますか？再生時間とキャッシュは消去されます。\nこの操作は元に戻せません。</string>
@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">ログをクリップボードにコピー</string>
     <string name="fake_audio_bar">偽の音声バー</string>
-    <string name="copy_crash_log_to_clipboard">クラッシュのログをクリップボードにコピー</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">バックアップと復元</string>
     <string name="message_excluded_s_songs">%s 曲を除外しました</string>
     <string name="show_thumbnail">サムネイルを表示</string>
