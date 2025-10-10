@@ -20,4 +20,14 @@
             android:targetPackage="me.knighthat.kreate.debug"
             android:action="COPY_CRASH_LOG" />
     </shortcut>
+    <shortcut
+            android:shortcutId="delete_databases"
+            android:enabled="true"
+            android:icon="@drawable/trash"
+            android:shortcutShortLabel="@string/delete_databases">
+        <intent
+                android:targetClass="app.kreate.android.DeleteDatabasesActivity"
+                android:targetPackage="me.knighthat.kreate.debug"
+                android:action="DELETE_DATABASES" />
+    </shortcut>
 </shortcuts>
