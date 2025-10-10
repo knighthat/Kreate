@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Gotovo</string>
     <string name="hidesong">Da li zaista želite da sakrijete ovu pesmu? Njegovo vreme reprodukcije i keš memorija će biti obrisani. Ova radnja je nepovratna.</string>
@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Kopirajte zapis u privremenu memoriju</string>
     <string name="fake_audio_bar">Lažni Audio Bar</string>
-    <string name="copy_crash_log_to_clipboard">Kopirajte zapis greške u privremenu memoriju</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">COPIA DE SEGURIDAD Y RESTAURAR</string>
     <string name="message_excluded_s_songs">Excluida %s canciones</string>
     <string name="show_thumbnail">Prikaži Sličicu</string>
