@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Готово</string>
     <string name="hidesong">Да ли заиста желите да сакријете ову песму? Његово време репродукције и кеш меморија ће бити обрисани. Ова радња је неповратна.</string>
@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Копирајте запис у привремену меморију</string>
     <string name="fake_audio_bar">Лажни Аудио Бар</string>
-    <string name="copy_crash_log_to_clipboard">Копирајте запис грешке у привремену меморију</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">РЕЗЕРВНА КОПИЈА И ПОВРАТАК РЕЗЕРВНЕ КОПИЈЕ</string>
     <string name="message_excluded_s_songs">Изузете %s песме</string>
     <string name="show_thumbnail">Прикажи Сличицу</string>
