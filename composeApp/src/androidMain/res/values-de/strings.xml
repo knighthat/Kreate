@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Fertig</string>
     <string name="hidesong">Soll der Titel wirklich ausblendet werden? Die Wiedergabezeit und der Cache werden zurückgesetzt. Diese Aktion kann nicht rückgängig gemacht werden.</string>
@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Kopiere Protokoll in die Zwischenablage</string>
     <string name="fake_audio_bar">Gefälschte Wellenform</string>
-    <string name="copy_crash_log_to_clipboard">Absturzprotokoll in Zwischenablage kopieren</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">SICHERN UND WIEDERHERSTELLEN</string>
     <string name="message_excluded_s_songs">%s Titel ausgeschlossen</string>
     <string name="show_thumbnail">Miniaturansicht anzeigen</string>
