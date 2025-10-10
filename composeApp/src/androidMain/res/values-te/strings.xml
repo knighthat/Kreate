@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">పూర్తి చేయి</string>
     <string name="hidesong">నీవు నిజంగానే ఈ పాటను దాచలి (దాయలి) అనుకుంటున్నావా? ప్రస్తుతం నీవు పాటలు వింటున్నవు. నీ పాట యొక్క cache కొల్పోతావు. ఒకసారి పాటను దాచిటే మళ్ళీ వెనక్కి తీసుకురాలేవు.</string>
@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Copy log to clipboard</string>
     <string name="fake_audio_bar">Fake Audio Bar</string>
-    <string name="copy_crash_log_to_clipboard">Copy crash log to clipboard</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">BACKUP AND RESTORE</string>
     <string name="message_excluded_s_songs">Excluded %s songs</string>
     <string name="show_thumbnail">Show thumbnail</string>
