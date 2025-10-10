@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Færdig</string>
     <string name="hidesong">Skal denne sang virkelig skjules? Dens afspilningstid og cache slettes. Dette er irreversibelt.</string>
@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logger alt, der sker i %s</string>
     <string name="copy_log_to_clipboard">Kopiér log til udklipsholder</string>
     <string name="fake_audio_bar">Falsk lydbølge</string>
-    <string name="copy_crash_log_to_clipboard">Kopiér nedbrudslog til udklipsholder</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">SIKKERHEDSKOPIERING OG GENDANNELSE</string>
     <string name="message_excluded_s_songs">Ekskluderede %s sange</string>
     <string name="show_thumbnail">Vis miniaturebillede</string>
