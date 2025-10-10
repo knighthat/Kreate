@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">완료</string>
     <string name="hidesong">정말로 이 곡을 숨기실건가요? 재생 시간과 캐시는 지워집니다.\n이 작업은 되돌릴 수 없습니다.</string>
@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">%s에서 발생하는 모든 작업을 기록 중입니다</string>
     <string name="copy_log_to_clipboard">클립보드에 로그 복사</string>
     <string name="fake_audio_bar">가짜 오디오 바</string>
-    <string name="copy_crash_log_to_clipboard">클립보드에 충돌 로그 복사</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">백업 및 복원</string>
     <string name="message_excluded_s_songs">%s개의 곡 제외됨</string>
     <string name="show_thumbnail">썸네일 표시</string>
