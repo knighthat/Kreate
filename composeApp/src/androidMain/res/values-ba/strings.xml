@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Әҙер</string>
     <string name="hidesong">Һеҙ ысынлап та был йырҙы юйғы киләме? Уйнатылған ваҡыты һәм кэш юйыла. Хәрәкәтте кире ҡайтарырға булмай.</string>
@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Copy log to clipboard</string>
     <string name="fake_audio_bar">Fake Audio Bar</string>
-    <string name="copy_crash_log_to_clipboard">Copy crash log to clipboard</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">BACKUP AND RESTORE</string>
     <string name="message_excluded_s_songs">Excluded %s songs</string>
     <string name="show_thumbnail">Show thumbnail</string>
