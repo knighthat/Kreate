@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Valmis</string>
     <string name="hidesong">Haluatko varmasti piilottaa tämän kappaleen? Sen toistoaika ja välimuisti tyhjennetään. Tämä toiminto on peruuttamaton.</string>
@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Kopioi loki leikepöydälle</string>
     <string name="fake_audio_bar">Väärennetty aaltomuoto</string>
-    <string name="copy_crash_log_to_clipboard">Kopioi kaatumisloki leikepöydälle</string>
+    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
     <string name="title_backup_and_restore">VARMUUSKOPIOI JA PALAUTA</string>
     <string name="message_excluded_s_songs">Poisjätetty %s kappale(tta)</string>
     <string name="show_thumbnail">Näytä pienoiskuva</string>
