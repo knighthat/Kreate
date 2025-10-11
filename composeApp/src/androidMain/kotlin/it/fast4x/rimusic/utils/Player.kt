@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastDistinctBy
-import androidx.compose.ui.util.fastMap
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -107,14 +106,14 @@ fun Player.playAtMedia(mediaItems: List<MediaItem>, mediaId: String) {
 }
 
 fun Player.forcePlay(mediaItem: MediaItem) {
-    setMediaItem(mediaItem.cleaned, true)
+    setMediaItem(mediaItem, true)
     prepare()
     restoreGlobalVolume()
     playWhenReady = true
 }
 
 fun Player.playVideo(mediaItem: MediaItem) {
-    setMediaItem(mediaItem.cleaned, true)
+    setMediaItem(mediaItem, true)
     pause()
 }
 
@@ -132,7 +131,7 @@ fun Player.forcePlayAtIndex(mediaItems: List<MediaItem>, mediaItemIndex: Int) {
 
     // This will prevent UI from freezing up during conversion
     CoroutineScope( Dispatchers.Default ).launch {
-        val cleanedMediaItems = mediaItems.fastMap( MediaItem::cleaned ).fastDistinctBy( MediaItem::mediaId )
+        val cleanedMediaItems = mediaItems.fastDistinctBy( MediaItem::mediaId )
 
         runBlocking( Dispatchers.Main ) {
             setMediaItems( cleanedMediaItems, mediaItemIndex, C.TIME_UNSET )
@@ -196,7 +195,7 @@ fun Player.addNext(mediaItem: MediaItem, context: Context? = null) {
     if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
         forcePlay(mediaItem)
     } else {
-        addMediaItem(currentMediaItemIndex + 1, mediaItem.cleaned)
+        addMediaItem(currentMediaItemIndex + 1, mediaItem)
     }
 }
 
@@ -211,14 +210,14 @@ fun Player.addNext(mediaItems: List<MediaItem>, context: Context? = null) {
     }
 
     if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
-        setMediaItems(filteredMediaItems.map { it.cleaned })
+        setMediaItems(filteredMediaItems)
 
         if( playbackState == Player.STATE_IDLE )
             prepare()
 
         play()
     } else {
-        addMediaItems(currentMediaItemIndex + 1, filteredMediaItems.map { it.cleaned })
+        addMediaItems(currentMediaItemIndex + 1, filteredMediaItems)
     }
 
 }
@@ -230,7 +229,7 @@ fun Player.enqueue(mediaItem: MediaItem, context: Context? = null) {
     if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
         forcePlay(mediaItem)
     } else {
-        addMediaItem(mediaItemCount, mediaItem.cleaned)
+        addMediaItem(mediaItemCount, mediaItem)
     }
 }
 
@@ -245,7 +244,7 @@ fun Player.enqueue(mediaItems: List<MediaItem>, context: Context? = null) {
         forcePlayFromBeginning(filteredMediaItems)
     } else {
         //addMediaItems(mediaItemCount, mediaItems)
-        addMediaItems(mediaItemCount, filteredMediaItems.map { it.cleaned })
+        addMediaItems(mediaItemCount, filteredMediaItems)
     }
 }
 
