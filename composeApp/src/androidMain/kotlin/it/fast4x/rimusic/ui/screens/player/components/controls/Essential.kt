@@ -47,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
@@ -62,7 +63,6 @@ import it.fast4x.rimusic.enums.PlayerBackgroundColors
 import it.fast4x.rimusic.enums.PlayerControlsType
 import it.fast4x.rimusic.enums.PlayerPlayButtonType
 import it.fast4x.rimusic.models.Info
-import it.fast4x.rimusic.models.ui.UiMedia
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.IconButton
@@ -73,6 +73,7 @@ import it.fast4x.rimusic.utils.HorizontalfadingEdge2
 import it.fast4x.rimusic.utils.bold
 import it.fast4x.rimusic.utils.conditional
 import it.fast4x.rimusic.utils.getLikeState
+import it.fast4x.rimusic.utils.isExplicit
 import it.fast4x.rimusic.utils.playNext
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.smartRewind
@@ -89,20 +90,15 @@ import me.knighthat.sync.YouTubeSync
 fun InfoAlbumAndArtistEssential(
     binder: PlayerServiceModern.Binder,
     navController: NavController,
+    mediaItem: MediaItem,
     albumId: String?,
-    media: UiMedia,
-    mediaId: String,
-    title: String?,
-    likedAt: Long?,
     artistIds: List<Info>?,
-    artist: String?,
-    isExplicit: Boolean,
-    onCollapse: () -> Unit,
-    disableScrollingText: Boolean = false
+    onCollapse: () -> Unit
 ) {
     val playerControlsType by Preferences.PLAYER_CONTROLS_TYPE
     val colorPaletteMode by Preferences.THEME_MODE
     var effectRotationEnabled by Preferences.ROTATION_EFFECT
+    val marqueEffect by Preferences.MARQUEE_TEXT_EFFECT
     var isRotated by rememberSaveable { mutableStateOf(false) }
     var showSelectDialog by remember { mutableStateOf(false) }
     var textoutline by Preferences.TEXT_OUTLINE
@@ -136,7 +132,7 @@ fun InfoAlbumAndArtistEssential(
                         }
                     },
                     onLongClick = {
-                        textCopyToClipboard(cleanPrefix(title ?: ""), context = appContext())
+                        textCopyToClipboard(cleanPrefix( mediaItem.mediaMetadata.title.toString() ), context = appContext())
                     }
                 )
 
@@ -161,15 +157,15 @@ fun InfoAlbumAndArtistEssential(
             BoxWithConstraints(
                 modifier = Modifier
                     .weight(1f)
-                    .conditional(!disableScrollingText){HorizontalfadingEdge2(0.025f)},
+                    .conditional( marqueEffect ){HorizontalfadingEdge2(0.025f)},
                 contentAlignment = Alignment.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically,
                     modifier = modifierTitle
-                    .conditional(!disableScrollingText) {padding(horizontal = maxWidth * 0.025f)}
+                    .conditional( marqueEffect ) {padding(horizontal = maxWidth * 0.025f)}
                     .conditional(playerControlsType == PlayerControlsType.Modern){padding(start = likeButtonWidth)}
                 ) {
-                    if (isExplicit) {
+                    if ( mediaItem.isExplicit ) {
                         IconButton(
                             icon = R.drawable.explicit,
                             color = colorPalette().text,
@@ -184,7 +180,7 @@ fun InfoAlbumAndArtistEssential(
                     }
                     Box {
                         BasicText(
-                            text = cleanPrefix(title ?: ""),
+                            text = cleanPrefix( mediaItem.mediaMetadata.title.toString() ),
                             style = TextStyle(
                                 textAlign = TextAlign.Center,
                                 color = if (albumId == null)
@@ -205,7 +201,7 @@ fun InfoAlbumAndArtistEssential(
                             maxLines = 1,
                         )
                         BasicText(
-                            text = cleanPrefix(title ?: ""),
+                            text = cleanPrefix( mediaItem.mediaMetadata.title.toString() ),
                             style = TextStyle(
                                 drawStyle = Stroke(width = 1.5f, join = StrokeJoin.Round),
                                 textAlign = TextAlign.Center,
@@ -232,7 +228,7 @@ fun InfoAlbumAndArtistEssential(
                     likeButtonWidth = maxWidth
                     IconButton(
                         color = colorPalette().favoritesIcon,
-                        icon = getLikeState(mediaId),
+                        icon = getLikeState( mediaItem.mediaId ),
                         onClick = {
                             CoroutineScope( Dispatchers.IO ).launch {
                                 YouTubeSync.toggleSongLike( appContext(), currentMediaItem ?: return@launch )
@@ -300,17 +296,17 @@ fun InfoAlbumAndArtistEssential(
                     }
                 },
                 onLongClick = {
-                    textCopyToClipboard(artist ?: "", context = appContext())
+                    textCopyToClipboard(mediaItem.mediaMetadata.artist.toString(), context = appContext())
                 }
             )
 
         BoxWithConstraints(
             modifier = Modifier
-                .conditional(!disableScrollingText){HorizontalfadingEdge2(0.025f)},
+                .conditional( marqueEffect ){HorizontalfadingEdge2(0.025f)},
             contentAlignment = Alignment.Center
         ) {
             BasicText(
-                text = artist ?: "",
+                text = mediaItem.mediaMetadata.artist.toString(),
                 style = TextStyle(
                     textAlign = TextAlign.Center,
                     color = if (artistIds?.isEmpty() == true)
@@ -325,11 +321,11 @@ fun InfoAlbumAndArtistEssential(
                 ),
                 maxLines = 1,
                 modifier = modifierArtist
-                    .conditional(!disableScrollingText){padding(horizontal = maxWidth*0.025f)}
+                    .conditional( marqueEffect ){padding(horizontal = maxWidth*0.025f)}
 
             )
             BasicText(
-                text = artist ?: "",
+                text = mediaItem.mediaMetadata.artist.toString(),
                 style = TextStyle(
                     drawStyle = Stroke(width = 1.5f, join = StrokeJoin.Round),
                     textAlign = TextAlign.Center,
@@ -342,7 +338,7 @@ fun InfoAlbumAndArtistEssential(
                 ),
                 maxLines = 1,
                 modifier = modifierArtist
-                    .conditional(!disableScrollingText){padding(horizontal = maxWidth*0.025f)}
+                    .conditional( marqueEffect ){padding(horizontal = maxWidth*0.025f)}
 
             )
         }

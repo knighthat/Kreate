@@ -24,13 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
+import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.themed.rimusic.screen.player.timeline.DurationIndicator
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.PlayerTimelineType
-import it.fast4x.rimusic.models.ui.UiMedia
 import it.fast4x.rimusic.ui.components.ProgressPercentage
 import it.fast4x.rimusic.ui.components.SeekBar
 import it.fast4x.rimusic.ui.components.SeekBarAudioWaves
@@ -46,24 +46,23 @@ const val DURATION_INDICATOR_HEIGHT = 20
 @OptIn(UnstableApi::class)
 @Composable
 fun GetSeekBar(
-    position: Long,
-    duration: Long,
-    mediaId: String,
-    media: UiMedia
-    ) {
+    mediaItem: MediaItem,
+    positionAndDuration: Pair<Long, Long>
+) {
     val binder = LocalPlayerServiceBinder.current
     binder?.player ?: return
     val playerTimelineType by Preferences.PLAYER_TIMELINE_TYPE
-    var scrubbingPosition by remember(mediaId) {
+    var scrubbingPosition by remember( mediaItem.mediaId ) {
         mutableStateOf<Long?>(null)
     }
     var transparentbar by Preferences.TRANSPARENT_TIMELINE
     val scope = rememberCoroutineScope()
+    val (position, duration) = positionAndDuration
     val animatedPosition = remember { Animatable(position.toFloat()) }
     var isSeeking by remember { mutableStateOf(false) }
 
     val compositionLaunched = isCompositionLaunched()
-    LaunchedEffect(mediaId) {
+    LaunchedEffect( mediaItem.mediaId ) {
         if (compositionLaunched) animatedPosition.animateTo(0f)
     }
     LaunchedEffect(position) {
@@ -174,7 +173,7 @@ fun GetSeekBar(
         if (playerTimelineType == PlayerTimelineType.Wavy) {
             SeekBarWaved(
                 position = { animatedPosition.value },
-                range = 0f..media.duration.toFloat(),
+                range = 0f..duration.toFloat(),
                 onSeekStarted = {
                     scrubbingPosition = it.toLong()
 
@@ -192,12 +191,12 @@ fun GetSeekBar(
                         null
                     }
 
-                    if (media.duration != C.TIME_UNSET) {
+                    if (duration != C.TIME_UNSET) {
                         //isSeeking = true
                         scope.launch {
                             animatedPosition.snapTo(
                                 animatedPosition.value.plus(delta)
-                                    .coerceIn(0f, media.duration.toFloat())
+                                    .coerceIn(0f, duration.toFloat())
                             )
                         }
                     }

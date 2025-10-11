@@ -1,15 +1,12 @@
 package it.fast4x.rimusic.utils
 
 import androidx.annotation.OptIn
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,11 +33,6 @@ fun GetControls(
 ) {
     val playerControlsType by Preferences.PLAYER_CONTROLS_TYPE
     val playerPlayButtonType by Preferences.PLAYER_PLAY_BUTTON_TYPE
-    var isRotated by rememberSaveable { mutableStateOf(false) }
-    val rotationAngle by animateFloatAsState(
-        targetValue = if (isRotated) 360F else 0f,
-        animationSpec = tween(durationMillis = 200), label = ""
-    )
     val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
 
     val isGradientBackgroundEnabled = playerBackgroundColors == PlayerBackgroundColors.ThemeColorGradient ||
@@ -48,7 +40,6 @@ fun GetControls(
 
     var playbackSpeed by Preferences.AUDIO_SPEED_VALUE
     var playbackDuration by Preferences.AUDIO_MEDLEY_DURATION
-    var setPlaybackDuration by remember { mutableStateOf(false) }
 
     var showSpeedPlayerDialog by rememberSaveable {
         mutableStateOf(false)
@@ -61,7 +52,6 @@ fun GetControls(
             pitchValue = {},
             durationValue = {
                 playbackDuration = it
-                setPlaybackDuration = true
             },
             scaleValue = onBlurScaleChange
         )
@@ -96,11 +86,9 @@ fun GetControls(
         if (playerControlsType == PlayerControlsType.Modern)
             ControlsModern(
                 binder = binder,
-                position = position,
                 playbackSpeed = playbackSpeed,
                 shouldBePlaying = shouldBePlaying,
                 playerPlayButtonType = playerPlayButtonType,
-                isGradientBackgroundEnabled = isGradientBackgroundEnabled,
                 onShowSpeedPlayerDialog = { showSpeedPlayerDialog = true }
             )
     }

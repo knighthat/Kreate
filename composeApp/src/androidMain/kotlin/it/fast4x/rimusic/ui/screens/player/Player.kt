@@ -139,7 +139,6 @@ import com.mikepenz.hypnoticcanvas.shaders.Stage
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.appRunningInBackground
-import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.AnimatedGradient
 import it.fast4x.rimusic.enums.BackgroundProgress
@@ -151,7 +150,6 @@ import it.fast4x.rimusic.enums.QueueType
 import it.fast4x.rimusic.enums.SwipeAnimationNoThumbnail
 import it.fast4x.rimusic.enums.ThumbnailType
 import it.fast4x.rimusic.models.Info
-import it.fast4x.rimusic.models.ui.toUiMedia
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.CustomModalBottomSheet
@@ -179,7 +177,6 @@ import it.fast4x.rimusic.utils.durationTextToMillis
 import it.fast4x.rimusic.utils.formatAsDuration
 import it.fast4x.rimusic.utils.formatAsTime
 import it.fast4x.rimusic.utils.horizontalFadingEdge
-import it.fast4x.rimusic.utils.isExplicit
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.mediaItems
 import it.fast4x.rimusic.utils.playAtIndex
@@ -1018,19 +1015,19 @@ fun Player(
     fun Controller( mediaItem: MediaItem, modifier: Modifier ) {
         Controls(
             navController = navController,
+            mediaItem = mediaItem,
             onCollapse = onDismiss,
             onBlurScaleChange = { blurAdjuster.strength = it },
-            expandPlayer = expandedplayer,
+            expandedPlayer = expandedplayer,
             titleExpanded = titleExpanded,
             timelineExpanded = timelineExpanded,
             controlsExpanded = controlsExpanded,
             isShowingLyrics = isShowingLyrics,
-            mediaItem = mediaItem,
             artistIds = artistInfos,
             albumId = albumId,
             shouldBePlaying = shouldBePlaying,
             positionAndDuration = positionAndDuration,
-            modifier = modifier,
+            modifier = modifier
         )
     }
 
@@ -1697,28 +1694,9 @@ fun Player(
                                     Box(modifier = Modifier
                                         .conditional(!expandedplayer && (!isShowingLyrics || showlyricsthumbnail)) {weight(1f)}
                                     ) {
-                                        Controls(
-                                            navController = navController,
-                                            onCollapse = onDismiss,
-                                            expandedplayer = expandedplayer,
-                                            titleExpanded = titleExpanded,
-                                            timelineExpanded = timelineExpanded,
-                                            controlsExpanded = controlsExpanded,
-                                            isShowingLyrics = isShowingLyrics,
-                                            media = mediaItem.toUiMedia(positionAndDuration.second),
-                                            mediaId = mediaItem.mediaId,
-                                            title = cleanPrefix( player.getMediaItemAt(it).mediaMetadata.title.toString() ),
-                                            artist = cleanPrefix( player.getMediaItemAt(it).mediaMetadata.artist.toString() ),
-                                            artistIds = artistInfos,
-                                            albumId = albumId,
-                                            shouldBePlaying = shouldBePlaying,
-                                            position = positionAndDuration.first,
-                                            duration = positionAndDuration.second,
-                                            modifier = Modifier
-                                                .padding(vertical = 4.dp)
-                                                .fillMaxWidth(),
-                                            onBlurScaleChange = { blurAdjuster.strength = it },
-                                            isExplicit = mediaItem.isExplicit
+                                        Controller(
+                                            mediaItem = player.getMediaItemAt(it),
+                                            modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth()
                                         )
                                     }
                                 }

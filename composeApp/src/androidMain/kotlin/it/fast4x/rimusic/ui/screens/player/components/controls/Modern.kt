@@ -44,13 +44,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.utils.scrollingText
 import it.fast4x.rimusic.appContext
-import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.NavRoutes
@@ -58,8 +58,8 @@ import it.fast4x.rimusic.enums.PlayerBackgroundColors
 import it.fast4x.rimusic.enums.PlayerControlsType
 import it.fast4x.rimusic.enums.PlayerPlayButtonType
 import it.fast4x.rimusic.models.Info
-import it.fast4x.rimusic.models.ui.UiMedia
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
+import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.CustomElevatedButton
 import it.fast4x.rimusic.ui.components.themed.IconButton
@@ -70,6 +70,7 @@ import it.fast4x.rimusic.utils.bold
 import it.fast4x.rimusic.utils.doubleShadowDrop
 import it.fast4x.rimusic.utils.dropShadow
 import it.fast4x.rimusic.utils.getLikeState
+import it.fast4x.rimusic.utils.isExplicit
 import it.fast4x.rimusic.utils.playNext
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.smartRewind
@@ -86,16 +87,10 @@ import me.knighthat.sync.YouTubeSync
 fun InfoAlbumAndArtistModern(
     binder: PlayerServiceModern.Binder,
     navController: NavController,
+    mediaItem: MediaItem,
     albumId: String?,
-    media: UiMedia,
-    mediaId: String,
-    title: String?,
-    likedAt: Long?,
     artistIds: List<Info>?,
-    isExplicit: Boolean,
-    artist: String?,
-    onCollapse: () -> Unit,
-    disableScrollingText: Boolean = false
+    onCollapse: () -> Unit
 ) {
     val colorPaletteMode by Preferences.THEME_MODE
     val playerControlsType by Preferences.PLAYER_CONTROLS_TYPE
@@ -122,7 +117,7 @@ fun InfoAlbumAndArtistModern(
 
             if (playerInfoShowIcon) {
                 IconButton(
-                    icon = if (albumId == null && !media.isLocal) R.drawable.logo_youtube else R.drawable.album,
+                    icon = if ( albumId == null && !mediaItem.isLocal ) R.drawable.logo_youtube else R.drawable.album,
                     color = if (albumId == null) colorPalette().textDisabled else colorPalette().text,
                     enabled = albumId != null,
                     onClick = {
@@ -152,7 +147,7 @@ fun InfoAlbumAndArtistModern(
                         }
                     },
                     onLongClick = {
-                        textCopyToClipboard(cleanPrefix(title ?: ""), context = appContext())
+                        textCopyToClipboard(mediaItem.mediaMetadata.title.toString(), context = appContext())
                     }
                 )
 
@@ -165,7 +160,7 @@ fun InfoAlbumAndArtistModern(
                 modifier = Modifier
                  .weight(1f)
             ) {
-                if ( isExplicit )
+                if ( mediaItem.isExplicit )
                     IconButton(
                         icon = R.drawable.explicit,
                         color = colorPalette().text,
@@ -178,7 +173,7 @@ fun InfoAlbumAndArtistModern(
 
              ){
                 BasicText(
-                    text = cleanPrefix(title ?: ""),
+                    text = mediaItem.mediaMetadata.title.toString(),
                     style = TextStyle(
                         color = if (albumId == null)
                             /*if (showthumbnail) colorPalette().textDisabled else if (colorPaletteMode == ColorPaletteMode.Light) colorPalette().textDisabled.copy(0.35f).compositeOver(Color.Black) else colorPalette().textDisabled.copy(0.35f).compositeOver(Color.White)
@@ -194,7 +189,7 @@ fun InfoAlbumAndArtistModern(
                     modifier = modifierTitle
                 )
                 BasicText(
-                    text = cleanPrefix(title ?: ""),
+                    text = mediaItem.mediaMetadata.title.toString(),
                     style = TextStyle(
                         drawStyle = Stroke(width = 1.5f, join = StrokeJoin.Round),
                         color = if (!textoutline) Color.Transparent else if (colorPaletteMode == ColorPaletteMode.Light || (colorPaletteMode == ColorPaletteMode.System && (!isSystemInDarkTheme()))) Color.White.copy(0.5f)
@@ -217,7 +212,7 @@ fun InfoAlbumAndArtistModern(
                 ){
                     IconButton(
                         color = colorPalette().favoritesIcon,
-                        icon = getLikeState(mediaId),
+                        icon = getLikeState( mediaItem.mediaId ),
                         onClick = {
                             CoroutineScope( Dispatchers.IO ).launch {
                                 YouTubeSync.toggleSongLike( appContext(), currentMediaItem ?: return@launch )
@@ -274,7 +269,7 @@ fun InfoAlbumAndArtistModern(
 
         if (playerInfoShowIcon) {
             IconButton(
-                icon = if (artistIds?.isEmpty() == true && !media.isLocal) R.drawable.logo_youtube else R.drawable.people,
+                icon = if ( artistIds?.isEmpty() == true && !mediaItem.isLocal ) R.drawable.logo_youtube else R.drawable.people,
                 color = if (artistIds?.isEmpty() == true) colorPalette().textDisabled else colorPalette().text,
                 onClick = {
                     if (artistIds?.isNotEmpty() == true && artistIds.size > 1)
@@ -308,7 +303,7 @@ fun InfoAlbumAndArtistModern(
                     }
                 },
                 onLongClick = {
-                    textCopyToClipboard(artist ?: "", context = appContext())
+                    textCopyToClipboard(mediaItem.mediaMetadata.artist.toString(), context = appContext())
                 }
             )
 
@@ -317,7 +312,7 @@ fun InfoAlbumAndArtistModern(
 
         ) {
             BasicText(
-                text = artist ?: "",
+                text = mediaItem.mediaMetadata.artist.toString(),
                 style = TextStyle(
                     color = if (albumId == null)
                         /*if (showthumbnail) colorPalette().textDisabled else if (colorPaletteMode == ColorPaletteMode.Light) colorPalette().textDisabled.copy(0.35f).compositeOver(Color.Black) else colorPalette().textDisabled.copy(0.35f).compositeOver(Color.White)
@@ -334,7 +329,7 @@ fun InfoAlbumAndArtistModern(
 
             )
             BasicText(
-                text = artist ?: "",
+                text = mediaItem.mediaMetadata.artist.toString(),
                 style = TextStyle(
                     drawStyle = Stroke(width = 1.5f, join = StrokeJoin.Round),
                     color = if (!textoutline) Color.Transparent else if (colorPaletteMode == ColorPaletteMode.Light || (colorPaletteMode == ColorPaletteMode.System && (!isSystemInDarkTheme()))) Color.White.copy(0.5f)
@@ -360,12 +355,10 @@ fun InfoAlbumAndArtistModern(
 @Composable
 fun ControlsModern(
     binder: PlayerServiceModern.Binder,
-    position: Long,
     playbackSpeed: Float,
     shouldBePlaying: Boolean,
     playerPlayButtonType: PlayerPlayButtonType,
-    isGradientBackgroundEnabled: Boolean,
-    onShowSpeedPlayerDialog: () -> Unit,
+    onShowSpeedPlayerDialog: () -> Unit
 ) {
     var effectRotationEnabled by Preferences.ROTATION_EFFECT
     var isRotated by rememberSaveable { mutableStateOf(false) }
