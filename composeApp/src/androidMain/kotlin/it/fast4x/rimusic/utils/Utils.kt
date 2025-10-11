@@ -25,7 +25,6 @@ import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Lyrics
 import app.kreate.database.models.Song
-import app.kreate.util.cleanPrefix
 import com.zionhuang.innertube.pages.LibraryPage
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ClientRequestException
@@ -237,25 +236,6 @@ val MediaItem.asSong: Song
         isExplicit = mediaMetadata.extras?.getBoolean( EXPLICIT_BUNDLE_TAG, false ) ?: false,
         isLocal = mediaMetadata.extras?.getBoolean( LOCAL_BUNDLE_TAG, false ) ?: false
     )
-
-val MediaItem.cleaned: MediaItem
-    get() {
-        // Add more if needed
-        val cleanTitle = cleanPrefix( mediaMetadata.title.toString() )
-        val cleanArtistName = cleanPrefix( mediaMetadata.artist.toString() )
-
-        if( cleanTitle == mediaMetadata.title && cleanArtistName == mediaMetadata.artist )
-            // Return as-is if no property is modified
-            // Reduce conversion time significantly when
-            // some (if not most) of media items are not modified.
-            return this
-
-        val newMetadata: MediaMetadata = mediaMetadata.buildUpon()
-                                                      .setTitle( cleanTitle )
-                                                      .setArtist( cleanArtistName )
-                                                      .build()
-        return buildUpon().setMediaMetadata( newMetadata ).build()
-    }
 
 val MediaItem.isVideo: Boolean
     get() = mediaMetadata.extras?.getBoolean("isVideo") == true

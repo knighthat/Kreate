@@ -22,7 +22,6 @@ import app.kreate.database.models.Song
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.DurationInMinutes
-import it.fast4x.rimusic.models.Song
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -153,7 +152,7 @@ fun Player.forcePlay(mediaItem: MediaItem) {
 }
 
 fun Player.playVideo(mediaItem: MediaItem) {
-    setMediaItem(mediaItem.cleaned, true)
+    setMediaItem(mediaItem, true)
     pause()
 }
 
@@ -219,7 +218,7 @@ fun Player.forcePlayAtIndex(mediaItems: List<MediaItem>, mediaItemIndex: Int) {
 
     // This will prevent UI from freezing up during conversion
     CoroutineScope( Dispatchers.Default ).launch {
-        val cleanedMediaItems = mediaItems.fastMap( MediaItem::cleaned ).fastDistinctBy( MediaItem::mediaId )
+        val cleanedMediaItems = mediaItems.fastDistinctBy( MediaItem::mediaId )
 
         runBlocking( Dispatchers.Main ) {
             setMediaItems( cleanedMediaItems, mediaItemIndex, C.TIME_UNSET )
