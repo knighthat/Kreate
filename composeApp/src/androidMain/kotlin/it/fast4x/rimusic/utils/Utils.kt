@@ -204,7 +204,7 @@ val MediaItem.asSong: Song
         artistsText = mediaMetadata.artist.toString(),
         durationText = mediaMetadata.extras?.getString("durationText"),
         thumbnailUrl = mediaMetadata.artworkUri.toString(),
-        isExplicit = mediaMetadata.extras?.getBoolean( EXPLICIT_BUNDLE_TAG, false ) ?: false,
+        isExplicit = isExplicit,
         isLocal = mediaMetadata.extras?.getBoolean( LOCAL_BUNDLE_TAG, false ) ?: false
     )
 
@@ -213,6 +213,7 @@ val MediaItem.isVideo: Boolean
 
 val MediaItem.isExplicit: Boolean
     get() = mediaMetadata.extras?.getBoolean( EXPLICIT_BUNDLE_TAG, false ) ?: false
+
 fun String.resize(
     width: Int? = null,
     height: Int? = null,
