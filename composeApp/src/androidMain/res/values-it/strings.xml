@@ -825,12 +825,12 @@
     <string name="theme_system">System</string>
     <string name="setting_entry_show_seek_forward_backward">Show seek forward/backward buttons</string>
     <string name="setting_entry_platform_indicator">Platform indicator</string>
-    <string name="word_icon">Icon</string>
+    <string name="word_icon">Icona</string>
     <string name="setting_entry_song_empty_duration_placeholder">Empty duration placeholder</string>
     <string name="setting_description_song_empty_duration_placeholder">Display \"--:--\" when duration is unknown</string>
-    <string name="shape_rectangle">Rectangle</string>
-    <string name="shape_circle">Circle</string>
-    <string name="word_description">Description</string>
+    <string name="shape_rectangle">Rettangolare</string>
+    <string name="shape_circle">Circolare</string>
+    <string name="word_description">Descrizione</string>
     <string name="word_information">Information</string>
     <string name="description_view_song_info">View song\'s details</string>
 </resources>
