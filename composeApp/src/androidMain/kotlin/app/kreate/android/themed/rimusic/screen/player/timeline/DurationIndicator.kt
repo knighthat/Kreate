@@ -35,13 +35,13 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.PauseBetweenSongs
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.styling.favoritesIcon
 import it.fast4x.rimusic.utils.DURATION_INDICATOR_HEIGHT
@@ -61,7 +61,7 @@ import kotlinx.coroutines.delay
 @UnstableApi
 @Composable
 private fun RowScope.SkipTimeButton(
-    binder: PlayerServiceModern.Binder,
+    player: Player,
     position: Long,
     operation: Long.(Long) -> Long,
     valueSelector: (Long, Long) -> Long,
@@ -79,7 +79,7 @@ private fun RowScope.SkipTimeButton(
     fun seekTo( adjustment: Long ) {
         val adjustedPosition = position.operation( adjustment )
         val newPosition = valueSelector( adjustedPosition, comparedValue )
-        binder.player.seekTo( newPosition )
+        player.seekTo( newPosition )
     }
 
     Icon(
@@ -148,7 +148,7 @@ private fun OutlinedText( text: String, outlineColor: Color ) {
 @UnstableApi
 @Composable
 fun DurationIndicator(
-    binder: PlayerServiceModern.Binder,
+    player: Player,
     scrubbingPosition: Long?,
     position: Long,
     duration: Long
@@ -160,7 +160,7 @@ fun DurationIndicator(
                            .fillMaxWidth()
     ) {
         SkipTimeButton(
-            binder, position, Long::minus, ::maxOf, 0, "Rewind", "Rewind 5 seconds", "Rewinds 30 seconds", Modifier.rotate( 180f )
+            player, position, Long::minus, ::maxOf, 0, "Rewind", "Rewind 5 seconds", "Rewinds 30 seconds", Modifier.rotate( 180f )
         )
 
         Spacer( Modifier.width( 5.dp ) )
@@ -194,7 +194,7 @@ fun DurationIndicator(
                                    .height( DURATION_INDICATOR_HEIGHT.dp ),
                 contentAlignment = Alignment.Center
             ) {
-                val positionAndDuration by binder.player.positionAndDurationState()
+                val positionAndDuration by player.positionAndDurationState()
                 val timeRemaining by remember {
                     derivedStateOf {
                         (positionAndDuration.second - positionAndDuration.first).coerceAtLeast( 0 )
@@ -207,9 +207,9 @@ fun DurationIndicator(
                     LaunchedEffect(timeRemaining) {
                         if(timeRemaining < 500) {
                             isPaused = true
-                            binder.player.pause()
+                            player.pause()
                             delay(pauseBetweenSongs.asMillis)
-                            binder.player.play()
+                            player.play()
                             isPaused = false
                         }
                     }
@@ -238,7 +238,7 @@ fun DurationIndicator(
         Spacer( Modifier.width( 5.dp ) )
 
         SkipTimeButton(
-            binder, position, Long::plus, ::minOf, duration, "Forward", "Forward 5 seconds", "Forward 30 seconds"
+            player, position, Long::plus, ::minOf, duration, "Forward", "Forward 5 seconds", "Forward 30 seconds"
         )
     }
 }

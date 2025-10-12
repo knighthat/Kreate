@@ -265,5 +265,5 @@ fun GetSeekBar(
 
     Spacer( modifier = Modifier.height( 8.dp ) )
 
-    DurationIndicator( binder, scrubbingPosition, position, duration )
+    DurationIndicator( binder.player, scrubbingPosition, position, duration )
 }
