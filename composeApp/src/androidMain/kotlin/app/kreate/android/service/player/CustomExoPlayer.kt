@@ -9,6 +9,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import app.kreate.android.Preferences
+import timber.log.Timber
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -155,4 +156,12 @@ class CustomExoPlayer(
         this.pause()
         player.stop()
     }
+
+    override fun getBufferedPercentage(): Int =
+        try {
+            player.bufferedPercentage
+        } catch ( e: IllegalArgumentException ) {
+            Timber.tag( this::class.java.simpleName ).e( e )
+            0
+        }
 }
