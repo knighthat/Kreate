@@ -2,11 +2,16 @@ package it.fast4x.rimusic
 
 import android.app.Application
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import androidx.compose.runtime.getValue
+import androidx.core.content.getSystemService
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.innertube.InnertubeProvider
+import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.CrashHandler
 import app.kreate.android.utils.logging.RollingFileLoggingTree
 import dagger.hilt.android.HiltAndroidApp
@@ -38,6 +43,14 @@ class MainApplication : Application() {
 
         Innertube.setProvider( InnertubeProvider() )
         ImageFactory.init( this )
+
+        // Register network callback
+        getSystemService<ConnectivityManager>()?.run {
+            val networkRequest: NetworkRequest = NetworkRequest.Builder()
+                                                               .addCapability( NetworkCapabilities.NET_CAPABILITY_INTERNET )
+                                                               .build()
+            registerNetworkCallback( networkRequest, ConnectivityUtils )
+        }
     }
 
     override fun onTerminate() {

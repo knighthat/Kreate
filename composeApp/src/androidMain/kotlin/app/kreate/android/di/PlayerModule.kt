@@ -37,6 +37,7 @@ import app.kreate.android.di.PlayerModule.upsertSongInfo
 import app.kreate.android.service.NetworkService
 import app.kreate.android.service.player.CustomExoPlayer
 import app.kreate.android.utils.CharUtils
+import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonWriter
@@ -54,6 +55,7 @@ import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.models.Format
 import it.fast4x.rimusic.service.LoginRequiredException
+import it.fast4x.rimusic.service.NoInternetException
 import it.fast4x.rimusic.service.UnknownException
 import it.fast4x.rimusic.service.UnplayableException
 import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
@@ -80,6 +82,7 @@ import org.schabi.newpipe.extractor.services.youtube.YoutubeJavaScriptPlayerMana
 import org.schabi.newpipe.extractor.services.youtube.YoutubeStreamHelper
 import timber.log.Timber
 import java.io.IOException
+import java.net.UnknownHostException
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Named
 import javax.inject.Singleton
@@ -371,6 +374,13 @@ object PlayerModule {
                     is LoginException,
                     is NullPointerException,            // When a component of cipherSignature wasn't found
                     is CancellationException -> e.message?.also { Timber.tag( LOG_TAG ).i( it ) }
+
+                    is UnknownHostException -> {
+                        // This exception can cause when DNS failed to resolve,
+                        // so this step is here to make sure.
+                        if( !ConnectivityUtils.isAvailable.value )
+                            throw NoInternetException(e)
+                    }
 
                     else -> Timber.tag( LOG_TAG ).e( e, "getPlayerResponse returns error" )
                 }
