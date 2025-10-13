@@ -187,8 +187,8 @@ fun Player.smartRewind() =
         seekToPreviousMediaItem()
 
 @UnstableApi
-fun Player.addNext(mediaItem: MediaItem, context: Context? = null) {
-    if (context != null && excludeMediaItem(mediaItem, context)) return
+fun Player.addNext( mediaItem: MediaItem ) {
+    if (excludeMediaItem(mediaItem)) return
 
     val itemIndex = findMediaItemIndexById(mediaItem.mediaId)
     if (itemIndex >= 0) removeMediaItem(itemIndex)
@@ -224,8 +224,8 @@ fun Player.addNext(mediaItems: List<MediaItem>, context: Context? = null) {
 }
 
 
-fun Player.enqueue(mediaItem: MediaItem, context: Context? = null) {
-     if (context != null && excludeMediaItem(mediaItem, context)) return
+fun Player.enqueue( mediaItem: MediaItem ) {
+     if ( excludeMediaItem(mediaItem) ) return
 
     if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
         forcePlay(mediaItem)
@@ -298,7 +298,7 @@ fun Player.excludeMediaItems(mediaItems: List<MediaItem>, context: Context): Lis
 
     return filteredMediaItems
 }
-fun Player.excludeMediaItem(mediaItem: MediaItem, context: Context): Boolean {
+fun Player.excludeMediaItem(mediaItem: MediaItem): Boolean {
     runCatching {
         val excludeSongWithDurationLimit by Preferences.LIMIT_SONGS_WITH_DURATION
         if (excludeSongWithDurationLimit != DurationInMinutes.Disabled) {

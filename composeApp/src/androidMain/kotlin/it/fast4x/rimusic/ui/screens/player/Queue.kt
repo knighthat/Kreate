@@ -300,10 +300,7 @@ fun Queue(
                                 )
                             },
                             onEnqueue = {
-                                binder.player.enqueue(
-                                    mediaItem,
-                                    context
-                                )
+                                binder.player.enqueue(mediaItem)
                             }
                         ) {
                             SongItem.Render(

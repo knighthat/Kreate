@@ -91,7 +91,6 @@ fun NonQueuedMediaItemGridMenu(
     onDownload: (() -> Unit)? = null
 ) {
     val binder = LocalPlayerServiceBinder.current
-    val context = LocalContext.current
 
     BaseMediaItemGridMenu(
         navController = navController,
@@ -100,8 +99,8 @@ fun NonQueuedMediaItemGridMenu(
         onStartRadio = {
             binder?.startRadio( mediaItem )
         },
-        onPlayNext = { binder?.player?.addNext(mediaItem, context) },
-        onEnqueue = { binder?.player?.enqueue(mediaItem, context) },
+        onPlayNext = { binder?.player?.addNext(mediaItem) },
+        onEnqueue = { binder?.player?.enqueue(mediaItem) },
         onDownload = onDownload,
         onRemoveFromPlaylist = onRemoveFromPlaylist,
         onHideFromDatabase = onHideFromDatabase,

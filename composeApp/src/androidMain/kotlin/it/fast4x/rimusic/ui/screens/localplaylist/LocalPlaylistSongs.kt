@@ -715,10 +715,7 @@ fun LocalPlaylistSongs(
                             }
                         },
                         onEnqueue = {
-                            binder?.player?.enqueue(
-                                song.asMediaItem,
-                                context
-                            )
+                            binder?.player?.enqueue(song.asMediaItem)
                         },
                     ) {
                         SongItem.Render(
