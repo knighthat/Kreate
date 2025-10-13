@@ -1,6 +1,7 @@
 package me.knighthat.component.ui.screens.player
 
 import android.annotation.SuppressLint
+import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -10,9 +11,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import app.kreate.android.R
 import app.kreate.android.Preferences
+import app.kreate.android.R
 import it.fast4x.compose.reordering.ReorderingState
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.ui.components.tab.toolbar.ConfirmDialog
@@ -20,9 +22,14 @@ import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.DynamicColor
 import it.fast4x.rimusic.ui.components.tab.toolbar.Icon
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
-import it.fast4x.rimusic.utils.shuffleQueue
-import it.fast4x.rimusic.utils.smoothScrollToTop
+import it.fast4x.rimusic.utils.addNext
+import it.fast4x.rimusic.utils.mediaItems
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import me.knighthat.utils.Toaster
+import timber.log.Timber
 
 @SuppressLint("ComposableNaming")
 @Composable
@@ -84,11 +91,32 @@ fun ShuffleQueue(
         @Composable
         get() = stringResource( messageId )
 
+    @OptIn(UnstableApi::class)
     override fun onShortClick() {
+        val index = player.currentMediaItemIndex
         reorderingState.coroutineScope.launch {
-            reorderingState.lazyListState.smoothScrollToTop()
+            reorderingState.lazyListState.animateScrollToItem( index )
         }.invokeOnCompletion {
-            player.shuffleQueue()
+            if( it != null ) {
+                Timber.tag( "QueueShuffler" ).e( it )
+                it.message?.also( Toaster::e )
+
+                return@invokeOnCompletion
+            }
+
+            // Any calls to [Player] must happen on Main thread
+            val mediaItems = player.mediaItems.toList()
+            CoroutineScope( Dispatchers.Default ).launch {
+                val startAt = index + 1
+                val shuffled = mediaItems.subList( startAt, mediaItems.size ).shuffled()
+
+                withContext( Dispatchers.Main.immediate ) {
+                    player.removeMediaItems( startAt, mediaItems.size )
+                    player.addNext( shuffled )
+
+                    Toaster.done()
+                }
+            }
         }
     }
 }
