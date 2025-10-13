@@ -376,8 +376,7 @@ object PlayerModule {
                     is CancellationException -> e.message?.also { Timber.tag( LOG_TAG ).i( it ) }
 
                     is UnknownHostException -> {
-                        // This exception can cause when DNS failed to resolve,
-                        // so this step is here to make sure.
+                        // Make sure it's not a temporary network fluctuation
                         if( !ConnectivityUtils.isAvailable.value )
                             throw NoInternetException(e)
                     }
