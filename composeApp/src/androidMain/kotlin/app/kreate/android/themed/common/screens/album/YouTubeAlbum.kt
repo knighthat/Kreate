@@ -521,10 +521,18 @@ fun YouTubeAlbum(
                                     },
                                     onClick = {
                                         binder.stopRadio()
-                                        binder.player.forcePlayAtIndex(
-                                            getMediaItems(),
-                                            index
-                                        )
+
+                                        val selectedSongs = getSongs()
+                                        if( song in selectedSongs )
+                                            binder.player.forcePlayAtIndex(
+                                                selectedSongs.fastMap( Song::asMediaItem ),
+                                                selectedSongs.indexOf( song )
+                                            )
+                                        else
+                                            binder.player.forcePlayAtIndex(
+                                                items.fastMap( Song::asMediaItem ),
+                                                index
+                                            )
 
                                         /*
                                             Due to the small size of checkboxes,

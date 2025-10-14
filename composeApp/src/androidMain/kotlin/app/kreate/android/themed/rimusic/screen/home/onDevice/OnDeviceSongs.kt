@@ -286,8 +286,19 @@ fun OnDeviceSong(
                     onClick = {
                         search.hideIfEmpty()
 
-                        val mediaItems = getSongs().fastMap( Song::asMediaItem )
-                        binder?.player?.forcePlayAtIndex( mediaItems, index )
+                        binder.stopRadio()
+
+                        val selectedSongs = getSongs()
+                        if( song in selectedSongs )
+                            binder.player.forcePlayAtIndex(
+                                selectedSongs.fastMap( Song::asMediaItem ),
+                                selectedSongs.indexOf( song )
+                            )
+                        else
+                            binder.player.forcePlayAtIndex(
+                                itemsOnDisplay.fastMap( Song::asMediaItem ),
+                                index
+                            )
                     }
                 )
             }
