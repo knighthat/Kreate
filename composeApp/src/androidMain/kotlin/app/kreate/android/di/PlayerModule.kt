@@ -191,7 +191,7 @@ object PlayerModule {
             databaseWorker.join()
 
             Database.asyncTransaction {
-                formatTable.insertIgnore(
+                formatTable.upsert(
                     Format(
                         videoId,
                         format.itag.toInt(),

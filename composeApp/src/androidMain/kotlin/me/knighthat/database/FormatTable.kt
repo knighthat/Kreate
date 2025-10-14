@@ -1,9 +1,6 @@
 package me.knighthat.database
 
-import android.database.SQLException
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Upsert
@@ -54,24 +51,6 @@ interface FormatTable {
      */
     @Query("SELECT DISTINCT * FROM Format WHERE songId = :songId")
     fun findBySongId( songId: String ): Flow<Format?>
-
-    /**
-     * Attempt to write [format] into database.
-     *
-     * ### Standalone use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored.
-     *
-     * ### Transaction use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored and the transaction continues.
-     *
-     * @param format data intended to insert in to database
-     */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertIgnore( format: Format )
 
     /**
      * Attempt to write [format] into database.
