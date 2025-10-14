@@ -179,9 +179,8 @@ fun Queue(
                 .let { itemsOnDisplay = it }
         }
 
-        val plistName = remember { mutableStateOf("") }
         val exportDialog = ExportSongsToCSVDialog(
-            playlistName = plistName.value,
+            playlistName = "",
             songs = ::getSongs
         )
         val shuffle = ShuffleQueue( player, reorderingState )

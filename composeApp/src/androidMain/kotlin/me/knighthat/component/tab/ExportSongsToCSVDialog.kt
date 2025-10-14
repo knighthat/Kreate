@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.core.net.toFile
 import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
@@ -87,7 +88,7 @@ class ExportSongsToCSVDialog private constructor(
                     val songsToWrite = songs().map {
                         SongCSV(
                             playlistBrowseId = playlistBrowseId,
-                            playlistName = playlistName,
+                            playlistName = playlistName.ifBlank { uri.toFile().nameWithoutExtension },
                             song = it
                         )
                     }
