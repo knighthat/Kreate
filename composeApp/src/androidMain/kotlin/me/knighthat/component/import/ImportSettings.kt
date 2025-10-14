@@ -11,7 +11,6 @@ import androidx.compose.ui.util.fastMapNotNull
 import androidx.core.content.edit
 import app.kreate.android.Preferences
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
-import it.fast4x.rimusic.utils.preferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,7 +44,7 @@ class ImportSettings private constructor(
                            Preferences.preferences.edit( true ) {
                                preferences.fastForEach { (type, key, value) ->
                                    val valueStr = value.toString()
-                                   when( type ) {
+                                   when( type.lowercase() ) {
                                        "string" -> putString( key, valueStr )
                                        "int" -> putInt( key, valueStr.toInt() )
                                        "long" -> putLong( key, valueStr.toLong() )
