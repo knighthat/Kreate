@@ -1,0 +1,22 @@
+Fixes:
+- Square icon in multiple places
+- Icons with dark background on older devices
+- Inverted icon's background when using monochrome icons
+- Adaptive icon background (teardrop, squircle, square, etc.)
+- White boxes in search lyrics text fields
+- Like button in AA and media controller
+- Crash when synced artists/albums exist along with locals - #785
+- Crash when exit app while downloading song(s)
+- Fail to restore settings - #726
+- Crash when start unselected song
+
+Changes:
+- Higher resolution thumbnail's placeholder
+- Move runtime logs and crash logs to external location
+- Remove song's cache will attempt to remove cached stream url
+- Prevent crash when buffer goes out of range
+- Stop querying for stream url when network is unavailable
+- Improve queue shuffle
+
+Removes:
+- Albums, artists, playlists shortcuts
