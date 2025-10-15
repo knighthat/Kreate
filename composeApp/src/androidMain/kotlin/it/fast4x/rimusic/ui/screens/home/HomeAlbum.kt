@@ -42,6 +42,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapNotNull
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
@@ -134,8 +135,10 @@ fun HomeAlbums(
 
     var itemsOnDisplay by persistList<Album>( "home/albums/on_display" )
     val onlineOnDisplay by remember {derivedStateOf {
-        onlineAlbums.fastFilter { filterBy === FilterBy.All || filterBy === FilterBy.YoutubeLibrary }
-                       .fastFilter { search appearsIn it.name }
+        val localIds = itemsOnDisplay.fastMap( Album::id )
+        onlineAlbums.fastFilter { it.id !in localIds }
+                    .fastFilter { filterBy === FilterBy.All || filterBy === FilterBy.YoutubeLibrary }
+                    .fastFilter { search appearsIn it.name }
     }}
 
     val sort = remember {
