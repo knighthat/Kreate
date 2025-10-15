@@ -109,6 +109,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -116,6 +117,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import me.knighthat.impl.DownloadHelperImpl
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
@@ -129,6 +131,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import kotlin.math.roundToInt
 import kotlin.system.exitProcess
+import kotlin.time.Duration.Companion.seconds
 import android.os.Binder as AndroidBinder
 import me.knighthat.innertube.Innertube as NewInnertube
 
@@ -449,9 +452,25 @@ class PlayerServiceModern:
             }
 
 
-        val minTimeForEvent by Preferences.QUICK_PICKS_MIN_DURATION
+        if ( totalPlayTimeMs <= Preferences.QUICK_PICKS_MIN_DURATION.value.asMillis )
+            return
 
-        if ( totalPlayTimeMs > minTimeForEvent.asMillis ) {
+        /*
+            There's a really small chance that at this point, the song
+            is yet to exist in the database, thus, `FOREIGN KEY constraint failed` is thrown.
+
+            To avoid this, a compact suspendable task is added,
+            its job is to wait (maximum 5s) for song to be added,
+            if it isn't by then, cancel the run
+         */
+        CoroutineScope(Dispatchers.IO).launch {
+            withTimeoutOrNull( 5.seconds ) {
+                Database.songTable
+                        .findById( mediaItem.mediaId )
+                        .filterNotNull()
+                        .first()
+            } ?: return@launch
+
             Database.asyncTransaction {
                 eventTable.insertIgnore(
                     Event(
@@ -461,7 +480,6 @@ class PlayerServiceModern:
                     )
                 )
             }
-
         }
     }
 
