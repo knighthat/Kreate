@@ -692,22 +692,18 @@ fun Lyrics(
                         title = title
                     )?.onSuccess {
                         if (it.isNotEmpty() && playerEnableLyricsPopupMessage)
-                            coroutineScope.launch {
+                            Toaster.e(
+                                R.string.info_lyrics_tracks_found_on_s,
+                                "LrcLib.net",
+                                duration = Toast.LENGTH_LONG
+                            )
+                        else
+                            if (playerEnableLyricsPopupMessage)
                                 Toaster.e(
-                                    R.string.info_lyrics_tracks_found_on_s,
+                                    R.string.info_lyrics_not_found_on_s,
                                     "LrcLib.net",
                                     duration = Toast.LENGTH_LONG
                                 )
-                            }
-                        else
-                            if (playerEnableLyricsPopupMessage)
-                                coroutineScope.launch {
-                                    Toaster.e(
-                                        R.string.info_lyrics_not_found_on_s,
-                                        "LrcLib.net",
-                                        duration = Toast.LENGTH_LONG
-                                    )
-                                }
                         if (it.isEmpty()){
                             menuState.display {
                                 Menu {
