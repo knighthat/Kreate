@@ -692,7 +692,7 @@ fun Lyrics(
                         title = title
                     )?.onSuccess {
                         if (it.isNotEmpty() && playerEnableLyricsPopupMessage)
-                            Toaster.e(
+                            Toaster.s(
                                 R.string.info_lyrics_tracks_found_on_s,
                                 "LrcLib.net",
                                 duration = Toast.LENGTH_LONG
