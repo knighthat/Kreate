@@ -2,7 +2,7 @@
 [versions]
 agp = "8.13.0"
 kotlin = "2.2.10"
-kotlin-ksp = "2.2.10-2.0.2"
+kotlin-ksp = "2.2.20-2.0.4"
 coil3 = "3.3.0"
 room = "2.7.2"
 media3 = "1.8.0"
