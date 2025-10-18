@@ -5,9 +5,11 @@
 
 version: 2
 updates:
-  # composeApp dependencies
   - package-ecosystem: gradle # See documentation for possible values
-    directory: "/composeApp"
+    directory: "/"
+    exclude-paths:
+      # They are separate projects, their dependencies are handled separately
+      - '/modules/**'
     schedule:
       interval: weekly
       day: tuesday
@@ -15,17 +17,6 @@ updates:
     ignore:
       # AGP requires manual upgrade
       - dependency-name: "com.android.application"
-
-  # Dependencies of libraries in extensions directory
-  - package-ecosystem: gradle # See documentation for possible values
-    directory: "/extensions/**"
-    schedule:
-      interval: weekly
-      day: tuesday
-    open-pull-requests-limit: 20
-
-  # Notice: DO NOT add entry for libraries in modules directory.
-  # They are separate projects, their dependencies are handled separately
 
   - package-ecosystem: github-actions # See documentation for possible values
     directory: "/" # Location of package manifests
