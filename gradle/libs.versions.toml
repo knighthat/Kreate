@@ -37,7 +37,7 @@ newpipe-extractor = "0.24.8"
 compose-kmp = "1.9.1"
 license-report = "2.9"
 hilt = "2.57.2"
-material3-kmp = "1.8.2"
+material3-kmp = "1.9.0"
 
 
 [libraries]
