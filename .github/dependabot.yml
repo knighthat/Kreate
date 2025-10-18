@@ -5,20 +5,28 @@
 
 version: 2
 updates:
+  # composeApp dependencies
   - package-ecosystem: gradle # See documentation for possible values
-    directory: "/" # Location of package manifests
+    directory: "/composeApp"
     schedule:
       interval: weekly
       day: tuesday
     open-pull-requests-limit: 20
     ignore:
       # AGP requires manual upgrade
-      - dependency-name: "com.android.tools.build:gradle"
       - dependency-name: "com.android.application"
-      - dependency-name: "com.android.library"
-      # These dependencies break build if implemented, potentially require manual intervention
-      - dependency-name: "org.jetbrains.kotlin:*"          # Kotlin (all submodules)
-      - dependency-name: "com.google.devtools.ksp"
+
+  # Dependencies of libraries in extensions directory
+  - package-ecosystem: gradle # See documentation for possible values
+    directory: "/extensions/**"
+    schedule:
+      interval: weekly
+      day: tuesday
+    open-pull-requests-limit: 20
+
+  # Notice: DO NOT add entry for libraries in modules directory.
+  # They are separate projects, their dependencies are handled separately
+
   - package-ecosystem: github-actions # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
