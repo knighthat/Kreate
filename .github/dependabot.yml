@@ -9,7 +9,7 @@ updates:
     directory: "/"
     exclude-paths:
       # They are separate projects, their dependencies are handled separately
-      - '/modules/**'
+      - 'modules/**'
     schedule:
       interval: weekly
       day: tuesday
