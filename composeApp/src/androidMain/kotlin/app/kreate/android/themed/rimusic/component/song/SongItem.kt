@@ -59,6 +59,7 @@ import it.fast4x.rimusic.enums.DownloadedStateMedia
 import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
+import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.ui.components.MusicAnimation
 import it.fast4x.rimusic.ui.styling.Appearance
@@ -214,16 +215,6 @@ object SongItem: Visual() {
                                }
         )
     }
-
-    @OptIn(UnstableApi::class)
-    @Composable
-    fun CacheAndDownloadIcon(
-        song: Song,
-        values: Values,
-        modifier: Modifier = Modifier,
-        onClick: () -> Unit = {}
-    ) =
-        CacheAndDownloadIcon( song.id, song, values, MyDownloadHelper::handleDownload , modifier, onClick )
 
     /**
      * Display badges such as "playlist", "explicit", etc.
@@ -471,9 +462,11 @@ object SongItem: Visual() {
                                        // it to the bottom for better view
                                        .align( Alignment.Bottom )
                 )
-                CacheAndDownloadIcon( song, values ) {
-                    binder.cache.removeResource( song.id )
-                }
+
+                if( !song.isLocal )
+                    CacheAndDownloadIcon( song.id, song, values, MyDownloadHelper::handleDownload , modifier ) {
+                        binder.cache.removeResource( song.id )
+                    }
             },
             trailingContent = {
                 itemSelector?.CheckBox( song )
