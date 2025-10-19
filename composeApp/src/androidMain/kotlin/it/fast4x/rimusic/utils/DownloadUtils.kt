@@ -6,79 +6,66 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
+import app.kreate.android.R
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalDownloadHelper
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.enums.DownloadedStateMedia
 import it.fast4x.rimusic.service.MyDownloadHelper
-import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.service.modern.isLocal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
+import me.knighthat.utils.Toaster
+import timber.log.Timber
 
 
 @UnstableApi
 @Composable
-fun downloadedStateMedia(mediaId: String): DownloadedStateMedia {
-    val binder = LocalPlayerServiceBinder.current
-
-    val cachedBytes = remember(mediaId) {
-        binder?.cache?.getCachedBytes(mediaId, 0, -1)
-    }
-
+fun downloadedStateMedia( mediaId: String ): DownloadedStateMedia {
     val isDownloaded by remember {
-        MyDownloadHelper.getDownload( mediaId ).map {
-            it?.state == Download.STATE_COMPLETED
-        }
-    }.collectAsState( false, Dispatchers.IO )
-    val isCached by remember {
-        Database.formatTable.findBySongId( mediaId ).map {
-            it?.contentLength == cachedBytes
-        }
+        MyDownloadHelper.getDownload( mediaId )
+                        .map { it?.state == Download.STATE_COMPLETED }
     }.collectAsState( false, Dispatchers.IO )
 
-    return when {
-        isDownloaded && isCached -> DownloadedStateMedia.CACHED_AND_DOWNLOADED
-        isDownloaded && !isCached -> DownloadedStateMedia.DOWNLOADED
-        !isDownloaded && isCached -> DownloadedStateMedia.CACHED
-        else -> DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED
-    }
-}
-
-@UnstableApi
-@Composable
-fun getDownloadStateMedia(
-    binder: PlayerServiceModern.Binder,
-    songId: String
-): DownloadedStateMedia {
-    if( songId.startsWith( LOCAL_KEY_PREFIX, true ) )
+    // Return early so it doesn't create another remember function
+    if( isDownloaded )
         return DownloadedStateMedia.DOWNLOADED
 
-    val isDownloaded by remember {
-        MyDownloadHelper.getDownload( songId )
-            .map { it?.state == Download.STATE_COMPLETED }
-    }.collectAsState( false, Dispatchers.IO )
-    val isCached by remember {
+    val cache = LocalPlayerServiceBinder.current?.cache
+    try {
+        cache!!.cacheSpace
+    } catch ( e: Exception ) {
+        when( e ) {
+            // When cache is uninitialized
+            is NullPointerException,
+            // When cache is not ready (or is released)
+            is IllegalStateException -> { /* Does nothing */ }
+
+            // Except for those 2, which are known (and unimportant) error
+            // Must show error to user so they can report
+            else -> Toaster.e( R.string.error_access_cache_failed )
+        }
+
+        Timber.tag( "DownloadUtil" ).e( e )
+
+        return DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED
+    }
+
+    // Force cache to to be available
+    // Throw NullPointerException is uninitialized
+    val isCached by remember( mediaId, cache ) {
+        val cachedBytes = cache.getCachedBytes( mediaId, 0, C.LENGTH_UNSET.toLong() )
+
         Database.formatTable
-            .findBySongId( songId )
-            .map {
-                if( it?.contentLength == null )
-                    return@map false
-                binder.cache.isCached( it.songId, 0, it.contentLength )
-            }
+                .findBySongId( mediaId )
+                .map { it?.contentLength == cachedBytes }
     }.collectAsState( false, Dispatchers.IO )
 
-    return when {
-        isDownloaded && isCached  -> DownloadedStateMedia.CACHED_AND_DOWNLOADED
-        isDownloaded && !isCached -> DownloadedStateMedia.DOWNLOADED
-        !isDownloaded && isCached -> DownloadedStateMedia.CACHED
-        // !isDownloaded && !isCached
-        else                      -> DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED
-    }
+    return if( isCached ) DownloadedStateMedia.CACHED else DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED
 }
 
 @UnstableApi

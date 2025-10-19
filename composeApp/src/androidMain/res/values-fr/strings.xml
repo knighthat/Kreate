@@ -836,4 +836,5 @@ Volume BAS : titre précédent</string>
     <string name="word_description">Description</string>
     <string name="word_information">Information</string>
     <string name="description_view_song_info">Voir les détails du titre</string>
+    <string name="error_access_cache_failed">Failed to retrieve data from cache storage</string>
 </resources>

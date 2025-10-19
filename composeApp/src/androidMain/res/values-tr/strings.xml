@@ -833,4 +833,5 @@
     <string name="word_description">Açıklama</string>
     <string name="word_information">Bilgi</string>
     <string name="description_view_song_info">Şarkının ayrıntılarına bak</string>
+    <string name="error_access_cache_failed">Failed to retrieve data from cache storage</string>
 </resources>
