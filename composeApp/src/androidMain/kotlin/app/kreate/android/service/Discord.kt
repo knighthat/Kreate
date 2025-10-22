@@ -113,16 +113,11 @@ class Discord(private val context: Context) {
         CoroutineScope( Dispatchers.IO ).launch {
             try {
                 DiscordLib.login {
-                    val activity = templateActivity.copy(
-                        detailsUrl = getAppButton.url
-                    )
+                    this.token = token
+                    this.properties = Identify.Properties("Android", "discord-kotlin", Build.DEVICE)
+                    this.intents = 0
 
-                    Identify(
-                        token = token,
-                        properties = Identify.Properties("Android", "discord-kotlin", Build.DEVICE),
-                        intents = 0,
-                        presence = Presence(null, listOf( activity ), Status.ONLINE, false)
-                    )
+                    this.initPresence( templateActivity.copy(detailsUrl = getAppButton.url) )
                 }
             } catch ( _: UnknownHostException ) {
                 delay( 1.seconds )
