@@ -10,6 +10,7 @@ import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
+import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.DiscordLogger
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
@@ -22,6 +23,7 @@ import it.fast4x.rimusic.models.Artist
 import it.fast4x.rimusic.utils.thumbnail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import me.knighthat.discord.Status
@@ -35,8 +37,11 @@ import me.knighthat.utils.ImageProcessor
 import me.knighthat.utils.Repository
 import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Contract
+import timber.log.Timber
+import java.net.UnknownHostException
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
+import kotlin.time.Duration.Companion.seconds
 import me.knighthat.discord.Discord as DiscordLib
 
 
@@ -106,22 +111,29 @@ class Discord(private val context: Context) {
 
     private fun login( token: String ) =
         CoroutineScope( Dispatchers.IO ).launch {
-            DiscordLib.login {
-                val activity = templateActivity.copy(
-                    detailsUrl = getAppButton.url
-                )
+            try {
+                DiscordLib.login {
+                    val activity = templateActivity.copy(
+                        detailsUrl = getAppButton.url
+                    )
 
-                Identify(
-                    token = token,
-                    properties = Identify.Properties("Android", "discord-kotlin", Build.DEVICE),
-                    intents = 0,
-                    presence = Presence(null, listOf( activity ), Status.ONLINE, false)
-                )
+                    Identify(
+                        token = token,
+                        properties = Identify.Properties("Android", "discord-kotlin", Build.DEVICE),
+                        intents = 0,
+                        presence = Presence(null, listOf( activity ), Status.ONLINE, false)
+                    )
+                }
+            } catch ( _: UnknownHostException ) {
+                delay( 1.seconds )
+
+                if( ConnectivityUtils.isAvailable.value )
+                    register()
+            } catch ( e: Exception ) {
+                Timber.tag( "discord" ).e( e )
+                e.message?.also( Toaster::e )
             }
-        }.invokeOnCompletion { err ->
-            err?.printStackTrace()
-            err?.message?.also( Toaster::e )
-        }.dispose()
+        }
 
     private suspend fun uploadArtwork( artworkUri: Uri ): Result<String> =
         runCatching {
