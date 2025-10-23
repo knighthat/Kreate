@@ -144,8 +144,6 @@ fun MiniPlayer(
 
     val mediaItem = nullableMediaItem ?: return
 
-    playerError?.let { PlayerError(error = it) }
-
     val isSongLiked by remember( mediaItem.mediaId ) {
         Database.songTable
                 .isLiked( mediaItem.mediaId )

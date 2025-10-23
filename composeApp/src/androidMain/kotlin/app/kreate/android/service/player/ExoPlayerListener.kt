@@ -2,6 +2,7 @@ package app.kreate.android.service.player
 
 import android.content.Context
 import android.media.audiofx.LoudnessEnhancer
+import android.widget.Toast
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.compose.runtime.getValue
@@ -24,6 +25,12 @@ import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.NotificationButtons
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.models.QueuedMediaItem
+import it.fast4x.rimusic.service.LoginRequiredException
+import it.fast4x.rimusic.service.MissingDecipherKeyException
+import it.fast4x.rimusic.service.NoInternetException
+import it.fast4x.rimusic.service.PlayableFormatNotFoundException
+import it.fast4x.rimusic.service.UnknownException
+import it.fast4x.rimusic.service.UnplayableException
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.utils.mediaItems
 import it.fast4x.rimusic.utils.playNext
@@ -37,7 +44,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
 import timber.log.Timber
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.time.Duration.Companion.seconds
 
+@OptIn(ExperimentalAtomicApi::class)
 @UnstableApi
 class ExoPlayerListener(
     private val player: ExoPlayer,
@@ -51,6 +61,8 @@ class ExoPlayerListener(
 ): Player.Listener {
 
     private var volumeNormalizationJob: Job = Job()
+    private var errorTimestamp = 0L
+    private var lastErrorMessage = ""
 
     var loudnessEnhancer: LoudnessEnhancer? = null
         private set
@@ -185,6 +197,36 @@ class ExoPlayerListener(
             }
     }
 
+    @MainThread
+    private fun traverseErrorStack( t: Throwable ): Throwable =
+        when( t ) {
+            is PlayableFormatNotFoundException,
+            is UnplayableException,
+            is LoginRequiredException,
+            is NoInternetException,
+            is UnknownException,
+            is MissingDecipherKeyException -> t
+
+            else -> t.cause?.let( ::traverseErrorStack ) ?: t
+        }
+
+    @MainThread
+    private fun printErrorMessage( errMsg: String )  {
+        // If the same error is set within 10s, it'll be ignored.
+        val timeWindow = errorTimestamp + 10.seconds.inWholeMilliseconds
+
+        if( errMsg == lastErrorMessage
+            && System.currentTimeMillis() <= timeWindow
+        ) return
+
+        lastErrorMessage = errMsg
+        // When field is successfully set, update timestamp.
+        errorTimestamp = System.currentTimeMillis()
+        // Finally, print the error if not blank
+        if( errMsg.isNotBlank() )
+            Toaster.e( errMsg, Toast.LENGTH_LONG )
+    }
+
     override fun onPlayWhenReadyChanged( playWhenReady: Boolean, reason: Int ) = saveQueueToDatabase()
 
     override fun onRepeatModeChanged( repeatMode: Int ) {
@@ -216,46 +258,21 @@ class ExoPlayerListener(
         }
     }
 
-    override fun onPlayerError(error: PlaybackException) {
-        super.onPlayerError(error)
+    override fun onPlayerError( error: PlaybackException ) {
+        val rootCause = traverseErrorStack( error )
 
-        val connectionExceptions = listOf(
-            PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED, //primary error code to manage
-            PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_TIMEOUT
-        )
+        when( rootCause ) {
+            is PlayableFormatNotFoundException -> appContext().getString( R.string.error_couldn_t_find_a_playable_audio_format )
+            is NoInternetException -> appContext().getString( R.string.no_connection )
+            is MissingDecipherKeyException -> appContext().getString( R.string.error_failed_to_decipher_signature )
 
-        // check if error is caused by internet connection
-        val isConnectionError = (error.cause?.cause as? PlaybackException)?.errorCode in connectionExceptions
+            else -> rootCause.message ?: appContext().getString( R.string.error_unknown )
+        }.also( ::printErrorMessage )
 
-        if (!isNetworkAvailable.value || isConnectionError) {
-            isNetworkAvailable.value = true
-            Toaster.noInternet()
-            return
-        }
+        // TODO: Add additional recovery step if type of error allows it
 
-        val playbackHttpExeptionList = listOf(
-            PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS,
-            PlaybackException.ERROR_CODE_IO_READ_POSITION_OUT_OF_RANGE,
-            416 // 416 Range Not Satisfiable
-        )
-
-        if (error.errorCode in playbackHttpExeptionList) {
-            Timber.e("PlayerServiceModern onPlayerError recovered occurred errorCodeName ${error.errorCodeName} cause ${error.cause?.cause}")
-            println("PlayerServiceModern onPlayerError recovered occurred errorCodeName ${error.errorCodeName} cause ${error.cause?.cause}")
-            player.pause()
-            player.prepare()
-            player.play()
-            return
-        }
-
-        if ( !Preferences.PLAYBACK_SKIP_ON_ERROR.value || !player.hasNextMediaItem() )
-            return
-
-        val prev = player.currentMediaItem ?: return
-        //player.seekToNextMediaItem()
-        player.playNext()
-
-        Toaster.e( R.string.skip_media_on_error_message, prev.mediaMetadata.title )
+        if ( Preferences.PLAYBACK_SKIP_ON_ERROR.value && player.hasNextMediaItem() )
+            player.playNext()
     }
 
     override fun onEvents(player: Player, events: Player.Events) {

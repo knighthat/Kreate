@@ -834,4 +834,5 @@
     <string name="word_information">Información</string>
     <string name="description_view_song_info">Ver detalles de la canción</string>
     <string name="error_access_cache_failed">Failed to retrieve data from cache storage</string>
+    <string name="error_failed_to_decipher_signature">Failed to decipher signature</string>
 </resources>
