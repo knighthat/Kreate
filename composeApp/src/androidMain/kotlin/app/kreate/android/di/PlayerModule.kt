@@ -51,6 +51,7 @@ import io.ktor.client.request.head
 import io.ktor.http.URLBuilder
 import io.ktor.http.parseQueryString
 import io.ktor.util.collections.ConcurrentMap
+import io.ktor.util.network.UnresolvedAddressException
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.models.Format
@@ -86,8 +87,6 @@ import java.net.UnknownHostException
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Named
 import javax.inject.Singleton
-import javax.security.auth.login.LoginException
-import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.seconds
 import me.knighthat.innertube.request.body.Context as InnertubeContext
 
@@ -364,24 +363,22 @@ object PlayerModule {
                 }
             } catch ( e: Exception ) {
                 when( e ) {
-                    // Only show this exception because this needs update
-                    // Other errors might be because of unsuccessful stream extraction
-                    is MissingFieldException -> e.message?.also( Toaster::e )
-
-                    // Must be placed last because most exceptions above are lumped
-                    // into this exception in the end. And the message is vague
-                    is UnplayableException,
-                    is LoginException,
-                    is NullPointerException,            // When a component of cipherSignature wasn't found
-                    is CancellationException -> e.message?.also { Timber.tag( LOG_TAG ).i( it ) }
-
-                    is UnknownHostException -> {
+                    is UnknownHostException,
+                    is UnresolvedAddressException -> {
                         // Make sure it's not a temporary network fluctuation
                         if( !ConnectivityUtils.isAvailable.value )
                             throw NoInternetException(e)
                     }
 
-                    else -> Timber.tag( LOG_TAG ).e( e, "getPlayerResponse returns error" )
+                    else -> {
+                        // Only show this exception because this needs update
+                        // Other errors might be because of unsuccessful stream extraction
+                        if( e is MissingFieldException )
+                            e.message?.also( Toaster::e )
+
+                        Timber.tag( LOG_TAG )
+                              .e( e, "${CONTEXTS[index].client.clientName} returns error" )
+                    }
                 }
 
                 lastException = e
