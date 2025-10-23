@@ -5,9 +5,12 @@ import androidx.media3.common.util.UnstableApi
 
 
 const val ERROR_CODE_RESPONSE_PARSING_ERROR = 2100
+const val ERROR_CODE_PLAYABLE_FORMAT_NOT_FOUND = 2101
 
 @UnstableApi
-class PlayableFormatNotFoundException : PlaybackException(null, null, ERROR_CODE_REMOTE_ERROR)
+class PlayableFormatNotFoundException
+    : PlaybackException("no playable format found", null, ERROR_CODE_PLAYABLE_FORMAT_NOT_FOUND)
+
 @UnstableApi
 class UnplayableException(
     message: String? = null,

@@ -58,6 +58,7 @@ import it.fast4x.rimusic.models.Format
 import it.fast4x.rimusic.service.LoginRequiredException
 import it.fast4x.rimusic.service.MissingDecipherKeyException
 import it.fast4x.rimusic.service.NoInternetException
+import it.fast4x.rimusic.service.PlayableFormatNotFoundException
 import it.fast4x.rimusic.service.UnplayableException
 import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
 import it.fast4x.rimusic.utils.isAtLeastAndroid10
@@ -212,6 +213,7 @@ object PlayerModule {
     //</editor-fold>
 
     //<editor-fold desc="Extractors">
+    @Throws(PlayableFormatNotFoundException::class)
     private fun extractFormat(
         streamingData: PlayerResponse.StreamingData?,
         audioQualityFormat: AudioQualityFormat,
@@ -226,7 +228,8 @@ object PlayerModule {
                          }
                          ?.sortedBy(PlayerResponse.StreamingData.Format::bitrate )
                          .orEmpty()
-        check( sortedAudioFormats.isNotEmpty() )
+        if( sortedAudioFormats.isEmpty() )
+            throw PlayableFormatNotFoundException()
 
         return when( audioQualityFormat ) {
             AudioQualityFormat.High -> sortedAudioFormats.last()
