@@ -57,7 +57,6 @@ import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.models.Format
 import it.fast4x.rimusic.service.LoginRequiredException
 import it.fast4x.rimusic.service.NoInternetException
-import it.fast4x.rimusic.service.UnknownException
 import it.fast4x.rimusic.service.UnplayableException
 import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
 import it.fast4x.rimusic.utils.isAtLeastAndroid10
@@ -284,10 +283,9 @@ object PlayerModule {
 
     private fun checkPlayabilityStatus( playabilityStatus: PlayerResponse.PlayabilityStatus ) =
         when( playabilityStatus.status ) {
-            "OK"                -> { Timber.tag( LOG_TAG ).d( "`playabilityStatus` is OK" ) }
+            "OK"                -> Timber.tag( LOG_TAG ).d( "`playabilityStatus` is OK" )
             "LOGIN_REQUIRED"    -> throw LoginRequiredException(playabilityStatus.reason)
-            "UNPLAYABLE"        -> throw UnplayableException(playabilityStatus.reason)
-            else                -> throw UnknownException(playabilityStatus.reason)
+            else                -> throw UnplayableException(playabilityStatus.reason)
         }
     //</editor-fold>
 
