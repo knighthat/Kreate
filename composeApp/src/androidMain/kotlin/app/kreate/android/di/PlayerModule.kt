@@ -56,6 +56,7 @@ import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.models.Format
 import it.fast4x.rimusic.service.LoginRequiredException
+import it.fast4x.rimusic.service.MissingDecipherKeyException
 import it.fast4x.rimusic.service.NoInternetException
 import it.fast4x.rimusic.service.UnplayableException
 import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
@@ -241,17 +242,19 @@ object PlayerModule {
         }
     }
 
+    @Throws(MissingDecipherKeyException::class)
     private fun extractStreamUrl( videoId: String, format: PlayerResponse.StreamingData.Format ): String =
         format.signatureCipher?.let { signatureCipher ->
             Timber.tag( LOG_TAG ).v( "deobfuscating signature $signatureCipher" )
 
             val (s, sp, url) = with( parseQueryString( signatureCipher ) ) {
+                val signature = this["s"] ?: throw MissingDecipherKeyException("s")
+                val signatureParam = this["sp"] ?: throw MissingDecipherKeyException("sp")
+                val signatureUrl = this["url"] ?: throw MissingDecipherKeyException("url")
                 Triple(
-                    requireNotNull( this["s"] ) { "missing signature cipher" },
-                    requireNotNull( this["sp"] ) { "missing signature parameter" },
-                    requireNotNull(
-                        this["url"]?.let( ::URLBuilder )
-                    ) { "missing url from signatureCipher" }
+                    signature,
+                    signatureParam,
+                    URLBuilder(signatureUrl)
                 )
             }
             url.parameters[sp] = YoutubeJavaScriptPlayerManager.deobfuscateSignature( videoId, s )

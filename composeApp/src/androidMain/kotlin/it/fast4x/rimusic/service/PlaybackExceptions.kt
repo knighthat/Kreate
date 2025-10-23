@@ -3,6 +3,9 @@ package it.fast4x.rimusic.service
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi
 
+
+const val ERROR_CODE_RESPONSE_PARSING_ERROR = 2100
+
 @UnstableApi
 class PlayableFormatNotFoundException : PlaybackException(null, null, ERROR_CODE_REMOTE_ERROR)
 @UnstableApi
@@ -39,3 +42,6 @@ class UnknownException(
 @UnstableApi
 class FakeException : PlaybackException(null, null, ERROR_CODE_IO_NETWORK_CONNECTION_FAILED)
 
+@UnstableApi
+class MissingDecipherKeyException(key: String)
+    : PlaybackException("missing \"$key\" key in signatureCipher", null, ERROR_CODE_RESPONSE_PARSING_ERROR)
