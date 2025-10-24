@@ -1,5 +1,7 @@
 name: 🐛Bug report
 description: Short description of how to trigger this bug
+labels:
+  - bug
 body:
   - type: markdown
     attributes:
