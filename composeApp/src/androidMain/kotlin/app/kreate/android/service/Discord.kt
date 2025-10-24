@@ -188,7 +188,8 @@ class Discord @Inject constructor(
         val scheme = artworkUri.scheme?.lowercase().orEmpty()
         val artworkUri =
             if( scheme == ContentResolver.SCHEME_FILE || scheme == ContentResolver.SCHEME_CONTENT )
-                uploadArtwork( artworkUri )
+                uploadArtwork( artworkUri ).getOrNull()
+                                           ?.let( String::toUri )
             else
                 artworkUri
 
