@@ -1,6 +1,5 @@
 package app.kreate.android.di
 
-import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.content.SharedPreferences
@@ -29,6 +28,7 @@ import app.kreate.android.service.player.CustomExoPlayer
 import app.kreate.android.utils.CharUtils
 import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
+import app.kreate.android.utils.isLocalFile
 import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonWriter
 import dagger.Module
@@ -446,8 +446,7 @@ object PlayerModule {
         // When player resumes from persistent queue, the videoId isn't path to the file,
         // but the following format: local:id. Therefore, checking for prefix is needed.
         val isLocal = videoId.startsWith(LOCAL_KEY_PREFIX, true )
-                || dataSpec.uri.scheme == ContentResolver.SCHEME_CONTENT
-                || dataSpec.uri.scheme == ContentResolver.SCHEME_FILE
+                || dataSpec.uri.isLocalFile()
 
         if( !isLocal )
             upsertSongInfo( context, videoId )

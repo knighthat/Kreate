@@ -1,6 +1,5 @@
 package app.kreate.android.service
 
-import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.os.Build
@@ -13,6 +12,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.DiscordLogger
+import app.kreate.android.utils.isLocalFile
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
@@ -185,9 +185,8 @@ class Discord @Inject constructor(
 
         Timber.tag( LOGGING_TAG ).v( "Getting external url for artwork $artworkUri" )
 
-        val scheme = artworkUri.scheme?.lowercase().orEmpty()
         val artworkUri =
-            if( scheme == ContentResolver.SCHEME_FILE || scheme == ContentResolver.SCHEME_CONTENT )
+            if( artworkUri.isLocalFile() )
                 uploadArtwork( artworkUri ).getOrNull()
                                            ?.let( String::toUri )
             else

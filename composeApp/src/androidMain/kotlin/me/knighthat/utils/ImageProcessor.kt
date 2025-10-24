@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.OpenableColumns
+import app.kreate.android.utils.isLocalFile
 import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.contracts.ExperimentalContracts
@@ -93,10 +94,9 @@ object ImageProcessor {
         OutOfMemoryError::class
     )
     fun compressArtwork( context: Context, artworkUri: Uri, maxWidth: Int, maxHeight: Int, maxSize: Long ): Uri {
-        require(
-            artworkUri.scheme.equals( ContentResolver.SCHEME_CONTENT, true )
-                    || artworkUri.scheme.equals( ContentResolver.SCHEME_FILE, true )
-        ) { "$artworkUri is NOT a local file!" }
+        require(artworkUri.isLocalFile()) {
+            "$artworkUri is NOT a local file!"
+        }
 
         val contentResolver = context.contentResolver
         val mimeType = contentResolver.getType( artworkUri )
