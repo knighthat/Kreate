@@ -3,13 +3,11 @@ package app.kreate.android.di
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
+import android.content.SharedPreferences
 import android.provider.MediaStore
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastFilter
 import androidx.core.net.toUri
-import androidx.media3.common.AudioAttributes
-import androidx.media3.common.C
-import androidx.media3.common.audio.SonicAudioProcessor
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
@@ -20,20 +18,12 @@ import androidx.media3.datasource.cache.CacheDataSink
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR
 import androidx.media3.datasource.okhttp.OkHttpDataSource
-import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.audio.AudioSink
-import androidx.media3.exoplayer.audio.DefaultAudioOffloadSupportProvider
-import androidx.media3.exoplayer.audio.DefaultAudioSink
-import androidx.media3.exoplayer.audio.DefaultAudioSink.DefaultAudioProcessorChain
-import androidx.media3.exoplayer.audio.SilenceSkippingAudioProcessor
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
-import androidx.media3.extractor.DefaultExtractorsFactory
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.di.PlayerModule.upsertSongFormat
 import app.kreate.android.di.PlayerModule.upsertSongInfo
+import app.kreate.android.service.Discord
 import app.kreate.android.service.NetworkService
 import app.kreate.android.service.player.CustomExoPlayer
 import app.kreate.android.utils.CharUtils
@@ -61,7 +51,6 @@ import it.fast4x.rimusic.service.NoInternetException
 import it.fast4x.rimusic.service.PlayableFormatNotFoundException
 import it.fast4x.rimusic.service.UnplayableException
 import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
-import it.fast4x.rimusic.utils.isAtLeastAndroid10
 import it.fast4x.rimusic.utils.isConnectionMetered
 import it.fast4x.rimusic.utils.isNetworkAvailable
 import kotlinx.coroutines.CoroutineScope
@@ -83,7 +72,6 @@ import org.schabi.newpipe.extractor.localization.Localization
 import org.schabi.newpipe.extractor.services.youtube.YoutubeJavaScriptPlayerManager
 import org.schabi.newpipe.extractor.services.youtube.YoutubeStreamHelper
 import timber.log.Timber
-import java.io.IOException
 import java.net.UnknownHostException
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Named
@@ -554,69 +542,12 @@ object PlayerModule {
 
     @Provides
     @Singleton
-    fun providesPlayer(
+    fun providesExoPlayer(
         @ApplicationContext context: Context,
-        @Named("playerDataSource") dataSourceFactory: DataSource.Factory
-    ): ExoPlayer {
-        val datasourceFactory = DefaultMediaSourceFactory(
-            dataSourceFactory,
-            DefaultExtractorsFactory()
-        ).setLoadErrorHandlingPolicy(
-            object : DefaultLoadErrorHandlingPolicy() {
-                override fun isEligibleForFallback(exception: IOException) = true
-            }
-        )
-        val renderFactory = object : DefaultRenderersFactory(context) {
-            override fun buildAudioSink(
-                context: Context,
-                enableFloatOutput: Boolean,
-                enableAudioTrackPlaybackParams: Boolean
-            ): AudioSink {
-                val minimumSilenceDuration: Long = Preferences.AUDIO_SKIP_SILENCE_LENGTH
-                                                              .value
-                                                              .coerceIn( 1_000L..2_000_000L )
-
-                return DefaultAudioSink.Builder(context)
-                    .setEnableFloatOutput(enableFloatOutput)
-                    .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
-                    .setAudioOffloadSupportProvider(
-                        DefaultAudioOffloadSupportProvider(context)
-                    )
-                    .setAudioProcessorChain(
-                        DefaultAudioProcessorChain(
-                            arrayOf(),
-                            SilenceSkippingAudioProcessor(
-                                /* minimumSilenceDurationUs = */ minimumSilenceDuration,
-                                /* silenceRetentionRatio = */ 0.01f,
-                                /* maxSilenceToKeepDurationUs = */ minimumSilenceDuration,
-                                /* minVolumeToKeepPercentageWhenMuting = */ 0,
-                                /* silenceThresholdLevel = */ 256
-                            ),
-                            SonicAudioProcessor()
-                        )
-                    )
-                    .build()
-                    .apply {
-                        if (isAtLeastAndroid10) setOffloadMode(AudioSink.OFFLOAD_MODE_DISABLED)
-                    }
-            }
-        }
-        val audioAttributes: AudioAttributes = AudioAttributes.Builder()
-                                                              .setUsage( C.USAGE_MEDIA )
-                                                              .setContentType( C.AUDIO_CONTENT_TYPE_MUSIC )
-                                                              .build()
-        val handleAudioFocus by Preferences.AUDIO_SMART_PAUSE_DURING_CALLS
-
-        return ExoPlayer.Builder(context)
-                        .setMediaSourceFactory( datasourceFactory )
-                        .setRenderersFactory( renderFactory )
-                        .setHandleAudioBecomingNoisy( true )
-                        .setWakeMode( C.WAKE_MODE_NETWORK )
-                        .setAudioAttributes( audioAttributes, handleAudioFocus )
-                        .setUsePlatformDiagnostics( false )
-                        .build()
-                        .let( ::CustomExoPlayer )
-    }
+        @Named("playerDataSource") dataSourceFactory: DataSource.Factory,
+        preferences: SharedPreferences,
+        discord: Discord
+    ): ExoPlayer = CustomExoPlayer(context, dataSourceFactory, preferences, discord)
 
     /**
      * Remove cached url of [songId].
