@@ -1,54 +1,17 @@
 name: 🐛Bug report
 description: Short description of how to trigger this bug
-labels:
-  - bug
 body:
   - type: markdown
     attributes:
       value: >-
         <h1 align="center">❗❗ IMPORTANT ❗❗</h1>
 
-        <h2 align="center">PLEASE READ </h1>
+        <h2 align="center">PLEASE READ <a
+        href='https://kreate.knighthat.me/usr/faq/how-to-make-a-good-issue-ticket'>HOW
+        TO MAKE GOOD ISSUE TICKET</a></h1>
 
-
-        ---
-
-
-        # Media cannot be played / Unknown Error / Login required
-
-
-        If you received one of these messages, chances are, YouTube is blocking
-        you and it is not our fault. Please don't open a ticket for this. We
-        already know!
-
-
-
-        # Download unsuccessful
-
-
-        If you click download (all or individually), and the download icons
-        aren't changed. 
-
-        Only open ticket if none of your songs downloaded.
-
-
-        If some are and some aren't, you are blocked by YouTube, please manually
-        download them with some break time in between
-                
-
-        # Don't think that's YT?
-                       
-        If you can't play songs even on those you've downloaded, please try
-        these steps:
-                
-        1. Re-download the song
-
-        2. Clear cache
-
-        3. Play songs that are physically on your device
-                        
-        Then, if the problem persists. Please follow the steps below to open a
-        ticket
+        > If your ticket doesn't meet standards mentioned in the article, it'll
+        be closed without notice.
 
 
         ---
@@ -62,18 +25,16 @@ body:
         gives us more reference to pinpoint the problem.
 
 
-        ---
-
-
         Required fields are marked with *
+
+        ---
   - type: input
     id: app-version
     attributes:
       label: Version of Kreate
       description: >-
-        Please specify what version of Kreate are you on. Note: Don't use
-        "latest" or similar terms, we have apps on multiple stores with some are
-        lagged behind. Tip: Find your app version in Settings > About
+        [How to get
+        it?](https://kreate.knighthat.me/usr/faq/how-to-make-a-good-issue-ticket#version-of-kreate)
       placeholder: v.1.0.0, v.1.1.0, etc.
     validations:
       required: true
@@ -102,15 +63,20 @@ body:
     id: other-android-version
     attributes:
       label: Other Android version
-      description: Only fill when you select "Other" in Android version
+      description: >-
+        Only fill when you select "Other" in Android version, or issue happens
+        in multiple versions
       placeholder: '16'
   - type: checkboxes
     id: required-actions
     attributes:
       label: TODOs before submitting a ticket
-      description: Complete these steps fixes most problems, most of the time. Shocker!
+      description: >-
+        Complete these steps fixes most problems, most of the time. Shocker!
+        [Why is it
+        required?](https://kreate.knighthat.me/usr/faq/how-to-make-a-good-issue-ticket#todos-before-submiting-a-ticket)
       options:
-        - label: Update my app to latest version (see link below)
+        - label: Update my app to latest version
           required: true
         - label: (If I'm on latest version) Re-install app
           required: true
@@ -119,17 +85,6 @@ body:
   - type: markdown
     attributes:
       value: >-
-        If you install Kreate with APK from releases page. Please go to
-        [releases/lastest](https://github.com/knighthat/Kreate/releases) and
-        check if it matches your install version.
-
-
-        If you install from third-party app store, such as F-Droid. Please
-        double check if there's update available on that app store. **If app
-        store's version is lagged behind, please wait a few days to let them
-        update it first, then you update the app.**
-
-
         > Please try to complete all of the tasks and not tick them because they
         are required.
   - type: markdown
@@ -159,25 +114,23 @@ body:
     id: video
     attributes:
       label: Submit a video
-      description: Please record a short clip of the bug, it helps tremendously
-      value: >-
-        Since Android 12, a screen recorder is baked into the OS, for your
-        convenience! Older versions require additional software to do so.
-
-
-        > Here's an [instruction
-        video](https://www.youtube.com/watch?v=h6fOErvWIGI)
+      description: >-
+        Don't know how? [Here's the
+        instructions](https://kreate.knighthat.me/usr/faq/how-to-make-a-good-issue-ticket#tell-us-how-to-trigger-this-bug).
+      placeholder: 'Please record a short clip of the bug, it helps tremendously. '
   - type: textarea
     id: log
     attributes:
       label: Logs
       description: >-
-        There are 2 types of logs, runtime log and crash log, both can be found
-        in Settings > Misc.
+        Instructions on how to extract logs can be found
+        [here](https://kreate.knighthat.me/usr/faq/how-to-make-a-good-issue-ticket#logs).
       value: |-
         <details>
           <summary>Logs</summary>
+
           [If you have multiple logs, please copy "details" for each log, name them appropriately, make sure they are different from each other]
+
           <Paste your log here>
         </details>
   - type: markdown
