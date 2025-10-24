@@ -59,6 +59,8 @@ class Discord @Inject constructor(
         private const val MAX_DIMENSION = 1024                           // Per Discord's guidelines
         private const val MAX_FILE_SIZE_BYTES = 2L * 1024 * 1024     // 2 MB in bytes
         private const val KREATE_IMAGE_URL = "https://i.ibb.co/bgZZ7bFx/discord-rpc-kreate.png"
+
+        const val LOGGING_TAG = "discord-integration"
     }
 
     private val templateActivity by lazy {
@@ -136,13 +138,19 @@ class Discord @Inject constructor(
 
     private suspend fun uploadArtwork( artworkUri: Uri ): Result<String> =
         runCatching {
+            Timber.tag( LOGGING_TAG ).v( "Uploading local artwork \"$artworkUri\" to online bucket" )
+
             val uploadableUri = ImageProcessor.compressArtwork(
                 context,
                 artworkUri,
                 MAX_DIMENSION,
                 MAX_DIMENSION,
                 MAX_FILE_SIZE_BYTES
-            )!!
+            )
+
+            Timber.tag( LOGGING_TAG ).d(
+                if( artworkUri !== uploadableUri ) "Upload compressed version $uploadableUri" else "No compression needed"
+            )
 
             val formData = formData {
                 val (mimeType, fileData) = with( context.contentResolver ) {
@@ -160,6 +168,10 @@ class Discord @Inject constructor(
             NetworkService.client
                           .submitFormWithBinaryData( TEMP_FILE_HOST, formData )
                           .bodyAsText()
+        }.onSuccess {
+            Timber.tag( LOGGING_TAG ).d( "Local artwork uploaded successfully" )
+        }.onFailure {
+            Timber.tag( LOGGING_TAG ).e( it, "Error occurs while uploading local artwork" )
         }
 
     @Contract("_,null->null")
@@ -170,11 +182,18 @@ class Discord @Inject constructor(
         }
         artworkUri ?: return null
 
+        Timber.tag( LOGGING_TAG ).v( "Getting external url for artwork $artworkUri" )
+
         val scheme = artworkUri.scheme?.lowercase().orEmpty()
         val isLocalArtwork = scheme == ContentResolver.SCHEME_FILE || scheme == ContentResolver.SCHEME_CONTENT
 
         val result = if( !isLocalArtwork )
             DiscordLib.getExternalImageUrl( artworkUri.toString(), APPLICATION_ID )
+                .onSuccess {
+                    Timber.tag( LOGGING_TAG ).d( "External url: $it" )
+                }.onFailure {
+                    Timber.tag( LOGGING_TAG ).e( it, "Failed to upload external image" )
+                }
         else
             uploadArtwork( artworkUri )
         return result.fold(
@@ -189,18 +208,26 @@ class Discord @Inject constructor(
     }
 
     private suspend fun getAppLogoUrl(): String? =
-        if ( ::smallImage.isInitialized )
+        if ( ::smallImage.isInitialized ) {
+            Timber.tag( LOGGING_TAG ).v( "Small image is cached" )
+
             smallImage
-        else
+        } else
             DiscordLib.getExternalImageUrl( KREATE_IMAGE_URL, APPLICATION_ID )
                       .onFailure {
-                          it.printStackTrace()
+                          Timber.tag( LOGGING_TAG ).e( it, "Failed to upload small image" )
                           it.message?.also( Toaster::e )
                       }
                       .getOrNull()
-                      ?.also { smallImage = it }
+                      ?.also {
+                          smallImage = it
+
+                          Timber.tag( LOGGING_TAG ).d( "Small image: $it" )
+                      }
 
     private suspend fun makeActivity( mediaItem: MediaItem, timeStart: Long ): Activity {
+        Timber.tag( LOGGING_TAG ).v( "Making new activity from media item ${mediaItem.mediaId} at $timeStart" )
+
         val metadata = mediaItem.mediaMetadata
 
         val title = metadata.title.toString().let( ::cleanPrefix )
@@ -232,6 +259,7 @@ class Discord @Inject constructor(
                                     }
                                 }
                                 ?.let {
+                                    Timber.tag( LOGGING_TAG ).v( "Using artist thumbnail as small image" )
                                     getImageUrl( it )
                                 }
                                 ?: getAppLogoUrl(),
@@ -278,6 +306,8 @@ class Discord @Inject constructor(
     fun updateMediaItem( mediaItem: MediaItem, timeStart: Long ) {
         if( !DiscordLib.isReady() ) return
 
+        Timber.tag( LOGGING_TAG ).v( "Update activity to new media item" )
+
         CoroutineScope( Dispatchers.IO ).launch {
             val activity = makeActivity( mediaItem, timeStart )
             DiscordLib.updatePresence {
@@ -289,6 +319,8 @@ class Discord @Inject constructor(
     fun stop() {
         if( !DiscordLib.isReady() ) return
 
+        Timber.tag( LOGGING_TAG ).v( "Sending stop activity to Discord" )
+
         CoroutineScope( Dispatchers.IO ).launch {
             DiscordLib.updatePresence {
                 Presence(null, listOf( templateActivity ), Status.ONLINE, false)
@@ -298,6 +330,8 @@ class Discord @Inject constructor(
 
     fun pause( mediaItem: MediaItem, timeStart: Long ) {
         if( !DiscordLib.isReady() ) return
+
+        Timber.tag( LOGGING_TAG ).v( "Sending pause activity to Discord" )
 
         CoroutineScope( Dispatchers.IO ).launch {
             val generated = makeActivity( mediaItem, timeStart )
