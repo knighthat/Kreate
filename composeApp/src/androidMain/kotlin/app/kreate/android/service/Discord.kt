@@ -185,26 +185,21 @@ class Discord @Inject constructor(
         Timber.tag( LOGGING_TAG ).v( "Getting external url for artwork $artworkUri" )
 
         val scheme = artworkUri.scheme?.lowercase().orEmpty()
-        val isLocalArtwork = scheme == ContentResolver.SCHEME_FILE || scheme == ContentResolver.SCHEME_CONTENT
+        val artworkUri =
+            if( scheme == ContentResolver.SCHEME_FILE || scheme == ContentResolver.SCHEME_CONTENT )
+                uploadArtwork( artworkUri )
+            else
+                artworkUri
 
-        val result = if( !isLocalArtwork )
-            DiscordLib.getExternalImageUrl( artworkUri.toString(), APPLICATION_ID )
-                .onSuccess {
-                    Timber.tag( LOGGING_TAG ).d( "External url: $it" )
-                }.onFailure {
-                    Timber.tag( LOGGING_TAG ).e( it, "Failed to upload external image" )
-                }
-        else
-            uploadArtwork( artworkUri )
-        return result.fold(
-            onSuccess = { it },
-            onFailure = {
-                it.printStackTrace()
-                it.message?.also( Toaster::e )
+        return DiscordLib.getExternalImageUrl( artworkUri.toString(), APPLICATION_ID )
+                         .fold(
+                             onSuccess = { it },
+                             onFailure = {
+                                 it.message?.also( Toaster::e )
 
-                getAppLogoUrl()
-            }
-        )
+                                 getAppLogoUrl()
+                             }
+                         )
     }
 
     private suspend fun getAppLogoUrl(): String? =
