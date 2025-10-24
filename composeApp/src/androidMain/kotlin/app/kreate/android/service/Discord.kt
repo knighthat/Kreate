@@ -12,6 +12,7 @@ import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.DiscordLogger
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.statement.bodyAsText
@@ -39,6 +40,7 @@ import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Contract
 import timber.log.Timber
 import java.net.UnknownHostException
+import javax.inject.Inject
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.time.Duration.Companion.seconds
@@ -47,7 +49,9 @@ import me.knighthat.discord.Discord as DiscordLib
 
 // TODO: Localize strings
 @RequiresApi(Build.VERSION_CODES.M)
-class Discord(private val context: Context) {
+class Discord @Inject constructor(
+    @param:ApplicationContext private val context: Context
+) {
 
     companion object {
         private const val APPLICATION_ID = "1370148610158759966"

@@ -159,7 +159,8 @@ class PlayerServiceModern:
     lateinit var downloadHelper: DownloadHelper
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private val discord: Discord = Discord(this)
+    @Inject
+    lateinit var discord: Discord
 
     @Inject
     lateinit var volumeObserver: VolumeObserver
