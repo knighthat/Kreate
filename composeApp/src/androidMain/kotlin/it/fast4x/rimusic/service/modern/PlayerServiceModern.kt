@@ -419,17 +419,9 @@ class PlayerServiceModern:
 
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
 
-    override fun onIsPlayingChanged(isPlaying: Boolean) {
-        if( !Preferences.isLoggedInToDiscord() )
-            return
-
-        val mediaItem = player.currentMediaItem ?: return
-        val startTime = System.currentTimeMillis() - player.currentPosition
-        @SuppressLint("NewApi")     // [Preferences.isLoggedInToDiscord] already verified it
-        if( isPlaying )
-            discord.updateMediaItem( mediaItem, startTime )
-        else
-            discord.pause( mediaItem, startTime )
+    override fun onIsPlayingChanged( isPlaying: Boolean ) {
+        // FIXME: At this time, this event keeps firing on and off
+        //  when user seeks around the timeline.
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession =

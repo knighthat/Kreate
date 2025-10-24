@@ -2,6 +2,7 @@ package app.kreate.android.service.player
 
 import android.animation.Animator
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.MainThread
@@ -197,39 +198,30 @@ class CustomExoPlayer(
         }
     }
 
-    override fun getSecondaryRenderer( index: Int ) = player.getSecondaryRenderer( index )
+    fun onIsPlayingChanged(isPlaying: Boolean) {
+        if( !Preferences.isLoggedInToDiscord() )
+            return
 
-    override fun release() {
-        stopFadingEffect()
-        player.release()
+        val mediaItem = player.currentMediaItem ?: return
+        val startTime = System.currentTimeMillis() - player.currentPosition
+        @SuppressLint("NewApi")     // [Preferences.isLoggedInToDiscord] already verified it
+        if( isPlaying )
+            discord.updateMediaItem( mediaItem, startTime )
+        else
+            discord.pause( mediaItem, startTime )
     }
 
-    override fun play() {
-        val duration = Preferences.AUDIO_FADE_DURATION.value.asMillis
-        if( duration == 0L ) {
-            if( playbackState == Player.STATE_IDLE )
-                prepare()
-            player.play()
-            return
+    private fun pause0( updateDiscord: Boolean ) {
+        fun action() {
+            player.pause()
+
+            if( updateDiscord )
+                onIsPlayingChanged( false )
         }
 
-        startFade(
-            start = 0f,
-            end = volume,
-            durationInMillis = duration,
-            doOnStart = {
-                volume = 0f
-                if ( playbackState == Player.STATE_IDLE )
-                    prepare()
-                player.play()
-            }
-        )
-    }
-
-    override fun pause() {
         val duration = Preferences.AUDIO_FADE_DURATION.value.asMillis
         if( duration == 0L ) {
-            player.pause()
+            action()
             return
         }
 
@@ -239,15 +231,53 @@ class CustomExoPlayer(
             end = 0f,
             durationInMillis = duration,
             doOnEnd = {
-                player.pause()
+                action()
                 volume = originalVolume
             }
         )
     }
 
+    override fun getSecondaryRenderer( index: Int ) = player.getSecondaryRenderer( index )
+
+    override fun release() {
+        stopFadingEffect()
+        player.release()
+    }
+
+    override fun play() {
+        fun action() {
+            if( playbackState == Player.STATE_IDLE )
+                prepare()
+            player.play()
+
+            onIsPlayingChanged( true )
+        }
+
+        val duration = Preferences.AUDIO_FADE_DURATION.value.asMillis
+        if( duration == 0L ) {
+            action()
+            return
+        }
+
+        startFade(
+            start = 0f,
+            end = volume,
+            durationInMillis = duration,
+            doOnStart = {
+                volume = 0f
+                action()
+            }
+        )
+    }
+
+    override fun pause() = this.pause0( true )
+
     override fun stop() {
-        this.pause()
+        this.pause0( false )
         player.stop()
+
+        if( Preferences.isLoggedInToDiscord() )
+            discord.stop()
     }
 
     override fun getBufferedPercentage(): Int =
