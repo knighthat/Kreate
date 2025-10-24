@@ -95,7 +95,7 @@ object ImageProcessor {
     fun compressArtwork( context: Context, artworkUri: Uri, maxWidth: Int, maxHeight: Int, maxSize: Long ): Uri {
         require(
             artworkUri.scheme.equals( ContentResolver.SCHEME_CONTENT, true )
-                    && artworkUri.scheme.equals( ContentResolver.SCHEME_FILE, true )
+                    || artworkUri.scheme.equals( ContentResolver.SCHEME_FILE, true )
         ) { "$artworkUri is NOT a local file!" }
 
         val contentResolver = context.contentResolver
