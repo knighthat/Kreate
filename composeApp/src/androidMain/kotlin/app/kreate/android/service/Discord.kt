@@ -10,6 +10,7 @@ import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
+import app.kreate.android.R
 import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.DiscordLogger
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -195,7 +196,7 @@ class Discord @Inject constructor(
                          .fold(
                              onSuccess = { it },
                              onFailure = {
-                                 it.message?.also( Toaster::e )
+                                 Toaster.e( R.string.error_failed_to_update_discord_activity )
 
                                  getAppLogoUrl()
                              }
