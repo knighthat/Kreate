@@ -141,6 +141,7 @@ class Discord @Inject constructor(
             }
         }
 
+    //<editor-fold defaultstate="collapsed" desc="External image handler">
     private suspend fun uploadArtwork( artworkUri: Uri ): Result<String> =
         runCatching {
             Timber.tag( LOGGING_TAG ).v( "Uploading local artwork \"$artworkUri\" to online bucket" )
@@ -234,6 +235,7 @@ class Discord @Inject constructor(
 
                           Timber.tag( LOGGING_TAG ).d( "Small image: $it" )
                       }
+    //</editor-fold>
 
     private suspend fun makeActivity( mediaItem: MediaItem, timeStart: Long ): Activity {
         Timber.tag( LOGGING_TAG ).v( "Making new activity from media item ${mediaItem.mediaId} at $timeStart" )
@@ -313,6 +315,7 @@ class Discord @Inject constructor(
 
     fun release() = DiscordLib.logout()
 
+    //<editor-fold defaultstate="collapsed" desc="Activity handler">
     fun updateMediaItem( mediaItem: MediaItem, timeStart: Long ) {
         if( !DiscordLib.isReady() ) return
 
@@ -368,4 +371,5 @@ class Discord @Inject constructor(
             }
         }
     }
+    //</editor-fold>
 }
