@@ -3,6 +3,7 @@ package app.kreate.android.utils
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
+import io.ktor.util.collections.ConcurrentSet
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.update
 
 object ConnectivityUtils: ConnectivityManager.NetworkCallback() {
 
+    private val _networks = ConcurrentSet<Network>()
     private val _isAvailable = MutableStateFlow(false)
     private val _isMetered = MutableStateFlow(false)
 
@@ -30,13 +32,22 @@ object ConnectivityUtils: ConnectivityManager.NetworkCallback() {
     override fun onAvailable( network: Network ) {
         super.onAvailable( network )
 
+        _networks.add( network )
         _isAvailable.update { true }
     }
 
     override fun onUnavailable() {
         super.onUnavailable()
 
+        _networks.clear()
         _isAvailable.update { false }
+    }
+
+    override fun onLost( network: Network ) {
+        super.onLost( network )
+
+        _networks.remove( network )
+        _isAvailable.update { _networks.isNotEmpty() }
     }
 
     override fun onCapabilitiesChanged( network: Network, networkCapabilities: NetworkCapabilities ) {
