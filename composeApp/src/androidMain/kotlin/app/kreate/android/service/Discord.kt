@@ -1,9 +1,9 @@
 package app.kreate.android.service
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Build
-import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import app.kreate.android.BuildConfig
@@ -24,8 +24,12 @@ import it.fast4x.rimusic.models.Artist
 import it.fast4x.rimusic.utils.thumbnail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import me.knighthat.discord.Status
@@ -43,6 +47,7 @@ import timber.log.Timber
 import java.net.UnknownHostException
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
+import javax.inject.Named
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.time.Duration.Companion.seconds
@@ -51,7 +56,9 @@ import me.knighthat.discord.Discord as DiscordLib
 
 // TODO: Localize strings
 class Discord @Inject constructor(
-    @param:ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context,
+    @param:Named("plain") private val preferences: SharedPreferences,
+    @param:Named("private") private val privatePreferences: SharedPreferences
 ) {
 
     companion object {
@@ -84,41 +91,17 @@ class Discord @Inject constructor(
         )
     }
 
+    @Volatile
+    private lateinit var loginListener: SharedPreferences.OnSharedPreferenceChangeListener
+    @Volatile
+    private lateinit var tokenListener: SharedPreferences.OnSharedPreferenceChangeListener
+    @Volatile
     private lateinit var smallImage: String
 
+    @Volatile
     private var updateActivityJob: Job? = null
-
-    init {
-        Preferences.preferences.registerOnSharedPreferenceChangeListener { prefs, key ->
-            val loginPrefKey = Preferences.DISCORD_LOGIN.key
-            val atPrefKey = Preferences.DISCORD_ACCESS_TOKEN.key
-
-            when( key ) {
-                loginPrefKey -> {
-                    if ( !prefs.getBoolean( loginPrefKey, false ) ) {
-                        release()
-                        return@registerOnSharedPreferenceChangeListener
-                    }
-
-                    val token = prefs.getString( atPrefKey, "" )
-                    if( !token.isNullOrBlank() )
-                        login( token )
-                }
-
-                atPrefKey ->
-                    try {
-                        release()
-
-                        val token = prefs.getString( atPrefKey, "" )
-                        if( !token.isNullOrBlank() )
-                            login( token )
-                    } catch( e: Exception ) {
-                        e.printStackTrace()
-                        e.message?.also( Toaster::e )
-                    }
-            }
-        }
-    }
+    @Volatile
+    private var reconnectJob: Job? = null
 
     private fun login( token: String ) =
         CoroutineScope( Dispatchers.IO ).launch {
@@ -300,20 +283,103 @@ class Discord @Inject constructor(
         )
     }
 
-    fun register() {
-        val token by Preferences.DISCORD_ACCESS_TOKEN
-        if( DiscordLib.isReady()
-            || !Preferences.DISCORD_LOGIN.value
-            || token.isBlank()
-        ) return
+    //<editor-fold defaultstate="collapsed" desc="Listeners">
+    private fun registerLoginListener( loginKey: String, tokenKey: String ) {
+        if( ::loginListener.isInitialized ) return
 
+        loginListener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
+            if( key != loginKey )
+                return@OnSharedPreferenceChangeListener
+            if( !prefs.getBoolean( loginKey, false ) ) {
+                Timber.tag( LOGGING_TAG ).v( "disabling DiscordRPC" )
+                DiscordLib.logout()
+
+                return@OnSharedPreferenceChangeListener
+            } else
+                Timber.tag( LOGGING_TAG ).v( "enabling DiscordRPC" )
+
+            val token = privatePreferences.getString( tokenKey, null )
+            if( !token.isNullOrBlank() )
+                login( token )
+        }
+        preferences.registerOnSharedPreferenceChangeListener( loginListener )
+    }
+
+    private fun registerTokenListener( tokenKey: String ) {
+        if( ::tokenListener.isInitialized ) return
+
+        tokenListener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
+            if( key != tokenKey ) return@OnSharedPreferenceChangeListener
+
+            Timber.tag( LOGGING_TAG ).v( "access token's changed" )
+
+            // When access token's changed, all previous connection must be dropped.
+            // If new token is present, attempt to open a new connection with new token.
+            DiscordLib.logout()
+
+            val token = prefs.getString( key, null )
+            if( !token.isNullOrBlank() )
+                login( token )
+        }
+        privatePreferences.registerOnSharedPreferenceChangeListener( tokenListener )
+    }
+
+    private fun registerNetworkListener( loginKey: String, tokenKey: String ) {
+        reconnectJob?.cancel()
+
+        reconnectJob = CoroutineScope(Dispatchers.Unconfined).launch {
+            var isConnectionLost = false
+
+            @OptIn(FlowPreview::class)
+            ConnectivityUtils.isAvailable
+                             .distinctUntilChanged { a, b -> a == b}
+                             .debounce( 2.seconds )
+                             .collectLatest {
+                                 if( !it ) {
+                                     isConnectionLost = true
+                                     return@collectLatest
+                                 } else if( !isConnectionLost || !preferences.getBoolean( loginKey, false ) )
+                                     // When connectivity becomes unavailable, socket will be
+                                     // closed immediately, so it's not handled here.
+                                     return@collectLatest
+
+                                 isConnectionLost = false
+
+                                 val token = privatePreferences.getString( tokenKey, null )
+                                 if( !token.isNullOrBlank() )
+                                     login( token )
+                             }
+        }
+    }
+    //</editor-fold>
+
+    fun register() {
         DiscordLib.setClient( NetworkService.client )
         Logger.handler = DiscordLogger()
 
+        val loginKey = Preferences.DISCORD_LOGIN.key
+        val tokenKey = Preferences.DISCORD_ACCESS_TOKEN.key
+
+        registerLoginListener( loginKey, tokenKey )
+        registerTokenListener( tokenKey )
+        registerNetworkListener( loginKey, tokenKey )
+
+        if( DiscordLib.isReady() || !Preferences.isLoggedInToDiscord() )
+            return
+
+        // This string should never be null when it's here
+        // If default value is returned, something's done wrong
+        val token = privatePreferences.getString( tokenKey, null )!!
         login( token )
     }
 
-    fun release() = DiscordLib.logout()
+    fun release() {
+        preferences.unregisterOnSharedPreferenceChangeListener( loginListener )
+        privatePreferences.unregisterOnSharedPreferenceChangeListener( tokenListener )
+        reconnectJob?.cancel()
+
+        DiscordLib.logout()
+    }
 
     //<editor-fold defaultstate="collapsed" desc="Activity handler">
     fun updateMediaItem( mediaItem: MediaItem, timeStart: Long ) {
