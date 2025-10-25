@@ -835,4 +835,5 @@
     <string name="description_view_song_info">Visualizza i dettagli della canzone</string>
     <string name="error_access_cache_failed">Failed to retrieve data from cache storage</string>
     <string name="error_failed_to_decipher_signature">Failed to decipher signature</string>
+    <string name="error_failed_to_update_discord_activity">Failed to update Discord activity</string>
 </resources>
