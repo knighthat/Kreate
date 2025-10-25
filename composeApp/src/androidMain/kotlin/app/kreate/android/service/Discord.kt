@@ -25,6 +25,7 @@ import it.fast4x.rimusic.models.Artist
 import it.fast4x.rimusic.utils.thumbnail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -86,6 +87,8 @@ class Discord @Inject constructor(
     }
 
     private lateinit var smallImage: String
+
+    private var updateActivityJob: Job? = null
 
     init {
         Preferences.preferences.registerOnSharedPreferenceChangeListener { prefs, key ->
@@ -315,9 +318,13 @@ class Discord @Inject constructor(
     fun updateMediaItem( mediaItem: MediaItem, timeStart: Long ) {
         if( !DiscordLib.isReady() ) return
 
-        Timber.tag( LOGGING_TAG ).v( "Update activity to new media item" )
+        updateActivityJob?.cancel()
 
-        CoroutineScope( Dispatchers.IO ).launch {
+        updateActivityJob = CoroutineScope( Dispatchers.IO ).launch {
+            delay( 1000 )
+
+            Timber.tag( LOGGING_TAG ).v( "Update activity to new media item" )
+
             val activity = makeActivity( mediaItem, timeStart )
             DiscordLib.updatePresence {
                 Presence(null, listOf( activity ), Status.ONLINE, false)
@@ -340,9 +347,13 @@ class Discord @Inject constructor(
     fun pause( mediaItem: MediaItem, timeStart: Long ) {
         if( !DiscordLib.isReady() ) return
 
-        Timber.tag( LOGGING_TAG ).v( "Sending pause activity to Discord" )
+        updateActivityJob?.cancel()
 
-        CoroutineScope( Dispatchers.IO ).launch {
+        updateActivityJob = CoroutineScope( Dispatchers.IO ).launch {
+            delay( 1000 )
+
+            Timber.tag( LOGGING_TAG ).v( "Sending pause activity to Discord" )
+
             val generated = makeActivity( mediaItem, timeStart )
 
             val activity = templateActivity.copy(
