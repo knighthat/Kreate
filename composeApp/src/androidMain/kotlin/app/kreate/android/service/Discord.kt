@@ -41,6 +41,7 @@ import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Contract
 import timber.log.Timber
 import java.net.UnknownHostException
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -60,6 +61,8 @@ class Discord @Inject constructor(
         private const val MAX_DIMENSION = 1024                           // Per Discord's guidelines
         private const val MAX_FILE_SIZE_BYTES = 2L * 1024 * 1024     // 2 MB in bytes
         private const val KREATE_IMAGE_URL = "https://i.ibb.co/bgZZ7bFx/discord-rpc-kreate.png"
+
+        private val cachedExternalUrls = ConcurrentHashMap<String, String>()
 
         const val LOGGING_TAG = "discord-integration"
     }
@@ -185,16 +188,26 @@ class Discord @Inject constructor(
 
         Timber.tag( LOGGING_TAG ).v( "Getting external url for artwork $artworkUri" )
 
+        val artworkCacheKey = artworkUri.toString()
+        if( cachedExternalUrls.containsKey( artworkCacheKey ) ) {
+            Timber.tag( LOGGING_TAG ).d( "artwork is cached" )
+            return cachedExternalUrls[artworkCacheKey]
+        }
+
         val artworkUri =
             if( artworkUri.isLocalFile() )
                 uploadArtwork( artworkUri ).getOrNull()
-                                           ?.let( String::toUri )
+                                           .toString()
             else
-                artworkUri
+                artworkUri.toString()
 
-        return DiscordLib.getExternalImageUrl( artworkUri.toString(), APPLICATION_ID )
+        return DiscordLib.getExternalImageUrl( artworkUri, APPLICATION_ID )
                          .fold(
-                             onSuccess = { it },
+                             onSuccess = {
+                                 cachedExternalUrls[artworkCacheKey] = it
+
+                                 it
+                             },
                              onFailure = {
                                  Toaster.e( R.string.error_failed_to_update_discord_activity )
 
