@@ -1,6 +1,5 @@
 package it.fast4x.rimusic.service.modern
 
-import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.WallpaperManager
@@ -22,11 +21,9 @@ import android.media.AudioManager
 import android.media.audiofx.AudioEffect
 import android.media.audiofx.BassBoost
 import android.media.audiofx.PresetReverb
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.MainThread
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -158,7 +155,6 @@ class PlayerServiceModern:
     @Inject
     lateinit var downloadHelper: DownloadHelper
 
-    @RequiresApi(Build.VERSION_CODES.M)
     @Inject
     lateinit var discord: Discord
 
@@ -208,7 +204,6 @@ class PlayerServiceModern:
                 return
 
             val startTime = System.currentTimeMillis() - player.currentPosition
-            @SuppressLint("NewApi")     // [Preferences.isLoggedInToDiscord] already verified it
             discord.updateMediaItem( mediaItem, startTime )
         } else if( Preferences.isLoggedInToDiscord() )
             discord.stop()
@@ -413,8 +408,7 @@ class PlayerServiceModern:
 
         }
 
-        if( isAtLeastAndroid6 )
-            discord.register()
+        discord.register()
     }
 
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
@@ -522,8 +516,7 @@ class PlayerServiceModern:
 
             coroutineScope.cancel()
 
-            if( isAtLeastAndroid6 )
-                discord.release()
+            discord.release()
 
             preferences.unregisterOnSharedPreferenceChangeListener(this)
         }.onFailure {

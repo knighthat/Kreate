@@ -1,9 +1,7 @@
 package app.kreate.android.themed.common.screens.settings
 
-import android.os.Build
 import android.webkit.CookieManager
 import android.webkit.WebStorage
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -54,7 +52,6 @@ import it.fast4x.rimusic.ui.components.CustomModalBottomSheet
 import it.fast4x.rimusic.ui.styling.Dimensions
 
 @ExperimentalMaterial3Api
-@RequiresApi(Build.VERSION_CODES.M)
 @Composable
 fun AccountSettings( paddingValues: PaddingValues ) {
     val context = LocalContext.current

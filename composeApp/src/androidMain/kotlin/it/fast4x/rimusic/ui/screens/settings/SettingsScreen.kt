@@ -43,7 +43,6 @@ import it.fast4x.rimusic.enums.UiType
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.Skeleton
 import it.fast4x.rimusic.ui.components.themed.StringListDialog
-import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.secondary
 import it.fast4x.rimusic.utils.semiBold
 import me.knighthat.component.dialog.RestartAppDialog
@@ -83,8 +82,7 @@ fun SettingsScreen(
             else
                 item(3, stringResource(R.string.quick_picks), R.drawable.sparkles)
             item(4, stringResource(R.string.tab_data), R.drawable.server)
-            if( isAtLeastAndroid6 )
-                item(5, stringResource(R.string.tab_accounts), R.drawable.person)
+            item(5, stringResource(R.string.tab_accounts), R.drawable.person)
             item(6, stringResource(R.string.tab_miscellaneous), R.drawable.equalizer)
             item(7, stringResource( R.string.tab_network ), R.drawable.swap_vertical_outline)
             item(8, stringResource(R.string.about), R.drawable.information)
@@ -98,10 +96,7 @@ fun SettingsScreen(
                 2 -> AppearanceSettings( paddingValues )
                 3 -> QuickPicksSettings( paddingValues )
                 4 -> DataSettings( paddingValues )
-                5 -> {
-                    if( isAtLeastAndroid6 )
-                        AccountSettings( paddingValues )
-                }
+                5 -> AccountSettings( paddingValues )
                 6 -> OtherSettings( paddingValues )
                 7 -> NetworkSettings( paddingValues )
                 8 -> About( navController, paddingValues )

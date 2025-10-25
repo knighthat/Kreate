@@ -1,13 +1,11 @@
 package it.fast4x.rimusic.extensions.youtubelogin
 
 import android.annotation.SuppressLint
-import android.os.Build
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,7 +27,6 @@ import me.knighthat.utils.Toaster
     ExperimentalMaterial3Api::class
 )
 @SuppressLint("SetJavaScriptEnabled")
-@RequiresApi(Build.VERSION_CODES.M)
 @Composable
 fun YouTubeLogin( onDone: () -> Unit ) {
     var webView: WebView? = null

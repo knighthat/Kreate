@@ -544,7 +544,7 @@ object PlayerModule {
     fun providesExoPlayer(
         @ApplicationContext context: Context,
         @Named("playerDataSource") dataSourceFactory: DataSource.Factory,
-        preferences: SharedPreferences,
+        @Named("plain") preferences: SharedPreferences,
         discord: Discord
     ): ExoPlayer = CustomExoPlayer(context, dataSourceFactory, preferences, discord)
 

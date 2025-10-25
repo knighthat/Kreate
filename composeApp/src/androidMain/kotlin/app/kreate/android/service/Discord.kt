@@ -3,7 +3,6 @@ package app.kreate.android.service
 import android.content.Context
 import android.net.Uri
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
@@ -51,7 +50,6 @@ import me.knighthat.discord.Discord as DiscordLib
 
 
 // TODO: Localize strings
-@RequiresApi(Build.VERSION_CODES.M)
 class Discord @Inject constructor(
     @param:ApplicationContext private val context: Context
 ) {

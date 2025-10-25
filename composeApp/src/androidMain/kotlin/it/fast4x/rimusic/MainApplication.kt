@@ -18,15 +18,23 @@ import dagger.hilt.android.HiltAndroidApp
 import me.knighthat.innertube.Innertube
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltAndroidApp
 class MainApplication : Application() {
 
     @Inject
+    @Named("plain")
     lateinit var preferences: SharedPreferences
+    @Inject
+    @Named("private")
+    lateinit var encryptedPreferences: SharedPreferences
 
     override fun onCreate() {
         super.onCreate()
+
+        Preferences.load( preferences, encryptedPreferences )
+
         //DatabaseInitializer()
         Dependencies.init(this)
 
