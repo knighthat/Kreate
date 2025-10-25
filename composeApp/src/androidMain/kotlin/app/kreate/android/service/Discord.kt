@@ -20,7 +20,9 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.cleanPrefix
+import it.fast4x.rimusic.models.Album
 import it.fast4x.rimusic.models.Artist
+import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.utils.thumbnail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -220,54 +222,60 @@ class Discord @Inject constructor(
                       }
     //</editor-fold>
 
+    //<editor-fold desc="Activity processor">
+    private suspend fun buildAssets(
+        mediaItem: MediaItem,
+        artist: Artist?,
+        listenToUrl: String?,
+        artistUrl: String?
+    ): Activity.Assets {
+        val thumbnailUrl = mediaItem.mediaMetadata.artworkUri?.thumbnail( MAX_DIMENSION )
+        val largeImage = thumbnailUrl?.let { getImageUrl(it) } ?: getAppLogoUrl()
+
+        val smallImage = artist?.thumbnailUrl?.let {
+            val sized = it.toUri().thumbnail( MAX_DIMENSION )
+            getImageUrl( sized )
+        } ?: getAppLogoUrl()
+
+        return Activity.Assets(largeImage, null, listenToUrl, smallImage, null, artistUrl ?: getAppButton.url)
+    }
+
+    private fun buildButtons( title: String, listenToUrl: String? ): List<Activity.Button> =
+        buildList {
+            add( getAppButton )
+            if( listenToUrl != null )
+                Activity.Button("Listen to $title", listenToUrl)
+                        .also( ::add )
+        }
+
     private suspend fun makeActivity( mediaItem: MediaItem, timeStart: Long ): Activity {
         Timber.tag( LOGGING_TAG ).v( "Making new activity from media item ${mediaItem.mediaId} at $timeStart" )
 
         val metadata = mediaItem.mediaMetadata
+        val isLocal = mediaItem.isLocal
 
-        val title = metadata.title.toString().let( ::cleanPrefix )
-        val timestamp = Activity.Timestamp(
-            start = timeStart,
-            end = timeStart + (metadata.durationMs ?: 0L)
-        )
-        val artistsText = metadata.artist?.toString()?.let( ::cleanPrefix )
+        //<editor-fold defaultstate="collapsed" desc="Artists">
         val artists: Artist? = Database.artistTable
                                        .findBySongId( mediaItem.mediaId )
                                        .firstOrNull()
                                        ?.firstOrNull()
+        val artistsText = metadata.artist?.toString()?.let( ::cleanPrefix )
+            ?: artists?.cleanName()
         // https://music.youtube.com/channel/[channelId]
         val artistUrl = artists?.let { "${Constants.YOUTUBE_MUSIC_URL}/channel/${it.id}" }
-        val album = metadata.albumTitle?.toString()?.let( ::cleanPrefix )
-        val listenToUrl = "${Constants.YOUTUBE_MUSIC_URL}/watch?v=${mediaItem.mediaId}"
-        val assets = Activity.Assets(
-            // [thumbnail] call only modifies youtube's thumbnail urls
-            largeImage = getImageUrl( metadata.artworkUri.thumbnail(MAX_DIMENSION) ),
-            largeText = null,
-            largeUrl = listenToUrl,
-            smallImage = artists?.thumbnailUrl
-                                .thumbnail( MAX_DIMENSION )
-                                ?.let {
-                                    try {
-                                        it.toUri()
-                                    } catch ( _: Exception ) {
-                                        null
-                                    }
-                                }
-                                ?.let {
-                                    Timber.tag( LOGGING_TAG ).v( "Using artist thumbnail as small image" )
-                                    getImageUrl( it )
-                                }
-                                ?: getAppLogoUrl(),
-            smallText = null,
-            smallUrl = artistUrl ?: getAppButton.url
-        )
-        val buttons = listOf(
-            getAppButton,
-            Activity.Button(
-                label = "Listen to $title",
-                url = listenToUrl
-            )
-        )
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Album">
+        val album: Album? = Database.albumTable
+                                    .findBySongId( mediaItem.mediaId )
+                                    .firstOrNull()
+        val alumTitle = metadata.albumTitle?.toString()?.let( ::cleanPrefix )
+            ?: album?.cleanTitle()
+        //</editor-fold>
+        val title = metadata.title.toString().let( ::cleanPrefix )
+        val timestamp = Activity.Timestamp(timeStart, timeStart + (metadata.durationMs ?: 0L))
+        val listenToUrl = if( !isLocal ) "${Constants.YOUTUBE_MUSIC_URL}/watch?v=${mediaItem.mediaId}" else null
+        val assets = buildAssets( mediaItem, artists, listenToUrl, artistUrl )
+        val buttons = buildButtons( title, listenToUrl )
 
         return Activity(
             name = title,
@@ -277,11 +285,12 @@ class Discord @Inject constructor(
             applicationId = APPLICATION_ID,
             details = artistsText,
             detailsUrl = artistUrl,
-            state = album,
+            state = alumTitle,
             assets = assets,
             buttons = buttons
         )
     }
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Listeners">
     private fun registerLoginListener( loginKey: String, tokenKey: String ) {
