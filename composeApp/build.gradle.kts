@@ -74,9 +74,6 @@ kotlin {
             implementation( libs.monetcompat )
             implementation(libs.androidmaterial)
 
-            // Deprecating
-            implementation( libs.androidx.crypto )
-
             // Player implementations
             implementation( libs.media3.exoplayer )
             implementation(libs.media3.session)

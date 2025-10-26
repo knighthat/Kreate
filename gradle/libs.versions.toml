@@ -18,7 +18,6 @@ translator = "1.1.1"
 kotlin-csv = "1.10.0"
 monetcompat = "0.4.1"
 timber = "5.0.1"
-crypto = "1.1.0"
 okhttp3 = "5.1.0"
 math3 = "3.6.1"
 toasty = "1.5.2"
@@ -61,7 +60,6 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 androidx-appcompat-resources = { group = "androidx.appcompat", name = "appcompat-resources", version.ref = "appcompat" }
 androidx-palette = { group = "androidx.palette", name = "palette", version.ref = "palette" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayout" }
-androidx-crypto = {  group = "androidx.security", name = "security-crypto", version.ref = "crypto" }
 androidx-glance-widgets = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance" }
 androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
 
