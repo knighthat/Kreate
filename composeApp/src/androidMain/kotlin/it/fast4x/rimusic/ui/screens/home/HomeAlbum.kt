@@ -148,7 +148,7 @@ fun HomeAlbums(
 
     val randomizer = object: Randomizer<Album> {
         override fun getItems(): List<Album> = itemsOnDisplay
-        override fun onClick(index: Int) = NavRoutes.YT_ALBUM.navigateHere( navController, itemsOnDisplay[index] )
+        override fun onClick(index: Int) = NavRoutes.YT_ALBUM.navigateHere( navController, itemsOnDisplay[index].id )
     }
     val shuffle = SongShuffler(
         databaseCall = Database.albumTable::allSongsInBookmarked,
@@ -496,7 +496,7 @@ fun HomeAlbums(
 
                                         },
                                         onGoToPlaylist = {
-                                            NavRoutes.localPlaylist.navigateHere( navController, it )
+                                            NavRoutes.localPlaylist.navigateHere( navController, it.toString() )
                                         }
                                     )
                                 }

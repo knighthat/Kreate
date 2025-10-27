@@ -136,7 +136,7 @@ fun HomeArtists(
 
     val randomizer = object: Randomizer<Artist> {
         override fun getItems(): List<Artist> = itemsOnDisplay
-        override fun onClick(index: Int) = NavRoutes.YT_ARTIST.navigateHere( navController, itemsOnDisplay[index] )
+        override fun onClick(index: Int) = NavRoutes.YT_ARTIST.navigateHere( navController, itemsOnDisplay[index].id )
 
     }
     val shuffle = SongShuffler(

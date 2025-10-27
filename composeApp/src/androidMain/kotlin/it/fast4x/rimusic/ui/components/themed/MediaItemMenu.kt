@@ -419,7 +419,7 @@ fun QueuedMediaItemMenu(
             },
             modifier = modifier,
             onGoToPlaylist = {
-                NavRoutes.localPlaylist.navigateHere( navController, it )
+                NavRoutes.localPlaylist.navigateHere( navController, it.toString() )
             },
             onAddToPreferites = {
                 if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
@@ -556,7 +556,7 @@ fun BaseMediaItemMenu(
         },
         onRemoveFromQuickPicks = onRemoveFromQuickPicks,
         onGoToPlaylist = {
-            NavRoutes.localPlaylist.navigateHere( navController, it )
+            NavRoutes.localPlaylist.navigateHere( navController, it.toString() )
         },
         modifier = modifier
     )
@@ -594,7 +594,7 @@ fun MiniMediaItemMenu(
             onDismiss()
         },
         onGoToPlaylist = {
-            NavRoutes.localPlaylist.navigateHere( navController, it )
+            NavRoutes.localPlaylist.navigateHere( navController, it.toString() )
             if (onGoToPlaylist != null) {
                 onGoToPlaylist(it)
             }
@@ -860,7 +860,7 @@ fun MediaItemMenu(
                                                 onGoToPlaylist(playlistPreview.playlist.id)
                                                 onDismiss()
                                             }
-                                            NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
+                                            NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id.toString() )
                                         },
                                         modifier = Modifier
                                             .size(24.dp)
@@ -897,7 +897,7 @@ fun MediaItemMenu(
                                                 onGoToPlaylist(playlistPreview.playlist.id)
                                                 onDismiss()
                                             }
-                                            NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
+                                            NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id.toString() )
                                         },
                                         modifier = Modifier
                                             .size(24.dp)
@@ -934,7 +934,7 @@ fun MediaItemMenu(
                                                 onGoToPlaylist(playlistPreview.playlist.id)
                                                 onDismiss()
                                             }
-                                            NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
+                                            NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id.toString() )
                                         },
                                         modifier = Modifier
                                             .size(24.dp)
@@ -1674,7 +1674,7 @@ fun AddToPlaylistItemMenu(
                                         onGoToPlaylist(playlistPreview.playlist.id)
                                         onDismiss()
                                     }
-                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
+                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id.toString() )
                                 },
                                 modifier = Modifier
                                     .size(24.dp)
@@ -1712,7 +1712,7 @@ fun AddToPlaylistItemMenu(
                                         onGoToPlaylist(playlistPreview.playlist.id)
                                         onDismiss()
                                     }
-                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
+                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id.toString() )
                                 },
                                 modifier = Modifier
                                     .size(24.dp)
@@ -1750,7 +1750,7 @@ fun AddToPlaylistItemMenu(
                                         onGoToPlaylist(playlistPreview.playlist.id)
                                         onDismiss()
                                     }
-                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
+                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id.toString() )
                                 },
                                 modifier = Modifier
                                     .size(24.dp)
@@ -1892,7 +1892,7 @@ fun AddToPlaylistArtistSongsMenu(
                                         onGoToPlaylist(playlistPreview.playlist.id)
                                         onDismiss()
                                     }
-                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
+                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id.toString() )
                                 },
                                 modifier = Modifier
                                     .size(24.dp)
@@ -1934,7 +1934,7 @@ fun AddToPlaylistArtistSongsMenu(
                                         onGoToPlaylist(playlistPreview.playlist.id)
                                         onDismiss()
                                     }
-                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
+                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id.toString() )
                                 },
                                 modifier = Modifier
                                     .size(24.dp)
@@ -1976,7 +1976,7 @@ fun AddToPlaylistArtistSongsMenu(
                                         onGoToPlaylist(playlistPreview.playlist.id)
                                         onDismiss()
                                     }
-                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
+                                    NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id.toString() )
                                 },
                                 modifier = Modifier
                                     .size(24.dp)

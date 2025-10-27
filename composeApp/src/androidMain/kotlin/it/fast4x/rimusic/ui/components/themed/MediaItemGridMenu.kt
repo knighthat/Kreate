@@ -190,7 +190,7 @@ fun BaseMediaItemGridMenu(
          */
         onRemoveFromQuickPicks = onRemoveFromQuickPicks,
         onGoToPlaylist = {
-            NavRoutes.localPlaylist.navigateHere( navController, it )
+            NavRoutes.localPlaylist.navigateHere( navController, it.toString() )
         },
         modifier = modifier
     )
@@ -225,7 +225,7 @@ fun MiniMediaItemGridMenu(
             onDismiss()
         },
         onGoToPlaylist = {
-            NavRoutes.localPlaylist.navigateHere( navController, it )
+            NavRoutes.localPlaylist.navigateHere( navController, it.toString() )
             if (onGoToPlaylist != null) {
                 onGoToPlaylist(it)
             }
@@ -629,7 +629,7 @@ fun MediaItemGridMenu (
                                                 onGoToPlaylist(playlistPreview.playlist.id)
                                                 onDismiss()
                                             }
-                                            NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
+                                            NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id.toString() )
                                         },
                                         modifier = Modifier
                                             .size(24.dp)
@@ -669,7 +669,7 @@ fun MediaItemGridMenu (
                                                 onGoToPlaylist(playlistPreview.playlist.id)
                                                 onDismiss()
                                             }
-                                            NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id )
+                                            NavRoutes.localPlaylist.navigateHere( navController, playlistPreview.playlist.id.toString() )
                                         },
                                         modifier = Modifier
                                             .size(24.dp)

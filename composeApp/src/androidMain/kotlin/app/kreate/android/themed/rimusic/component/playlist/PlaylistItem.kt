@@ -393,7 +393,7 @@ object PlaylistItem: Visual(), MultiplatformItem {
                 if( playlist.browseId != null && playlist.id == -1L )
                     NavRoutes.YT_PLAYLIST.navigateHere( navController, playlist.browseId )
                 else
-                    NavRoutes.localPlaylist.navigateHere( navController, playlist.id )
+                    NavRoutes.localPlaylist.navigateHere( navController, playlist.id.toString() )
             },
             onLongClick = onLongClick
         )
@@ -540,7 +540,7 @@ object PlaylistItem: Visual(), MultiplatformItem {
                 if( playlist.browseId != null && playlist.id == -1L )
                     NavRoutes.YT_PLAYLIST.navigateHere( navController, playlist.browseId )
                 else
-                    NavRoutes.localPlaylist.navigateHere( navController, playlist.id )
+                    NavRoutes.localPlaylist.navigateHere( navController, playlist.id.toString() )
             },
             onLongClick = onLongClick
         )

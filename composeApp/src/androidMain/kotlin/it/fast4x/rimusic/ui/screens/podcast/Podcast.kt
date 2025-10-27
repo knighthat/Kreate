@@ -547,7 +547,7 @@ fun Podcast(
                                                         }
                                                     },
                                                     onGoToPlaylist = {
-                                                        NavRoutes.localPlaylist.navigateHere( navController, it )
+                                                        NavRoutes.localPlaylist.navigateHere( navController, it.toString() )
                                                     }
                                                 )
                                             }
