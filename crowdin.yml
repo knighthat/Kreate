@@ -1,53 +1,23 @@
+project_id: 779500
+api_token_env: CROWDIN_PERSONAL_TOKEN
+base_path: .
+base_url: https://api.crowdin.com
+
+preserve_hierarchy: true
+
 files:
   # Strings
   - source: /composeApp/src/androidMain/res/values/strings.xml
     translation: /composeApp/src/androidMain/res/values-%android_code%/strings.xml
     languages_mapping:
       android_code:
-        af: af
-        ar: ar
-        az: az
-        ba: ba
-        bn: bn
-        ca: ca
-        cs: cs
-        da: da
-        de: de
-        el: el
-        en: en
-        eo: eo
         es-ES: es
-        et: et
-        fa: fa
-        fi: fi
-        fil: fil
-        fr: fr
         ga-IE: ga
-        gl: gl
         he: iw
-        hi: hi
-        hu: hu
-        ia: ia
         id: in
-        it: it
-        ja: ja
-        ko: ko
         ml-IN: ml
-        nl: nl
-        no: no
-        or: or
-        pl: pl
         pt-PT: pt
-        ro: ro
-        ru: ru
         si-LK: si
-        sv: sv
-        ta: ta
-        te: te
-        tr: tr
-        uk: uk
-        vi: vi
-        zh: zh
         zh-CN: zh-rCN
         zh-TW: zh-rTW
         pt-BR: pt-rBR
@@ -58,50 +28,13 @@ files:
     translation: /composeApp/src/androidMain/res/values-%android_code%/plurals.xml
     languages_mapping:
       android_code:
-        af: af
-        ar: ar
-        az: az
-        ba: ba
-        bn: bn
-        ca: ca
-        cs: cs
-        da: da
-        de: de
-        el: el
-        en: en
-        eo: eo
         es-ES: es
-        et: et
-        fa: fa
-        fi: fi
-        fil: fil
-        fr: fr
         ga-IE: ga
-        gl: gl
         he: iw
-        hi: hi
-        hu: hu
-        ia: ia
         id: in
-        it: it
-        ja: ja
-        ko: ko
         ml-IN: ml
-        nl: nl
-        no: no
-        or: or
-        pl: pl
         pt-PT: pt
-        ro: ro
-        ru: ru
         si-LK: si
-        sv: sv
-        ta: ta
-        te: te
-        tr: tr
-        uk: uk
-        vi: vi
-        zh: zh
         zh-CN: zh-rCN
         zh-TW: zh-rTW
         pt-BR: pt-rBR
