@@ -39,6 +39,21 @@ interface SongTable {
     ): Flow<List<Song>>
 
     /**
+     * @return all records from this table in randomized order
+     */
+    @Query("""
+        SELECT DISTINCT * 
+        FROM Song 
+        WHERE totalPlayTimeMs >= :excludeHidden
+        ORDER BY RANDOM()
+        LIMIT :limit
+    """)
+    fun allRandomized(
+        limit: Int = Int.MAX_VALUE,
+        excludeHidden: Boolean = false
+    ): Flow<List<Song>>
+
+    /**
      * @return all records that have [Song.id] start with [LOCAL_KEY_PREFIX]
      */
     @Query("""
@@ -49,6 +64,9 @@ interface SongTable {
     """)
     fun allOnDevice( limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
 
+    /**
+     * @return all songs that were liked by user
+     */
     @Query("""
         SELECT DISTINCT * 
         FROM Song 
@@ -57,6 +75,18 @@ interface SongTable {
         LIMIT :limit
     """)
     fun allFavorites( limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+
+    /**
+     * @return all songs that were liked by user in randomized order
+     */
+    @Query("""
+        SELECT DISTINCT * 
+        FROM Song 
+        WHERE likedAt IS NOT NULL AND likedAt > 0
+        ORDER BY RANDOM()
+        LIMIT :limit
+    """)
+    fun allFavoritesRandomized( limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
 
     @Query("""
         SELECT DISTINCT * 
@@ -448,6 +478,7 @@ interface SongTable {
         SongSortBy.Artist           -> sortAllByArtist( limit, excludeHidden )
         SongSortBy.Duration         -> sortAllByDuration( limit, excludeHidden )
         SongSortBy.AlbumName        -> sortAllByAlbumName( limit, excludeHidden )
+        SongSortBy.RANDOM           -> allRandomized( limit, excludeHidden )
     }.map( sortOrder::applyTo )
     //</editor-fold>
 
@@ -541,6 +572,7 @@ interface SongTable {
         SongSortBy.Artist           -> sortFavoritesByArtist()
         SongSortBy.Duration         -> sortFavoritesByDuration()
         SongSortBy.AlbumName        -> sortFavoritesByAlbumName()
+        SongSortBy.RANDOM           -> allFavoritesRandomized()
     }.map( sortOrder::applyTo ).take( limit )
     //</editor-fold>
 }

@@ -33,6 +33,18 @@ interface ArtistTable {
     fun allFollowing( limit: Int = Int.MAX_VALUE ): Flow<List<Artist>>
 
     /**
+     * @return all artists from this table that are followed by user in randomized order
+     */
+    @Query("""
+        SELECT DISTINCT * 
+        FROM Artist
+        WHERE bookmarkedAt IS NOT NULL
+        ORDER BY RANDOM()
+        LIMIT :limit
+    """)
+    fun allFollowingRandomized( limit: Int = Int.MAX_VALUE ): Flow<List<Artist>>
+
+    /**
      * @return artists that have their songs mapped to at least 1 playlist
      */
     @Query("""
@@ -44,6 +56,19 @@ interface ArtistTable {
         LIMIT :limit
     """)
     fun allInLibrary( limit: Int = Int.MAX_VALUE ): Flow<List<Artist>>
+
+    /**
+     * @return artists that have their songs mapped to at least 1 playlist in randomized order
+     */
+    @Query("""
+        SELECT DISTINCT A.*
+        FROM Artist A
+        JOIN SongArtistMap sam ON sam.artistId = A.id
+        JOIN SongPlaylistMap spm ON spm.songId = sam.songId
+        ORDER BY RANDOM()
+        LIMIT :limit
+    """)
+    fun allInLibraryRandomized( limit: Int = Int.MAX_VALUE ): Flow<List<Artist>>
 
     /**
      * @return all songs of following artists
@@ -223,6 +248,7 @@ interface ArtistTable {
     ): Flow<List<Artist>> = when( sortBy ) {
         ArtistSortBy.Name       -> sortFollowingByName()
         ArtistSortBy.DateAdded  -> allFollowing()
+        ArtistSortBy.RANDOM     -> allFollowingRandomized()
     }.map( sortOrder::applyTo ).take( limit )
     //</editor-fold>
 
@@ -259,6 +285,7 @@ interface ArtistTable {
     ): Flow<List<Artist>> = when( sortBy ) {
         ArtistSortBy.Name       -> sortInLibraryByName()
         ArtistSortBy.DateAdded  -> allInLibrary()     // Already sorted by ROWID
+        ArtistSortBy.RANDOM     -> allInLibraryRandomized()
     }.map( sortOrder::applyTo ).take( limit )
     //</editor-fold>
 }

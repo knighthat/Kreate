@@ -4,12 +4,16 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import app.kreate.android.R
+import app.kreate.enums.SortCategory
 import me.knighthat.enums.TextView
 
 enum class PlaylistSongSortBy(
     @field:StringRes override val textId: Int,
-    @field:DrawableRes override val iconId: Int
-): TextView, Drawable {
+    @field:DrawableRes override val iconId: Int,
+    override val isRandom: Boolean = false
+): TextView, Drawable, SortCategory {
+
+    RANDOM( R.string.random, R.drawable.random, true ),
 
     Album( R.string.sort_album, R.drawable.album ),
 

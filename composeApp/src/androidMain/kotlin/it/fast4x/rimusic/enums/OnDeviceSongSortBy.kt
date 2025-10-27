@@ -4,6 +4,7 @@ import android.provider.MediaStore
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import app.kreate.android.R
+import app.kreate.enums.SortCategory
 import me.knighthat.enums.TextView
 import org.intellij.lang.annotations.MagicConstant
 
@@ -12,7 +13,8 @@ enum class OnDeviceSongSortBy(
     val value: String,
     @field:StringRes override val textId: Int,
     @field:DrawableRes override val iconId: Int,
-): TextView, Drawable {
+    override val isRandom: Boolean = false
+): TextView, Drawable, SortCategory {
 
     Title( MediaStore.Audio.Media.TITLE, R.string.sort_title, R.drawable.text ),
 

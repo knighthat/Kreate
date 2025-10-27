@@ -3,12 +3,16 @@ package it.fast4x.rimusic.enums
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import app.kreate.android.R
+import app.kreate.enums.SortCategory
 import me.knighthat.enums.TextView
 
 enum class AlbumSortBy(
     @field:StringRes override val textId: Int,
-    @field:DrawableRes override val iconId: Int
-): Drawable, TextView {
+    @field:DrawableRes override val iconId: Int,
+    override val isRandom: Boolean = false
+): Drawable, TextView, SortCategory {
+
+    RANDOM( R.string.random, R.drawable.random, true ),
 
     Title( R.string.sort_album, R.drawable.text ),
 

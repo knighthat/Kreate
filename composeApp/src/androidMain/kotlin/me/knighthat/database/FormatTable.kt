@@ -35,6 +35,22 @@ interface FormatTable {
     ): Flow<List<FormatWithSong>>
 
     /**
+     * @return formats & songs of this table in randomized order
+     */
+    @Query("""
+        SELECT DISTINCT F.*, S.* 
+        FROM Format F
+        JOIN Song S ON S.id = F.songId
+        WHERE totalPlayTimeMs >= :excludeHidden
+        ORDER BY RANDOM()
+        LIMIT :limit
+    """)
+    fun allWithSongsRandomized(
+        limit: Int = Int.MAX_VALUE,
+        excludeHidden: Boolean = false
+    ): Flow<List<FormatWithSong>>
+
+    /**
      * [Format] with [Format.songId] inside [songIds] will be removed.
      *
      * @return number of rows affected by this operation
@@ -187,6 +203,7 @@ interface FormatTable {
         SongSortBy.Artist           -> sortAllWithSongsByArtist( limit, excludeHidden )
         SongSortBy.Duration         -> sortAllWithSongsByDuration( limit, excludeHidden )
         SongSortBy.AlbumName        -> sortAllWithSongsByAlbumName( limit, excludeHidden )
+        SongSortBy.RANDOM           -> allWithSongsRandomized()
     }.map( sortOrder::applyTo )
     //</editor-fold>
 }

@@ -16,11 +16,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.enums.SortCategory
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.Drawable
 import it.fast4x.rimusic.enums.MenuStyle
@@ -29,16 +31,17 @@ import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.MenuState
 import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
 import it.fast4x.rimusic.ui.components.tab.toolbar.Clickable
+import it.fast4x.rimusic.ui.components.tab.toolbar.DualIcon
 import it.fast4x.rimusic.ui.components.tab.toolbar.Menu
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import it.fast4x.rimusic.utils.semiBold
 import me.knighthat.enums.TextView
 
-open class Sort<T: Enum<T>>(
+open class Sort<T>(
     override val menuState: MenuState,
     sortByState: Preferences<T>,
     sortOrderState: Preferences<SortOrder>,
-): MenuIcon, Clickable, Menu {
+): MenuIcon, Clickable, Menu, DualIcon where T: Enum<T>, T: SortCategory {
 
     open var sortBy: T by sortByState
     open var sortOrder: SortOrder by sortOrderState
@@ -51,11 +54,20 @@ open class Sort<T: Enum<T>>(
             label = ""
         )
     override val iconId: Int = R.drawable.arrow_up
+    override val secondIconId: Int = R.drawable.random
     override val menuIconTitle: String
         @Composable
         get() = stringResource( R.string.sorting_order )
+    override val icon: Painter
+        // [isFirstIcon] is not a MutableState object,
+        // so when its state changes, no recomposition happens
+        @Composable
+        get() = painterResource(
+            if( sortBy.isRandom ) secondIconId else iconId
+        )
 
     override var menuStyle: MenuStyle by Preferences.MENU_STYLE
+    override var isFirstIcon: Boolean = !sortBy.isRandom
 
     /** Flip oder. */
     override fun onShortClick() { sortOrder = !sortOrder }
@@ -142,14 +154,18 @@ open class Sort<T: Enum<T>>(
 
     @Composable
     override fun ToolBarButton() {
-        val animatedArrow by arrowDirection
+        val modifier = if( !sortBy.isRandom ) {
+            val animatedArrow by arrowDirection
+            Modifier.graphicsLayer { rotationZ = animatedArrow }
+        } else
+            Modifier
 
         TabToolBar.Icon(
             icon,
             color,
             sizeDp,
             isEnabled,
-            this.modifier.graphicsLayer { rotationZ = animatedArrow },
+            this.modifier.then( modifier),
             this::onShortClick,
             this::onLongClick
         )

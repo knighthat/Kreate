@@ -78,6 +78,20 @@ interface SongPlaylistMapTable {
     """)
     fun allSongsOf( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
 
+    /**
+     * @param playlistId of playlist to look for
+     * @return all [Song]s that were mapped to playlist has [Playlist.id] matches [playlistId] in randomized order
+     */
+    @Query("""
+        SELECT DISTINCT S.*
+        FROM SongPlaylistMap SPM
+        JOIN Song S ON S.id = SPM.songId
+        WHERE SPM.playlistId = :playlistId
+        ORDER BY RANDOM()
+        LIMIT :limit
+    """)
+    fun allSongsOfRandomized( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateReplace( songPlaylistMaps: List<SongPlaylistMap> ): Int
 
@@ -389,6 +403,7 @@ interface SongPlaylistMapTable {
         PlaylistSongSortBy.Duration         -> sortSongsByDuration( playlistId )
         PlaylistSongSortBy.DateLiked        -> sortSongsByLikedAt( playlistId )
         PlaylistSongSortBy.DateAdded        -> allSongsOf( playlistId )     // Already sorted by ROWID
+        PlaylistSongSortBy.RANDOM           -> allSongsOfRandomized( playlistId )
     }.map( sortOrder::applyTo ).take( limit )
     //</editor-fold>
 }

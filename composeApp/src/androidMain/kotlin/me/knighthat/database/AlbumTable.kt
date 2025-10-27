@@ -39,6 +39,18 @@ interface AlbumTable {
     fun allBookmarked( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
 
     /**
+     * @return all albums from this table that are bookmarked by user in randomized order
+     */
+    @Query("""
+        SELECT DISTINCT *
+        FROM Album
+        WHERE bookmarkedAt IS NOT NULL
+        ORDER BY RANDOM()
+        LIMIT :limit
+    """)
+    fun allBookmarkedRandomized( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
+
+    /**
      * @return albums that have their songs mapped to at least 1 playlist
      */
     @Query("""
@@ -50,6 +62,19 @@ interface AlbumTable {
         LIMIT :limit
     """)
     fun allInLibrary( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
+
+    /**
+     * @return albums that have their songs mapped to at least 1 playlist in randomized order
+     */
+    @Query("""
+        SELECT DISTINCT A.*
+        FROM Album A
+        JOIN SongAlbumMap sam ON sam.albumId = A.id
+        JOIN SongPlaylistMap spm ON spm.songId = sam.songId 
+        ORDER BY RANDOM()
+        LIMIT :limit
+    """)
+    fun allInLibraryRandomized( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
 
     /**
      * @return all songs of bookmarked albums
@@ -313,6 +338,7 @@ interface AlbumTable {
         AlbumSortBy.Artist      -> sortBookmarkedByArtist()
         AlbumSortBy.Songs       -> sortBookmarkedBySongsCount()
         AlbumSortBy.Duration    -> sortBookmarkedByDuration()
+        AlbumSortBy.RANDOM      -> allBookmarkedRandomized()
     }.map( sortOrder::applyTo ).take( limit )
     //</editor-fold>
 
@@ -398,6 +424,7 @@ interface AlbumTable {
         AlbumSortBy.Artist      -> sortInLibraryByArtist()
         AlbumSortBy.Songs       -> sortInLibraryBySongsCount()
         AlbumSortBy.Duration    -> sortInLibraryByDuration()
+        AlbumSortBy.RANDOM      -> allInLibraryRandomized()
     }.map( sortOrder::applyTo ).take( 4 )
     //</editor-fold>
 }

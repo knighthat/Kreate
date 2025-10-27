@@ -97,6 +97,23 @@ interface PlaylistTable {
     fun allAsPreview( limit: Int = Int.MAX_VALUE ): Flow<List<PlaylistPreview>>
 
     /**
+     * @return all playlists from this table with number of songs they carry in randomized order
+     */
+    @Query("""
+        SELECT DISTINCT 
+            *,
+            (
+                SELECT COUNT(songId)
+                FROM SongPlaylistMap
+                WHERE playlistId = id
+            ) as songCount
+        FROM Playlist
+        ORDER BY RANDOM()
+        LIMIT :limit
+    """)
+    fun allAsPreviewRandomized( limit: Int = Int.MAX_VALUE ): Flow<List<PlaylistPreview>>
+
+    /**
      * @param browseId of playlist to look for
      * @return [Playlist] that has [Playlist.browseId] matches [browseId]
      */
@@ -287,6 +304,7 @@ interface PlaylistTable {
         PlaylistSortBy.Name         -> sortPreviewsByName()
         PlaylistSortBy.DateAdded    -> allAsPreview()       // Already sorted by ROWID
         PlaylistSortBy.SongCount    -> sortPreviewsBySongCount()
+        PlaylistSortBy.RANDOM       -> allAsPreviewRandomized()
     }.map( sortOrder::applyTo ).take( limit )
     //</editor-fold>
 }
