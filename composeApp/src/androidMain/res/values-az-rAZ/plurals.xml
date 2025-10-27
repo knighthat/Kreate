@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="second">
+        <item quantity="one">%d saniyə</item>
+        <item quantity="other">%d saniyə</item>
+    </plurals>
+    <plurals name="query">
+        <item quantity="one">%d sorğu</item>
+        <item quantity="other">%d sorğu</item>
+    </plurals>
+    <plurals name="file">
+        <item quantity="one">%d fayl</item>
+        <item quantity="other">%d fayl</item>
+    </plurals>
+</resources>
