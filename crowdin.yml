@@ -40,3 +40,9 @@ files:
         pt-BR: pt-rBR
         sr: b+sr+Cyrl
         sr-CS: b+sr+Latn
+    # FDroid fastlane - Full description
+    - source: /fastlane/metadata/android/en-US/full_description.txt
+      translation: /fastlane/metadata/android/%locale%/full_description.txt
+    # FDroid fastlane - Short description
+    - source: /fastlane/metadata/android/en-US/short_description.txt
+      translation: /fastlane/metadata/android/%locale%/short_description.txt
