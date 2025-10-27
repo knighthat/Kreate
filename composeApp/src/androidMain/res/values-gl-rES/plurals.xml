@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="second">
+        <item quantity="one">%d segundo</item>
+        <item quantity="other">%d second</item>
+    </plurals>
+    <plurals name="query">
+        <item quantity="one">%d busca</item>
+        <item quantity="other">%d buscas</item>
+    </plurals>
+    <plurals name="file">
+        <item quantity="one">%d file</item>
+        <item quantity="other">%d file</item>
+    </plurals>
+</resources>
