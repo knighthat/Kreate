@@ -806,9 +806,9 @@ fun HomeQuickPicks(
                     LaunchedEffect( refreshing, countryCode ) {
                         CoroutineScope( Dispatchers.IO ).launch {
                             me.knighthat.innertube.Innertube.charts( CURRENT_LOCALE, countryCode, null )
-                                .onFailure {
-                                    it.printStackTrace()
-                                    it.message?.also( Toaster::e )
+                                .onFailure { err ->
+                                    Timber.tag( "HomeQuickPicks" ).e( err )
+                                    Toaster.e( R.string.error_failed_to_get_charts )
                                 }
                                 .getOrNull()
                                 .also { charts = it }

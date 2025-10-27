@@ -100,6 +100,7 @@ import me.knighthat.database.AlbumTable
 import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubeAlbum
 import me.knighthat.utils.Toaster
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalTextApi
@@ -225,9 +226,12 @@ fun HomeAlbums(
                      .onSuccess { results ->
                          onlineAlbums = results.fastMapNotNull { it as? InnertubeAlbum }
                      }
-                     .onFailure {
-                         it.printStackTrace()
-                         it.message?.also( Toaster::e )
+                     .onFailure { err ->
+                         Timber.tag( "HomeAlbums" ).e( err )
+                         Toaster.e(
+                             R.string.error_failed_to_sync_tab,
+                             context.getString( R.string.albums ).lowercase()
+                         )
                      }
         }
     }

@@ -326,9 +326,9 @@ fun YouTubeAlbum(
                          albumPage = it
                          updateAlbumInDatabase( dbAlbum, it )
                      }
-                     .onFailure {
-                         it.printStackTrace()
-                         it.message?.also( Toaster::e )
+                     .onFailure { err ->
+                         Timber.tag( "YouTubeAlbum" ).e( err )
+                         Toaster.e( R.string.error_failed_to_load_album )
                      }
 
             isRefreshing = false

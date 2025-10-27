@@ -947,9 +947,9 @@ class PlayerServiceModern:
                                         player.addMediaItems(it)
                                     }
                                 }
-                }.onFailure {
-                    it.printStackTrace()
-                    it.message?.also( Toaster::e )
+                }.onFailure { err ->
+                    Timber.tag( "SongRadio" ).e( err )
+                    Toaster.e( R.string.error_song_radio_failed )
                 }
 
                 isLoadingRadio = false

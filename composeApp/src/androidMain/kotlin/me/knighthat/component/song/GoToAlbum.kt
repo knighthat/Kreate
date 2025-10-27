@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.innertube.Innertube
 import me.knighthat.utils.Toaster
+import timber.log.Timber
 import java.util.Optional
 
 class GoToAlbum(
@@ -62,9 +63,9 @@ class GoToAlbum(
                                              )
                                          }
                                  },
-                                 onFailure = {
-                                     it.printStackTrace()
-                                     it.message?.also( Toaster::e )
+                                 onFailure = { err ->
+                                     Timber.tag( "GoToAlbum" ).e( err )
+                                     Toaster.e( R.string.error_failed_to_load_album )
                                  }
                              )
                 }

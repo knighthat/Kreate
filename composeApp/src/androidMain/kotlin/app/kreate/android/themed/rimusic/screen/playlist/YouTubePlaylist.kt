@@ -243,8 +243,8 @@ fun YouTubePlaylist(
                              continuation = playlistPage!!.songContinuation
                          }
                          .onFailure { err ->
-                             err.printStackTrace()
-                             err.message?.also( Toaster::e )
+                             Timber.tag( "YouTubePlaylist" ).e( err )
+                             Toaster.e( R.string.error_failed_to_load_playlist )
                          }
             else if ( playlistPage?.visitorData != null || useLogin )
                 Innertube.playlistContinued(
@@ -262,8 +262,8 @@ fun YouTubePlaylist(
                              continuation = continued.continuation
                          }
                          .onFailure { err ->
-                             err.printStackTrace()
-                             err.message?.also( Toaster::e )
+                             Timber.tag( "YouTubePlaylist" ).e( err )
+                             Toaster.e( R.string.error_failed_to_get_playlists_next_songs )
                          }
         }
 

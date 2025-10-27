@@ -29,6 +29,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
@@ -79,6 +80,7 @@ import me.knighthat.component.tab.SongShuffler
 import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubePlaylist
 import me.knighthat.utils.Toaster
+import timber.log.Timber
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -94,6 +96,7 @@ fun HomeLibrary(
     onSettingsClick: () -> Unit
 ) {
     // Essentials
+    val context = LocalContext.current
     val lazyGridState = rememberLazyGridState()
     val menuState = LocalMenuState.current
     val appearance = LocalAppearance.current
@@ -173,9 +176,12 @@ fun HomeLibrary(
                      .onSuccess { results ->
                          onlinePlaylists = results.fastMapNotNull { it as? InnertubePlaylist }
                      }
-                     .onFailure {
-                         it.printStackTrace()
-                         it.message?.also( Toaster::e )
+                     .onFailure { err ->
+                         Timber.tag( "HomePlaylist" ).e( err )
+                         Toaster.e(
+                             R.string.error_failed_to_sync_tab,
+                             context.getString( R.string.playlists ).lowercase()
+                         )
                      }
         }
     }

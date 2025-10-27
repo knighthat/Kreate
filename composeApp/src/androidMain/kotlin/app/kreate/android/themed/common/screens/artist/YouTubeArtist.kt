@@ -113,6 +113,7 @@ import me.knighthat.innertube.model.InnertubeItem
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.PropUtils
 import me.knighthat.utils.Toaster
+import timber.log.Timber
 
 private fun updateArtistInDatabase( dbArtist: Artist?, innertubeArtist: InnertubeArtist ) = Database.asyncTransaction {
     val onlineArtist = Artist(
@@ -275,9 +276,9 @@ fun YouTubeArtist(
                              updateArtistInDatabase( dbArtist, it )
                          }
                      }
-                     .onFailure {
-                         it.printStackTrace()
-                         it.message?.also( Toaster::e )
+                     .onFailure { err ->
+                         Timber.tag( "YouTubeArtist" ).e( err )
+                         Toaster.e( R.string.error_failed_to_load_artist )
                      }
 
             isRefreshing = false

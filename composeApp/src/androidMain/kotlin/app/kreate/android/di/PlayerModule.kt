@@ -155,9 +155,7 @@ object PlayerModule {
                      }
                      .onFailure {
                          Timber.tag( LOG_TAG ).e( it, "failed to upsert $videoId's information to database" )
-
-                         val message= it.message ?: context.getString( R.string.failed_to_fetch_original_property )
-                         Toaster.e( message )
+                         Toaster.e( R.string.error_failed_to_fetch_songs_info )
                      }
         }
 

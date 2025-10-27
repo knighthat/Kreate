@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import app.kreate.android.R
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,8 +32,8 @@ class SongDetailsViewModel(private val songId: String): ViewModel() {
         Innertube.songInfo( songId, CURRENT_LOCALE)
                  .onSuccess { songDetails = it }
                  .onFailure { err ->
-                     Timber.Forest.tag( "SongDetails" ).e( err )
-                     err.message?.also( Toaster::e )
+                     Timber.tag( "SongDetails" ).e( err )
+                     Toaster.e(  R.string.error_failed_to_fetch_songs_info )
                  }
     }
 
@@ -40,8 +41,8 @@ class SongDetailsViewModel(private val songId: String): ViewModel() {
         Innertube.songBasicInfo( songId, CURRENT_LOCALE)
                  .onSuccess { songBasicInfo = it }
                  .onFailure { err ->
-                     Timber.Forest.tag( "SongDetails" ).e( err )
-                     err.message?.also( Toaster::e )
+                     Timber.tag( "SongDetails" ).e( err )
+                     Toaster.e( R.string.error_failed_to_fetch_songs_info )
                  }
     }
 

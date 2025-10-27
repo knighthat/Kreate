@@ -24,6 +24,7 @@ import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Contract
+import timber.log.Timber
 import java.util.Optional
 
 @UnstableApi
@@ -118,9 +119,9 @@ class ResetSongDialog private constructor(
                 var innertubeSong: InnertubeSong? = null
                 Innertube.songBasicInfo( song.id, CURRENT_LOCALE )
                          .onSuccess { innertubeSong = it }
-                         .onFailure {
-                             it.printStackTrace()
-                             it.message?.also( Toaster::e )
+                         .onFailure { err ->
+                             Timber.tag( "ResetSongDialog" ).e( err )
+                             Toaster.e( R.string.error_failed_to_fetch_songs_info )
                          }
 
                 @Contract("_,null->null")

@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -87,6 +88,7 @@ import me.knighthat.component.tab.SongShuffler
 import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubeArtist
 import me.knighthat.utils.Toaster
+import timber.log.Timber
 
 @ExperimentalMaterial3Api
 @UnstableApi
@@ -101,6 +103,7 @@ fun HomeArtists(
     onSettingsClick: () -> Unit
 ) {
     // Essentials
+    val context = LocalContext.current
     val lazyGridState = rememberLazyGridState()
     val (colorPalette, typography) = LocalAppearance.current
     val menuState = LocalMenuState.current
@@ -192,9 +195,12 @@ fun HomeArtists(
                      .onSuccess { results ->
                          onlineArtists = results.fastMapNotNull { it as? InnertubeArtist }
                      }
-                     .onFailure {
-                         it.printStackTrace()
-                         it.message?.also( Toaster::e )
+                     .onFailure { err ->
+                         Timber.tag( "HomeArtists" ).e( err )
+                         Toaster.e(
+                             R.string.error_failed_to_sync_tab,
+                             context.getString( R.string.artists ).lowercase()
+                         )
                      }
         }
     }
