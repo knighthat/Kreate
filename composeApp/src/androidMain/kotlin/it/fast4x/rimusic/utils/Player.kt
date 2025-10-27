@@ -26,6 +26,13 @@ import me.knighthat.utils.Toaster
 import timber.log.Timber
 import java.util.ArrayDeque
 
+
+private fun Player.playWhenReady() {
+    prepare()
+    restoreGlobalVolume()
+    playWhenReady = true
+}
+
 var GlobalVolume: Float = 0.5f
 
 fun Player.restoreGlobalVolume() {
@@ -100,17 +107,13 @@ fun Player.playAtMedia(mediaItems: List<MediaItem>, mediaId: String) {
 
     Log.d("mediaItem-playAtMedia",itemIndex.toString())
     setMediaItems(mediaItems, itemIndex, C.TIME_UNSET)
-    prepare()
-    restoreGlobalVolume()
-    playWhenReady = true
+    playWhenReady()
 
 }
 
 fun Player.forcePlay(mediaItem: MediaItem) {
     setMediaItem(mediaItem.cleaned, true)
-    prepare()
-    restoreGlobalVolume()
-    playWhenReady = true
+    playWhenReady()
 }
 
 fun Player.playVideo(mediaItem: MediaItem) {
@@ -120,9 +123,7 @@ fun Player.playVideo(mediaItem: MediaItem) {
 
 fun Player.playAtIndex(mediaItemIndex: Int) {
     seekTo(mediaItemIndex, C.TIME_UNSET)
-    prepare()
-    restoreGlobalVolume()
-    playWhenReady = true
+    playWhenReady()
 }
 
 @SuppressLint("Range")
@@ -136,9 +137,7 @@ fun Player.forcePlayAtIndex(mediaItems: List<MediaItem>, mediaItemIndex: Int) {
 
         runBlocking( Dispatchers.Main ) {
             setMediaItems( cleanedMediaItems, mediaItemIndex, C.TIME_UNSET )
-            prepare()
-            restoreGlobalVolume()
-            playWhenReady = true
+            playWhenReady()
         }
     }
 }
@@ -160,17 +159,13 @@ fun Player.forceSeekToNext() =
 fun Player.playNext() {
     seekToNextMediaItem()
     //seekToNext()
-    prepare()
-    restoreGlobalVolume()
-    playWhenReady = true
+    playWhenReady()
 }
 
 fun Player.playPrevious() {
     seekToPreviousMediaItem()
     //seekToPrevious()
-    prepare()
-    restoreGlobalVolume()
-    playWhenReady = true
+    playWhenReady()
 }
 
 /**
