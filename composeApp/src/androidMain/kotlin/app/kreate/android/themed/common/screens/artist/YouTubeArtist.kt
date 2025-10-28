@@ -90,6 +90,7 @@ import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
+import it.fast4x.rimusic.utils.durationToMillis
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.fadingEdge
 import it.fast4x.rimusic.utils.forcePlayAtIndex
@@ -444,10 +445,7 @@ fun YouTubeArtist(
                                     showThumbnail = true,
                                     onClick = {
                                         binder.stopRadio()
-                                        binder.player.forcePlayAtIndex(
-                                            songs.map( Song::asMediaItem ),
-                                            index
-                                        )
+                                        binder.player.forcePlayAtIndex( songs, index )
                                     }
                                 )
                             }
@@ -486,10 +484,9 @@ fun YouTubeArtist(
                                              showThumbnail = true,
                                              onClick = {
                                                  binder.stopRadio()
-                                                 binder.player.forcePlayAtIndex(
-                                                     songs.map( InnertubeSong::toMediaItem ),
-                                                     index
-                                                 )
+                                                 binder.player.forcePlayAtIndex( songs, index, InnertubeSong::toMediaItem ) {
+                                                     durationToMillis( it.durationText.orEmpty() )
+                                                 }
                                              }
                                          )
                                      }

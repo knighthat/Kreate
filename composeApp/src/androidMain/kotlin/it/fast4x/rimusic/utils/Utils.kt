@@ -187,6 +187,35 @@ val Song.asMediaItem: MediaItem
         .setCustomCacheKey(id)
         .build()
 
+val Song.asCleanedMediaItem: MediaItem
+    get() = MediaItem.Builder()
+        .setMediaMetadata(
+            MediaMetadata.Builder()
+                .setTitle( cleanTitle() )
+                .setArtist( cleanArtistsText() )
+                .setArtworkUri( thumbnailUrl?.toUri() )
+                .setDurationMs( durationToMillis( durationText.orEmpty() ) )
+                .setExtras(
+                    bundleOf(
+                        "durationText" to durationText,
+                        EXPLICIT_BUNDLE_TAG to title.startsWith( EXPLICIT_PREFIX, true )
+                    )
+                )
+                .build()
+        )
+        .setMediaId( id )
+        .setUri(
+            if ( isLocal )
+                ContentUris.withAppendedId(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                id.substringAfter(LOCAL_KEY_PREFIX).toLong()
+                )
+            else
+                id.toUri()
+        )
+        .setCustomCacheKey(id)
+        .build()
+
 val Innertube.ArtistItem.asArtist: Artist
     get() = Artist(
         id = key,

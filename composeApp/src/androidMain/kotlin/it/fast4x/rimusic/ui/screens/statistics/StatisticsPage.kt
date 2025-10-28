@@ -341,10 +341,7 @@ fun StatisticsPage(
                             },
                             onClick = {
                                 binder.stopRadio()
-                                binder.player.forcePlayAtIndex(
-                                    songs.map(Song::asMediaItem),
-                                    index
-                                )
+                                binder.player.forcePlayAtIndex( songs, index )
                             }
                         )
                     }

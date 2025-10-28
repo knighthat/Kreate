@@ -337,15 +337,9 @@ fun HomeSongs(
 
                         val selectedSongs = getSongs()
                         if( song in selectedSongs )
-                            binder.player.forcePlayAtIndex(
-                                selectedSongs.fastMap( Song::asMediaItem ),
-                                selectedSongs.indexOf( song )
-                            )
+                            binder.player.forcePlayAtIndex( selectedSongs, selectedSongs.indexOf( song ) )
                         else
-                            binder.player.forcePlayAtIndex(
-                                itemsOnDisplay.fastMap( Song::asMediaItem ),
-                                index
-                            )
+                            binder.player.forcePlayAtIndex( itemsOnDisplay, index )
                     }
                 )
             }

@@ -40,7 +40,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastMap
 import androidx.core.content.ContextCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -290,15 +289,9 @@ fun OnDeviceSong(
 
                         val selectedSongs = getSongs()
                         if( song in selectedSongs )
-                            binder.player.forcePlayAtIndex(
-                                selectedSongs.fastMap( Song::asMediaItem ),
-                                selectedSongs.indexOf( song )
-                            )
+                            binder.player.forcePlayAtIndex( selectedSongs, selectedSongs.indexOf( song ) )
                         else
-                            binder.player.forcePlayAtIndex(
-                                itemsOnDisplay.fastMap( Song::asMediaItem ),
-                                index
-                            )
+                            binder.player.forcePlayAtIndex( itemsOnDisplay, index )
                     }
                 )
             }

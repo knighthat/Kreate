@@ -47,7 +47,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastFilter
-import androidx.compose.ui.util.fastMap
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -565,15 +564,9 @@ fun YouTubePlaylist(
 
                                     val selectedSongs = getSongs()
                                     if( song in selectedSongs )
-                                        binder.player.forcePlayAtIndex(
-                                            selectedSongs.fastMap( Song::asMediaItem ),
-                                            selectedSongs.indexOf( song )
-                                        )
+                                        binder.player.forcePlayAtIndex( selectedSongs, selectedSongs.indexOf( song ) )
                                     else
-                                        binder.player.forcePlayAtIndex(
-                                            itemsOnDisplay.fastMap( Song::asMediaItem ),
-                                            index
-                                        )
+                                        binder.player.forcePlayAtIndex( itemsOnDisplay, index )
                                 }
                             )
                         }

@@ -16,12 +16,16 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.DurationInMinutes
+import it.fast4x.rimusic.models.Song
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
+import org.jetbrains.annotations.Blocking
 import timber.log.Timber
 
 
@@ -29,6 +33,32 @@ private fun Player.playWhenReady() {
     prepare()
     restoreGlobalVolume()
     playWhenReady = true
+}
+
+@Blocking
+private fun <T> filterDurationAndLimit(
+    items: List<T>,
+    toMediaItem: T.() -> MediaItem,
+    getDuration: (T) -> Long
+): List<MediaItem> {
+    val durationLimit by Preferences.LIMIT_SONGS_WITH_DURATION
+    val maxCount by Preferences.MAX_NUMBER_OF_SONG_IN_QUEUE
+
+    val result = mutableListOf<MediaItem>()
+    for( s in items ) {
+        if( result.size > maxCount.toInt() )
+            break
+
+        val durationMillis = getDuration(s)
+        if( durationLimit != DurationInMinutes.Disabled
+            && durationMillis > durationLimit.asMillis
+        ) continue
+
+        val cleanedMediaItem = s.toMediaItem()
+        result.add( cleanedMediaItem )
+    }
+
+    return result.toList()      // Make it immutable
 }
 
 var GlobalVolume: Float = 0.5f
@@ -83,6 +113,49 @@ fun Player.playAtIndex(mediaItemIndex: Int) {
     playWhenReady()
 }
 
+fun <T> Player.forcePlayAtIndex(
+    items: List<T>,
+    index: Int,
+    toMediaItem: T.() -> MediaItem,
+    getDuration: (T) -> Long
+) =
+    CoroutineScope(Dispatchers.Default).launch {
+        val realList = items.subList( index, items.size )
+        val mediaItems = filterDurationAndLimit( realList, toMediaItem, getDuration )
+        if( mediaItems.isEmpty() ) return@launch
+
+        val item = items[index].toMediaItem()
+        // This index should be 0 in most cases
+        val startIndex = mediaItems.indexOfFirst {
+            it.mediaId == item.mediaId
+        }
+        // When selected item is no longer in the list,
+        // we only warn user and do nothing.
+        if( startIndex == -1 ) {
+            Toaster.w( R.string.warning_songs_duration_exceeds_limit )
+            return@launch
+        }
+
+        // Let user know how many songs were excluded.
+        if( mediaItems.size < items.size ) {
+            val excludedByDurationLimit = items.size - mediaItems.size
+            Toaster.w(
+                R.string.warning_num_songs_exlucded_because_duration_limit,
+                appContext().resources.getQuantityString(
+                    R.plurals.song,
+                    excludedByDurationLimit,
+                    excludedByDurationLimit
+                )
+            )
+        }
+
+        withContext( Dispatchers.Main ) {
+            setMediaItems( mediaItems, startIndex, C.INDEX_UNSET.toLong() )
+            playWhenReady()
+        }
+    }
+
+@JvmName("forcePlayMediaItemsAtIndex")
 @SuppressLint("Range")
 @UnstableApi
 fun Player.forcePlayAtIndex(mediaItems: List<MediaItem>, mediaItemIndex: Int) {
@@ -98,6 +171,14 @@ fun Player.forcePlayAtIndex(mediaItems: List<MediaItem>, mediaItemIndex: Int) {
         }
     }
 }
+
+@JvmName("forcePlaySongsAtIndex")
+fun Player.forcePlayAtIndex( songs: List<Song>, startIndex: Int ) {
+    forcePlayAtIndex( songs, startIndex, Song::asCleanedMediaItem ) {
+        durationToMillis( it.durationText.orEmpty() )
+    }
+}
+
 @UnstableApi
 fun Player.forcePlayFromBeginning(mediaItems: List<MediaItem>) =
     forcePlayAtIndex(mediaItems, 0)

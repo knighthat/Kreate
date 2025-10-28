@@ -104,6 +104,7 @@ import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.addToYtPlaylist
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.durationTextToMillis
+import it.fast4x.rimusic.utils.durationToMillis
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.fadingEdge
 import it.fast4x.rimusic.utils.forcePlayAtIndex
@@ -731,11 +732,16 @@ fun Podcast(
                             onClick = {
                                 searching = false
                                 filter = null
-                                podcastPage?.listEpisode?.map(Innertube.Podcast.EpisodeItem::asMediaItem)
-                                    ?.let { mediaItems ->
-                                        binder.stopRadio()
-                                        binder.player.forcePlayAtIndex(mediaItems, index)
+
+                                binder.stopRadio()
+                                binder.player.forcePlayAtIndex(
+                                    items = podcastPage?.listEpisode.orEmpty(),
+                                    index = index,
+                                    toMediaItem = Innertube.Podcast.EpisodeItem::asMediaItem,
+                                    getDuration = {
+                                        durationToMillis( it.durationString.orEmpty() )
                                     }
+                                )
                             }
                         )
                     }

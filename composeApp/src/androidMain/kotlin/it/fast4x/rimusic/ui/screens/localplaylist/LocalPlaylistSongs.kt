@@ -45,7 +45,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.media3.common.MediaItem
@@ -765,15 +764,9 @@ fun LocalPlaylistSongs(
 
                                 val selectedSongs = getSongs()
                                 if( song in selectedSongs )
-                                    binder.player.forcePlayAtIndex(
-                                        selectedSongs.fastMap( Song::asMediaItem ),
-                                        selectedSongs.indexOf( song )
-                                    )
+                                    binder.player.forcePlayAtIndex( selectedSongs, selectedSongs.indexOf( song ) )
                                 else
-                                    binder.player.forcePlayAtIndex(
-                                        itemsOnDisplay.fastMap( Song::asMediaItem ),
-                                        index
-                                    )
+                                    binder.player.forcePlayAtIndex( itemsOnDisplay, index )
 
                                 /*
                                     Due to the small size of checkboxes,
