@@ -122,7 +122,10 @@ fun <T> Player.forcePlayAtIndex(
     CoroutineScope(Dispatchers.Default).launch {
         val realList = items.subList( index, items.size )
         val mediaItems = filterDurationAndLimit( realList, toMediaItem, getDuration )
-        if( mediaItems.isEmpty() ) return@launch
+        if( mediaItems.isEmpty() ) {
+            Toaster.w( R.string.warning_no_valid_songs )
+            return@launch
+        }
 
         val item = items[index].toMediaItem()
         // This index should be 0 in most cases
@@ -263,7 +266,10 @@ fun <T> Player.enqueue(
 ) =
     CoroutineScope(Dispatchers.Default).launch {
         val mediaItems = filterDurationAndLimit( items, toMediaItem, getDuration )
-        if( mediaItems.isEmpty() ) return@launch
+        if( mediaItems.isEmpty() ) {
+            Toaster.w( R.string.warning_no_valid_songs )
+            return@launch
+        }
 
         // Let user know how many songs were excluded.
         if( mediaItems.size < items.size ) {
