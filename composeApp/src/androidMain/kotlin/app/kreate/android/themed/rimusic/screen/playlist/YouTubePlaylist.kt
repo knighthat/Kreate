@@ -94,7 +94,6 @@ import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.fadingEdge
 import it.fast4x.rimusic.utils.forcePlayAtIndex
-import it.fast4x.rimusic.utils.forcePlayFromBeginning
 import it.fast4x.rimusic.utils.getHttpClient
 import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isLandscape
@@ -102,6 +101,7 @@ import it.fast4x.rimusic.utils.isNetworkAvailable
 import it.fast4x.rimusic.utils.languageDestination
 import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.medium
+import it.fast4x.rimusic.utils.playShuffled
 import it.fast4x.rimusic.utils.secondary
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
@@ -589,7 +589,7 @@ fun YouTubePlaylist(
                             }
 
                             binder.stopRadio()
-                            binder.player.forcePlayFromBeginning( getMediaItems() )
+                            getSongs().also( binder.player::playShuffled )
                         }
                     )
             }

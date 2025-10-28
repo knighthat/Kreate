@@ -16,6 +16,7 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.DurationInMinutes
 import it.fast4x.rimusic.models.Song
@@ -120,18 +121,22 @@ fun <T> Player.forcePlayAtIndex(
     getDuration: (T) -> Long
 ) =
     CoroutineScope(Dispatchers.Default).launch {
-        val realList = items.subList( index, items.size )
+        val realList = items.subList( index.coerceAtLeast(0), items.size )
         val mediaItems = filterDurationAndLimit( realList, toMediaItem, getDuration )
         if( mediaItems.isEmpty() ) {
             Toaster.w( R.string.warning_no_valid_songs )
             return@launch
         }
 
-        val item = items[index].toMediaItem()
-        // This index should be 0 in most cases
-        val startIndex = mediaItems.indexOfFirst {
-            it.mediaId == item.mediaId
-        }
+        // [index] equals to -1 means whatever first
+        val startIndex = if( index > -1 ) {
+            val item = items[index].toMediaItem()
+            // This index should be 0 in most cases
+            mediaItems.indexOfFirst {
+                it.mediaId == item.mediaId
+            }
+        } else 0
+
         // When selected item is no longer in the list,
         // we only warn user and do nothing.
         if( startIndex == -1 ) {
@@ -182,9 +187,30 @@ fun Player.forcePlayAtIndex( songs: List<Song>, startIndex: Int ) {
     }
 }
 
+@JvmName("playSongsShuffled")
+fun Player.playShuffled( songs: List<Song> ) {
+    if( songs.isEmpty() ) {
+        Toaster.w( R.string.warning_nothing_to_shuffle )
+        return
+    }
+
+    val shuffled = songs.shuffled()
+    forcePlayAtIndex( shuffled, -1 )
+}
+
+@JvmName("playPodcastEpisodeShuffled")
 @UnstableApi
-fun Player.forcePlayFromBeginning(mediaItems: List<MediaItem>) =
-    forcePlayAtIndex(mediaItems, 0)
+fun Player.playShuffled(episodes: List<Innertube.Podcast.EpisodeItem> ) {
+    if( episodes.isEmpty() ) {
+        Toaster.w( R.string.warning_nothing_to_shuffle )
+        return
+    }
+
+    val shuffled = episodes.shuffled()
+    forcePlayAtIndex( shuffled, -1, Innertube.Podcast.EpisodeItem::asMediaItem ) {
+        durationToMillis( it.durationString.orEmpty() )
+    }
+}
 
 fun Player.playNext() {
     seekToNextMediaItem()

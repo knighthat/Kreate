@@ -117,11 +117,11 @@ import it.fast4x.rimusic.utils.deleteFileIfExists
 import it.fast4x.rimusic.utils.durationTextToMillis
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.forcePlayAtIndex
-import it.fast4x.rimusic.utils.forcePlayFromBeginning
 import it.fast4x.rimusic.utils.formatAsTime
 import it.fast4x.rimusic.utils.isAtLeastAndroid14
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.manageDownload
+import it.fast4x.rimusic.utils.playShuffled
 import it.fast4x.rimusic.utils.saveImageToInternalStorage
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.Dispatchers
@@ -798,13 +798,8 @@ fun LocalPlaylistSongs(
                 iconId = R.drawable.shuffle,
                 visible = !reorderingState.isDragging,
                 onClick = {
-                    getMediaItems().let { songs ->
-                        if (songs.isNotEmpty()) {
-                            binder?.stopRadio()
-                            binder?.player
-                                  ?.forcePlayFromBeginning( songs.shuffled() )
-                        }
-                    }
+                    binder.stopRadio()
+                    getSongs().also( binder.player::playShuffled )
                 }
             )
     }
