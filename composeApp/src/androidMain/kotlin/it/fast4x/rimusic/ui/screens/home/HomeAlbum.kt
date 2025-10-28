@@ -470,10 +470,7 @@ fun HomeAlbums(
                                         },
                                         onEnqueue = {
                                             println("mediaItem ${songs}")
-                                            binder?.player?.enqueue(
-                                                songs.map(Song::asMediaItem), context
-                                            )
-
+                                            binder?.player?.enqueue( songs )
                                         },
                                         onAddToPlaylist = { playlistPreview ->
                                             position =

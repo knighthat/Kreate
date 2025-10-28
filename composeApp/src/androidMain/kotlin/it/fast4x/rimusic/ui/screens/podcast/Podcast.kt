@@ -448,9 +448,13 @@ fun Podcast(
                                     .padding(horizontal = 5.dp)
                                     .combinedClickable(
                                         onClick = {
-                                            podcastPage?.listEpisode?.map(Innertube.Podcast.EpisodeItem::asMediaItem)?.let { mediaItems ->
-                                                binder?.player?.enqueue(mediaItems, context)
-                                            }
+                                            binder.player.enqueue(
+                                                items = podcastPage?.listEpisode.orEmpty(),
+                                                toMediaItem = Innertube.Podcast.EpisodeItem::asMediaItem,
+                                                getDuration = {
+                                                    durationToMillis( it.durationString.orEmpty() )
+                                                }
+                                            )
                                         },
                                         onLongClick = {
                                             Toaster.i( R.string.info_enqueue_songs )

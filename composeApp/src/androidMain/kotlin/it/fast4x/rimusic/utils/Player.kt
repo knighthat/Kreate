@@ -256,18 +256,41 @@ fun Player.enqueue( mediaItem: MediaItem ) {
     }
 }
 
+fun <T> Player.enqueue(
+    items: List<T>,
+    toMediaItem: T.() -> MediaItem,
+    getDuration: (T) -> Long
+) =
+    CoroutineScope(Dispatchers.Default).launch {
+        val mediaItems = filterDurationAndLimit( items, toMediaItem, getDuration )
+        if( mediaItems.isEmpty() ) return@launch
 
-@UnstableApi
-fun Player.enqueue(mediaItems: List<MediaItem>, context: Context? = null) {
-    val filteredMediaItems = if (context != null) excludeMediaItems(mediaItems, context)
-    else mediaItems
+        // Let user know how many songs were excluded.
+        if( mediaItems.size < items.size ) {
+            val excludedByDurationLimit = items.size - mediaItems.size
+            Toaster.w(
+                R.string.warning_num_songs_exlucded_because_duration_limit,
+                appContext().resources.getQuantityString(
+                    R.plurals.song,
+                    excludedByDurationLimit,
+                    excludedByDurationLimit
+                )
+            )
+        }
 
-    if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
-        //forcePlayFromBeginning(mediaItems)
-        forcePlayFromBeginning(filteredMediaItems)
-    } else {
-        //addMediaItems(mediaItemCount, mediaItems)
-        addMediaItems(mediaItemCount, filteredMediaItems.map { it.cleaned })
+        withContext( Dispatchers.Main ) {
+            if ( playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED ) {
+                setMediaItems( mediaItems, true )
+                playWhenReady()
+            } else
+                addMediaItems( mediaItems )
+        }
+    }
+
+@JvmName("enqueueSongs")
+fun Player.enqueue( songs: List<Song> ) {
+    enqueue( songs, Song::asCleanedMediaItem ) {
+        durationToMillis( it.durationText.orEmpty() )
     }
 }
 

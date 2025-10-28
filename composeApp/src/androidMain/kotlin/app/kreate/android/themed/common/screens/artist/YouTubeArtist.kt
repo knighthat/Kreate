@@ -252,9 +252,7 @@ fun YouTubeArtist(
             }
         }
         val enqueue = Enqueue {
-            getMediaItems().let {
-                binder.player.enqueue( it, appContext() )
-            }
+            getSongs().also( binder.player::enqueue )
         }
 
         downloadAllDialog.Render()

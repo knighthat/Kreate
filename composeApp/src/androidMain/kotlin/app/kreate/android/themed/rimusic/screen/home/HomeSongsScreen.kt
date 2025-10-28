@@ -92,7 +92,7 @@ fun HomeSongsScreen(navController: NavController ) {
         itemSelector.isActive = false
     }
     val enqueue = Enqueue {
-        binder?.player?.enqueue( getMediaItems(), appContext() )
+        getSongs().also( binder.player::enqueue )
 
         // Turn of selector clears the selected list
         itemSelector.isActive = false

@@ -191,7 +191,7 @@ fun YouTubePlaylist(
         )
         val addToFavorite = LikeComponent( ::getSongs )
         val enqueue = Enqueue {
-            binder.player.enqueue( getMediaItems(), context )
+            getSongs().also( binder.player::enqueue )
 
             // Turn of selector clears the selected list
             itemSelector.isActive = false

@@ -133,7 +133,7 @@ class SongItemMenu private constructor(
             binder?.player?.addNext( listOf(song.asMediaItem), appContext() )
         }
         val enqueue = Enqueue {
-            binder?.player?.enqueue( listOf(song.asMediaItem), appContext() )
+            binder.player.enqueue( listOf(song) )
         }
         val addToFavorite = LikeComponent { listOf(song) }
         val addToPlaylist = PlaylistsMenu.init(

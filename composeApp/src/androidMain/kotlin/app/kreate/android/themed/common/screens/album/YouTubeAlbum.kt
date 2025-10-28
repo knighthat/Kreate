@@ -270,12 +270,10 @@ fun YouTubeAlbum(
             }
         }
         val enqueue = Enqueue {
-            getMediaItems().let {
-                binder.player.enqueue( it, appContext() )
+            getSongs().also( binder.player::enqueue )
 
-                // Turn of selector clears the selected list
-                itemSelector.isActive = false
-            }
+            // Turn of selector clears the selected list
+            itemSelector.isActive = false
         }
         val addToPlaylist = PlaylistsMenu.init(
             navController,
