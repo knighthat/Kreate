@@ -16,13 +16,14 @@ files:
         he: iw
         id: in
         ml-IN: ml
+        pt-BR: pt-rBR
         pt-PT: pt
         si-LK: si
-        zh-CN: zh-rCN
-        zh-TW: zh-rTW
-        pt-BR: pt-rBR
         sr: b+sr+Cyrl
         sr-CS: b+sr+Latn
+        sv-SE: sv
+        zh-CN: zh-rCN
+        zh-TW: zh-rTW
   # Plurals
   - source: /composeApp/src/androidMain/res/values/plurals.xml
     translation: /composeApp/src/androidMain/res/values-%android_code%/plurals.xml
@@ -33,13 +34,14 @@ files:
         he: iw
         id: in
         ml-IN: ml
+        pt-BR: pt-rBR
         pt-PT: pt
         si-LK: si
-        zh-CN: zh-rCN
-        zh-TW: zh-rTW
-        pt-BR: pt-rBR
         sr: b+sr+Cyrl
         sr-CS: b+sr+Latn
+        sv-SE: sv
+        zh-CN: zh-rCN
+        zh-TW: zh-rTW
   # FDroid fastlane - Full description
   - source: /fastlane/metadata/android/en-US/full_description.txt
     translation: /fastlane/metadata/android/%locale%/full_description.txt
