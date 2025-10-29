@@ -50,8 +50,8 @@
 - Fully featured in-app update checker and auto-update $.^2$
 
 > [!NOTE]
-> **1.** This feature requires **microphone permission** (disabled by default)\
-> **2.** This feature only available on GitHub builds (`Kreate-release.apk` and `Kreate-uncompressed.apk`)
+> **¹.** This feature requires **microphone permission** (disabled by default)\
+> **².** This feature only available on GitHub builds (`Kreate-release.apk` and `Kreate-uncompressed.apk`)
 
 # Social media
 
