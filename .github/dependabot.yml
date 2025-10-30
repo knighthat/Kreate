@@ -17,6 +17,13 @@ updates:
     ignore:
       # AGP requires manual upgrade
       - dependency-name: "com.android.application"
+      # Kotlin and KSP must be updated in sync.
+      # Best to do it in local machine
+      - dependency-name: "com.google.devtools.ksp"
+      - dependency-name: "org.jetbrains.kotlin.multiplatform"
+      - dependency-name: "org.jetbrains.kotlin.plugin.compose"
+      - dependency-name: "org.jetbrains.kotlin.plugin.serialization"
+      - dependency-name: "org.jetbrains.kotlin.jvm"
 
   - package-ecosystem: github-actions # See documentation for possible values
     directory: "/" # Location of package manifests
