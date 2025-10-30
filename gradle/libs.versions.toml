@@ -11,7 +11,7 @@ brotli = "0.1.2"
 palette = "1.0.0"
 desugaring = "2.1.5"
 appcompat = "1.7.1"
-materialdesktop = "1.7.3"
+materialIcons = "1.7.3"
 androidmaterial = "1.13.0"
 constraintlayout = "1.1.1"
 translator = "1.1.1"
@@ -73,7 +73,8 @@ ktor-serialization-protobuf = { group = "io.ktor", name = "ktor-serialization-ko
 ktor-websockets = { group = "io.ktor", name = "ktor-client-websockets", version.ref = "ktor" }
 
 # Jetbrains Compose
-material-icon-desktop = { group = "org.jetbrains.compose.material", name = "material-icons-extended-desktop", version.ref = "materialdesktop" }
+material-icons-desktop-ext = { group = "org.jetbrains.compose.material", name = "material-icons-extended-desktop", version.ref = "materialIcons" }
+material-icons-kmp = { group = "org.jetbrains.compose.material", name = "material-icons-core", version.ref = "materialIcons" }
 navigation-kmp = {  group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigationKMP" }
 compose-kmp-ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref = "compose-kmp" }
 compose-kmp-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "compose-kmp" }

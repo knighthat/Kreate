@@ -55,7 +55,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.desktop.currentOs)
 
-            implementation(libs.material.icon.desktop)
+            implementation(libs.material.icons.desktop.ext)
             implementation(libs.vlcj)
         }
         androidMain.dependencies {
@@ -119,6 +119,8 @@ kotlin {
             implementation( libs.okhttp3.logging.interceptor )
 
             implementation( libs.math3 )
+
+            implementation( libs.material.icons.kmp )
         }
     }
 }
