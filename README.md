@@ -34,7 +34,7 @@
 - Download songs or entire playlists for offline playback (not cache)
 - Background playback
 - Listening statistics
-- Audio visualizer on player with many type of effects $.^1$
+- Audio visualizer on player with many type of effects.¹
 - News, mood, musical genres, new albums from favourite artists
 - Import/Export online, RiMusic playlists, can be shared with friends
 - Fetch, display, edit, translate synchronized, or not, songs lyrics
@@ -47,11 +47,11 @@
 - Export cached/downloaded media
 - Export settings
 - Plays music even with no internet connection
-- Fully featured in-app update checker and auto-update $.^2$
+- Fully featured in-app update checker and auto-update.²
 
 > [!NOTE]
-> **¹.** This feature requires **microphone permission** (disabled by default)\
-> **².** This feature only available on GitHub builds (`Kreate-release.apk` and `Kreate-uncompressed.apk`)
+> **¹** This feature requires **microphone permission** (disabled by default)\
+> **²** This feature only available on GitHub builds (`Kreate-release.apk` and `Kreate-uncompressed.apk`)
 
 # Social media
 
