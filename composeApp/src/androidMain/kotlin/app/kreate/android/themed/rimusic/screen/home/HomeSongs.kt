@@ -268,7 +268,7 @@ fun HomeSongs(
 
             SwipeablePlaylistItem(
                 mediaItem = mediaItem,
-                onPlayNext = { binder?.player?.addNext( mediaItem ) },
+                onPlayNext = { binder.player.addNext( song ) },
                 onDownload = {
                     if( builtInPlaylist != BuiltInPlaylist.OnDevice ) {
                         binder?.cache?.removeResource(mediaItem.mediaId)
@@ -283,9 +283,7 @@ fun HomeSongs(
                             )
                     }
                 },
-                onEnqueue = {
-                    binder?.player?.enqueue(mediaItem)
-                }
+                onEnqueue = { binder.player.enqueue( song ) }
             ) {
                 SongItem.Render(
                     song = song,

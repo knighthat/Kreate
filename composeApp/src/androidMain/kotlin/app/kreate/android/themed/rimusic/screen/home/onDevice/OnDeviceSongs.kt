@@ -267,10 +267,8 @@ fun OnDeviceSong(
 
             SwipeablePlaylistItem(
                 mediaItem = mediaItem,
-                onPlayNext = { binder?.player?.addNext( mediaItem ) },
-                onEnqueue = {
-                    binder?.player?.enqueue(mediaItem)
-                }
+                onPlayNext = { binder.player.addNext( song ) },
+                onEnqueue = { binder.player.enqueue( song ) }
             ) {
                 SongItem.Render(
                     song = song,

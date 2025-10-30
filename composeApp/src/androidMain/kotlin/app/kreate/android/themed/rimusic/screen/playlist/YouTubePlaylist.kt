@@ -529,9 +529,7 @@ fun YouTubePlaylist(
 
                         SwipeablePlaylistItem(
                             mediaItem = song.asMediaItem,
-                            onPlayNext = {
-                                binder.player.addNext( song.asMediaItem )
-                            },
+                            onPlayNext = { binder.player.addNext( song ) },
                             onDownload = {
                                 binder.cache.removeResource( song.id )
                                 Database.asyncTransaction {
@@ -545,9 +543,7 @@ fun YouTubePlaylist(
                                         downloadState = isDownloaded
                                     )
                             },
-                            onEnqueue = {
-                                binder.player.enqueue(song.asMediaItem)
-                            }
+                            onEnqueue = { binder.player.enqueue( song ) }
                         ) {
                             SongItem.Render(
                                 song = song,

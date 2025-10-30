@@ -485,9 +485,7 @@ fun YouTubeAlbum(
                         ) { index, song ->
                             SwipeablePlaylistItem(
                                 mediaItem = song.asMediaItem,
-                                onPlayNext = {
-                                    binder.player.addNext(song.asMediaItem)
-                                }
+                                onPlayNext = { binder.player.addNext( song ) }
                             ) {
                                 SongItem.Render(
                                     song = song,

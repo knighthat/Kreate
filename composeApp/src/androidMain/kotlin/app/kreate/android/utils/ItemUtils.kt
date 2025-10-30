@@ -21,7 +21,6 @@ import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
-import app.kreate.android.utils.innertube.toMediaItem
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.isVideoEnabled
@@ -94,7 +93,7 @@ object ItemUtils {
                         isPlaying = childItem.key == currentlyPlaying,
                         navController = navController,
                         onClick = {
-                            binder.player.forcePlay( childItem.asMediaItem )
+                            binder.player.forcePlay( childItem )
                         }
                     )
 
@@ -112,7 +111,7 @@ object ItemUtils {
                                 if ( isVideoEnabled() )
                                     binder.player.playVideo( childItem.asMediaItem )
                                 else
-                                    binder.player.forcePlay( childItem.asMediaItem )
+                                    binder.player.forcePlay( childItem )
                             }
                         )
                     }
@@ -182,7 +181,7 @@ object ItemUtils {
                         isPlaying = item.id == currentlyPlaying,
                         navController = navController,
                         onClick = {
-                            binder.player.forcePlay( item.toMediaItem )
+                            binder.player.forcePlay( item )
                         }
                     )
 

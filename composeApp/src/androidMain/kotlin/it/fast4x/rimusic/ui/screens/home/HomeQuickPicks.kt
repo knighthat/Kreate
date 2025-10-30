@@ -39,6 +39,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.referentialEqualityPolicy
@@ -114,7 +115,9 @@ import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.bold
 import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.color
+import it.fast4x.rimusic.utils.durationToMillis
 import it.fast4x.rimusic.utils.forcePlay
+import it.fast4x.rimusic.utils.forcePlayAtIndex
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.quickPicsDiscoverPageKey
 import it.fast4x.rimusic.utils.quickPicsHomePageKey
@@ -479,10 +482,11 @@ fun HomeQuickPicks(
                         },
                         icon2 = R.drawable.play,
                         onClick2 = {
-                            binder?.stopRadio()
-                            trending?.let { binder?.player?.forcePlay(it.asMediaItem) }
-                            binder?.player?.addMediaItems(relatedInit?.songs?.map { it.asMediaItem }
-                                ?: emptyList())
+                            binder.stopRadio()
+                            trending?.let { binder.player.forcePlay( it ) }
+                            binder.player.addMediaItems(
+                                relatedInit?.songs?.map { it.asMediaItem }.orEmpty()
+                            )
                         }
 
                         //modifier = Modifier.fillMaxWidth(0.7f)
@@ -887,6 +891,11 @@ fun HomeQuickPicks(
                                             SongItem.Values.from( colorPalette, typography )
                                         }
 
+                                        val itemsOnDisplay by remember {derivedStateOf {
+                                            songs.fastFilter { !parentalControlEnabled || !it.isExplicit }
+                                                 .fastDistinctBy(InnertubeSong::id )
+                                        }}
+
                                         LazyHorizontalGrid(
                                             rows = GridCells.Fixed(2),
                                             modifier = Modifier
@@ -896,8 +905,7 @@ fun HomeQuickPicks(
                                             flingBehavior = ScrollableDefaults.flingBehavior()
                                         ) {
                                             itemsIndexed(
-                                                items = songs.fastFilter { !parentalControlEnabled || !it.isExplicit }
-                                                             .fastDistinctBy(InnertubeSong::id ),
+                                                items = itemsOnDisplay,
                                                 key = { i, s -> "${System.identityHashCode(s)}-$i"}
                                             ) { index, song ->
                                                 Row(
@@ -921,10 +929,15 @@ fun HomeQuickPicks(
                                                         values = songItemValues,
                                                         isPlaying = song.id == currentlyPlaying,
                                                         onClick = {
-                                                            val mediaItem = song.toMediaItem
                                                             binder.stopRadio()
-                                                            binder.player.forcePlay(mediaItem)
-                                                            binder.player.addMediaItems(songs.map { it.toMediaItem })
+                                                            binder.player.forcePlayAtIndex(
+                                                                items = itemsOnDisplay,
+                                                                index = index,
+                                                                toMediaItem = InnertubeSong::toMediaItem,
+                                                                getDuration = {
+                                                                    durationToMillis( it.durationText.orEmpty() )
+                                                                }
+                                                            )
                                                         }
                                                     )
                                                 }

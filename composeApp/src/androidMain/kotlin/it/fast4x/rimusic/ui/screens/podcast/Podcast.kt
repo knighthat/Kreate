@@ -691,7 +691,13 @@ fun Podcast(
                     SwipeablePlaylistItem(
                         mediaItem = song.asMediaItem,
                         onPlayNext = {
-                            binder?.player?.addNext(song.asMediaItem)
+                            binder.player.addNext(
+                                item = song,
+                                toMediaItem = Innertube.Podcast.EpisodeItem::asMediaItem,
+                                getDuration = {
+                                    durationToMillis( it.durationString.orEmpty() )
+                                }
+                            )
                         },
                         onDownload = {
                             binder?.cache?.removeResource(song.asMediaItem.mediaId)
@@ -707,7 +713,13 @@ fun Podcast(
                                 )
                         },
                         onEnqueue = {
-                            binder?.player?.enqueue(song.asMediaItem)
+                            binder.player.enqueue(
+                                item = song,
+                                toMediaItem = Innertube.Podcast.EpisodeItem::asMediaItem,
+                                getDuration = {
+                                    durationToMillis( it.durationString.orEmpty() )
+                                }
+                            )
                         }
                     ) {
                         SongItem.Render(

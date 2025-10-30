@@ -214,7 +214,7 @@ fun HistoryList(
                             values = songItemValues,
                             navController = navController,
                             onClick = {
-                                binder.player.forcePlay( event.song.asMediaItem )
+                                binder.player.forcePlay( event.song )
                             }
                         )
                     }

@@ -687,9 +687,7 @@ fun LocalPlaylistSongs(
 
                     SwipeableQueueItem(
                         mediaItem = song.asMediaItem,
-                        onPlayNext = {
-                            binder?.player?.addNext(song.asMediaItem)
-                        },
+                        onPlayNext = { binder.player.addNext( song ) },
                         onRemoveFromQueue = {
                             Database.asyncTransaction {
                                 songPlaylistMapTable.deleteBySongId( song.id, playlistId )
@@ -713,9 +711,7 @@ fun LocalPlaylistSongs(
                                 )
                             }
                         },
-                        onEnqueue = {
-                            binder?.player?.enqueue(song.asMediaItem)
-                        },
+                        onEnqueue = { binder.player.enqueue( song ) },
                     ) {
                         SongItem.Render(
                             song = song,

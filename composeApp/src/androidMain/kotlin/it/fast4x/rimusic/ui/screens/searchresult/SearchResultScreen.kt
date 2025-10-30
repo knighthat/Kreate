@@ -178,7 +178,13 @@ fun SearchResultScreen(
                             SwipeablePlaylistItem(
                                 mediaItem = song.asMediaItem,
                                 onPlayNext = {
-                                    localBinder?.player?.addNext(song.asMediaItem)
+                                    localBinder?.player?.addNext(
+                                        item = song,
+                                        toMediaItem = Innertube.SongItem::asMediaItem,
+                                        getDuration = {
+                                            durationToMillis( it.durationText.orEmpty() )
+                                        }
+                                    )
                                 },
                                 onDownload = {
                                     localBinder?.cache?.removeResource(song.asMediaItem.mediaId)
@@ -192,7 +198,13 @@ fun SearchResultScreen(
                                     )
                                 },
                                 onEnqueue = {
-                                    localBinder?.player?.enqueue(song.asMediaItem)
+                                    binder.player.enqueue(
+                                        item = song,
+                                        toMediaItem = Innertube.SongItem::asMediaItem,
+                                        getDuration = {
+                                            durationToMillis( it.durationText.orEmpty() )
+                                        }
+                                    )
                                 }
                             ) {
                                 SongItem.Render(
@@ -459,15 +471,11 @@ fun SearchResultScreen(
                         itemContent = { video ->
                             SwipeablePlaylistItem(
                                 mediaItem = video.asMediaItem,
-                                onPlayNext = {
-                                    localBinder?.player?.addNext(video.asMediaItem)
-                                },
+                                onPlayNext = { localBinder?.player?.addNext( video ) },
                                 onDownload = {
                                     Toaster.w( R.string.downloading_videos_not_supported )
                                 },
-                                onEnqueue = {
-                                    localBinder?.player?.enqueue(video.asMediaItem)
-                                }
+                                onEnqueue = { localBinder?.player?.enqueue( video ) }
                             ) {
                                 SongItem.Render(
                                     innertubeVideo = video,
@@ -492,7 +500,7 @@ fun SearchResultScreen(
                                         if (isVideoEnabled)
                                             localBinder?.player?.playVideo(video.asMediaItem)
                                         else
-                                            localBinder?.player?.forcePlay(video.asMediaItem)
+                                            localBinder?.player?.forcePlay( video )
                                     }
                                 )
                             }

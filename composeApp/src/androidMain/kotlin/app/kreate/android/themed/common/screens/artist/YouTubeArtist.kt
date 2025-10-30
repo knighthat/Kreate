@@ -425,9 +425,7 @@ fun YouTubeArtist(
                         ) { index, song ->
                             SwipeablePlaylistItem(
                                 mediaItem = song.asMediaItem,
-                                onPlayNext = {
-                                    binder.player.addNext( song.asMediaItem )
-                                }
+                                onPlayNext = { binder.player.addNext( song ) }
                             ) {
                                 SongItem.Render(
                                     song = song,
@@ -465,7 +463,13 @@ fun YouTubeArtist(
                                      SwipeablePlaylistItem(
                                          mediaItem = song.toMediaItem,
                                          onPlayNext = {
-                                             binder.player.addNext( song.toMediaItem )
+                                             binder.player.addNext(
+                                                 item = song,
+                                                 toMediaItem = InnertubeSong::toMediaItem,
+                                                 getDuration = {
+                                                     durationToMillis( it.durationText.orEmpty() )
+                                                 }
+                                             )
                                          }
                                      ) {
                                          SongItem.Render(
