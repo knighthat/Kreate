@@ -3,6 +3,7 @@ package it.fast4x.rimusic.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.annotation.MainThread
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastDistinctBy
 import androidx.compose.ui.util.fastFilter
@@ -256,6 +257,31 @@ fun <T> Player.addNext(
     items: List<T>,
     toMediaItem: T.() -> MediaItem,
     getDuration: (T) -> Long
+) = enqueue( items, currentMediaItemIndex + 1, toMediaItem, getDuration )
+
+@JvmName("addMediaItemsNext")
+fun Player.addNext( songs: List<Song> ) {
+    addNext( songs, Song::asCleanedMediaItem ) {
+        durationToMillis( it.durationText.orEmpty() )
+    }
+}
+
+
+fun Player.enqueue( mediaItem: MediaItem ) {
+     if ( excludeMediaItem(mediaItem) ) return
+
+    if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
+        forcePlay(mediaItem)
+    } else {
+        addMediaItem(mediaItemCount, mediaItem.cleaned)
+    }
+}
+
+fun <T> Player.enqueue(
+    items: List<T>,
+    index: Int,
+    toMediaItem: T.() -> MediaItem,
+    getDuration: (T) -> Long
 ) =
     CoroutineScope(Dispatchers.Default).launch {
         val mediaItems = filterDurationAndLimit( items, toMediaItem, getDuration )
@@ -284,7 +310,7 @@ fun <T> Player.addNext(
 
                 null to emptyList()
             } else
-                currentMediaItem?.mediaId to this@addNext.mediaItems.toList()       // Make a copy because next steps access it outside of Main thread
+                currentMediaItem?.mediaId to this@enqueue.mediaItems.toList()       // Make a copy because next steps access it outside of Main thread
         }
         if( mediaId == null ) return@launch
 
@@ -304,61 +330,16 @@ fun <T> Player.addNext(
 
         val realList = mediaItems.fastFilter { it.mediaId != mediaId }
         withContext( Dispatchers.Main ) {
-            addMediaItems( currentMediaItemIndex + 1, realList )
+            addMediaItems( index, realList )
         }
     }
 
-@JvmName("addMediaItemsNext")
-fun Player.addNext( songs: List<Song> ) {
-    addNext( songs, Song::asCleanedMediaItem ) {
-        durationToMillis( it.durationText.orEmpty() )
-    }
-}
-
-
-fun Player.enqueue( mediaItem: MediaItem ) {
-     if ( excludeMediaItem(mediaItem) ) return
-
-    if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
-        forcePlay(mediaItem)
-    } else {
-        addMediaItem(mediaItemCount, mediaItem.cleaned)
-    }
-}
-
+@MainThread
 fun <T> Player.enqueue(
     items: List<T>,
     toMediaItem: T.() -> MediaItem,
     getDuration: (T) -> Long
-) =
-    CoroutineScope(Dispatchers.Default).launch {
-        val mediaItems = filterDurationAndLimit( items, toMediaItem, getDuration )
-        if( mediaItems.isEmpty() ) {
-            Toaster.w( R.string.warning_no_valid_songs )
-            return@launch
-        }
-
-        // Let user know how many songs were excluded.
-        if( mediaItems.size < items.size ) {
-            val excludedByDurationLimit = items.size - mediaItems.size
-            Toaster.w(
-                R.string.warning_num_songs_exlucded_because_duration_limit,
-                appContext().resources.getQuantityString(
-                    R.plurals.song,
-                    excludedByDurationLimit,
-                    excludedByDurationLimit
-                )
-            )
-        }
-
-        withContext( Dispatchers.Main ) {
-            if ( playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED ) {
-                setMediaItems( mediaItems, true )
-                playWhenReady()
-            } else
-                addMediaItems( mediaItems )
-        }
-    }
+) = enqueue( items, mediaItemCount + 1, toMediaItem, getDuration )
 
 @JvmName("enqueueSongs")
 fun Player.enqueue( songs: List<Song> ) {
