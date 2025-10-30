@@ -70,7 +70,6 @@ import app.kreate.android.utils.renderDescription
 import app.kreate.android.utils.scrollingText
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.models.Artist
@@ -247,9 +246,7 @@ fun YouTubeArtist(
         }
         val radio = Radio(::getSongs)
         val playNext = PlayNext {
-            getMediaItems().let {
-                binder.player.addNext( it, appContext() )
-            }
+            getSongs().also( binder.player::addNext )
         }
         val enqueue = Enqueue {
             getSongs().also( binder.player::enqueue )

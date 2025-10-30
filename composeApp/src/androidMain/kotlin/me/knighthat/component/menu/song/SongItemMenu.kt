@@ -32,7 +32,6 @@ import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.models.Song
@@ -130,7 +129,7 @@ class SongItemMenu private constructor(
         val changeAuthor = ChangeAuthorDialog{ song }
         val startRadio = Radio { listOf(song) }
         val playNext = PlayNext {
-            binder?.player?.addNext( listOf(song.asMediaItem), appContext() )
+            binder.player.addNext( listOf(song) )
         }
         val enqueue = Enqueue {
             binder.player.enqueue( listOf(song) )

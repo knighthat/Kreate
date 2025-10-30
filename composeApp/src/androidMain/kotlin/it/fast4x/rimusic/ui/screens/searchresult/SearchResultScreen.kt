@@ -260,20 +260,14 @@ fun SearchResultScreen(
 
                                                                     println("mediaItem success home album songsPage ${currentAlbumPage.songsPage} description ${currentAlbumPage.description} year ${currentAlbumPage.year}")
 
-                                                                    albumPage
-                                                                        ?.songsPage
-                                                                        ?.items
-                                                                        ?.map(
-                                                                            Innertube.SongItem::asMediaItem
-                                                                        )
-                                                                        ?.let { it1 ->
-                                                                            withContext(Dispatchers.Main) {
-                                                                                binder?.player?.addNext(
-                                                                                    it1,
-                                                                                    context
-                                                                                )
-                                                                            }
+                                                                    binder.player.addNext(
+                                                                        items = albumPage?.songsPage?.items.orEmpty(),
+                                                                        toMediaItem = Innertube.SongItem::asMediaItem,
+                                                                        getDuration = {
+                                                                            durationToMillis( it.durationText.orEmpty() )
                                                                         }
+                                                                    )
+
                                                                     println("mediaItem success add in queue album songsPage ${albumPage
                                                                         ?.songsPage
                                                                         ?.items?.size}")

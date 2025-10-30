@@ -31,7 +31,6 @@ import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.screen.home.onDevice.OnDeviceSong
 import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BuiltInPlaylist
 import it.fast4x.rimusic.enums.NavRoutes
@@ -86,7 +85,7 @@ fun HomeSongsScreen(navController: NavController ) {
     val import = ImportSongsFromCSV()
     val shuffle = SongShuffler(::getSongs)
     val playNext = PlayNext {
-        binder?.player?.addNext( getMediaItems(), appContext() )
+        getSongs().also( binder.player::addNext )
 
         // Turn of selector clears the selected list
         itemSelector.isActive = false

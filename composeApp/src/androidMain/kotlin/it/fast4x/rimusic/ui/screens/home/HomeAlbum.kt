@@ -463,10 +463,7 @@ fun HomeAlbums(
                                         },
                                         onPlayNext = {
                                             println("mediaItem ${songs}")
-                                            binder?.player?.addNext(
-                                                songs.map(Song::asMediaItem), context
-                                            )
-
+                                            binder?.player?.addNext( songs )
                                         },
                                         onEnqueue = {
                                             println("mediaItem ${songs}")

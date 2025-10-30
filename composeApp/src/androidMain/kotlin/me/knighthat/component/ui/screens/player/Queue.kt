@@ -110,10 +110,18 @@ fun ShuffleQueue(
                 val startAt = index + 1
                 val shuffled = mediaItems.subList( startAt, mediaItems.size ).shuffled()
 
-                withContext( Dispatchers.Main.immediate ) {
+                // Avoid removing effect, because it's slow
+                withContext( Dispatchers.Main ) {
                     player.removeMediaItems( startAt, mediaItems.size )
-                    player.addNext( shuffled )
+                }
 
+                player.addNext(
+                    items = shuffled,
+                    toMediaItem = { this },
+                    getDuration = { mediaItem ->
+                        mediaItem.mediaMetadata.durationMs ?: 0L
+                    }
+                ).invokeOnCompletion {
                     Toaster.done()
                 }
             }

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastDistinctBy
+import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -251,27 +252,67 @@ fun Player.addNext( mediaItem: MediaItem ) {
     }
 }
 
-@UnstableApi
-fun Player.addNext(mediaItems: List<MediaItem>, context: Context? = null) {
-    val filteredMediaItems = if (context != null) excludeMediaItems(mediaItems, context)
-    else mediaItems
+fun <T> Player.addNext(
+    items: List<T>,
+    toMediaItem: T.() -> MediaItem,
+    getDuration: (T) -> Long
+) =
+    CoroutineScope(Dispatchers.Default).launch {
+        val mediaItems = filterDurationAndLimit( items, toMediaItem, getDuration )
+        if( mediaItems.isEmpty() ) {
+            Toaster.w( R.string.warning_no_valid_songs )
+            return@launch
+        }
 
-    filteredMediaItems.forEach { mediaItem ->
-        val itemIndex = findMediaItemIndexById(mediaItem.mediaId)
-        if (itemIndex >= 0) removeMediaItem(itemIndex)
+        // Let user know how many songs were excluded.
+        if( mediaItems.size < items.size ) {
+            val excludedByDurationLimit = items.size - mediaItems.size
+            Toaster.w(
+                R.string.warning_num_songs_exlucded_because_duration_limit,
+                appContext().resources.getQuantityString(
+                    R.plurals.song,
+                    excludedByDurationLimit,
+                    excludedByDurationLimit
+                )
+            )
+        }
+
+        val (mediaId, queue) = withContext( Dispatchers.Main ) {
+            if ( playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED ) {
+                setMediaItems( mediaItems, true )
+                playWhenReady()
+
+                null to emptyList()
+            } else
+                currentMediaItem?.mediaId to this@addNext.mediaItems.toList()       // Make a copy because next steps access it outside of Main thread
+        }
+        if( mediaId == null ) return@launch
+
+        // This step goes through the queue from the bottom and remove
+        // MediaItems that are present in [mediaItems] list
+        val addingIds = mediaItems.fastMap( MediaItem::mediaId ).toSet()
+        for( i in queue.lastIndex downTo 0 ) {
+            // Remove non-playing songs in the queue
+            val queueMediaId = queue[i].mediaId
+            if( queueMediaId !in addingIds || queueMediaId == mediaId )
+                continue
+
+            withContext( Dispatchers.Main ) {
+                removeMediaItem( i )
+            }
+        }
+
+        val realList = mediaItems.fastFilter { it.mediaId != mediaId }
+        withContext( Dispatchers.Main ) {
+            addMediaItems( currentMediaItemIndex + 1, realList )
+        }
     }
 
-    if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
-        setMediaItems(filteredMediaItems.map { it.cleaned })
-
-        if( playbackState == Player.STATE_IDLE )
-            prepare()
-
-        play()
-    } else {
-        addMediaItems(currentMediaItemIndex + 1, filteredMediaItems.map { it.cleaned })
+@JvmName("addMediaItemsNext")
+fun Player.addNext( songs: List<Song> ) {
+    addNext( songs, Song::asCleanedMediaItem ) {
+        durationToMillis( it.durationText.orEmpty() )
     }
-
 }
 
 

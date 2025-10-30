@@ -72,7 +72,6 @@ import app.kreate.android.utils.scrollingText
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.MODIFIED_PREFIX
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.models.Album
 import it.fast4x.rimusic.models.Song
@@ -262,12 +261,10 @@ fun YouTubeAlbum(
         val radio = Radio( ::getSongs )
         val locator = Locator( lazyListState, ::getSongs )
         val playNext = PlayNext {
-            getMediaItems().let {
-                binder.player.addNext( it, appContext() )
+            getSongs().also( binder.player::addNext )
 
-                // Turn of selector clears the selected list
-                itemSelector.isActive = false
-            }
+            // Turn of selector clears the selected list
+            itemSelector.isActive = false
         }
         val enqueue = Enqueue {
             getSongs().also( binder.player::enqueue )
