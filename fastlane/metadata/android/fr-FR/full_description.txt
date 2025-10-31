@@ -1,19 +1,19 @@
 <p>
-  Fork of <a href="https://github.com/fast4x/RiMusic">RiMusic</a>, performance is our top priority.
+  Fork de <a href="https://github.com/fast4x/RiMusic">RiMusic</a>, la performance est notre priorité absolue.
 </p>
 
-<b>Features:</b>
+<b>Caractéristiques :</b>
 <ul>
-  <li>Support multiple languages</li>
-  <li>Friendly designs</li>
-  <li>Cache or download songs for offline playback</li>
-  <li>Background playback</li>
-  <li>Statistics and reports (stored and processed locally)</li>
-  <li>Various audio visualizers (some require mic permission, but disabled by default)</li>
-  <li>Sleep timer</li>
-  <li>Audio control: playback speed, pitch, normalization, skip silence</li>
-  <li>Support for Android Auto, Android TV, and YouTube video</li>
-  <li>Export cached/downloaded songs</li>
-  <li>Play music even when not connected to the internet</li>
-  <li>And many more...</li>
+  <li>Prise en charge de plusieurs langues</li>
+  <li>Des designs conviviaux</li>
+  <li>Mettre en cache ou télécharger des titres pour une écoute hors ligne</li>
+  <li>Lecture en arrière-plan</li>
+  <li>Statistiques et rapports (stockés et traités localement)</li>
+  <li>Divers visualiseurs audio (certains nécessitent l'autorisation d'utiliser le micro, mais sont désactivés par défaut)</li>
+  <li>Minuterie</li>
+  <li>Contrôle audio : vitesse de lecture, tonalité, normalisation, saut des silences</li>
+  <li>Prise en charge d'Android Auto, d'Android TV et des vidéos YouTube</li>
+  <li>Exporter les titres mis en cache/téléchargés</li>
+  <li>Écouter de la musique même sans connexion internet</li>
+  <li>Et bien plus encore...</li>
 </ul>
