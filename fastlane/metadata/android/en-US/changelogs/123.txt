@@ -1,0 +1,25 @@
+New:
+- Random sort category
+
+Fixes:
+- Crash when song starts playing
+- Mismatch background color of text fields in lyrics search
+- Crash on startup when song is half-cached
+- Discord causes crash when internet goes out
+- "SKip on error" has no effect
+- RPC doesn't pickup local song's thumbnail
+- DiscordRPC doesn't reconnect on network recovery
+- DiscordRPC doesn't reconnect when setting is enabled
+- Crash when navigating to albums and artists
+- Crash when random artist/album is used
+
+Changes:
+- Green background when lyrics found
+- Hide cache/download icon on local songs
+- Player shows more messages when error occurs
+- Login is not available on Android 5
+- Apply duration limit to play next, enqueue, play actions
+- Apply queue limit to play next, enqueue, play actions
+
+Remove:
+- Encryption library
