@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="second">
+        <item quantity="other">%d giây</item>
+    </plurals>
+    <plurals name="query">
+        <item quantity="other">%d tìm kiếm</item>
+    </plurals>
+    <plurals name="file">
+        <item quantity="other">%d tệp tin</item>
+    </plurals>
+    <plurals name="song">
+        <item quantity="other">%d bài hát</item>
+    </plurals>
+</resources>
