@@ -7,6 +7,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val APP_NAME = "Kreate"
+val VERSION_CODE = 124
 
 plugins {
     // Multiplatform
@@ -158,8 +159,6 @@ android {
         applicationId = "me.knighthat.kreate"
         minSdk = 21
         targetSdk = 36
-        versionCode = 124
-        versionName = "1.8.4"
 
         /*
                 UNIVERSAL VARIABLES
@@ -203,18 +202,9 @@ android {
             // App's properties
             versionNameSuffix = "-f"
         }
-
-        /**
-         * For convenience only.
-         * "Forkers" want to change app name across builds
-         * just need to change this variable
-         */
-        forEach {
-            it.manifestPlaceholders.putIfAbsent( "appName", APP_NAME )
-        }
     }
 
-    flavorDimensions += listOf( "platform", "arch" )
+    flavorDimensions += listOf( "platform", "arch", "env" )
     productFlavors {
         //<editor-fold desc="Platforms">
         create("github") {
@@ -268,6 +258,37 @@ android {
             // Build architecture
             ndk { abiFilters += "x86_64" }
             buildConfigField( "String", "ARCH", "\"$name\" ")
+        }
+        //</editor-fold>
+        //<editor-fold desc="Environment">
+        create( "nightly" ) {
+            dimension = "env"
+
+            val buildDate = System.getenv("BUILD_DATE")
+            if( buildDate.isNullOrBlank() )
+                error( "Build failed! Missing env \"BUILD_DATE\"" )
+            // Turns "2025.11.01" to "251101"
+            val shortDate = buildDate.replace(
+                regex = Regex("""\d{2}(\d{2})\.(\d{2})\.(\d{2})"""),
+                replacement = "$1$2$3"
+            )
+
+            // App's properties
+            applicationIdSuffix = ".nightly"
+            versionName = buildDate
+            manifestPlaceholders["appName"] = "Nightly"
+            // The idea is to combine build date and current version code together
+            versionCode = "$shortDate$VERSION_CODE".toInt()
+        }
+        create( "prod" ) {
+            dimension = "env"
+
+            isDefault = true
+
+            // App's properties
+            versionName = "1.8.4"
+            manifestPlaceholders["appName"] = APP_NAME
+            versionCode = VERSION_CODE
         }
         //</editor-fold>
     }
