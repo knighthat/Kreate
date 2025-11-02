@@ -295,7 +295,24 @@ android {
     applicationVariants.all {
         outputs.map { it as BaseVariantOutputImpl }
                .forEach {
-                   val suffix = if( "izzy" in flavorName ) "izzy" else buildType.name
+                   val suffix = if( "izzy" in flavorName )
+                       "izzy"
+                   else if( "Nightly" in flavorName )
+                       "nightly"
+                   // The next 4 conditions set the APK name to the architect
+                   // if it's intended for release build
+                   else if( "Arm64" in flavorName && buildType.name == "release" )
+                       "arm64-v8a"
+                   else if( "Arm32" in flavorName && buildType.name == "release" )
+                       "armeabi-v7a"
+                   else if( "X86_64" in flavorName && buildType.name == "release" )
+                       "x86_64"
+                   else if( "X86" in flavorName && buildType.name == "release" )
+                       "x86"
+                   // Or just append build type at the end of the APK file name
+                   else
+                       buildType.name
+
                    it.outputFileName = "$APP_NAME-${suffix}.apk"
                }
 
