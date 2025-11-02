@@ -50,8 +50,9 @@ jobs:
         id: downstream
         # Output is current version located inside composeApp/build.gradle.kts
         # android {
-        #   defaultConfig {
+        #   create( "" ) {
         #     versionName = "..."
+        #     versionName = 000
         #   }
         # }
         run: |
@@ -74,8 +75,11 @@ jobs:
 
     steps:
       - name: Whether build can proceed
+        # Compare upstream and downstream version
+        # echo ::error::"" sets custom error message
         run: |
           if [ "${{ needs.versioning.outputs.downstream }}" = "${{ needs.versioning.outputs.upstream }}" ]; then
+            echo "::error::Matched upstream and downstream versions"
             exit 1
           fi
 
@@ -83,9 +87,18 @@ jobs:
         with:
           submodules: true
 
+      # Exit build early.
+      # Build will fail still if this file doesn't exist,
+      # but it takes some time to setup compiler,
+      # place this here to shorten that
       - name: Whether changelogs exists
+        env:
+          VERSION_CODE: ${{ needs.versioning.outputs.code }}
+        # !: Not
+        # -e: true if file exists
         run: |
-          if [ ! -e "fastlane/metadata/android/en-US/changelogs/${{ needs.versioning.outputs.code }}.txt" ]; then
+          if [ ! -e "fastlane/metadata/android/en-US/changelogs/$VERSION_CODE.txt" ]; then
+            echo "::error::$VERSION_CODE.txt release note doesn't exist"
             exit 1
           fi
 
