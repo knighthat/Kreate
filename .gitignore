@@ -29,3 +29,8 @@
 ###     DEPENDENCIES
 /YT python/
 /.kotlin/
+
+
+### nektos/act
+.env
+.secrets
