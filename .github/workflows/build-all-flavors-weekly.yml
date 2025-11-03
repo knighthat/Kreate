@@ -20,12 +20,18 @@ jobs:
     # Set date as a variable
     outputs:
       date: ${{ steps.date.outputs.date }}
+      dot_date: ${{ steps.dot_date.outputs.date }}
 
     steps:
       - name: Get date
         id: date
         # Output of "October 2 2024" will be "20241002"
         run: echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+
+      - name: Get dot date
+        id: dot_date
+        # Output of "October 2 2024" will be "2024.10.02"
+        run: echo "date=$(date +'%Y.%m.%d')" >> $GITHUB_OUTPUT
 
   versioning:
     name: Extract version
