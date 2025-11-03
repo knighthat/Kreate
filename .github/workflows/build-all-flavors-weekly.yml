@@ -62,8 +62,11 @@ jobs:
         #   }
         # }
         run: |
-          echo "version=$(grep -E '^\s*versionName\s*=' composeApp/build.gradle.kts | awk -F '"' '{print $2}')" >> $GITHUB_OUTPUT
-          echo "code=$(grep -E '^\s*versionCode\s*=' composeApp/build.gradle.kts | awk -F '= ' '{print $2}')" >> $GITHUB_OUTPUT
+          VERSION_NAME=$(grep -E '^\s*versionName\s*= "' composeApp/build.gradle.kts | awk -F '"' '{print $2}')
+          echo "version=$VERSION_NAME" >> $GITHUB_OUTPUT
+          
+          VERSION_CODE=$(grep -E '^\s*val VERSION_CODE\s*=\s*' composeApp/build.gradle.kts | awk -F '= ' '{print $2}')
+          echo "code=$VERSION_CODE" >> $GITHUB_OUTPUT
 
       - name: Get upstream version
         id: upstream
