@@ -110,177 +110,103 @@ jobs:
             echo "::error::$VERSION_CODE.txt release note doesn't exist"
             exit 1
           fi
-
-  build-uncompressed:
-    needs: [versioning, verify-version]
-    name: Build uncompressed version
+          
+  build-complex:
+    needs: [build_time, verify-version]
+    name: Build all versions
     runs-on: ubuntu-latest
+
     timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
 
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          submodules: true
+    env:
+      BUILD_DATE: ${{ needs.build_time.outputs.dot_date }}
+      STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+      KEY_PASSWORD: ${{ secrets.PROD_KEY_PASSWORD }}
+      KEYSTORE_PATH: .ignore.d/keystores
+      KEYSTORE_FILENAME: production.jks
 
-      - name: Setup Java 21
-        uses: actions/setup-java@v5.0.0
-        with:
-          java-version: "21"
-          distribution: "corretto"
+    strategy:
+      matrix:
+        platform: [ 'Github' ]
+        # Kreate-release.apk
+        # Kreate-arm64.apk
+        # Kreate-arm32.apk
+        # Kreate-x86.apk
+        # Kreate-x86_64.apk
+        architect: [ 'Universal', 'Arm64', 'Arm32', 'X86', 'X86_64' ]
+        type: [ 'Release' ]
+        include:
+          # Kreate-izzy.apk
+          - platform: Izzy
+            architect: Universal
+            type: Release
 
-      - name: Restore Gradle dependencies & build cache
-        # actions/cache/restore only downloads the cache
-        # This will save time uploading the cache, since cache
-        # builder is handled by another workflow
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ./build
-            ./composeApp/build
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle-wrapper.properties', '**/libs.versions.toml') }}
-          # Pulls latest cache artifact
-          restore-keys: gradle-${{ runner.os }}-
-
-      - name: Build with Gradle
-        run: ./gradlew assembleGithubUncompressed
-
-      - name: Upload artifacts for signing
-        uses: actions/upload-artifact@v5.0.0
-        with:
-          name: unsigned-uncompressed
-          path: |
-            composeApp/build/outputs/apk/github/uncompressed/*.apk
-
-  build-release:
-    needs: [versioning, verify-version]
-    name: Build release version
-    runs-on: ubuntu-latest
-    timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
+          # Kreate-uncompressed.apk
+          - platform: Github
+            architect: Universal
+            type: Uncompressed
 
     steps:
-      - uses: actions/checkout@v5
-        with:
-          submodules: true
-
-      - name: Setup Java 21
-        uses: actions/setup-java@v5.0.0
-        with:
-          java-version: "21"
-          distribution: "corretto"
-
-      - name: Restore Gradle dependencies & build cache
-        # actions/cache/restore only downloads the cache
-        # This will save time uploading the cache, since cache
-        # builder is handled by another workflow
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ./build
-            ./composeApp/build
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle-wrapper.properties', '**/libs.versions.toml') }}
-          # Pulls latest cache artifact
-          restore-keys: gradle-${{ runner.os }}-
-
-      - name: Build with Gradle
-        run: ./gradlew assembleGithubRelease
-
-      - name: Upload artifacts for signing
-        uses: actions/upload-artifact@v5.0.0
-        with:
-          name: unsigned-release
-          path: |
-            composeApp/build/outputs/apk/github/release/*.apk
-
-  build-izzy:
-    needs: [versioning, verify-version]
-    name: Build Izzy version
-    runs-on: ubuntu-latest
-    timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
-
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          submodules: true
-
-      - name: Setup Java 21
-        uses: actions/setup-java@v5.0.0
-        with:
-          java-version: "21"
-          distribution: "corretto"
-
-      - name: Restore Gradle dependencies & build cache
-        # actions/cache/restore only downloads the cache
-        # This will save time uploading the cache, since cache
-        # builder is handled by another workflow
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ./build
-            ./composeApp/build
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle-wrapper.properties', '**/libs.versions.toml') }}
-          # Pulls latest cache artifact
-          restore-keys: gradle-${{ runner.os }}-
-
-      - name: Build with Gradle
-        run: ./gradlew assembleIzzyRelease
-
-      - name: Upload artifacts for signing
-        uses: actions/upload-artifact@v5.0.0
-        with:
-          name: unsigned-izzy
-          path: |
-            composeApp/build/outputs/apk/izzy/release/*.apk
-
-  sign-apks:
-    name: Sign all built APKs
-    needs:
-      - build-uncompressed
-      - build-release
-      - build-izzy
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v6.0.0
-        with:
-          # Destination path. Supports basic tilde expansion.
-          # Optional. Default is $GITHUB_WORKSPACE
-          path: upstream/unsigned
-          # When multiple artifacts are matched, this changes the behavior of the destination directories.
-          # If true, the downloaded artifacts will be in the same directory specified by path.
-          # If false, the downloaded artifacts will be extracted into individual named directories within the specified path.
-          # Optional. Default is 'false'
-          merge-multiple: true
-
-      - name: Sign APKs
-        uses: Tlaster/android-sign@v1.2.2
-        with:
-          releaseDirectory: upstream/unsigned
-
-          signingKeyBase64: "${{ secrets.KREATE_KEYSTORE }}"
-          keyStorePassword: "${{ secrets.KREATE_KEYSTORE_PASSWD }}"
-          alias: "${{ secrets.KREATE_KEY_ALIAS }}"
-          keyPassword: "${{ secrets.KREATE_KEY_PASSWD }}"
-
-          output: signed
-        env:
-          BUILD_TOOLS_VERSION: "34.0.0"
-
-      - name: Remove trails     # remove "-signed"
+      - name: Revert keystore from base64 to PCKS#12 file
         run: |
-          for filename in signed/*.apk; do mv "$filename" "${filename//-signed}"; done
+          mkdir -p $KEYSTORE_PATH
 
-      - name: Upload for release
+          echo "${{ secrets.PROD_KEYSTORE_BASE64 }}" | base64 -d > $KEYSTORE_PATH/$KEYSTORE_FILENAME
+
+      # This step is designed to fail when decoded keystore's
+      # hash doesn't match pre-defined hash
+      - name: Verify keystore
+        run: echo "${{ secrets.PROD_KEYSTORE_SHA256 }} $KEYSTORE_PATH/$KEYSTORE_FILENAME" | sha256sum -c
+
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v5.0.0
+        with:
+          java-version: "21"
+          distribution: "corretto"
+          # Shouldn't use cache here, custom cache artifact is handled separately
+
+      - name: Restore Gradle dependencies & build cache
+        # actions/cache/restore only downloads the cache
+        # This will save time uploading the cache, since cache
+        # builder is handled by another workflow
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ./build
+            ./composeApp/build
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle-wrapper.properties', '**/libs.versions.toml') }}
+          # Pulls latest cache artifact
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Build with Gradle
+        # I.E. assembleGithubX64ProdRelease
+        run: ./gradlew "assemble${{ matrix.platform }}${{ matrix.architect }}Prod${{ matrix.type }}"
+
+      - name: Get build path
+        id: build_path
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          ARCH: ${{ matrix.architect }}
+          BUILD_TYPE: ${{ matrix.type }}
+        run: |
+          # Github -> github 
+          LOWERCASE_PLATFORM=$(echo $PLATFORM | tr '[:upper:]' '[:lower:]')
+          # Release -> release
+          LOWERCASE_BUILD_TYPE=$(echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]')
+          
+          echo "path=composeApp/build/outputs/apk/$LOWERCASE_PLATFORM${ARCH}Prod/$LOWERCASE_BUILD_TYPE" >> $GITHUB_OUTPUT
+
+      - name: Upload artifacts for uploading
         uses: actions/upload-artifact@v5.0.0
         with:
-          name: signed-apks
-          path: signed/*.apk
+          name: ${{ matrix.platform }}-${{ matrix.architect }}-${{ matrix.type }}
+          path: ${{ steps.build_path.outputs.path }}/*.apk
 
   upload-to-release:
     needs: [build_time, versioning, sign-apks]
