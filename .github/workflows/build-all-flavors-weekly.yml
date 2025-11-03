@@ -215,8 +215,6 @@ jobs:
     steps:
       - name: Download signed APKs
         uses: actions/download-artifact@v6.0.0
-        with:
-          name: signed-apks
 
       - name: Upload built APK to release
         uses: softprops/action-gh-release@v2
@@ -227,69 +225,15 @@ jobs:
           tag_name: v${{ needs.versioning.outputs.downstream }}
           make_latest: "true"
           body: |           
+            If you don't know what to download, please refer to article [Why are there so many APK files?](https://kreate.knighthat.me/usr/faq/why-are-there-so-many-apk-files)
             ## What's `Kreate-izzy.apk`
             
             This is APK built specifically for IzzyOnDroid with update checker disabled. You shouldn't
             download this version here.
             
-            ## Verification
-            
-            > Always check for signature before installing any app you downloaded from Github or any other APK distributors.\
-            
-            ### Public key hashes
-            
-            | Algorithm      | Hash digest                                                      |
-            |----------------|------------------------------------------------------------------|
-            | SHA-256        | 9dadd5c4bbfb59174bca523dd10b66bedbbf7b2e00630fa990d140a6a17ce7a5 |
-            | SHA-1          | f49a497bd47322c90e9f534ff945ac05f3a8e77a                         |
-            | MD5            | d4fc781f4a5ffc10434cb84d93706eba                                 |
-            
-            ### Certificate hashes
-            
-            | Algorithm      | Hash digest                                                      |
-            |----------------|------------------------------------------------------------------|
-            | SHA-256        | 1bd03a8de5df4dbd7faddb81b9f2aaf55681a584a93d6fb47e9a5ccc736ef7ac |
-            | SHA-1          | 1690571d0d8b8d54c43a4b9460a2a2bc5f67e9bc                         |
-            | MD5            | 320e604e315a0abb177e8d7570dcf4dc                                 |
-            
-            ## FAQ
-            
-            <details> 
-            <summary>Q1: How do I download your build?</summary>
-              <blockquote>
-                Right below this article, there are links to prebuilt APKs.<br>
-                Select the one that fits your need to start the download.
-              </blockquote>
-            </details>
-            <details>
-            <summary>Q2: How verify build's signature?</summary>
-              <blockquote>
-                There are 2 main methods:
-                <ol>
-                  <li>
-                    Built-in <a href="https://stackoverflow.com/questions/7104624/how-do-i-verify-that-an-android-apk-is-signed-with-a-release-certificate" target="_blank" rel="noopener noreferrer">jarsigner</a>
-                  </li>
-                  <li>
-                    <a href="https://developer.android.com/tools/apksigner#options-verify" target="_blank" rel="noopener noreferrer">apksigner</a> from AndroidSDK
-                  </li>
-                </ol>
-              </blockquote>
-            </details>
-            <details>
-            <summary>Q3: What's an `uncompressed` build?</summary>
-              <blockquote>
-                Most Android apps go through a process called <b>minification</b>. This step remvoes 
-                unused codes and resources which reduces total file size while keeping all functionalities intact.
-                
-                You should NOT use this build unless there's a bug in release build but unaffected in uncompressed
-
-                Learn more <a href='https://kreate.knighthat.me/usr/faq/minified_and_full' target="_blank">here</a>.
-              </blockquote>
-            </details>
-            
             ## Changelogs
             
-            Please visit [wiki/changelogs](https://github.com/knighthat/Kreate/wiki/Changelogs) for details.
+            You can read change logs on our [Blog](https://kreate.knighthat.me/blog/tags/release) website
 
           token: ${{ secrets.RELEASE_TOKEN }}
           generate_release_notes: true
