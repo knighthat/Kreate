@@ -167,6 +167,21 @@ android {
 
     namespace = "app.kreate.android"
 
+    signingConfigs {
+        create( "production" ) {
+            storeFile = file("$rootDir/.ignore.d/keystores/production.jks")
+            keyAlias = "kreate"
+            storePassword = System.getenv( "STORE_PASSWORD" )
+            keyPassword = System.getenv( "KEY_PASSWORD" )
+        }
+        create( "nightly" ) {
+            storeFile = file("$rootDir/.ignore.d/keystores/nightly.jks")
+            keyAlias = "nightly"
+            storePassword = System.getenv( "STORE_PASSWORD" )
+            keyPassword = System.getenv( "KEY_PASSWORD" )
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
@@ -263,6 +278,9 @@ android {
         create( "nightly" ) {
             dimension = "env"
 
+            // Signing config
+            signingConfig = signingConfigs.getByName( "nightly" )
+
             val buildDate = System.getenv("BUILD_DATE")
             if( buildDate.isNullOrBlank() )
                 error( "Build failed! Missing env \"BUILD_DATE\"" )
@@ -283,6 +301,9 @@ android {
             dimension = "env"
 
             isDefault = true
+
+            // Singing config
+            signingConfig = signingConfigs.getByName( "production" )
 
             // App's properties
             versionName = "1.8.4"
