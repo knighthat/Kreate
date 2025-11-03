@@ -14,6 +14,11 @@
 
   [![Discord badge](https://dcbadge.limes.pink/api/server/https://discord.gg/WYr9ZgJzpx?theme=default-inverted)](https://discord.gg/WYr9ZgJzpx)
 
+  <br>
+
+  [![Documentation](https://img.shields.io/badge/DOCUMENTATION-0D900A?style=for-the-badge&logo=mdBook&labelColor=black)](https://kreate.knighthat.me/)
+  [![Blogs](https://img.shields.io/badge/BLOGS-0D900A?style=for-the-badge&logo=blogger&labelColor=black&logoColor=white)](https://kreate.knighthat.me/blog)
+
 </div>
 
 # 📲 Installation
