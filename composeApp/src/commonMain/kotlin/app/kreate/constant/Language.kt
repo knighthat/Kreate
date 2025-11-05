@@ -44,7 +44,7 @@ enum class Language(
 
     DUTCH("nl", "NL"),
 
-    ENGLISH("en", "US"),
+    ENGLISH("en", "US"),        // This language doesn't have `values-en` dir because it uses default values (which is English by itself)
 
     ESPERANTO("eo", "UY"),
 
