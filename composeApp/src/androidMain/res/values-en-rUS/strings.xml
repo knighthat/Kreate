@@ -368,7 +368,7 @@
     <string name="month_october_s">October %s</string>
     <string name="month_november_s">November %s</string>
     <string name="month_december_s">December %s</string>
-    <string name="info_reorder_is_possible_only_in_ascending_sort">Reorder is possible only in ascending sorting</string>
+    <string name="info_reorder_is_possible_only_in_ascending_sort">Reorder is possible only in ascending order</string>
     <string name="info_lyrics_found_on_s">Lyrics found on %s</string>
     <string name="info_lyrics_not_found_on_s_try_on_s">Lyrics not found on %1$s, try on %2$s</string>
     <string name="info_lyrics_not_found_on_s">Lyrics not found on %s</string>
