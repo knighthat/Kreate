@@ -3,7 +3,7 @@ package it.fast4x.rimusic.enums
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import app.kreate.android.R
-import app.kreate.enums.SortCategory
+import app.kreate.constant.SortCategory
 import me.knighthat.enums.TextView
 
 enum class PlaylistSortBy(

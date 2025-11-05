@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import app.kreate.android.R
-import app.kreate.enums.SortCategory
+import app.kreate.constant.SortCategory
 import me.knighthat.enums.TextView
 
 enum class PlaylistSongSortBy(

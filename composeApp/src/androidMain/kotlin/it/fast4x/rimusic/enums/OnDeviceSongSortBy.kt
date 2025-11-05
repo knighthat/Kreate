@@ -4,7 +4,7 @@ import android.provider.MediaStore
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import app.kreate.android.R
-import app.kreate.enums.SortCategory
+import app.kreate.constant.SortCategory
 import me.knighthat.enums.TextView
 import org.intellij.lang.annotations.MagicConstant
 

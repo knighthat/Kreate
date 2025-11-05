@@ -1,4 +1,4 @@
-package app.kreate.enums
+package app.kreate.constant
 
 
 interface SortCategory {
