@@ -1,4 +1,4 @@
-project_id: 779500
+project_id: "779500"
 api_token_env: CROWDIN_PERSONAL_TOKEN
 base_path: .
 base_url: https://api.crowdin.com
@@ -11,37 +11,17 @@ files:
     translation: /composeApp/src/androidMain/res/values-%android_code%/strings.xml
     languages_mapping:
       android_code:
-        es-ES: es
-        ga-IE: ga
-        he: iw
-        id: in
-        ml-IN: ml
-        pt-BR: pt-rBR
-        pt-PT: pt
-        si-LK: si
+        ia: ia
         sr: b+sr+Cyrl
         sr-CS: b+sr+Latn
-        sv-SE: sv
-        zh-CN: zh-rCN
-        zh-TW: zh-rTW
   # Plurals
   - source: /composeApp/src/androidMain/res/values/plurals.xml
     translation: /composeApp/src/androidMain/res/values-%android_code%/plurals.xml
     languages_mapping:
       android_code:
-        es-ES: es
-        ga-IE: ga
-        he: iw
-        id: in
-        ml-IN: ml
-        pt-BR: pt-rBR
-        pt-PT: pt
-        si-LK: si
+        ia: ia
         sr: b+sr+Cyrl
         sr-CS: b+sr+Latn
-        sv-SE: sv
-        zh-CN: zh-rCN
-        zh-TW: zh-rTW
   # FDroid fastlane - Full description
   - source: /fastlane/metadata/android/en-US/full_description.txt
     translation: /fastlane/metadata/android/%locale%/full_description.txt
