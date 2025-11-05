@@ -10,6 +10,6 @@
         <item quantity="other">%d file</item>
     </plurals>
     <plurals name="song">
-        <item quantity="other">%d songs</item>
+        <item quantity="other">%d song</item>
     </plurals>
 </resources>
