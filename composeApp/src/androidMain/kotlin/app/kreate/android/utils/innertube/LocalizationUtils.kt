@@ -3,8 +3,8 @@ package app.kreate.android.utils.innertube
 import android.telephony.TelephonyManager
 import androidx.core.content.getSystemService
 import app.kreate.android.Preferences
+import app.kreate.constant.Language
 import it.fast4x.rimusic.appContext
-import it.fast4x.rimusic.enums.Languages
 import me.knighthat.innertube.request.Localization
 import java.util.Locale
 
@@ -15,9 +15,9 @@ val CURRENT_LOCALE: Localization
 // hl
 val HOST_LANGUAGE: String
     get() = when ( Preferences.APP_LANGUAGE.value ) {
-        Languages.System ->
+        Language.SYSTEM ->
             try {
-                enumValueOf<Languages>(Locale.getDefault().language).code
+                enumValueOf<Language>(Locale.getDefault().language).code
             } catch (_: IllegalArgumentException) {
                 "en"
             }

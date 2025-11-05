@@ -104,7 +104,6 @@ import it.fast4x.rimusic.cleanPrefix
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
-import it.fast4x.rimusic.enums.Languages
 import it.fast4x.rimusic.enums.LyricsAlignment
 import it.fast4x.rimusic.enums.LyricsBackground
 import it.fast4x.rimusic.enums.LyricsColor
@@ -134,7 +133,6 @@ import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.conditional
 import it.fast4x.rimusic.utils.getHttpClient
-import it.fast4x.rimusic.utils.languageDestination
 import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.playNext
 import it.fast4x.rimusic.utils.shimmerEffect
@@ -153,6 +151,7 @@ import timber.log.Timber
 import kotlin.Float.Companion.POSITIVE_INFINITY
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import app.kreate.constant.Language as LyricsLanguage
 
 val textFieldColors: TextFieldColors
     @Composable
@@ -269,7 +268,7 @@ fun Lyrics(
                     MenuEntry(
                         icon = R.drawable.translate,
                         text = stringResource(R.string._default),
-                        secondaryText = otherLanguageApp.text,
+                        secondaryText = otherLanguageApp.displayName,
                         onClick = {
                             menuState.hide()
                             showLanguagesList = false
@@ -278,11 +277,11 @@ fun Lyrics(
                         }
                     )
 
-                    Languages.entries.forEach {
-                        if (it != Languages.System)
+                    LyricsLanguage.entries.forEach {
+                        if ( it != LyricsLanguage.SYSTEM )
                             MenuEntry(
                                 icon = R.drawable.translate,
-                                text = it.text,
+                                text = it.displayName,
                                 secondaryText = "",
                                 onClick = {
                                     menuState.hide()
@@ -297,7 +296,7 @@ fun Lyrics(
             }
         }
 
-        var languageDestination = languageDestination(otherLanguageApp)
+        val languageDestination = Preferences.OTHER_APP_LANGUAGE.value.toTranslatorLanguage()
 
         val translator = Translator(getHttpClient())
 
@@ -2122,7 +2121,7 @@ fun Lyrics(
                                         //if (!showlyricsthumbnail)
                                             MenuEntry(
                                                 icon = R.drawable.translate,
-                                                text = stringResource(R.string.translate_to, otherLanguageApp),
+                                                text = stringResource(R.string.translate_to, otherLanguageApp.languageName),
                                                 enabled = true,
                                                 onClick = {
                                                     menuState.hide()

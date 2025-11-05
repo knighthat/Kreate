@@ -26,6 +26,7 @@ import app.kreate.android.themed.common.component.settings.header
 import app.kreate.android.themed.common.screens.settings.general.playerSettingsSection
 import app.kreate.android.themed.common.screens.settings.general.updateSection
 import app.kreate.android.utils.innertube.HOST_LANGUAGE
+import app.kreate.constant.Language
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.ui.styling.Dimensions
@@ -56,8 +57,6 @@ fun GeneralSettings( paddingValues: PaddingValues ) {
     ) {
         search.ToolBarButton()
 
-        val sysLocaleText = stringResource( R.string.currently_selected, Preferences.APP_LANGUAGE.value.text )
-
         LazyColumn(
             state = scrollState,
             contentPadding = PaddingValues(bottom = Dimensions.bottomSpacer)
@@ -66,19 +65,24 @@ fun GeneralSettings( paddingValues: PaddingValues ) {
 
             header(
                 titleId = R.string.languages,
-                subtitle = { sysLocaleText }
+                subtitle = {
+                    stringResource( R.string.currently_selected, Preferences.APP_LANGUAGE.value.displayName )
+                }
             )
             entry( search, R.string.app_language ) {
                 SettingComponents.EnumEntry(
-                    Preferences.APP_LANGUAGE,
-                    titleId = R.string.app_language,
-                    subtitleId = R.string.setting_description_app_language,
+                    preference = Preferences.APP_LANGUAGE,
+                    title = stringResource( R.string.app_language ),
+                    subtitle = stringResource( R.string.setting_description_app_language ),
+                    getName = { it.displayName },
                     onValueChanged = {
                         try {
+                            val locales = if (it === Language.SYSTEM)
+                                LocaleListCompat.getEmptyLocaleList()
+                            else
+                                LocaleListCompat.create( it.toLocale() )
                             // Apply it first before really selecting it
-                            AppCompatDelegate.setApplicationLocales(
-                                LocaleListCompat.forLanguageTags( it.code )
-                            )
+                            AppCompatDelegate.setApplicationLocales( locales )
 
                             Preferences.APP_LANGUAGE.value = it
                         } catch (err: Exception) {

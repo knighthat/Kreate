@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import app.kreate.android.enums.PlatformIndicatorType
 import app.kreate.android.utils.innertube.getSystemCountryCode
+import app.kreate.constant.Language
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.AlbumSortBy
 import it.fast4x.rimusic.enums.AlbumSwipeAction
@@ -38,7 +39,6 @@ import it.fast4x.rimusic.enums.HistoryType
 import it.fast4x.rimusic.enums.HomeItemSize
 import it.fast4x.rimusic.enums.HomeScreenTabs
 import it.fast4x.rimusic.enums.IconLikeType
-import it.fast4x.rimusic.enums.Languages
 import it.fast4x.rimusic.enums.LyricsAlignment
 import it.fast4x.rimusic.enums.LyricsBackground
 import it.fast4x.rimusic.enums.LyricsColor
@@ -878,10 +878,10 @@ sealed class Preferences<T>(
             Boolean( preferences, "ShowNoUpdateAvailableMessage", "", true )
         }
         val APP_LANGUAGE by lazy {
-            Enum( preferences, "AppLanguage", "languageApp", Languages.System )
+            Enum( preferences, "AppLanguage", "languageApp", Language.SYSTEM )
         }
         val OTHER_APP_LANGUAGE by lazy {
-            Enum( preferences, "OtherAppLanguage", "otherLanguageApp", Languages.System )
+            Enum( preferences, "OtherAppLanguage", "otherLanguageApp", Language.SYSTEM )
         }
         val APP_REGION by lazy {
             String( preferences, "AppRegion", "", getSystemCountryCode() )
