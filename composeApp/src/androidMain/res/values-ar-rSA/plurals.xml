@@ -25,11 +25,11 @@
         <item quantity="other">%d file</item>
     </plurals>
     <plurals name="song">
-        <item quantity="zero">%d songs</item>
+        <item quantity="zero">%d song</item>
         <item quantity="one">%d song</item>
-        <item quantity="two">%d songs</item>
-        <item quantity="few">%d songs</item>
-        <item quantity="many">%d songs</item>
-        <item quantity="other">%d songs</item>
+        <item quantity="two">%d song</item>
+        <item quantity="few">%d song</item>
+        <item quantity="many">%d song</item>
+        <item quantity="other">%d song</item>
     </plurals>
 </resources>
