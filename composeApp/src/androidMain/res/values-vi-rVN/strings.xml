@@ -749,7 +749,7 @@
     <string name="setting_description_app_language">Chỉ áp dụng cho ứng dụng, ngôn ngữ trên hệ thống sẽ giữ nguyên</string>
     <string name="currently_selected">Đang chọn: %s</string>
     <string name="setting_description_update_checker_ask">Nhắc khi có bản cập mới</string>
-    <string name="setting_description_update_checker_disabled">%s sẽ không nhác khi có phiên bản mới</string>
+    <string name="setting_description_update_checker_disabled">%s sẽ không nhắc khi có phiên bản mới</string>
     <string name="setting_description_update_checker_automatic">Automatically download \&amp; install new version when available</string>
     <string name="setting_title_update_checker_automatic">Tự động tải và cài đặt phiên bản mới</string>
     <string name="setting_entry_update_checker">Cập nhật</string>
