@@ -7,13 +7,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
@@ -61,6 +59,7 @@ import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toSong
+import app.kreate.android.utils.renderDescription
 import app.kreate.android.utils.scrollingText
 import it.fast4x.innertube.YtMusic
 import it.fast4x.rimusic.Database
@@ -87,22 +86,17 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.addNext
-import it.fast4x.rimusic.utils.align
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.collectLatest
-import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.fadingEdge
 import it.fast4x.rimusic.utils.forcePlayAtIndex
-import it.fast4x.rimusic.utils.getHttpClient
 import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.isNetworkAvailable
-import it.fast4x.rimusic.utils.languageDestination
 import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.playShuffled
-import it.fast4x.rimusic.utils.secondary
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -110,15 +104,11 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import me.bush.translator.Language
-import me.bush.translator.Translator
 import me.knighthat.component.tab.ExportSongsToCSVDialog
 import me.knighthat.component.tab.LikeComponent
 import me.knighthat.component.tab.Radio
 import me.knighthat.component.tab.SongShuffler
 import me.knighthat.component.ui.screens.DynamicOrientationLayout
-import me.knighthat.component.ui.screens.album.Translate
 import me.knighthat.innertube.Constants
 import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubePlaylist
@@ -225,11 +215,6 @@ fun YouTubePlaylist(
                 }
             }
         }
-        //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Translator">
-        val translate = Translate.init()
-        val translator = Translator(getHttpClient())
-        val languageDestination = languageDestination()
         //</editor-fold>
 
         val pageProvider: suspend (String?) -> Unit by rememberUpdatedState {
@@ -440,82 +425,7 @@ fun YouTubePlaylist(
                     }
 
                     playlistPage?.description?.let {
-                        item( "description" ) {
-
-                            val description = it
-                            // For some reason adding 2 "\n" makes double quotes appear
-                            // on the same level as the last line of text
-                            val attributionsIndex = description.lastIndexOf("\n\nFrom Wikipedia")
-
-                            Row(
-                                modifier = Modifier.padding(
-                                    vertical = 16.dp,
-                                    horizontal = 8.dp
-                                )
-                            ) {
-                                translate.ToolBarButton()
-
-                                BasicText(
-                                    text = "“",
-                                    style = typography().xxl.semiBold,
-                                    modifier = Modifier.offset( y = (-8).dp )
-                                        .align( Alignment.Top )
-                                )
-
-                                var translatedText by remember { mutableStateOf("") }
-                                val nonTranslatedText by remember {
-                                    mutableStateOf(
-                                        if ( attributionsIndex == -1 ) {
-                                            description
-                                        } else {
-                                            description.substring( 0, attributionsIndex )
-                                        }
-                                    )
-                                }
-
-                                if ( translate.isActive ) {
-                                    LaunchedEffect( Unit ) {
-                                        val result = withContext( Dispatchers.IO ) {
-                                            try {
-                                                translator.translate(
-                                                    nonTranslatedText,
-                                                    languageDestination,
-                                                    Language.AUTO
-                                                ).translatedText
-                                            } catch (e: Exception) {
-                                                e.printStackTrace()
-                                            }
-                                        }
-                                        translatedText =
-                                            if (result.toString() == "kotlin.Unit") "" else result.toString()
-                                    }
-                                } else translatedText = nonTranslatedText
-
-                                BasicText(
-                                    text = translatedText,
-                                    style = typography().xxs.secondary.align(TextAlign.Justify),
-                                    modifier = Modifier.padding( horizontal = 8.dp )
-                                        .weight( 1f )
-                                )
-
-                                BasicText(
-                                    text = "„",
-                                    style = typography().xxl.semiBold,
-                                    modifier = Modifier.offset( y = 4.dp )
-                                        .align( Alignment.Bottom )
-                                )
-                            }
-
-                            if (attributionsIndex != -1) {
-                                BasicText(
-                                    text = stringResource(R.string.from_wikipedia_cca),
-                                    style = typography().xxs
-                                        .color( colorPalette().textDisabled )
-                                        .align( TextAlign.Start ),
-                                    modifier = Modifier.padding( horizontal = 16.dp )
-                                )
-                            }
-                        }
+                        renderDescription( it )
                     }
 
                     itemsIndexed(
