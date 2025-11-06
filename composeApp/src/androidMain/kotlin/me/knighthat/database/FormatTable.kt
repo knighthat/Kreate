@@ -3,10 +3,10 @@ package me.knighthat.database
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
-import androidx.room.Upsert
 import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.Format
 import app.kreate.database.models.Song
+import app.kreate.database.table.DatabaseTable
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.toDuration
 import it.fast4x.rimusic.enums.SongSortBy
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.map
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface FormatTable {
+interface FormatTable: DatabaseTable<Format> {
 
     /**
      * @return formats & songs of this table
@@ -60,25 +60,12 @@ interface FormatTable {
 
     fun deleteBySongId( vararg songIds: String ): Int = deleteBySongId( songIds.toList() )
 
-
     /**
      * @param songId of song to look for
      * @return [Format] that has [Format.songId] matches [songId]
      */
     @Query("SELECT DISTINCT * FROM formats WHERE song_id = :songId")
     fun findBySongId( songId: String ): Flow<Format?>
-
-    /**
-     * Attempt to write [format] into database.
-     *
-     * If [format] exist (determined by its primary key),
-     * existing record's columns will be replaced
-     * by provided [format]' data.
-     *
-     * @param format data intended to insert in to database
-     */
-    @Upsert
-    fun upsert( format: Format )
 
     /**
      * @return stored [Format.contentLength] of song with id [songId], `0` otherwise

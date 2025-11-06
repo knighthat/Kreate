@@ -2,14 +2,12 @@ package me.knighthat.database
 
 import android.database.SQLException
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Update
-import androidx.room.Upsert
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Song
+import app.kreate.database.table.DatabaseTable
 import it.fast4x.rimusic.enums.ArtistSortBy
 import it.fast4x.rimusic.enums.SortOrder
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +16,7 @@ import kotlinx.coroutines.flow.take
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface ArtistTable {
+interface ArtistTable: DatabaseTable<Artist> {
 
     /**
      * @return all artists from this table that are followed by user
@@ -115,59 +113,6 @@ interface ArtistTable {
         )
     """)
     fun isFollowing( artistId: String ): Flow<Boolean>
-
-    /**
-     * Attempt to write [artist] into database.
-     *
-     * ### Standalone use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored.
-     *
-     * ### Transaction use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored and the transaction continues.
-     *
-     * @param artist data intended to insert in to database
-     */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertIgnore( artist: Artist )
-
-    /**
-     * Attempt to write the list of [Artist] to database.
-     *
-     * If record exist (determined by its primary key),
-     * it'll simply be ignored and the transaction continues.
-     *
-     * @param artists list of [Artist] to insert to database
-     */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertIgnore( artists: List<Artist> )
-
-    /**
-     * Attempt to write [artist] into database.
-     *
-     * If [artist] exist (determined by its primary key),
-     * existing record's columns will be replaced
-     * by provided [artist]' data.
-     *
-     * @param artist data intended to insert in to database
-     */
-    @Upsert
-    fun upsert( artist: Artist )
-
-    /**
-     * Attempt to write the list of [Artist] to database.
-     *
-     * If record exist (determined by its primary key),
-     * existing record's columns will be replaced
-     * by provided data.
-     *
-     * @param artists list of [Artist] to insert to database
-     */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun upsert( artists: List<Artist> )
 
     /**
      * Attempt to replace a record's data with provided [artist].

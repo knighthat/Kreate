@@ -6,10 +6,11 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import app.kreate.database.models.PersistentQueue
+import app.kreate.database.table.DatabaseTable
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface QueuedMediaItemTable {
+interface QueuedMediaItemTable: DatabaseTable<PersistentQueue> {
 
     @Query("""
         SELECT *

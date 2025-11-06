@@ -1,68 +1,17 @@
 package me.knighthat.database
 
-import android.database.SQLException
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
-import androidx.room.Upsert
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongArtistMap
+import app.kreate.database.table.DatabaseTable
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface SongArtistMapTable {
-
-    /**
-     * Attempt to write the list of [SongArtistMap] to database.
-     *
-     * If record exist (determined by its primary key),
-     * existing record's columns will be replaced
-     * by provided data.
-     *
-     * @param songArtistMaps list of [SongArtistMap] to insert to database
-     */
-    @Upsert
-    fun upsert( songArtistMaps: List<SongArtistMap> )
-
-    /**
-     * Attempt to write [songArtistMap] into database.
-     *
-     * ### Standalone use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored.
-     *
-     * ### Transaction use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored and the transaction continues.
-     *
-     * @param songArtistMap data intended to insert in to database
-     */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertIgnore( songArtistMap: SongArtistMap )
-
-    /**
-     * Attempt to write list of [SongArtistMap] into database.
-     *
-     * ### Standalone use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored.
-     *
-     * ### Transaction use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored and the transaction continues.
-     *
-     * @param songArtistMaps data intended to insert in to database
-     */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertIgnore( songArtistMaps: List<SongArtistMap> )
+interface SongArtistMapTable: DatabaseTable<SongArtistMap> {
 
     /**
      * @param artistId of artist to look for
