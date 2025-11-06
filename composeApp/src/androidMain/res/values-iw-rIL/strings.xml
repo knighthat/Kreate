@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">בוצע</string>
     <string name="hidesong">האם באמת תרצו להסתיר את השיר? זמן ההשמעה וזיכרון המטמון שלו ימחקו.\n הפעולה הזאת לא ניתנת לביטול.</string>
@@ -370,7 +370,7 @@
     <string name="month_december_s">דצמבר %s</string>
     <string name="info_reorder_is_possible_only_in_ascending_sort">הסדר מחדש אפשרי רק במיון עולה</string>
     <string name="info_lyrics_found_on_s">מילות השיר נמצאו ב %s</string>
-    <string name="info_lyrics_not_found_on_s_try_on_s">Lyrics not found on %1$s, try on %2$s</string>
+    <string name="info_lyrics_not_found_on_s_try_on_s">המילים לא נמצאו ב%1$s, נסה ב%2$s</string>
     <string name="info_lyrics_not_found_on_s">מילות השיר לא נמצאו ב %s</string>
     <string name="info_lyrics_tracks_found_on_s">רצועות מילים נמצאו ב %s</string>
     <string name="background_colors">צבעי רקע</string>
@@ -438,7 +438,7 @@
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">העתק קבצי לוג ללוח</string>
     <string name="fake_audio_bar">סרגל שמע מזויף</string>
-    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
+    <string name="copy_crash_log_to_clipboard">העתק דוח קריסה</string>
     <string name="title_backup_and_restore">BACKUP AND RESTORE</string>
     <string name="message_excluded_s_songs">Excluded %s songs</string>
     <string name="show_thumbnail">הצג תמונה ממוזערת</string>
@@ -469,8 +469,8 @@
     <string name="extra_space">Extra space at top</string>
     <string name="game_restart">Restart</string>
     <string name="game_over">Game Over!</string>
-    <string name="white">White</string>
-    <string name="black">Black</string>
+    <string name="white">לבן</string>
+    <string name="black">שחור</string>
     <string name="highlight">Highlight</string>
     <string name="thin_bar">Thin Bar</string>
     <string name="buttonzoomout">Button Zoom Out Animation</string>
@@ -499,8 +499,8 @@
     <string name="controls_title_playback_speed">Playback speed</string>
     <string name="controls_title_playback_pitch">Playback pitch</string>
     <string name="controls_title_playback_volume">Playback Volume</string>
-    <string name="controls_title_device_volume">Device volume</string>
-    <string name="searches_suggestions">Suggestions</string>
+    <string name="controls_title_device_volume">ווליום המכשיר</string>
+    <string name="searches_suggestions">הצעות</string>
     <string name="searches_saved_searches">Saved searches</string>
     <string name="event_volumekeys">Change song with the volume keys</string>
     <string name="event_volumekeysinfo">Volume UP next and volume DOWN previous song</string>
@@ -523,7 +523,7 @@
     <string name="value_must_be_ip_address">Value must be an ip address</string>
     <string name="swipe_up_to_open_the_queue">החלק מעלה לפתיחת התור</string>
     <string name="pinfo_show_icons">Show info with icons</string>
-    <string name="format_ms">%1$s ms</string>
+    <string name="format_ms">%1$s אלפיות השנייה</string>
     <string name="minimum_silence_length">Minimum silence length</string>
     <string name="minimum_silence_length_description">The minimum time the audio has to be silent to get skipped</string>
     <string name="minimum_silence_length_warning">Player has to be restarted for the changes to be effective!</string>
@@ -532,11 +532,11 @@
     <string name="queuetype">Queue Type</string>
     <string name="error_no_internet">No network connection</string>
     <string name="error_timeout">Connection timeout</string>
-    <string name="error_unknown">Unknown error</string>
+    <string name="error_unknown">שגיאה לא ידועה</string>
     <string name="delete_song">האם באמת תרצה למחוק את השיר? הוא ימחק ממסד הנתונים. הפעולה הזאת לא ניתנת לביטול.</string>
     <string name="info_check_update_now">Check Now</string>
     <string name="info_no_update_available">No update available</string>
-    <string name="translate_to">Translate to %s</string>
+    <string name="translate_to">תרגם ל%s</string>
     <string name="translate_to_other_language">Traslate to other language</string>
     <string name="action_bar_show_video_button">Show video button</string>
     <string name="update">Update</string>
@@ -549,7 +549,7 @@
     <string name="discord_disconnect">התנתק</string>
     <string name="discord_connect">התחבר</string>
     <string name="discord_connected_to_discord_account">Connected to Discord Account</string>
-    <string name="settings_reset">Reset</string>
+    <string name="settings_reset">אפס</string>
     <string name="create_new_playlist">Create new playlist</string>
     <string name="settings_loudness_base_gain">Loudness base gain</string>
     <string name="settings_target_gain_loudness_info">Target gain for the loudness normalization</string>
@@ -569,15 +569,15 @@
     <string name="actionbar">Action Bar</string>
     <string name="center">Center</string>
     <string name="lyricsalignment">Lyrics Alignment</string>
-    <string name="translators">Translators</string>
+    <string name="translators">מתרגמים</string>
     <string name="player_auto_load_songs_in_queue">טען שירים לתור באופן אוטומטי</string>
-    <string name="player_auto_load_songs_in_queue_description">Adds songs when the queue is about to end</string>
+    <string name="player_auto_load_songs_in_queue_description">הוסף שירים כשהתור עומד להסתיים</string>
     <string name="toggle_romanization">Toggle Romanization</string>
-    <string name="edit_thumbnail">Edit Thumbnail</string>
-    <string name="thumbnail_not_selected">Thumbnail Not Selected</string>
-    <string name="reset_thumbnail">Reset Thumbnail</string>
+    <string name="edit_thumbnail">ערוך תמונת נושא</string>
+    <string name="thumbnail_not_selected">תמונת נושא לא נבחרה</string>
+    <string name="reset_thumbnail">אפס תמונת נושא</string>
     <string name="no_thumbnail_present">No Thumbnail Present</string>
-    <string name="removed_thumbnail">Removed Thumbnail</string>
+    <string name="removed_thumbnail">תמונת נושא נמחקה</string>
     <string name="failed_to_remove_thumbnail">Failed to Remove Thumbnail</string>
     <string name="settings_enable_pip">Enable Picture in Picture</string>
     <string name="settings_enable_pip_auto">Enable Automatic Picture in Picture</string>
