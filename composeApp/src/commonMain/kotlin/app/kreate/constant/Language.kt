@@ -92,7 +92,7 @@ enum class Language(
 
     PORTUGUESE("pt", "PT"),
 
-    PortugueseBrazilian("pt", "BR"),
+    PORTUGUESE_BRAZILIAN("pt", "BR"),
 
     ROMANIAN("ro", "RO"),
 
