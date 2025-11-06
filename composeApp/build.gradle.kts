@@ -122,6 +122,9 @@ kotlin {
 
             implementation( libs.material.icons.kmp )
         }
+        commonTest.dependencies {
+            implementation( libs.kotlin.test )
+        }
     }
 }
 
