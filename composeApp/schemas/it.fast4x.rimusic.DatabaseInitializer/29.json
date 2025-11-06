@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 29,
-    "identityHash": "16b8cd5af3f674843559c40f9db3eff2",
+    "identityHash": "985e5c4c1521a4b522fe7c16e5d0117b",
     "entities": [
       {
         "tableName": "Song",
@@ -153,7 +153,7 @@
       },
       {
         "tableName": "Playlist",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `browseId` TEXT, `isEditable` INTEGER NOT NULL, `isYoutubePlaylist` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `browseId` TEXT, `isEditable` INTEGER NOT NULL, `isYoutubePlaylist` INTEGER NOT NULL, `is_pinned` INTEGER NOT NULL, `is_monthly` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
           {
             "fieldPath": "name",
@@ -175,6 +175,18 @@
           {
             "fieldPath": "isYoutubePlaylist",
             "columnName": "isYoutubePlaylist",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isPinned",
+            "columnName": "is_pinned",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isMonthly",
+            "columnName": "is_monthly",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -673,7 +685,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '16b8cd5af3f674843559c40f9db3eff2')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '985e5c4c1521a4b522fe7c16e5d0117b')"
     ]
   }
 }

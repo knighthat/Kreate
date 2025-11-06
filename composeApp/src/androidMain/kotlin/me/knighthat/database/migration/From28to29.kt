@@ -36,5 +36,29 @@ class From28to29: Migration(28,29) {
                 id = REPLACE(id, 'local:', '')
             WHERE title LIKE 'local:%'
         """.trimIndent())
+
+        // Adding `is_pinned` col
+        connection.execSQL("""
+            ALTER TABLE Playlist ADD COLUMN is_pinned INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+        // Set is_pinned to `true` if name contains 'pinned:'
+        connection.execSQL("""
+            UPDATE Playlist 
+            SET is_pinned = 1,
+                id = REPLACE(id, 'pinned:', '')
+            WHERE name LIKE 'pinned:%'
+        """.trimIndent())
+
+        // Adding `is_monthly` col
+        connection.execSQL("""
+            ALTER TABLE Playlist ADD COLUMN is_monthly INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+        // Set is_monthly to `true` if name contains 'monthly:'
+        connection.execSQL("""
+            UPDATE Playlist 
+            SET is_monthly = 1,
+                id = REPLACE(id, 'monthly:', '')
+            WHERE name LIKE 'monthly:%'
+        """.trimIndent())
     }
 }

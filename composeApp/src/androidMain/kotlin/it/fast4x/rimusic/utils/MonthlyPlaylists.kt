@@ -8,12 +8,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import app.kreate.android.R
 import app.kreate.database.models.Playlist
-import app.kreate.util.MONTHLY_PREFIX
 import it.fast4x.rimusic.Database
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.firstOrNull
 import me.knighthat.utils.TimeDateUtils
 import java.time.LocalDate
 
@@ -42,17 +39,16 @@ fun CheckMonthlyPlaylist() {
 
     LaunchedEffect( lastMonth, thisMonth ) {
         // I.E. April 2025 returns "monthly:202504"
-        val playlistName = "$MONTHLY_PREFIX${thisMonth.year}${thisMonth.monthValue}"
+        val playlistName = "${thisMonth.year}${thisMonth.monthValue}"
 
-        Database.playlistTable
-                .exists( playlistName )
-                .flowOn( Dispatchers.IO )
-                .collectLatest { isMonthlyPlaylistExist ->
-                    // Force cancel this to prevent further updates
-                    if( isMonthlyPlaylistExist ) return@collectLatest
+        val monthlyPlaylist = Database.playlistTable
+            .findMonthlyPlaylistByName( playlistName )
+            .firstOrNull()
 
-                    addMonthlyPlaylist( lastMonth, thisMonth, playlistName )
-                }
+        // Only add when playlist doesn't exist
+        if( monthlyPlaylist == null )
+            addMonthlyPlaylist( lastMonth, thisMonth, playlistName )
+
     }
 }
 

@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import app.kreate.android.R
 import app.kreate.database.models.Playlist
-import app.kreate.util.PINNED_PREFIX
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.DynamicColor
@@ -26,7 +25,7 @@ class PinPlaylist(
         get() = stringResource( messageId )
 
     override var isFirstColor: Boolean
-        get() = playlist?.name?.startsWith( PINNED_PREFIX, true ) == true
+        get() = playlist?.isPinned ?: false
         set(value) =
             throw UnsupportedOperationException("Please use Database.playlistTable.togglePin(playlistId) instead!")
 

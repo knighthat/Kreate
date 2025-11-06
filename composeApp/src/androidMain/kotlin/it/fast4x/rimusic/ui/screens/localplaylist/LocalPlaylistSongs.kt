@@ -63,7 +63,6 @@ import app.kreate.android.themed.rimusic.component.playlist.PositionLock
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongPlaylistMap
-import app.kreate.util.MONTHLY_PREFIX
 import app.kreate.util.cleanPrefix
 import com.github.doyaaaaaken.kotlincsv.client.KotlinCsvExperimental
 import it.fast4x.compose.persist.persistList
@@ -443,8 +442,7 @@ fun LocalPlaylistSongs(
 
     val rippleIndication = ripple(bounded = false)
 
-    val playlistNotMonthlyType =
-        playlist?.name?.startsWith(MONTHLY_PREFIX, 0, true) == false
+    val playlistNotMonthlyType = playlist?.isMonthly == false
 
     var currentlyPlaying by remember { mutableStateOf(binder.player.currentMediaItem?.mediaId) }
     binder.player.DisposableListener {

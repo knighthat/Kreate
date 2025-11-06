@@ -21,8 +21,6 @@ import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.database.models.PlaylistPreview
-import app.kreate.util.MONTHLY_PREFIX
-import app.kreate.util.PINNED_PREFIX
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.MenuStyle
@@ -90,7 +88,7 @@ class PlaylistsMenu private constructor(
 
         MenuEntry(
             icon = R.drawable.add_in_playlist,
-            text = playlist.name.substringAfter( PINNED_PREFIX ),
+            text = playlist.name,
             secondaryText = "${playlistPreview.songCount} ${stringResource( R.string.songs )}",
             onClick = {
                 onAdd( playlistPreview )
@@ -126,12 +124,10 @@ class PlaylistsMenu private constructor(
             Database.playlistTable.sortPreviewsByName()
         }.collectAsState( emptyList(), Dispatchers.IO )
 
-        val pinnedPlaylists = playlistPreviews.filter {
-            it.playlist.name.startsWith(PINNED_PREFIX, 0, true)
-        }
+        val pinnedPlaylists = playlistPreviews.filter { it.playlist.isPinned }
         val unpinnedPlaylists = playlistPreviews.filter {
-            !it.playlist.name.startsWith(PINNED_PREFIX, 0, true) &&
-                    !it.playlist.name.startsWith(MONTHLY_PREFIX, 0, true)
+            !it.playlist.isPinned
+                    && !it.playlist.isMonthly
         }
 
         val newPlaylistButton = NewPlaylistDialog()

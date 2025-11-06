@@ -1,6 +1,7 @@
 package app.kreate.database.models
 
 import androidx.compose.runtime.Immutable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import app.kreate.util.cleanPrefix
@@ -16,6 +17,12 @@ data class Playlist(
     val isEditable: Boolean = true,
 
     val isYoutubePlaylist: Boolean = false,
+
+    @ColumnInfo("is_pinned")
+    val isPinned: Boolean = false,
+
+    @ColumnInfo("is_monthly")
+    val isMonthly: Boolean = false,
 
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0

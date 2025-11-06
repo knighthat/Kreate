@@ -76,7 +76,6 @@ import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.scrollingText
 import app.kreate.database.models.Song
-import app.kreate.util.MONTHLY_PREFIX
 import it.fast4x.compose.persist.persist
 import it.fast4x.compose.persist.persistList
 import it.fast4x.innertube.Innertube
@@ -764,9 +763,7 @@ fun HomeQuickPicks(
                             .allAsPreview()
                             .distinctUntilChanged()
                             .map { list ->
-                                list.filter {
-                                    it.playlist.name.startsWith( MONTHLY_PREFIX, true )
-                                }
+                                list.filter { it.playlist.isMonthly }
                             }
                 }.collectAsState( emptyList(), Dispatchers.IO )
 

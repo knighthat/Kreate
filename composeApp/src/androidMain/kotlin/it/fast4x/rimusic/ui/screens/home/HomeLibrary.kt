@@ -45,9 +45,6 @@ import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.InnertubeUtils
 import app.kreate.database.models.PlaylistPreview
-import app.kreate.util.MONTHLY_PREFIX
-import app.kreate.util.PINNED_PREFIX
-import app.kreate.util.YTP_PREFIX
 import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
@@ -103,14 +100,6 @@ fun HomeLibrary(
 
     // Non-vital
     var playlistType by Preferences.HOME_LIBRARY_TYPE
-    val listPrefix by remember {derivedStateOf {
-        when( playlistType ) {
-            PlaylistsType.Playlist -> ""    // Matches everything
-            PlaylistsType.PinnedPlaylist -> PINNED_PREFIX
-            PlaylistsType.MonthlyPlaylist -> MONTHLY_PREFIX
-            PlaylistsType.YTPlaylist -> YTP_PREFIX
-        }
-    }}
 
     var items by persistList<PlaylistPreview>("home/playlists")
     var onlinePlaylists by remember { mutableStateOf( emptyList<InnertubePlaylist>() ) }
@@ -119,13 +108,19 @@ fun HomeLibrary(
 
     val itemsOnDisplay by remember {derivedStateOf {
         items.fastFilter {
-                 (playlistType == PlaylistsType.YTPlaylist && it.playlist.isYoutubePlaylist)
-                         || it.playlist.name.startsWith( listPrefix, true )
+                 when( Preferences.HOME_LIBRARY_TYPE.value ) {
+                     PlaylistsType.Playlist -> true    // Matches everything
+                     PlaylistsType.PinnedPlaylist -> it.playlist.isPinned
+                     PlaylistsType.MonthlyPlaylist -> it.playlist.isMonthly
+                     PlaylistsType.YTPlaylist -> it.playlist.isYoutubePlaylist
+                 }
              }
              .fastFilter { search appearsIn it.playlist.cleanName() }
     }}
     val onlineOnDisplay by remember {derivedStateOf {
-        onlinePlaylists.fastFilter { listPrefix.isBlank() || playlistType == PlaylistsType.YTPlaylist }
+        onlinePlaylists.fastFilter {
+                            Preferences.HOME_LIBRARY_TYPE.either(PlaylistsType.YTPlaylist, PlaylistsType.Playlist)
+                        }
                        .fastFilter { search appearsIn it.name }
     }}
 

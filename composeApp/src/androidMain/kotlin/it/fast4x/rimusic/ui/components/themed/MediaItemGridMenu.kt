@@ -50,8 +50,6 @@ import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.database.models.Playlist
 import app.kreate.util.MODIFIED_PREFIX
-import app.kreate.util.MONTHLY_PREFIX
-import app.kreate.util.PINNED_PREFIX
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
@@ -539,14 +537,10 @@ fun MediaItemGridMenu (
                 Database.songPlaylistMapTable.mappedTo( mediaItem.mediaId )
             }.collectAsState( emptyList(), Dispatchers.IO )
 
-            val pinnedPlaylists = playlistPreviews.filter {
-                it.playlist.name.startsWith(PINNED_PREFIX, 0, true)
-            }
+            val pinnedPlaylists = playlistPreviews.filter { it.playlist.isPinned }
 
             val unpinnedPlaylists = playlistPreviews.filter {
-                !it.playlist.name.startsWith(PINNED_PREFIX, 0, true) &&
-                !it.playlist.name.startsWith(MONTHLY_PREFIX, 0, true) //&&
-                //!it.playlist.name.startsWith(PIPED_PREFIX, 0, true)
+                !it.playlist.isPinned && !it.playlist.isMonthly
             }
 
             var isCreatingNewPlaylist by rememberSaveable {
@@ -611,7 +605,7 @@ fun MediaItemGridMenu (
                         pinnedPlaylists.forEach { playlistPreview ->
                             MenuEntry(
                                 icon = if (playlistIds.contains(playlistPreview.playlist.id)) R.drawable.checkmark else R.drawable.add_in_playlist,
-                                text = playlistPreview.playlist.name.substringAfter(PINNED_PREFIX),
+                                text = playlistPreview.playlist.name,
                                 secondaryText = "${playlistPreview.songCount} " + stringResource(R.string.songs),
                                 onClick = {
                                     onDismiss()

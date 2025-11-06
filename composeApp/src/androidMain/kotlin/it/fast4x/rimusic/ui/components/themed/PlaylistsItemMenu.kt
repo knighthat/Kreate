@@ -43,8 +43,6 @@ import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
-import app.kreate.util.MONTHLY_PREFIX
-import app.kreate.util.PINNED_PREFIX
 import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
@@ -158,16 +156,15 @@ fun PlaylistsItemMenu(
                 }.collectAsState( emptyList(), Dispatchers.IO )
 
                 val pinnedPlaylists = playlistPreviews.filter {
-                    it.playlist.name.startsWith(PINNED_PREFIX, 0, true)
-                            && if (isNetworkConnected(context)) !(it.playlist.isYoutubePlaylist && !it.playlist.isEditable) else !it.playlist.isYoutubePlaylist
+                    it.playlist.isPinned && if (isNetworkConnected(context)) !(it.playlist.isYoutubePlaylist && !it.playlist.isEditable) else !it.playlist.isYoutubePlaylist
                 }
 
-                val youtubePlaylists = playlistPreviews.filter { it.playlist.isEditable && it.playlist.isYoutubePlaylist && !it.playlist.name.startsWith(PINNED_PREFIX) }
+                val youtubePlaylists = playlistPreviews.filter { it.playlist.isEditable && it.playlist.isYoutubePlaylist && !it.playlist.isPinned }
 
                 val unpinnedPlaylists = playlistPreviews.filter {
-                    !it.playlist.name.startsWith(PINNED_PREFIX, 0, true) &&
-                            !it.playlist.name.startsWith(MONTHLY_PREFIX, 0, true) &&
-                            !it.playlist.isYoutubePlaylist
+                    !it.playlist.isPinned
+                            && !it.playlist.isMonthly
+                            && !it.playlist.isYoutubePlaylist
                 }
 
                 var isCreatingNewPlaylist by rememberSaveable {

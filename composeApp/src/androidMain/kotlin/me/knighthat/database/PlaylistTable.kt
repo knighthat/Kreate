@@ -13,8 +13,6 @@ import app.kreate.database.models.Artist
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
-import app.kreate.util.MONTHLY_PREFIX
-import app.kreate.util.PINNED_PREFIX
 import it.fast4x.rimusic.enums.PlaylistSortBy
 import it.fast4x.rimusic.enums.SortOrder
 import kotlinx.coroutines.flow.Flow
@@ -45,7 +43,7 @@ interface PlaylistTable {
         FROM SongPlaylistMap spm
         JOIN Song S ON S.id = spm.songId
         JOIN Playlist P ON P.id = spm.playlistId
-        WHERE P.name LIKE '$PINNED_PREFIX%' COLLATE NOCASE
+        WHERE P.is_pinned COLLATE NOCASE
         ORDER BY S.ROWID
         LIMIT :limit
     """)
@@ -73,7 +71,7 @@ interface PlaylistTable {
         FROM SongPlaylistMap spm
         JOIN Song S ON S.id = spm.songId
         JOIN Playlist P ON P.id = spm.playlistId
-        WHERE P.name LIKE '$MONTHLY_PREFIX%' COLLATE NOCASE
+        WHERE P.is_monthly COLLATE NOCASE
         ORDER BY S.ROWID
         LIMIT :limit
     """)
@@ -130,6 +128,15 @@ interface PlaylistTable {
         LIMIT 1
     """)
     fun findByName( playlistName: String ): Flow<Playlist?>
+
+    @Query("""
+        SELECT *
+        FROM Playlist
+        WHERE trim(name) COLLATE NOCASE = trim(:playlistName) COLLATE NOCASE
+        AND is_monthly = 1
+        LIMIT 1
+    """)
+    fun findMonthlyPlaylistByName( playlistName: String ): Flow<Playlist?>
 
     /**
      * @return playlist with id [playlistId]
@@ -223,32 +230,16 @@ interface PlaylistTable {
     fun delete( playlist: Playlist ): Int
 
     /**
-     * @return whether a playlist with name [playlistName] exists in the database
-     */
-    @Query("""
-        SELECT COUNT(*) > 0
-        FROM Playlist
-        WHERE name = :playlistName
-    """)
-    fun exists( playlistName: String ): Flow<Boolean>
-
-    /**
-     * ### If playlist **IS NOT** pinned
-     *
-     * Add [PINNED_PREFIX] to [Playlist.name]
-     *
-     * ### If playlist **IS** pinned
-     *
-     * Remove [PINNED_PREFIX] from [Playlist.name]
+     * Toggle [Playlist.isPinned]
      *
      * @return number of rows affected
      */
     @Query("""
         UPDATE Playlist
-        SET name = 
-            CASE
-                WHEN name LIKE '$PINNED_PREFIX%' THEN SUBSTR(name, LENGTH('$PINNED_PREFIX') + 1)
-                ELSE '$PINNED_PREFIX' || name
+        SET is_pinned = 
+            CASE 
+                WHEN is_pinned = 0 THEN 1
+                ELSE 0
             END
         WHERE id = :playlistId
     """)
