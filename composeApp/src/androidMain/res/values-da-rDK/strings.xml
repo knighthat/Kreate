@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Færdig</string>
     <string name="hidesong">Skal denne sang virkelig skjules? Dens afspilningstid og cache slettes. Dette er irreversibelt.</string>
