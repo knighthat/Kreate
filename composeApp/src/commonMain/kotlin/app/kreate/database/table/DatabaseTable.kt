@@ -4,12 +4,40 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
+import androidx.room.RawQuery
+import androidx.room.RoomRawQuery
 import androidx.room.Update
 import androidx.room.Upsert
+import org.jetbrains.annotations.Blocking
 
 
 @Dao
 interface DatabaseTable<T> {
+
+    /**
+     * Name of table
+     */
+    val tableName: String
+
+    /**
+     * Performs [statement] on current thread.
+     *
+     * This will block current thread in till it's finished.
+     */
+    @RawQuery
+    @Blocking
+    fun blockingGet( statement: RoomRawQuery ): List<T>
+
+    /**
+     * Return all records in the table.
+     *
+     * This will block current thread in till it's finished.
+     */
+    @Blocking
+    fun blockingAll( limit: Int = Int.MAX_VALUE ): List<T> {
+        val statement = RoomRawQuery("SELECT DISTINCT * FROM $tableName LIMIT $limit")
+        return blockingGet( statement )
+    }
 
     /**
      * Attempt to write [record] into database.

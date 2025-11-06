@@ -3,6 +3,7 @@ package me.knighthat.database
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import androidx.room.RoomRawQuery
 import app.kreate.database.models.Song
 import app.kreate.database.table.DatabaseTable
 import app.kreate.util.MODIFIED_PREFIX
@@ -12,10 +13,14 @@ import it.fast4x.rimusic.utils.durationToMillis
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
+import org.jetbrains.annotations.Blocking
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
 interface SongTable: DatabaseTable<Song> {
+
+    override val tableName: String
+        get() = Song::class.simpleName!!
 
     /**
      * @return all records from this table
@@ -31,6 +36,23 @@ interface SongTable: DatabaseTable<Song> {
         limit: Int = Int.MAX_VALUE,
         excludeHidden: Boolean = false
     ): Flow<List<Song>>
+
+    /**
+     * This will block current thread in till it's finished.
+     * 
+     * @return all songs that aren't disliked
+     */
+    @Blocking
+    override fun blockingAll( limit: Int ): List<Song> {
+        val statement = RoomRawQuery("""
+            SELECT DISTINCT *
+            FROM $tableName 
+            WHERE totalPlayTimeMs >= 0 
+            ORDER BY ROWID 
+            LIMIT $limit
+        """.trimIndent())
+        return blockingGet( statement )
+    }
 
     /**
      * @return all records from this table in randomized order

@@ -18,6 +18,9 @@ import me.knighthat.database.ext.FormatWithSong
 @RewriteQueriesToDropUnusedColumns
 interface FormatTable: DatabaseTable<Format> {
 
+    override val tableName: String
+        get() = "Format"
+
     /**
      * @return formats & songs of this table
      */

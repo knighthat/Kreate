@@ -17,6 +17,9 @@ import me.knighthat.database.ext.EventWithSong
 @RewriteQueriesToDropUnusedColumns
 interface EventTable: DatabaseTable<Event> {
 
+    override val tableName: String
+        get() = Event::class.simpleName!!
+
     @Query("SELECT COUNT(*) FROM Event")
     fun countAll(): Flow<Long>
 

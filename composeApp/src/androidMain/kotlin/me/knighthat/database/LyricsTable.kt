@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.Flow
 @RewriteQueriesToDropUnusedColumns
 interface LyricsTable: DatabaseTable<Lyrics> {
 
+    override val tableName: String
+        get() = Lyrics::class.simpleName!!
+
     /**
      * @param songId of song to look for
      * @return [Lyrics] that has [Lyrics.songId] matches [songId]

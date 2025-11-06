@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.Flow
 @RewriteQueriesToDropUnusedColumns
 interface SearchQueryTable: DatabaseTable<SearchQuery> {
 
+    override val tableName: String
+        get() = SearchQuery::class.simpleName!!
+
     /**
      * [searchTerm] appears in [SearchQuery.query].
      * Additionally, it's **case-insensitive**

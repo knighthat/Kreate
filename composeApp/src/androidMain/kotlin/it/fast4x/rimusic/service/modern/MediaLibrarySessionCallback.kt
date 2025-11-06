@@ -233,7 +233,7 @@ class MediaLibrarySessionCallback(
                     )
                 }
 
-                PlayerServiceModern.ALBUM -> database.albumTable.all().first().map { album ->
+                PlayerServiceModern.ALBUM -> database.albumTable.blockingAll().map { album ->
                     browsableMediaItem(
                         "${PlayerServiceModern.ALBUM}/${album.id}",
                         album.title ?: "",
@@ -409,7 +409,7 @@ class MediaLibrarySessionCallback(
                 }
                 PlayerServiceModern.SONG -> {
                     songId = paths[1]
-                    queryList = database.songTable.all().first()
+                    queryList = database.songTable.blockingAll()
                 }
                 PlayerServiceModern.ARTIST -> {
                     songId = paths[2]
@@ -485,7 +485,7 @@ class MediaLibrarySessionCallback(
             val startPositionMs: Long
             val mediaItems: List<MediaItem>
 
-            database.queueTable.all().first().run {
+            database.queueTable.blockingAll().run {
                 indexOfFirst { it.position != null }.coerceAtLeast( 0 )
                                                     .let {
                                                         startIndex = it

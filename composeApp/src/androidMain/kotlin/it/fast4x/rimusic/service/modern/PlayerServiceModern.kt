@@ -738,10 +738,7 @@ class PlayerServiceModern:
         if ( !Preferences.ENABLE_PERSISTENT_QUEUE.value ) return
 
         Database.asyncQuery {
-            val queuedSong = runBlocking {
-                queueTable.all().first()
-            }
-
+            val queuedSong = queueTable.blockingAll()
             if (queuedSong.isEmpty()) return@asyncQuery
 
             val index = queuedSong.indexOfFirst { it.position != null }.coerceAtLeast(0)

@@ -13,6 +13,9 @@ import kotlinx.coroutines.flow.Flow
 @RewriteQueriesToDropUnusedColumns
 interface SongArtistMapTable: DatabaseTable<SongArtistMap> {
 
+    override val tableName: String
+        get() = SongArtistMap::class.simpleName!!
+
     /**
      * @param artistId of artist to look for
      * @param limit number of results cannot go over this value
