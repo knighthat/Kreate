@@ -55,7 +55,7 @@ class RenamePlaylistDialog private constructor(
 
         Database.asyncTransaction {
             playlist.copy( name = newValue )
-                    .let( playlistTable::update )
+                    .let( playlistTable::updateIgnore )
         }
 
         hideDialog()

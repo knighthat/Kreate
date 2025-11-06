@@ -1,10 +1,8 @@
 package me.knighthat.database
 
-import android.database.SQLException
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
-import androidx.room.Update
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Song
 import app.kreate.database.table.DatabaseTable
@@ -113,28 +111,6 @@ interface ArtistTable: DatabaseTable<Artist> {
         )
     """)
     fun isFollowing( artistId: String ): Flow<Boolean>
-
-    /**
-     * Attempt to replace a record's data with provided [artist].
-     *
-     * ### Standalone use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * the process is cancel and passes exception to caller.
-     *
-     * ### Transaction use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * **the entire transaction rolls back** and passes exception to caller.
-     *
-     *
-     * @param artist intended to update
-     *
-     * @throws SQLException when there's a conflict
-     */
-    @Update
-    @Throws(SQLException::class)
-    fun update( artist: Artist )
 
     /**
      * There are 2 possible actions.

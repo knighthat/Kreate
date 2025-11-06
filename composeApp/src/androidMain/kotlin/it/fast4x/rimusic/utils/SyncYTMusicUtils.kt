@@ -50,7 +50,7 @@ fun ytmPrivatePlaylistSync(playlist: Playlist, playlistId: Long) {
                         // Update here playlist isEditable flag because library contain playlists but isEditable isn't always available
                         if (remotePlaylist.isEditable == true)
                             Database.playlistTable
-                                    .update( playlist.copy(isEditable = true) )
+                                    .updateIgnore( playlist.copy(isEditable = true) )
 
                         remotePlaylist.songs
                                       .map( Innertube.SongItem::asMediaItem )
@@ -95,7 +95,7 @@ suspend fun importYTMSubscribedChannels(): Boolean {
                         bookmarkedAt = localArtist.bookmarkedAt ?: System.currentTimeMillis(),
                         thumbnailUrl = remoteArtist.thumbnail?.url,
                         isYoutubeArtist = true
-                    ).let( Database.artistTable::update )
+                    ).let( Database.artistTable::updateIgnore )
                 }
             }
 
@@ -106,7 +106,7 @@ suspend fun importYTMSubscribedChannels(): Boolean {
                         artist.isYoutubeArtist && artist.id !in ytmArtists.map { it.key }
                     }
                     .map { it.copy( isYoutubeArtist = false, bookmarkedAt = null ) }
-                    .forEach( Database.artistTable::update )
+                    .forEach( Database.artistTable::updateIgnore )
         }
             .onFailure {
                 println("Error importing YTM subscribed artists channels: ${it.stackTraceToString()}")

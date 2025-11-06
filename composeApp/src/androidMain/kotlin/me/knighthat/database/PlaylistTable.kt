@@ -5,7 +5,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
-import androidx.room.Update
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
@@ -165,28 +164,6 @@ interface PlaylistTable: DatabaseTable<Playlist> {
     @Insert
     @Throws(SQLException::class)
     fun insert( playlist: Playlist ): Long
-
-    /**
-     * Attempt to replace a record's data with provided [playlist].
-     *
-     * ### Standalone use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * the process is cancel and passes exception to caller.
-     *
-     * ### Transaction use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * **the entire transaction rolls back** and passes exception to caller.
-     *
-     *
-     * @param playlist intended to update
-     * @return number of rows affected by the this operation
-     * @throws SQLException when there's a conflict
-     */
-    @Update
-    @Throws(SQLException::class)
-    fun update( playlist: Playlist ): Int
 
     /**
      * Toggle [Playlist.isPinned]
