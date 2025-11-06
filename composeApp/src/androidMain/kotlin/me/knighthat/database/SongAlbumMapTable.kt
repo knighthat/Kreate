@@ -13,6 +13,9 @@ import kotlinx.coroutines.flow.Flow
 @RewriteQueriesToDropUnusedColumns
 interface SongAlbumMapTable: DatabaseTable<SongAlbumMap> {
 
+    override val tableName: String
+        get() = "song_album_map"
+
     /**
      * Remove all songs belong to album with id [albumId]
      *

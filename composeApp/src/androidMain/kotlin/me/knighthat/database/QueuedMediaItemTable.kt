@@ -10,13 +10,16 @@ import app.kreate.database.table.DatabaseTable
 @RewriteQueriesToDropUnusedColumns
 interface QueuedMediaItemTable: DatabaseTable<PersistentQueue> {
 
+    override val tableName: String
+        get() = "persistent_queue"
+
     @Query("""
-        SELECT *
-        FROM persistent_queue q
-        JOIN songs s ON s.id = q.song_id 
+        SELECT * 
+        FROM persistent_queue
+        JOIN songs ON song_id = id
         LIMIT :limit
     """)
-    suspend fun allBlocking( limit: Int = Int.MAX_VALUE ): List<PersistentQueue.Item>
+    fun blockingItems( limit: Int = Int.MAX_VALUE ): List<PersistentQueue.Item>
 
     @Query("DELETE FROM persistent_queue")
     fun deleteAll(): Int

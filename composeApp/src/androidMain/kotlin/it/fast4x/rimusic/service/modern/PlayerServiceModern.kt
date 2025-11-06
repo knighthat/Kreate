@@ -759,7 +759,7 @@ class PlayerServiceModern:
         if ( !Preferences.ENABLE_PERSISTENT_QUEUE.value ) return
 
         CoroutineScope(Dispatchers.IO).launch {
-            val queue = Database.queueTable.allBlocking()
+            val queue = Database.queueTable.blockingItems()
 
             if( queue.isEmpty() ) {
                 Timber.tag( "PersistentQueue" ).i( "Persistent queue empty, not resuming!" )

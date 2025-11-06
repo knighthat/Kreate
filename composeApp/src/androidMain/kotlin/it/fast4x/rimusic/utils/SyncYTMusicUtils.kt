@@ -155,8 +155,7 @@ suspend fun importYTMLikedAlbums(): Boolean {
             }
 
             Database.albumTable
-                    .all()
-                    .first()
+                    .blockingAll()
                     .filter { album ->
                         album.isYoutubeAlbum && album.id !in ytmAlbums.map { it.key }
                     }

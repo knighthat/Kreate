@@ -17,6 +17,9 @@ import kotlinx.coroutines.flow.Flow
 @RewriteQueriesToDropUnusedColumns
 interface EventTable: DatabaseTable<Event> {
 
+    override val tableName: String
+        get() = "playback_history"
+
     @Query("SELECT COUNT(*) FROM playback_history")
     fun countAll(): Flow<Long>
 

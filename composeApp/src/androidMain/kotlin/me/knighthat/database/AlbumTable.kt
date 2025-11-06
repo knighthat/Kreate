@@ -16,11 +16,8 @@ import kotlinx.coroutines.flow.take
 @RewriteQueriesToDropUnusedColumns
 interface AlbumTable: DatabaseTable<Album> {
 
-    /**
-     * @return all records from this table
-     */
-    @Query("SELECT DISTINCT * FROM albums LIMIT :limit")
-    fun all( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
+    override val tableName: String
+        get() = "albums"
 
     /**
      * @return all albums from this table that are bookmarked by user

@@ -18,6 +18,9 @@ import kotlinx.coroutines.flow.map
 @RewriteQueriesToDropUnusedColumns
 interface FormatTable: DatabaseTable<Format> {
 
+    override val tableName: String
+        get() = "formats"
+
     /**
      * @return formats & songs of this table
      */

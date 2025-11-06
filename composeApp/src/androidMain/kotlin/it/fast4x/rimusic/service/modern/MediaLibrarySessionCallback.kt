@@ -235,7 +235,7 @@ class MediaLibrarySessionCallback(
                     )
                 }
 
-                PlayerServiceModern.ALBUM -> database.albumTable.all().first().map { album ->
+                PlayerServiceModern.ALBUM -> database.albumTable.blockingAll().map { album ->
                     browsableMediaItem(
                         "${PlayerServiceModern.ALBUM}/${album.id}",
                         album.title ?: "",
@@ -411,7 +411,7 @@ class MediaLibrarySessionCallback(
                 }
                 PlayerServiceModern.SONG -> {
                     songId = paths[1]
-                    queryList = database.songTable.all().first()
+                    queryList = database.songTable.blockingAll()
                 }
                 PlayerServiceModern.ARTIST -> {
                     songId = paths[2]
@@ -483,7 +483,7 @@ class MediaLibrarySessionCallback(
             return Futures.immediateFuture(defaultResult)
 
         scope.future {
-            val queue = database.queueTable.allBlocking()
+            val queue = database.queueTable.blockingItems()
             val startIndex = queue.indexOfFirst { it.position != null }
             val startPositionMs = queue[startIndex].position ?: C.TIME_UNSET
             val mediaItems = queue.map { it.song.asMediaItem.buildUpon().setTag( PersistentQueue.Tag ).build() }
