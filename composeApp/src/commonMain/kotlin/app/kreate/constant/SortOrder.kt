@@ -1,14 +1,15 @@
-package it.fast4x.rimusic.enums
+package app.kreate.constant
 
 import org.jetbrains.annotations.Contract
 
+
 enum class SortOrder( val rotationZ: Float, val asSqlString: String ) {
-    Ascending( 0f, "ASC" ),
-    Descending( 180f, "DESC" );
+    ASCENDING( 0f, "ASC" ),
+    DESCENDING( 180f, "DESC" );
 
     operator fun not() = when (this) {
-        Ascending -> Descending
-        Descending -> Ascending
+        ASCENDING -> DESCENDING
+        DESCENDING -> ASCENDING
     }
 
     /**
@@ -16,7 +17,7 @@ enum class SortOrder( val rotationZ: Float, val asSqlString: String ) {
      *
      * The provided list [items] is always assumed to be sorted
      * in ascending order. Therefore, it only get reversed
-     * when [Descending] is selected.
+     * when [DESCENDING] is selected.
      *
      * Return list is always a new list to prevent unwanted results
      *
@@ -28,7 +29,7 @@ enum class SortOrder( val rotationZ: Float, val asSqlString: String ) {
     )
     fun <T> applyTo( items: List<T> ): List<T> =
         when( this ) {
-            Descending -> items.reversed()
-            Ascending -> items.toList()
+            DESCENDING -> items.reversed()
+            ASCENDING -> items.toList()
         }
 }

@@ -23,10 +23,10 @@ import androidx.compose.ui.unit.dp
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.constant.SortCategory
+import app.kreate.constant.SortOrder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.Drawable
 import it.fast4x.rimusic.enums.MenuStyle
-import it.fast4x.rimusic.enums.SortOrder
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.MenuState
 import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
