@@ -3,6 +3,7 @@ package me.knighthat.database
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import app.kreate.constant.SortOrder
 import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.Format
 import app.kreate.database.models.Song
@@ -10,7 +11,6 @@ import app.kreate.database.table.DatabaseTable
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.toDuration
 import it.fast4x.rimusic.enums.SongSortBy
-import it.fast4x.rimusic.enums.SortOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

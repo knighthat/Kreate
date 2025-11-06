@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import app.kreate.constant.SortOrder
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongPlaylistMap
@@ -12,7 +13,6 @@ import app.kreate.database.table.DatabaseTable
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.toDuration
 import it.fast4x.rimusic.enums.PlaylistSongSortBy
-import it.fast4x.rimusic.enums.SortOrder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

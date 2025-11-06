@@ -16,6 +16,7 @@ import app.kreate.android.enums.DohServer
 import app.kreate.android.enums.PlatformIndicatorType
 import app.kreate.android.utils.innertube.getSystemCountryCode
 import app.kreate.constant.Language
+import app.kreate.constant.SortOrder
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.AlbumSortBy
 import it.fast4x.rimusic.enums.AlbumSwipeAction
@@ -80,7 +81,6 @@ import it.fast4x.rimusic.enums.RecommendationsNumber
 import it.fast4x.rimusic.enums.Romanization
 import it.fast4x.rimusic.enums.SongSortBy
 import it.fast4x.rimusic.enums.SongsNumber
-import it.fast4x.rimusic.enums.SortOrder
 import it.fast4x.rimusic.enums.StatisticsCategory
 import it.fast4x.rimusic.enums.StatisticsType
 import it.fast4x.rimusic.enums.SwipeAnimationNoThumbnail
@@ -183,19 +183,19 @@ sealed class Preferences<T>(
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Sort order">
         val HOME_SONGS_SORT_ORDER by lazy {
-            Enum( preferences, "HomeSongsSortOrder", "", SortOrder.Ascending )
+            Enum( preferences, "HomeSongsSortOrder", "", SortOrder.ASCENDING )
         }
         val HOME_ARTISTS_SORT_ORDER by lazy {
-            Enum( preferences, "PlaylistSongsSortOrder", "", SortOrder.Ascending )
+            Enum( preferences, "PlaylistSongsSortOrder", "", SortOrder.ASCENDING )
         }
         val HOME_ALBUM_SORT_ORDER by lazy {
-            Enum( preferences, "PlaylistSongsSortOrder", "", SortOrder.Ascending )
+            Enum( preferences, "PlaylistSongsSortOrder", "", SortOrder.ASCENDING )
         }
         val HOME_LIBRARY_SORT_ORDER by lazy {
-            Enum( preferences, "HomeLibrarySortOrder", "", SortOrder.Ascending )
+            Enum( preferences, "HomeLibrarySortOrder", "", SortOrder.ASCENDING )
         }
         val PLAYLIST_SONGS_SORT_ORDER by lazy {
-            Enum( preferences, "PlaylistSongsSortOrder", "", SortOrder.Ascending )
+            Enum( preferences, "PlaylistSongsSortOrder", "", SortOrder.ASCENDING )
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Max # of ...">
