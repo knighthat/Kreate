@@ -2,17 +2,15 @@ package me.knighthat.database
 
 import android.database.SQLException
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Update
-import androidx.room.Upsert
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
+import app.kreate.database.table.DatabaseTable
 import it.fast4x.rimusic.enums.PlaylistSortBy
 import it.fast4x.rimusic.enums.SortOrder
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +19,7 @@ import kotlinx.coroutines.flow.take
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface PlaylistTable {
+interface PlaylistTable: DatabaseTable<Playlist> {
 
     /**
      * @return list of songs that were mapped to at least 1 playlist
@@ -169,36 +167,6 @@ interface PlaylistTable {
     fun insert( playlist: Playlist ): Long
 
     /**
-     * Attempt to write [playlist] into database.
-     *
-     * ### Standalone use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored.
-     *
-     * ### Transaction use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored and the transaction continues.
-     *
-     * @param playlist data intended to insert in to database
-     */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertIgnore( playlist: Playlist )
-
-    /**
-     * Attempt to write [playlist] into database.
-     *
-     * If [playlist] exist (determined by its primary key),
-     * existing record's columns will be replaced
-     * by provided [playlist]' data.
-     *
-     * @param playlist data intended to insert in to database
-     */
-    @Upsert
-    fun upsert( playlist: Playlist )
-
-    /**
      * Attempt to replace a record's data with provided [playlist].
      *
      * ### Standalone use
@@ -219,15 +187,6 @@ interface PlaylistTable {
     @Update
     @Throws(SQLException::class)
     fun update( playlist: Playlist ): Int
-
-    /**
-     * Attempt to remove a record from database.
-     *
-     * @param playlist intended to delete from database
-     * @return number of rows affected by the this operation
-     */
-    @Delete
-    fun delete( playlist: Playlist ): Int
 
     /**
      * Toggle [Playlist.isPinned]

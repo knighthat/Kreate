@@ -1,9 +1,6 @@
 package me.knighthat.database
 
-import android.database.SQLException
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
@@ -12,12 +9,13 @@ import app.kreate.database.models.Artist
 import app.kreate.database.models.Event
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
+import app.kreate.database.table.DatabaseTable
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.database.ext.EventWithSong
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface EventTable {
+interface EventTable: DatabaseTable<Event> {
 
     @Query("SELECT COUNT(*) FROM Event")
     fun countAll(): Flow<Long>
@@ -157,24 +155,6 @@ interface EventTable {
         to: Long = System.currentTimeMillis(),
         limit: Int = Int.MAX_VALUE
     ): Flow<List<PlaylistPreview>>
-
-    /**
-     * Attempt to write [event] into database.
-     *
-     * ### Standalone use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored.
-     *
-     * ### Transaction use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored and the transaction continues.
-     *
-     * @param event data intended to insert in to database
-     */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertIgnore( event: Event )
 
     @Query("DELETE FROM Event")
     fun deleteAll(): Int

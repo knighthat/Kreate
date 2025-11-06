@@ -3,27 +3,15 @@ package me.knighthat.database
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
-import androidx.room.Upsert
 import app.kreate.database.models.Album
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongAlbumMap
+import app.kreate.database.table.DatabaseTable
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface SongAlbumMapTable {
-
-    /**
-     * Attempt to write the list of [SongAlbumMap] to database.
-     *
-     * If record exist (determined by its primary key),
-     * existing record's columns will be replaced
-     * by provided data.
-     *
-     * @param songAlbumMap list of [SongAlbumMap] to insert to database
-     */
-    @Upsert
-    fun upsert( songAlbumMap: List<SongAlbumMap> )
+interface SongAlbumMapTable: DatabaseTable<SongAlbumMap> {
 
     /**
      * Remove all songs belong to album with id [albumId]

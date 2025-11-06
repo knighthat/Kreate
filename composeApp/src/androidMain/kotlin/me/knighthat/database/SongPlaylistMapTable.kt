@@ -3,13 +3,12 @@ package me.knighthat.database
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.room.Dao
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
-import androidx.room.Update
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongPlaylistMap
+import app.kreate.database.table.DatabaseTable
 import app.kreate.util.MODIFIED_PREFIX
 import it.fast4x.rimusic.enums.PlaylistSongSortBy
 import it.fast4x.rimusic.enums.SortOrder
@@ -22,7 +21,7 @@ import kotlinx.coroutines.flow.take
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface SongPlaylistMapTable {
+interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
 
     /**
      * Song with [songId] will be removed from all playlists
@@ -91,9 +90,6 @@ interface SongPlaylistMapTable {
         LIMIT :limit
     """)
     fun allSongsOfRandomized( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
-
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun updateReplace( songPlaylistMaps: List<SongPlaylistMap> ): Int
 
     /**
      * @param songId of playlist to look for

@@ -1,15 +1,11 @@
 package me.knighthat.database
 
-import android.database.SQLException
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
-import androidx.room.Update
-import androidx.room.Upsert
 import app.kreate.database.models.Album
 import app.kreate.database.models.Song
+import app.kreate.database.table.DatabaseTable
 import it.fast4x.rimusic.enums.AlbumSortBy
 import it.fast4x.rimusic.enums.SortOrder
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +14,7 @@ import kotlinx.coroutines.flow.take
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface AlbumTable {
+interface AlbumTable: DatabaseTable<Album> {
 
     /**
      * @return all records from this table
@@ -107,85 +103,6 @@ interface AlbumTable {
         WHERE songId = :songId
     """)
     fun findBySongId( songId: String ): Flow<Album?>
-
-    /**
-     * Attempt to write [Album] into database.
-     *
-     * ### Standalone use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored.
-     *
-     * ### Transaction use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored and the transaction continues.
-     *
-     * @param album intended to insert in to database
-     */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertIgnore( album: Album )
-
-    /**
-     * Attempt to replace a record's data with provided [album].
-     *
-     * ### Standalone use
-     *
-     * When error occurs and [android.database.SQLException] is thrown,
-     * data inside database will be replaced by provided [album].
-     *
-     * ### Transaction use
-     *
-     * When error occurs and [android.database.SQLException] is thrown,
-     * data inside database will be replaced by provided [album]
-     * and transaction continues.
-     *
-     * @param album intended to update
-     */
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun updateReplace( album: Album )
-
-    /**
-     * Attempt to replace each record's data with the one provided in records.
-     *
-     * ### Standalone use
-     *
-     * When an element fails to insert, it overrides existing
-     * data with provided one.
-     *
-     * ### Transaction use
-     *
-     * When an element fails to insert, it overrides existing
-     * data with provided one and transaction continues.
-     *
-     * @param albums list of [Album] to update
-     */
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun updateReplace( albums: List<Album> )
-
-    /**
-     * Attempt to write [album] into database.
-     *
-     * If [album] exist (determined by its primary key),
-     * existing record's columns will be replaced
-     * by provided [album]' data.
-     *
-     * @param album data intended to insert in to database
-     */
-    @Upsert
-    fun upsert( album: Album )
-
-    /**
-     * Attempt to write the list of [Album] to database.
-     *
-     * If record exist (determined by its primary key),
-     * existing record's columns will be replaced
-     * by provided data.
-     *
-     * @param albums list of [Album] to insert to database
-     */
-    @Upsert
-    fun upsert( albums: List<Album> )
 
     /**
      * @return whether [Album] with id [albumId] is bookmarked,

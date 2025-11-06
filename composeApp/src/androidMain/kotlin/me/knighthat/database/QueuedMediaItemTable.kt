@@ -5,12 +5,13 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import app.kreate.database.table.DatabaseTable
 import it.fast4x.rimusic.models.QueuedMediaItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface QueuedMediaItemTable {
+interface QueuedMediaItemTable: DatabaseTable<QueuedMediaItem> {
 
     /**
      * @return all records from this table

@@ -1,15 +1,10 @@
 package me.knighthat.database
 
-import android.database.SQLException
 import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
-import androidx.room.Update
-import androidx.room.Upsert
 import app.kreate.database.models.Song
+import app.kreate.database.table.DatabaseTable
 import app.kreate.util.MODIFIED_PREFIX
 import it.fast4x.rimusic.enums.SongSortBy
 import it.fast4x.rimusic.enums.SortOrder
@@ -20,7 +15,7 @@ import kotlinx.coroutines.flow.take
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface SongTable {
+interface SongTable: DatabaseTable<Song> {
 
     /**
      * @return all records from this table
@@ -150,76 +145,6 @@ interface SongTable {
         ) COLLATE NOCASE = trim(:artistName) COLLATE NOCASE
     """)
     fun findAllByArtist( artistName: String ): Flow<List<Song>>
-
-    /**
-     * Attempt to write [Song] into database.
-     *
-     * ### Standalone use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored.
-     *
-     * ### Transaction use
-     *
-     * When error occurs and [SQLException] is thrown,
-     * it'll simply be ignored and the transaction continues.
-     *
-     * @param song intended to insert in to database
-     */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertIgnore( song: Song )
-
-    /**
-     * Attempt to replace a record's data with provided [song].
-     *
-     * ### Standalone use
-     *
-     * When error occurs and [android.database.SQLException] is thrown,
-     * data inside database will be replaced by provided [song].
-     *
-     * ### Transaction use
-     *
-     * When error occurs and [android.database.SQLException] is thrown,
-     * data inside database will be replaced by provided [song]
-     * and transaction continues.
-     *
-     * @param song intended to update
-     * @return number of rows affected by the this operation
-     */
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun updateReplace( song: Song )
-
-    /**
-     * Attempt to write [song] into database.
-     *
-     * If [song] exist (determined by its primary key),
-     * existing record's columns will be replaced
-     * by provided [song]' data.
-     *
-     * @param song data intended to insert in to database
-     */
-    @Upsert
-    fun upsert( song: Song )
-
-    /**
-     * Attempt to write the list of [Song] to database.
-     *
-     * If record exist (determined by its primary key),
-     * existing record's columns will be replaced
-     * by provided data.
-     *
-     * @param songs list of [Song] to insert to database
-     */
-    @Upsert
-    fun upsert( songs: List<Song> )
-
-    /**
-     * Attempt to remove a record from database.
-     *
-     * @param song intended to delete from database
-     */
-    @Delete
-    fun delete( song: Song )
 
     /**
      * @return whether any record in [Song] table has id [songId]
