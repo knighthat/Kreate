@@ -8,8 +8,8 @@ import app.kreate.database.models.Format
 import app.kreate.database.models.Song
 import app.kreate.database.table.DatabaseTable
 import app.kreate.util.MODIFIED_PREFIX
+import app.kreate.util.toDuration
 import it.fast4x.rimusic.enums.SongSortBy
-import it.fast4x.rimusic.utils.durationToMillis
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.database.ext.FormatWithSong
@@ -132,9 +132,7 @@ interface FormatTable: DatabaseTable<Format> {
 
     fun sortAllWithSongsByDuration( limit: Int = Int.MAX_VALUE, excludeHidden: Boolean = false ): Flow<List<FormatWithSong>> =
         allWithSongs( limit, excludeHidden ).map { list ->
-            list.sortedBy {
-                durationToMillis( it.song.durationText ?: "0:0" )
-            }
+            list.sortedBy { it.song.durationText.toDuration() }
         }
 
     @Query("""

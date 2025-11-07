@@ -8,8 +8,8 @@ import app.kreate.constant.SortOrder
 import app.kreate.database.models.Song
 import app.kreate.database.table.DatabaseTable
 import app.kreate.util.MODIFIED_PREFIX
+import app.kreate.util.toDuration
 import it.fast4x.rimusic.enums.SongSortBy
-import it.fast4x.rimusic.utils.durationToMillis
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
@@ -364,9 +364,7 @@ interface SongTable: DatabaseTable<Song> {
 
     fun sortAllByDuration( limit: Int = Int.MAX_VALUE, excludeHidden: Boolean = false ): Flow<List<Song>> =
         all( limit, excludeHidden ).map { list ->
-            list.sortedBy {
-                durationToMillis( it.durationText ?: "0:0" )
-            }
+            list.sortedBy { it.durationText.toDuration() }
         }
 
     @Query("""
@@ -466,9 +464,7 @@ interface SongTable: DatabaseTable<Song> {
 
     fun sortFavoritesByDuration( limit: Int = Int.MAX_VALUE ): Flow<List<Song>> =
         allFavorites( limit ).map { list ->
-            list.sortedBy {
-                durationToMillis( it.durationText ?: "0:0" )
-            }
+            list.sortedBy { it.durationText.toDuration() }
         }
 
     @Query("""

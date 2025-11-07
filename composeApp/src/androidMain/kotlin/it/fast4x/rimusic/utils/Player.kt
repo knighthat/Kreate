@@ -19,6 +19,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.database.models.Song
+import app.kreate.util.toDuration
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.DurationInMinutes
@@ -121,27 +122,27 @@ fun <T> Player.forcePlay(
 
 fun Player.forcePlay( song: Song ) {
     forcePlay( song, Song::asCleanedMediaItem ) {
-        durationToMillis( it.durationText.orEmpty() )
+        it.durationText.toDuration().inWholeMilliseconds
     }
 }
 
 @UnstableApi
 fun Player.forcePlay( song: Innertube.SongItem ) {
     forcePlay( song, Innertube.SongItem::asMediaItem ) {
-        durationToMillis( it.durationText.orEmpty() )
+        it.durationText.toDuration().inWholeMilliseconds
     }
 }
 
 @UnstableApi
 fun Player.forcePlay( video: Innertube.VideoItem ) {
     forcePlay( video, Innertube.VideoItem::asMediaItem ) {
-        durationToMillis( it.durationText.orEmpty() )
+        it.durationText.toDuration().inWholeMilliseconds
     }
 }
 
 fun Player.forcePlay( song: InnertubeSong ) {
     forcePlay( song, InnertubeSong::toMediaItem ) {
-        durationToMillis(it.durationText.orEmpty())
+        it.durationText.toDuration().inWholeMilliseconds
     }
 }
 
@@ -230,7 +231,7 @@ fun Player.forcePlayAtIndex(mediaItems: List<MediaItem>, mediaItemIndex: Int) {
 @JvmName("forcePlaySongsAtIndex")
 fun Player.forcePlayAtIndex( songs: List<Song>, startIndex: Int ) {
     forcePlayAtIndex( songs, startIndex, Song::asCleanedMediaItem ) {
-        durationToMillis( it.durationText.orEmpty() )
+        it.durationText.toDuration().inWholeMilliseconds
     }
 }
 
@@ -255,7 +256,7 @@ fun Player.playShuffled(episodes: List<Innertube.Podcast.EpisodeItem> ) {
 
     val shuffled = episodes.shuffled()
     forcePlayAtIndex( shuffled, -1, Innertube.Podcast.EpisodeItem::asMediaItem ) {
-        durationToMillis( it.durationString.orEmpty() )
+        it.durationString.toDuration().inWholeMilliseconds
     }
 }
 
@@ -299,7 +300,7 @@ fun Player.addNext( mediaItem: MediaItem ) {
 @MainThread
 fun Player.addNext( song: Song ) {
     addNext( song, Song::asCleanedMediaItem ) {
-        durationToMillis( it.durationText.orEmpty() )
+        it.durationText.toDuration().inWholeMilliseconds
     }
 }
 
@@ -307,7 +308,7 @@ fun Player.addNext( song: Song ) {
 @MainThread
 fun Player.addNext( video: Innertube.VideoItem ) {
     addNext( video, Innertube.VideoItem::asMediaItem ) {
-        durationToMillis( it.durationText.orEmpty() )
+        it.durationText.toDuration().inWholeMilliseconds
     }
 }
 
@@ -320,7 +321,7 @@ fun <T> Player.addNext(
 @JvmName("addMediaItemsNext")
 fun Player.addNext( songs: List<Song> ) {
     addNext( songs, Song::asCleanedMediaItem ) {
-        durationToMillis( it.durationText.orEmpty() )
+        it.durationText.toDuration().inWholeMilliseconds
     }
 }
 
@@ -356,7 +357,7 @@ fun <T> Player.enqueue(
 @MainThread
 fun Player.enqueue( song: Song ) {
     enqueue( song, Song::asCleanedMediaItem ) {
-        durationToMillis( it.durationText.orEmpty() )
+        it.durationText.toDuration().inWholeMilliseconds
     }
 }
 
@@ -364,7 +365,7 @@ fun Player.enqueue( song: Song ) {
 @MainThread
 fun Player.enqueue( video: Innertube.VideoItem ) {
     enqueue( video, Innertube.VideoItem::asMediaItem ) {
-        durationToMillis( it.durationText.orEmpty() )
+        it.durationText.toDuration().inWholeMilliseconds
     }
 }
 
@@ -440,7 +441,7 @@ fun <T> Player.enqueue(
 @JvmName("enqueueSongs")
 fun Player.enqueue( songs: List<Song> ) {
     enqueue( songs, Song::asCleanedMediaItem ) {
-        durationToMillis( it.durationText.orEmpty() )
+        it.durationText.toDuration().inWholeMilliseconds
     }
 }
 

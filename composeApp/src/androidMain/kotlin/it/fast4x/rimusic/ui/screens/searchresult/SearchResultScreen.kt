@@ -35,6 +35,7 @@ import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.database.models.Album
 import app.kreate.database.models.SongAlbumMap
+import app.kreate.util.toDuration
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBody
@@ -59,7 +60,6 @@ import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
-import it.fast4x.rimusic.utils.durationToMillis
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.isDownloadedSong
@@ -181,9 +181,7 @@ fun SearchResultScreen(
                                     localBinder?.player?.addNext(
                                         item = song,
                                         toMediaItem = Innertube.SongItem::asMediaItem,
-                                        getDuration = {
-                                            durationToMillis( it.durationText.orEmpty() )
-                                        }
+                                        getDuration = { it.durationText.toDuration().inWholeMilliseconds }
                                     )
                                 },
                                 onDownload = {
@@ -201,9 +199,7 @@ fun SearchResultScreen(
                                     binder.player.enqueue(
                                         item = song,
                                         toMediaItem = Innertube.SongItem::asMediaItem,
-                                        getDuration = {
-                                            durationToMillis( it.durationText.orEmpty() )
-                                        }
+                                        getDuration = { it.durationText.toDuration().inWholeMilliseconds }
                                     )
                                 }
                             ) {
@@ -275,9 +271,7 @@ fun SearchResultScreen(
                                                                     binder.player.addNext(
                                                                         items = albumPage?.songsPage?.items.orEmpty(),
                                                                         toMediaItem = Innertube.SongItem::asMediaItem,
-                                                                        getDuration = {
-                                                                            durationToMillis( it.durationText.orEmpty() )
-                                                                        }
+                                                                        getDuration = { it.durationText.toDuration().inWholeMilliseconds }
                                                                     )
 
                                                                     println("mediaItem success add in queue album songsPage ${albumPage
@@ -315,9 +309,7 @@ fun SearchResultScreen(
                                                                     binder.player.enqueue(
                                                                         items = albumPage?.songsPage?.items.orEmpty(),
                                                                         toMediaItem = Innertube.SongItem::asMediaItem,
-                                                                        getDuration = {
-                                                                            durationToMillis( it.durationText.orEmpty() )
-                                                                        }
+                                                                        getDuration = { it.durationText.toDuration().inWholeMilliseconds }
                                                                     )
 
                                                                     println("mediaItem success add in queue album songsPage ${albumPage

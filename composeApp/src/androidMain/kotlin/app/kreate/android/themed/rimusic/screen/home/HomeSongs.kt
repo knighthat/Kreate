@@ -41,6 +41,7 @@ import app.kreate.android.themed.rimusic.component.song.PeriodSelector
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.database.models.Song
+import app.kreate.util.toDuration
 import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
@@ -64,7 +65,6 @@ import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.color
-import it.fast4x.rimusic.utils.durationTextToMillis
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.forcePlayAtIndex
 import it.fast4x.rimusic.utils.isDownloadedSong
@@ -188,8 +188,7 @@ fun HomeSongs(
                                                // Exclude songs with duration higher than what [excludeSongWithDurationLimit] is
                                                list.fastFilter { song ->
                                                    excludeSongWithDurationLimit == DurationInMinutes.Disabled
-                                                           || song.durationText
-                                                                  ?.let { durationTextToMillis(it) < excludeSongWithDurationLimit.asMillis } == true
+                                                           || song.durationText.toDuration().inWholeMilliseconds < excludeSongWithDurationLimit.asMillis
                                                }
                                            }
 

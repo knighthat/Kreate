@@ -76,6 +76,7 @@ import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.scrollingText
 import app.kreate.database.models.Song
+import app.kreate.util.toDuration
 import it.fast4x.compose.persist.persist
 import it.fast4x.compose.persist.persistList
 import it.fast4x.innertube.Innertube
@@ -114,7 +115,6 @@ import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.bold
 import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.color
-import it.fast4x.rimusic.utils.durationToMillis
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.forcePlayAtIndex
 import it.fast4x.rimusic.utils.isLandscape
@@ -931,9 +931,7 @@ fun HomeQuickPicks(
                                                                 items = itemsOnDisplay,
                                                                 index = index,
                                                                 toMediaItem = InnertubeSong::toMediaItem,
-                                                                getDuration = {
-                                                                    durationToMillis( it.durationText.orEmpty() )
-                                                                }
+                                                                getDuration = { it.durationText.toDuration().inWholeMilliseconds }
                                                             )
                                                         }
                                                     )
