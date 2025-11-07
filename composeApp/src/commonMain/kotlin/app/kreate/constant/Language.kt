@@ -2,7 +2,7 @@ package app.kreate.constant
 
 import androidx.compose.runtime.Composable
 import me.knighthat.kreate.composeapp.generated.resources.Res
-import me.knighthat.kreate.composeapp.generated.resources.system
+import me.knighthat.kreate.composeapp.generated.resources.locale_system
 import org.jetbrains.compose.resources.stringResource
 import java.util.Locale
 import me.bush.translator.Language as TranslatorLanguage
@@ -122,7 +122,7 @@ enum class Language(
         @Composable
         get() {
             if( this === SYSTEM )
-                return stringResource( Res.string.system )
+                return stringResource( Res.string.locale_system )
 
             val locale = this.toLocale()
             return locale.getDisplayLanguage( locale )

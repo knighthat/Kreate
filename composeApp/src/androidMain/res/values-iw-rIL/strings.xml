@@ -171,7 +171,6 @@
     <string name="interface_in_use">ממשק בשימוש</string>
     <string name="user_interface">ממשק משתמש</string>
     <string name="ui_tab">מצב ממשק</string>
-    <string name="system_language">שפת מערכת</string>
     <string name="biggest">הכי גדול</string>
     <string name="set_custom_cache">הגדר מטמון מותאם אישית</string>
     <string name="enter_value_in_mb">הזן ערך ב MB</string>
