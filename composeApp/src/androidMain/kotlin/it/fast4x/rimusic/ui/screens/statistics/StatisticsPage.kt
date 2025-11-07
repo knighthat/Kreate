@@ -30,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -79,13 +78,15 @@ import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.forcePlayAtIndex
-import it.fast4x.rimusic.utils.formatAsTime
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalTextApi
@@ -150,7 +151,7 @@ fun StatisticsPage(
                 )
                 .distinctUntilChanged()
     }.collectAsState( emptyList(), Dispatchers.IO )
-    var totalPlayTimes by remember { mutableLongStateOf(0L) }
+    var totalDuration by remember { mutableStateOf(Duration.ZERO) }
     val songs by remember {
         Database.eventTable
                 .findSongsMostPlayedBetween(
@@ -159,7 +160,7 @@ fun StatisticsPage(
                 )
                 .distinctUntilChanged()
                 .onEach {
-                    totalPlayTimes = it.sumOf( Song::totalPlayTimeMs )
+                    totalDuration = it.sumOf( Song::totalPlayTimeMs ).toDuration( DurationUnit.MILLISECONDS )
                 }
                 .map { it.take( maxStatisticsItems.toInt() ) }
     }.collectAsState( emptyList(), Dispatchers.IO )
@@ -263,7 +264,7 @@ fun StatisticsPage(
                                 "${songs.size} ${context.getString( R.string.statistics_songs_heard )}"
                             }}
                             val subtitle by remember { derivedStateOf {
-                                "${formatAsTime(totalPlayTimes)} ${context.getString( R.string.statistics_of_time_taken )}"
+                                "$totalDuration ${context.getString( R.string.statistics_of_time_taken )}"
                             }}
 
                             Row(

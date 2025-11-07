@@ -56,6 +56,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -105,6 +106,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import androidx.compose.ui.util.fastFold
 import androidx.compose.ui.util.fastZip
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.zIndex
@@ -122,6 +124,7 @@ import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.drawable.AppIcon
 import app.kreate.android.screens.player.background.BlurredCover
 import app.kreate.android.themed.rimusic.screen.player.ActionBar
+import app.kreate.util.toDuration
 import coil3.request.allowHardware
 import com.mikepenz.hypnoticcanvas.shaderBackground
 import com.mikepenz.hypnoticcanvas.shaders.BlackCherryCosmos
@@ -173,9 +176,7 @@ import it.fast4x.rimusic.utils.SearchYoutubeEntity
 import it.fast4x.rimusic.utils.VerticalfadingEdge2
 import it.fast4x.rimusic.utils.currentWindow
 import it.fast4x.rimusic.utils.doubleShadowDrop
-import it.fast4x.rimusic.utils.durationTextToMillis
 import it.fast4x.rimusic.utils.formatAsDuration
-import it.fast4x.rimusic.utils.formatAsTime
 import it.fast4x.rimusic.utils.horizontalFadingEdge
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.mediaItems
@@ -196,6 +197,7 @@ import me.knighthat.utils.Toaster
 import kotlin.Float.Companion.POSITIVE_INFINITY
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
+import kotlin.time.Duration
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -668,14 +670,11 @@ fun Player(
 
     var sizeShader by remember { mutableStateOf(Size.Zero) }
 
-    var totalPlayTimes = 0L
-    mediaItems.forEach {
-        totalPlayTimes += it.mediaMetadata.extras?.getString("durationText")?.let { it1 ->
-            durationTextToMillis(it1)
-        }?.toLong() ?: 0
-    }
-
-
+    val totalDuration by remember {derivedStateOf {
+        mediaItems.fastFold( Duration.ZERO ) { acc, mediaItem ->
+            acc + mediaItem.mediaMetadata.extras?.getString("durationText").toDuration()
+        }
+    }}
     var isShowingStatsForNerds by rememberSaveable {
         mutableStateOf(false)
     }
@@ -2074,7 +2073,7 @@ fun Player(
 
                             Box {
                                 BasicText(
-                                    text = " ${formatAsTime(totalPlayTimes)}",
+                                    text = " $totalDuration",
                                     style = typography().xxs.semiBold.merge(
                                         TextStyle(
                                             textAlign = TextAlign.Center,
@@ -2085,7 +2084,7 @@ fun Player(
                                     overflow = TextOverflow.Ellipsis,
                                 )
                                 BasicText(
-                                    text = " ${formatAsTime(totalPlayTimes)}",
+                                    text = " $totalDuration",
                                     style = typography().xxs.semiBold.merge(
                                         TextStyle(
                                             textAlign = TextAlign.Center,

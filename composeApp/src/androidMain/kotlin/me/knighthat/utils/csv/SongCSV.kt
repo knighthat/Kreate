@@ -1,8 +1,8 @@
 package me.knighthat.utils.csv
 
 import app.kreate.database.models.Song
+import app.kreate.util.toDuration
 import com.github.doyaaaaaken.kotlincsv.client.ICsvFileWriter
-import it.fast4x.rimusic.utils.durationTextToMillis
 
 data class SongCSV(
     val songId: String,
@@ -23,7 +23,7 @@ data class SongCSV(
         songId = song.id,
         title = song.title,
         artists = song.artistsText ?: "",
-        duration = durationTextToMillis( song.durationText ?: "" ).div( 1000 ).toString(),
+        duration = song.durationText.toDuration().inWholeSeconds.toString(),
         thumbnailUrl = song.thumbnailUrl ?: ""
     )
 

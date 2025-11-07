@@ -11,10 +11,10 @@ import androidx.room.Update
 import androidx.room.Upsert
 import app.kreate.database.models.Song
 import app.kreate.util.MODIFIED_PREFIX
+import app.kreate.util.toDuration
 import it.fast4x.rimusic.enums.SongSortBy
 import it.fast4x.rimusic.enums.SortOrder
 import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
-import it.fast4x.rimusic.utils.durationToMillis
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
@@ -418,9 +418,7 @@ interface SongTable {
 
     fun sortAllByDuration( limit: Int = Int.MAX_VALUE, excludeHidden: Boolean = false ): Flow<List<Song>> =
         all( limit, excludeHidden ).map { list ->
-            list.sortedBy {
-                durationToMillis( it.durationText ?: "0:0" )
-            }
+            list.sortedBy { it.durationText.toDuration() }
         }
 
     @Query("""
@@ -520,9 +518,7 @@ interface SongTable {
 
     fun sortFavoritesByDuration( limit: Int = Int.MAX_VALUE ): Flow<List<Song>> =
         allFavorites( limit ).map { list ->
-            list.sortedBy {
-                durationToMillis( it.durationText ?: "0:0" )
-            }
+            list.sortedBy { it.durationText.toDuration() }
         }
 
     @Query("""

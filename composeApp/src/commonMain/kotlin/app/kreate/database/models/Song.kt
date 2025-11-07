@@ -4,9 +4,11 @@ import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import app.kreate.util.cleanPrefix
-import app.kreate.util.durationTextToMillis
+import app.kreate.util.toDuration
 import kotlinx.serialization.Serializable
 import org.jetbrains.annotations.Contract
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 
 @Serializable
@@ -49,7 +51,9 @@ data class Song(
     fun cleanArtistsText() = cleanPrefix( this.artistsText ?: "" )
 
     fun relativePlayTime(): Double {
-        val totalPlayTimeMs = durationTextToMillis( this.durationText ?: "" )
-        return if(totalPlayTimeMs > 0) this.totalPlayTimeMs.toDouble() / totalPlayTimeMs.toDouble() else 0.0
+        val duration = this.durationText.toDuration()
+        val totalPlayTime = this.totalPlayTimeMs.toDuration( DurationUnit.MILLISECONDS )
+
+        return totalPlayTime.div( duration )
     }
 }

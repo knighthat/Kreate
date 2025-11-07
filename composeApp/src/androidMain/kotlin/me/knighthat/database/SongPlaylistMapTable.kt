@@ -11,9 +11,9 @@ import app.kreate.database.models.Playlist
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongPlaylistMap
 import app.kreate.util.MODIFIED_PREFIX
+import app.kreate.util.toDuration
 import it.fast4x.rimusic.enums.PlaylistSongSortBy
 import it.fast4x.rimusic.enums.SortOrder
-import it.fast4x.rimusic.utils.durationTextToMillis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -358,7 +358,7 @@ interface SongPlaylistMapTable {
 
     fun sortSongsByDuration( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>> =
         allSongsOf( playlistId, limit ).map { list ->
-            list.sortedBy { durationTextToMillis( it.durationText ?: "0" ) }
+            list.sortedBy { it.durationText.toDuration() }
         }
 
     fun sortSongsByLikedAt( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>> =

@@ -71,6 +71,7 @@ import app.kreate.android.utils.scrollingText
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongArtistMap
+import app.kreate.util.toDuration
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
@@ -89,7 +90,6 @@ import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.durationToMillis
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.fadingEdge
 import it.fast4x.rimusic.utils.forcePlayAtIndex
@@ -466,9 +466,7 @@ fun YouTubeArtist(
                                              binder.player.addNext(
                                                  item = song,
                                                  toMediaItem = InnertubeSong::toMediaItem,
-                                                 getDuration = {
-                                                     durationToMillis( it.durationText.orEmpty() )
-                                                 }
+                                                 getDuration = { it.durationText.toDuration().inWholeMilliseconds }
                                              )
                                          }
                                      ) {
@@ -484,7 +482,7 @@ fun YouTubeArtist(
                                              onClick = {
                                                  binder.stopRadio()
                                                  binder.player.forcePlayAtIndex( songs, index, InnertubeSong::toMediaItem ) {
-                                                     durationToMillis( it.durationText.orEmpty() )
+                                                     it.durationText.toDuration().inWholeMilliseconds
                                                  }
                                              }
                                          )

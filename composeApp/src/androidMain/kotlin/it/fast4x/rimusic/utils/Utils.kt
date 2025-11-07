@@ -27,6 +27,7 @@ import app.kreate.database.models.Lyrics
 import app.kreate.database.models.Song
 import app.kreate.util.EXPLICIT_PREFIX
 import app.kreate.util.cleanPrefix
+import app.kreate.util.toDuration
 import com.zionhuang.innertube.pages.LibraryPage
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ClientRequestException
@@ -51,9 +52,6 @@ import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import me.knighthat.utils.Toaster
-import java.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.minutes
 
 const val EXPLICIT_BUNDLE_TAG = "is_explicit"
 
@@ -79,7 +77,7 @@ val Innertube.Podcast.EpisodeItem.asMediaItem: MediaItem
                 .setArtist(author.toString())
                 .setAlbumTitle(title)
                 .setArtworkUri(thumbnail.firstOrNull()?.url?.toUri())
-                .setDurationMs( durationToMillis(durationString.orEmpty()) )
+                .setDurationMs( durationString.toDuration().inWholeMilliseconds )
                 .setExtras(
                     bundleOf(
                         //"albumId" to album?.endpoint?.browseId,
@@ -105,7 +103,7 @@ val Innertube.SongItem.asMediaItem: MediaItem
                 .setArtist(authors?.filter {it.name?.matches(Regex("\\s*([,&])\\s*")) == false }?.joinToString(", ") { it.name ?: "" })
                 .setAlbumTitle(album?.name)
                 .setArtworkUri(thumbnail?.url?.toUri())
-                .setDurationMs( durationToMillis( durationText.orEmpty() ) )
+                .setDurationMs( durationText.toDuration().inWholeMilliseconds )
                 .setExtras(
                     bundleOf(
                         "albumId" to album?.endpoint?.browseId,
@@ -141,7 +139,7 @@ val Innertube.VideoItem.asMediaItem: MediaItem
                 .setTitle(info?.name)
                 .setArtist(authors?.joinToString(", ") { it.name ?: "" })
                 .setArtworkUri(thumbnail?.url?.toUri())
-                .setDurationMs( durationToMillis( durationText.orEmpty() ) )
+                .setDurationMs( durationText.toDuration().inWholeMilliseconds )
                 .setExtras(
                     bundleOf(
                         "durationText" to durationText,
@@ -168,7 +166,7 @@ val Song.asMediaItem: MediaItem
                 .setTitle(title)
                 .setArtist(artistsText)
                 .setArtworkUri(thumbnailUrl?.toUri())
-                .setDurationMs( durationToMillis( durationText.orEmpty() ) )
+                .setDurationMs( durationText.toDuration().inWholeMilliseconds )
                 .setExtras(
                     bundleOf(
                         "durationText" to durationText,
@@ -194,7 +192,7 @@ val Song.asCleanedMediaItem: MediaItem
                 .setTitle( cleanTitle() )
                 .setArtist( cleanArtistsText() )
                 .setArtworkUri( thumbnailUrl?.toUri() )
-                .setDurationMs( durationToMillis( durationText.orEmpty() ) )
+                .setDurationMs( durationText.toDuration().inWholeMilliseconds )
                 .setExtras(
                     bundleOf(
                         "durationText" to durationText,
@@ -297,39 +295,6 @@ fun Uri?.thumbnail(size: Int): Uri? {
 }
 
 fun formatAsDuration(millis: Long) = DateUtils.formatElapsedTime(millis / 1000).removePrefix("0")
-fun durationToMillis(duration: String): Long {
-    if( duration.isBlank() || !duration.contains( ":" ) )
-        return 0
-
-    val parts = duration.split(":")
-    if (parts.size == 3){
-        val hours = parts[0].toLong()
-        val minutes = parts[1].toLong()
-        val seconds = parts[2].toLong()
-        return hours * 3600000 + minutes * 60000 + seconds * 1000
-    } else {
-        val minutes = parts[0].toLong()
-        val seconds = parts[1].toLong()
-        return minutes * 60000 + seconds * 1000
-    }
-}
-
-fun durationTextToMillis(duration: String): Long {
-    return try {
-        durationToMillis(duration)
-    } catch (e: Exception) {
-        0L
-    }
-}
-
-
-fun formatAsTime(millis: Long): String {
-    //if (millis == 0L) return ""
-    val timePart1 = Duration.ofMillis(millis).toMinutes().minutes
-    val timePart2 = Duration.ofMillis(millis).seconds % 60
-
-    return "${timePart1} ${timePart2}s"
-}
 
 @JvmName("ResultInnertubeItemsPageCompleted")
 suspend fun Result<Innertube.ItemsPage<Innertube.SongItem>?>.completed(
@@ -560,7 +525,7 @@ suspend fun downloadSyncedLyrics( song: Song ) {
     LrcLib.lyrics(
         artist = song.cleanArtistsText(),
         title = song.cleanTitle(),
-        duration = durationTextToMillis( song.durationText.orEmpty() ).milliseconds
+        duration = song.durationText.toDuration()
     )?.onSuccess {
         fetchedLyrics = Lyrics(
             songId = song.id,
@@ -572,7 +537,7 @@ suspend fun downloadSyncedLyrics( song: Song ) {
         KuGou.lyrics(
             artist = song.cleanArtistsText(),
             title = song.cleanTitle(),
-            duration = durationTextToMillis( song.durationText.orEmpty() ) / 1000
+            duration = song.durationText.toDuration().inWholeSeconds
         )?.onSuccess {
             fetchedLyrics = Lyrics(
                 songId = song.id,
