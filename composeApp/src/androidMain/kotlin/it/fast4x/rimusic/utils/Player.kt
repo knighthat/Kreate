@@ -2,7 +2,6 @@ package it.fast4x.rimusic.utils
 
 
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.annotation.MainThread
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastDistinctBy
@@ -31,7 +30,6 @@ import kotlinx.coroutines.withContext
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Blocking
-import timber.log.Timber
 
 
 private fun Player.playWhenReady() {
@@ -446,59 +444,6 @@ fun Player.enqueue( songs: List<Song> ) {
     }
 }
 
-fun Player.findMediaItemIndexById(mediaId: String): Int {
-    for (i in currentMediaItemIndex until mediaItemCount) {
-        if (getMediaItemAt(i).mediaId == mediaId) {
-            return i
-        }
-    }
-    return -1
-}
-
-fun Player.excludeMediaItems(mediaItems: List<MediaItem>, context: Context): List<MediaItem> {
-    var filteredMediaItems = mediaItems
-    runCatching {
-        val excludeSongWithDurationLimit by Preferences.LIMIT_SONGS_WITH_DURATION
-
-        if (excludeSongWithDurationLimit != DurationInMinutes.Disabled) {
-            filteredMediaItems = mediaItems.filter {
-                it.mediaMetadata.extras?.getString("durationText")?.let { it1 ->
-                    durationTextToMillis(it1)
-                }!! < excludeSongWithDurationLimit.asMillis
-            }
-
-            val excludedSongs = mediaItems.size - filteredMediaItems.size
-            if (excludedSongs > 0)
-                Toaster.n( R.string.message_excluded_s_songs, arrayOf( excludedSongs ) )
-        }
-    }.onFailure {
-        Timber.e(it.message)
-    }
-
-    return filteredMediaItems
-}
-fun Player.excludeMediaItem(mediaItem: MediaItem): Boolean {
-    runCatching {
-        val excludeSongWithDurationLimit by Preferences.LIMIT_SONGS_WITH_DURATION
-        if (excludeSongWithDurationLimit != DurationInMinutes.Disabled) {
-            val excludedSong = mediaItem.mediaMetadata.extras?.getString("durationText")?.let { it1 ->
-                    durationTextToMillis(it1)
-                }!! <= excludeSongWithDurationLimit.asMillis
-
-            if (excludedSong)
-                Toaster.n( R.string.message_excluded_s_songs, arrayOf( 1 ) )
-
-            return excludedSong
-        }
-    }.onFailure {
-        //it.printStackTrace()
-        Timber.e(it.message)
-        return false
-    }
-
-    return false
-
-}
 
 val Player.mediaItems: List<MediaItem>
     get() = object : AbstractList<MediaItem>() {
