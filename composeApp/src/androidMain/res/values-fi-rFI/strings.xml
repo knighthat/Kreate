@@ -171,7 +171,6 @@
     <string name="interface_in_use">Käyttöliittymä käytössä</string>
     <string name="user_interface">Käyttöliittymä</string>
     <string name="ui_tab">Käyttöliittymä</string>
-    <string name="system_language">Järjestelmän kieli</string>
     <string name="biggest">Suurin</string>
     <string name="set_custom_cache">Aseta mukautettu välimuisti</string>
     <string name="enter_value_in_mb">Syötä arvo Mt:ssa</string>
