@@ -171,7 +171,6 @@
     <string name="interface_in_use">ഇന്റർഫേസ് ഉപയോഗത്തിലുണ്ട്</string>
     <string name="user_interface">ഉപയോക്തൃ ഇന്റർഫേസ്</string>
     <string name="ui_tab">യുഐ</string>
-    <string name="system_language">സിസ്റ്റം ഭാഷ</string>
     <string name="biggest">വലിയതായ</string>
     <string name="set_custom_cache">കസ്റ്റം കാഷ് സജ്ജമാക്കുക</string>
     <string name="enter_value_in_mb">മൂല്യം MBയിൽ ചേർക്കുക</string>
