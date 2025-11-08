@@ -171,7 +171,6 @@
     <string name="interface_in_use">使用中のインターフェース</string>
     <string name="user_interface">ユーザーインターフェイス</string>
     <string name="ui_tab">UI</string>
-    <string name="system_language">システムの言語</string>
     <string name="biggest">最大</string>
     <string name="set_custom_cache">カスタムキャッシュを設定</string>
     <string name="enter_value_in_mb">MB単位で値を入力</string>
