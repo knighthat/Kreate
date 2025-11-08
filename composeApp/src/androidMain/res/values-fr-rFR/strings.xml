@@ -171,7 +171,6 @@
     <string name="interface_in_use">Interface en cours d\'utilisation</string>
     <string name="user_interface">Interface Utilisateur</string>
     <string name="ui_tab">Interface Utilisateur</string>
-    <string name="system_language">Langue du système</string>
     <string name="biggest">Très gros</string>
     <string name="set_custom_cache">Définir un cache personnalisé</string>
     <string name="enter_value_in_mb">Entrez la valeur en Mo</string>
