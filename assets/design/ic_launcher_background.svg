@@ -1,38 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
-<svg width="108" height="108" viewBox="0 0 108 108" version="1.1" id="svg1" xmlns:xlink="http://www.w3.org/1999/xlink"
-        xmlns="http://www.w3.org/2000/svg">
-  <defs
-     id="defs1">
-    <linearGradient
-       id="linearGradient5">
-      <stop
-         style="stop-color:#f468b9;stop-opacity:1;"
+<svg width="108" height="108" viewBox="0 0 108 108" version="1.1" id="svg1" xml:space="preserve"
+        xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><defs
+     id="defs1"><linearGradient
+       id="linearGradient2"><stop
+         style="stop-color:#3159f7;stop-opacity:1;"
          offset="0"
-         id="stop5" />
-      <stop
-         style="stop-color:#2314c1;stop-opacity:1;"
+         id="stop2" /><stop
+         style="stop-color:#bb19ff;stop-opacity:1;"
          offset="1"
-         id="stop6" />
-    </linearGradient>
-    <linearGradient
-       xlink:href="#linearGradient5"
-       id="linearGradient6"
-       x1="-3.3406432"
-       y1="13.849649"
-       x2="111.34064"
-       y2="94.150352"
-       gradientUnits="userSpaceOnUse" />
-  </defs>
-  <g
-     id="layer1">
-    <rect
-       style="fill:url(#linearGradient6);fill-rule:evenodd;stroke:none;stroke-width:32;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-       id="rect1"
-       width="108"
-       height="108"
-       x="0"
-       y="0" />
-  </g>
-</svg>
+         id="stop3" /></linearGradient><linearGradient
+       xlink:href="#linearGradient2"
+       id="linearGradient3"
+       x1="26.176075"
+       y1="111.0953"
+       x2="103.96709"
+       y2="26.77873"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.99385142,0,0,0.99520182,0.36392154,0.18120474)" /></defs><g
+     id="layer1"
+     style="display:inline"
+     transform="matrix(0.79701342,0,0,0.79701342,0.00147038,0.00153561)"><rect
+       style="fill:url(#linearGradient3);stroke-width:0.263133"
+       id="rect2"
+       width="135.50587"
+       height="135.50583"
+       x="-0.0018448641"
+       y="-0.0019266997"
+       ry="0" /></g></svg>
