@@ -146,7 +146,8 @@ enum class Language(
                 builder.setScript( "Cyrl" )
             else if( this === SERBIAN_LATIN )
                 builder.setScript( "Latn" )
-            else
+
+            if( this !== SERBIAN_CYRILLIC )
                 builder.setRegion( this.region )
 
             builder.build()

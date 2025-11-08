@@ -12,7 +12,7 @@ files:
     languages_mapping:
       android_code:
         ia: ia
-        sr: b+sr+Cyrl
+        sr: sr
         sr-CS: b+sr+Latn
   # Plurals
   - source: /composeApp/src/androidMain/res/values/plurals.xml
@@ -20,7 +20,7 @@ files:
     languages_mapping:
       android_code:
         ia: ia
-        sr: b+sr+Cyrl
+        sr: sr
         sr-CS: b+sr+Latn
   # FDroid fastlane - Full description
   - source: /fastlane/metadata/android/en-US/full_description.txt
