@@ -237,7 +237,7 @@
     <string name="default_page">Página por defecto</string>
     <string name="keep_screen_on">Mantener pantalla encendida</string>
     <string name="prevents_screen_timeout">Evitar pantalla de tiempo de espera</string>
-    <string name="action_bar_show_sleep_timer_button">Mostrar botón del temporizador de apagado</string>
+    <string name="action_bar_show_sleep_timer_button">Botón del temporizador de sueño</string>
     <string name="sort_album_year">Año del álbum</string>
     <string name="sort_position">Posición</string>
     <string name="sort_title">Título</string>
@@ -477,7 +477,7 @@
     <string name="showtwosongs">Número de canciones en la mini cola (1 al 9)</string>
     <string name="showalbumcover">Mostrar portada del álbum</string>
     <string name="do_not_translate">No traducir</string>
-    <string name="info_sleep_timer_delayed_at_end_of_song">Temporizador de apagado retrasado al finalizar la canción</string>
+    <string name="info_sleep_timer_delayed_at_end_of_song">Temporizador de sueño retrasado al finalizar la canción</string>
     <string name="lyricsbackground">Fondo de la letra</string>
     <string name="info_debug_mode_enabled">Modo depuración habilitado</string>
     <string name="info_debug_mode_is_enabled">El modo depuración está habilitado, recuerda deshabilitarlo en los ajustes</string>
