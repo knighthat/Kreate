@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">Sistem dili</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">Albom</string>
+    <string name="sort_album_year">Albom İli</string>
+    <string name="sort_date_added">Əlavə Olunma Tarixi</string>
+    <string name="sort_artist">Sənətkar</string>
+    <string name="sort_songs_count">Mahnı Nömrəsi</string>
+    <string name="sort_total_duration">Müddət</string>
+    <string name="sort_listening_time">Dinlənmə Müddəti</string>
+    <string name="sort_title">Başlıq</string>
+    <string name="sort_date_played">Dinlənmə Tarixi</string>
+    <string name="sort_date_liked">Bəyənmə Tarixi</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">Mövqe</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>

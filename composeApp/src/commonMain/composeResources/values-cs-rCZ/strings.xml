@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">Systémový jazyk</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">Album</string>
+    <string name="sort_album_year">Rok vydání alba</string>
+    <string name="sort_date_added">Datum přidání</string>
+    <string name="sort_artist">Interpret</string>
+    <string name="sort_songs_count">Číslo skladby</string>
+    <string name="sort_total_duration">Trvání</string>
+    <string name="sort_listening_time">Doba poslechu</string>
+    <string name="sort_title">Název</string>
+    <string name="sort_date_played">Datum přehrání</string>
+    <string name="sort_date_liked">Datum oblíbení</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">Pozice</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>

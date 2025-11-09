@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">ତନ୍ତ୍ର ଭାଷା</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">Album</string>
+    <string name="sort_album_year">ଆଲବମ ବର୍ଷ</string>
+    <string name="sort_date_added">ତାରିଖ ଯୋଗ କରାଯାଇଛି</string>
+    <string name="sort_artist">କଳାକାର</string>
+    <string name="sort_songs_count">ଗୀତ ସଂଖ୍ୟା</string>
+    <string name="sort_total_duration">Duration</string>
+    <string name="sort_listening_time">ଶୁଣିବା ସମୟ</string>
+    <string name="sort_title">ଶୀର୍ଷକ</string>
+    <string name="sort_date_played">ଖେଳାଯାଇଥିବା ତାରିଖ</string>
+    <string name="sort_date_liked">Date Liked</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">ଅବସ୍ଥାନ</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>

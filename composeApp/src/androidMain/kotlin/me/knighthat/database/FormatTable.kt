@@ -3,13 +3,13 @@ package me.knighthat.database
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import app.kreate.constant.SongSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.database.models.Format
 import app.kreate.database.models.Song
 import app.kreate.database.table.DatabaseTable
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.toDuration
-import it.fast4x.rimusic.enums.SongSortBy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.database.ext.FormatWithSong
@@ -182,16 +182,16 @@ interface FormatTable: DatabaseTable<Format> {
         limit: Int = Int.MAX_VALUE,
         excludeHidden: Boolean = false
     ): Flow<List<FormatWithSong>> = when( sortBy ){
-        SongSortBy.PlayTime         -> sortAllWithSongsByPlayTime( limit, excludeHidden )
-        SongSortBy.RelativePlayTime -> sortAllWithSongsByRelativePlayTime( limit, excludeHidden )
-        SongSortBy.Title            -> sortAllWithSongsByTitle( limit, excludeHidden )
-        SongSortBy.DateAdded        -> allWithSongs( limit, excludeHidden )      // Already sorted by ROWID
-        SongSortBy.DatePlayed       -> sortAllWithSongsByDatePlayed( limit, excludeHidden )
-        SongSortBy.DateLiked        -> sortAllWithSongsByLikedAt( limit, excludeHidden )
-        SongSortBy.Artist           -> sortAllWithSongsByArtist( limit, excludeHidden )
-        SongSortBy.Duration         -> sortAllWithSongsByDuration( limit, excludeHidden )
-        SongSortBy.AlbumName        -> sortAllWithSongsByAlbumName( limit, excludeHidden )
-        SongSortBy.RANDOM           -> allWithSongsRandomized()
+        SongSortBy.TOTAL_PLAY_TIME      -> sortAllWithSongsByPlayTime( limit, excludeHidden )
+        SongSortBy.RELATIVE_PLAY_TIME   -> sortAllWithSongsByRelativePlayTime( limit, excludeHidden )
+        SongSortBy.TITLE                -> sortAllWithSongsByTitle( limit, excludeHidden )
+        SongSortBy.DATE_ADDED           -> allWithSongs( limit, excludeHidden )      // Already sorted by ROWID
+        SongSortBy.DATE_PLAYED          -> sortAllWithSongsByDatePlayed( limit, excludeHidden )
+        SongSortBy.DATE_LIKED           -> sortAllWithSongsByLikedAt( limit, excludeHidden )
+        SongSortBy.ARTIST               -> sortAllWithSongsByArtist( limit, excludeHidden )
+        SongSortBy.DURATION             -> sortAllWithSongsByDuration( limit, excludeHidden )
+        SongSortBy.ALBUM                -> sortAllWithSongsByAlbumName( limit, excludeHidden )
+        SongSortBy.RANDOM               -> allWithSongsRandomized()
     }.map( sortOrder::applyTo )
     //</editor-fold>
 }

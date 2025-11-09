@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import app.kreate.constant.PlaylistSongSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.Song
@@ -12,7 +13,6 @@ import app.kreate.database.models.SongPlaylistMap
 import app.kreate.database.table.DatabaseTable
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.toDuration
-import it.fast4x.rimusic.enums.PlaylistSongSortBy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -390,19 +390,19 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
         sortOrder: SortOrder,
         limit: Int = Int.MAX_VALUE
     ): Flow<List<Song>> = when( sortBy ) {
-        PlaylistSongSortBy.Album            -> sortSongsByAlbum( playlistId )
-        PlaylistSongSortBy.AlbumYear        -> sortSongsByAlbumYear( playlistId )
-        PlaylistSongSortBy.Artist           -> sortSongsByArtist( playlistId )
-        PlaylistSongSortBy.ArtistAndAlbum   -> sortSongsByAlbumAndArtist( playlistId )
-        PlaylistSongSortBy.DatePlayed       -> sortSongsByDatePlayed( playlistId )
-        PlaylistSongSortBy.PlayTime         -> sortSongsByPlayTime( playlistId )
-        PlaylistSongSortBy.RelativePlayTime -> sortSongsByRelativePlayTime( playlistId )
-        PlaylistSongSortBy.Position         -> sortSongsByPosition( playlistId )
-        PlaylistSongSortBy.Title            -> sortSongsByTitle( playlistId )
-        PlaylistSongSortBy.Duration         -> sortSongsByDuration( playlistId )
-        PlaylistSongSortBy.DateLiked        -> sortSongsByLikedAt( playlistId )
-        PlaylistSongSortBy.DateAdded        -> allSongsOf( playlistId )     // Already sorted by ROWID
-        PlaylistSongSortBy.RANDOM           -> allSongsOfRandomized( playlistId )
+        PlaylistSongSortBy.ALBUM                -> sortSongsByAlbum( playlistId )
+        PlaylistSongSortBy.ALBUM_YEAR           -> sortSongsByAlbumYear( playlistId )
+        PlaylistSongSortBy.ARTIST               -> sortSongsByArtist( playlistId )
+        PlaylistSongSortBy.ARTIST_AND_ALBUM     -> sortSongsByAlbumAndArtist( playlistId )
+        PlaylistSongSortBy.DATE_PLAYED          -> sortSongsByDatePlayed( playlistId )
+        PlaylistSongSortBy.TOTAL_PLAY_TIME      -> sortSongsByPlayTime( playlistId )
+        PlaylistSongSortBy.RELATIVE_PLAY_TIME   -> sortSongsByRelativePlayTime( playlistId )
+        PlaylistSongSortBy.POSITION             -> sortSongsByPosition( playlistId )
+        PlaylistSongSortBy.TITLE                -> sortSongsByTitle( playlistId )
+        PlaylistSongSortBy.DURATION             -> sortSongsByDuration( playlistId )
+        PlaylistSongSortBy.DATE_LIKED           -> sortSongsByLikedAt( playlistId )
+        PlaylistSongSortBy.DATE_ADDED           -> allSongsOf( playlistId )     // Already sorted by ROWID
+        PlaylistSongSortBy.RANDOM               -> allSongsOfRandomized( playlistId )
     }.map( sortOrder::applyTo ).take( limit )
     //</editor-fold>
 }

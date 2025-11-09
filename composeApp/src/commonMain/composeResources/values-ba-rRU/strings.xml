@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">Системаның теле</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">Album</string>
+    <string name="sort_album_year">Альбом йылы</string>
+    <string name="sort_date_added">Ҡушыу датаһы</string>
+    <string name="sort_artist">Артист</string>
+    <string name="sort_songs_count">Йырҙар һаны</string>
+    <string name="sort_total_duration">Duration</string>
+    <string name="sort_listening_time">Тыңлау Ваҡыты</string>
+    <string name="sort_title">Атама</string>
+    <string name="sort_date_played">Уйнатыу датаһы</string>
+    <string name="sort_date_liked">Date Liked</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">Позиция</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>

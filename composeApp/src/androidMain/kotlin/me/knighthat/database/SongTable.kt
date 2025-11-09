@@ -4,12 +4,12 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.RoomRawQuery
+import app.kreate.constant.SongSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.database.models.Song
 import app.kreate.database.table.DatabaseTable
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.toDuration
-import it.fast4x.rimusic.enums.SongSortBy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
@@ -413,16 +413,16 @@ interface SongTable: DatabaseTable<Song> {
         limit: Int = Int.MAX_VALUE,
         excludeHidden: Boolean = false
     ): Flow<List<Song>> = when( sortBy ){
-        SongSortBy.PlayTime         -> sortAllByPlayTime( limit, excludeHidden )
-        SongSortBy.RelativePlayTime -> sortAllByRelativePlayTime( limit, excludeHidden )
-        SongSortBy.Title            -> sortAllByTitle( limit, excludeHidden )
-        SongSortBy.DateAdded        -> all( limit, excludeHidden )      // Already sorted by ROWID
-        SongSortBy.DatePlayed       -> sortAllByDatePlayed( limit, excludeHidden )
-        SongSortBy.DateLiked        -> sortAllByLikedAt( limit, excludeHidden )
-        SongSortBy.Artist           -> sortAllByArtist( limit, excludeHidden )
-        SongSortBy.Duration         -> sortAllByDuration( limit, excludeHidden )
-        SongSortBy.AlbumName        -> sortAllByAlbumName( limit, excludeHidden )
-        SongSortBy.RANDOM           -> allRandomized( limit, excludeHidden )
+        SongSortBy.TOTAL_PLAY_TIME      -> sortAllByPlayTime( limit, excludeHidden )
+        SongSortBy.RELATIVE_PLAY_TIME   -> sortAllByRelativePlayTime( limit, excludeHidden )
+        SongSortBy.TITLE                -> sortAllByTitle( limit, excludeHidden )
+        SongSortBy.DATE_ADDED           -> all( limit, excludeHidden )      // Already sorted by ROWID
+        SongSortBy.DATE_PLAYED          -> sortAllByDatePlayed( limit, excludeHidden )
+        SongSortBy.DATE_LIKED           -> sortAllByLikedAt( limit, excludeHidden )
+        SongSortBy.ARTIST               -> sortAllByArtist( limit, excludeHidden )
+        SongSortBy.DURATION             -> sortAllByDuration( limit, excludeHidden )
+        SongSortBy.ALBUM                -> sortAllByAlbumName( limit, excludeHidden )
+        SongSortBy.RANDOM               -> allRandomized( limit, excludeHidden )
     }.map( sortOrder::applyTo )
     //</editor-fold>
 
@@ -505,16 +505,16 @@ interface SongTable: DatabaseTable<Song> {
         sortOrder: SortOrder,
         limit: Int = Int.MAX_VALUE
     ): Flow<List<Song>> = when( sortBy ) {
-        SongSortBy.PlayTime         -> sortFavoritesByPlayTime()
-        SongSortBy.RelativePlayTime -> sortFavoritesByRelativePlayTime()
-        SongSortBy.Title            -> sortFavoritesByTitle()
-        SongSortBy.DateAdded        -> allFavorites()      // Already sorted by ROWID
-        SongSortBy.DatePlayed       -> sortFavoritesByDatePlayed()
-        SongSortBy.DateLiked        -> sortFavoritesByLikedAt()
-        SongSortBy.Artist           -> sortFavoritesByArtist()
-        SongSortBy.Duration         -> sortFavoritesByDuration()
-        SongSortBy.AlbumName        -> sortFavoritesByAlbumName()
-        SongSortBy.RANDOM           -> allFavoritesRandomized()
+        SongSortBy.TOTAL_PLAY_TIME      -> sortFavoritesByPlayTime()
+        SongSortBy.RELATIVE_PLAY_TIME   -> sortFavoritesByRelativePlayTime()
+        SongSortBy.TITLE                -> sortFavoritesByTitle()
+        SongSortBy.DATE_ADDED           -> allFavorites()      // Already sorted by ROWID
+        SongSortBy.DATE_PLAYED          -> sortFavoritesByDatePlayed()
+        SongSortBy.DATE_LIKED           -> sortFavoritesByLikedAt()
+        SongSortBy.ARTIST               -> sortFavoritesByArtist()
+        SongSortBy.DURATION             -> sortFavoritesByDuration()
+        SongSortBy.ALBUM                -> sortFavoritesByAlbumName()
+        SongSortBy.RANDOM               -> allFavoritesRandomized()
     }.map( sortOrder::applyTo ).take( limit )
     //</editor-fold>
 }

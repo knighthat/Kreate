@@ -1,2 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<resources />
+<resources>
+    <string name="sort_random">Random</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
+</resources>

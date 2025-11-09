@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">시스템 언어</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">앨범</string>
+    <string name="sort_album_year">앨범 연도</string>
+    <string name="sort_date_added">추가된 날짜</string>
+    <string name="sort_artist">아티스트</string>
+    <string name="sort_songs_count">노래 순서</string>
+    <string name="sort_total_duration">기간</string>
+    <string name="sort_listening_time">재생 시간</string>
+    <string name="sort_title">제목</string>
+    <string name="sort_date_played">재생 일자</string>
+    <string name="sort_date_liked">좋아요 표시한 날짜</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">위치</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>

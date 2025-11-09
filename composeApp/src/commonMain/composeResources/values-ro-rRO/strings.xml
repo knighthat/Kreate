@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">Limba sistemului</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">Album</string>
+    <string name="sort_album_year">Anul albumului</string>
+    <string name="sort_date_added">Data adăugării</string>
+    <string name="sort_artist">Artist</string>
+    <string name="sort_songs_count">Număr de melodii</string>
+    <string name="sort_total_duration">Durată</string>
+    <string name="sort_listening_time">Durata redării</string>
+    <string name="sort_title">Titlu</string>
+    <string name="sort_date_played">Data redării</string>
+    <string name="sort_date_liked">Data aprecierii</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">Poziție</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>

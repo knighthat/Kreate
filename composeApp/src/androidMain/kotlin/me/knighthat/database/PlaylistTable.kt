@@ -5,13 +5,13 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import app.kreate.constant.PlaylistSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
 import app.kreate.database.table.DatabaseTable
-import it.fast4x.rimusic.enums.PlaylistSortBy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
@@ -230,11 +230,11 @@ interface PlaylistTable: DatabaseTable<Playlist> {
         sortOrder: SortOrder,
         limit: Int = Int.MAX_VALUE
     ): Flow<List<PlaylistPreview>> = when( sortBy ) {
-        PlaylistSortBy.MostPlayed   -> sortPreviewsByMostPlayed()
-        PlaylistSortBy.Name         -> sortPreviewsByName()
-        PlaylistSortBy.DateAdded    -> allAsPreview()       // Already sorted by ROWID
-        PlaylistSortBy.SongCount    -> sortPreviewsBySongCount()
-        PlaylistSortBy.RANDOM       -> allAsPreviewRandomized()
+        PlaylistSortBy.TOTAL_PLAY_TIME  -> sortPreviewsByMostPlayed()
+        PlaylistSortBy.TITLE            -> sortPreviewsByName()
+        PlaylistSortBy.DATE_ADDED       -> allAsPreview()       // Already sorted by ROWID
+        PlaylistSortBy.SONG_COUNT       -> sortPreviewsBySongCount()
+        PlaylistSortBy.RANDOM           -> allAsPreviewRandomized()
     }.map( sortOrder::applyTo ).take( limit )
     //</editor-fold>
 }

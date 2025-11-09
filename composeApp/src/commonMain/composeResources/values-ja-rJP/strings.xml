@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">システムの言語</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">アルバム</string>
+    <string name="sort_album_year">アルバムの年</string>
+    <string name="sort_date_added">追加日</string>
+    <string name="sort_artist">アーティスト</string>
+    <string name="sort_songs_count">曲番号</string>
+    <string name="sort_total_duration">長さ</string>
+    <string name="sort_listening_time">視聴時間</string>
+    <string name="sort_title">題名</string>
+    <string name="sort_date_played">再生した日付</string>
+    <string name="sort_date_liked">いいねした日付</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">順番</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>

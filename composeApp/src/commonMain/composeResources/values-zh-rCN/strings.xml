@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">系统语言</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">专辑</string>
+    <string name="sort_album_year">专辑年份</string>
+    <string name="sort_date_added">加入日期</string>
+    <string name="sort_artist">艺术家</string>
+    <string name="sort_songs_count">歌曲编号</string>
+    <string name="sort_total_duration">持续时间</string>
+    <string name="sort_listening_time">收听时间</string>
+    <string name="sort_title">标题</string>
+    <string name="sort_date_played">播放时间</string>
+    <string name="sort_date_liked">点赞日期</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">位置</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>

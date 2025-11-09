@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">সিস্টেমের ভাষা</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">এলবাম</string>
+    <string name="sort_album_year">এলবামের বছর</string>
+    <string name="sort_date_added">এড করার তারিখে</string>
+    <string name="sort_artist">শিল্পী</string>
+    <string name="sort_songs_count">গানের ক্রম</string>
+    <string name="sort_total_duration">সময়কাল</string>
+    <string name="sort_listening_time">শোনার সময়ে</string>
+    <string name="sort_title">টাইটেল</string>
+    <string name="sort_date_played">যখন বাজানো হয়েছে</string>
+    <string name="sort_date_liked">লাইক করার ডেট</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">অবস্থান</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>

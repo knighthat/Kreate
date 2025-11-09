@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">Systemspråk</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">Album</string>
+    <string name="sort_album_year">Album År</string>
+    <string name="sort_date_added">Dato lagt til</string>
+    <string name="sort_artist">Artist</string>
+    <string name="sort_songs_count">Antall sanger</string>
+    <string name="sort_total_duration">Varighet</string>
+    <string name="sort_listening_time">Lyttetid</string>
+    <string name="sort_title">Tittel</string>
+    <string name="sort_date_played">Dato avspilt</string>
+    <string name="sort_date_liked">Dato likt</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">Posisjon</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>

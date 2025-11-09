@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">Rendszernyelv</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">Album</string>
+    <string name="sort_album_year">Album kiadási éve</string>
+    <string name="sort_date_added">Hozzáadás dátuma</string>
+    <string name="sort_artist">Előadó</string>
+    <string name="sort_songs_count">Dalok száma</string>
+    <string name="sort_total_duration">Időtartam</string>
+    <string name="sort_listening_time">Hallgatási idő</string>
+    <string name="sort_title">Cím</string>
+    <string name="sort_date_played">Lejátszási dátum</string>
+    <string name="sort_date_liked">Hozzáadás dátuma</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">Pozíció</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>

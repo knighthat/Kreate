@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">Langue du système</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">Album</string>
+    <string name="sort_album_year">Année de l\'album</string>
+    <string name="sort_date_added">Date d’ajout</string>
+    <string name="sort_artist">Artiste</string>
+    <string name="sort_songs_count">Numéro du titre</string>
+    <string name="sort_total_duration">Durée</string>
+    <string name="sort_listening_time">Durée d’écoute</string>
+    <string name="sort_title">Titre</string>
+    <string name="sort_date_played">Date de lecture</string>
+    <string name="sort_date_liked">Date de mise en favoris</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">Position</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>

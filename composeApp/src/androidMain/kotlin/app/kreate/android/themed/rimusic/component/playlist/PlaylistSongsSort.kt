@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import app.kreate.android.Preferences
 import app.kreate.android.themed.rimusic.component.tab.Sort
-import it.fast4x.rimusic.enums.PlaylistSongSortBy
+import app.kreate.constant.PlaylistSongSortBy
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.MenuState
 import it.fast4x.rimusic.utils.semiBold

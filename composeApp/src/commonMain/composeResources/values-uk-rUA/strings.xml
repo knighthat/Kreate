@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">Системна мова</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">Альбом</string>
+    <string name="sort_album_year">Рік альбому</string>
+    <string name="sort_date_added">Дата додавання</string>
+    <string name="sort_artist">Виконавець</string>
+    <string name="sort_songs_count">Номер пісні</string>
+    <string name="sort_total_duration">Тривалість</string>
+    <string name="sort_listening_time">Час прослуховування</string>
+    <string name="sort_title">Назва</string>
+    <string name="sort_date_played">Дата програвання</string>
+    <string name="sort_date_liked">Дата вподобання</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">Позиція</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>

@@ -14,14 +14,17 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import app.kreate.android.enums.PlatformIndicatorType
 import app.kreate.android.utils.innertube.getSystemCountryCode
+import app.kreate.constant.AlbumSortBy
+import app.kreate.constant.ArtistSortBy
 import app.kreate.constant.Language
+import app.kreate.constant.PlaylistSongSortBy
+import app.kreate.constant.PlaylistSortBy
+import app.kreate.constant.SongSortBy
 import app.kreate.constant.SortOrder
 import it.fast4x.rimusic.appContext
-import it.fast4x.rimusic.enums.AlbumSortBy
 import it.fast4x.rimusic.enums.AlbumSwipeAction
 import it.fast4x.rimusic.enums.AlbumsType
 import it.fast4x.rimusic.enums.AnimatedGradient
-import it.fast4x.rimusic.enums.ArtistSortBy
 import it.fast4x.rimusic.enums.ArtistsType
 import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.enums.BackgroundProgress
@@ -68,8 +71,6 @@ import it.fast4x.rimusic.enums.PlayerThumbnailSize
 import it.fast4x.rimusic.enums.PlayerTimelineSize
 import it.fast4x.rimusic.enums.PlayerTimelineType
 import it.fast4x.rimusic.enums.PlayerType
-import it.fast4x.rimusic.enums.PlaylistSongSortBy
-import it.fast4x.rimusic.enums.PlaylistSortBy
 import it.fast4x.rimusic.enums.PlaylistSwipeAction
 import it.fast4x.rimusic.enums.PlaylistsType
 import it.fast4x.rimusic.enums.PresetsReverb
@@ -78,7 +79,6 @@ import it.fast4x.rimusic.enums.QueueSwipeAction
 import it.fast4x.rimusic.enums.QueueType
 import it.fast4x.rimusic.enums.RecommendationsNumber
 import it.fast4x.rimusic.enums.Romanization
-import it.fast4x.rimusic.enums.SongSortBy
 import it.fast4x.rimusic.enums.SongsNumber
 import it.fast4x.rimusic.enums.StatisticsCategory
 import it.fast4x.rimusic.enums.StatisticsType
@@ -148,22 +148,22 @@ sealed class Preferences<T>(
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Sort by">
         val HOME_SONGS_SORT_BY by lazy {
-            Enum( preferences, "HomeSongsSortBy", "", SongSortBy.Title )
+            Enum( preferences, "HomeSongsSortBy", "", SongSortBy.TITLE )
         }
         val HOME_ON_DEVICE_SONGS_SORT_BY by lazy {
             Enum( preferences, "HomeOnDeviceSongsSortBy", "", OnDeviceSongSortBy.Title )
         }
         val HOME_ARTISTS_SORT_BY by lazy {
-            Enum( preferences, "HomeArtistsSortBy", "", ArtistSortBy.Name )
+            Enum( preferences, "HomeArtistsSortBy", "", ArtistSortBy.TITLE )
         }
         val HOME_ALBUMS_SORT_BY by lazy {
-            Enum( preferences, "HomeAlbumsSortBy", "", AlbumSortBy.Title )
+            Enum( preferences, "HomeAlbumsSortBy", "", AlbumSortBy.TITLE )
         }
         val HOME_LIBRARY_SORT_BY by lazy {
-            Enum( preferences, "HomeLibrarySortBy", "", PlaylistSortBy.SongCount )
+            Enum( preferences, "HomeLibrarySortBy", "", PlaylistSortBy.SONG_COUNT )
         }
         val PLAYLIST_SONGS_SORT_BY by lazy {
-            Enum( preferences, "PlaylistSongsSortBy", "", PlaylistSongSortBy.Title )
+            Enum( preferences, "PlaylistSongsSortBy", "", PlaylistSongSortBy.TITLE )
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Sort order">

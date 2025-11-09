@@ -62,6 +62,7 @@ import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistSongsSort
 import app.kreate.android.themed.rimusic.component.playlist.PositionLock
 import app.kreate.android.themed.rimusic.component.song.SongItem
+import app.kreate.constant.PlaylistSongSortBy
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongPlaylistMap
 import app.kreate.util.cleanPrefix
@@ -78,7 +79,6 @@ import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
-import it.fast4x.rimusic.enums.PlaylistSongSortBy
 import it.fast4x.rimusic.enums.UiType
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.thumbnailShape
@@ -590,7 +590,7 @@ fun LocalPlaylistSongs(
                     mutableListOf<Button>().apply {
                         if (playlistNotMonthlyType)
                             this.add( pin )
-                        if ( sort.sortBy == PlaylistSongSortBy.Position )
+                        if ( sort.sortBy == PlaylistSongSortBy.POSITION )
                             this.add( positionLock )
 
                         this.add( downloadAllDialog )
@@ -730,7 +730,7 @@ fun LocalPlaylistSongs(
                                     Box( Modifier.width( 24.dp ) )
                             },
                             thumbnailOverlay = {
-                                if (sort.sortBy == PlaylistSongSortBy.PlayTime) {
+                                if ( sort.sortBy == PlaylistSongSortBy.TOTAL_PLAY_TIME ) {
                                     BasicText(
                                         text = song.formattedTotalPlayTime,
                                         style = typography().xxs.semiBold.center.color(

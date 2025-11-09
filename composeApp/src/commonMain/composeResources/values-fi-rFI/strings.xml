@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">Järjestelmän kieli</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">Albumi</string>
+    <string name="sort_album_year">Albumin julkaisuvuosi</string>
+    <string name="sort_date_added">Lisäyspäivämäärä</string>
+    <string name="sort_artist">Artisti</string>
+    <string name="sort_songs_count">Kappaleiden määrä</string>
+    <string name="sort_total_duration">Kesto</string>
+    <string name="sort_listening_time">Kuunteluaika</string>
+    <string name="sort_title">Nimi</string>
+    <string name="sort_date_played">Viimeksi soitettu</string>
+    <string name="sort_date_liked">Tykkäyspäivämäärä</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">Paikka</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>

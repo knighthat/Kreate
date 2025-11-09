@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">സിസ്റ്റം ഭാഷ</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">ആൽബം</string>
+    <string name="sort_album_year">ആൽബം വർഷം</string>
+    <string name="sort_date_added">ചേർത്ത തീയതി</string>
+    <string name="sort_artist">ആർട്ടിസ്റ്റുകൾ</string>
+    <string name="sort_songs_count">ഗീതങ്ങളുടെ എണ്ണം</string>
+    <string name="sort_total_duration">Duration</string>
+    <string name="sort_listening_time">കാതൊടുക്കൽ സമയം</string>
+    <string name="sort_title">ശീർഷകം</string>
+    <string name="sort_date_played">പ്ലേ ചെയ്ത തീയതി</string>
+    <string name="sort_date_liked">Date Liked</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">സ്ഥാനമേഖല</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>
