@@ -44,7 +44,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.ColorPickerDialog
 import app.kreate.android.utils.scrollingText
-import app.kreate.constant.TextView
+import app.kreate.component.TextView
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.Switch

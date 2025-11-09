@@ -1,5 +1,7 @@
 package app.kreate.constant
 
+import app.kreate.component.Drawable
+import app.kreate.component.TextView
 import me.knighthat.kreate.composeapp.generated.resources.Res
 import me.knighthat.kreate.composeapp.generated.resources.calendar
 import me.knighthat.kreate.composeapp.generated.resources.cross_shuffle
