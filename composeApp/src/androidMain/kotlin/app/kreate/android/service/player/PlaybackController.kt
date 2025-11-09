@@ -89,7 +89,7 @@ object PlaybackController {
         builder: CommandButton.Builder.() -> Unit = {}
     ): CommandButton =
         CommandButton.Builder( CommandButton.ICON_UNDEFINED )
-                     .setDisplayName( context.resources.getString( button.textId ) )
+                     .setDisplayName( context.resources.getString( button.androidTextId ) )
                      .setSessionCommand( button.sessionCommand )
                      .apply {
                          getIconId( player, button ).also( ::setCustomIconResId )

@@ -7,7 +7,7 @@ import me.knighthat.enums.TextView
 
 enum class AlbumSwipeAction(
     @field:DrawableRes override val androidIconId: Int,
-    @field:StringRes override val textId: Int,
+    @field:StringRes override val androidTextId: Int,
 ): Drawable, TextView {
 
     NoAction( R.drawable.close, R.string.none ),

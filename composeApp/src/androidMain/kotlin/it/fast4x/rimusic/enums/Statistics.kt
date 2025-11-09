@@ -10,7 +10,7 @@ import kotlin.time.Duration.Companion.days
 enum class StatisticsType(
     val duration: Duration,
     @field:DrawableRes override val androidIconId: Int,
-    @field:StringRes override val textId: Int
+    @field:StringRes override val androidTextId: Int
 ): Drawable, TextView {
 
     Today( 1.days, R.drawable.stat_today, R.string.today ),
@@ -39,7 +39,7 @@ enum class StatisticsType(
 }
 
 enum class StatisticsCategory(
-    @field:StringRes override val textId: Int
+    @field:StringRes override val androidTextId: Int
 ): TextView {
 
     Songs( R.string.songs ),

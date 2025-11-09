@@ -7,7 +7,7 @@ import app.kreate.constant.SortCategory
 import me.knighthat.enums.TextView
 
 enum class SongSortBy(
-    @field:StringRes override val textId: Int,
+    @field:StringRes override val androidTextId: Int,
     @field:DrawableRes override val androidIconId: Int,
     override val isRandom: Boolean = false
 ): TextView, Drawable, SortCategory {
