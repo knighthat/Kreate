@@ -3,11 +3,11 @@ package me.knighthat.database
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import app.kreate.constant.ArtistSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Song
 import app.kreate.database.table.DatabaseTable
-import it.fast4x.rimusic.enums.ArtistSortBy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
@@ -170,8 +170,8 @@ interface ArtistTable: DatabaseTable<Artist> {
         sortOrder: SortOrder,
         limit: Int = Int.MAX_VALUE
     ): Flow<List<Artist>> = when( sortBy ) {
-        ArtistSortBy.Name       -> sortFollowingByName()
-        ArtistSortBy.DateAdded  -> allFollowing()
+        ArtistSortBy.TITLE      -> sortFollowingByName()
+        ArtistSortBy.DATE_ADDED -> allFollowing()
         ArtistSortBy.RANDOM     -> allFollowingRandomized()
     }.map( sortOrder::applyTo ).take( limit )
     //</editor-fold>
@@ -207,8 +207,8 @@ interface ArtistTable: DatabaseTable<Artist> {
         sortOrder: SortOrder,
         limit: Int = Int.MAX_VALUE
     ): Flow<List<Artist>> = when( sortBy ) {
-        ArtistSortBy.Name       -> sortInLibraryByName()
-        ArtistSortBy.DateAdded  -> allInLibrary()     // Already sorted by ROWID
+        ArtistSortBy.TITLE      -> sortInLibraryByName()
+        ArtistSortBy.DATE_ADDED -> allInLibrary()     // Already sorted by ROWID
         ArtistSortBy.RANDOM     -> allInLibraryRandomized()
     }.map( sortOrder::applyTo ).take( limit )
     //</editor-fold>

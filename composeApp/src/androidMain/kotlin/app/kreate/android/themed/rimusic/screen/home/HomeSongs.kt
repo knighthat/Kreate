@@ -40,6 +40,7 @@ import app.kreate.android.themed.rimusic.component.song.PeriodSelector
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.utils.shallowCompare
+import app.kreate.constant.SongSortBy
 import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.Song
 import app.kreate.util.toDuration
@@ -49,7 +50,6 @@ import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BuiltInPlaylist
 import it.fast4x.rimusic.enums.DurationInMinutes
-import it.fast4x.rimusic.enums.SongSortBy
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.thumbnailShape
@@ -287,7 +287,7 @@ fun HomeSongs(
                     navController = navController,
                     modifier = Modifier.animateItem(),
                     thumbnailOverlay = {
-                        if ( songSort.sortBy == SongSortBy.PlayTime || builtInPlaylist == BuiltInPlaylist.Top ) {
+                        if ( songSort.sortBy == SongSortBy.TOTAL_PLAY_TIME || builtInPlaylist == BuiltInPlaylist.Top ) {
                             var text = song.formattedTotalPlayTime
                             var typography = typography().xxs
                             var alignment = Alignment.BottomCenter

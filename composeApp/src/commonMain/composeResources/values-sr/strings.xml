@@ -1,4 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="locale_system">Системски језик</string>
+    <string name="sort_random">Random</string>
+    <string name="sort_album_title">Албум</string>
+    <string name="sort_album_year">Година Албума</string>
+    <string name="sort_date_added">Датум додавања</string>
+    <string name="sort_artist">Извођач</string>
+    <string name="sort_songs_count">Број Песама</string>
+    <string name="sort_total_duration">Трајање</string>
+    <string name="sort_listening_time">Време слушања</string>
+    <string name="sort_title">Наслов</string>
+    <string name="sort_date_played">Датум Пуштања</string>
+    <string name="sort_date_liked">Датум свиђања</string>
+    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_position">Позиција</string>
+    <string name="sort_song_duration">Duration</string>
+    <string name="sort_album_and_artist">Album title and artist name</string>
 </resources>

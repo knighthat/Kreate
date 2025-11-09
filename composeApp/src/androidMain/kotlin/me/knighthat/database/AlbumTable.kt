@@ -3,11 +3,11 @@ package me.knighthat.database
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
+import app.kreate.constant.AlbumSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.database.models.Album
 import app.kreate.database.models.Song
 import app.kreate.database.table.DatabaseTable
-import it.fast4x.rimusic.enums.AlbumSortBy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
@@ -246,13 +246,13 @@ interface AlbumTable: DatabaseTable<Album> {
         sortOrder: SortOrder,
         limit: Int = Int.MAX_VALUE
     ): Flow<List<Album>> = when( sortBy ) {
-        AlbumSortBy.Title       -> sortBookmarkedByTitle()
-        AlbumSortBy.Year        -> sortBookmarkedByYear()
-        AlbumSortBy.DateAdded   -> allBookmarked()       // Already sorted by ROWID
-        AlbumSortBy.Artist      -> sortBookmarkedByArtist()
-        AlbumSortBy.Songs       -> sortBookmarkedBySongsCount()
-        AlbumSortBy.Duration    -> sortBookmarkedByDuration()
-        AlbumSortBy.RANDOM      -> allBookmarkedRandomized()
+        AlbumSortBy.TITLE           -> sortBookmarkedByTitle()
+        AlbumSortBy.YEAR            -> sortBookmarkedByYear()
+        AlbumSortBy.DATE_ADDED      -> allBookmarked()       // Already sorted by ROWID
+        AlbumSortBy.ARTIST          -> sortBookmarkedByArtist()
+        AlbumSortBy.SONGS_COUNT     -> sortBookmarkedBySongsCount()
+        AlbumSortBy.TOTAL_DURATION  -> sortBookmarkedByDuration()
+        AlbumSortBy.RANDOM          -> allBookmarkedRandomized()
     }.map( sortOrder::applyTo ).take( limit )
     //</editor-fold>
 
@@ -332,13 +332,13 @@ interface AlbumTable: DatabaseTable<Album> {
         sortOrder: SortOrder,
         limit: Int = Int.MAX_VALUE
     ): Flow<List<Album>> = when( sortBy ) {
-        AlbumSortBy.Title       -> sortInLibraryByTitle()
-        AlbumSortBy.Year        -> sortInLibraryByYear()
-        AlbumSortBy.DateAdded   -> allInLibrary()        // Already sorted by ROWID
-        AlbumSortBy.Artist      -> sortInLibraryByArtist()
-        AlbumSortBy.Songs       -> sortInLibraryBySongsCount()
-        AlbumSortBy.Duration    -> sortInLibraryByDuration()
-        AlbumSortBy.RANDOM      -> allInLibraryRandomized()
+        AlbumSortBy.TITLE           -> sortInLibraryByTitle()
+        AlbumSortBy.YEAR            -> sortInLibraryByYear()
+        AlbumSortBy.DATE_ADDED      -> allInLibrary()        // Already sorted by ROWID
+        AlbumSortBy.ARTIST          -> sortInLibraryByArtist()
+        AlbumSortBy.SONGS_COUNT     -> sortInLibraryBySongsCount()
+        AlbumSortBy.TOTAL_DURATION  -> sortInLibraryByDuration()
+        AlbumSortBy.RANDOM          -> allInLibraryRandomized()
     }.map( sortOrder::applyTo ).take( 4 )
     //</editor-fold>
 }
