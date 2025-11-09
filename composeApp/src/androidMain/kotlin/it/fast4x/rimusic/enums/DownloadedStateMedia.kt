@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import app.kreate.android.R
 
 enum class DownloadedStateMedia(
-    @field:DrawableRes override val iconId: Int
+    @field:DrawableRes override val androidIconId: Int
 ): Drawable {
 
     CACHED( R.drawable.download ),

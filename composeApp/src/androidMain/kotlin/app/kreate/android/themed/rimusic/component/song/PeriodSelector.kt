@@ -30,7 +30,7 @@ class PeriodSelector(override val menuState: MenuState): MenuIcon, Descriptive, 
     var period: StatisticsType by Preferences.HOME_SONGS_TOP_PLAYLIST_PERIOD
 
     override val iconId: Int
-        get() = period.iconId
+        get() = period.androidIconId
     override val messageId: Int = R.string.statistics
     override val menuIconTitle: String
         @Composable
@@ -75,7 +75,7 @@ class PeriodSelector(override val menuState: MenuState): MenuIcon, Descriptive, 
 
             StatisticsType.entries.forEach {
                 MenuEntry(
-                    icon = it.iconId,
+                    icon = it.androidIconId,
                     text = it.text,
                     onClick = {
                         onDismiss( it )

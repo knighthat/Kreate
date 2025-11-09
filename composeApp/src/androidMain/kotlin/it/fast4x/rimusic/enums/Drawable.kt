@@ -8,7 +8,7 @@ import androidx.compose.ui.res.painterResource
 interface Drawable {
 
     @get:DrawableRes
-    val iconId: Int
+    val androidIconId: Int
         get() = throw NotImplementedError("""
             This setting uses [${this::class.simpleName}#icon] directly 
             or its [${this::class.simpleName}#iconId] hasn't initialized!
@@ -16,5 +16,5 @@ interface Drawable {
 
     val icon: Painter
         @Composable
-        get() = painterResource( this.iconId )
+        get() = painterResource( this.androidIconId )
 }

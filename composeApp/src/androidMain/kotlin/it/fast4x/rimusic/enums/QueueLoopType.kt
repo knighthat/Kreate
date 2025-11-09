@@ -7,7 +7,7 @@ import org.intellij.lang.annotations.MagicConstant
 
 enum class QueueLoopType(
     @field:MagicConstant(valuesFromClass = Player::class) val type: Int,
-    @field:DrawableRes override val iconId: Int
+    @field:DrawableRes override val androidIconId: Int
 ): Drawable {
 
     Default( Player.REPEAT_MODE_OFF, R.drawable.repeat ),

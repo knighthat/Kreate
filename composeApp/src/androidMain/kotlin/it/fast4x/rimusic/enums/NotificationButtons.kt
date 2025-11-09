@@ -18,7 +18,7 @@ import me.knighthat.enums.TextView
 
 enum class NotificationButtons(
     @field:StringRes override val textId: Int,
-    @field:DrawableRes override val iconId: Int
+    @field:DrawableRes override val androidIconId: Int
 ): TextView, Drawable {
 
     Download( R.string.download, R.drawable.download ),

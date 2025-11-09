@@ -9,7 +9,7 @@ import kotlin.time.Duration.Companion.days
 
 enum class StatisticsType(
     val duration: Duration,
-    @field:DrawableRes override val iconId: Int,
+    @field:DrawableRes override val androidIconId: Int,
     @field:StringRes override val textId: Int
 ): Drawable, TextView {
 
