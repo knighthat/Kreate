@@ -1,4 +1,4 @@
-package app.kreate.constant
+package app.kreate.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
@@ -13,7 +13,6 @@ interface Drawable {
                 This setting uses [${this::class.simpleName}#text] directly 
                 or its [${this::class.simpleName}#textId] hasn't initialized!
         """.trimIndent())
-
 
     val icon: Painter
         @Composable

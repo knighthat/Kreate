@@ -3,7 +3,7 @@ package me.knighthat.enums
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import app.kreate.constant.TextView
+import app.kreate.component.TextView
 
 interface TextView: TextView {
 

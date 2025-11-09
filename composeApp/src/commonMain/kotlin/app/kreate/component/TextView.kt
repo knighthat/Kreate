@@ -1,4 +1,4 @@
-package app.kreate.constant
+package app.kreate.component
 
 import androidx.compose.runtime.Composable
 import org.jetbrains.compose.resources.StringResource
