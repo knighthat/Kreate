@@ -7,7 +7,7 @@ import me.knighthat.enums.TextView
 enum class PlayerPlayButtonType(
     val height: Int,
     val width: Int,
-    @field:StringRes override val textId: Int
+    @field:StringRes override val androidTextId: Int
 ): TextView {
 
     Disabled( 60, 60, R.string.vt_disabled ),

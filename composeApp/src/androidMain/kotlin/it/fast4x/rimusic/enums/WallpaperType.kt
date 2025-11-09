@@ -7,7 +7,7 @@ import app.kreate.android.R
 import me.knighthat.enums.TextView
 
 enum class WallpaperType(
-    @param:StringRes override val textId: Int
+    @param:StringRes override val androidTextId: Int
 ): TextView {
     DISABLED( R.string.vt_disabled ),
     HOME( R.string.home ),
@@ -16,5 +16,5 @@ enum class WallpaperType(
 
     override val text: String
         @Composable
-        get() = stringResource( this.textId )
+        get() = stringResource( this.androidTextId )
 }

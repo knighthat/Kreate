@@ -6,7 +6,7 @@ import me.knighthat.enums.TextView
 
 enum class PlayerThumbnailSize(
     val size: Int,
-    @field:StringRes override val textId: Int
+    @field:StringRes override val androidTextId: Int
 ): TextView {
 
     Small( 90, R.string.small ),

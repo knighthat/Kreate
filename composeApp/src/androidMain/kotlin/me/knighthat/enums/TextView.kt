@@ -7,7 +7,7 @@ import androidx.compose.ui.res.stringResource
 interface TextView {
 
     @get:StringRes
-    val textId: Int
+    val androidTextId: Int
         get() = throw NotImplementedError("""
                 This setting uses [${this::class.simpleName}#text] directly 
                 or its [${this::class.simpleName}#textId] hasn't initialized!
@@ -15,5 +15,5 @@ interface TextView {
 
     val text: String
         @Composable
-        get() = stringResource( this.textId )
+        get() = stringResource( this.androidTextId )
 }

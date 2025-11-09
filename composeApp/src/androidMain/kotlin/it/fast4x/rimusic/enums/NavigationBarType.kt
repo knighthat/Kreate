@@ -8,7 +8,7 @@ import me.knighthat.enums.TextView
 
 
 enum class NavigationBarType(
-    @field:StringRes override val textId: Int
+    @field:StringRes override val androidTextId: Int
 ): TextView {
 
     IconAndText( R.string.icon_and_text ),

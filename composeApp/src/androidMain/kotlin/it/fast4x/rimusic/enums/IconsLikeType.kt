@@ -11,7 +11,7 @@ import me.knighthat.enums.TextView
 enum class IconLikeType(
     @field:DrawableRes val likedIconId: Int,
     @field:DrawableRes val neutralIconId: Int,
-    @field:StringRes override val textId: Int,
+    @field:StringRes override val androidTextId: Int,
 ): TextView, Drawable {
 
     Apple( R.drawable.heart_apple, R.drawable.heart_apple_outline, R.string.icon_like_apple ),

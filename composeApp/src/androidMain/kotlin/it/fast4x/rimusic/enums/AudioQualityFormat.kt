@@ -5,7 +5,7 @@ import app.kreate.android.R
 import me.knighthat.enums.TextView
 
 enum class AudioQualityFormat(
-    @field:StringRes override val textId: Int
+    @field:StringRes override val androidTextId: Int
 ): TextView {
 
     Auto( R.string.audio_quality_automatic ),

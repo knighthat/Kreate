@@ -6,7 +6,7 @@ import me.knighthat.enums.TextView
 
 enum class HomeScreenTabs(
     val index: Int,
-    @field:StringRes override val textId: Int
+    @field:StringRes override val androidTextId: Int
 ): TextView {
 
     Default( 0, R.string._default ),

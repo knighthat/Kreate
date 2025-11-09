@@ -5,7 +5,7 @@ import app.kreate.android.R
 import me.knighthat.enums.TextView
 
 enum class AnimatedGradient(
-    @field:StringRes override val textId: Int
+    @field:StringRes override val androidTextId: Int
 ): TextView {
 
     FluidThemeColorGradient( R.string.bg_colors_fluid_gradient_background_from_theme ),

@@ -181,7 +181,7 @@ fun UiSettings( paddingValues: PaddingValues ) {
                     if( Preferences.MAIN_THEME.value == UiType.ViMusic )
                         R.string.setting_description_only_available_in_theme
                     else
-                        Preferences.NAVIGATION_BAR_POSITION.value.textId
+                        Preferences.NAVIGATION_BAR_POSITION.value.androidTextId
                 }}
 
                 SettingComponents.EnumEntry(

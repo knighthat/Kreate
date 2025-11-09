@@ -17,7 +17,7 @@ import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import me.knighthat.enums.TextView
 
 enum class NotificationButtons(
-    @field:StringRes override val textId: Int,
+    @field:StringRes override val androidTextId: Int,
     @field:DrawableRes override val androidIconId: Int
 ): TextView, Drawable {
 

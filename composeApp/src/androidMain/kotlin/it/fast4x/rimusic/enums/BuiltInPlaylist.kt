@@ -7,7 +7,7 @@ import me.knighthat.enums.TextView
 
 enum class BuiltInPlaylist(
     @field:DrawableRes override val androidIconId: Int,
-    @field:StringRes override val textId: Int
+    @field:StringRes override val androidTextId: Int
 ): Drawable, TextView {
 
     All( R.drawable.musical_notes, R.string.songs ),
