@@ -22,10 +22,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.constant.Drawable
 import app.kreate.constant.SortCategory
 import app.kreate.constant.SortOrder
+import app.kreate.constant.TextView
 import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.enums.Drawable
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.MenuState
@@ -35,7 +36,6 @@ import it.fast4x.rimusic.ui.components.tab.toolbar.DualIcon
 import it.fast4x.rimusic.ui.components.tab.toolbar.Menu
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import it.fast4x.rimusic.utils.semiBold
-import me.knighthat.enums.TextView
 
 open class Sort<T>(
     override val menuState: MenuState,
@@ -83,7 +83,7 @@ open class Sort<T>(
                 icon = {
                     Icon(
                         painter =
-                            if( it is Drawable )
+                            if( it is Drawable)
                                 it.icon
                             else
                                 painterResource( R.drawable.close ),

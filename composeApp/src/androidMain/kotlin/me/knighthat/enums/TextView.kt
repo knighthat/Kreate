@@ -3,8 +3,9 @@ package me.knighthat.enums
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import app.kreate.constant.TextView
 
-interface TextView {
+interface TextView: TextView {
 
     @get:StringRes
     val androidTextId: Int
@@ -13,7 +14,7 @@ interface TextView {
                 or its [${this::class.simpleName}#textId] hasn't initialized!
         """.trimIndent())
 
-    val text: String
+    override val text: String
         @Composable
         get() = stringResource( this.androidTextId )
 }
