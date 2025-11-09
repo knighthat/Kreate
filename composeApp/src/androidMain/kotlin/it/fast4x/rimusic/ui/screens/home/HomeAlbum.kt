@@ -56,6 +56,7 @@ import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.InnertubeUtils
 import app.kreate.database.models.Album
 import app.kreate.database.models.Song
+import app.kreate.database.table.AlbumTable
 import app.kreate.util.MODIFIED_PREFIX
 import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
@@ -96,7 +97,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.knighthat.component.tab.SongShuffler
-import me.knighthat.database.AlbumTable
 import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubeAlbum
 import me.knighthat.utils.Toaster

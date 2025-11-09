@@ -1,4 +1,4 @@
-package me.knighthat.database
+package app.kreate.database.table
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -7,7 +7,6 @@ import androidx.room.RoomRawQuery
 import app.kreate.constant.SongSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.database.models.Song
-import app.kreate.database.table.DatabaseTable
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.toDuration
 import kotlinx.coroutines.flow.Flow

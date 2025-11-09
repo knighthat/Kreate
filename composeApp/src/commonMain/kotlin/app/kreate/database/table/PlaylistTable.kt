@@ -1,6 +1,5 @@
-package me.knighthat.database
+package app.kreate.database.table
 
-import android.database.SQLException
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -11,7 +10,6 @@ import app.kreate.database.models.Artist
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
-import app.kreate.database.table.DatabaseTable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
@@ -149,23 +147,19 @@ interface PlaylistTable: DatabaseTable<Playlist> {
      *
      * ### Standalone use
      *
-     * When error occurs and [SQLException] is thrown,
-     * the process is cancel and passes exception to caller.
+     * When error occurs, the process is cancel and passes exception to caller.
      *
      * ### Transaction use
      *
-     * When error occurs and [SQLException] is thrown,
-     * **the entire transaction rolls back** and passes exception to caller.
+     * When error occurs, the entire transaction rolls back** and passes exception to caller.
      *
      * > Note: Use this if inserting record is crucial for
      * > the transaction to continue.
      *
      * @param playlist intended to insert in to database
      * @return ROWID of this new record, throws exception when fail
-     * @throws SQLException when there's a conflict
      */
     @Insert
-    @Throws(SQLException::class)
     fun insert( playlist: Playlist ): Long
 
     /**

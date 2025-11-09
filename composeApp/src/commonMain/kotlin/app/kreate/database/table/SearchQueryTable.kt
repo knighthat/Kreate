@@ -1,10 +1,9 @@
-package me.knighthat.database
+package app.kreate.database.table
 
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import app.kreate.database.models.SearchQuery
-import app.kreate.database.table.DatabaseTable
 import kotlinx.coroutines.flow.Flow
 
 @Dao

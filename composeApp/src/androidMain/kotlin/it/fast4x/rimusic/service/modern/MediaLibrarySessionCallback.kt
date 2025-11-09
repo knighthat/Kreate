@@ -22,6 +22,7 @@ import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.database.extension.FormatWithSong
 import app.kreate.database.models.Song
 import app.kreate.util.cleanPrefix
 import com.google.common.collect.ImmutableList
@@ -51,7 +52,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
-import me.knighthat.database.ext.FormatWithSong
 
 @UnstableApi
 class MediaLibrarySessionCallback(

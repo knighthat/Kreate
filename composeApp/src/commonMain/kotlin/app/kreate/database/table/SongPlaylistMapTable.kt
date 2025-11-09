@@ -1,7 +1,5 @@
-package me.knighthat.database
+package app.kreate.database.table
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
@@ -10,7 +8,6 @@ import app.kreate.constant.SortOrder
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongPlaylistMap
-import app.kreate.database.table.DatabaseTable
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.toDuration
 import kotlinx.coroutines.Dispatchers
@@ -146,7 +143,6 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
      *
      * @return number of rows affected by this operation
      */
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Query("""
         UPDATE SongPlaylistMap 
         SET position = shuffled.new_position
@@ -169,7 +165,6 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
      *
      * @return number of rows affected by this operation
      */
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Query("""
         UPDATE SongPlaylistMap
         SET position = updated.new_position

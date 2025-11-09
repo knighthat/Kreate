@@ -1,4 +1,4 @@
-package me.knighthat.database.ext
+package app.kreate.database.extension
 
 import androidx.room.Embedded
 import androidx.room.Relation

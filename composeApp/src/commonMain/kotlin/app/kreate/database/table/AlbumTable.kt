@@ -1,4 +1,4 @@
-package me.knighthat.database
+package app.kreate.database.table
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -7,7 +7,6 @@ import app.kreate.constant.AlbumSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.database.models.Album
 import app.kreate.database.models.Song
-import app.kreate.database.table.DatabaseTable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take

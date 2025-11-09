@@ -1,17 +1,16 @@
-package me.knighthat.database
+package app.kreate.database.table
 
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
+import app.kreate.database.extension.EventWithSong
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Event
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
-import app.kreate.database.table.DatabaseTable
 import kotlinx.coroutines.flow.Flow
-import me.knighthat.database.ext.EventWithSong
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
