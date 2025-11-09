@@ -19,7 +19,7 @@ enum class HomeItemSize (
     BIG( R.string.big, 162 );
 
     @field:DrawableRes
-    override val iconId = R.drawable.arrow_forward
+    override val androidIconId = R.drawable.arrow_forward
 
     val dp: Dp = this.size.dp
     val px: Int

@@ -79,7 +79,7 @@ object PlaybackController {
             }
 
             NotificationButtons.Search,
-            NotificationButtons.Radio -> button.iconId
+            NotificationButtons.Radio -> button.androidIconId
         }
 
     suspend fun makeButton(

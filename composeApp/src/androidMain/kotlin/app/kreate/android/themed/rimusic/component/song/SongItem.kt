@@ -58,7 +58,6 @@ import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.DownloadedStateMedia
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
-import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.ui.components.MusicAnimation
 import it.fast4x.rimusic.ui.styling.Appearance
@@ -190,7 +189,7 @@ object SongItem: Visual() {
         val iconId = when( downloadState ) {
             Download.STATE_DOWNLOADING  -> R.drawable.download_progress
             Download.STATE_REMOVING     -> R.drawable.download
-            else                        -> cacheState.iconId
+            else                        -> cacheState.androidIconId
         }
         val color = when( cacheState ) {
             DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED   -> values.uncachedColor

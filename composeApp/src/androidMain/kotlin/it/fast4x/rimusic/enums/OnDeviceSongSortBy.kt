@@ -12,7 +12,7 @@ enum class OnDeviceSongSortBy(
     @field:MagicConstant(valuesFromClass = MediaStore.Audio.Media::class)
     val value: String,
     @field:StringRes override val textId: Int,
-    @field:DrawableRes override val iconId: Int,
+    @field:DrawableRes override val androidIconId: Int,
     override val isRandom: Boolean = false
 ): TextView, Drawable, SortCategory {
 

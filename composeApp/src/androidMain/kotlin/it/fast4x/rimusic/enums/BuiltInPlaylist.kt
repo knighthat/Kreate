@@ -6,7 +6,7 @@ import app.kreate.android.R
 import me.knighthat.enums.TextView
 
 enum class BuiltInPlaylist(
-    @field:DrawableRes override val iconId: Int,
+    @field:DrawableRes override val androidIconId: Int,
     @field:StringRes override val textId: Int
 ): Drawable, TextView {
 

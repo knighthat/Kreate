@@ -541,7 +541,7 @@ fun BoxScope.ActionBar(
                     val effectRotationEnabled by Preferences.ROTATION_EFFECT
 
                     IconButton(
-                        icon = queueLoopType.iconId,
+                        icon = queueLoopType.androidIconId,
                         color = colorPalette().accent,
                         onClick = {
                             queueLoopType = queueLoopType.next()
