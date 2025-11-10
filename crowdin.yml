@@ -30,6 +30,12 @@ files:
   # FDroid fastlane - Full description
   - source: /fastlane/metadata/android/en-US/full_description.txt
     translation: /fastlane/metadata/android/%locale%/full_description.txt
+    languages_mapping:
+      locale:
+        ia: ia
   # FDroid fastlane - Short description
   - source: /fastlane/metadata/android/en-US/short_description.txt
     translation: /fastlane/metadata/android/%locale%/short_description.txt
+    languages_mapping:
+      locale:
+        ia: ia
