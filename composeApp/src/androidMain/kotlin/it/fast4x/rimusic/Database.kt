@@ -15,6 +15,7 @@ import app.kreate.database.models.Artist
 import app.kreate.database.models.Event
 import app.kreate.database.models.Format
 import app.kreate.database.models.Lyrics
+import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.SearchQuery
 import app.kreate.database.models.Song
@@ -26,21 +27,21 @@ import app.kreate.database.table.ArtistTable
 import app.kreate.database.table.EventTable
 import app.kreate.database.table.FormatTable
 import app.kreate.database.table.LyricsTable
+import app.kreate.database.table.PersistentQueueTable
 import app.kreate.database.table.PlaylistTable
 import app.kreate.database.table.SearchQueryTable
 import app.kreate.database.table.SongAlbumMapTable
 import app.kreate.database.table.SongArtistMapTable
 import app.kreate.database.table.SongPlaylistMapTable
 import app.kreate.database.table.SongTable
+import app.kreate.database.view.QueueView
 import it.fast4x.rimusic.Database.asyncQuery
 import it.fast4x.rimusic.Database.asyncTransaction
 import it.fast4x.rimusic.Database.insertIgnore
-import it.fast4x.rimusic.models.QueuedMediaItem
 import it.fast4x.rimusic.models.SortedSongPlaylistMap
 import it.fast4x.rimusic.utils.asSong
 import kotlinx.coroutines.flow.first
 import me.knighthat.database.Converters
-import me.knighthat.database.QueuedMediaItemTable
 import me.knighthat.database.migration.From10To11Migration
 import me.knighthat.database.migration.From11To12Migration
 import me.knighthat.database.migration.From14To15Migration
@@ -53,6 +54,7 @@ import me.knighthat.database.migration.From25To26Migration
 import me.knighthat.database.migration.From26To27Migration
 import me.knighthat.database.migration.From27To28Migration
 import me.knighthat.database.migration.From28to29
+import me.knighthat.database.migration.From29To30
 import me.knighthat.database.migration.From3To4Migration
 import me.knighthat.database.migration.From7To8Migration
 import me.knighthat.database.migration.From8To9Migration
@@ -79,8 +81,6 @@ object Database {
         get() = _internal.lyricsTable
     val playlistTable: PlaylistTable
         get() = _internal.playlistTable
-    val queueTable: QueuedMediaItemTable
-        get() = _internal.queueTable
     val searchTable: SearchQueryTable
         get() = _internal.searchQueryTable
     val songAlbumMapTable: SongAlbumMapTable
@@ -89,6 +89,8 @@ object Database {
         get() = _internal.songArtistMapTable
     val songPlaylistMapTable: SongPlaylistMapTable
         get() = _internal.songPlaylistMapTable
+    val persistentQueueTable: PersistentQueueTable
+        get() = _internal.persistentQueueTable
 
     //**********************************************
 
@@ -351,15 +353,16 @@ object Database {
         Album::class,
         SongAlbumMap::class,
         SearchQuery::class,
-        QueuedMediaItem::class,
+        PersistentQueue::class,
         Format::class,
         Event::class,
         Lyrics::class,
     ],
     views = [
-        SortedSongPlaylistMap::class
+        SortedSongPlaylistMap::class,
+        QueueView::class
     ],
-    version = 29,
+    version = 30,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -390,12 +393,12 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
     abstract val formatTable: FormatTable
     abstract val lyricsTable: LyricsTable
     abstract val playlistTable: PlaylistTable
-    abstract val queueTable: QueuedMediaItemTable
     abstract val searchQueryTable: SearchQueryTable
     abstract val songAlbumMapTable: SongAlbumMapTable
     abstract val songArtistMapTable: SongArtistMapTable
     abstract val songPlaylistMapTable: SongPlaylistMapTable
     abstract val songTable: SongTable
+    abstract val persistentQueueTable: PersistentQueueTable
 
     companion object {
         val Instance: DatabaseInitializer by lazy {
@@ -414,7 +417,8 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
                     From25To26Migration(),
                     From26To27Migration(),
                     From27To28Migration(),
-                    From28to29()
+                    From28to29(),
+                    From29To30()
                 )
                 .build()
         }

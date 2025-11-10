@@ -8,6 +8,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.OptIn
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
+import androidx.compose.ui.util.fastMapIndexed
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -41,6 +42,7 @@ import it.fast4x.rimusic.service.modern.MediaSessionConstants.ID_DOWNLOADED
 import it.fast4x.rimusic.service.modern.MediaSessionConstants.ID_FAVORITES
 import it.fast4x.rimusic.service.modern.MediaSessionConstants.ID_ONDEVICE
 import it.fast4x.rimusic.service.modern.MediaSessionConstants.ID_TOP
+import it.fast4x.rimusic.utils.asCleanedMediaItem
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
 import kotlinx.coroutines.CoroutineScope
@@ -481,18 +483,21 @@ class MediaLibrarySessionCallback(
             return Futures.immediateFuture(defaultResult)
 
         scope.future {
-            val startIndex: Int
-            val startPositionMs: Long
+            var startIndex = 0
+            var startPositionMs = 0L
             val mediaItems: List<MediaItem>
 
-            database.queueTable.blockingAll().run {
-                indexOfFirst { it.position != null }.coerceAtLeast( 0 )
-                                                    .let {
-                                                        startIndex = it
-                                                        startPositionMs = it.toLong()
-                                                    }
-                mediaItems = map { it.mediaItem.asSong.toMediaItem( true ) }
-            }
+            database.persistentQueueTable
+                    .blockingGetAllAsSongInQueue()
+                    .fastMapIndexed { index, (song, position) ->
+                        if( position != null ) {
+                            startIndex = index
+                            startPositionMs = position
+                        }
+
+                        song.asCleanedMediaItem
+                    }
+                    .also { mediaItems = it }
 
             val resumptionPlaylist = MediaSession.MediaItemsWithStartPosition(
                 mediaItems,

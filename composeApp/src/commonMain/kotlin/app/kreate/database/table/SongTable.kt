@@ -129,6 +129,14 @@ interface SongTable: DatabaseTable<Song> {
     fun findById( songId: String ): Flow<Song?>
 
     /**
+     * @param ids list of [Song.id] t ofind
+     *
+     * @return [Song]s that have [Song.id] in [ids]
+     */
+    @Query("SELECT DISTINCT * FROM Song WHERE id IN (:ids)")
+    fun findByIds( ids: List<String> ): Flow<List<Song>>
+
+    /**
      * [searchTerm] appears in [Song.title] or [Song.artistsText].
      * Additionally, it's **case-insensitive**
      *

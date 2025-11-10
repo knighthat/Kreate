@@ -29,8 +29,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
+import androidx.compose.ui.util.fastMapIndexed
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.media3.common.AuxEffectInfo
 import androidx.media3.common.C
 import androidx.media3.common.ForwardingPlayer
@@ -80,6 +82,7 @@ import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.utils.CoilBitmapLoader
 import it.fast4x.rimusic.utils.LOCAL_BUNDLE_TAG
 import it.fast4x.rimusic.utils.TimerJob
+import it.fast4x.rimusic.utils.asCleanedMediaItem
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.broadCastPendingIntent
 import it.fast4x.rimusic.utils.collect
@@ -112,7 +115,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import me.knighthat.impl.DownloadHelperImpl
@@ -737,29 +739,34 @@ class PlayerServiceModern:
     private fun maybeRestorePlayerQueue() {
         if ( !Preferences.ENABLE_PERSISTENT_QUEUE.value ) return
 
-        Database.asyncQuery {
-            val queuedSong = queueTable.blockingAll()
-            if (queuedSong.isEmpty()) return@asyncQuery
+        CoroutineScope(Dispatchers.Default).launch {
+            var startIndex = 0
+            var startPositionMs = C.TIME_UNSET
+            val mediaItems: List<MediaItem>
 
-            val index = queuedSong.indexOfFirst { it.position != null }.coerceAtLeast(0)
+            withContext( Dispatchers.IO ) {
+                Database.persistentQueueTable.blockingGetAllAsSongInQueue()
+            }.fastMapIndexed { index, (song, position) ->
+                if( position != null ) {
+                    startIndex = index
+                    startPositionMs = position
+                }
 
-            runBlocking(Dispatchers.Main) {
-                player.setMediaItems(
-                    queuedSong.map { mediaItem ->
-                        mediaItem.mediaItem.buildUpon()
-                            .setUri(mediaItem.mediaItem.mediaId)
-                            .setCustomCacheKey(mediaItem.mediaItem.mediaId)
-                            .build().apply {
-                                mediaMetadata.extras?.putBoolean("isFromPersistentQueue", true)
-                            }
-                    },
-                    index,
-                    queuedSong[index].position ?: C.TIME_UNSET
-                )
+                val mediaItem = song.asCleanedMediaItem
+                val mediaMetadata = mediaItem.mediaMetadata.buildUpon().setExtras(
+                    bundleOf( "isFromPersistentQueue" to true )
+                ).build()
+
+                mediaItem.buildUpon()
+                         .setMediaMetadata( mediaMetadata )
+                         .build()
+            }.also { mediaItems = it }
+
+            withContext( Dispatchers.Main ) {
+                player.setMediaItems( mediaItems, startIndex, startPositionMs )
                 player.prepare()
             }
         }
-
     }
 
     fun updateDownloadedState() {

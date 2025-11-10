@@ -20,11 +20,11 @@ import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.database.models.PersistentQueue
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.NotificationButtons
 import it.fast4x.rimusic.enums.QueueLoopType
-import it.fast4x.rimusic.models.QueuedMediaItem
 import it.fast4x.rimusic.service.LoginRequiredException
 import it.fast4x.rimusic.service.MissingDecipherKeyException
 import it.fast4x.rimusic.service.NoInternetException
@@ -77,23 +77,21 @@ class ExoPlayerListener(
         CoroutineScope( Dispatchers.Default ).launch {
             val (queue, index, playerPos) = withContext(Dispatchers.Main ) {
                 // Any call related to [Player] must happen on main thread
-                with( player ) {
-                    Triple(currentTimeline.mediaItems, currentMediaItemIndex, currentPosition)
-                }
+                Triple(
+                    player.currentTimeline.mediaItems.toList(),
+                    player.currentMediaItemIndex,
+                    player.currentPosition
+                )
             }
 
-            queue.fastMapIndexed { i, m ->
-                QueuedMediaItem(
-                    mediaItem = m,
+            val records = queue.fastMapIndexed { i, item ->
+                PersistentQueue(
+                    songId = item.mediaId,
                     position = if( i == index ) playerPos else null
                 )
-            }.also { list ->
-                if( list.isEmpty() ) return@also
-
-                Database.asyncTransaction {
-                    queueTable.deleteAll()
-                    queueTable.insertIgnore( list )
-                }
+            }
+            withContext( Dispatchers.IO ) {
+                Database.persistentQueueTable.save( records )
             }
         }
     }
