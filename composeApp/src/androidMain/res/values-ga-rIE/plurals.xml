@@ -17,8 +17,15 @@
     <plurals name="file">
         <item quantity="one">%d file</item>
         <item quantity="two">%d file</item>
+        <item quantity="few">%d file</item>
         <item quantity="many">%d file</item>
         <item quantity="other">%d file</item>
-        <item quantity="few">%d file</item>
+    </plurals>
+    <plurals name="song">
+        <item quantity="one">%d song</item>
+        <item quantity="two">%d song</item>
+        <item quantity="few">%d song</item>
+        <item quantity="many">%d song</item>
+        <item quantity="other">%d song</item>
     </plurals>
 </resources>

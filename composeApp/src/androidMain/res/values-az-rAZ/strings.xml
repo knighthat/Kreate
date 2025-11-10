@@ -437,7 +437,7 @@
     <string name="setting_description_runtime_log">%s üzərindən olan hər şeyi qeydə alır</string>
     <string name="copy_log_to_clipboard">Jurnalı buferə köçür</string>
     <string name="fake_audio_bar">Saxta Səs Cizgisi</string>
-    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
+    <string name="copy_crash_log_to_clipboard">Çökmə qeydin köçür</string>
     <string name="title_backup_and_restore">NÜSXƏLƏ VƏ BƏRPA ET</string>
     <string name="message_excluded_s_songs">%s mahnı çıxarıldı</string>
     <string name="show_thumbnail">Miniatürü göstər</string>

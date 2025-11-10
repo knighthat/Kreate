@@ -12,4 +12,8 @@
         <item quantity="one">%d archivo</item>
         <item quantity="other">%d archivos</item>
     </plurals>
+    <plurals name="song">
+        <item quantity="one">%d Canción</item>
+        <item quantity="other">%d Canciones</item>
+    </plurals>
 </resources>

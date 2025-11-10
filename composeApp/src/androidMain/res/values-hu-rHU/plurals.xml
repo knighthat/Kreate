@@ -12,4 +12,8 @@
         <item quantity="one">%d file</item>
         <item quantity="other">%d file</item>
     </plurals>
+    <plurals name="song">
+        <item quantity="one">%d song</item>
+        <item quantity="other">%d song</item>
+    </plurals>
 </resources>

@@ -9,8 +9,11 @@
         <item quantity="other">%d requêtes</item>
     </plurals>
     <plurals name="file">
-        <item quantity="one">%d file</item>
-        <item quantity="many">%d file</item>
-        <item quantity="other">%d file</item>
+        <item quantity="one">%d fichier</item>
+        <item quantity="other">%d fichiers</item>
+    </plurals>
+    <plurals name="song">
+        <item quantity="one">%d titre</item>
+        <item quantity="other">%d song</item>
     </plurals>
 </resources>
