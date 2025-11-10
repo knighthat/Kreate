@@ -13,9 +13,7 @@
   <li>Sleep timer</li>
   <li>Audio control: playback speed, pitch, normalization, skip silence</li>
   <li>Support for Android Auto, Android TV, and YouTube video</li>
-  <li>Update notification</li>
   <li>Export cached/downloaded songs</li>
-  <li>Save database and settings</li>
   <li>Play music even when not connected to the internet</li>
   <li>And many more...</li>
 </ul>
