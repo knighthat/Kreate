@@ -14,8 +14,8 @@ files:
         ia: ia
         sr: sr
         sr-CS: b+sr+Latn
-  - source: /composeApp/src/composeResources/res/values/strings.xml
-    translation: /composeApp/src/composeResources/res/values-%android_code%/strings.xml
+  - source: /composeApp/src/composeResources/values/strings.xml
+    translation: /composeApp/src/composeResources/values-%android_code%/strings.xml
     languages_mapping:
       android_code:
         ia: ia
