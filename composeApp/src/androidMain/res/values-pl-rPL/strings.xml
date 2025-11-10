@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Zatwierdź</string>
     <string name="hidesong">Na pewno chcesz ukryć ten utwór? Jego czas odtwarzania zostanie usunięty oraz zostanie on wymazany z pamięci podręcznej. Tego działania nie da się cofnąć.</string>
@@ -628,7 +628,7 @@
     <string name="settings_enable_autodownload_song_when_liked">Pobierz automatycznie, gdy polubiono</string>
     <string name="settings_enable_autodownload_song_when_album_bookmarked">Auto download song when album bookmarked</string>
     <string name="tab_general">Ogólne</string>
-    <string name="queue_and_local_playlists_left_swipe">Queue and Local Playlists Left Swipe</string>
+    <string name="queue_and_local_playlists_left_swipe"></string>
     <string name="queue_and_local_playlists_right_swipe">Queue and Local Playlists Right Swipe</string>
     <string name="playlist_left_swipe">Playlist Left Swipe</string>
     <string name="playlist_right_swipe">Playlist Right Swipe</string>
