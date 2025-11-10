@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">בוצע</string>
     <string name="hidesong">האם באמת תרצו להסתיר את השיר? זמן ההשמעה וזיכרון המטמון שלו ימחקו.\n הפעולה הזאת לא ניתנת לביטול.</string>
@@ -554,11 +554,11 @@
     <string name="settings_target_gain_loudness_info">Target gain for the loudness normalization</string>
     <string name="error_media_cannot_be_played">Media cannot be played</string>
     <string name="full_screen_lyrics_components">Full Screen Lyrics Components</string>
-    <string name="titleartist">Title and Artists</string>
+    <string name="titleartist">כותרת ואומנים</string>
     <string name="miniqueue">תור מוקטן</string>
     <string name="controls">Controls</string>
-    <string name="add_to_favorites">Add to favorites</string>
-    <string name="import_favorites">Import favorites</string>
+    <string name="add_to_favorites">הוסף למועדפים</string>
+    <string name="import_favorites">יבא מועדפים</string>
     <string name="skip_media_on_error">Autoskip on error</string>
     <string name="skip_media_on_error_description">If an error occurs, the media is changed</string>
     <string name="skip_media_on_error_message">The media %1$s went wrong</string>
@@ -593,7 +593,7 @@
     <string name="repeat">Repeat</string>
     <string name="original_lyrics">Original Lyrics</string>
     <string name="translated_lyrics">Translated Lyrics</string>
-    <string name="press_once_again_to_exit">Press once again to exit</string>
+    <string name="press_once_again_to_exit">לחץ עוד פעם ליציאה</string>
     <string name="music_animations_bars">Bars</string>
     <string name="music_animations_crazy_bars">Crazy Bars</string>
     <string name="music_animations_crazy_points">Crazy Points</string>
@@ -627,7 +627,7 @@
     <string name="settings_enable_autodownload_song">Enable auto download song</string>
     <string name="settings_enable_autodownload_song_when_liked">Auto download song when liked</string>
     <string name="settings_enable_autodownload_song_when_album_bookmarked">Auto download song when album bookmarked</string>
-    <string name="tab_general">General</string>
+    <string name="tab_general">כללי</string>
     <string name="queue_and_local_playlists_left_swipe">Queue and Local Playlists Left Swipe</string>
     <string name="queue_and_local_playlists_right_swipe">Queue and Local Playlists Right Swipe</string>
     <string name="playlist_left_swipe">Playlist Left Swipe</string>
@@ -635,7 +635,7 @@
     <string name="album_left_swipe">Album Left Swipe</string>
     <string name="album_right_swipe">Album Right Swipe</string>
     <string name="bookmark">Bookmark</string>
-    <string name="downloading_videos_not_supported">Downloading videos not supported</string>
+    <string name="downloading_videos_not_supported">הורדת סרטונים לא נתמכת</string>
     <string name="animatedgradient">Animated Gradient</string>
     <string name="linear">Linear Gradient</string>
     <string name="mesh">Mesh Gradient</string>
@@ -650,7 +650,7 @@
     <string name="icereflection">Ice Reflection</string>
     <string name="blackcherrycosmos">Black Cherry Cosmos</string>
     <string name="gradienttype">Gradient Type</string>
-    <string name="random">Random</string>
+    <string name="random">אקראי</string>
     <string name="colorpalette">Color Palette</string>
     <string name="customcolor">Custom Color</string>
     <string name="lyricsanimate">Animate Lyrics Size</string>
@@ -699,7 +699,7 @@
     <string name="songs_add_yt_success">Added the song in the YouTube Playlist</string>
     <string name="songs_add_yt_failed">Failed to add the song in the YouTube Playlist</string>
     <string name="are_you_sure">Are you sure?</string>
-    <string name="title_reset_cache">Reset cache</string>
+    <string name="title_reset_cache">אפס מטמון</string>
     <string name="playing_song_not_found_on_current_list">Could not find playing song on current list</string>
     <string name="no_songs_playing">No song is playing at the moment</string>
     <string name="invalid_input">Invalid input!</string>
@@ -710,9 +710,9 @@
     <string name="failed_to_fetch_original_property">Failed to fetch original property</string>
     <string name="failed_to_fetch_album">Failed to fetch album</string>
     <string name="info_open_reset_dialog">Open reset dialog</string>
-    <string name="title_reset_title">Reset title</string>
+    <string name="title_reset_title">אפס כותרת</string>
     <string name="title_reset_authors">Reset authors</string>
-    <string name="title_reset_total_play_time">Reset total play time</string>
+    <string name="title_reset_total_play_time">אפס זמן ניגון כולל</string>
     <string name="title_name_your_export">Name your export</string>
     <string name="export_cached">Export cached</string>
     <string name="info_export_cached_or_downloaded_song">Export cached or downloaded song</string>
@@ -738,25 +738,25 @@
     <string name="setting_description_smart_rewind">Previous button will act like rewind button after %s</string>
     <string name="setting_entry_show_chip">Show \"%s\" chip</string>
     <string name="show_quotes">Show \"%s\"</string>
-    <string name="setting_entry_crash_log">Crash log</string>
+    <string name="setting_entry_crash_log">דוח קריסה</string>
     <string name="setting_entry_logs">Logs</string>
     <string name="setting_description_copy_or_export_logs">Tap here to export, tap icon to copy</string>
     <string name="error_message_unsupported_local_playlist">Unsupported format</string>
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
     <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
-    <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
+    <string name="setting_description_app_language">מוכל רק לשפת האפליקציה; שפת המערכת לא מושפעת</string>
     <string name="currently_selected">Currently selected: %s</string>
     <string name="setting_description_update_checker_ask">Prompt when a new version is available to download</string>
-    <string name="setting_description_update_checker_disabled">%s will not notify you about new updates</string>
+    <string name="setting_description_update_checker_disabled">%s לא תודיע לך על עדכונים חדשים</string>
     <string name="setting_description_update_checker_automatic">הורד והתקן גרסא חדשה בהפעלה</string>
-    <string name="setting_title_update_checker_automatic">Download and install automatically</string>
-    <string name="setting_entry_update_checker">App update</string>
+    <string name="setting_title_update_checker_automatic">הורד והתקן באופן אוטומטי</string>
+    <string name="setting_entry_update_checker">עדכוני אפליקציה</string>
     <string name="update_dialog_init_status">Initializing</string>
-    <string name="update_dialog_downloading_status">Downloading</string>
-    <string name="update_dialog_verifying_status">Verifying</string>
-    <string name="update_dialog_installing_status">Installing</string>
-    <string name="update_dialog_error_status">Error</string>
+    <string name="update_dialog_downloading_status">מוריד</string>
+    <string name="update_dialog_verifying_status">מאמת</string>
+    <string name="update_dialog_installing_status">מתקין</string>
+    <string name="update_dialog_error_status">שגיאה</string>
     <string name="word_updating">Updating</string>
     <string name="error_downloaded_file_not_found">Downloaded file not found</string>
     <string name="error_download_manager_init_failed">Failed to initialize DownloadManager to download update</string>
@@ -847,10 +847,15 @@
     <string name="error_failed_to_load_developers">Failed to load developers</string>
     <string name="error_failed_to_load_translators">Failed to load translators</string>
     <string name="error_check_for_updates_failed">Check for updates failed</string>
+    <string name="settings_entry_live_wallpaper_reset_duration">Switch back after</string>
+    <string name="settings_description_live_wallpaper_reset_duration">How long to wait after music stopped playing to switch back to the regular wallpaper</string>
     <string name="title_change_thumbnail">Change thumbnail</string>
     <string name="description_change_thumbnail">Replace thumbnail with one of your choice</string>
     <string name="description_select_from_device">Select from device</string>
     <string name="error_failed_to_load_image">Failed to load image</string>
     <string name="error_invalid_path">Invalid path</string>
     <string name="description_validate_url">Validate url</string>
+    <string name="disabled">disabled</string>
+    <string name="settings_live_wallpaper_reset_warning"> WARNING: this will switch back to your manufacturer’s default wallpaper. Unfortunately it is difficult to revert to your previous wallpaper</string>
+    <string name="ok">ok</string>
 </resources>
