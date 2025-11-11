@@ -12,19 +12,30 @@ files:
     languages_mapping:
       android_code:
         ia: ia
-        sr: b+sr+Cyrl
+        sr: sr
         sr-CS: b+sr+Latn
+  - source: /composeApp/src/composeResources/values/strings.xml
+    translation: /composeApp/src/composeResources/values-%android_code%/strings.xml
+    languages_mapping:
+      android_code:
+        ia: ia
   # Plurals
   - source: /composeApp/src/androidMain/res/values/plurals.xml
     translation: /composeApp/src/androidMain/res/values-%android_code%/plurals.xml
     languages_mapping:
       android_code:
         ia: ia
-        sr: b+sr+Cyrl
+        sr: sr
         sr-CS: b+sr+Latn
   # FDroid fastlane - Full description
   - source: /fastlane/metadata/android/en-US/full_description.txt
     translation: /fastlane/metadata/android/%locale%/full_description.txt
+    languages_mapping:
+      locale:
+        ia: ia
   # FDroid fastlane - Short description
   - source: /fastlane/metadata/android/en-US/short_description.txt
     translation: /fastlane/metadata/android/%locale%/short_description.txt
+    languages_mapping:
+      locale:
+        ia: ia

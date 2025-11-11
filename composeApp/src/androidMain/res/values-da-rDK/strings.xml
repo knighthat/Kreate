@@ -171,7 +171,6 @@
     <string name="interface_in_use">Grænseflade i brug</string>
     <string name="user_interface">Brugergrænseflade</string>
     <string name="ui_tab">UI</string>
-    <string name="system_language">Systemsprog</string>
     <string name="biggest">Største</string>
     <string name="set_custom_cache">Tilpas cache</string>
     <string name="enter_value_in_mb">Angiv værdi i MB</string>

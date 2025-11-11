@@ -171,7 +171,6 @@
     <string name="interface_in_use">사용 중인 인터페이스</string>
     <string name="user_interface">사용자 인터페이스</string>
     <string name="ui_tab">UI</string>
-    <string name="system_language">시스템 언어</string>
     <string name="biggest">가장 크게</string>
     <string name="set_custom_cache">맞춤 캐시 설정</string>
     <string name="enter_value_in_mb">MB 단위로 입력하기</string>

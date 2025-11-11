@@ -171,7 +171,6 @@
     <string name="interface_in_use">Schnittstelle in Verwendung</string>
     <string name="user_interface">Benutzeroberfläche</string>
     <string name="ui_tab">UI</string>
-    <string name="system_language">Systemsprache</string>
     <string name="biggest">Sehr groß</string>
     <string name="set_custom_cache">Größe des Zwischenspeichers festlegen</string>
     <string name="enter_value_in_mb">Wert in MB eingeben</string>
