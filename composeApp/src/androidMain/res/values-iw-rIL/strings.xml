@@ -466,8 +466,8 @@
     <string name="showvisthumbnail">Show Thumbnail for visualizer</string>
     <string name="androidheadunit">Android Head unit</string>
     <string name="extra_space">Extra space at top</string>
-    <string name="game_restart">Restart</string>
-    <string name="game_over">Game Over!</string>
+    <string name="game_restart">התחל מחדש</string>
+    <string name="game_over">המשחק נגמר!</string>
     <string name="white">לבן</string>
     <string name="black">שחור</string>
     <string name="highlight">Highlight</string>
@@ -538,7 +538,7 @@
     <string name="translate_to">תרגם ל%s</string>
     <string name="translate_to_other_language">Traslate to other language</string>
     <string name="action_bar_show_video_button">Show video button</string>
-    <string name="update">Update</string>
+    <string name="update">עדכן</string>
     <string name="update_song">האם באמת תרצה לאחזר מחדש את השיר? זמן ההשמעה וזיכרון המטמון שלו ימחקו. הפעולה הזאת לא ניתנת לביטול.</string>
     <string name="player_pause_listen_history_info">Does not save playback events used for statistics, history and suggestions in quick pics</string>
     <string name="vertical_widget">Vertical widget</string>
