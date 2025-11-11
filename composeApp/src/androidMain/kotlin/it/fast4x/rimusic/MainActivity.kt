@@ -264,14 +264,6 @@ MainActivity :
         }
     }
 
-    private fun checkIfAppIsRunningInBackground() {
-        val runningAppProcessInfo = ActivityManager.RunningAppProcessInfo()
-        ActivityManager.getMyMemoryState(runningAppProcessInfo)
-        appRunningInBackground =
-            runningAppProcessInfo.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-
-    }
-
     override fun onPictureInPictureModeChanged(
         isInPictureInPictureMode: Boolean,
         newConfig: Configuration
@@ -1087,6 +1079,14 @@ MainActivity :
         }
     }
 
+
+}
+
+fun checkIfAppIsRunningInBackground() {
+    val runningAppProcessInfo = ActivityManager.RunningAppProcessInfo()
+    ActivityManager.getMyMemoryState(runningAppProcessInfo)
+    appRunningInBackground =
+        runningAppProcessInfo.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
 
 }
 
