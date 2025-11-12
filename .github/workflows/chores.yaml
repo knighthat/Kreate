@@ -1,0 +1,391 @@
+name: Chores
+
+
+on:
+  schedule:
+    - cron: '0 6 13,26 * *'   # 0AM on the 13th and 26th of every month
+
+  push:
+    # Limit to the default branch.
+    branches:
+      - main
+    # Don't run on tag creation
+    tags-ignore:
+      - '**'
+    paths:
+      # Specific version catalog file
+      - 'gradle/libs.versions.toml'
+      # Any build.gradle.kts file (recursive)
+      - '**/build.gradle.kts'
+
+  # Allow manual trigger
+  workflow_dispatch:
+
+
+env:
+  RES_RAW_PATH: composeApp/src/androidMain/res/raw
+
+
+jobs:
+
+  date:
+    name: Capture current time
+    runs-on: ubuntu-latest
+    # Set date as a variable
+    outputs:
+      dashes: ${{ steps.dashes.outputs.date }}
+
+    steps:
+      - name: Get date with dashes
+        id: dashes
+        # Output of "October 2 2024" will be "2024-10-02"
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: "DEBUG: Print date with dashes"
+        run: echo "$dashes"
+
+  update-licenses-report:
+    needs: [date]
+    if: ${{ github.event_name == 'push' }}
+
+    # Prevent multiple jobs from running at the same time
+    concurrency:
+      group: 'chores-license'
+      cancel-in-progress: true  # Cancel any in-progress runs in this group
+
+    runs-on: ubuntu-latest
+    name: Update license report
+
+    env:
+      REPORT_PATH: composeApp/build/reports/dependency-license/index.json
+
+    # Allows GITHUB_TOKEN to be used to create PR
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v5.0.0
+        with:
+          java-version: "21"
+          distribution: "corretto"
+
+      - name: Generate license report
+        run: ./gradlew generateLicenseReport
+
+      - name: "DEBUG: Print license report"
+        run: cat "$REPORT_PATH"
+
+      # Turn human-readable format json file into 1 line json file
+      - name: De-prettifying generated report & paste it to res/raw dir
+        env:
+          RAW_REPORT_PATH: ${{ env.RES_RAW_PATH }}/licenses.json
+        run: cat "$REPORT_PATH" | jq -c '.' > "$RAW_REPORT_PATH"
+
+      - name: "DEBUG: Check changes"
+        run: git status
+
+      - name: Commit changes & make PR
+        # Skip this step when running with nektos/act
+        if: ${{ !env.ACT }}
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: Update license report
+          commit-message: "Update license ${{ needs.date.outputs.dashes }}"
+          branch: chores/update-license-report
+          delete-branch: true
+          assignees: ${{ github.repository_owner }}
+
+  update-contributors-list:
+    needs: [date]
+    if: ${{ github.event_name == 'schedule' }}
+
+    # Prevent multiple jobs from running at the same time
+    concurrency:
+      group: 'chores-contributors'
+      cancel-in-progress: true  # Cancel any in-progress runs in this group
+
+    runs-on: ubuntu-latest
+    name: Update contributors list
+
+    env:
+      CONTRIBUTORS_FILENAME: contributors.json
+
+    # Allows GITHUB_TOKEN to be used to create PR
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Get contributors
+        env:
+          USER_AGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3
+        # Use curl command to avoid login required
+        run: |
+          curl -L \
+            -H "UserAgent: $USER_AGENT" \
+            "$GITHUB_API_URL/repos/${{ github.repository }}/contributors?per_page=100&page=1" > "$CONTRIBUTORS_FILENAME"
+
+      - name: "DEBUG: Print $CONTRIBUTORS_FILENAME"
+        run: cat "$CONTRIBUTORS_FILENAME"
+
+      # Only keep these keys: login, id, name, avatar_url, html_url, contributions
+      # is_owner stores a boolean `true` if id matches the owner of the
+      #
+      # Additional conditions:
+      # - contributions must be a non-zero number
+      #
+      # `-c` flag is for compact mode, prints all in 1 line
+      - name: Process raw contributors list
+        env:
+          RESOURCE_PATH: ${{ env.RES_RAW_PATH }}/${{ env.CONTRIBUTORS_FILENAME }}
+        run: |
+          # Make sure this path exist first
+          mkdir -p "$RES_RAW_PATH"
+
+          jq -cr "[
+            .[] |
+            select(.type == \"User\" and .contributions > 0) |
+            {
+              login: .login,
+              id: .id,
+              name: .name,
+              avatar_url: .avatar_url,
+              html_url: .html_url,
+              contributions: .contributions,
+              is_owner: (.id == ${{ github.repository_owner_id || 0 }})
+            }
+          ]" "$CONTRIBUTORS_FILENAME" > "$RESOURCE_PATH"
+
+      - name: "DEBUG: Print processed $CONTRIBUTORS_FILENAME"
+        run: cat "$RES_RAW_PATH/$CONTRIBUTORS_FILENAME"
+
+      # To avoid this file from being included to the PR
+      - name: Delete $CONTRIBUTORS_FILENAME
+        run: rm -rf "$CONTRIBUTORS_FILENAME"
+
+      - name: "DEBUG: Check for changes"
+        run: git status
+
+      - name: Commit changes & make PR
+        # Skip this step when running with nektos/act
+        if: ${{ !env.ACT }}
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: Update contributors
+          commit-message: "Update contributors ${{ needs.date.outputs.dashes }}"
+          branch: chores/update-contributors
+          delete-branch: true
+          assignees: ${{ github.repository_owner }}
+
+  update-translators-list:
+    needs: [date]
+    if: ${{ github.event_name == 'schedule' }}
+
+    # Prevent multiple jobs from running at the same time
+    concurrency:
+      group: 'chores-translators'
+      cancel-in-progress: true  # Cancel any in-progress runs in this group
+
+    runs-on: ubuntu-latest
+    name: Update translators list
+
+    # Allows GITHUB_TOKEN to be used to create PR
+    permissions:
+      contents: write
+      pull-requests: write
+
+    env:
+      WORKFLOWS_FILENAME: workflows.json
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # actions/download-artifact doesn't know which workflow to download
+      # artifact from when `repository` is assgined.
+      # Therefore, 2 more steps are introduced to extract latest success workflow
+      # with this required artifact
+      - name: Get workflows on docs repo
+        id: run
+        run: |
+          curl -L \
+            -H "UserAgent: $USER_AGENT" \
+            "$GITHUB_API_URL/repos/knighthat/Kreate-docs/actions/runs" > "$WORKFLOWS_FILENAME"
+
+      - name: "DEBUG: Print $WORKFLOWS_FILENAME"
+        run: cat "$WORKFLOWS_FILENAME"
+
+      # Get ID of "Update translators" workflow,
+      # must be completed and success
+      - name: Extract run ID from workflows
+        id: extract
+        run: |
+          RUN_ID=$(jq -r '[
+            .workflow_runs[] |
+            select(
+              .name == "Update translators" and
+              .status == "completed" and
+              .conclusion == "success"
+            )
+          ] | .[0].id' "$WORKFLOWS_FILENAME")
+
+          echo "run_id=$RUN_ID" >> $GITHUB_OUTPUT
+
+      - name: "DEBUG: Print run ID"
+        run: echo "${{ steps.run.outputs.run_id }}"
+
+      # To avoid this file from being included to the PR
+      - name: Delete $WORKFLOWS_FILENAME
+        run: rm -rf "$WORKFLOWS_FILENAME"
+
+      - name: Download translators list
+        uses: actions/download-artifact@v6
+        with:
+          name: translators
+          repository: knighthat/Kreate-docs
+          github-token: ${{ secrets.DOWNLOAD_TRANSLATORS_TOKEN }}
+          path: ${{ env.RES_RAW_PATH }}
+          run-id: ${{ steps.extract.outputs.run_id }}
+
+      - name: "DEBUG: Check for changes"
+        run: git status
+
+      - name: Commit changes & make PR
+        # Skip this step when running with nektos/act
+        if: ${{ !env.ACT }}
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: Update translators
+          commit-message: "Update translators ${{ needs.date.outputs.dashes }}"
+          branch: chores/update-translators
+          delete-branch: true
+          assignees: ${{ github.repository_owner }}
+
+  delete-finished-workflows:
+    # Allow this job to run on both scheduled and manual event
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+
+    # Prevent multiple jobs from running at the same time
+    concurrency:
+      group: 'chores-house-keeping'
+      cancel-in-progress: false  # Don't cancel any in-progress runs in this group
+
+    runs-on: ubuntu-latest
+    name: Delete finished workflows
+
+    env:
+      RATE_LIMIT_FILENAME: rate_limit.json
+      # Repo's path in format {OWNER}/{REPO}
+      GITHUB_REPOSITORY: ${{ github.repository }}
+
+    steps:
+      - name: Login to Github CLI
+        run: echo "${{ secrets.HOUSE_KEEPER_WORKFLOW }}" | gh auth login --with-token
+
+      # Get all "completed" workflows
+      # - Each response has up to 100 results
+      # - If there's more than 100 results, continue fetching until there's nothing left
+      # - Append result(s) to workflows.json file
+      # https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository
+      - name: Get workflows
+        run: |
+          gh api -X GET "repos/$GITHUB_REPOSITORY/actions/runs" \
+          -F "status=completed" \
+          -F "per_page=100" \
+          --paginate > workflows.json
+
+      # - Must be "success"
+      # - Started at least 2 weeks ago
+      #
+      # Each workflow json is reduced to its ID,
+      # and shown on a separate line
+      - name: Filter successful workflows
+        run: |
+          jq -r '
+          .workflow_runs[] |
+          select(
+            .conclusion == "success" and
+            (now - (.updated_at | fromdate)) >= (14 * 86400)
+          ) |
+          .id' workflows.json >> successful_workflows.txt
+
+      - name: "DEBUG: Print total successful workflows"
+        run: wc -l successful_workflows.txt
+
+      # - Triggered by an issue
+      # - Conclusion is anything but "failure"
+      #
+      # Each workflow json is reduced to its ID,
+      # and shown on a separate line
+      - name: Filter non failure issue-triggered workflows
+        run: |
+          jq -r '
+          .workflow_runs[] |
+          select(
+            .event == "issues" and
+            .conclusion != "failure"
+          ) |
+          .id' workflows.json >> issue_workflows.txt
+
+      - name: "DEBUG: Print total issue-triggered workflows"
+        run: wc -l issue_workflows.txt
+
+      # Each response has `total_count` shows total available workflows,
+      # pipe this thru `uniq` to get unique value(s) - should be a single value
+      - name: "DEBUG: Print total queried workflows"
+        run: |
+          total_count=$(jq -r '.total_count' workflows.json | uniq)
+          echo "Queried: $total_count runs"
+
+      - name: Get rate limit
+        run: gh api -X GET "rate_limit" > "$RATE_LIMIT_FILENAME"
+
+      - name: "DEBUG: Print rate limit response"
+        run: cat "$RATE_LIMIT_FILENAME"
+
+      # The idea is too keep deleting until we have ~1000 requests left
+      - name: Calculate remaining requests count
+        id: remaining
+        run: |
+          REMAINING=$(jq -r '.rate.remaining' $RATE_LIMIT_FILENAME)
+
+          if [ "$ACT" = "true" ]; then
+
+            echo "Remaining: $REMAINING"
+            echo "remaining=10" >> $GITHUB_OUTPUT
+
+          else
+
+            echo "remaining=$(( REMAINING - 1000 ))" >> $GITHUB_OUTPUT
+
+          fi
+
+      - name: "DEBUG: Print remaining"
+        run: echo "${{ steps.remaining.outputs.remaining }}"
+
+      # Merges 2 filtered files together
+      # Since workflow's id is number, `sort` can be used
+      # with `-u` flag to sort and remove duplicates between the 2.
+      # `head` to only take first `-n` number of lines
+      - name: Merge workflow files
+        env:
+          REMAINING: ${{ steps.remaining.outputs.remaining }}
+        run: cat successful_workflows.txt issue_workflows.txt | sort -u | head -n $REMAINING >> process_workflows.txt
+
+      - name: "DEBUG: Print total process workflows"
+        run: wc -l process_workflows.txt
+
+      # This step takes every line from process_workflows.txt
+      # and send delete request to GitHub via cli
+      - name: Delete workflows
+        run: |
+          while IFS= read -r id; do
+            gh api --verbose -X DELETE "repos/$GITHUB_REPOSITORY/actions/runs/$id"
+          done < process_workflows.txt
