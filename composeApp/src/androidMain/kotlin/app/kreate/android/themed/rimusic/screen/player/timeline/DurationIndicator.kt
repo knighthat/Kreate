@@ -39,17 +39,19 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.util.readableText
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.PauseBetweenSongs
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.styling.favoritesIcon
 import it.fast4x.rimusic.utils.DURATION_INDICATOR_HEIGHT
-import it.fast4x.rimusic.utils.formatAsDuration
 import it.fast4x.rimusic.utils.positionAndDurationState
 import it.fast4x.rimusic.utils.rememberPreference
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.delay
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 /**
  * Adjust timeline based on provided values.
@@ -181,7 +183,10 @@ fun DurationIndicator(
             contentAlignment = Alignment.CenterStart
         ) {
             val toDisplay by remember( position ) {
-                derivedStateOf { formatAsDuration( scrubbingPosition ?: position ) }
+                derivedStateOf {
+                    (scrubbingPosition ?: position).toDuration(DurationUnit.MILLISECONDS)
+                                                   .readableText()
+                }
             }
             OutlinedText( toDisplay, outlineColor )
         }
@@ -217,7 +222,9 @@ fun DurationIndicator(
                 if(isPaused) return@Box
 
                 val toDisplay by remember {
-                    derivedStateOf { formatAsDuration(timeRemaining) }
+                    derivedStateOf {
+                        timeRemaining.toDuration(DurationUnit.MILLISECONDS).readableText()
+                    }
                 }
                 OutlinedText( toDisplay, outlineColor )
             }
@@ -230,7 +237,7 @@ fun DurationIndicator(
             contentAlignment = Alignment.CenterEnd
         ) {
             val toDisplay = remember( duration ) {
-                if( duration <= 0 ) "--:--" else formatAsDuration( duration )
+                if( duration <= 0 ) "--:--" else duration.toDuration( DurationUnit.MILLISECONDS ).readableText()
             }
             OutlinedText( toDisplay, outlineColor )
         }

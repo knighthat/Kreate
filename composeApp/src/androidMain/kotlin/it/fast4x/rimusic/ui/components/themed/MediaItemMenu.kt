@@ -32,7 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -71,6 +71,7 @@ import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.MONTHLY_PREFIX
 import app.kreate.util.PINNED_PREFIX
 import app.kreate.util.cleanPrefix
+import app.kreate.util.readableText
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.appContext
@@ -94,7 +95,6 @@ import it.fast4x.rimusic.utils.addToYtLikedSong
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.enqueue
-import it.fast4x.rimusic.utils.formatAsDuration
 import it.fast4x.rimusic.utils.getDownloadState
 import it.fast4x.rimusic.utils.getLikeState
 import it.fast4x.rimusic.utils.isDownloadedSong
@@ -111,6 +111,8 @@ import me.knighthat.sync.YouTubeSync
 import me.knighthat.utils.Toaster
 import java.time.LocalTime.now
 import java.time.format.DateTimeFormatter
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @ExperimentalTextApi
 @ExperimentalAnimationApi
@@ -1168,10 +1170,10 @@ fun MediaItemMenu(
 
                     val positionAndDuration = binder?.player?.positionAndDurationState()
 
-                    var timeRemaining by remember { mutableIntStateOf(0) }
+                    var timeRemaining by remember { mutableLongStateOf(0) }
 
                     if (positionAndDuration != null) {
-                        timeRemaining = positionAndDuration.value.second.toInt() - positionAndDuration.value.first.toInt()
+                        timeRemaining = positionAndDuration.value.second - positionAndDuration.value.first
                     }
 
                     //val timeToStop = System.currentTimeMillis()
@@ -1232,7 +1234,7 @@ fun MediaItemMenu(
                                             BasicText(
                                                 text = stringResource(
                                                     R.string.left,
-                                                    formatAsDuration(amount * 5 * 60 * 1000L)
+                                                    (amount * 5).toDuration( DurationUnit.MINUTES ).readableText()
                                                 ),
                                                 style = typography().s.semiBold,
                                                 modifier = Modifier
@@ -1261,7 +1263,7 @@ fun MediaItemMenu(
                                         CircularSlider(
                                             stroke = 40f,
                                             thumbColor = colorPalette().accent,
-                                            text = formatAsDuration(amount * 5 * 60 * 1000L),
+                                            text = (amount * 5).toDuration( DurationUnit.MINUTES ).readableText(),
                                             modifier = Modifier
                                                 .size(300.dp),
                                             onChange = {
@@ -1279,10 +1281,10 @@ fun MediaItemMenu(
                                 ) {
                                     SecondaryTextButton(
                                         text = stringResource(R.string.set_to) + " "
-                                                + formatAsDuration(timeRemaining.toLong())
+                                                + timeRemaining.toDuration( DurationUnit.MILLISECONDS ).readableText()
                                                 + " " + stringResource(R.string.end_of_song),
                                         onClick = {
-                                            binder?.startSleepTimer(timeRemaining.toLong())
+                                            binder?.startSleepTimer(timeRemaining)
                                             isShowingSleepTimerDialog = false
                                         }
                                     )
@@ -1327,7 +1329,7 @@ fun MediaItemMenu(
                                 BasicText(
                                     text = stringResource(
                                         R.string.left,
-                                        formatAsDuration(it)
+                                        it.toDuration( DurationUnit.MILLISECONDS ).readableText()
                                     ) + " / " +
                                             now()
                                                 .plusSeconds(it / 1000)

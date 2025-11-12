@@ -12,17 +12,18 @@ import app.kreate.android.R
 import app.kreate.android.exception.InvalidHeaderException
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.Song
+import app.kreate.util.DURATION_FORMAT_REGEX
+import app.kreate.util.readableText
+import app.kreate.util.toDuration
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
-import it.fast4x.rimusic.utils.formatAsDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.component.ImportFromFile
-import me.knighthat.utils.DurationUtils
 import me.knighthat.utils.Toaster
 import me.knighthat.utils.csv.SongCSV
 import java.io.InputStream
@@ -70,12 +71,10 @@ class ImportSongsFromCSV(
                           // in seconds.
                           val rawDuration = row["Duration"].orEmpty()
                           val convertedDuration =
-                              if( rawDuration.isBlank() )
-                                  "0"
-                              else if( !DurationUtils.isHumanReadable( rawDuration ) )
-                                  formatAsDuration( rawDuration.toLong().times( 1000 ) )
+                              if( rawDuration.matches( DURATION_FORMAT_REGEX ) )
+                                  rawDuration.toDuration().readableText()
                               else
-                                  rawDuration
+                                  "0"
 
                           SongCSV(
                               playlistBrowseId = browseId,

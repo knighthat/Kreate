@@ -9,7 +9,6 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.text.format.DateUtils
 import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -293,8 +292,6 @@ fun String?.thumbnail(): String? {
 fun Uri?.thumbnail(size: Int): Uri? {
     return toString().thumbnail(size)?.toUri()
 }
-
-fun formatAsDuration(millis: Long) = DateUtils.formatElapsedTime(millis / 1000).removePrefix("0")
 
 @JvmName("ResultInnertubeItemsPageCompleted")
 suspend fun Result<Innertube.ItemsPage<Innertube.SongItem>?>.completed(

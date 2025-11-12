@@ -15,7 +15,7 @@ import kotlin.time.toDuration
  *
  * Single or double-digits are accepted
  */
-private val DURATION_FORMAT_REGEX = Regex("^\\d+(?::\\d+){0,3}$")
+val DURATION_FORMAT_REGEX = Regex("^\\d+(?::\\d+){0,3}$")
 
 // These are multiplier that turns current unit to seconds
 private val TIME_UNITS = arrayOf(1, 60, 3600, 86400)
