@@ -307,7 +307,7 @@ fun ProfileItem(
                 .weight(1f)
                 .padding(horizontal = 24.dp, vertical = 4.dp)
         )
-        if (isEnabled && title != DEFAULT_PROFILE_NAME) {
+        if (isEnabled && title != stringResource(R.string._default)) {
             Icon(
                 painter = painterResource(R.drawable.trash),
                 contentDescription = null,
