@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">হয়েছে</string>
     <string name="hidesong">আপনি কি সত্যি গানটা লুকাতে চান? এর প্লেব্যাক টাইম আর ক্যাশে মুছে যাবে। \n এটা পুনরুদ্ধার করা যাবে না আর।</string>

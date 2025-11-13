@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Feito</string>
     <string name="hidesong">Realmente queres agochar esta canción? O tempo de reprodución e a caché serán borrados. Esta acción é irreversible.</string>

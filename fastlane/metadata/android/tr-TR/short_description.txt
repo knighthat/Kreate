@@ -1,1 +1,1 @@
-A multilingual YouTube Music frontend for Android, prioritize performance.
+Android için çok dilli, performans odaklı bir YouTube Music ön yüzü.
