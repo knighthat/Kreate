@@ -59,7 +59,7 @@ private fun HamburgerMenu(
     menu.add(
         DropdownMenu.Item(
             R.drawable.person,
-            R.string.proxy
+            R.string.profiles
         ) { onItemClick( NavRoutes.PROFILES ) }
     )
     // Picture in picture button
