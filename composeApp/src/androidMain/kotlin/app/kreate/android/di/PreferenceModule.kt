@@ -20,7 +20,7 @@ object PreferenceModule {
     private const val PROFILE_PREFERENCES_FILENAME = "profiles"
     private const val ACTIVE_PROFILE_KEY = "ActiveProfile"
     private const val PREFERENCES_BASE_FILENAME = "preferences"
-    private const val PRIVATE_PREFERENCES_FILENAME = "private_preferences"
+    private const val PRIVATE_PREFERENCES_BASE_FILENAME = "private_preferences"
 
     @Named("profiles")
     @Provides
@@ -64,6 +64,16 @@ object PreferenceModule {
     @Named("private")
     @Provides
     @Singleton
-    fun providesPrivatePreferences( @ApplicationContext context: Context ): SharedPreferences =
-        context.getSharedPreferences( PRIVATE_PREFERENCES_FILENAME, Context.MODE_PRIVATE )
+    fun providesPrivatePreferences(
+        @ApplicationContext context: Context,
+        @Named("profiles") profile: SharedPreferences
+    ): SharedPreferences {
+        val profileName = profile.getString(ACTIVE_PROFILE_KEY, "default")
+        val filename = if (profileName == "default") {
+            PRIVATE_PREFERENCES_BASE_FILENAME
+        } else {
+            PRIVATE_PREFERENCES_BASE_FILENAME + "_$profileName"
+        }
+        return context.getSharedPreferences(filename, Context.MODE_PRIVATE)
+    }
 }
