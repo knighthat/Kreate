@@ -87,6 +87,11 @@ kotlin {
             // Dependency injection
             implementation( libs.android.hilt )
         }
+        androidUnitTest.dependencies {
+            implementation( libs.junit4 )
+            implementation( libs.robolectric )
+            implementation( libs.androidx.test )
+        }
         commonMain.dependencies {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -134,6 +139,12 @@ android {
         includeInApk = false
         // Disables dependency metadata when building Android App Bundles.
         includeInBundle = false
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 
     buildFeatures {

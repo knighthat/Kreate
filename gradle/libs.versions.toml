@@ -38,6 +38,9 @@ compose-kmp = "1.9.1"
 license-report = "3.0.1"
 hilt = "2.57.2"
 material3-kmp = "1.9.0"
+junit4 = "4.13.2"
+robolectric = "4.16"
+androidTest = "1.7.0"
 
 
 [libraries]
@@ -110,6 +113,9 @@ junit5-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-eng
 junit5-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit5" }
 junit-platform = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junit-platform" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
+junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+androidx-test = { group = "androidx.test", name = "core", version.ref = "androidTest" }
 
 # MonetCompat
 monetcompat = {  group = "com.github.KieronQuinn", name = "MonetCompat", version.ref = "monetcompat" }
