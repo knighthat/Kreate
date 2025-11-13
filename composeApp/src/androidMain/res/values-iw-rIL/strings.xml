@@ -847,6 +847,16 @@
     <string name="error_failed_to_load_developers">Failed to load developers</string>
     <string name="error_failed_to_load_translators">Failed to load translators</string>
     <string name="error_check_for_updates_failed">Check for updates failed</string>
+    <string name="warning_num_songs_exlucded_because_duration_limit">%s excluded because their duration exceed duration limit</string>
+    <string name="warning_songs_duration_exceeds_limit">Selected song\s duration exceeds limit</string>
+    <string name="warning_no_valid_songs">No valid songs</string>
+    <string name="warning_nothing_to_shuffle">Nothing to shuffle</string>
+    <string name="profiles">Profiles</string>
+    <string name="add_profile">Add profile</string>
+    <string name="remove_profile">Remove profile</string>
+    <string name="this_profile_alreaty_exist">This profile alreaty exist</string>
+    <string name="enter_profile_name">Enter profile name</string>
+    <string name="profile_restart_required">This will required a restart of the app</string>
     <string name="title_change_thumbnail">Change thumbnail</string>
     <string name="description_change_thumbnail">Replace thumbnail with one of your choice</string>
     <string name="description_select_from_device">Select from device</string>

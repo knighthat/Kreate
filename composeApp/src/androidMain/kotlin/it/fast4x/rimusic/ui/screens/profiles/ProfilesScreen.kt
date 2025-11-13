@@ -49,7 +49,6 @@ import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.utils.intent
-import it.fast4x.rimusic.utils.isAtLeastAndroid7
 import kotlin.system.exitProcess
 
 private const val PREFERENCES_BASE_FILENAME = "preferences"
@@ -85,7 +84,7 @@ fun ProfileScreen(
         navController,
         miniPlayer = miniPlayer,
         navBarContent = { item ->
-            item(0, stringResource(R.string.profiles), R.drawable.person)
+//            item(0, stringResource(R.string.profiles), R.drawable.person)
 
         }
     ) {
@@ -173,7 +172,6 @@ fun ProfileScreen(
                 val file = File(context.filesDir, PROFILE_FILE_NAME)
                 file.writeText(profilesNames.joinToString("\n"))
                 deletePreferencesForProfile(context, removingProfile)
-                deleteRoomDatabaseByName(context, "data_$removingProfile.db")
             }
         )
     }
@@ -249,37 +247,21 @@ fun deletePreferencesForProfile(
 }
 
 fun deleteSharedPrefsByName(context: Context, prefsName: String): Boolean {
-    return if (isAtLeastAndroid7) {
+    return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
         context.deleteSharedPreferences(prefsName)
     } else {
         context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
             .edit(commit = true) { clear() }
 
-        val dir = File(context.applicationInfo.dataDir, "shared_prefs")
-        val xml = File(dir, "$prefsName.xml")
-        val xmlBak = File(dir, "$prefsName.xml.bak")
+        val dir = java.io.File(context.applicationInfo.dataDir, "shared_prefs")
+        val xml = java.io.File(dir, "$prefsName.xml")
+        val xmlBak = java.io.File(dir, "$prefsName.xml.bak")
 
         var ok = true
         if (xml.exists()) ok = xml.delete() && ok
         if (xmlBak.exists()) ok = xmlBak.delete() && ok
         ok
     }
-}
-
-fun deleteRoomDatabaseByName(context: Context, dbName: String): Boolean {
-    val primaryOk = context.deleteDatabase(dbName)
-
-    val dbFile = context.getDatabasePath(dbName)
-    var ok = primaryOk
-    listOf(
-        dbFile,                                   // "…/app_db__{id}"
-        File(dbFile.path + "-journal"),   // mode journal (ישן)
-        File(dbFile.path + "-wal"),       // write-ahead log
-        File(dbFile.path + "-shm")        // shared memory
-    ).forEach { f ->
-        if (f.exists()) ok = f.delete() && ok
-    }
-    return ok
 }
 
 @Composable
@@ -308,7 +290,7 @@ fun ProfileItem(
                 .weight(1f)
                 .padding(horizontal = 24.dp, vertical = 4.dp)
         )
-        if (isEnabled && title != stringResource(R.string._default)) {
+        if (isEnabled && title != DEFAULT_PROFILE_NAME) {
             Icon(
                 painter = painterResource(R.drawable.trash),
                 contentDescription = null,
