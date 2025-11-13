@@ -17,14 +17,31 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object PreferenceModule {
 
-    private const val PREFERENCES_FILENAME = "preferences"
+    private const val PROFILE_PREFERENCES_FILENAME = "profiles"
+    private const val ACTIVE_PROFILE_KEY = "ActiveProfile"
+    private const val PREFERENCES_BASE_FILENAME = "preferences"
     private const val PRIVATE_PREFERENCES_FILENAME = "private_preferences"
+
+    @Named("profiles")
+    @Provides
+    @Singleton
+    fun provideProfilePreferences( @ApplicationContext context: Context ): SharedPreferences =
+        context.getSharedPreferences(PROFILE_PREFERENCES_FILENAME, Context.MODE_PRIVATE)
 
     @Named("plain")
     @Provides
     @Singleton
-    fun providePlainPreferences( @ApplicationContext context: Context ): SharedPreferences {
-        val result = context.getSharedPreferences( PREFERENCES_FILENAME, Context.MODE_PRIVATE )
+    fun providePlainPreferences(
+        @ApplicationContext context: Context,
+        @Named("profiles") profile: SharedPreferences
+    ): SharedPreferences {
+        val profileName = profile.getString(ACTIVE_PROFILE_KEY, "default")
+        val filename = if (profileName == "default") {
+            PREFERENCES_BASE_FILENAME
+        } else {
+            PREFERENCES_BASE_FILENAME + "_$profileName"
+        }
+        val result = context.getSharedPreferences( filename, Context.MODE_PRIVATE )
         result.edit {
             // Using reflection to get unused keys would be a better
             // idea, but it'd force all keys to be initialized, which
