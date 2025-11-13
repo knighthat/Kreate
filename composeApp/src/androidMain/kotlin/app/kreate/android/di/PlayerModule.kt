@@ -544,7 +544,7 @@ object PlayerModule {
         @Named("playerDataSource") dataSourceFactory: DataSource.Factory,
         @Named("plain") preferences: SharedPreferences,
         discord: Discord
-    ): ExoPlayer = CustomExoPlayer(context, dataSourceFactory, preferences, discord)
+    ): ExoPlayer = CustomExoPlayer(dataSourceFactory, preferences, context, discord)
 
     /**
      * Remove cached url of [songId].

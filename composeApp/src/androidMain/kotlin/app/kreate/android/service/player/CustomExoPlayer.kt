@@ -40,9 +40,9 @@ import kotlin.math.pow
  */
 @UnstableApi
 class CustomExoPlayer(
-    context: Context,
     dataSourceFactory: DataSource.Factory,
     preferences: SharedPreferences,
+    private val context: Context,
     private val discord: Discord,
     private val player: ExoPlayer = makeBasePlayer( context, preferences, dataSourceFactory )
 ): ExoPlayer by player {
