@@ -1,0 +1,6 @@
+Fixes:
+- Synced playlists fail to load on some accounts
+
+Changes:
+- Merge en_US to default language
+- Replace Norwegian (no) language with Norwegian Bokmål (nb)
