@@ -282,6 +282,9 @@ jobs:
 
     env:
       RATE_LIMIT_FILENAME: rate_limit.json
+      WORKFLOWS_FILENAME: workflows.json
+      SUCCESS_WORKFLOWS_FILENAME: successful_workflows.txt
+      ISSUE_NOT_FAILED_FILENAME: issue_workflows.txt
 
     steps:
       - name: Login to Github CLI
@@ -297,7 +300,12 @@ jobs:
           gh api -X GET "repos/$GITHUB_REPOSITORY/actions/runs" \
           -F "status=completed" \
           -F "per_page=100" \
-          --paginate > workflows.json
+          --paginate > "$WORKFLOWS_FILENAME"
+
+      - name: "DEBUG: Print total queried workflows"
+        run: |
+          TOTAL_COUNT=$(jq -r '.total_count' "$WORKFLOWS_FILENAME" | uniq)
+          echo "Queried: $TOTAL_COUNT runs"
 
       # - Must be "success"
       # - Started at least 2 weeks ago
@@ -312,10 +320,10 @@ jobs:
             .conclusion == "success" and
             (now - (.updated_at | fromdate) >= 14 * 86400)
           ) |
-          .id' workflows.json >> successful_workflows.txt
+          .id' "$WORKFLOWS_FILENAME" >> "$SUCCESS_WORKFLOWS_FILENAME"
 
       - name: "DEBUG: Print total successful workflows"
-        run: wc -l successful_workflows.txt
+        run: wc -l "$SUCCESS_WORKFLOWS_FILENAME"
 
       # - Triggered by an issue
       # - Conclusion is anything but "failure"
@@ -330,17 +338,10 @@ jobs:
             .event == "issues" and
             .conclusion != "failure"
           ) |
-          .id' workflows.json >> issue_workflows.txt
+          .id' "$WORKFLOWS_FILENAME" >> "$ISSUE_NOT_FAILED_FILENAME"
 
       - name: "DEBUG: Print total issue-triggered workflows"
-        run: wc -l issue_workflows.txt
-
-      # Each response has `total_count` shows total available workflows,
-      # pipe this thru `uniq` to get unique value(s) - should be a single value
-      - name: "DEBUG: Print total queried workflows"
-        run: |
-          total_count=$(jq -r '.total_count' workflows.json | uniq)
-          echo "Queried: $total_count runs"
+        run: wc -l "$ISSUE_NOT_FAILED_FILENAME"
 
       - name: Get rate limit
         run: gh api -X GET "rate_limit" > "$RATE_LIMIT_FILENAME"
@@ -375,7 +376,7 @@ jobs:
       - name: Merge workflow files
         env:
           REMAINING: ${{ steps.remaining.outputs.remaining }}
-        run: cat successful_workflows.txt issue_workflows.txt | sort -u | head -n $REMAINING >> process_workflows.txt
+        run: cat "$SUCCESS_WORKFLOWS_FILENAME" "$ISSUE_NOT_FAILED_FILENAME" | sort -u | head -n $REMAINING >> process_workflows.txt
 
       - name: "DEBUG: Print total process workflows"
         run: wc -l process_workflows.txt
