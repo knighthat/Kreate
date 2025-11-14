@@ -844,8 +844,4 @@
     <string name="error_failed_to_get_charts">Không thể tải bảng xếp hạng</string>
     <string name="error_failed_to_acquire_account_info">Không thể tải thông tin tài khoản</string>
     <string name="error_failed_to_sync_tab">Đồng bộ hóa %s thất bại</string>
-    <string name="warning_num_songs_exlucded_because_duration_limit">%s bị loại bỏ vì vượt quá thời lượng cho phép</string>
-    <string name="warning_songs_duration_exceeds_limit">Bài hát được chọn vượt quá thời lượng cho phép</string>
-    <string name="warning_no_valid_songs">Không có bài hát hợp lệ nào</string>
-    <string name="warning_nothing_to_shuffle">Không có nhạc để trộn</string>
 </resources>
