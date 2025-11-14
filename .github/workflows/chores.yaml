@@ -310,7 +310,7 @@ jobs:
           .workflow_runs[] |
           select(
             .conclusion == "success" and
-            (now - (.updated_at | fromdate)) >= (14 * 86400)
+            (now - (.updated_at | fromdate) >= 14 * 86400)
           ) |
           .id' workflows.json >> successful_workflows.txt
 
