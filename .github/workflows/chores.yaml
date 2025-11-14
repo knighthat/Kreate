@@ -282,8 +282,6 @@ jobs:
 
     env:
       RATE_LIMIT_FILENAME: rate_limit.json
-      # Repo's path in format {OWNER}/{REPO}
-      GITHUB_REPOSITORY: ${{ github.repository }}
 
     steps:
       - name: Login to Github CLI
