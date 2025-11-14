@@ -844,4 +844,5 @@
     <string name="error_failed_to_get_charts">Error al conseguir gráficas</string>
     <string name="error_failed_to_acquire_account_info">Error al conseguir información de la cuenta</string>
     <string name="error_failed_to_sync_tab">Error al sincronizar %s</string>
+    <string name="error_failed_to_load_developers">Failed to load developers</string>
 </resources>
