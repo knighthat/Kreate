@@ -307,6 +307,17 @@ jobs:
           TOTAL_COUNT=$(jq -r '.total_count' "$WORKFLOWS_FILENAME" | uniq)
           echo "Queried: $TOTAL_COUNT runs"
 
+      - name: Upload queried workflows file
+        uses: actions/upload-artifact@v4
+        with:
+          name: workflows
+          path: workflows.json
+          # Stop the job if workflows file isn't found
+          if-no-files-found: error
+          # It's all texts, enable this to achieve smallest size
+          compression-level: 9
+          overwrite: true
+
       # - Must be "success"
       # - Started at least 2 weeks ago
       #
