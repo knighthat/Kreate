@@ -12,8 +12,4 @@
         <item quantity="one">%d fayl</item>
         <item quantity="other">%d fayl</item>
     </plurals>
-    <plurals name="song">
-        <item quantity="other">%d song</item>
-        <item quantity="one">%d song</item>
-    </plurals>
 </resources>

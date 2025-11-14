@@ -47,6 +47,7 @@ import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
 import it.fast4x.rimusic.ui.components.themed.InputTextField
 import it.fast4x.rimusic.ui.styling.Dimensions
+import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
@@ -56,6 +57,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.withContext
 
 @ExperimentalTextApi
 @SuppressLint("SuspiciousIndentation")
@@ -222,7 +224,9 @@ fun GoToLink(
                                 }?.let { videoId ->
                                     Innertube.song(videoId)?.getOrNull()?.let { song ->
                                         val binder = snapshotFlow { binder }.filterNotNull().first()
-                                        binder.player.forcePlay( song )
+                                        withContext(Dispatchers.Main) {
+                                            binder.player.forcePlay(song.asMediaItem)
+                                        }
                                     }
                                 }
                             }

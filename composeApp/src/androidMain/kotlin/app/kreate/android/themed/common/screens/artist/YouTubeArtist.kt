@@ -71,9 +71,9 @@ import app.kreate.android.utils.scrollingText
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongArtistMap
-import app.kreate.util.toDuration
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
+import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.typography
@@ -246,10 +246,14 @@ fun YouTubeArtist(
         }
         val radio = Radio(::getSongs)
         val playNext = PlayNext {
-            getSongs().also( binder.player::addNext )
+            getMediaItems().let {
+                binder.player.addNext( it, appContext() )
+            }
         }
         val enqueue = Enqueue {
-            getSongs().also( binder.player::enqueue )
+            getMediaItems().let {
+                binder.player.enqueue( it, appContext() )
+            }
         }
 
         downloadAllDialog.Render()
@@ -425,7 +429,9 @@ fun YouTubeArtist(
                         ) { index, song ->
                             SwipeablePlaylistItem(
                                 mediaItem = song.asMediaItem,
-                                onPlayNext = { binder.player.addNext( song ) }
+                                onPlayNext = {
+                                    binder.player.addNext( song.asMediaItem )
+                                }
                             ) {
                                 SongItem.Render(
                                     song = song,
@@ -438,7 +444,10 @@ fun YouTubeArtist(
                                     showThumbnail = true,
                                     onClick = {
                                         binder.stopRadio()
-                                        binder.player.forcePlayAtIndex( songs, index )
+                                        binder.player.forcePlayAtIndex(
+                                            songs.map( Song::asMediaItem ),
+                                            index
+                                        )
                                     }
                                 )
                             }
@@ -463,11 +472,7 @@ fun YouTubeArtist(
                                      SwipeablePlaylistItem(
                                          mediaItem = song.toMediaItem,
                                          onPlayNext = {
-                                             binder.player.addNext(
-                                                 item = song,
-                                                 toMediaItem = InnertubeSong::toMediaItem,
-                                                 getDuration = { it.durationText.toDuration().inWholeMilliseconds }
-                                             )
+                                             binder.player.addNext( song.toMediaItem )
                                          }
                                      ) {
                                          SongItem.Render(
@@ -481,9 +486,10 @@ fun YouTubeArtist(
                                              showThumbnail = true,
                                              onClick = {
                                                  binder.stopRadio()
-                                                 binder.player.forcePlayAtIndex( songs, index, InnertubeSong::toMediaItem ) {
-                                                     it.durationText.toDuration().inWholeMilliseconds
-                                                 }
+                                                 binder.player.forcePlayAtIndex(
+                                                     songs.map( InnertubeSong::toMediaItem ),
+                                                     index
+                                                 )
                                              }
                                          )
                                      }

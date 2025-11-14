@@ -267,7 +267,7 @@ fun HomeSongs(
 
             SwipeablePlaylistItem(
                 mediaItem = mediaItem,
-                onPlayNext = { binder.player.addNext( song ) },
+                onPlayNext = { binder?.player?.addNext( mediaItem ) },
                 onDownload = {
                     if( builtInPlaylist != BuiltInPlaylist.OnDevice ) {
                         binder?.cache?.removeResource(mediaItem.mediaId)
@@ -282,7 +282,9 @@ fun HomeSongs(
                             )
                     }
                 },
-                onEnqueue = { binder.player.enqueue( song ) }
+                onEnqueue = {
+                    binder?.player?.enqueue(mediaItem)
+                }
             ) {
                 SongItem.Render(
                     song = song,
@@ -334,9 +336,15 @@ fun HomeSongs(
 
                         val selectedSongs = getSongs()
                         if( song in selectedSongs )
-                            binder.player.forcePlayAtIndex( selectedSongs, selectedSongs.indexOf( song ) )
+                            binder.player.forcePlayAtIndex(
+                                selectedSongs.fastMap( Song::asMediaItem ),
+                                selectedSongs.indexOf( song )
+                            )
                         else
-                            binder.player.forcePlayAtIndex( itemsOnDisplay, index )
+                            binder.player.forcePlayAtIndex(
+                                itemsOnDisplay.fastMap( Song::asMediaItem ),
+                                index
+                            )
                     }
                 )
             }

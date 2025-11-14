@@ -18,10 +18,4 @@
         <item quantity="many">%d file</item>
         <item quantity="other">%d file</item>
     </plurals>
-    <plurals name="song">
-        <item quantity="other">%d song</item>
-        <item quantity="few">%d song</item>
-        <item quantity="many">%d song</item>
-        <item quantity="one">%d song</item>
-    </plurals>
 </resources>

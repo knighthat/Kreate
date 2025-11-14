@@ -372,7 +372,9 @@ fun OnlineSearch(
                                 };
                                 hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                             },
-                            onClick = { binder.player.forcePlay( song ) }
+                            onClick = {
+                                binder.player.forcePlay(song.asMediaItem)
+                            }
                         )
                     }
                 }

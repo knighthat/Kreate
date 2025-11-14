@@ -130,6 +130,7 @@ import it.fast4x.rimusic.ui.styling.customColorPalette
 import it.fast4x.rimusic.ui.styling.dynamicColorPaletteOf
 import it.fast4x.rimusic.ui.styling.typographyOf
 import it.fast4x.rimusic.utils.LocalMonetCompat
+import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.getEnum
 import it.fast4x.rimusic.utils.intent
@@ -942,7 +943,7 @@ MainActivity :
                                 val binder = snapshotFlow { binder }.filterNotNull().first()
                                 withContext(Dispatchers.Main) {
                                     if ( !song.explicit && !Preferences.PARENTAL_CONTROL.value )
-                                        binder.player.forcePlay( song )
+                                        binder?.player?.forcePlay(song.asMediaItem)
                                     else
                                         Toaster.w( "Parental control is enabled" )
                                 }

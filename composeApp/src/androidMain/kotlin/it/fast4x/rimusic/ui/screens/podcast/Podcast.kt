@@ -108,11 +108,11 @@ import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.fadingEdge
 import it.fast4x.rimusic.utils.forcePlayAtIndex
+import it.fast4x.rimusic.utils.forcePlayFromBeginning
 import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.medium
-import it.fast4x.rimusic.utils.playShuffled
 import it.fast4x.rimusic.utils.secondary
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
@@ -450,11 +450,9 @@ fun Podcast(
                                     .padding(horizontal = 5.dp)
                                     .combinedClickable(
                                         onClick = {
-                                            binder.player.enqueue(
-                                                items = podcastPage?.listEpisode.orEmpty(),
-                                                toMediaItem = Innertube.Podcast.EpisodeItem::asMediaItem,
-                                                getDuration = { it.durationString.toDuration().inWholeMilliseconds }
-                                            )
+                                            podcastPage?.listEpisode?.map(Innertube.Podcast.EpisodeItem::asMediaItem)?.let { mediaItems ->
+                                                binder?.player?.enqueue(mediaItems, context)
+                                            }
                                         },
                                         onLongClick = {
                                             Toaster.i( R.string.info_enqueue_songs )
@@ -471,8 +469,15 @@ fun Podcast(
                                     .padding(horizontal = 5.dp)
                                     .combinedClickable(
                                         onClick = {
-                                            binder.stopRadio()
-                                            podcastPage?.listEpisode?.also( binder.player::playShuffled )
+                                            if (podcastPage?.listEpisode?.isNotEmpty() == true) {
+                                                binder?.stopRadio()
+                                                podcastPage?.listEpisode?.shuffled()?.map(Innertube.Podcast.EpisodeItem::asMediaItem)
+                                                    ?.let {
+                                                        binder?.player?.forcePlayFromBeginning(
+                                                            it
+                                                        )
+                                                    }
+                                            }
                                         },
                                         onLongClick = {
                                             Toaster.i( R.string.info_shuffle )
@@ -691,11 +696,7 @@ fun Podcast(
                     SwipeablePlaylistItem(
                         mediaItem = song.asMediaItem,
                         onPlayNext = {
-                            binder.player.addNext(
-                                item = song,
-                                toMediaItem = Innertube.Podcast.EpisodeItem::asMediaItem,
-                                getDuration = { it.durationString.toDuration().inWholeMilliseconds }
-                            )
+                            binder?.player?.addNext(song.asMediaItem)
                         },
                         onDownload = {
                             binder?.cache?.removeResource(song.asMediaItem.mediaId)
@@ -711,11 +712,7 @@ fun Podcast(
                                 )
                         },
                         onEnqueue = {
-                            binder.player.enqueue(
-                                item = song,
-                                toMediaItem = Innertube.Podcast.EpisodeItem::asMediaItem,
-                                getDuration = { it.durationString.toDuration().inWholeMilliseconds }
-                            )
+                            binder?.player?.enqueue(song.asMediaItem)
                         }
                     ) {
                         SongItem.Render(
@@ -737,14 +734,11 @@ fun Podcast(
                             onClick = {
                                 searching = false
                                 filter = null
-
-                                binder.stopRadio()
-                                binder.player.forcePlayAtIndex(
-                                    items = podcastPage?.listEpisode.orEmpty(),
-                                    index = index,
-                                    toMediaItem = Innertube.Podcast.EpisodeItem::asMediaItem,
-                                    getDuration = { it.durationString.toDuration().inWholeMilliseconds }
-                                )
+                                podcastPage?.listEpisode?.map(Innertube.Podcast.EpisodeItem::asMediaItem)
+                                    ?.let { mediaItems ->
+                                        binder.stopRadio()
+                                        binder.player.forcePlayAtIndex(mediaItems, index)
+                                    }
                             }
                         )
                     }
@@ -768,8 +762,14 @@ fun Podcast(
                 lazyListState = lazyListState,
                 iconId = R.drawable.shuffle,
                 onClick = {
-                    binder.stopRadio()
-                    podcastPage?.listEpisode?.also( binder.player::playShuffled )
+                    podcastPage?.listEpisode?.let { songs ->
+                        if (songs.isNotEmpty()) {
+                            binder?.stopRadio()
+                            binder?.player?.forcePlayFromBeginning(
+                                songs.shuffled().map(Innertube.Podcast.EpisodeItem::asMediaItem)
+                            )
+                        }
+                    }
                 }
             )
 

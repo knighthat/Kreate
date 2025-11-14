@@ -113,11 +113,15 @@ fun SearchYoutubeEntity (
                 itemContent = { video ->
                     SwipeablePlaylistItem(
                         mediaItem = video.asMediaItem,
-                        onPlayNext = { binder?.player?.addNext( video ) },
+                        onPlayNext = {
+                            binder?.player?.addNext(video.asMediaItem)
+                        },
                         onDownload = {
                             Toaster.w( R.string.downloading_videos_not_supported )
                         },
-                        onEnqueue = { binder?.player?.enqueue( video ) }
+                        onEnqueue = {
+                            binder?.player?.enqueue(video.asMediaItem)
+                        }
                     ) {
                         SongItem.Render(
                             innertubeVideo = video,
@@ -130,7 +134,7 @@ fun SearchYoutubeEntity (
                                 if ( isVideoEnabled )
                                     binder?.player?.playVideo( video.asMediaItem )
                                 else
-                                    binder?.player?.forcePlay( video )
+                                    binder?.player?.forcePlay( video.asMediaItem )
 
                                 onDismiss()
                             },

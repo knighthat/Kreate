@@ -2,10 +2,9 @@ package it.fast4x.rimusic.utils
 
 
 import android.annotation.SuppressLint
-import androidx.annotation.MainThread
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastDistinctBy
-import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -14,56 +13,19 @@ import androidx.media3.common.Player.REPEAT_MODE_ALL
 import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.Timeline
+import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.utils.innertube.toMediaItem
-import app.kreate.database.models.Song
 import app.kreate.util.toDuration
-import it.fast4x.innertube.Innertube
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.DurationInMinutes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
-import org.jetbrains.annotations.Blocking
-
-
-private fun Player.playWhenReady() {
-    prepare()
-    restoreGlobalVolume()
-    playWhenReady = true
-}
-
-@Blocking
-private fun <T> filterDurationAndLimit(
-    items: List<T>,
-    toMediaItem: T.() -> MediaItem,
-    getDuration: (T) -> Long
-): List<MediaItem> {
-    val durationLimit by Preferences.LIMIT_SONGS_WITH_DURATION
-    val maxCount by Preferences.MAX_NUMBER_OF_SONG_IN_QUEUE
-
-    val result = mutableListOf<MediaItem>()
-    for( s in items ) {
-        if( result.size > maxCount.toInt() )
-            break
-
-        val durationMillis = getDuration(s)
-        if( durationLimit != DurationInMinutes.Disabled
-            && durationMillis > durationLimit.asMillis
-        ) continue
-
-        val cleanedMediaItem = s.toMediaItem()
-        result.add( cleanedMediaItem )
-    }
-
-    return result.toList()      // Make it immutable
-}
+import timber.log.Timber
+import java.util.ArrayDeque
 
 var GlobalVolume: Float = 0.5f
 
@@ -71,8 +33,16 @@ fun Player.restoreGlobalVolume() {
     volume = GlobalVolume
 }
 
+fun Player.saveGlobalVolume() {
+    GlobalVolume = volume
+}
+
 fun Player.setGlobalVolume(v: Float) {
     GlobalVolume = v
+}
+
+fun Player.getGlobalVolume(): Float {
+    return GlobalVolume
 }
 
 fun Player.isNowPlaying(mediaId: String): Boolean {
@@ -95,6 +65,26 @@ inline val Timeline.windows: List<Timeline.Window>
 val Player.shouldBePlaying: Boolean
     get() = !(playbackState == Player.STATE_ENDED || !playWhenReady)
 
+fun Player.removeMediaItems(range: IntRange) = removeMediaItems(range.first, range.last + 1)
+
+//fun Player.seamlessPlay(mediaItem: MediaItem) {
+//    if (mediaItem.mediaId == currentMediaItem?.mediaId) {
+//        if (currentMediaItemIndex > 0) removeMediaItems(0, currentMediaItemIndex)
+//        if (currentMediaItemIndex < mediaItemCount - 1) removeMediaItems(currentMediaItemIndex + 1, mediaItemCount)
+//    } else {
+//        forcePlay(mediaItem)
+//    }
+//}
+
+fun Player.seamlessPlay(mediaItem: MediaItem) {
+    if (mediaItem.mediaId == currentMediaItem?.mediaId) {
+        if (currentMediaItemIndex > 0) removeMediaItems(0 until currentMediaItemIndex)
+        if (currentMediaItemIndex < mediaItemCount - 1)
+            removeMediaItems(currentMediaItemIndex + 1 until mediaItemCount)
+    } else forcePlay(mediaItem)
+}
+
+
 fun Player.shuffleQueue() {
     val mediaItems = currentTimeline.mediaItems.toMutableList().apply { removeAt(currentMediaItemIndex) }
     if (currentMediaItemIndex > 0) removeMediaItems(0, currentMediaItemIndex)
@@ -102,54 +92,26 @@ fun Player.shuffleQueue() {
     addMediaItems(mediaItems.shuffled())
 }
 
-fun <T> Player.forcePlay(
-    item: T,
-    toMediaItem: T.() -> MediaItem,
-    getDuration: (T) -> Long
-) =
-    CoroutineScope(Dispatchers.Default).launch {
-        val mediaItems = filterDurationAndLimit( listOf(item), toMediaItem, getDuration )
-        if( mediaItems.isEmpty() ) {
-            Toaster.w( R.string.warning_songs_duration_exceeds_limit )
-            return@launch
-        }
-
-        withContext( Dispatchers.Main ) {
-            setMediaItems( mediaItems, true )
-            playWhenReady()
-        }
-    }
-
-fun Player.forcePlay( song: Song ) {
-    forcePlay( song, Song::asCleanedMediaItem ) {
-        it.durationText.toDuration().inWholeMilliseconds
-    }
-}
-
+@SuppressLint("Range")
 @UnstableApi
-fun Player.forcePlay( song: Innertube.SongItem ) {
-    forcePlay( song, Innertube.SongItem::asMediaItem ) {
-        it.durationText.toDuration().inWholeMilliseconds
-    }
-}
+fun Player.playAtMedia(mediaItems: List<MediaItem>, mediaId: String) {
+    Log.d("mediaItem-playAtMedia","${mediaItems.size}")
+    if (mediaItems.isEmpty()) return
+    val itemIndex = findMediaItemIndexById(mediaId)
 
-@UnstableApi
-fun Player.forcePlay( video: Innertube.VideoItem ) {
-    forcePlay( video, Innertube.VideoItem::asMediaItem ) {
-        it.durationText.toDuration().inWholeMilliseconds
-    }
-}
+    Log.d("mediaItem-playAtMedia",itemIndex.toString())
+    setMediaItems(mediaItems, itemIndex, C.TIME_UNSET)
+    prepare()
+    restoreGlobalVolume()
+    playWhenReady = true
 
-fun Player.forcePlay( song: InnertubeSong ) {
-    forcePlay( song, InnertubeSong::toMediaItem ) {
-        it.durationText.toDuration().inWholeMilliseconds
-    }
 }
 
 fun Player.forcePlay(mediaItem: MediaItem) {
-    forcePlay( mediaItem, { this } ) {
-        it.mediaMetadata.durationMs ?: 0L
-    }
+    setMediaItem(mediaItem.cleaned, true)
+    prepare()
+    restoreGlobalVolume()
+    playWhenReady = true
 }
 
 fun Player.playVideo(mediaItem: MediaItem) {
@@ -158,60 +120,12 @@ fun Player.playVideo(mediaItem: MediaItem) {
 }
 
 fun Player.playAtIndex(mediaItemIndex: Int) {
-    seekToDefaultPosition( mediaItemIndex )
-    playWhenReady()
+    seekTo(mediaItemIndex, C.TIME_UNSET)
+    prepare()
+    restoreGlobalVolume()
+    playWhenReady = true
 }
 
-fun <T> Player.forcePlayAtIndex(
-    items: List<T>,
-    index: Int,
-    toMediaItem: T.() -> MediaItem,
-    getDuration: (T) -> Long
-) =
-    CoroutineScope(Dispatchers.Default).launch {
-        val realList = items.subList( index.coerceAtLeast(0), items.size )
-        val mediaItems = filterDurationAndLimit( realList, toMediaItem, getDuration )
-        if( mediaItems.isEmpty() ) {
-            Toaster.w( R.string.warning_no_valid_songs )
-            return@launch
-        }
-
-        // [index] equals to -1 means whatever first
-        val startIndex = if( index > -1 ) {
-            val item = items[index].toMediaItem()
-            // This index should be 0 in most cases
-            mediaItems.indexOfFirst {
-                it.mediaId == item.mediaId
-            }
-        } else 0
-
-        // When selected item is no longer in the list,
-        // we only warn user and do nothing.
-        if( startIndex == -1 ) {
-            Toaster.w( R.string.warning_songs_duration_exceeds_limit )
-            return@launch
-        }
-
-        // Let user know how many songs were excluded.
-        if( mediaItems.size < items.size ) {
-            val excludedByDurationLimit = items.size - mediaItems.size
-            Toaster.w(
-                R.string.warning_num_songs_exlucded_because_duration_limit,
-                appContext().resources.getQuantityString(
-                    R.plurals.song,
-                    excludedByDurationLimit,
-                    excludedByDurationLimit
-                )
-            )
-        }
-
-        withContext( Dispatchers.Main ) {
-            setMediaItems( mediaItems, startIndex, C.INDEX_UNSET.toLong() )
-            playWhenReady()
-        }
-    }
-
-@JvmName("forcePlayMediaItemsAtIndex")
 @SuppressLint("Range")
 @UnstableApi
 fun Player.forcePlayAtIndex(mediaItems: List<MediaItem>, mediaItemIndex: Int) {
@@ -223,53 +137,41 @@ fun Player.forcePlayAtIndex(mediaItems: List<MediaItem>, mediaItemIndex: Int) {
 
         runBlocking( Dispatchers.Main ) {
             setMediaItems( cleanedMediaItems, mediaItemIndex, C.TIME_UNSET )
-            playWhenReady()
+            prepare()
+            restoreGlobalVolume()
+            playWhenReady = true
         }
     }
 }
-
-@JvmName("forcePlaySongsAtIndex")
-fun Player.forcePlayAtIndex( songs: List<Song>, startIndex: Int ) {
-    forcePlayAtIndex( songs, startIndex, Song::asCleanedMediaItem ) {
-        it.durationText.toDuration().inWholeMilliseconds
-    }
-}
-
-@JvmName("playSongsShuffled")
-fun Player.playShuffled( songs: List<Song> ) {
-    if( songs.isEmpty() ) {
-        Toaster.w( R.string.warning_nothing_to_shuffle )
-        return
-    }
-
-    val shuffled = songs.shuffled()
-    forcePlayAtIndex( shuffled, -1 )
-}
-
-@JvmName("playPodcastEpisodeShuffled")
 @UnstableApi
-fun Player.playShuffled(episodes: List<Innertube.Podcast.EpisodeItem> ) {
-    if( episodes.isEmpty() ) {
-        Toaster.w( R.string.warning_nothing_to_shuffle )
-        return
-    }
+fun Player.forcePlayFromBeginning(mediaItems: List<MediaItem>) =
+    forcePlayAtIndex(mediaItems, 0)
 
-    val shuffled = episodes.shuffled()
-    forcePlayAtIndex( shuffled, -1, Innertube.Podcast.EpisodeItem::asMediaItem ) {
-        it.durationString.toDuration().inWholeMilliseconds
+fun Player.forceSeekToPrevious() {
+    if (hasPreviousMediaItem() || currentPosition > maxSeekToPreviousPosition) {
+        seekToPrevious()
+    } else if (mediaItemCount > 0) {
+        seekTo(mediaItemCount - 1, C.TIME_UNSET)
     }
 }
+
+fun Player.forceSeekToNext() =
+    if (hasNextMediaItem()) seekToNext() else seekTo(0, C.TIME_UNSET)
 
 fun Player.playNext() {
     seekToNextMediaItem()
     //seekToNext()
-    playWhenReady()
+    prepare()
+    restoreGlobalVolume()
+    playWhenReady = true
 }
 
 fun Player.playPrevious() {
     seekToPreviousMediaItem()
     //seekToPrevious()
-    playWhenReady()
+    prepare()
+    restoreGlobalVolume()
+    playWhenReady = true
 }
 
 /**
@@ -285,166 +187,144 @@ fun Player.smartRewind() =
     else
         seekToPreviousMediaItem()
 
-@MainThread
-fun <T> Player.addNext(
-    item: T,
-    toMediaItem: T.() -> MediaItem,
-    getDuration: (T) -> Long
-) = enqueue( item, currentMediaItemIndex + 1, toMediaItem, getDuration )
-
-@MainThread
+@UnstableApi
 fun Player.addNext( mediaItem: MediaItem ) {
-    addNext( mediaItem, { this }, { it.mediaMetadata.durationMs ?: 0L } )
-}
+    if (excludeMediaItem(mediaItem)) return
 
-@MainThread
-fun Player.addNext( song: Song ) {
-    addNext( song, Song::asCleanedMediaItem ) {
-        it.durationText.toDuration().inWholeMilliseconds
+    val itemIndex = findMediaItemIndexById(mediaItem.mediaId)
+    if (itemIndex >= 0) removeMediaItem(itemIndex)
+
+    if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
+        forcePlay(mediaItem)
+    } else {
+        addMediaItem(currentMediaItemIndex + 1, mediaItem.cleaned)
     }
 }
 
 @UnstableApi
-@MainThread
-fun Player.addNext( video: Innertube.VideoItem ) {
-    addNext( video, Innertube.VideoItem::asMediaItem ) {
-        it.durationText.toDuration().inWholeMilliseconds
+fun Player.addNext(mediaItems: List<MediaItem>, context: Context? = null) {
+    val filteredMediaItems = if (context != null) excludeMediaItems(mediaItems, context)
+    else mediaItems
+
+    filteredMediaItems.forEach { mediaItem ->
+        val itemIndex = findMediaItemIndexById(mediaItem.mediaId)
+        if (itemIndex >= 0) removeMediaItem(itemIndex)
     }
+
+    if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
+        setMediaItems(filteredMediaItems.map { it.cleaned })
+
+        if( playbackState == Player.STATE_IDLE )
+            prepare()
+
+        play()
+    } else {
+        addMediaItems(currentMediaItemIndex + 1, filteredMediaItems.map { it.cleaned })
+    }
+
 }
 
-fun <T> Player.addNext(
-    items: List<T>,
-    toMediaItem: T.() -> MediaItem,
-    getDuration: (T) -> Long
-) = enqueue( items, currentMediaItemIndex + 1, toMediaItem, getDuration )
 
-@JvmName("addMediaItemsNext")
-fun Player.addNext( songs: List<Song> ) {
-    addNext( songs, Song::asCleanedMediaItem ) {
-        it.durationText.toDuration().inWholeMilliseconds
-    }
-}
-
-fun <T> Player.enqueue(
-    item: T,
-    index: Int,
-    toMediaItem: T.() -> MediaItem,
-    getDuration: (T) -> Long
-) =
-    CoroutineScope(Dispatchers.Default).launch {
-        val mediaItems = filterDurationAndLimit( listOf(item), toMediaItem, getDuration )
-        if( mediaItems.isEmpty() ) {
-            Toaster.w( R.string.warning_songs_duration_exceeds_limit )
-            return@launch
-        }
-
-        withContext( Dispatchers.Main ) {
-            if( playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED ) {
-                setMediaItems( mediaItems, true )
-                playWhenReady()
-            } else
-                addMediaItems( index, mediaItems )
-        }
-    }
-
-@MainThread
-fun <T> Player.enqueue(
-    item: T,
-    toMediaItem: T.() -> MediaItem,
-    getDuration: (T) -> Long
-) = enqueue( item, mediaItemCount + 1, toMediaItem, getDuration )
-
-@MainThread
-fun Player.enqueue( song: Song ) {
-    enqueue( song, Song::asCleanedMediaItem ) {
-        it.durationText.toDuration().inWholeMilliseconds
-    }
-}
-
-@UnstableApi
-@MainThread
-fun Player.enqueue( video: Innertube.VideoItem ) {
-    enqueue( video, Innertube.VideoItem::asMediaItem ) {
-        it.durationText.toDuration().inWholeMilliseconds
-    }
-}
-
-@MainThread
 fun Player.enqueue( mediaItem: MediaItem ) {
-    enqueue( mediaItem, { this }, { it.mediaMetadata.durationMs ?: 0L } )
+    if ( excludeMediaItem(mediaItem) ) return
+
+    if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
+        forcePlay(mediaItem)
+    } else {
+        addMediaItem(mediaItemCount, mediaItem.cleaned)
+    }
 }
 
-fun <T> Player.enqueue(
-    items: List<T>,
-    index: Int,
-    toMediaItem: T.() -> MediaItem,
-    getDuration: (T) -> Long
-) =
-    CoroutineScope(Dispatchers.Default).launch {
-        val mediaItems = filterDurationAndLimit( items, toMediaItem, getDuration )
-        if( mediaItems.isEmpty() ) {
-            Toaster.w( R.string.warning_no_valid_songs )
-            return@launch
+
+@UnstableApi
+fun Player.enqueue(mediaItems: List<MediaItem>, context: Context? = null) {
+    val filteredMediaItems = if (context != null) excludeMediaItems(mediaItems, context)
+    else mediaItems
+
+    if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
+        //forcePlayFromBeginning(mediaItems)
+        forcePlayFromBeginning(filteredMediaItems)
+    } else {
+        //addMediaItems(mediaItemCount, mediaItems)
+        addMediaItems(mediaItemCount, filteredMediaItems.map { it.cleaned })
+    }
+}
+
+/*
+fun Player.findNextMediaItemById(mediaId: String): MediaItem? {
+    for (i in currentMediaItemIndex until mediaItemCount) {
+        if (getMediaItemAt(i).mediaId == mediaId) {
+            return getMediaItemAt(i)
         }
+    }
+    return null
+}
+*/
 
-        // Let user know how many songs were excluded.
-        if( mediaItems.size < items.size ) {
-            val excludedByDurationLimit = items.size - mediaItems.size
-            Toaster.w(
-                R.string.warning_num_songs_exlucded_because_duration_limit,
-                appContext().resources.getQuantityString(
-                    R.plurals.song,
-                    excludedByDurationLimit,
-                    excludedByDurationLimit
-                )
-            )
+fun Player.findNextMediaItemById(mediaId: String): MediaItem? = runCatching {
+    for (i in currentMediaItemIndex until mediaItemCount) {
+        if (getMediaItemAt(i).mediaId == mediaId) return getMediaItemAt(i)
+    }
+    return null
+}.getOrNull()
+
+fun Player.findMediaItemIndexById(mediaId: String): Int {
+    for (i in currentMediaItemIndex until mediaItemCount) {
+        if (getMediaItemAt(i).mediaId == mediaId) {
+            return i
         }
+    }
+    return -1
+}
 
-        val (mediaId, queue) = withContext( Dispatchers.Main ) {
-            if ( playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED ) {
-                setMediaItems( mediaItems, true )
-                playWhenReady()
+fun Player.excludeMediaItems(mediaItems: List<MediaItem>, context: Context): List<MediaItem> {
+    var filteredMediaItems = mediaItems
+    runCatching {
+        val excludeSongWithDurationLimit by Preferences.LIMIT_SONGS_WITH_DURATION
 
-                null to emptyList()
-            } else
-                currentMediaItem?.mediaId to this@enqueue.mediaItems.toList()       // Make a copy because next steps access it outside of Main thread
-        }
-        if( mediaId == null ) return@launch
-
-        // This step goes through the queue from the bottom and remove
-        // MediaItems that are present in [mediaItems] list
-        val addingIds = mediaItems.fastMap( MediaItem::mediaId ).toSet()
-        for( i in queue.lastIndex downTo 0 ) {
-            // Remove non-playing songs in the queue
-            val queueMediaId = queue[i].mediaId
-            if( queueMediaId !in addingIds || queueMediaId == mediaId )
-                continue
-
-            withContext( Dispatchers.Main ) {
-                removeMediaItem( i )
+        if (excludeSongWithDurationLimit != DurationInMinutes.Disabled) {
+            filteredMediaItems = mediaItems.filter {
+                it.mediaMetadata
+                    .extras
+                    ?.getString("durationText")
+                    .toDuration()
+                    .inWholeMilliseconds < excludeSongWithDurationLimit.asMillis
             }
-        }
 
-        val realList = mediaItems.fastFilter { it.mediaId != mediaId }
-        withContext( Dispatchers.Main ) {
-            addMediaItems( index, realList )
+            val excludedSongs = mediaItems.size - filteredMediaItems.size
+            if (excludedSongs > 0)
+                Toaster.n( R.string.message_excluded_s_songs, arrayOf( excludedSongs ) )
         }
+    }.onFailure {
+        Timber.e(it.message)
     }
 
-@MainThread
-fun <T> Player.enqueue(
-    items: List<T>,
-    toMediaItem: T.() -> MediaItem,
-    getDuration: (T) -> Long
-) = enqueue( items, mediaItemCount + 1, toMediaItem, getDuration )
-
-@JvmName("enqueueSongs")
-fun Player.enqueue( songs: List<Song> ) {
-    enqueue( songs, Song::asCleanedMediaItem ) {
-        it.durationText.toDuration().inWholeMilliseconds
-    }
+    return filteredMediaItems
 }
+fun Player.excludeMediaItem(mediaItem: MediaItem): Boolean {
+    runCatching {
+        val excludeSongWithDurationLimit by Preferences.LIMIT_SONGS_WITH_DURATION
+        if (excludeSongWithDurationLimit != DurationInMinutes.Disabled) {
+            val excludedSong = mediaItem.mediaMetadata
+                .extras
+                ?.getString("durationText")
+                .toDuration()
+                .inWholeMilliseconds <= excludeSongWithDurationLimit.asMillis
 
+            if (excludedSong)
+                Toaster.n( R.string.message_excluded_s_songs, arrayOf( 1 ) )
+
+            return excludedSong
+        }
+    }.onFailure {
+        //it.printStackTrace()
+        Timber.e(it.message)
+        return false
+    }
+
+    return false
+
+}
 
 val Player.mediaItems: List<MediaItem>
     get() = object : AbstractList<MediaItem>() {
@@ -453,6 +333,28 @@ val Player.mediaItems: List<MediaItem>
 
         override fun get(index: Int): MediaItem = getMediaItemAt(index)
     }
+
+fun Player.getCurrentQueueIndex(): Int {
+    if (currentTimeline.isEmpty) {
+        return -1
+    }
+    var index = 0
+    var currentMediaItemIndex = currentMediaItemIndex
+    while (currentMediaItemIndex != C.INDEX_UNSET) {
+        currentMediaItemIndex = currentTimeline.getPreviousWindowIndex(currentMediaItemIndex, REPEAT_MODE_OFF, shuffleModeEnabled)
+        if (currentMediaItemIndex != C.INDEX_UNSET) {
+            index++
+        }
+    }
+    return index
+}
+
+fun Player.togglePlayPause() {
+    if (!playWhenReady && playbackState == Player.STATE_IDLE) {
+        prepare()
+    }
+    playWhenReady = !playWhenReady
+}
 
 fun Player.toggleRepeatMode() {
     repeatMode = when (repeatMode) {
@@ -465,4 +367,35 @@ fun Player.toggleRepeatMode() {
 
 fun Player.toggleShuffleMode() {
     shuffleModeEnabled = !shuffleModeEnabled
+}
+
+fun Player.getQueueWindows(): List<Timeline.Window> {
+    val timeline = currentTimeline
+    if (timeline.isEmpty) {
+        return emptyList()
+    }
+    val queue = ArrayDeque<Timeline.Window>()
+    val queueSize = timeline.windowCount
+
+    val currentMediaItemIndex: Int = currentMediaItemIndex
+    queue.add(timeline.getWindow(currentMediaItemIndex, Timeline.Window()))
+
+    var firstMediaItemIndex = currentMediaItemIndex
+    var lastMediaItemIndex = currentMediaItemIndex
+    val shuffleModeEnabled = shuffleModeEnabled
+    while ((firstMediaItemIndex != C.INDEX_UNSET || lastMediaItemIndex != C.INDEX_UNSET) && queue.size < queueSize) {
+        if (lastMediaItemIndex != C.INDEX_UNSET) {
+            lastMediaItemIndex = timeline.getNextWindowIndex(lastMediaItemIndex, REPEAT_MODE_OFF, shuffleModeEnabled)
+            if (lastMediaItemIndex != C.INDEX_UNSET) {
+                queue.add(timeline.getWindow(lastMediaItemIndex, Timeline.Window()))
+            }
+        }
+        if (firstMediaItemIndex != C.INDEX_UNSET && queue.size < queueSize) {
+            firstMediaItemIndex = timeline.getPreviousWindowIndex(firstMediaItemIndex, REPEAT_MODE_OFF, shuffleModeEnabled)
+            if (firstMediaItemIndex != C.INDEX_UNSET) {
+                queue.addFirst(timeline.getWindow(firstMediaItemIndex, Timeline.Window()))
+            }
+        }
+    }
+    return queue.toList()
 }
