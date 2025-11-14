@@ -844,8 +844,4 @@
     <string name="error_failed_to_get_charts">Listeler alınamadı</string>
     <string name="error_failed_to_acquire_account_info">Hesap bilgisi alınamadı</string>
     <string name="error_failed_to_sync_tab">%s senkronize edilemedi</string>
-    <string name="warning_num_songs_exlucded_because_duration_limit">%s, süre sınırını aştığı için hariç tutuldu</string>
-    <string name="warning_songs_duration_exceeds_limit">Seçilen şarkının süresi sınırı aşıyor</string>
-    <string name="warning_no_valid_songs">Geçerli şarkı yok</string>
-    <string name="warning_nothing_to_shuffle">Karıştırılacak bir şey yok</string>
 </resources>

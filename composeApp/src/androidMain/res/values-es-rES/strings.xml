@@ -844,8 +844,4 @@
     <string name="error_failed_to_get_charts">Error al conseguir gráficas</string>
     <string name="error_failed_to_acquire_account_info">Error al conseguir información de la cuenta</string>
     <string name="error_failed_to_sync_tab">Error al sincronizar %s</string>
-    <string name="warning_num_songs_exlucded_because_duration_limit">%s Excluido porque excede el límite de duración</string>
-    <string name="warning_songs_duration_exceeds_limit">La/s cancion/es Seleccionadas exceden el límite de duración</string>
-    <string name="warning_no_valid_songs">No hay canciones válidas</string>
-    <string name="warning_nothing_to_shuffle">No hay canciones que barajar</string>
 </resources>
