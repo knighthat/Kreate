@@ -10,6 +10,6 @@
         <item quantity="other">%d tệp tin</item>
     </plurals>
     <plurals name="song">
-        <item quantity="other">%d bài hát</item>
+        <item quantity="other">%d song</item>
     </plurals>
 </resources>
