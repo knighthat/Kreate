@@ -40,7 +40,7 @@ abstract class Contributor {
 
         const val AVATAR_SIZE = 40
         val SM_ARRANGEMENT_SPACE = Arrangement.spacedBy( 5.dp )
-        val CARD_SHAPE = RoundedCornerShape( 25.dp )
+        val CARD_SHAPE = RoundedCornerShape( 15.dp )
     }
 
     abstract val username: String

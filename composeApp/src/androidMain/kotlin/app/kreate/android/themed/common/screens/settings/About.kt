@@ -91,7 +91,7 @@ private inline fun <reified T: Contributor> getContributors(resources: Resources
 private fun RenderContributors( contributors: List<Contributor> ) =
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy( 15.dp ),
+        verticalArrangement = Contributor.SM_ARRANGEMENT_SPACE,
         contentPadding = PaddingValues(
             horizontal = SettingComponents.HORIZONTAL_PADDING.dp,
             vertical = 20.dp
