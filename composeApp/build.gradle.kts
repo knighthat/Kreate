@@ -4,6 +4,7 @@ import com.github.jk1.license.filter.ExcludeTransitiveDependenciesFilter
 import com.github.jk1.license.render.JsonReportRenderer
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.text.SimpleDateFormat
 
 val APP_NAME = "Kreate"
 val VERSION_CODE = 124
@@ -281,21 +282,15 @@ android {
             // Signing config
             signingConfig = signingConfigs.getByName( "nightly" )
 
-            val buildDate = System.getenv("BUILD_DATE")
-            if( buildDate.isNullOrBlank() )
-                error( "Build failed! Missing env \"BUILD_DATE\"" )
-            // Turns "2025.11.01" to "251101"
-            val shortDate = buildDate.replace(
-                regex = Regex("""\d{2}(\d{2})\.(\d{2})\.(\d{2})"""),
-                replacement = "$1$2$3"
-            )
+            val longFormat = SimpleDateFormat("yyyy.MM.dd")
+            val shortFormat = SimpleDateFormat("yyMMdd")
 
             // App's properties
             applicationIdSuffix = ".nightly"
-            versionName = buildDate
+            versionName = longFormat.format (Date() )
             manifestPlaceholders["appName"] = "Nightly"
             // The idea is to combine build date and current version code together
-            versionCode = "$shortDate$VERSION_CODE".toInt()
+            versionCode = "${shortFormat.format( Date() )}$VERSION_CODE".toInt()
         }
         create( "prod" ) {
             dimension = "env"
