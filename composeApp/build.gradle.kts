@@ -4,10 +4,26 @@ import com.github.jk1.license.filter.ExcludeTransitiveDependenciesFilter
 import com.github.jk1.license.render.JsonReportRenderer
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.security.MessageDigest
 import java.text.SimpleDateFormat
+import java.util.Date
 
 val APP_NAME = "Kreate"
 val VERSION_CODE = 124
+
+private fun String.sha256(): String {
+    val digest = MessageDigest.getInstance( "SHA-256" )
+    val hashBytes = digest.digest( this.toByteArray() )
+
+    return hashBytes.joinToString("") { b -> "%02x".format(b) }
+}
+
+// Please DO NOT change this, it's intended to differentiate between
+// knighthat/Kreate's build env and others' build env.
+// Only official build env has passwords and keystore to sign the APK
+// Other build environments can have unsigned version instead
+val officialBuildPhrase: String? = System.getenv( "OFFICIAL_BUILD_PASSPHRASE" )
+val isOfficialBuildEnv = !officialBuildPhrase.isNullOrBlank() && officialBuildPhrase.sha256() == "b2c778240e03b2005d23899aa02e51de049223a54d549d082e89dc20e51dd545"
 
 plugins {
     // Multiplatform
@@ -297,8 +313,9 @@ android {
 
             isDefault = true
 
-            // Singing config
-            signingConfig = signingConfigs.getByName( "production" )
+            if( isOfficialBuildEnv )
+                // Singing config
+                signingConfig = signingConfigs.getByName( "production" )
 
             // App's properties
             versionName = "1.8.4"
