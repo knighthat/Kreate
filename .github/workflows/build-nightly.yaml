@@ -1,0 +1,198 @@
+name: Build (Nightly)
+
+on:
+  schedule:
+    - cron: '29 8 * * *'  # 8:29AM every day
+
+  # Allow manual trigger
+  workflow_dispatch:
+
+
+# Prevent multiple jobs from running at the same time
+concurrency:
+  group: 'nightly-deploy'
+  cancel-in-progress: true  # Cancel running job in favor of new request
+
+
+jobs:
+  check-for-changes:
+    name: Check for changes
+    runs-on: ubuntu-latest
+
+    env:
+      CHANGELOGS_FILENAME: changelogs.txt
+
+    outputs:
+      changes_made: ${{ steps.detect_changes.outputs.changes_made }}
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+          # Always have a hard-coded limit of how many commits to fetch.
+          # Better idea to fetch the whole thing but fetch time goes BRRRRRR.
+          fetch-depth: 300
+
+      # git log: shows commit history
+      # --since="1 day ago": Show commits in the last 24 hours
+      # --name-only: Show name of changed file
+      # --pretty=format: Show nothing but file name
+      # --submodules: Show changes in submodules too
+      # |: Pipe result(s) to next command
+      # sort -u: Sort and keep unique lines
+      - name: Get change logs
+        id: changelogs
+        run: |
+          NAMES=$(git log --since="1 day ago" --name-only --submodule=log --pretty=format:)
+          echo "$NAMES" | sort -u > "$CHANGELOGS_FILENAME"
+
+      - name: "DEBUG: Verify changelogs file"
+        run: cat "$CHANGELOGS_FILENAME"
+
+      # - grep: Filter out strings matched provided expression
+      # - -q: Returns 0 upon first match, 1 for else
+      # - -e: Additional expression, string only needs to match 1 expression to be considered matched
+      #
+      # Check for these locations:
+      # - composeApp/src/commonMain
+      # - composeApp/src/androidMain
+      # - composeApp/src/androidGithub
+      # - composeApp/src/github
+      # - build.gradle.kts              : Any file in the project
+      # - gradle/**
+      # - extensions/**
+      # - modules/**
+      - name: Filter locations
+        id: detect_changes
+        continue-on-error: true
+        run: |
+          grep -q \
+              -e "^composeApp/src/androidMain/" \
+              -e "^composeApp/src/commonMain/" \
+              -e "^composeApp/src/androidGithub/" \
+              -e "^composeApp/src/github/" \
+              -e "build\.gradle\.kts$" \
+              -e "^gradle/" \
+              -e "^extensions/" \
+              -e "^modules/" \
+              $CHANGELOGS_FILENAME
+          
+          EXIT_CODE=$? 
+          [[ $EXIT_CODE -eq 0 ]] && echo "changes_made=true" >> $GITHUB_OUTPUT
+
+  build-github-nightly:
+    needs: [check-for-changes]
+    if: ${{ needs.check-for-changes.outputs.changes_made == 'true' }}
+
+    name: Build GitHub nightly
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
+
+    env:
+      STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+      KEY_PASSWORD: ${{ secrets. NIGHTLY_KEY_PASSWORD }}
+      OFFICIAL_BUILD_PASSPHRASE: ${{ secrets.OFFICIAL_BUILD_PASSPHRASE }}
+      KEYSTORE_FILENAME: nightly.jks
+
+    steps:
+      - name: Revert keystore from base64 to PCKS#12 file
+        run: |
+          mkdir -p $KEYSTORE_PATH
+
+          echo "${{ secrets.NIGHTLY_KEYSTORE }}" | base64 -d > $KEYSTORE_PATH/$KEYSTORE_FILENAME
+
+      # This step is designed to fail when decoded keystore's
+      # hash doesn't match pre-defined hash
+      - name: Verify keystore
+        run: echo "${{ secrets.NIGHTLY_KEYSTORE_SHA256 }} $KEYSTORE_PATH/$KEYSTORE_FILENAME" | sha256sum -c
+
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v5.0.0
+        with:
+          java-version: "21"
+          distribution: "corretto"
+
+      - name: Restore Gradle dependencies & build cache
+        # This job also acts as a cache builder for release builds
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ./build
+            ./composeApp/build
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle-wrapper.properties', '**/libs.versions.toml') }}
+          # Pulls latest cache artifact
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Build with Gradle
+        run: ./gradlew assembleGithubUniversalNightlyRelease
+
+      - name: Get build path
+        id: build_path
+        run: echo "path=composeApp/build/outputs/apk/githubUniversalNightly/release/Kreate-nightly.apk" >> $GITHUB_OUTPUT
+
+      - name: Upload artifact for uploading
+        uses: actions/upload-artifact@v5.0.0
+        with:
+          name: apk
+          path: ${{ steps.build_path.outputs.path }}
+
+  capture-time:
+    name: Capture current time
+    runs-on: ubuntu-latest
+
+    # Set date as a variable
+    outputs:
+      date: ${{ steps.date.outputs.date }}
+      dot-date: ${{ steps.dot_date.outputs.date }}
+
+    steps:
+      - name: Get date
+        id: date
+        # Output of "October 2 2024" will be "20241002"
+        run: echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+
+      - name: Get dot date
+        id: dot_date
+        # Output of "October 2 2024" will be "2024.10.02"
+        run: echo "date=$(date +'%Y.%m.%d')" >> $GITHUB_OUTPUT
+
+  upload-to-release:
+    needs: [capture-time, build-github-nightly]
+
+    name: Upload to release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download APKs
+        uses: actions/download-artifact@v6.0.0
+        with:
+          name: apk
+
+      - name: Upload built APK to release
+        # Skip this step when running with nektos/act
+        if: ${{ !env.ACT }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: 'Kreate-nightly.apk'
+          # Name: v20250303 | Nightly build
+          name: "${{ needs.capture-time.outputs.date }} | Nightly build"
+          # Tag name: v2025.03.03
+          tag_name: v${{ needs.capture-time.outputs.dot-date }}
+          prerelease: true
+          body: |
+            ## This is a nightly build
+
+            It's not meant for normal users, only install this version if you know what you're doing.
+
+            ---
+
+            To download official release, please visit [releases/latest](https://github.com/knighthat/Kreate/releases/latest)
+
+          token: ${{ secrets.RELEASE_TOKEN }}
+          generate_release_notes: true
