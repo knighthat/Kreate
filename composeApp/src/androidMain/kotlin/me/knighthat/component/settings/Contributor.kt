@@ -68,7 +68,7 @@ abstract class Contributor {
         )
 
     @Composable
-    protected fun Handle( values: Values ) {
+    protected open fun Handle(values: Values ) {
         val uriHandler = LocalUriHandler.current
 
         Text(

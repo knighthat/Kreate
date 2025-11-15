@@ -848,4 +848,5 @@ Volume BAS : titre précédent</string>
     <string name="error_failed_to_acquire_account_info">Échec de l\'acquisition des informations de compte</string>
     <string name="error_failed_to_sync_tab">Échec de la synchronisation de %s</string>
     <string name="error_failed_to_load_developers">Failed to load developers</string>
+    <string name="error_failed_to_load_translators">Failed to load translators</string>
 </resources>
