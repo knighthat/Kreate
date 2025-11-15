@@ -122,6 +122,7 @@ jobs:
       BUILD_DATE: ${{ needs.build_time.outputs.dot_date }}
       STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
       KEY_PASSWORD: ${{ secrets.PROD_KEY_PASSWORD }}
+      OFFICIAL_BUILD_PASSPHRASE: ${{ secrets.OFFICIAL_BUILD_PASSPHRASE }}
       KEYSTORE_FILENAME: production.jks
 
     strategy:
