@@ -217,6 +217,8 @@ jobs:
         uses: actions/download-artifact@v6.0.0
 
       - name: Upload built APK to release
+        # Skip this step when running with nektos/act
+        if: ${{ !env.ACT }}
         uses: softprops/action-gh-release@v2
         with:
           files: '*.apk'
