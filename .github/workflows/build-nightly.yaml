@@ -98,7 +98,7 @@ jobs:
     steps:
       - name: Revert keystore from base64 to PCKS#12 file
         run: |
-          mkdir -p $KEYSTORE_PATH
+          mkdir -p "$KEYSTORE_PATH"
 
           echo "${{ secrets.NIGHTLY_KEYSTORE }}" | base64 -d > $KEYSTORE_PATH/$KEYSTORE_FILENAME
 
