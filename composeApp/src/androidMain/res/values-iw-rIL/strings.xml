@@ -554,7 +554,7 @@
     <string name="settings_target_gain_loudness_info">Target gain for the loudness normalization</string>
     <string name="error_media_cannot_be_played">Media cannot be played</string>
     <string name="full_screen_lyrics_components">Full Screen Lyrics Components</string>
-    <string name="titleartist">Title and Artists</string>
+    <string name="titleartist">כותרת ואומנים</string>
     <string name="miniqueue">תור מוקטן</string>
     <string name="controls">Controls</string>
     <string name="add_to_favorites">Add to favorites</string>
