@@ -209,7 +209,7 @@ jobs:
           path: ${{ steps.build_path.outputs.path }}/*.apk
 
   upload-to-release:
-    needs: [build_time, versioning, sign-apks]
+    needs: [build_time, versioning, build-complex]
     runs-on: ubuntu-latest
 
     steps:
