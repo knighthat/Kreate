@@ -100,6 +100,7 @@ import it.fast4x.innertube.requests.playlistPage
 import it.fast4x.innertube.requests.song
 import it.fast4x.innertube.utils.LocalePreferenceItem
 import it.fast4x.innertube.utils.LocalePreferences
+import it.fast4x.rimusic.Dependencies.application
 import it.fast4x.rimusic.enums.AnimatedGradient
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
@@ -129,6 +130,7 @@ import it.fast4x.rimusic.ui.styling.colorPaletteOf
 import it.fast4x.rimusic.ui.styling.customColorPalette
 import it.fast4x.rimusic.ui.styling.dynamicColorPaletteOf
 import it.fast4x.rimusic.ui.styling.typographyOf
+import it.fast4x.rimusic.utils.AppLifecycleTracker
 import it.fast4x.rimusic.utils.LocalMonetCompat
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
@@ -251,8 +253,6 @@ MainActivity :
                     SensorManager.SENSOR_DELAY_NORMAL
                 )
         }
-
-        checkIfAppIsRunningInBackground()
 
         // Fetch Piped & Invidious instances
         lifecycleScope.launch(Dispatchers.IO) {
@@ -764,8 +764,6 @@ MainActivity :
                                 }
                             )
 
-                            checkIfAppIsRunningInBackground()
-
 
                             val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
 
@@ -996,7 +994,6 @@ MainActivity :
         }.onFailure {
             Timber.e("MainActivity.onResume registerListener sensorManager ${it.stackTraceToString()}")
         }
-        appRunningInBackground = false
     }
 
     override fun onPause() {
@@ -1006,7 +1003,6 @@ MainActivity :
         }.onFailure {
             Timber.e("MainActivity.onPause unregisterListener sensorListener ${it.stackTraceToString()}")
         }
-        appRunningInBackground = true
     }
 
     @UnstableApi
@@ -1084,15 +1080,8 @@ MainActivity :
 
 }
 
-fun checkIfAppIsRunningInBackground() {
-    val runningAppProcessInfo = ActivityManager.RunningAppProcessInfo()
-    ActivityManager.getMyMemoryState(runningAppProcessInfo)
-    appRunningInBackground =
-        runningAppProcessInfo.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-
-}
-
-var appRunningInBackground: Boolean = false
+val appRunningInBackground: Boolean
+    get() = application.appLifecycleTracker.appState.value == AppLifecycleTracker.AppState.BACKGROUND
 
 val LocalPlayerServiceBinder = staticCompositionLocalOf<PlayerServiceModern.Binder?> { null }
 

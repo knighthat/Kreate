@@ -72,7 +72,6 @@ import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.appRunningInBackground
-import it.fast4x.rimusic.checkIfAppIsRunningInBackground
 import it.fast4x.rimusic.enums.PresetsReverb
 import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
@@ -217,9 +216,6 @@ class PlayerServiceModern:
         NewPipe.init( NewPipeDownloader() )
 
         super.onCreate()
-
-        // Update here the var for app running in background
-        checkIfAppIsRunningInBackground()
 
         volumeObserver.register()
 

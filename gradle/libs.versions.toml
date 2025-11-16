@@ -40,6 +40,7 @@ material3-kmp = "1.9.0"
 junit4 = "4.13.2"
 robolectric = "4.16"
 androidTest = "1.7.0"
+lifecycle = "2.9.4"
 
 
 [libraries]
@@ -64,6 +65,8 @@ androidx-palette = { group = "androidx.palette", name = "palette", version.ref =
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayout" }
 androidx-glance-widgets = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance" }
 androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
+androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycle" }
 
 # Ktor
 ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }

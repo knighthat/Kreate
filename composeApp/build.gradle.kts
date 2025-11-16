@@ -103,6 +103,9 @@ kotlin {
 
             // Dependency injection
             implementation( libs.android.hilt )
+
+            implementation(libs.androidx.lifecycle.runtime)
+            implementation(libs.androidx.lifecycle.process)
         }
         androidUnitTest.dependencies {
             implementation( libs.junit4 )
