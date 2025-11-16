@@ -151,7 +151,7 @@ jobs:
         run: |
           mkdir -p $KEYSTORE_PATH
 
-          echo "${{ secrets.PROD_KEYSTORE_BASE64 }}" | base64 -d > $KEYSTORE_PATH/$KEYSTORE_FILENAME
+          echo "${{ secrets.PROD_KEYSTORE }}" | base64 -d > $KEYSTORE_PATH/$KEYSTORE_FILENAME
 
       # This step is designed to fail when decoded keystore's
       # hash doesn't match pre-defined hash
