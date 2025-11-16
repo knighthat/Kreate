@@ -86,6 +86,9 @@ kotlin {
 
             // Dependency injection
             implementation( libs.android.hilt )
+
+            implementation(libs.androidx.lifecycle.runtime)
+            implementation(libs.androidx.lifecycle.process)
         }
         commonMain.dependencies {
             implementation(compose.components.resources)

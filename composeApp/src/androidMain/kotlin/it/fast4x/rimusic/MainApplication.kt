@@ -7,6 +7,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import androidx.compose.runtime.getValue
 import androidx.core.content.getSystemService
+import androidx.lifecycle.ProcessLifecycleOwner
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.coil3.ImageFactory
@@ -15,6 +16,7 @@ import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.CrashHandler
 import app.kreate.android.utils.logging.RollingFileLoggingTree
 import dagger.hilt.android.HiltAndroidApp
+import it.fast4x.rimusic.utils.AppLifecycleTracker
 import me.knighthat.innertube.Innertube
 import timber.log.Timber
 import javax.inject.Inject
@@ -30,8 +32,14 @@ class MainApplication : Application() {
     @Named("private")
     lateinit var encryptedPreferences: SharedPreferences
 
+    lateinit var appLifecycleTracker: AppLifecycleTracker
+        private set
+
     override fun onCreate() {
         super.onCreate()
+
+        appLifecycleTracker = AppLifecycleTracker()
+        ProcessLifecycleOwner.get().lifecycle.addObserver(appLifecycleTracker)
 
         Preferences.load( preferences, encryptedPreferences )
 
