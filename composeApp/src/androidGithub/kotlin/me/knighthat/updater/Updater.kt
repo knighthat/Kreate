@@ -34,15 +34,18 @@ object Updater {
      */
     @Throws(NoSuchFileException::class)
     private fun extractBuild( assets: List<GithubRelease.Build> ): GithubRelease.Build {
+        // e.g. Release version will have name 'Kreate-release.apk'
+        val filename = "%s-%s.apk".format(
+            BuildConfig.APP_NAME,
+            // Ignore the warning `BuildConfig.FLAVOR_env == "nightly"` either `true` or `false`
+            // This condition is different based on the build
+            if( BuildConfig.FLAVOR_env == "nightly" ) "nightly" else "release"
+        )
         return assets.fastFirstOrNull {
             // Get the first build that has name matches 'Kreate-<buildType>.apk'
             // with the exception of nightly build, which is `Kreate-nightly.apk`
-            // e.g. Release version will have name 'Kreate-release.apk'
-            it.name == "%s-%s.apk".format(
-                BuildConfig.APP_NAME,
-                if( BuildConfig.FLAVOR_env == "nightly" ) "nightly" else "release"
-            )
-        } ?: throw NoSuchFileException(appContext().getString( R.string.error_no_build_matches_this_version ))
+            it.name == filename
+        } ?: throw NoSuchFileException(filename)
     }
 
     /**
@@ -135,7 +138,7 @@ object Updater {
             }
 
             val message = when( e ) {
-                is NoSuchFileException -> e.message.orEmpty()
+                is NoSuchFileException -> appContext().getString( R.string.error_no_build_matches_this_version )
 
                 is ResponseException,
                 is SerializationException -> appContext().getString( R.string.error_check_for_updates_failed )
