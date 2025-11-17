@@ -5,31 +5,43 @@ import androidx.compose.ui.util.fastFirstOrNull
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.NetworkService
+import io.ktor.client.call.body
+import io.ktor.client.plugins.ResponseException
+import io.ktor.client.request.get
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.CheckUpdateState
 import it.fast4x.rimusic.utils.isNetworkAvailable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.SerializationException
 import me.knighthat.updater.Updater.build
 import me.knighthat.utils.Repository
 import me.knighthat.utils.Toaster
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import timber.log.Timber
 import java.nio.file.NoSuchFileException
+import kotlin.time.ExperimentalTime
+
 
 object Updater {
     private lateinit var tagName: String
 
     lateinit var build: GithubRelease.Build
 
+    /**
+     * @throws NoSuchFileException when there's no build matches current build
+     */
+    @Throws(NoSuchFileException::class)
     private fun extractBuild( assets: List<GithubRelease.Build> ): GithubRelease.Build {
         return assets.fastFirstOrNull {
             // Get the first build that has name matches 'Kreate-<buildType>.apk'
+            // with the exception of nightly build, which is `Kreate-nightly.apk`
             // e.g. Release version will have name 'Kreate-release.apk'
-            it.name == "%s-release.apk".format( BuildConfig.APP_NAME, BuildConfig.BUILD_TYPE )
+            it.name == "%s-%s.apk".format(
+                BuildConfig.APP_NAME,
+                if( BuildConfig.FLAVOR_env == "nightly" ) "nightly" else "release"
+            )
         } ?: throw NoSuchFileException(appContext().getString( R.string.error_no_build_matches_this_version ))
     }
 
@@ -39,39 +51,56 @@ object Updater {
     private fun trimVersion( versionStr: String ) = versionStr.removePrefix( "v" ).substringBefore( "-" )
 
     /**
+     * @throws ResponseException when occurs while getting response from GitHub
+     * @throws SerializationException when fails to deserialize response to [GithubRelease]
+     */
+    @Throws(ResponseException::class, SerializationException::class)
+    private suspend fun getLatestRelease(): GithubRelease {
+        // https://api.github.com/repos/knighthat/Kreate/releases/latest
+        val url = "${Repository.GITHUB_API}/repos/${Repository.LATEST_TAG_URL}"
+
+        return NetworkService.client
+                             .get( url )
+                             .body<GithubRelease>()
+    }
+
+    /**
+     * @throws ResponseException when occurs while getting response from GitHub
+     * @throws NoSuchElementException when no prerelease [GithubRelease] found
+     * @throws SerializationException when fails to deserialize response to list of [GithubRelease]
+     */
+    @OptIn(ExperimentalTime::class)
+    @Throws(ResponseException::class, NoSuchElementException::class, SerializationException::class)
+    private suspend fun getPrerelease(): GithubRelease {
+        // https://api.github.com/repos/knighthat/Kreate/releases
+        val url = "${Repository.GITHUB_API}/repos/${Repository.REPO}/releases"
+
+        return NetworkService.client
+                             .get( url )
+                             .body<List<GithubRelease>>()
+                             .filter( GithubRelease::prerelease )
+                             .sortedBy(GithubRelease::publishedAt )
+                             .reversed()
+                             .first()
+    }
+
+    /**
      * Sends out requests to Github for latest version.
      *
      * Results are downloaded, filtered, and saved to [build]
      *
      * > **NOTE**: This is a blocking process, it should never run on UI thread
      */
-    private suspend fun fetchUpdate() = withContext( Dispatchers.IO ) {
+    private suspend fun fetchUpdate() {
         assert( Looper.myLooper() != Looper.getMainLooper() ) {
             "Cannot run fetch update on main thread"
         }
 
-        // https://api.github.com/repos/knighthat/Kreate/releases/latest
-        val url = "${Repository.GITHUB_API}/repos/${Repository.LATEST_TAG_URL}"
-        val request = Request.Builder().url( url ).build()
-        val response = OkHttpClient().newCall( request ).execute()
-
-        if( !response.isSuccessful ) {
-            Toaster.e( response.message )
-            return@withContext
-        }
-
-        val resBody = response.body?.string()
-        if( resBody.isNullOrBlank() ) {
-            Toaster.i( R.string.info_no_update_available )
-            return@withContext
-        }
-
-        val json = Json {
-            ignoreUnknownKeys = true
-        }
-        val githubRelease = json.decodeFromString<GithubRelease>( resBody )
-        build = extractBuild( githubRelease.builds )
-        tagName = githubRelease.tagName
+        // Ignore the warning `BuildConfig.FLAVOR_env == "nightly"` either `true` or `false`
+        // This condition is different based on the build
+        val release = if( BuildConfig.FLAVOR_env == "nightly" ) getPrerelease() else getLatestRelease()
+        build = extractBuild( release.builds )
+        tagName = release.tagName
     }
 
     fun checkForUpdate(
@@ -98,7 +127,22 @@ object Updater {
                 CheckUpdateState.DISABLED           -> NewUpdatePrompt.isActive = isForced && isNewUpdateAvailable
             }
         } catch( e: Exception ) {
-            Toaster.e( e.message ?: appContext().getString( R.string.error_unknown ) )
+            Timber.tag( "Updater" ).e( e )
+
+            if( e is NoSuchElementException && Preferences.SHOW_CHECK_UPDATE_STATUS.value ) {
+                Toaster.i( R.string.info_no_update_available )
+                return@launch
+            }
+
+            val message = when( e ) {
+                is NoSuchFileException -> e.message.orEmpty()
+
+                is ResponseException,
+                is SerializationException -> appContext().getString( R.string.error_check_for_updates_failed )
+
+                else -> appContext().getString( R.string.error_unknown )
+            }
+            Toaster.e( message )
         }
     }
 }
