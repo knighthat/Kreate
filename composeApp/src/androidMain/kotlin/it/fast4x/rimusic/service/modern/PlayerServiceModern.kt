@@ -21,9 +21,11 @@ import android.media.AudioManager
 import android.media.audiofx.AudioEffect
 import android.media.audiofx.BassBoost
 import android.media.audiofx.PresetReverb
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.MainThread
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -106,6 +108,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -125,6 +128,7 @@ import me.knighthat.utils.Toaster
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -194,6 +198,10 @@ class PlayerServiceModern:
     private var notificationManager: NotificationManager? = null
 
     private lateinit var notificationActionReceiver: NotificationActionReceiver
+
+    private var wallpaperRevertJob: Job? = null
+    private var wallpaper_cleared: Boolean = false
+
 
     private fun onMediaItemTransition( mediaItem: MediaItem? ) {
         listener.updateMediaControl( this, player )
@@ -419,8 +427,19 @@ class PlayerServiceModern:
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
 
     override fun onIsPlayingChanged( isPlaying: Boolean ) {
-        // FIXME: At this time, this event keeps firing on and off
-        //  when user seeks around the timeline.
+        wallpaperRevertJob?.cancel()
+
+        if (!isPlaying) {
+            wallpaperRevertJob = coroutineScope.launch {
+                delay(Preferences.LIVE_WALLPAPER_RESET_DURATION.value.ms)
+                revertWallpaperToDefault()
+            }
+        } else {
+            if (wallpaper_cleared) {
+                wallpaper_cleared = false
+                updateWallpaper(bitmapProvider.bitmap)
+            }
+        }
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession =
@@ -642,6 +661,17 @@ class PlayerServiceModern:
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun getFlag(type: WallpaperType): Int{
+            return when (type) {
+                WallpaperType.BOTH -> FLAG_LOCK or FLAG_SYSTEM
+                WallpaperType.LOCKSCREEN -> FLAG_LOCK
+                WallpaperType.HOME -> FLAG_SYSTEM
+                // This is intended, [WallpaperType.DISABLED] must not present at this point
+                WallpaperType.DISABLED -> throw UnsupportedOperationException("WallpaperType.DISABLED is used")
+            }
+    }
+
     private fun updateWallpaper( bitmap: Bitmap ) {
         val type by Preferences.LIVE_WALLPAPER
         if( type == WallpaperType.DISABLED ) return
@@ -651,13 +681,7 @@ class PlayerServiceModern:
             val cropRect = with( bitmap ) { centerCropToMatchScreenSize( width, height ) }
 
             if( isAtLeastAndroid7 ) {
-                val flag = when( type ) {
-                    WallpaperType.BOTH          -> FLAG_LOCK or FLAG_SYSTEM
-                    WallpaperType.LOCKSCREEN    -> FLAG_LOCK
-                    WallpaperType.HOME          -> FLAG_SYSTEM
-                    // This is intended, [WallpaperType.DISABLED] must not present at this point
-                    WallpaperType.DISABLED      -> throw UnsupportedOperationException("WallpaperType.DISABLED is used")
-                }
+                val flag = getFlag(type)
 
                 mgr.setBitmap( bitmap, cropRect, true, flag )
             } else if( type != WallpaperType.LOCKSCREEN )
@@ -773,6 +797,25 @@ class PlayerServiceModern:
             }
         }
 
+    }
+
+
+    private fun revertWallpaperToDefault() {
+        val type by Preferences.LIVE_WALLPAPER
+        if (type == WallpaperType.DISABLED) return
+        coroutineScope.launch(Dispatchers.IO) {
+            val mgr = WallpaperManager.getInstance(this@PlayerServiceModern)
+            try {
+                if (isAtLeastAndroid7) {
+                    mgr.clear(getFlag(type))
+                } else {
+                    mgr.clear()
+                }
+                wallpaper_cleared = true
+            } catch (e: IOException) {
+                Toaster.e("Failed to revert wallpaper")
+            }
+        }
     }
 
     fun updateDownloadedState() {
