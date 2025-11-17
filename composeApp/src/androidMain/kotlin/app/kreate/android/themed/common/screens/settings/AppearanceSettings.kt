@@ -95,6 +95,14 @@ fun AppearanceSettings( paddingValues: PaddingValues ) {
                         )
                 }
             }
+            entry(search, R.string.settings_entry_live_wallpaper_reset_duration){
+                SettingComponents.EnumEntry(
+                    preference = Preferences.LIVE_WALLPAPER_RESET_DURATION,
+                    title = stringResource(R.string.settings_entry_live_wallpaper_reset_duration),
+                    subtitle = stringResource(R.string.settings_description_live_wallpaper_reset_duration),
+                            action = SettingComponents.Action.RESTART_PLAYER_SERVICE
+                )
+            }
         }
     }
 }
