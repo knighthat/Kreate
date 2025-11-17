@@ -171,6 +171,7 @@ object DownloadAndInstallDialog: Dialog {
         // Constant-time comparison
         val buildHash: ByteArray = Updater.build
                                           .digest
+                                          .orEmpty()
                                           .substringAfter( "sha256:" )
                                           .chunked( 2 )
                                           .map { it.toInt( 16 ).toByte() }
