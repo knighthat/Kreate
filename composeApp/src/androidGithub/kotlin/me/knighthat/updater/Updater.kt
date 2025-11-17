@@ -1,5 +1,6 @@
 package me.knighthat.updater
 
+import android.content.Context
 import android.os.Looper
 import androidx.compose.ui.util.fastFirstOrNull
 import app.kreate.android.BuildConfig
@@ -9,7 +10,6 @@ import app.kreate.android.service.NetworkService
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.get
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.CheckUpdateState
 import it.fast4x.rimusic.utils.isNetworkAvailable
 import kotlinx.coroutines.CoroutineScope
@@ -107,12 +107,13 @@ object Updater {
     }
 
     fun checkForUpdate(
+        context: Context,
         isForced: Boolean = false
     ) = CoroutineScope( Dispatchers.IO ).launch {
         if( ::build.isInitialized && !isForced )
             return@launch
 
-        if( !isNetworkAvailable( appContext() ) ) {
+        if( !isNetworkAvailable( context ) ) {
             Toaster.noInternet()
             return@launch
         }
@@ -138,12 +139,12 @@ object Updater {
             }
 
             val message = when( e ) {
-                is NoSuchFileException -> appContext().getString( R.string.error_no_build_matches_this_version )
+                is NoSuchFileException -> context.getString( R.string.error_no_build_matches_this_version )
 
                 is ResponseException,
-                is SerializationException -> appContext().getString( R.string.error_check_for_updates_failed )
+                is SerializationException -> context.getString( R.string.error_check_for_updates_failed )
 
-                else -> appContext().getString( R.string.error_unknown )
+                else -> context.getString( R.string.error_unknown )
             }
             Toaster.e( message )
         }

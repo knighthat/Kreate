@@ -12,16 +12,17 @@ import java.io.File
 
 @Composable
 fun UpdateHandler() {
+    val context = LocalContext.current
+
     DownloadAndInstallDialog.Render()
     NewUpdatePrompt.Render()
 
     val check4UpdateState by Preferences.CHECK_UPDATE
     LaunchedEffect( check4UpdateState ) {
         if( check4UpdateState != CheckUpdateState.DISABLED )
-            Updater.checkForUpdate()
+            Updater.checkForUpdate( context )
     }
 
-    val context = LocalContext.current
     LaunchedEffect( Unit ) {
         val apkFile = File(
             context.getExternalFilesDir( Environment.DIRECTORY_DOWNLOADS ),

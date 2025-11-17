@@ -38,9 +38,10 @@ fun LazyListScope.updateSection( search: SettingEntrySearch ) {
                     // Slide out from left + fade out effect.
                     exit = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(targetAlpha = 0f)
                 ) {
+                    val context = LocalContext.current
                     SecondaryTextButton(
                         text = stringResource( R.string.info_check_update_now ),
-                        onClick = { Updater.checkForUpdate( true ) }
+                        onClick = { Updater.checkForUpdate( context, true ) }
                     )
                 }
             }
