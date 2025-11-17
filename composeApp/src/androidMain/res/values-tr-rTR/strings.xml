@@ -846,4 +846,5 @@
     <string name="error_failed_to_sync_tab">%s senkronize edilemedi</string>
     <string name="error_failed_to_load_developers">Failed to load developers</string>
     <string name="error_failed_to_load_translators">Failed to load translators</string>
+    <string name="error_check_for_updates_failed">Check for updates failed</string>
 </resources>
