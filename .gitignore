@@ -34,3 +34,4 @@
 ### nektos/act
 .env
 .secrets
+.vars
