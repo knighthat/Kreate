@@ -123,6 +123,7 @@ jobs:
       STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
       KEY_PASSWORD: ${{ secrets.PROD_KEY_PASSWORD }}
       OFFICIAL_BUILD_PASSPHRASE: ${{ secrets.OFFICIAL_BUILD_PASSPHRASE }}
+      KEYSTORE_PATH: ${{ vars.KEYSTORE_PATH }}
       KEYSTORE_FILENAME: production.jks
 
     strategy:
@@ -149,7 +150,7 @@ jobs:
     steps:
       - name: Revert keystore from base64 to PCKS#12 file
         run: |
-          mkdir -p $KEYSTORE_PATH
+          mkdir -p "$KEYSTORE_PATH"
 
           echo "${{ secrets.PROD_KEYSTORE }}" | base64 -d > $KEYSTORE_PATH/$KEYSTORE_FILENAME
 

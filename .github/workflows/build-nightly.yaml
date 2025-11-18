@@ -93,6 +93,7 @@ jobs:
       STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
       KEY_PASSWORD: ${{ secrets. NIGHTLY_KEY_PASSWORD }}
       OFFICIAL_BUILD_PASSPHRASE: ${{ secrets.OFFICIAL_BUILD_PASSPHRASE }}
+      KEYSTORE_PATH: ${{ vars.KEYSTORE_PATH }}
       KEYSTORE_FILENAME: nightly.jks
 
     steps:
