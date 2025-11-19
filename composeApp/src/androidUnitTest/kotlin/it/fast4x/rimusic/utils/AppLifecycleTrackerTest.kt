@@ -18,35 +18,53 @@ class AppLifecycleTrackerTest {
         AppLifecycleTracker.onStop(DummyLifecycleOwner)
     }
 
+    /**
+     * Ensure both [AppLifecycleTracker.isInForeground] and [AppLifecycleTracker.isInBackground]
+     * return correct value when lifecycle's state is updated
+     */
     @Test
-    fun initialState() {
-        assertFalse(AppLifecycleTracker.appRunningInForeground)
+    fun testStates() {
+        assertFalse( AppLifecycleTracker.isInForeground() )
+        assertTrue( AppLifecycleTracker.isInBackground() )
+
+        AppLifecycleTracker.onStart( DummyLifecycleOwner )
+        assertTrue( AppLifecycleTracker.isInForeground() )
+        assertFalse( AppLifecycleTracker.isInBackground() )
+
+        AppLifecycleTracker.onStop( DummyLifecycleOwner )
+        assertFalse( AppLifecycleTracker.isInForeground() )
+        assertTrue( AppLifecycleTracker.isInBackground() )
     }
 
     @Test
-    fun onForeground() {
-        assertFalse(AppLifecycleTracker.appRunningInForeground)
-        AppLifecycleTracker.onStart(DummyLifecycleOwner)
-        assertTrue(AppLifecycleTracker.appRunningInForeground)
+    fun initialState()  {
+        assertFalse( AppLifecycleTracker.isInForeground() )
     }
 
     @Test
-    fun onBackground() {
-        assertFalse(AppLifecycleTracker.appRunningInForeground)
-        AppLifecycleTracker.onStart(DummyLifecycleOwner)
-        assertTrue(AppLifecycleTracker.appRunningInForeground)
-        AppLifecycleTracker.onStop(DummyLifecycleOwner)
-        assertFalse(AppLifecycleTracker.appRunningInForeground)
+    fun onForeground()  {
+        assertFalse( AppLifecycleTracker.isInForeground() )
+        AppLifecycleTracker.onStart( DummyLifecycleOwner )
+        assertTrue( AppLifecycleTracker.isInForeground() )
+    }
+
+    @Test
+    fun onBackground()  {
+        assertFalse( AppLifecycleTracker.isInForeground() )
+        AppLifecycleTracker.onStart( DummyLifecycleOwner )
+        assertTrue( AppLifecycleTracker.isInForeground() )
+        AppLifecycleTracker.onStop( DummyLifecycleOwner )
+        assertFalse( AppLifecycleTracker.isInForeground() )
     }
 
     @Test
     fun cycleCheck() {
         repeat(5) {
-            assertFalse(AppLifecycleTracker.appRunningInForeground)
-            AppLifecycleTracker.onStart(DummyLifecycleOwner)
-            assertTrue(AppLifecycleTracker.appRunningInForeground)
-            AppLifecycleTracker.onStop(DummyLifecycleOwner)
-            assertFalse(AppLifecycleTracker.appRunningInForeground)
+            assertFalse( AppLifecycleTracker.isInForeground() )
+            AppLifecycleTracker.onStart( DummyLifecycleOwner )
+            assertTrue( AppLifecycleTracker.isInForeground() )
+            AppLifecycleTracker.onStop( DummyLifecycleOwner )
+            assertFalse( AppLifecycleTracker.isInForeground() )
         }
     }
 }

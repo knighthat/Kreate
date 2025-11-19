@@ -171,7 +171,7 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.collapsedPlayerProgressBar
 import it.fast4x.rimusic.ui.styling.dynamicColorPaletteOf
 import it.fast4x.rimusic.ui.styling.favoritesOverlay
-import it.fast4x.rimusic.utils.AppLifecycleTracker.appRunningInForeground
+import it.fast4x.rimusic.utils.AppLifecycleTracker
 import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.SearchYoutubeEntity
 import it.fast4x.rimusic.utils.VerticalfadingEdge2
@@ -863,7 +863,7 @@ fun Player(
                         )
                     }
                     AnimatedGradient.Mesh -> {
-                        shaderCondition = appRunningInForeground
+                        shaderCondition = AppLifecycleTracker.isInForeground()
                         shader = MeshGradient(
                             colors = arrayOf(
                                 saturate(vibrant).darkenBy(),
@@ -1313,7 +1313,7 @@ fun Player(
                                  val pageSpacing = thumbnailSpacingL.toInt()*0.01*(screenWidth) - (2.5*playerThumbnailSizeL.size.dp)
 
                                  LaunchedEffect(pagerState, binder.player.currentMediaItemIndex) {
-                                     if (!appRunningInForeground || isShowingLyrics) {
+                                     if (AppLifecycleTracker.isInBackground() || isShowingLyrics) {
                                          pagerState.scrollToPage(binder.player.currentMediaItemIndex)
                                      } else {
                                          pagerState.animateScrollToPage(binder.player.currentMediaItemIndex)
@@ -2222,7 +2222,7 @@ fun PagerState.LaunchedEffectScrollToPage(
 ) {
     val pagerState = this
     LaunchedEffect(pagerState, index) {
-        if (appRunningInForeground) {
+        if ( AppLifecycleTracker.isInForeground() ) {
             pagerState.animateScrollToPage(index)
         } else {
             pagerState.scrollToPage(index)
