@@ -1079,9 +1079,6 @@ MainActivity :
 
 }
 
-val appRunningInBackground: Boolean
-    get() = application.appLifecycleTracker.appState.value == AppLifecycleTracker.AppState.BACKGROUND
-
 val LocalPlayerServiceBinder = staticCompositionLocalOf<PlayerServiceModern.Binder?> { null }
 
 val LocalPlayerAwareWindowInsets = staticCompositionLocalOf<WindowInsets> { TODO() }

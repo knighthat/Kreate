@@ -69,7 +69,6 @@ import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.appContext
-import it.fast4x.rimusic.appRunningInBackground
 import it.fast4x.rimusic.enums.PresetsReverb
 import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
@@ -78,6 +77,7 @@ import it.fast4x.rimusic.models.Song
 import it.fast4x.rimusic.service.BitmapProvider
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.MyDownloadService
+import it.fast4x.rimusic.utils.AppLifecycleTracker.appRunningInForeground
 import it.fast4x.rimusic.utils.CoilBitmapLoader
 import it.fast4x.rimusic.utils.TimerJob
 import it.fast4x.rimusic.utils.asMediaItem
@@ -733,7 +733,7 @@ class PlayerServiceModern:
     private fun maybeResumePlaybackOnStart() {
         if( Preferences.ENABLE_PERSISTENT_QUEUE.value
             && Preferences.RESUME_PLAYBACK_ON_STARTUP.value
-            && !appRunningInBackground
+            && appRunningInForeground
         ) binder.gracefulPlay()
     }
 

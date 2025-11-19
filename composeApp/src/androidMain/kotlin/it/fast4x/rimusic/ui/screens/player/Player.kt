@@ -138,7 +138,6 @@ import com.mikepenz.hypnoticcanvas.shaders.Shader
 import com.mikepenz.hypnoticcanvas.shaders.Stage
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.appRunningInBackground
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.AnimatedGradient
 import it.fast4x.rimusic.enums.BackgroundProgress
@@ -168,6 +167,7 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.collapsedPlayerProgressBar
 import it.fast4x.rimusic.ui.styling.dynamicColorPaletteOf
 import it.fast4x.rimusic.ui.styling.favoritesOverlay
+import it.fast4x.rimusic.utils.AppLifecycleTracker.appRunningInForeground
 import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.SearchYoutubeEntity
 import it.fast4x.rimusic.utils.VerticalfadingEdge2
@@ -862,7 +862,7 @@ fun Player(
                         )
                     }
                     AnimatedGradient.Mesh -> {
-                        shaderCondition = !appRunningInBackground
+                        shaderCondition = appRunningInForeground
                         shader = MeshGradient(
                             colors = arrayOf(
                                 saturate(vibrant).darkenBy(),
@@ -1312,7 +1312,7 @@ fun Player(
                                  val pageSpacing = thumbnailSpacingL.toInt()*0.01*(screenWidth) - (2.5*playerThumbnailSizeL.size.dp)
 
                                  LaunchedEffect(pagerState, binder.player.currentMediaItemIndex) {
-                                     if (appRunningInBackground || isShowingLyrics) {
+                                     if (!appRunningInForeground || isShowingLyrics) {
                                          pagerState.scrollToPage(binder.player.currentMediaItemIndex)
                                      } else {
                                          pagerState.animateScrollToPage(binder.player.currentMediaItemIndex)
@@ -2221,7 +2221,7 @@ fun PagerState.LaunchedEffectScrollToPage(
 ) {
     val pagerState = this
     LaunchedEffect(pagerState, index) {
-        if (!appRunningInBackground) {
+        if (appRunningInForeground) {
             pagerState.animateScrollToPage(index)
         } else {
             pagerState.scrollToPage(index)

@@ -3,12 +3,11 @@ package it.fast4x.rimusic.utils
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
-class AppLifecycleTracker : DefaultLifecycleObserver {
+object AppLifecycleTracker : DefaultLifecycleObserver {
     private val _appState = MutableStateFlow(AppState.BACKGROUND)
-    val appState: StateFlow<AppState> = _appState.asStateFlow()
+    val appRunningInForeground: Boolean
+        get() = _appState.value == AppState.FOREGROUND
 
     enum class AppState {
         FOREGROUND, BACKGROUND

@@ -38,8 +38,8 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        appLifecycleTracker = AppLifecycleTracker()
-        ProcessLifecycleOwner.get().lifecycle.addObserver(appLifecycleTracker)
+        appLifecycleTracker = AppLifecycleTracker
+        ProcessLifecycleOwner.get().lifecycle.addObserver(AppLifecycleTracker)
 
         Preferences.load( preferences, encryptedPreferences )
 
