@@ -3,23 +3,24 @@ package it.fast4x.rimusic.utils
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
-object AppLifecycleTracker : DefaultLifecycleObserver {
-    private val _appState = MutableStateFlow(AppState.BACKGROUND)
-    val appRunningInForeground: Boolean
-        get() = _appState.value == AppState.FOREGROUND
 
-    enum class AppState {
-        FOREGROUND, BACKGROUND
-    }
+object AppLifecycleTracker: DefaultLifecycleObserver {
 
-    override fun onStart(owner: LifecycleOwner) {
-        // App has come to the foreground (or is already there)
-        _appState.value = AppState.FOREGROUND
-    }
+    private val _state = MutableStateFlow(false)
 
-    override fun onStop(owner: LifecycleOwner) {
-        // App has gone to the background
-        _appState.value = AppState.BACKGROUND
-    }
+    /**
+     * @return `true` when app is visible to user
+     */
+    fun isInForeground() = _state.value
+
+    /**
+     * @return `true` is no longer visible to user
+     */
+    fun isInBackground() = !_state.value
+    
+    override fun onStart( owner: LifecycleOwner ) = _state.update { true }
+
+    override fun onStop( owner: LifecycleOwner ) = _state.update { false }
 }
