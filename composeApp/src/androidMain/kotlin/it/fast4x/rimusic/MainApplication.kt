@@ -32,9 +32,6 @@ class MainApplication : Application() {
     @Named("private")
     lateinit var encryptedPreferences: SharedPreferences
 
-    lateinit var appLifecycleTracker: AppLifecycleTracker
-        private set
-
     override fun onCreate() {
         super.onCreate()
 
