@@ -30,8 +30,7 @@ hypnoticcanvas = "0.4.1"
 ksoup = "0.6.0"
 jetbrains-annotations = "26.0.2-1"
 lombok = "1.18.42"
-junit5 = "5.13.4"
-junit-platform = "1.13.4"
+junit5 = "6.0.1"
 webkit = "1.14.0"
 newpipe-extractor = "0.24.8"
 compose-kmp = "1.9.3"
@@ -111,7 +110,7 @@ jetbrains-annotations = { group = "org.jetbrains", name = "annotations", version
 junit5-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit5" }
 junit5-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit5" }
 junit5-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit5" }
-junit-platform = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junit-platform" }
+junit-platform = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junit5" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
