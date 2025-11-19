@@ -204,7 +204,7 @@ jobs:
           echo "path=composeApp/build/outputs/apk/$LOWERCASE_PLATFORM${ARCH}Prod/$LOWERCASE_BUILD_TYPE" >> $GITHUB_OUTPUT
 
       - name: Upload artifacts for uploading
-        uses: actions/upload-artifact@v5.0.0
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.platform }}-${{ matrix.architect }}-${{ matrix.type }}
           path: ${{ steps.build_path.outputs.path }}/*.apk
