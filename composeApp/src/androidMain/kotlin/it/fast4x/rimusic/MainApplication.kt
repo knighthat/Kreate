@@ -32,14 +32,8 @@ class MainApplication : Application() {
     @Named("private")
     lateinit var encryptedPreferences: SharedPreferences
 
-    lateinit var appLifecycleTracker: AppLifecycleTracker
-        private set
-
     override fun onCreate() {
         super.onCreate()
-
-        appLifecycleTracker = AppLifecycleTracker
-        ProcessLifecycleOwner.get().lifecycle.addObserver(AppLifecycleTracker)
 
         Preferences.load( preferences, encryptedPreferences )
 
@@ -67,6 +61,8 @@ class MainApplication : Application() {
                                                                .build()
             registerNetworkCallback( networkRequest, ConnectivityUtils )
         }
+        // Register app lifecycle tracker
+        ProcessLifecycleOwner.get().lifecycle.addObserver(AppLifecycleTracker)
     }
 
     override fun onTerminate() {
