@@ -38,9 +38,6 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        appLifecycleTracker = AppLifecycleTracker
-        ProcessLifecycleOwner.get().lifecycle.addObserver(AppLifecycleTracker)
-
         Preferences.load( preferences, encryptedPreferences )
 
         //DatabaseInitializer()
@@ -67,6 +64,8 @@ class MainApplication : Application() {
                                                                .build()
             registerNetworkCallback( networkRequest, ConnectivityUtils )
         }
+        // Register app lifecycle tracker
+        ProcessLifecycleOwner.get().lifecycle.addObserver(AppLifecycleTracker)
     }
 
     override fun onTerminate() {
