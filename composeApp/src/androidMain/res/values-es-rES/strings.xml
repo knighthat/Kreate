@@ -276,7 +276,7 @@
     <string name="activate_the_action_menu_by_swiping_the_song_left_or_right">Habilita el menú de acciones deslizando la canción hacia la izquierda o derecha</string>
     <string name="smart_recommendations">RECOMENDACIONES INTELIGENTES</string>
     <string name="player_collapsed_disable_swiping_down">Deshabilitar deslizar hacia abajo</string>
-    <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">Evitar cerrar el reproductor y limpieza de la cola deslizando hacia abajo mientras está minimizado</string>
+    <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">Evitar cerrar el reproductor y borrar la cola deslizando hacia abajo mientras está minimizado</string>
     <string name="sort_date_liked">Fecha del me gusta</string>
     <string name="export_playlist">Exportar lista de reproducción</string>
     <string name="playlist_top">Lista de reproducción top</string>
@@ -844,7 +844,7 @@
     <string name="error_failed_to_get_charts">Error al conseguir gráficas</string>
     <string name="error_failed_to_acquire_account_info">Error al conseguir información de la cuenta</string>
     <string name="error_failed_to_sync_tab">Error al sincronizar %s</string>
-    <string name="error_failed_to_load_developers">Failed to load developers</string>
-    <string name="error_failed_to_load_translators">Failed to load translators</string>
-    <string name="error_check_for_updates_failed">Check for updates failed</string>
+    <string name="error_failed_to_load_developers">Error al cargar los desarrolladores</string>
+    <string name="error_failed_to_load_translators">Error al cargar los traductores</string>
+    <string name="error_check_for_updates_failed">Error al comprobar actualizaciones</string>
 </resources>
