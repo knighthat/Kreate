@@ -49,6 +49,7 @@ import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.utils.intent
+import it.fast4x.rimusic.utils.isAtLeastAndroid7
 import kotlin.system.exitProcess
 
 private const val PREFERENCES_BASE_FILENAME = "preferences"
@@ -84,7 +85,7 @@ fun ProfileScreen(
         navController,
         miniPlayer = miniPlayer,
         navBarContent = { item ->
-//            item(0, stringResource(R.string.profiles), R.drawable.person)
+            item(0, stringResource(R.string.profiles), R.drawable.person)
 
         }
     ) {
@@ -248,7 +249,7 @@ fun deletePreferencesForProfile(
 }
 
 fun deleteSharedPrefsByName(context: Context, prefsName: String): Boolean {
-    return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+    return if (isAtLeastAndroid7) {
         context.deleteSharedPreferences(prefsName)
     } else {
         context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
