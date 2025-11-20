@@ -21,12 +21,43 @@ jobs:
 
     env:
       CHANGELOGS_FILENAME: changelogs.txt
+      WORKFLOWS_FILENAME: workflows.json
+      WORKFLOW_ID: ${{ vars.WORKFLOW_ID }}
 
     outputs:
-      changes_made: ${{ steps.detect_changes.outputs.changes_made }}
+      changes_made: ${{ steps.last-successful-run.outputs.changes_made || steps.detect_changes.outputs.changes_made }}
 
     steps:
+      - name: Get workflows
+        run: curl -L "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs?per_page=100&status=success" > "$WORKFLOWS_FILENAME"
+
+      # To truly detect changes, we need to get when was the last success run happened.
+      # This script goes through all runs and take runs of script $WORKFLOW_ID,
+      # then it sorts by the updated_at property and take the last (latest run)
+      - name: Get last successful run
+        id: last-successful-run
+        run: |
+          LAST_SUCCESSFUL_RUN=$(
+            jq -r '
+            [
+              .workflow_runs[] |
+              select(.workflow_id == '$WORKFLOW_ID')
+            ] |
+            sort_by(.updated_at | fromdate) |
+            last |
+            .updated_at
+            ' "$WORKFLOWS_FILENAME"
+          )
+
+          # If there's no previous job, assume this is the first run, and run anyway
+          if [ "$LAST_SUCCESSFUL_RUN" = "null" ]; then
+            echo "changes_made=true" >> $GITHUB_OUTPUT
+          else
+            echo "timestamp=$LAST_SUCCESSFUL_RUN" >> $GITHUB_OUTPUT
+          fi
+
       - uses: actions/checkout@v5
+        if: ${{ !steps.last-successful-run.outputs.changes_made }}
         with:
           submodules: true
           # Always have a hard-coded limit of how many commits to fetch.
@@ -34,19 +65,23 @@ jobs:
           fetch-depth: 300
 
       # git log: shows commit history
-      # --since="1 day ago": Show commits in the last 24 hours
+      # --since="": Show commits in from this date
       # --name-only: Show name of changed file
       # --pretty=format: Show nothing but file name
       # --submodules: Show changes in submodules too
       # |: Pipe result(s) to next command
       # sort -u: Sort and keep unique lines
       - name: Get change logs
+        if: ${{ !steps.last-successful-run.outputs.changes_made }}
         id: changelogs
+        env:
+          LAST_TIMESTAMP: ${{ steps.last-successful-run.outputs.timestamp }}
         run: |
-          NAMES=$(git log --since="1 day ago" --name-only --submodule=log --pretty=format:)
+          NAMES=$(git log --since="$LAST_TIMESTAMP" --name-only --submodule=log --pretty=format:)
           echo "$NAMES" | sort -u > "$CHANGELOGS_FILENAME"
 
       - name: "DEBUG: Verify changelogs file"
+        if: ${{ !steps.last-successful-run.outputs.changes_made }}
         run: cat "$CHANGELOGS_FILENAME"
 
       # - grep: Filter out strings matched provided expression
@@ -63,6 +98,7 @@ jobs:
       # - extensions/**
       # - modules/**
       - name: Filter locations
+        if: ${{ !steps.last-successful-run.outputs.changes_made }}
         id: detect_changes
         continue-on-error: true
         run: |
