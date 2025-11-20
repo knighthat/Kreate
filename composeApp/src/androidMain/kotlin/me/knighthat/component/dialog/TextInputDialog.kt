@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.password
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import app.kreate.android.R
 import it.fast4x.rimusic.appContext
@@ -40,6 +41,8 @@ abstract class TextInputDialog(
     open val allowEmpty: Boolean = false
 
     var errorMessage: String by mutableStateOf("")
+    override var value: TextFieldValue by mutableStateOf(TextFieldValue())
+    override var isActive: Boolean by mutableStateOf(false)
 
     override fun onValueChanged(newValue: String): Boolean {
         val result = newValue.matches( constraintRegex )
