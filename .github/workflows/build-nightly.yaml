@@ -133,6 +133,21 @@ jobs:
       KEYSTORE_FILENAME: nightly.jks
 
     steps:
+      # Checkout is placed before reverting keystore because in read
+      # GitHub Action env, the repo gets cloned into another folder
+      # i.e /home/runner/work/Kreate/Kreate
+      # Without cloning first, the keystore will be placed in
+      # /home/runner/work/Kreate/.ignore.d/keystores/nightly.jks
+      # Which will unintentionally make the build process fail because it
+      # can't find the keystore to sign the apk
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+          # Only clone the latest version of repo.
+          # Checking for changes happened before this job so
+          # it's unnecessary to pull more than needed.
+          # Plus, save time for other steps to run
+
       - name: Revert keystore from base64 to PCKS#12 file
         run: |
           mkdir -p "$KEYSTORE_PATH"
@@ -143,10 +158,6 @@ jobs:
       # hash doesn't match pre-defined hash
       - name: Verify keystore
         run: echo "${{ secrets.NIGHTLY_KEYSTORE_SHA256 }} $KEYSTORE_PATH/$KEYSTORE_FILENAME" | sha256sum -c
-
-      - uses: actions/checkout@v5
-        with:
-          submodules: true
 
       - name: Setup Java 21
         uses: actions/setup-java@v5.0.0
