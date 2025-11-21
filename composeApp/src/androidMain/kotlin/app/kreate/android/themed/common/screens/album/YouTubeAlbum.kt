@@ -307,7 +307,7 @@ fun YouTubeAlbum(
         val changeCover = AlbumModifier(
             iconId = R.drawable.cover_edit,
             messageId = R.string.update_cover,
-            getDefaultValue = { dbAlbum?.thumbnailUrl ?: "" },
+            getDefaultValue = { dbAlbum?.cleanThumbnailUrl() ?: "" },
         ) {
             updateCover( browseId, "$MODIFIED_PREFIX$it" )
         }
@@ -347,7 +347,7 @@ fun YouTubeAlbum(
             SongItem.Values.from( colorPalette, typography )
         }
 
-        val thumbnailPainter = ImageFactory.rememberAsyncImagePainter( dbAlbum?.thumbnailUrl )
+        val thumbnailPainter = ImageFactory.rememberAsyncImagePainter( dbAlbum?.cleanThumbnailUrl() )
         DynamicOrientationLayout( thumbnailPainter ) {
             PullToRefreshBox(
                 isRefreshing = isRefreshing,

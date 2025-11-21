@@ -238,7 +238,7 @@ class MediaLibrarySessionCallback(
                         "${PlayerServiceModern.ALBUM}/${album.id}",
                         album.title ?: "",
                         album.authorsText,
-                        album.thumbnailUrl?.toUri(),
+                        album.cleanThumbnailUrl()?.toUri(),
                         MediaMetadata.MEDIA_TYPE_ALBUM
                     )
                 }

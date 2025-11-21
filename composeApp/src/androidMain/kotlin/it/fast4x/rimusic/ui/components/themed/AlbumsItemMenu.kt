@@ -41,6 +41,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.themed.common.ChangeAlbumThumbnail
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.database.models.Album
 import app.kreate.database.models.Playlist
@@ -463,16 +464,16 @@ fun AlbumsItemMenu(
                             }
                         )
                     }
-                    onChangeAlbumCover?.let {
-                        MenuEntry(
-                            icon = R.drawable.cover_edit,
-                            text = stringResource(R.string.update_cover),
-                            onClick = {
-                                onDismiss()
-                                onChangeAlbumCover()
-                            }
-                        )
+                    val context = LocalContext.current
+                    val changeThumbnail = remember {
+                        ChangeAlbumThumbnail(context, album::id)
                     }
+                    changeThumbnail.Render()
+                    MenuEntry(
+                        icon = changeThumbnail.iconId,
+                        text = changeThumbnail.menuIconTitle,
+                        onClick = changeThumbnail::showDialog
+                    )
 
                     onDownloadAlbumCover?.let {
                         MenuEntry(

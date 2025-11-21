@@ -23,4 +23,6 @@ data class Album(
     fun cleanTitle() = cleanPrefix( this.title ?: "" )
 
     fun cleanAuthorsText() = cleanPrefix( this.authorsText ?: "" )
+
+    fun cleanThumbnailUrl() = thumbnailUrl?.let { cleanPrefix( it ) }
 }

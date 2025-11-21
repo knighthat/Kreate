@@ -249,7 +249,7 @@ object AlbumItem: Visual(), MultiplatformItem {
             widthDp = widthDp,
             modifier = modifier,
             thumbnail = {
-                Thumbnail( album.id, album.thumbnailUrl, widthDp )
+                Thumbnail( album.id, album.cleanThumbnailUrl(), widthDp )
             },
             firstLine = {
                 Title(
@@ -306,7 +306,7 @@ object AlbumItem: Visual(), MultiplatformItem {
             heightDp = heightDp,
             modifier = modifier,
             thumbnail = {
-                Thumbnail( album.id, album.thumbnailUrl, heightDp )
+                Thumbnail( album.id, album.cleanThumbnailUrl(), heightDp )
             },
             firstLine = {
                 Title(
