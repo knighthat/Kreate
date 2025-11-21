@@ -29,6 +29,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.themed.common.ChangeSongThumbnail
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.database.models.Song
 import it.fast4x.rimusic.Database
@@ -128,6 +129,9 @@ class SongItemMenu private constructor(
         //<editor-fold defaultstate="collapsed" desc="Buttons">
         val renameSong = RenameSongDialog{ song }
         val changeAuthor = ChangeAuthorDialog{ song }
+        val changeThumbnail = remember {
+            ChangeSongThumbnail(context, song::id)
+        }
         val startRadio = Radio { listOf(song) }
         val playNext = PlayNext {
             binder?.player?.addNext( listOf(song.asMediaItem), appContext() )
@@ -161,6 +165,7 @@ class SongItemMenu private constructor(
         buttons = mutableListOf<Button>().apply {
             add( renameSong )
             add( changeAuthor )
+            add( changeThumbnail )
             add( startRadio )
             add( playNext )
             add( enqueue )
@@ -180,6 +185,7 @@ class SongItemMenu private constructor(
         //<editor-fold desc="Dialog renders">
         renameSong.Render()
         changeAuthor.Render()
+        changeThumbnail.Render()
         deleteSongDialog.Render()
         resetDialog.Render()
         exportCacheDialog.Render()

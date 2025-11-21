@@ -357,6 +357,15 @@ interface SongTable {
     fun updateArtists( songId: String, artistsText: String ): Int
 
     /**
+     * @param songId identifier of [Song]
+     * @param thumbnailUrl new url to get image
+     *
+     * @return number of albums affected by this operation
+     */
+    @Query("UPDATE Song SET thumbnailUrl = :thumbnailUrl WHERE id = :songId")
+    fun updateThumbnail( songId: String, thumbnailUrl: String? ): Int
+
+    /**
      * Set [Song.totalPlayTimeMs] to:
      * - [value] if [isIncrement] is `false`
      * - Sum of [Song.totalPlayTimeMs] and [value] if [isIncrement] is `true`
