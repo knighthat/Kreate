@@ -250,16 +250,12 @@ interface SongPlaylistMapTable {
     ): Flow<List<String>> =
         findMostPlayedSongsOf( playlistId )
             .map { list ->
-                val results = mutableListOf<String>()
-
-                for( song in list ) {
-                    if( results.size == limit )
-                        break
-                    else if( song.thumbnailUrl != null && song.thumbnailUrl !in results )
-                        results.add( song.thumbnailUrl )
-                }
-
-                results
+                list.asSequence()
+                    .filter { it.thumbnailUrl != null }
+                    .distinctBy( Song::thumbnailUrl )
+                    .take( 4 )
+                    .toList()
+                    .mapNotNull( Song::cleanThumbnailUrl )
             }
             .flowOn( Dispatchers.Default )
 

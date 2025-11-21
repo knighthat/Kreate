@@ -50,6 +50,8 @@ data class Song(
 
     fun cleanArtistsText() = cleanPrefix( this.artistsText ?: "" )
 
+    fun cleanThumbnailUrl() = thumbnailUrl?.let { cleanPrefix( it ) }
+
     fun relativePlayTime(): Double {
         val duration = this.durationText.toDuration()
         val totalPlayTime = this.totalPlayTimeMs.toDuration( DurationUnit.MILLISECONDS )

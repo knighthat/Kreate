@@ -209,7 +209,7 @@ fun HomeAlbums(
                      runBlocking {
                          songAlbumMapTable.allSongsOf( album.id )
                                           .first()
-                                          .groupingBy( Song::thumbnailUrl )
+                                          .groupingBy( Song::cleanThumbnailUrl )
                                           .eachCount()
                                           .maxByOrNull { it.value }
                                           ?.key

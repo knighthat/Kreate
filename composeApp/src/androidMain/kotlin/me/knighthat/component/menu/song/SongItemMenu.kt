@@ -212,7 +212,7 @@ class SongItemMenu private constructor(
                         bottom = 10.dp
                     ),
                     thumbnail = {
-                        SongItem.Thumbnail( song.thumbnailUrl, songItemValues )
+                        SongItem.Thumbnail( song.cleanThumbnailUrl(), songItemValues )
                     },
                     firstLine = {
                         SongItem.Title( song.cleanTitle(), songItemValues )

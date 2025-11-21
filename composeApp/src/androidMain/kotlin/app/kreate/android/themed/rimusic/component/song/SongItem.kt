@@ -430,7 +430,7 @@ object SongItem: Visual() {
             thumbnail = {
                 Thumbnail(
                     showThumbnail = showThumbnail,
-                    thumbnailUrl = song.thumbnailUrl,
+                    thumbnailUrl = song.cleanThumbnailUrl(),
                     isLiked = song.likedAt != null,
                     isPlaying = isPlaying,
                     values = values,

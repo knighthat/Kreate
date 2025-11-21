@@ -541,7 +541,7 @@ class MediaLibrarySessionCallback(
                     .setTitle(cleanTitle())
                     .setSubtitle(cleanArtistsText())
                     .setArtist(cleanArtistsText())
-                    .setArtworkUri(thumbnailUrl?.toUri())
+                    .setArtworkUri(cleanThumbnailUrl()?.toUri())
                     .setIsPlayable(true)
                     .setIsBrowsable(false)
                     .setMediaType(MediaMetadata.MEDIA_TYPE_MUSIC)

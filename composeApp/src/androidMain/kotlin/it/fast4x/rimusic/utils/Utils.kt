@@ -164,7 +164,7 @@ val Song.asMediaItem: MediaItem
             MediaMetadata.Builder()
                 .setTitle(title)
                 .setArtist(artistsText)
-                .setArtworkUri(thumbnailUrl?.toUri())
+                .setArtworkUri(cleanThumbnailUrl()?.toUri())
                 .setDurationMs( durationText.toDuration().inWholeMilliseconds )
                 .setExtras(
                     bundleOf(
@@ -190,7 +190,7 @@ val Song.asCleanedMediaItem: MediaItem
             MediaMetadata.Builder()
                 .setTitle( cleanTitle() )
                 .setArtist( cleanArtistsText() )
-                .setArtworkUri( thumbnailUrl?.toUri() )
+                .setArtworkUri( cleanThumbnailUrl()?.toUri() )
                 .setDurationMs( durationText.toDuration().inWholeMilliseconds )
                 .setExtras(
                     bundleOf(
