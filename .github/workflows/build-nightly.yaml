@@ -25,6 +25,7 @@ jobs:
       WORKFLOW_ID: ${{ vars.WORKFLOW_ID }}
 
     outputs:
+      since: ${{ steps.last-successful-run.outputs.timestamp }}
       changes_made: ${{ steps.last-successful-run.outputs.changes_made || steps.detect_changes.outputs.changes_made }}
 
     steps:
@@ -116,9 +117,68 @@ jobs:
           EXIT_CODE=$? 
           [[ $EXIT_CODE -eq 0 ]] && echo "changes_made=true" >> $GITHUB_OUTPUT
 
-  build-github-nightly:
+  prep:
     needs: [check-for-changes]
     if: ${{ needs.check-for-changes.outputs.changes_made == 'true' }}
+
+    name: Preparing needed components
+    runs-on: ubuntu-latest
+
+    outputs:
+      filename: ${{ steps.changelogs.outputs.filename }}
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+          # Always have a hard-coded limit of how many commits to fetch.
+          # Better idea to fetch the whole thing but fetch time goes BRRRRRR.
+          fetch-depth: 300
+
+      - name: Extract version code
+        id: version
+        run: |
+          VERSION_CODE=$(grep -E '^\s*val VERSION_CODE\s*=\s*' composeApp/build.gradle.kts | awk -F '= ' '{print $2}')
+          echo "code=$VERSION_CODE" >> $GITHUB_OUTPUT
+
+      - name: "DEBUG: Print version code"
+        run: echo "${{ steps.version.outputs.code }}"
+
+      - name: Get changes from git log
+        id: changelogs
+        env:
+          SINCE: ${{ needs.check-for-changes.outputs.since }}
+          CODE: ${{ steps.version.outputs.code }}
+        run: |
+          FILENAME="$((( 1 << 20 ) | $CODE)).txt"
+          echo "filename=$FILENAME" >> $GITHUB_OUTPUT
+
+          echo "Changes:" > "$FILENAME"
+
+          git --no-pager log \
+            --since="${SINCE:-1 day ago}" \
+            --pretty=format:"- %s" \
+            --reverse -- \
+            composeApp/src/androidMain/ \
+            composeApp/src/commonMain/ \
+            composeApp/src/androidGithub/ \
+            composeApp/src/github/ \
+            "**/build\.gradle\.kts" \
+            gradle/ \
+            modules/ \
+            extensions/ >> "$FILENAME"
+
+      - name: "DEBUG: Print change logs file"
+        run: cat "${{ steps.changelogs.outputs.filename }}"
+
+      - name: Upload change logs file
+        uses: actions/upload-artifact@v5
+        with:
+          name: changelogs
+          path: ${{ steps.changelogs.outputs.filename }}
+
+  build-github-nightly:
+    needs: [prep]
 
     name: Build GitHub nightly
     runs-on: ubuntu-latest
@@ -158,6 +218,16 @@ jobs:
       # hash doesn't match pre-defined hash
       - name: Verify keystore
         run: echo "${{ secrets.NIGHTLY_KEYSTORE_SHA256 }} $KEYSTORE_PATH/$KEYSTORE_FILENAME" | sha256sum -c
+
+      - name: Download change logs
+        uses: actions/download-artifact@v6
+        with:
+          name: changelogs
+          path: fastlane/metadata/android/en-US/changelogs/
+
+      - name: "DEBUG: Verify change logs"
+        run: cat "fastlane/metadata/android/en-US/changelogs/${{ needs.prep.outputs.filename }}"
+
 
       - name: Setup Java 21
         uses: actions/setup-java@v5.0.0
