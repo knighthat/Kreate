@@ -1,7 +1,7 @@
 name: Close issues upon a release.
 on:
   release:
-    types: [published]
+    types: [released]
 
 jobs:
   patched:
