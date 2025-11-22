@@ -265,11 +265,17 @@ android {
 
             isDefault = true
 
+            // App's properties
+            versionCode = VERSION_CODE
+
             // Build architecture
             buildConfigField( "String", "ARCH", "\"$name\"" )
         }
         create("arm64") {
             dimension = "arch"
+
+            // App's properties
+            versionCode = (1 shl 20) or VERSION_CODE
 
             // Build architecture
             ndk { abiFilters += "arm64-v8a" }
@@ -277,17 +283,28 @@ android {
         }
         create("arm32") {
             dimension = "arch"
+
+            // App's properties
+            versionCode = (1 shl 19) or VERSION_CODE
+
+            // Build architecture
             ndk { abiFilters += "armeabi-v7a" }
             buildConfigField( "String", "ARCH", "\"$name\"" )
         }
         create("x86") {
             dimension = "arch"
 
+            // App's properties
+            versionCode = (1 shl 18) or VERSION_CODE
+
             ndk { abiFilters += "x86" }
             buildConfigField( "String", "ARCH", "\"$name\"" )
         }
         create("x86_64") {
             dimension = "arch"
+
+            // App's properties
+            versionCode = (1 shl 17) or VERSION_CODE
 
             // Build architecture
             ndk { abiFilters += "x86_64" }
@@ -323,7 +340,6 @@ android {
             // App's properties
             versionName = "1.8.4"
             manifestPlaceholders["appName"] = APP_NAME
-            versionCode = VERSION_CODE
         }
         //</editor-fold>
     }
@@ -437,7 +453,8 @@ licenseReport {
 val copyReleaseNote = tasks.register<Copy>("copyReleaseNote" ) {
     from( "$rootDir/fastlane/metadata/android/en-US/changelogs" )
 
-    val fileName = "$VERSION_CODE.txt"
+    val versionCode = (1 shl 20) or VERSION_CODE
+    val fileName = "$versionCode.txt"
     setIncludes( listOf( fileName ) )
 
     into( "$rootDir/composeApp/src/androidMain/res/raw" )
