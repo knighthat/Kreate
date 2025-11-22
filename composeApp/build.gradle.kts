@@ -268,9 +268,6 @@ android {
 
             // App's properties
             versionCode = VERSION_CODE
-
-            // Build architecture
-            buildConfigField( "String", "ARCH", "\"$name\"" )
         }
         create("arm64") {
             dimension = "arch"
@@ -280,7 +277,6 @@ android {
 
             // Build architecture
             ndk { abiFilters += "arm64-v8a" }
-            buildConfigField( "String", "ARCH", "\"$name\"" )
         }
         create("arm32") {
             dimension = "arch"
@@ -290,7 +286,6 @@ android {
 
             // Build architecture
             ndk { abiFilters += "armeabi-v7a" }
-            buildConfigField( "String", "ARCH", "\"$name\"" )
         }
         create("x86") {
             dimension = "arch"
@@ -298,8 +293,8 @@ android {
             // App's properties
             versionCode = (1 shl 18) or VERSION_CODE
 
+            // Build architecture
             ndk { abiFilters += "x86" }
-            buildConfigField( "String", "ARCH", "\"$name\"" )
         }
         create("x86_64") {
             dimension = "arch"
@@ -309,7 +304,6 @@ android {
 
             // Build architecture
             ndk { abiFilters += "x86_64" }
-            buildConfigField( "String", "ARCH", "\"$name\" ")
         }
         //</editor-fold>
         //<editor-fold desc="Environment">
