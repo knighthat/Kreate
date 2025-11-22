@@ -239,6 +239,7 @@ android {
     }
 
     flavorDimensions += listOf( "platform", "arch", "env" )
+    //noinspection ChromeOsAbiSupport
     productFlavors {
         //<editor-fold desc="Platforms">
         create("github") {
