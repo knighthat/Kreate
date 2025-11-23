@@ -57,7 +57,7 @@ class CrashHandler(
             val writer = PrintWriter(outStream)
 
             writer.println( "Version: ${BuildConfig.VERSION_NAME}" )
-            writer.println( "Architect: ${BuildConfig.ARCH}" )
+            writer.println( "Architect: ${BuildConfig.FLAVOR_arch}" )
             writer.println( "Manufacturer: ${Build.MANUFACTURER}" )
             writer.println( "Model: ${Build.MODEL}" )
             writer.println( "Brand: ${Build.BRAND}" )
