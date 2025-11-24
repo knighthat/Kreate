@@ -75,6 +75,7 @@ import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.PresetsReverb
 import it.fast4x.rimusic.enums.WallpaperType
+import it.fast4x.rimusic.enums.WallpaperResetDuration
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
 import it.fast4x.rimusic.service.BitmapProvider
 import it.fast4x.rimusic.service.MyDownloadHelper
@@ -425,7 +426,7 @@ class PlayerServiceModern:
     override fun onIsPlayingChanged( isPlaying: Boolean ) {
         wallpaperRevertJob?.cancel()
 
-        if (!isPlaying) {
+        if (!isPlaying && Preferences.LIVE_WALLPAPER_RESET_DURATION != WallpaperResetDuration.DISABLED) {
             wallpaperRevertJob = coroutineScope.launch {
                 delay(Preferences.LIVE_WALLPAPER_RESET_DURATION.value.ms)
                 revertWallpaperToDefault()
