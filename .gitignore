@@ -1,0 +1,19 @@
+*.iml
+.kotlin
+xcuserdata
+captures
+.externalNativeBuild
+.cxx
+.ignore.d
+
+# Gradle
+.gradle
+local.properties
+**/build/
+!src/**/build/
+gradlew
+gradlew.bat
+**/gradle-wrapper.jar
+
+# Android Studio
+.idea

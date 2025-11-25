@@ -1,0 +1,50 @@
+[versions]
+# Application properties
+minSdk = "23"
+targetSdk = "36"
+
+# Libraries
+agp = "8.11.2"
+kotlin = "2.2.21"
+ksp = "2.2.21-2.0.4"
+androidx-activity = "1.12.0"
+androidx-appcompat = "1.7.1"
+androidx-core = "1.17.0"
+compose-hot-reload = "1.0.0"
+compose-kmp = "1.9.3"
+kotlinx-coroutines = "1.10.2"
+hilt = "2.57.2"
+
+
+[libraries]
+# Androidx
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+
+# Kotlinx
+kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+
+# Testing
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+
+# Dependency injection
+android-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
+android-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+
+
+[plugins]
+# Multiplatform
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-kmp" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+
+# Android
+application = { id = "com.android.application", version.ref = "agp" }
+library = { id = "com.android.library", version.ref = "agp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+
+# Other
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+compose-hot-reload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-hot-reload" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
