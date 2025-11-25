@@ -265,9 +265,6 @@ android {
             dimension = "arch"
 
             isDefault = true
-
-            // App's properties
-            versionCode = VERSION_CODE
         }
         create("arm64") {
             dimension = "arch"
@@ -335,6 +332,7 @@ android {
             // App's properties
             versionName = "1.8.4"
             manifestPlaceholders["appName"] = APP_NAME
+            versionCode = VERSION_CODE
         }
         //</editor-fold>
     }
