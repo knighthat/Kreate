@@ -48,7 +48,7 @@ jobs:
       GITHUB_REPOSITORY: ${{ github.action_repository }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -92,7 +92,7 @@ jobs:
             exit 1
           fi
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -155,7 +155,7 @@ jobs:
       # /home/runner/work/Kreate/.ignore.d/keystores/production.jks
       # Which will unintentionally make the build process fail because it
       # can't find the keystore to sign the apk
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
           # Only clone the latest version of repo.

@@ -65,7 +65,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -122,7 +122,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Get contributors
         env:
@@ -206,7 +206,7 @@ jobs:
       WORKFLOWS_FILENAME: workflows.json
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       # actions/download-artifact doesn't know which workflow to download
       # artifact from when `repository` is assgined.
