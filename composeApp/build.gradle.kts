@@ -1,3 +1,4 @@
+import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.security.MessageDigest
@@ -61,6 +62,9 @@ kotlin {
             implementation( libs.androidx.core.ktx )
             implementation( libs.androidx.splashscreen )
         }
+        androidUnitTest.dependencies {
+            implementation( libs.robolectric )
+        }
         jvmMain.dependencies {
             implementation( compose.desktop.currentOs )
             implementation(libs.kotlinx.coroutines.swing)
@@ -78,6 +82,9 @@ kotlin {
         commonTest.dependencies {
             implementation( libs.kotlin.test )
             implementation( libs.kotlin.test.junit )
+
+            @OptIn(ExperimentalComposeLibrary::class)
+            implementation( compose.uiTest )
         }
     }
 }
@@ -240,6 +247,11 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
+    }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 }
 

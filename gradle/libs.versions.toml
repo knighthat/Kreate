@@ -17,6 +17,7 @@ kotlinx-coroutines = "1.10.2"
 hilt = "2.57.2"
 material-kmp = "1.9.0"
 material-android = "1.13.0"
+robolectric = "4.16"
 
 
 [libraries]
@@ -37,6 +38,7 @@ kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-
 # Testing
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 # Dependency injection
 android-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
