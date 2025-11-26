@@ -403,8 +403,8 @@
     <string name="bg_colors_fluid_gradient_background_from_cover">Fluid gradient background from cover</string>
     <string name="show_background_in_lyrics">Show background color in Lyrics</string>
     <string name="bg_colors_blurred_cover_background">Blurred cover background</string>
-    <string name="pcontrols_modern">Modern</string>
-    <string name="pcontrols_essential">Essential</string>
+    <string name="pcontrols_modern">आधुनिक</string>
+    <string name="pcontrols_essential">आवश्यक</string>
     <string name="pcontrols_type">Controls type</string>
     <string name="player_swiping_down_is_disabled">Player swiping down is disabled</string>
     <string name="player_position">Player position</string>
@@ -430,9 +430,9 @@
     <string name="enable_quick_picks_page">Enable Quick Picks page</string>
     <string name="parental_control">Parental control</string>
     <string name="info_prevent_play_songs_with_age_limitation">Prevent play songs with age limitation</string>
-    <string name="cache_location_private">Private</string>
+    <string name="cache_location_private">निजी</string>
     <string name="cache_location_system">प्रणाली</string>
-    <string name="debug">DEBUG</string>
+    <string name="debug">दोषमार्जन</string>
     <string name="setting_entry_runtime_log">Runtime log</string>
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
     <string name="copy_log_to_clipboard">Copy log to clipboard</string>
