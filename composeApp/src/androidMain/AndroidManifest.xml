@@ -8,7 +8,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:banner="@mipmap/ic_banner"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        android:theme="@style/Theme.Kreate.Starting">
         <activity
             android:exported="true"
             android:name=".MainActivity">

@@ -56,6 +56,7 @@ kotlin {
 
             implementation( libs.androidx.appcompat )
             implementation( libs.androidx.core.ktx )
+            implementation( libs.androidx.splashscreen )
         }
         jvmMain.dependencies {
             implementation( compose.desktop.currentOs )

@@ -10,6 +10,7 @@ ksp = "2.2.21-2.0.4"
 androidx-activity = "1.12.0"
 androidx-appcompat = "1.7.1"
 androidx-core = "1.17.0"
+androidx-core-splashscreen = "1.2.0"
 compose-hot-reload = "1.0.0"
 compose-kmp = "1.9.3"
 kotlinx-coroutines = "1.10.2"
@@ -21,6 +22,7 @@ hilt = "2.57.2"
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+androidx-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-core-splashscreen" }
 
 # Kotlinx
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
