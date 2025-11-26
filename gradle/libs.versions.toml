@@ -4,7 +4,7 @@ minSdk = "23"
 targetSdk = "36"
 
 # Libraries
-agp = "8.11.2"
+agp = "8.13.1"
 kotlin = "2.2.21"
 ksp = "2.2.21-2.0.4"
 androidx-activity = "1.12.0"
