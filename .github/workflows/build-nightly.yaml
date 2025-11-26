@@ -57,7 +57,7 @@ jobs:
             echo "timestamp=$LAST_SUCCESSFUL_RUN" >> $GITHUB_OUTPUT
           fi
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         if: ${{ !steps.last-successful-run.outputs.changes_made }}
         with:
           submodules: true
@@ -128,7 +128,7 @@ jobs:
       filename: ${{ steps.changelogs.outputs.filename }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
           # Always have a hard-coded limit of how many commits to fetch.
@@ -200,7 +200,7 @@ jobs:
       # /home/runner/work/Kreate/.ignore.d/keystores/nightly.jks
       # Which will unintentionally make the build process fail because it
       # can't find the keystore to sign the apk
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
           # Only clone the latest version of repo.
