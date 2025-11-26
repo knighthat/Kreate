@@ -8,21 +8,28 @@ agp = "8.11.2"
 kotlin = "2.2.21"
 ksp = "2.2.21-2.0.4"
 androidx-activity = "1.12.0"
-androidx-appcompat = "1.7.1"
 androidx-core = "1.17.0"
 androidx-core-splashscreen = "1.2.0"
+androidx-material3 = "1.4.0"
 compose-hot-reload = "1.0.0"
 compose-kmp = "1.9.3"
 kotlinx-coroutines = "1.10.2"
 hilt = "2.57.2"
+material-kmp = "1.9.0"
+material-android = "1.13.0"
 
 
 [libraries]
 # Androidx
-androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-core-splashscreen" }
+
+# Material
+material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material-kmp" }
+material3-desktop = { module = "org.jetbrains.compose.material3:material3-desktop", version.ref = "material-kmp" }
+material3-android = { module = "androidx.compose.material3:material3", version.ref = "androidx-material3" }
+material-android = { module = "com.google.android.material:material", version.ref = "material-android" }
 
 # Kotlinx
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }

@@ -54,21 +54,26 @@ kotlin {
             // Dependency injection
             implementation( libs.android.hilt )
 
-            implementation( libs.androidx.appcompat )
+            // Material
+            implementation( libs.material3.android )
+            implementation( libs.material.android )     // This is needed for themes.xml
+
             implementation( libs.androidx.core.ktx )
             implementation( libs.androidx.splashscreen )
         }
         jvmMain.dependencies {
             implementation( compose.desktop.currentOs )
             implementation(libs.kotlinx.coroutines.swing)
+
+            // Material
+            implementation( libs.material3.desktop )
         }
         commonMain.dependencies {
-            implementation( compose.runtime )
-            implementation( compose.foundation )
-            implementation( compose.material3 )
-            implementation( compose.ui )
             implementation( compose.components.resources )
             implementation( compose.components.uiToolingPreview )
+
+            // Material
+            implementation( libs.material3 )
         }
         commonTest.dependencies {
             implementation( libs.kotlin.test )
