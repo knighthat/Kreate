@@ -3,7 +3,7 @@
     <style name="Theme.Kreate" parent="Theme.Material3.DayNight.NoActionBar" />
 
     <style name="Theme.Kreate.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenIconBackgroundColor">@color/splash_background</item>
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
 
         <item name="postSplashScreenTheme">@style/Theme.Kreate</item>
