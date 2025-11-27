@@ -844,13 +844,13 @@
     <string name="error_failed_to_get_charts">Listeler alınamadı</string>
     <string name="error_failed_to_acquire_account_info">Hesap bilgisi alınamadı</string>
     <string name="error_failed_to_sync_tab">%s senkronize edilemedi</string>
-    <string name="error_failed_to_load_developers">Failed to load developers</string>
-    <string name="error_failed_to_load_translators">Failed to load translators</string>
-    <string name="error_check_for_updates_failed">Check for updates failed</string>
-    <string name="title_change_thumbnail">Change thumbnail</string>
-    <string name="description_change_thumbnail">Replace thumbnail with one of your choice</string>
-    <string name="description_select_from_device">Select from device</string>
-    <string name="error_failed_to_load_image">Failed to load image</string>
-    <string name="error_invalid_path">Invalid path</string>
-    <string name="description_validate_url">Validate url</string>
+    <string name="error_failed_to_load_developers">Geliştiriciler yüklenemedi</string>
+    <string name="error_failed_to_load_translators">Çevirmenler yüklenemedi</string>
+    <string name="error_check_for_updates_failed">Güncelleme kontrolü başarısız oldu</string>
+    <string name="title_change_thumbnail">Küçük resmi değiştir</string>
+    <string name="description_change_thumbnail">Küçük resmi istediğiniz bir taneyle değiştirin</string>
+    <string name="description_select_from_device">Cihazdan seç</string>
+    <string name="error_failed_to_load_image">Resim yüklenemedi</string>
+    <string name="error_invalid_path">Geçersiz yol</string>
+    <string name="description_validate_url">URL\'yi doğrula</string>
 </resources>
