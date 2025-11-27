@@ -43,6 +43,10 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_21)
         }
     }
+
+    compilerOptions {
+        freeCompilerArgs.add( "-Xexpect-actual-classes" )
+    }
     
     jvm()
     
@@ -82,6 +86,7 @@ kotlin {
         commonTest.dependencies {
             implementation( libs.kotlin.test )
             implementation( libs.kotlin.test.junit )
+            implementation( kotlin("reflect") )
 
             @OptIn(ExperimentalComposeLibrary::class)
             implementation( compose.uiTest )
