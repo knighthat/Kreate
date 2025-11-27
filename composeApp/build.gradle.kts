@@ -57,7 +57,7 @@ kotlin {
             implementation( libs.androidx.activity.compose )
 
             // Dependency injection
-            implementation( libs.android.hilt )
+            implementation( libs.hilt )
 
             // Material
             implementation( libs.material3.android )
@@ -82,6 +82,9 @@ kotlin {
 
             // Material
             implementation( libs.material3 )
+
+            // Dependency injection
+            implementation( libs.dagger )
         }
         commonTest.dependencies {
             implementation( libs.kotlin.test )
@@ -263,7 +266,8 @@ android {
 dependencies {
     debugImplementation( compose.uiTooling )
 
-    add( "kspAndroid", libs.android.hilt.compiler )
+    add( "kspAndroid", libs.hilt.compiler )
+    add( "kspJvm", libs.dagger.compiler )
 }
 
 compose.desktop {

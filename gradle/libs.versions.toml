@@ -18,6 +18,9 @@ hilt = "2.57.2"
 material-kmp = "1.9.0"
 material-android = "1.13.0"
 robolectric = "4.16"
+room = "2.8.4"
+sqlite = "2.6.2"
+desugar = "2.1.5"
 
 
 [libraries]
@@ -41,14 +44,17 @@ kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 # Dependency injection
-android-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
-android-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
+hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+dagger = { module = "com.google.dagger:dagger", version.ref = "hilt" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "hilt" }
 
 
 [plugins]
 # Multiplatform
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-kmp" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+room-kmp = { id = "androidx.room", version.ref = "room" }
 
 # Android
 application = { id = "com.android.application", version.ref = "agp" }
