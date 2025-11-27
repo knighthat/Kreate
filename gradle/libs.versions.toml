@@ -49,6 +49,14 @@ hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "hilt" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "hilt" }
 
+# Database
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+
+# Others
+android-desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
+
 
 [plugins]
 # Multiplatform

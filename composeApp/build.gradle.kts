@@ -26,6 +26,7 @@ plugins {
     // Multiplatform
     alias( libs.plugins.compose.multiplatform )
     alias( libs.plugins.kotlin.multiplatform )
+    alias( libs.plugins.room.kmp )
 
     // Android
     alias( libs.plugins.application )
@@ -79,6 +80,10 @@ kotlin {
         commonMain.dependencies {
             implementation( compose.components.resources )
             implementation( compose.components.uiToolingPreview )
+
+            // Database
+            implementation( libs.room.runtime )
+            implementation( libs.sqlite.bundled )
 
             // Material
             implementation( libs.material3 )
@@ -255,6 +260,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
+
+        isCoreLibraryDesugaringEnabled = true
     }
     testOptions {
         unitTests {
@@ -267,7 +274,11 @@ dependencies {
     debugImplementation( compose.uiTooling )
 
     add( "kspAndroid", libs.hilt.compiler )
+    add( "kspAndroid", libs.room.compiler )
     add( "kspJvm", libs.dagger.compiler )
+    add( "kspJvm", libs.room.compiler )
+
+    coreLibraryDesugaring( libs.android.desugar )
 }
 
 compose.desktop {
@@ -280,4 +291,8 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
