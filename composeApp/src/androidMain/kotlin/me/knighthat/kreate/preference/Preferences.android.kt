@@ -34,7 +34,7 @@ actual class BooleanPref actual constructor(
              existed in the preferences file, then delete that key
              (for migration to new key)
          */
-        if( storage.contains( oldKey ) ) {
+        if( oldKey.isNotBlank() && storage.contains( oldKey ) ) {
             fromFile = storage.getBoolean( oldKey, defaultValue )
             storage.edit( commit = true ) {
                 remove( oldKey )
@@ -94,7 +94,7 @@ actual class ColorPref actual constructor(
              existed in the preferences file, then delete that key
              (for migration to new key)
          */
-        if( storage.contains( oldKey ) ) {
+        if( oldKey.isNotBlank() && storage.contains( oldKey ) ) {
             fromFile = storage.getInt( oldKey, defaultValue.hashCode() )
             storage.edit( commit = true ) {
                 remove( oldKey )
@@ -154,7 +154,7 @@ actual class StringPref actual constructor(
              existed in the preferences file, then delete that key
              (for migration to new key)
          */
-        if( storage.contains( oldKey ) ) {
+        if( oldKey.isNotBlank() && storage.contains( oldKey ) ) {
             fromFile = storage.getString( oldKey, null )
             storage.edit( commit = true ) {
                 remove( oldKey )
@@ -214,7 +214,7 @@ actual class IntPref actual constructor(
              existed in the preferences file, then delete that key
              (for migration to new key)
          */
-        if( storage.contains( oldKey ) ) {
+        if( oldKey.isNotBlank() && storage.contains( oldKey ) ) {
             fromFile = storage.getInt( oldKey, defaultValue )
             storage.edit( commit = true ) {
                 remove( oldKey )
@@ -274,7 +274,7 @@ actual class FloatPref actual constructor(
              existed in the preferences file, then delete that key
              (for migration to new key)
          */
-        if( storage.contains( oldKey ) ) {
+        if( oldKey.isNotBlank() && storage.contains( oldKey ) ) {
             fromFile = storage.getFloat( oldKey, defaultValue )
             storage.edit( commit = true ) {
                 remove( oldKey )
@@ -335,7 +335,7 @@ actual class EnumPref<E : Enum<E>> actual constructor(
              existed in the preferences file, then delete that key
              (for migration to new key)
          */
-        if( storage.contains( oldKey ) ) {
+        if( oldKey.isNotBlank() && storage.contains( oldKey ) ) {
             fromFile = storage.getString( oldKey, null )
             storage.edit( commit = true ) {
                 remove( oldKey )
@@ -397,7 +397,7 @@ actual class LongPref actual constructor(
              existed in the preferences file, then delete that key
              (for migration to new key)
          */
-        if( storage.contains( oldKey ) ) {
+        if( oldKey.isNotBlank() && storage.contains( oldKey ) ) {
             fromFile = storage.getLong( oldKey, defaultValue )
             storage.edit( commit = true ) {
                 remove( oldKey )
@@ -457,7 +457,7 @@ actual class DurationPref actual constructor(
              existed in the preferences file, then delete that key
              (for migration to new key)
          */
-        if( storage.contains( oldKey ) ) {
+        if( oldKey.isNotBlank() && storage.contains( oldKey ) ) {
             fromFile = storage.getLong( oldKey, defaultValue.inWholeMilliseconds )
             storage.edit( commit = true ) {
                 remove( oldKey )
