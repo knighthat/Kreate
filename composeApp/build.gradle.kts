@@ -268,6 +268,9 @@ android {
             isIncludeAndroidResources = true
         }
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
