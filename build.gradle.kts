@@ -9,7 +9,6 @@ plugins {
     // Android
     alias( libs.plugins.application ) apply false
     alias( libs.plugins.library ) apply false
-    alias( libs.plugins.hilt ) apply false
 
     // Other
     alias( libs.plugins.compose.hot.reload ) apply false

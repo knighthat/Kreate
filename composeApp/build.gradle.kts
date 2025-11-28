@@ -30,7 +30,6 @@ plugins {
 
     // Android
     alias( libs.plugins.application )
-    alias( libs.plugins.hilt )
 
     // Other
     alias( libs.plugins.compose.hot.reload )
@@ -58,7 +57,7 @@ kotlin {
             implementation( libs.androidx.activity.compose )
 
             // Dependency injection
-            implementation( libs.hilt )
+            implementation( libs.koin.android )
 
             // Material
             implementation( libs.material3.android )
@@ -89,7 +88,8 @@ kotlin {
             implementation( libs.material3 )
 
             // Dependency injection
-            implementation( libs.dagger )
+            api( libs.koin.core )
+            implementation( libs.koin.compose )
         }
         commonTest.dependencies {
             implementation( libs.kotlin.test )
@@ -273,9 +273,7 @@ android {
 dependencies {
     debugImplementation( compose.uiTooling )
 
-    add( "kspAndroid", libs.hilt.compiler )
     add( "kspAndroid", libs.room.compiler )
-    add( "kspJvm", libs.dagger.compiler )
     add( "kspJvm", libs.room.compiler )
 
     coreLibraryDesugaring( libs.android.desugar )

@@ -14,13 +14,13 @@ androidx-material3 = "1.4.0"
 compose-hot-reload = "1.0.0"
 compose-kmp = "1.9.3"
 kotlinx-coroutines = "1.10.2"
-hilt = "2.57.2"
 material-kmp = "1.9.0"
 material-android = "1.13.0"
 robolectric = "4.16"
 room = "2.8.4"
 sqlite = "2.6.2"
 desugar = "2.1.5"
+koin = "4.1.1"
 
 
 [libraries]
@@ -44,10 +44,9 @@ kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 # Dependency injection
-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
-dagger = { module = "com.google.dagger:dagger", version.ref = "hilt" }
-dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "hilt" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose-viewmodel-navigation", version.ref = "koin" }
 
 # Database
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
@@ -67,7 +66,6 @@ room-kmp = { id = "androidx.room", version.ref = "room" }
 # Android
 application = { id = "com.android.application", version.ref = "agp" }
 library = { id = "com.android.library", version.ref = "agp" }
-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 
 # Other
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

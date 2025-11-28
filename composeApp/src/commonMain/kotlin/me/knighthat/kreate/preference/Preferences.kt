@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.annotations.NonBlocking
+import org.koin.core.qualifier.named
+import org.koin.java.KoinJavaComponent.inject
 
 
 abstract class Preferences<T> internal constructor(
@@ -18,30 +20,13 @@ abstract class Preferences<T> internal constructor(
         /**
          * Store general settings
          */
-        private lateinit var preferences: Storage
+        private val preferences: Storage by inject(Storage::class.java, named(PrefType.PLAIN))
 
         /**
          * For logging credentials and other entries
          * that require total privacy.
          */
-        private lateinit var credentials: Storage
-
-        /**
-         * Initialize needed properties for settings to use.
-         *
-         * **ATTENTION**: Must be call as early as possible to prevent
-         * because all preference require [preferences] to be initialized
-         * to work.
-         */
-        fun load( preferences: Storage, credentials: Storage ) {
-            // Only set once to prevent unwanted injection
-            if( !::preferences.isInitialized )
-                this.preferences = preferences
-
-            // Only set once to prevent unwanted injection
-            if( !::credentials.isInitialized )
-                this.credentials = credentials
-        }
+        private val credentials: Storage by inject(Storage::class.java, named(PrefType.PRIVATE))
     }
 
     protected val internalFlow: MutableStateFlow<T> = MutableStateFlow(
