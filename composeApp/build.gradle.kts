@@ -35,6 +35,7 @@ plugins {
     alias( libs.plugins.compose.hot.reload )
     alias( libs.plugins.compose.compiler )
     alias( libs.plugins.ksp )
+    alias( libs.plugins.kotlin.serialization )
 }
 
 kotlin {
@@ -65,13 +66,16 @@ kotlin {
 
             implementation( libs.androidx.core.ktx )
             implementation( libs.androidx.splashscreen )
+            implementation( libs.kotlinx.coroutines.android )
+            implementation( libs.ktor.okhttp )
         }
         androidUnitTest.dependencies {
             implementation( libs.robolectric )
         }
         jvmMain.dependencies {
             implementation( compose.desktop.currentOs )
-            implementation(libs.kotlinx.coroutines.swing)
+            implementation( libs.kotlinx.coroutines.swing )
+            implementation( libs.ktor.cio )
 
             // Material
             implementation( libs.material3.desktop )
@@ -79,13 +83,16 @@ kotlin {
         commonMain.dependencies {
             implementation( compose.components.resources )
             implementation( compose.components.uiToolingPreview )
+            implementation( libs.kotlinx.coroutines.core )
+            implementation( libs.kotlinx.serialization.json )
+            implementation( libs.bundles.ktor )
 
             // Database
             implementation( libs.room.runtime )
             implementation( libs.sqlite.bundled )
 
             // Material
-            implementation( libs.material3 )
+            implementation( libs.bundles.material3 )
 
             // Dependency injection
             api( libs.koin.core )
@@ -104,6 +111,7 @@ kotlin {
             implementation( libs.kotlin.test )
             implementation( libs.kotlin.test.junit )
             implementation( kotlin("reflect") )
+            implementation( libs.kotlinx.coroutines.test )
 
             @OptIn(ExperimentalComposeLibrary::class)
             implementation( compose.uiTest )

@@ -14,6 +14,7 @@ androidx-material3 = "1.4.0"
 compose-hot-reload = "1.0.0"
 compose-kmp = "1.9.3"
 kotlinx-coroutines = "1.10.2"
+kotlinx-serialization = "1.9.0"
 material-kmp = "1.9.0"
 material-android = "1.13.0"
 robolectric = "4.16"
@@ -23,6 +24,7 @@ desugar = "2.1.5"
 koin = "4.1.1"
 kermit = "2.0.8"
 datastore = "1.2.0"
+ktor = "3.3.3"
 
 
 [libraries]
@@ -39,11 +41,15 @@ material-android = { module = "com.google.android.material:material", version.re
 
 # Kotlinx
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 # Testing
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 
 # Dependency injection
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
@@ -64,6 +70,16 @@ kermit-koin = { module = "co.touchlab:kermit-koin", version.ref = "kermit" }
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
+# Ktor
+ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-content-encoding = { module = "io.ktor:ktor-client-encoding", version.ref = "ktor" }
+ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-serialization-protobuf = { module = "io.ktor:ktor-serialization-kotlinx-protobuf", version.ref = "ktor" }
+
 # Others
 android-desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
 
@@ -82,3 +98,8 @@ library = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-hot-reload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-hot-reload" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+
+[bundles]
+ktor = ["ktor-core", "ktor-content-negotiation", "ktor-content-encoding", "ktor-logging", "ktor-serialization-json", "ktor-serialization-protobuf"]
