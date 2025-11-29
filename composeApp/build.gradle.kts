@@ -86,6 +86,7 @@ kotlin {
             implementation( libs.kotlinx.coroutines.core )
             implementation( libs.kotlinx.serialization.json )
             implementation( libs.bundles.ktor )
+            implementation( libs.bundles.coil3 )
 
             // Database
             implementation( libs.room.runtime )

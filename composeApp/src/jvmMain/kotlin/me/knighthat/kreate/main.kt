@@ -2,8 +2,10 @@ package me.knighthat.kreate
 
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import coil3.SingletonImageLoader
 import kreate.composeapp.generated.resources.Res
 import kreate.composeapp.generated.resources.app_name
+import me.knighthat.kreate.coil.setupCoil
 import me.knighthat.kreate.di.initKoin
 import me.knighthat.kreate.logging.setupLogging
 import me.knighthat.kreate.util.CrashHandler
@@ -16,6 +18,8 @@ fun main() {
     initKoin()
 
     setupLogging()
+
+    SingletonImageLoader.setSafe( ::setupCoil )
 
     application {
         Window(

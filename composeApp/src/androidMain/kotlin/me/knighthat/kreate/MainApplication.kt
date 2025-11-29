@@ -1,6 +1,8 @@
 package me.knighthat.kreate
 
 import android.app.Application
+import coil3.SingletonImageLoader
+import me.knighthat.kreate.coil.setupCoil
 import me.knighthat.kreate.di.initKoin
 import me.knighthat.kreate.logging.setupLogging
 import me.knighthat.kreate.util.CrashHandler
@@ -19,5 +21,10 @@ class MainApplication: Application() {
         }
 
         setupLogging()
+
+        // ImageLoader is placed here to make sure it's set up before anything
+        // Services like playback and AA can be sure to have imageLoader
+        // without MainActivity even loaded
+        SingletonImageLoader.setSafe( ::setupCoil )
     }
 }

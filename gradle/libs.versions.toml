@@ -25,6 +25,7 @@ koin = "4.1.1"
 kermit = "2.0.8"
 datastore = "1.2.0"
 ktor = "3.3.3"
+coil3 = "3.3.0"
 
 
 [libraries]
@@ -80,6 +81,11 @@ ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-serialization-protobuf = { module = "io.ktor:ktor-serialization-kotlinx-protobuf", version.ref = "ktor" }
 
+# Coil3
+coil3-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil3" }
+coil3-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil3" }
+coil3-cache-control = { module = "io.coil-kt.coil3:coil-network-cache-control", version.ref = "coil3" }
+
 # Others
 android-desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
 
@@ -103,3 +109,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 
 [bundles]
 ktor = ["ktor-core", "ktor-content-negotiation", "ktor-content-encoding", "ktor-logging", "ktor-serialization-json", "ktor-serialization-protobuf"]
+coil3 = ["coil3-compose", "coil3-ktor", "coil3-cache-control"]

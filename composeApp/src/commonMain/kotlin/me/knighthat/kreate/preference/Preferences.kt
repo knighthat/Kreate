@@ -63,6 +63,11 @@ sealed class Preferences<K, V> protected constructor(
             EnumPref(preferences, Key.RUNTIME_LOG_SEVERITY, Severity.Info)
         }
         //</editor-fold>
+        //<editor-fold desc="Caching">
+        val IMAGE_CACHE_MAX_SIZE by lazy {
+            LongPref(preferences, Key.IMAGE_CACHE_MAX_SIZE, 1024L * 1024 * 1024)        // Default 1GB
+        }
+        //</editor-fold>
     }
 
     protected open val state: StateFlow<V> =
@@ -210,5 +215,6 @@ sealed class Preferences<K, V> protected constructor(
         const val RUNTIME_LOG_FILE_SIZE = "runtime_log_file_size"
         const val RUNTIME_LOG_NUM_OF_FILES = "runtime_log_num_of_files"
         const val RUNTIME_LOG_SEVERITY = "runtime_log_severity"
+        const val IMAGE_CACHE_MAX_SIZE = "image_cache_max_size"
     }
 }
