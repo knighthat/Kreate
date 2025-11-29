@@ -90,6 +90,10 @@ kotlin {
             // Dependency injection
             api( libs.koin.core )
             implementation( libs.koin.compose )
+
+            // Datastore - Don't expose API because it's masked by Preferences.kt
+            implementation( libs.datastore )
+            implementation( libs.datastore.preferences )
         }
         commonTest.dependencies {
             implementation( libs.kotlin.test )
