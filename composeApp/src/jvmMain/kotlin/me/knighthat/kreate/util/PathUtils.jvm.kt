@@ -7,7 +7,7 @@ import java.nio.file.Paths
 
 
 @get:Throws(IllegalStateException::class)
-private val OPERATING_SYSTEM by lazy {
+val OPERATING_SYSTEM by lazy {
     val osName = System.getProperty( "os.name" )
     when {
         osName.contains( "win", true ) -> OperatingSystem.WINDOWS
@@ -132,7 +132,7 @@ actual fun getCacheDir(): File {
     return dir.toFile()
 }
 
-private enum class OperatingSystem {
+enum class OperatingSystem {
 
     WINDOWS,
     MACOS,

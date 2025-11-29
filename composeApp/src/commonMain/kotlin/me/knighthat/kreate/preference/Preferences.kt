@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import co.touchlab.kermit.Severity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
@@ -50,6 +51,18 @@ sealed class Preferences<K, V> protected constructor(
          * that require total privacy.
          */
         private val credentials by inject<PrefDataStore>(named( PrefType.PRIVATE ))
+
+        //<editor-fold desc="Runtime logs">
+        val RUNTIME_LOG_FILE_SIZE by lazy {
+            LongPref(preferences, Key.RUNTIME_LOG_FILE_SIZE, 5L * 1024 * 1024)      // Default: 5MB
+        }
+        val RUNTIME_LOG_NUM_FILES by lazy {
+            IntPref(preferences, Key.RUNTIME_LOG_NUM_OF_FILES, 3)
+        }
+        val RUNTIME_LOG_SEVERITY by lazy {
+            EnumPref(preferences, Key.RUNTIME_LOG_SEVERITY, Severity.Info)
+        }
+        //</editor-fold>
     }
 
     protected open val state: StateFlow<V> =

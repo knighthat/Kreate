@@ -5,10 +5,17 @@ import androidx.compose.ui.window.application
 import kreate.composeapp.generated.resources.Res
 import kreate.composeapp.generated.resources.app_name
 import me.knighthat.kreate.di.initKoin
+import me.knighthat.kreate.logging.setupLogging
+import me.knighthat.kreate.util.CrashHandler
 import org.jetbrains.compose.resources.stringResource
 
+
 fun main() {
+    Thread.setDefaultUncaughtExceptionHandler( CrashHandler() )
+
     initKoin()
+
+    setupLogging()
 
     application {
         Window(

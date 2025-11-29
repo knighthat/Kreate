@@ -21,6 +21,7 @@ room = "2.8.4"
 sqlite = "2.6.2"
 desugar = "2.1.5"
 koin = "4.1.1"
+kermit = "2.0.8"
 datastore = "1.2.0"
 
 
@@ -53,6 +54,11 @@ koin-compose = { module = "io.insert-koin:koin-compose-viewmodel-navigation", ve
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+
+# Logging
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+kermit-io = { module = "co.touchlab:kermit-io", version.ref = "kermit" }
+kermit-koin = { module = "co.touchlab:kermit-koin", version.ref = "kermit" }
 
 # Datastore (Store settings/configurations)
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
