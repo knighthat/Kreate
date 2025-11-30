@@ -35,3 +35,6 @@ plugins {
 
 rootProject.name = "Kreate"
 include(":composeApp")
+// Submodules
+include(":innertube")
+project(":innertube").projectDir = file("modules/innertube")

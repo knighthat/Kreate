@@ -27,6 +27,10 @@ datastore = "1.2.0"
 ktor = "3.3.3"
 coil3 = "3.3.0"
 material-icons = "1.7.3"
+junit5 = "6.0.1"
+lombok = "1.18.42"
+jetbrains-annotations = "26.0.2-1"
+okhttp3 = "5.1.0"
 
 
 [libraries]
@@ -46,7 +50,7 @@ material-icons-extended = { module = "org.jetbrains.compose.material:material-ic
 # Kotlinx
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 # Testing
@@ -54,6 +58,11 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotl
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+junit5-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit5" }
+junit5-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit5" }
+junit5-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit5" }
+junit-platform = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junit5" }
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 
 # Dependency injection
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
@@ -89,8 +98,13 @@ coil3-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil3
 coil3-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil3" }
 coil3-cache-control = { module = "io.coil-kt.coil3:coil-network-cache-control", version.ref = "coil3" }
 
+# Annotations
+lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
+jetbrains-annotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations" }
+
 # Others
 android-desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
+okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp3" }
 
 
 [plugins]
@@ -108,9 +122,11 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 compose-hot-reload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-hot-reload" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 
 
 [bundles]
 ktor = ["ktor-core", "ktor-content-negotiation", "ktor-content-encoding", "ktor-logging", "ktor-serialization-json", "ktor-serialization-protobuf"]
 coil3 = ["coil3-compose", "coil3-ktor", "coil3-cache-control"]
 material3= ["material3", "material-icons", "material-icons-extended"]
+junit5 = ["junit5-jupiter-params", "junit5-jupiter-engine", "junit5-jupiter-api"]

@@ -1,0 +1,3 @@
+[submodule "modules/innertube"]
+	path = modules/innertube
+	url = https://gitlab.com/tannguyen047/innertube-kotlin.git

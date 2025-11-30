@@ -83,10 +83,11 @@ kotlin {
         commonMain.dependencies {
             implementation( compose.components.resources )
             implementation( compose.components.uiToolingPreview )
-            implementation( libs.kotlinx.coroutines.core )
+            implementation(libs.kotlinx.coroutines)
             implementation( libs.kotlinx.serialization.json )
             implementation( libs.bundles.ktor )
             implementation( libs.bundles.coil3 )
+            implementation( projects.innertube )
 
             // Database
             implementation( libs.room.runtime )
