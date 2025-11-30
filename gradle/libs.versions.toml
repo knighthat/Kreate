@@ -26,6 +26,7 @@ kermit = "2.0.8"
 datastore = "1.2.0"
 ktor = "3.3.3"
 coil3 = "3.3.0"
+material-icons = "1.7.3"
 
 
 [libraries]
@@ -39,6 +40,8 @@ material3 = { module = "org.jetbrains.compose.material3:material3", version.ref 
 material3-desktop = { module = "org.jetbrains.compose.material3:material3-desktop", version.ref = "material-kmp" }
 material3-android = { module = "androidx.compose.material3:material3", version.ref = "androidx-material3" }
 material-android = { module = "com.google.android.material:material", version.ref = "material-android" }
+material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "material-icons" }
+material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "material-icons" }
 
 # Kotlinx
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
@@ -110,3 +113,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 [bundles]
 ktor = ["ktor-core", "ktor-content-negotiation", "ktor-content-encoding", "ktor-logging", "ktor-serialization-json", "ktor-serialization-protobuf"]
 coil3 = ["coil3-compose", "coil3-ktor", "coil3-cache-control"]
+material3= ["material3", "material-icons", "material-icons-extended"]

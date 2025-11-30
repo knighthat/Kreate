@@ -3,12 +3,9 @@ package me.knighthat.kreate
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import me.knighthat.kreate.di.TopLayoutConfiguration
+import org.koin.compose.koinInject
 
 
 class MainActivity : ComponentActivity() {
@@ -19,28 +16,11 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        // Optional: Keep the splash screen visible while loading data
-        // For a single theme, you often only need the installSplashScreen() call.
-        // If you need to observe a condition:
-        var keepSplashOn = true
-
-        // Example: Dismiss after a condition is met
-        splashScreen.setKeepOnScreenCondition { keepSplashOn }
-
-        // Simulating data loading
-        lifecycleScope.launch {
-            delay(2000)
-            keepSplashOn = false // Set to false when your data is loaded
-        }
-
         setContent {
-            App()
+            val topLayoutConfiguration = koinInject<TopLayoutConfiguration>()
+            splashScreen.setKeepOnScreenCondition { !topLayoutConfiguration.isAppReady }
+
+            MainContentLayout()
         }
     }
-}
-
-@Preview
-@Composable
-fun AppAndroidPreview() {
-    App()
 }

@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import me.knighthat.kreate.constant.ColorScheme
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.qualifier.named
@@ -68,6 +69,17 @@ sealed class Preferences<K, V> protected constructor(
             LongPref(preferences, Key.IMAGE_CACHE_MAX_SIZE, 1024L * 1024 * 1024)        // Default 1GB
         }
         //</editor-fold>
+        //<editor-fold desc="Theme">
+        val COLOR_SCHEME by lazy {
+            EnumPref(preferences, Key.COLOR_SCHEME, ColorScheme.DYNAMIC)
+        }
+        val USE_DYNAMIC_COLOR by lazy {
+            BooleanPref(preferences, Key.USE_DYNAMIC_COLOR, true)
+        }
+        //</editor-fold>
+        val ICON_ONLY by lazy {
+            BooleanPref(preferences, Key.ICON_ONLY, false)
+        }
     }
 
     protected open val state: StateFlow<V> =
@@ -216,5 +228,9 @@ sealed class Preferences<K, V> protected constructor(
         const val RUNTIME_LOG_NUM_OF_FILES = "runtime_log_num_of_files"
         const val RUNTIME_LOG_SEVERITY = "runtime_log_severity"
         const val IMAGE_CACHE_MAX_SIZE = "image_cache_max_size"
+        const val COLOR_SCHEME = "color_scheme"
+        const val USE_DYNAMIC_COLOR = "use_dynamic_color"
+        const val ICON_ONLY = "icon_only"
+        const val STARTUP_SCREEN = "startup_screen"
     }
 }
