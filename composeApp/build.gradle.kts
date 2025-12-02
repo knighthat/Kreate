@@ -266,29 +266,29 @@ android {
 
             isDefault = true
         }
-        create("arm64") {
-            dimension = "arch"
-
-            // App's properties
-            versionCode = (1 shl 20) or VERSION_CODE
-
-            // Build architecture
-            ndk { abiFilters += "arm64-v8a" }
-        }
         create("arm32") {
             dimension = "arch"
 
             // App's properties
-            versionCode = (1 shl 19) or VERSION_CODE
+            versionCode = (VERSION_CODE * 10) + 1
 
             // Build architecture
             ndk { abiFilters += "armeabi-v7a" }
+        }
+        create("arm64") {
+            dimension = "arch"
+
+            // App's properties
+            versionCode = (VERSION_CODE * 10) + 2
+
+            // Build architecture
+            ndk { abiFilters += "arm64-v8a" }
         }
         create("x86") {
             dimension = "arch"
 
             // App's properties
-            versionCode = (1 shl 18) or VERSION_CODE
+            versionCode = (VERSION_CODE * 10) + 3
 
             // Build architecture
             ndk { abiFilters += "x86" }
@@ -297,7 +297,7 @@ android {
             dimension = "arch"
 
             // App's properties
-            versionCode = (1 shl 17) or VERSION_CODE
+            versionCode = (VERSION_CODE * 10) + 4
 
             // Build architecture
             ndk { abiFilters += "x86_64" }
