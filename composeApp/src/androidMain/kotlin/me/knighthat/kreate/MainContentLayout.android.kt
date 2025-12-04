@@ -1,7 +1,6 @@
 package me.knighthat.kreate
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -22,9 +21,7 @@ actual fun MainContent() {
     Scaffold(
         topBar = { AppTopBar(navController) },
         bottomBar = { AppBottomBar(navController) },
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
-            .fillMaxSize(),
+        modifier = Modifier.background( MaterialTheme.colorScheme.surfaceContainerLowest )
     ) {
         NavHost(
             navController = navController,

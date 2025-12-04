@@ -1,6 +1,9 @@
 package me.knighthat.kreate.component
 
+import android.provider.Settings
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.LocalLibrary
@@ -16,6 +19,7 @@ import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -28,6 +32,18 @@ import me.knighthat.kreate.preference.Preferences
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
+
+private val bottomBarInsets: WindowInsets
+    @Composable
+    get() {
+        val contentResolver = LocalContext.current.contentResolver
+        val navigationMode = Settings.Secure.getInt(contentResolver, "navigation_mode")
+
+        return if( navigationMode == 2 )
+            WindowInsets(0, 0, 0, 0)
+        else
+            WindowInsets.navigationBars
+    }
 
 @Composable
 @NonRestartableComposable
@@ -56,37 +72,40 @@ private fun RowScope.Item(
     )
 
 @Composable
-fun AppBottomBar( navController: NavController ) = NavigationBar {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    navBackStackEntry?.destination?.hierarchy?.any {
-        it.hasRoute<Route.Home>()
+fun AppBottomBar( navController: NavController ) =
+    NavigationBar(
+        windowInsets = bottomBarInsets
+    ) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        navBackStackEntry?.destination?.hierarchy?.any {
+            it.hasRoute<Route.Home>()
+        }
+
+        val isIconOnly by Preferences.ICON_ONLY.collectAsState()
+        val colors = NavigationBarItemDefaults.colors().copy(
+            selectedIconColor = MaterialTheme.colorScheme.onSurface,
+            selectedTextColor = MaterialTheme.colorScheme.onSurface,
+            unselectedIconColor = MaterialTheme.colorScheme.outlineVariant,
+            unselectedTextColor = MaterialTheme.colorScheme.outlineVariant
+        )
+
+        // Home button
+        Item(
+            selected = Route.Home.isHere( navController ),
+            isIconOnly = isIconOnly,
+            colors = colors,
+            labelRes = Res.string.tab_home,
+            imageVector = Icons.Rounded.Home,
+            onClick = { navController.navigate(Route.Home) }
+        )
+
+        // Library button
+        Item(
+            selected = Route.Library.isHere( navController ),
+            isIconOnly = isIconOnly,
+            colors = colors,
+            labelRes = Res.string.tab_library,
+            imageVector = Icons.Rounded.LocalLibrary,
+            onClick = { navController.navigate(Route.Library) }
+        )
     }
-
-    val isIconOnly by Preferences.ICON_ONLY.collectAsState()
-    val colors = NavigationBarItemDefaults.colors().copy(
-        selectedIconColor = MaterialTheme.colorScheme.onSurface,
-        selectedTextColor = MaterialTheme.colorScheme.onSurface,
-        unselectedIconColor = MaterialTheme.colorScheme.outlineVariant,
-        unselectedTextColor = MaterialTheme.colorScheme.outlineVariant
-    )
-
-    // Home button
-    Item(
-        selected = Route.Home.isHere( navController ),
-        isIconOnly = isIconOnly,
-        colors = colors,
-        labelRes = Res.string.tab_home,
-        imageVector = Icons.Rounded.Home,
-        onClick = { navController.navigate(Route.Home) }
-    )
-
-    // Library button
-    Item(
-        selected = Route.Library.isHere( navController ),
-        isIconOnly = isIconOnly,
-        colors = colors,
-        labelRes = Res.string.tab_library,
-        imageVector = Icons.Rounded.LocalLibrary,
-        onClick = { navController.navigate(Route.Library) }
-    )
-}
