@@ -8,13 +8,13 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -24,13 +24,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kreate.composeapp.generated.resources.Res
-import kreate.composeapp.generated.resources.app_icon_no_ring
+import kreate.composeapp.generated.resources.app_icon_inverted
 import kreate.composeapp.generated.resources.good_afternoon
 import kreate.composeapp.generated.resources.good_evening
 import kreate.composeapp.generated.resources.good_morning
@@ -99,15 +98,16 @@ fun AppTopBar( navController: NavController ) {
                 },
                 modifier = Modifier.fillMaxWidth()
             ) { target ->
-                Text( target )
+                Text(
+                    text = target,
+                    style = MaterialTheme.typography.headlineSmall,
+                    maxLines = 1,
+                    autoSize = TextAutoSize.StepBased(
+                        MaterialTheme.typography.titleSmall.fontSize,
+                        MaterialTheme.typography.headlineSmall.fontSize
+                    )
+                )
             }
-        },
-        navigationIcon = {
-            Icon(
-                painter = painterResource(Res.drawable.app_icon_no_ring ),
-                contentDescription = "App icon",
-                modifier = Modifier.size( 40.dp )
-            )
         },
         actions = {
             IconButton(
@@ -125,8 +125,9 @@ fun AppTopBar( navController: NavController ) {
                 onClick = { }
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.MoreVert,
-                    contentDescription = "Menu"
+                    painter = painterResource( Res.drawable.app_icon_inverted ),
+                    contentDescription = "Menu",
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
