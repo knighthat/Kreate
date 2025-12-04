@@ -17,6 +17,7 @@ class TopLayoutConfiguration {
     val lazyListState: LazyListState = LazyListState()
 
     var title: String by mutableStateOf( "" )
+    var background: String? by mutableStateOf( null )
     var isAppReady: Boolean by mutableStateOf( false )
         private set
 

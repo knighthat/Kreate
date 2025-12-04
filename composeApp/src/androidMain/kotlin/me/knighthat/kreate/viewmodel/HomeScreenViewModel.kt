@@ -14,7 +14,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -50,7 +49,6 @@ class HomeScreenViewModel(
         private val _continuation = MutableStateFlow<Continuation?>(null)
     }
 
-    val homePage = _homePage.asStateFlow()
     val sections: StateFlow<List<Section>>
     val continuation: StateFlow<String?>
 
@@ -121,7 +119,12 @@ class HomeScreenViewModel(
                 _continuation.update { result.continuations.firstOrNull() }
             }
 
-            withContext( Dispatchers.Main ) { isRefreshing = false }
+            withContext( Dispatchers.Main ) {
+                if( result != null )
+                    topLayoutConfiguration.background = result.thumbnails.firstOrNull()?.url
+
+                isRefreshing = false
+            }
         }
     }
 

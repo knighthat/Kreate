@@ -17,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import kotlinx.datetime.TimeZone
@@ -45,10 +47,10 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
-fun AppTopBar( navController: NavController ) {
-    val topLayoutConfiguration = koinInject<TopLayoutConfiguration>()
-    topLayoutConfiguration.showContent()
-
+fun AppTopBar(
+    navController: NavController,
+    topLayoutConfiguration: TopLayoutConfiguration = koinInject()
+) {
     TopAppBar(
         title = {
             var title by remember { mutableStateOf("") }
@@ -130,6 +132,13 @@ fun AppTopBar( navController: NavController ) {
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
-        }
+        },
+        // Use transparent so [TopLayoutConfiguration.background] is visible
+        colors = TopAppBarDefaults.topAppBarColors().copy(
+            containerColor = Color.Transparent
+        )
     )
+
+    // Show content once TopBar is loaded
+    topLayoutConfiguration.showContent()
 }
