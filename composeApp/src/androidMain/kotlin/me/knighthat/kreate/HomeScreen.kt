@@ -230,7 +230,6 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         val sections by viewModel.sections.collectAsState()
-
         val hasMore by viewModel.hasMore.collectAsState(false)
 
         LaunchedEffect( sections ) {
@@ -258,7 +257,11 @@ fun HomeScreen(
                     item { Spacer(Modifier.height( TITLE_HEIGHT.dp )) }
                 else {
                     val title = s.title.orEmpty()
-                    item( Title(title) ) { Header( title, s.browseId, s.params ) }
+                    item( Title(title) ) {
+                        // Don't show header for the very first header
+                        if( sections.first() !== s )
+                            Header( title, s.browseId, s.params )
+                    }
                 }
 
                 val songs = s.contents.fastMapNotNull { it as? InnertubeSong }
