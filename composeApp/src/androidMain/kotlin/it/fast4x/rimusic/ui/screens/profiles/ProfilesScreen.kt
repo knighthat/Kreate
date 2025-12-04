@@ -45,11 +45,13 @@ import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.semiBold
 import java.io.File
 import androidx.core.content.edit
+import androidx.core.net.toUri
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.utils.intent
 import it.fast4x.rimusic.utils.isAtLeastAndroid7
+import java.io.BufferedReader
 import kotlin.system.exitProcess
 
 private const val PREFERENCES_BASE_FILENAME = "preferences"
@@ -73,12 +75,13 @@ fun ProfileScreen(
     var profileToSwitch by remember { mutableStateOf("") }
 
     var profilesNames by remember {
-        val file = File(context.filesDir, PROFILE_FILE_NAME)
-        if (file.exists()) {
-            mutableStateOf(file.readLines())
-        } else {
-            mutableStateOf(emptyList())
-        }
+        val file = context.filesDir.resolve("Profile_names.txt")
+        val lines = context.contentResolver
+            .openInputStream( file.toUri() )
+            ?.bufferedReader()
+            ?.use( BufferedReader::readLines )
+            .orEmpty()
+        mutableStateOf(lines)
     }
 
     Skeleton(
