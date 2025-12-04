@@ -15,10 +15,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.flow.stateIn
@@ -41,13 +41,18 @@ class HomeScreenViewModel(
     val topLayoutConfiguration: TopLayoutConfiguration
 ): ViewModel() {
 
-    private val _homePage = MutableStateFlow<HomePage?>(null)
-    private val _sections = MutableStateFlow<List<Section>>(emptyList())
-    private val _continuation = MutableStateFlow<Continuation?>(null)
+    // These fields are placed as static fields to persist
+    // even when user go to another route and comeback.
+    private companion object {
+
+        private val _homePage = MutableStateFlow<HomePage?>(null)
+        private val _sections = MutableStateFlow<List<Section>>(emptyList())
+        private val _continuation = MutableStateFlow<Continuation?>(null)
+    }
 
     val homePage = _homePage.asStateFlow()
-    val hasMore = _continuation.map { !it?.nextContinuationData?.continuation.isNullOrBlank() }
     val sections: StateFlow<List<Section>>
+    val continuation: StateFlow<String?>
 
     var isRefreshing: Boolean by mutableStateOf( false )
 
@@ -65,19 +70,39 @@ class HomeScreenViewModel(
                 }
         }
 
-        sections = _sections.sample( 100.milliseconds )
-                            .mapLatest { list ->
-                                list.asSequence()
-                                    .filter { it.title == null || it.contents.isNotEmpty() }
-                                    .toList()
-                            }
-                            .distinctUntilChanged()
-                            .flowOn( Dispatchers.Default )
-                            .stateIn(
-                                viewModelScope,
-                                SharingStarted.WhileSubscribed( 5.seconds.inWholeMilliseconds ),
-                                emptyList()
-                            )
+        // Combining them ensures that contents of [_homePage]
+        // won't be duplicated when new sections are added to [_sections]
+        sections = combine( _homePage, _sections ) { homePage, sections ->
+                val hpSections = homePage?.sections.orEmpty()
+                hpSections + sections
+            }
+            .sample( 200.milliseconds )
+            .mapLatest { list ->
+                list.asSequence()
+                    .filter { it.title == null || it.contents.isNotEmpty() }
+                    .toList()
+            }
+            .distinctUntilChanged()
+            .flowOn( Dispatchers.Default )
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed( 5.seconds.inWholeMilliseconds ),
+                emptyList()
+            )
+
+        continuation = combine( _homePage, _continuation ) { homePage, c ->
+                val hpContinuation = homePage?.continuations?.firstOrNull()
+                hpContinuation ?: c
+            }
+            .mapLatest { c ->
+                c?.nextContinuationData?.continuation
+            }
+            .distinctUntilChanged()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed( 5.seconds.inWholeMilliseconds ),
+                null
+            )
     }
 
     fun onRefresh() {
@@ -93,8 +118,6 @@ class HomeScreenViewModel(
 
             _homePage.update { result }
             if( result != null ) {
-                _sections.update { result.sections }
-                // This forces new list
                 _continuation.update { result.continuations.firstOrNull() }
             }
 

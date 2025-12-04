@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMapNotNull
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.map
 import me.knighthat.innertube.model.InnertubeAlbum
 import me.knighthat.innertube.model.InnertubeArtist
 import me.knighthat.innertube.model.InnertubeItem
@@ -230,7 +231,9 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         val sections by viewModel.sections.collectAsState()
-        val hasMore by viewModel.hasMore.collectAsState(false)
+        val hasMore: Boolean by viewModel.continuation
+                                         .map { it != null }
+                                         .collectAsState( false )
 
         LaunchedEffect( sections ) {
             val title = sections.firstOrNull()?.title
