@@ -14,8 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastJoinToString
 import coil3.compose.AsyncImage
 import me.knighthat.innertube.model.InnertubeAlbum
+import me.knighthat.innertube.response.Runs
 
 
 const val ALBUM_ITEM_WIDTH = 108
@@ -25,7 +27,7 @@ const val ALBUM_ITEM_COMPONENT_SPACING = 5
 private fun AlbumItem(
     thumbnailUrl: String?,
     title: String,
-    subtitle: String?,
+    subtitle: Runs?,
     modifier: Modifier
 ) =
     Column(
@@ -51,7 +53,7 @@ private fun AlbumItem(
 
         if( subtitle != null )
             Text(
-                text = subtitle,
+                text = subtitle.runs.fastJoinToString( "" ) { it.text },
                 color = MaterialTheme.colorScheme.outline,
                 style = MaterialTheme.typography.labelMedium,
                 maxLines = 2
