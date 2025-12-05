@@ -9,14 +9,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TopLayoutConfiguration {
 
     val lazyListState: LazyListState = LazyListState()
+    val title = MutableStateFlow("")
 
-    var title: String by mutableStateOf( "" )
     var background: String? by mutableStateOf( null )
     var isAppReady: Boolean by mutableStateOf( false )
         private set
@@ -33,7 +35,7 @@ class TopLayoutConfiguration {
                     lazyListState.layoutInfo.visibleItemsInfo.firstOrNull()?.key as? Title
                 }
                 .collect { title ->
-                    this@TopLayoutConfiguration.title = title.title
+                    this@TopLayoutConfiguration.title.update { title.title }
                 }
         }
     }

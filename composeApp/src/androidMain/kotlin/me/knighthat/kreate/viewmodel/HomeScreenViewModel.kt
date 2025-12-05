@@ -14,6 +14,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -49,14 +50,13 @@ class HomeScreenViewModel(
         private val _continuation = MutableStateFlow<Continuation?>(null)
     }
 
+    val homePage = _homePage.asStateFlow()
     val sections: StateFlow<List<Section>>
     val continuation: StateFlow<String?>
 
     var isRefreshing: Boolean by mutableStateOf( false )
 
     init {
-        topLayoutConfiguration.title = ""
-
         viewModelScope.launch {
             snapshotFlow { topLayoutConfiguration.lazyListState.layoutInfo. visibleItemsInfo }
                 .filter { list ->
@@ -120,9 +120,6 @@ class HomeScreenViewModel(
             }
 
             withContext( Dispatchers.Main ) {
-                if( result != null )
-                    topLayoutConfiguration.background = result.thumbnails.firstOrNull()?.url
-
                 isRefreshing = false
             }
         }

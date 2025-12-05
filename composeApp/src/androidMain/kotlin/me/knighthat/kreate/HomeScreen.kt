@@ -46,6 +46,7 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMapNotNull
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import me.knighthat.innertube.model.InnertubeAlbum
 import me.knighthat.innertube.model.InnertubeArtist
 import me.knighthat.innertube.model.InnertubeItem
@@ -236,8 +237,13 @@ fun HomeScreen(
                                          .collectAsState( false )
 
         LaunchedEffect( sections ) {
+            val topLayoutConfiguration = viewModel.topLayoutConfiguration
+
             val title = sections.firstOrNull()?.title
             if( title == null ) {
+                // Forces greeting
+                topLayoutConfiguration.title.update { "" }
+
                 delay( 500.milliseconds )
                 viewModel.onRefresh()
 
@@ -245,7 +251,8 @@ fun HomeScreen(
             }
 
             // Set title to first section title
-            viewModel.topLayoutConfiguration.title = title
+            topLayoutConfiguration.title.update { title }
+            topLayoutConfiguration.background = viewModel.homePage.value?.thumbnails?.firstOrNull()?.url
         }
 
         LazyColumn(
