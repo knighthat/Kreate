@@ -9,6 +9,7 @@ import androidx.room.RoomDatabase
 import androidx.room.Transaction
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SimpleSQLiteQuery
+import app.kreate.android.Preferences
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Event
@@ -59,7 +60,7 @@ import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.PropUtils
 
 object Database {
-    const val FILE_NAME = "data.db"
+    val FILE_NAME = if ( Preferences.ACTIVE_PROFILE.value == "default" ) "data.db" else "data_${Preferences.ACTIVE_PROFILE.value}.db"
 
     private val _internal: DatabaseInitializer
         get() = DatabaseInitializer.Instance
