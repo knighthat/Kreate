@@ -20,7 +20,7 @@ object PreferenceModule {
     private const val PROFILE_PREFERENCES_FILENAME = "profiles"
     private const val ACTIVE_PROFILE_KEY = "ActiveProfile"
     private const val PREFERENCES_BASE_FILENAME = "preferences"
-    private const val PRIVATE_PREFERENCES_FILENAME = "private_preferences"
+    private const val PRIVATE_PREFERENCES_BASE_FILENAME = "private_preferences"
 
     @Named("profiles")
     @Provides

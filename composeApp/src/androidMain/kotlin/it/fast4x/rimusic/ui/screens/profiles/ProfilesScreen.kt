@@ -75,12 +75,17 @@ fun ProfileScreen(
     var profileToSwitch by remember { mutableStateOf("") }
 
     var profilesNames by remember {
-        val file = context.filesDir.resolve("Profile_names.txt")
-        val lines = context.contentResolver
-            .openInputStream( file.toUri() )
-            ?.bufferedReader()
-            ?.use( BufferedReader::readLines )
-            .orEmpty()
+        val file = context.filesDir.resolve(PROFILE_FILE_NAME)
+        val lines =
+            if (file.exists()) {
+                context.contentResolver
+                    .openInputStream( file.toUri() )
+                    ?.bufferedReader()
+                    ?.use( BufferedReader::readLines )
+                    .orEmpty()
+            } else {
+                emptyList()
+            }
         mutableStateOf(lines)
     }
 
