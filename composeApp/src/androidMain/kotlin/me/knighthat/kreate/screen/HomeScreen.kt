@@ -1,4 +1,4 @@
-package me.knighthat.kreate
+package me.knighthat.kreate.screen
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background

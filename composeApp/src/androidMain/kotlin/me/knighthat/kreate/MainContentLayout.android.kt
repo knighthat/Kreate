@@ -27,6 +27,9 @@ import me.knighthat.kreate.component.AppBottomBar
 import me.knighthat.kreate.component.AppTopBar
 import me.knighthat.kreate.constant.Route
 import me.knighthat.kreate.di.TopLayoutConfiguration
+import me.knighthat.kreate.screen.HomeScreen
+import me.knighthat.kreate.screen.LibraryScreen
+import me.knighthat.kreate.screen.SearchScreen
 import me.knighthat.kreate.util.LocalNavController
 import org.koin.compose.koinInject
 import org.koin.core.component.KoinComponent
@@ -98,6 +101,10 @@ actual fun MainContent() =
                     }
 
                     composable<Route.Search> {
+                        SearchScreen()
+                    }
+
+                    composable<Route.Search.Results> {
 
                     }
                 }

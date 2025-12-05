@@ -22,6 +22,7 @@ import me.knighthat.innertube.response.Runs
 
 const val ALBUM_ITEM_WIDTH = 108
 const val ALBUM_ITEM_COMPONENT_SPACING = 5
+val ALBUM_ITEM_THUMBNAIL_ROUNDNESS = RoundedCornerShape(5)
 
 @Composable
 private fun AlbumItem(
@@ -41,7 +42,7 @@ private fun AlbumItem(
             contentDescription = "$title's thumbnail",
             modifier = Modifier.size( ALBUM_ITEM_WIDTH.dp )
                                .aspectRatio( 1f )
-                               .clip( RoundedCornerShape(5) )
+                               .clip( ALBUM_ITEM_THUMBNAIL_ROUNDNESS )
         )
 
         Text(

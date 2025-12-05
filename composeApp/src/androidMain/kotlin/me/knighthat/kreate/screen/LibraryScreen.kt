@@ -1,4 +1,4 @@
-package me.knighthat.kreate
+package me.knighthat.kreate.screen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

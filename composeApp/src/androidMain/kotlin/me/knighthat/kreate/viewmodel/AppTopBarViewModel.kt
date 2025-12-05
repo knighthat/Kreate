@@ -1,9 +1,13 @@
 package me.knighthat.kreate.viewmodel
 
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
@@ -26,6 +30,7 @@ import kreate.composeapp.generated.resources.good_afternoon
 import kreate.composeapp.generated.resources.good_evening
 import kreate.composeapp.generated.resources.good_morning
 import kreate.composeapp.generated.resources.good_night
+import me.knighthat.kreate.di.SharedSearchProperties
 import me.knighthat.kreate.di.TopLayoutConfiguration
 import org.jetbrains.compose.resources.getString
 import kotlin.time.Clock
@@ -34,10 +39,18 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
 class AppTopBarViewModel(
+    val searchProperties: SharedSearchProperties,
     val topLayoutConfiguration: TopLayoutConfiguration
 ): ViewModel() {
 
+    companion object {
+
+        private const val MENU_ICON_TRANSITION_DURATION = 300
+    }
+
     val titleSwapTransition: ContentTransform
+    val menuIconEnterTransition: EnterTransition
+    val menuIconExitTransition: ExitTransition
 
     var title by mutableStateOf("")
         private set
@@ -85,5 +98,20 @@ class AppTopBarViewModel(
             )
         titleSwapTransition = inSpec togetherWith outputSpec
         //</editor-fold>
+        // Makes space then appears slowly
+        menuIconEnterTransition = expandHorizontally(
+            animationSpec = tween( MENU_ICON_TRANSITION_DURATION )
+        ) + fadeIn(
+            animationSpec = tween( delayMillis = MENU_ICON_TRANSITION_DURATION )
+        )
+        // Slides up with fade out THEN shrink
+        menuIconExitTransition = slideOutVertically(
+            animationSpec = tween( MENU_ICON_TRANSITION_DURATION ),
+            targetOffsetY = { -it }
+        ) + fadeOut(
+            animationSpec = tween( MENU_ICON_TRANSITION_DURATION )
+        ) + shrinkHorizontally(
+            animationSpec = tween( delayMillis = MENU_ICON_TRANSITION_DURATION )
+        )
     }
 }
