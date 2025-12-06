@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import app.kreate.android.enums.PlatformIndicatorType
-import app.kreate.android.enums.WallpaperResetDuration
 import app.kreate.android.utils.innertube.getSystemCountryCode
 import app.kreate.constant.Language
 import it.fast4x.rimusic.appContext
@@ -864,7 +863,7 @@ sealed class Preferences<T>(
             Enum(preferences, "LiveWallpaper", "", WallpaperType.DISABLED)
         }
         val LIVE_WALLPAPER_RESET_DURATION by lazy {
-            Enum(preferences, "LiveWallpaperResetDuration", "", WallpaperResetDuration.S30)
+            Long(preferences, "LiveWallpaperResetDuration", "", 15000L)
         }
         val ANIMATED_GRADIENT by lazy {
             Enum( preferences, "AnimatedGradient", "animatedGradient", AnimatedGradient.Linear )

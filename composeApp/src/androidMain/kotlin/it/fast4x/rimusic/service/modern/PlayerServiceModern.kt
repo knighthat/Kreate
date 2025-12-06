@@ -425,9 +425,10 @@ class PlayerServiceModern:
     override fun onIsPlayingChanged( isPlaying: Boolean ) {
         wallpaperRevertJob?.cancel()
 
-        if (!isPlaying) {
+
+        if (!isPlaying && Preferences.LIVE_WALLPAPER_RESET_DURATION.value != -1L) { // -1 means it should be disabled
             wallpaperRevertJob = coroutineScope.launch {
-                delay(Preferences.LIVE_WALLPAPER_RESET_DURATION.value.ms)
+                delay(Preferences.LIVE_WALLPAPER_RESET_DURATION.value)
                 revertWallpaperToDefault()
             }
         } else {
