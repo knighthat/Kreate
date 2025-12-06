@@ -1006,7 +1006,7 @@ class PlayerServiceModern:
             println("PlayerServiceModern toggleDownload currentMediaItem ${currentMediaItem.value} currentSongIsDownloaded ${currentSongStateDownload.value}")
             manageDownload(
                 context = this@PlayerServiceModern,
-                mediaItem = currentMediaItem.value ?: return,
+                mediaItem = binder.player.currentMediaItem ?: return,
                 downloadState = currentSongStateDownload.value == Download.STATE_COMPLETED
             )
         }
