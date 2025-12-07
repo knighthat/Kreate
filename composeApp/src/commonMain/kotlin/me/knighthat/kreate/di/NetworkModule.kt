@@ -22,7 +22,9 @@ private val KTOR_LOGGER_TO_KERMIT = object : Logger {
         // Automatically logs everything at verbose level
         // This will prevent logging unnecessary things in prod
         // but still be useful in dev.
-        co.touchlab.kermit.Logger.v( "Ktor" ) { message }
+        message.chunkedSequence( 250 ).forEach {
+            co.touchlab.kermit.Logger.v( "Ktor" ) { it }
+        }
 }
 
 expect val networkEngine: HttpClientEngineFactory<HttpClientEngineConfig>
