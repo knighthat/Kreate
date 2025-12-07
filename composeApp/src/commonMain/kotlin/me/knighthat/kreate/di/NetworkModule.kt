@@ -9,6 +9,8 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
 import me.knighthat.kreate.util.isDebug
 import org.koin.dsl.module
@@ -25,6 +27,7 @@ private val KTOR_LOGGER_TO_KERMIT = object : Logger {
 
 expect val networkEngine: HttpClientEngineFactory<HttpClientEngineConfig>
 
+@OptIn(ExperimentalSerializationApi::class)
 val networkModule = module {
     single {
         HttpClient(networkEngine) {
@@ -33,6 +36,8 @@ val networkModule = module {
             install( ContentNegotiation ) {
                 json(Json {
                     ignoreUnknownKeys = true
+                    explicitNulls = false
+                    classDiscriminatorMode = ClassDiscriminatorMode.NONE
                 })
             }
             install( ContentEncoding ) {
