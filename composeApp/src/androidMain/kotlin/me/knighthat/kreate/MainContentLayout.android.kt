@@ -29,6 +29,7 @@ import me.knighthat.kreate.constant.Route
 import me.knighthat.kreate.di.TopLayoutConfiguration
 import me.knighthat.kreate.screen.HomeScreen
 import me.knighthat.kreate.screen.LibraryScreen
+import me.knighthat.kreate.screen.SearchResults
 import me.knighthat.kreate.screen.SearchScreen
 import me.knighthat.kreate.util.LocalNavController
 import org.koin.compose.koinInject
@@ -85,11 +86,11 @@ actual fun MainContent() =
                 topBar = { AppTopBar(navController) },
                 bottomBar = { AppBottomBar(navController) },
                 containerColor = Color.Transparent
-            ) {
+            ) { padding ->
                 NavHost(
                     navController = navController,
                     startDestination = Route.Home,
-                    modifier = Modifier.padding( it )
+                    modifier = Modifier.padding( padding )
                 ) {
 
                     composable<Route.Home> {
@@ -105,7 +106,7 @@ actual fun MainContent() =
                     }
 
                     composable<Route.Search.Results> {
-
+                        SearchResults()
                     }
                 }
             }

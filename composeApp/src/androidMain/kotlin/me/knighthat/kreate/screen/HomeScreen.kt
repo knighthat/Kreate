@@ -140,7 +140,7 @@ private fun SongPages( songs: List<InnertubeSong> ) {
         ) { index ->
             Column {
                 pages[index].fastForEach { song ->
-                    SongItem( song, false )
+                    SongItem( song, showMenuIcon = false )
                 }
             }
         }

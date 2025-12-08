@@ -132,7 +132,7 @@ fun SongItemPlaceHolder( modifier: Modifier = Modifier ) =
     }
 
 @Composable
-fun SongItem( song: InnertubeSong, showMenuIcon: Boolean, modifier: Modifier = Modifier ) =
+fun SongItem( song: InnertubeSong, modifier: Modifier = Modifier, showMenuIcon: Boolean = true ) =
     SongItem( song.thumbnails.firstOrNull()?.url, song.name, song.artistsText, showMenuIcon, modifier )
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
