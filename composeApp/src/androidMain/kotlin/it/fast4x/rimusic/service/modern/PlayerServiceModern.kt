@@ -315,11 +315,7 @@ class PlayerServiceModern:
                         PendingIntent.FLAG_IMMUTABLE
                     )
                 )
-                .setBitmapLoader(CoilBitmapLoader(
-                    this,
-                    coroutineScope,
-                    512 * resources.displayMetrics.density.toInt()
-                ))
+                .setBitmapLoader( CoilBitmapLoader(coroutineScope) )
                 .build()
 
         listener = ExoPlayerListener(
