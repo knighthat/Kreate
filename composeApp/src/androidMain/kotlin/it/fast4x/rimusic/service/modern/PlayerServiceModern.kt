@@ -55,9 +55,10 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.Discord
 import app.kreate.android.service.DownloadHelper
-import app.kreate.android.service.newpipe.NewPipeDownloader
+import app.kreate.android.service.NetworkService
 import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.VolumeObserver
+import app.kreate.android.utils.YTPlayerUtils
 import app.kreate.android.utils.centerCropBitmap
 import app.kreate.android.utils.centerCropToMatchScreenSize
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
@@ -66,6 +67,8 @@ import app.kreate.android.widget.Widget
 import app.kreate.database.models.Event
 import app.kreate.database.models.Song
 import com.google.common.util.concurrent.MoreExecutors
+import com.metrolist.innertube.InnerTube
+import com.metrolist.innertube.pages.NewPipeUtils
 import dagger.hilt.android.AndroidEntryPoint
 import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
@@ -119,7 +122,6 @@ import kotlinx.coroutines.withTimeoutOrNull
 import me.knighthat.impl.DownloadHelperImpl
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
-import org.schabi.newpipe.extractor.NewPipe
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -213,7 +215,9 @@ class PlayerServiceModern:
 
     @kotlin.OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     override fun onCreate() {
-        NewPipe.init( NewPipeDownloader() )
+        NewPipeUtils.client = NetworkService.engine
+        YTPlayerUtils.httpClient = NetworkService.engine
+        InnerTube.httpClient = NetworkService.client
 
         super.onCreate()
 
