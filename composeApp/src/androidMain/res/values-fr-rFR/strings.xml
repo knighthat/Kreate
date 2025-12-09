@@ -850,10 +850,15 @@ Volume BAS : titre précédent</string>
     <string name="error_failed_to_load_developers">Échec du chargement des développeurs</string>
     <string name="error_failed_to_load_translators">Échec du chargement des traducteurs</string>
     <string name="error_check_for_updates_failed">La vérification des mises à jour a échoué.</string>
+    <string name="settings_entry_live_wallpaper_reset_duration">Switch back after</string>
+    <string name="settings_description_live_wallpaper_reset_duration">How long to wait after music stopped playing to switch back to the regular wallpaper</string>
     <string name="title_change_thumbnail">Changer la miniature</string>
     <string name="description_change_thumbnail">Remplacez la miniature par une de vos images préférées</string>
     <string name="description_select_from_device">Sélectionnez un appareil</string>
     <string name="error_failed_to_load_image">Impossible de charger l\'image</string>
     <string name="error_invalid_path">Chemin invalide</string>
     <string name="description_validate_url">Valider l\'URL</string>
+    <string name="disabled">disabled</string>
+    <string name="settings_live_wallpaper_reset_warning"> WARNING: this will switch back to your manufacturer’s default wallpaper. Unfortunately it is difficult to revert to your previous wallpaper</string>
+    <string name="ok">ok</string>
 </resources>
