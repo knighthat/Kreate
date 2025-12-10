@@ -93,7 +93,7 @@ jobs:
       - name: Commit changes & make PR
         # Skip this step when running with nektos/act
         if: ${{ !env.ACT }}
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           title: Update license report
           commit-message: "Update license ${{ needs.date.outputs.dashes }}"
@@ -177,7 +177,7 @@ jobs:
       - name: Commit changes & make PR
         # Skip this step when running with nektos/act
         if: ${{ !env.ACT }}
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           title: Update contributors
           commit-message: "Update contributors ${{ needs.date.outputs.dashes }}"
@@ -260,7 +260,7 @@ jobs:
       - name: Commit changes & make PR
         # Skip this step when running with nektos/act
         if: ${{ !env.ACT }}
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           title: Update translators
           commit-message: "Update translators ${{ needs.date.outputs.dashes }}"
