@@ -306,7 +306,16 @@ compose.desktop {
         mainClass = "me.knighthat.kreate.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(
+                TargetFormat.AppImage,
+                TargetFormat.Deb,
+                TargetFormat.Rpm,
+                TargetFormat.Dmg,
+                TargetFormat.Pkg,
+                TargetFormat.Exe,
+                TargetFormat.Msi
+            )
+
             packageName = "me.knighthat.kreate"
             packageVersion = "1.0.0"
         }
