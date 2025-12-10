@@ -12,9 +12,20 @@ import me.knighthat.kreate.logging.setupLogging
 import me.knighthat.kreate.util.CrashHandler
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import picocli.CommandLine
+import kotlin.system.exitProcess
 
 
-fun main() {
+fun main( args: Array<String> ) {
+    val cli = CommandLine(Args())
+    val exitCode = cli.execute( *args )
+    if( exitCode > 0 )
+        exitProcess( exitCode )
+    else if( cli.isUsageHelpRequested ) {
+        cli.printVersionHelp( System.out )
+        exitProcess( 0 )
+    }
+
     Thread.setDefaultUncaughtExceptionHandler( CrashHandler() )
 
     initKoin()

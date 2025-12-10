@@ -31,6 +31,7 @@ junit5 = "6.0.1"
 lombok = "1.18.42"
 jetbrains-annotations = "26.0.2-1"
 okhttp3 = "5.1.0"
+picocli = "4.7.7"
 
 
 [libraries]
@@ -105,6 +106,7 @@ jetbrains-annotations = { group = "org.jetbrains", name = "annotations", version
 # Others
 android-desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
 okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp3" }
+picocli = { module = "info.picocli:picocli", version.ref = "picocli" }
 
 
 [plugins]

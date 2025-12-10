@@ -76,6 +76,7 @@ kotlin {
             implementation( compose.desktop.currentOs )
             implementation( libs.kotlinx.coroutines.swing )
             implementation( libs.ktor.cio )
+            implementation( libs.picocli )
 
             // Material
             implementation( libs.material3.desktop )

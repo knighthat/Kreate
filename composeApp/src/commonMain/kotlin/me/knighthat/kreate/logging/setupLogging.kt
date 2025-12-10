@@ -32,6 +32,9 @@ fun setupLogging() {
     Logger.setLogWriters( platformLogWriter(), fileWriter )
     Logger.setMinSeverity(
         // Override severity when in debug mode
-        if(isDebug ) Severity.Verbose else severity
+        if( isDebug ) Severity.Verbose else severity
     )
+
+    if( Logger.config.minSeverity == Severity.Verbose )
+        Logger.v( "System" ) { "Verbose mode enabled!" }
 }
