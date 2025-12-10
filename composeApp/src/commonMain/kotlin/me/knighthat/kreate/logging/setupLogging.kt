@@ -12,7 +12,7 @@ import me.knighthat.kreate.util.getRuntimeLogDir
 import me.knighthat.kreate.util.isDebug
 
 
-fun setupLogging() {
+fun setupLogging( vararg bufferedLoggers: BufferedLogger ) {
     val dir = Path( getRuntimeLogDir().absolutePath )
     val maxSize = Preferences.RUNTIME_LOG_FILE_SIZE.value
     val numFiles = Preferences.RUNTIME_LOG_NUM_FILES.value
@@ -37,4 +37,7 @@ fun setupLogging() {
 
     if( Logger.config.minSeverity == Severity.Verbose )
         Logger.v( "System" ) { "Verbose mode enabled!" }
+
+    // Dump logs from BufferedLogger to current logger
+    bufferedLoggers.forEach { it.flushTo( Logger ) }
 }

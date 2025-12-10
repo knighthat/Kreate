@@ -103,7 +103,6 @@ kotlin {
 
             // Logging
             implementation( libs.kermit )
-            implementation( libs.kermit.koin )
             api( libs.kermit.io )
 
             // Datastore - Don't expose API because it's masked by Preferences.kt

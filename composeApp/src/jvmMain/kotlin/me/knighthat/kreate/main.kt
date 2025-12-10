@@ -8,6 +8,7 @@ import kreate.composeapp.generated.resources.app_icon_no_ring
 import kreate.composeapp.generated.resources.app_name
 import me.knighthat.kreate.coil.setupCoil
 import me.knighthat.kreate.di.initKoin
+import me.knighthat.kreate.logging.KoinBufferedLogger
 import me.knighthat.kreate.logging.setupLogging
 import me.knighthat.kreate.util.CrashHandler
 import org.jetbrains.compose.resources.painterResource
@@ -28,9 +29,12 @@ fun main( args: Array<String> ) {
 
     Thread.setDefaultUncaughtExceptionHandler( CrashHandler() )
 
-    initKoin()
+    val koinLogger = KoinBufferedLogger()
+    initKoin {
+        logger( koinLogger )
+    }
 
-    setupLogging()
+    setupLogging( koinLogger )
 
     SingletonImageLoader.setSafe( ::setupCoil )
 

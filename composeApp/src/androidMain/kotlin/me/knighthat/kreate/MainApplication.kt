@@ -5,6 +5,7 @@ import coil3.SingletonImageLoader
 import me.knighthat.innertube.Innertube
 import me.knighthat.kreate.coil.setupCoil
 import me.knighthat.kreate.di.initKoin
+import me.knighthat.kreate.logging.KoinBufferedLogger
 import me.knighthat.kreate.logging.setupLogging
 import me.knighthat.kreate.service.InnertubeProviderImpl
 import me.knighthat.kreate.util.CrashHandler
@@ -18,11 +19,14 @@ class MainApplication: Application() {
 
         Thread.setDefaultUncaughtExceptionHandler( CrashHandler() )
 
+        val koinLogger = KoinBufferedLogger()
         initKoin {
+            logger( koinLogger )
+
             androidContext( this@MainApplication )
         }
 
-        setupLogging()
+        setupLogging( koinLogger )
 
         // ImageLoader is placed here to make sure it's set up before anything
         // Services like playback and AA can be sure to have imageLoader
