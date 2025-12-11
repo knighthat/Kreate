@@ -31,6 +31,9 @@ plugins {
     // Android
     alias( libs.plugins.application )
 
+    // Desktop
+    alias( libs.plugins.buildconfig )
+
     // Other
     alias( libs.plugins.compose.hot.reload )
     alias( libs.plugins.compose.compiler )
@@ -324,4 +327,21 @@ compose.desktop {
 
 room {
     schemaDirectory("$projectDir/schemas")
+}
+
+buildConfig {
+    useKotlinOutput { topLevelConstants = true }
+
+    buildConfigField("APP_VERSION", expect<String>())
+
+    sourceSets.named( "androidMain" ) {
+        buildConfigField("APP_VERSION", android.defaultConfig.versionName.orEmpty())
+    }
+
+    sourceSets.named( "jvmMain" ) {
+        buildConfigField(
+            name = "APP_VERSION",
+            value = compose.desktop.application.nativeDistributions.packageVersion.orEmpty()
+        )
+    }
 }

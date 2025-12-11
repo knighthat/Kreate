@@ -32,6 +32,7 @@ lombok = "1.18.42"
 jetbrains-annotations = "26.0.2-1"
 okhttp3 = "5.1.0"
 picocli = "4.7.7"
+buildconfig = "6.0.6"
 
 
 [libraries]
@@ -117,6 +118,9 @@ room-kmp = { id = "androidx.room", version.ref = "room" }
 # Android
 application = { id = "com.android.application", version.ref = "agp" }
 library = { id = "com.android.library", version.ref = "agp" }
+
+# Desktop
+buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }
 
 # Other
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
