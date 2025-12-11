@@ -8,7 +8,7 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 import kreate.composeapp.generated.resources.Res
 import kreate.composeapp.generated.resources.tab_albums
-import kreate.composeapp.generated.resources.tab_artist
+import kreate.composeapp.generated.resources.tab_artists
 import kreate.composeapp.generated.resources.tab_playlists
 import kreate.composeapp.generated.resources.tab_songs
 import me.knighthat.innertube.SearchFilter
@@ -28,7 +28,7 @@ enum class SearchTab(
 
     ALBUMS(SearchFilter.ALBUMS, Res.string.tab_albums, Icons.Rounded.Album),
 
-    ARTISTS(SearchFilter.ARTISTS, Res.string.tab_artist, Icons.Rounded.Person),
+    ARTISTS(SearchFilter.ARTISTS, Res.string.tab_artists, Icons.Rounded.Person),
 
     PLAYLISTS(SearchFilter.COMMUNITY_PLAYLISTS, Res.string.tab_playlists, Icons.Rounded.LibraryMusic);
 }
