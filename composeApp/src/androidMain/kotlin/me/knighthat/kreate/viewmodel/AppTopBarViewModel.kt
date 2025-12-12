@@ -1,6 +1,5 @@
 package me.knighthat.kreate.viewmodel
 
-import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
@@ -8,9 +7,7 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -48,7 +45,6 @@ class AppTopBarViewModel(
         private const val MENU_ICON_TRANSITION_DURATION = 300
     }
 
-    val titleSwapTransition: ContentTransform
     val menuIconEnterTransition: EnterTransition
     val menuIconExitTransition: ExitTransition
 
@@ -83,21 +79,6 @@ class AppTopBarViewModel(
                 }
         }
         //<editor-fold defaultstate="collapsed" desc="titleSwapTransition">
-        // Always slides up
-        val inSpec =
-            slideInVertically(
-                animationSpec = tween( durationMillis = 800 )
-            ) { it } + fadeIn(
-                animationSpec = tween( durationMillis = 1000 )
-            )
-        val outputSpec =
-            slideOutVertically(
-                animationSpec = tween( durationMillis = 800 )
-            ) { -it } + fadeOut(
-                animationSpec = tween( durationMillis = 2000 )
-            )
-        titleSwapTransition = inSpec togetherWith outputSpec
-        //</editor-fold>
         // Makes space then appears slowly
         menuIconEnterTransition = expandHorizontally(
             animationSpec = tween( MENU_ICON_TRANSITION_DURATION )

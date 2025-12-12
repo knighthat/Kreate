@@ -95,7 +95,7 @@ fun AppTopBar(
         title = {
             AnimatedContent(
                 targetState = viewModel.title to (Route.Search.isHere || Route.isHere<Route.Search.Results>( navController )),
-                transitionSpec = { viewModel.titleSwapTransition },
+                transitionSpec = { viewModel.topLayoutConfiguration.titleSwapTransition },
                 modifier = Modifier.fillMaxWidth()
             ) { (title, isSearching) ->
                 if( isSearching )

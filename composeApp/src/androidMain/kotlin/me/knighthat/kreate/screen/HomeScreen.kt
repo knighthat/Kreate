@@ -55,6 +55,7 @@ import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.innertube.response.Runs
 import me.knighthat.innertube.response.Thumbnails
 import me.knighthat.kreate.component.LoadMoreContentType
+import me.knighthat.kreate.component.TopBarTitle
 import me.knighthat.kreate.component.item.ALBUM_ITEM_WIDTH
 import me.knighthat.kreate.component.item.ARTIST_ITEM_WIDTH
 import me.knighthat.kreate.component.item.AlbumItem
@@ -65,7 +66,6 @@ import me.knighthat.kreate.component.item.PlaylistItemPlaceholder
 import me.knighthat.kreate.component.item.SONG_ITEM_HORIZONTAL_PADDING
 import me.knighthat.kreate.component.item.SongItem
 import me.knighthat.kreate.component.item.SongItemPlaceHolder
-import me.knighthat.kreate.di.TopLayoutConfiguration.Title
 import me.knighthat.kreate.theme.AppTheme
 import me.knighthat.kreate.viewmodel.HomeScreenViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -267,7 +267,7 @@ fun HomeScreen(
                     item { Spacer(Modifier.height( TITLE_HEIGHT.dp )) }
                 else {
                     val title = s.title.orEmpty()
-                    item( Title(title) ) {
+                    item(TopBarTitle(title) ) {
                         // Don't show header for the very first header
                         if( sections.first() !== s )
                             Header( title, s.browseId, s.params )

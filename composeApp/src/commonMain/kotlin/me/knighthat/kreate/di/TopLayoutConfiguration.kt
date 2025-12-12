@@ -1,7 +1,12 @@
 package me.knighthat.kreate.di
 
-import android.os.Parcel
-import android.os.Parcelable
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,11 +18,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.knighthat.kreate.component.TopBarTitle
 
 class TopLayoutConfiguration {
 
-    val lazyListState: LazyListState = LazyListState()
+    val lazyListState = LazyListState()
     val title = MutableStateFlow("")
+    val titleSwapTransition: ContentTransform
 
     var background: String? by mutableStateOf( null )
     var isAppReady: Boolean by mutableStateOf( false )
@@ -32,12 +39,29 @@ class TopLayoutConfiguration {
         coroutineScope.launch {
             snapshotFlow { lazyListState.firstVisibleItemIndex }
                 .mapNotNull { _ ->
-                    lazyListState.layoutInfo.visibleItemsInfo.firstOrNull()?.key as? Title
+                    lazyListState.layoutInfo.visibleItemsInfo.firstOrNull()?.key as? TopBarTitle
                 }
                 .collect { title ->
                     this@TopLayoutConfiguration.title.update { title.title }
                 }
         }
+
+        //<editor-fold defaultstate="collapsed" desc="titleSwapTransition">
+        // Always slides up
+        val inSpec =
+            slideInVertically(
+                animationSpec = tween( durationMillis = 800 )
+            ) { it } + fadeIn(
+                animationSpec = tween( durationMillis = 1000 )
+            )
+        val outputSpec =
+            slideOutVertically(
+                animationSpec = tween( durationMillis = 800 )
+            ) { -it } + fadeOut(
+                animationSpec = tween( durationMillis = 2000 )
+            )
+        titleSwapTransition = inSpec togetherWith outputSpec
+        //</editor-fold>
     }
 
     /**
@@ -46,20 +70,5 @@ class TopLayoutConfiguration {
      */
     fun showContent() {
         isAppReady = true
-    }
-
-
-    class Title( val title: String ): Parcelable {
-
-        constructor(parcel: Parcel) : this(parcel.readString()!!)
-
-        override fun describeContents(): Int = 0
-        override fun writeToParcel(dest: Parcel, flags: Int) = dest.writeString( title )
-
-        companion object CREATOR : Parcelable.Creator<Title> {
-
-            override fun createFromParcel(parcel: Parcel): Title = Title(parcel)
-            override fun newArray(size: Int): Array<Title?> = arrayOfNulls(size)
-        }
     }
 }

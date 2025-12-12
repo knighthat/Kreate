@@ -10,7 +10,6 @@ import org.koin.dsl.module
 
 
 actual val platformViewModel = module {
-    singleOf(::TopLayoutConfiguration)
     singleOf(::SharedSearchProperties)
     viewModelOf(::HomeScreenViewModel)
     viewModelOf(::AppTopBarViewModel)
