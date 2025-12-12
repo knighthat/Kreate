@@ -6,8 +6,14 @@
     <string name="tab_albums">Albums</string>
     <string name="tab_artists">Artists</string>
     <string name="tab_playlists">Playlists</string>
+    <string name="tab_search">Search</string>
     <string name="good_morning">Good morning</string>
     <string name="good_afternoon">Good afternoon</string>
     <string name="good_evening">Good evening</string>
     <string name="good_night">Good night</string>
+    <string name="app_version">Version: %1$s</string>
+    <string name="button_previous">previous</string>
+    <string name="button_play">play</string>
+    <string name="button_pause">pause</string>
+    <string name="button_next">next</string>
 </resources>

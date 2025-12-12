@@ -64,6 +64,10 @@ sealed class Route {
         @Composable
         get() = !isHere
 
+    @Contract("null->false")
+    fun isHere( navBackStackEntry: NavBackStackEntry? ): Boolean =
+        isHere( this::class, navBackStackEntry )
+
     fun isHere( navController: NavController ): Boolean =
         isHere( this::class, navController.currentBackStackEntry )
 
@@ -87,4 +91,13 @@ sealed class Route {
         @Serializable
         data class Results( val input: String ): Route()
     }
+
+    @Serializable
+    object Songs: Route()
+
+    @Serializable
+    object Albums: Route()
+
+    @Serializable
+    object Artists: Route()
 }

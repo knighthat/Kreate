@@ -1,6 +1,9 @@
 package me.knighthat.kreate
 
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import coil3.SingletonImageLoader
 import kreate.composeapp.generated.resources.Res
@@ -42,7 +45,10 @@ fun main( args: Array<String> ) {
         Window(
             onCloseRequest = ::exitApplication,
             title = stringResource( Res.string.app_name ),
-            icon = painterResource(Res.drawable.app_icon_no_ring )
+            icon = painterResource(Res.drawable.app_icon_no_ring ),
+            state = WindowState(
+                size = DpSize(1280.dp, 720.dp),
+            )
         ) {
             MainContentLayout()
         }
