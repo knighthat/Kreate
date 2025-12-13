@@ -21,6 +21,7 @@ import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.di.PlayerModule.MAX_CHUNK_LENGTH
 import app.kreate.android.di.PlayerModule.upsertSongInfo
 import app.kreate.android.service.Discord
 import app.kreate.android.service.NetworkService
@@ -79,7 +80,7 @@ object PlayerModule {
      * This is created to reduce load to Room
      */
     private val justInserted = AtomicReference("")
-    private val songUrlCache = ConcurrentHashMap<String, Pair<String, Long>>()
+    private val songUrlCache = ConcurrentHashMap<String, Triple<String, Long, Long?>>()
 
     //<editor-fold desc="Database handlers">
     /**
@@ -126,6 +127,19 @@ object PlayerModule {
         // Must not modify [JustInserted] to [upsertSongFormat] let execute later
     }
 
+    /**
+     * Returns the length from [position] to [contentLength].
+     *
+     * If [contentLength] is a `null` value, use [C.LENGTH_UNSET]
+     * to get the rest of the data.
+     *
+     * Cap the maximum data to get to [MAX_CHUNK_LENGTH]
+     */
+    private fun calculateLength( position: Long, contentLength: Long? ): Long =
+        contentLength?.let { it - position }
+                     ?.coerceAtMost( MAX_CHUNK_LENGTH )
+                     ?: C.LENGTH_UNSET.toLong()
+
     //<editor-fold desc="Resolvers">
     private fun DataSpec.process(
         videoId: String,
@@ -136,11 +150,17 @@ object PlayerModule {
         Timber.tag( LOG_TAG ).v( "processing $videoId at quality $audioQualityFormat with connection metered: $connectionMetered" )
 
         // Checking cached urls
-        if( songUrlCache.contains( videoId ) ) {
-            val (url, expire) = songUrlCache[videoId]!!
-            if( expire > System.currentTimeMillis() )
-                return@runBlocking withUri( url.toUri() ).subrange( uriPositionOffset, CHUNK_LENGTH )
-        }
+        if( songUrlCache.containsKey( videoId ) ) {
+            Timber.tag( LOG_TAG ).d( "cache hit" )
+
+            val (url, expire, length) = songUrlCache[videoId]!!
+            val currentTime = System.currentTimeMillis()
+            if( expire > currentTime ) {
+                val range = calculateLength( position, length )
+                return@runBlocking withUri( url.toUri() ).subrange( 0, range )
+            }
+        } else
+            Timber.tag( LOG_TAG ).d( "cache missed" )
 
         val response = YTPlayerUtils.playerResponseForPlayback(
             videoId = videoId,
@@ -159,21 +179,14 @@ object PlayerModule {
         }
 
         val streamUrl = response.streamUrl
-        songUrlCache[videoId] = streamUrl to System.currentTimeMillis() + (response.streamExpiresInSeconds * 1000L)
+        songUrlCache[videoId] = Triple(
+            streamUrl,
+            System.currentTimeMillis() + response.streamExpiresInSeconds * 1000L,
+            response.format.contentLength
+        )
 
-        val absolutePosition = uriPositionOffset + position
-        // This will make YT gives the song in whole
-        // If the format doesn't contain contentLength,
-        // or the song's size is larger than [MAX_CHUNK_LENGTH],
-        // use [MAX_CHUNK_LENGTH] instead.
-        val contentLength = (response.format.contentLength ?: MAX_CHUNK_LENGTH).coerceAtMost( MAX_CHUNK_LENGTH )
-
-        streamUrl.toUri()
-                 .buildUpon()
-                 .appendQueryParameter( "range", "$absolutePosition-$contentLength" )
-                 .build()
-                 .let( ::withUri )
-                 .subrange( absolutePosition, C.LENGTH_UNSET.toLong() )
+        val range = calculateLength( position, response.format.contentLength )
+        withUri( streamUrl.toUri() ).subrange( 0, range )
     }
 
     /**
