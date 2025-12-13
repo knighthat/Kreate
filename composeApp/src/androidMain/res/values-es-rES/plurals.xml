@@ -14,6 +14,6 @@
     </plurals>
     <plurals name="song">
         <item quantity="one">%d canción</item>
-        <item quantity="other">%d canción</item>
+        <item quantity="other">%d canciones</item>
     </plurals>
 </resources>
