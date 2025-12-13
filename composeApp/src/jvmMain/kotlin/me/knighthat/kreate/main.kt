@@ -50,7 +50,8 @@ fun main( args: Array<String> ) {
                 size = DpSize(1280.dp, 720.dp),
             ),
             undecorated = true,
-            transparent = true
+            transparent = true,
+            onKeyEvent = GlobalWindowActions::handleKeyEvent
         ) {
             MainContentLayout()
         }
