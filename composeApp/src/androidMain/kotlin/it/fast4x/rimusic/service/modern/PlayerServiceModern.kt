@@ -224,7 +224,6 @@ class PlayerServiceModern:
     @kotlin.OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     override fun onCreate() {
         NewPipeUtils.client = NetworkService.engine
-        YTPlayerUtils.httpClient = NetworkService.engine
         InnerTube.httpClient = NetworkService.client
 
         super.onCreate()

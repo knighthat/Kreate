@@ -3,6 +3,7 @@ package app.kreate.android.utils
 import androidx.annotation.OptIn
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi
+import app.kreate.android.service.NetworkService
 import com.metrolist.innertube.pages.NewPipeUtils
 import com.metrolist.innertube.YouTube
 import com.metrolist.innertube.models.YouTubeClient
@@ -20,6 +21,10 @@ import com.metrolist.innertube.models.YouTubeClient.Companion.WEB_CREATOR
 import com.metrolist.innertube.models.YouTubeClient.Companion.WEB_REMIX
 import com.metrolist.innertube.models.response.PlayerResponse
 import it.fast4x.rimusic.enums.AudioQualityFormat
+import it.fast4x.rimusic.service.LoginRequiredException
+import it.fast4x.rimusic.service.PlayableFormatNotFoundException
+import it.fast4x.rimusic.service.UnknownException
+import it.fast4x.rimusic.service.UnplayableException
 import okhttp3.OkHttpClient
 import timber.log.Timber
 
@@ -28,7 +33,7 @@ import timber.log.Timber
 object YTPlayerUtils {
     private const val logTag = "YTPlayerUtils"
 
-    lateinit var httpClient: OkHttpClient
+    val httpClient = NetworkService.engine
 
     /**
      * The main client is used for metadata and initial streams.
@@ -194,11 +199,11 @@ object YTPlayerUtils {
         if (streamPlayerResponse.playabilityStatus.status != "OK") {
             val errorReason = streamPlayerResponse.playabilityStatus.reason
             Timber.tag(logTag).e("Playability status not OK: $errorReason")
-            throw PlaybackException(
-                errorReason,
-                null,
-                PlaybackException.ERROR_CODE_REMOTE_ERROR
-            )
+
+            if( streamPlayerResponse.playabilityStatus.status == "LOGIN_REQUIRED" )
+                throw LoginRequiredException(errorReason)
+            else
+                throw UnplayableException(errorReason)
         }
 
         if (streamExpiresInSeconds == null) {
@@ -208,7 +213,7 @@ object YTPlayerUtils {
 
         if (format == null) {
             Timber.tag(logTag).e("Could not find format")
-            throw Exception("Could not find format")
+            throw PlayableFormatNotFoundException()
         }
 
         if (streamUrl == null) {

@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.provider.MediaStore
 import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
@@ -46,6 +47,7 @@ import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.UserAgents
 import me.knighthat.utils.Toaster
 import timber.log.Timber
+import java.net.UnknownHostException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Named
@@ -139,10 +141,17 @@ object PlayerModule {
             videoId = videoId,
             audioQuality = audioQualityFormat,
             isNetworkMetered = connectionMetered
-        ).onFailure { err ->
-            Toaster.e( "failed to fetch playback stream" )
+        ).getOrElse { err ->
             Timber.tag( LOG_TAG ).e( err )
-        }.getOrThrow()
+            Toaster.e( "failed to fetch playback stream" )
+
+            when( err ) {
+                is UnknownHostException,
+                is UnresolvedAddressException   -> throw NoInternetException(err)
+                is PlaybackException            -> throw err
+                else                            -> throw UnknownException()
+            }
+        }
 
         val streamUrl = response.streamUrl
         songUrlCache[videoId] = streamUrl to System.currentTimeMillis() + (response.streamExpiresInSeconds * 1000L)
