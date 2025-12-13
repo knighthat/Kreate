@@ -16,4 +16,5 @@
     <string name="button_play">play</string>
     <string name="button_pause">pause</string>
     <string name="button_next">next</string>
+    <string name="button_close_app">Close app</string>
 </resources>

@@ -48,7 +48,9 @@ fun main( args: Array<String> ) {
             icon = painterResource(Res.drawable.app_icon_no_ring ),
             state = WindowState(
                 size = DpSize(1280.dp, 720.dp),
-            )
+            ),
+            undecorated = true,
+            transparent = true
         ) {
             MainContentLayout()
         }

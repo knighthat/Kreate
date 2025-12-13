@@ -31,6 +31,10 @@ import me.knighthat.kreate.util.LocalNavController
 import org.koin.compose.koinInject
 
 
+@get:Composable
+val MAIN_TITLE_TYPOGRAPHY
+    get() = MaterialTheme.typography.displaySmall
+
 @Composable
 private fun ActualView(
     navController: NavController = LocalNavController.current
@@ -80,7 +84,7 @@ fun MainView(
         ) { title ->
             Text(
                 text = title,
-                style = MaterialTheme.typography.displaySmall
+                style = MAIN_TITLE_TYPOGRAPHY
             )
         }
 
