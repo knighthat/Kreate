@@ -17,4 +17,6 @@
     <string name="button_pause">pause</string>
     <string name="button_next">next</string>
     <string name="button_close_app">Close app</string>
+    <string name="dark_mode">Dark mode</string>
+    <string name="light_mode">Light mode</string>
 </resources>

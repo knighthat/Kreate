@@ -2,7 +2,10 @@ package me.knighthat.kreate.component
 
 import Kreate.composeApp.APP_VERSION
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -10,26 +13,38 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.DarkMode
+import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.navigation.compose.currentBackStackEntryAsState
 import kreate.composeapp.generated.resources.Res
 import kreate.composeapp.generated.resources.app_version
+import kreate.composeapp.generated.resources.dark_mode
 import kreate.composeapp.generated.resources.ic_launcher
+import kreate.composeapp.generated.resources.light_mode
 import me.knighthat.kreate.CONTENT_SPACING
+import me.knighthat.kreate.constant.ColorScheme
 import me.knighthat.kreate.constant.MainNavigationTab
+import me.knighthat.kreate.preference.Preferences
 import me.knighthat.kreate.util.LocalNavController
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -80,10 +95,15 @@ fun AppNavigationRail( modifier: Modifier = Modifier ) =
             )
         }
 
-        Box(
-            contentAlignment = Alignment.BottomCenter,
+        Column(
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.weight( 1f )
         ) {
+            SwitchColorSchemeButton()
+
+            Spacer( Modifier.height(CONTENT_SPACING.dp) )
+
             Text(
                 text = stringResource( Res.string.app_version, APP_VERSION ),
                 maxLines = 1,
