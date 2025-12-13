@@ -130,6 +130,8 @@ sealed class Preferences<T>(
      */
     companion object {
 
+        lateinit var profilePreferences: SharedPreferences
+            private set
         lateinit var preferences: SharedPreferences
             private set
         lateinit var encryptedPreferences: SharedPreferences
@@ -1066,6 +1068,9 @@ sealed class Preferences<T>(
         val SONG_EMPTY_DURATION_PLACEHOLDER by lazy {
             Boolean(preferences, "SongEmptyDurationPlaceholder", "", false)
         }
+        val ACTIVE_PROFILE by lazy {
+            String(profilePreferences, "ActiveProfile", "", "default")
+        }
 
         fun isLoggedInToDiscord(): kotlin.Boolean =
             DISCORD_LOGIN.value && DISCORD_ACCESS_TOKEN.value.isNotBlank()
@@ -1077,7 +1082,11 @@ sealed class Preferences<T>(
          * because all preference require [preferences] to be initialized
          * to work.
          */
-        fun load( preferences: SharedPreferences, encryptedPreferences: SharedPreferences ) {
+        fun load(profilePreferences: SharedPreferences, preferences: SharedPreferences, encryptedPreferences: SharedPreferences ) {
+            // Only set once to prevent unwanted injection
+            if ( !::profilePreferences.isInitialized )
+                this.profilePreferences = profilePreferences
+
             // Only set once to prevent unwanted injection
             if( !::preferences.isInitialized )
                 this.preferences = preferences
@@ -1097,7 +1106,10 @@ sealed class Preferences<T>(
          */
         @SuppressLint("UseKtx", "ApplySharedPref")      // Use conventional syntax because it's easier to read
         @Blocking
-        fun unload() = this.preferences.edit().commit()
+        fun unload() {
+            this.preferences.edit().commit()
+            this.profilePreferences.edit().commit()
+        }
     }
 
     /**
