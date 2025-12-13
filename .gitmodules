@@ -7,3 +7,6 @@
 [submodule "modules/discord"]
 	path = modules/discord
 	url = https://gitlab.com/tannguyen047/discord-kotlin.git
+[submodule "modules/old-innertube"]
+	path = modules/metrolist-innertube
+	url = https://github.com/knighthat/Metrolist-innertube

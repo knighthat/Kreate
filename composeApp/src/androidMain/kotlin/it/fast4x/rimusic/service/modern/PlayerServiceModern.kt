@@ -21,9 +21,11 @@ import android.media.AudioManager
 import android.media.audiofx.AudioEffect
 import android.media.audiofx.BassBoost
 import android.media.audiofx.PresetReverb
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.MainThread
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -55,9 +57,10 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.Discord
 import app.kreate.android.service.DownloadHelper
-import app.kreate.android.service.newpipe.NewPipeDownloader
+import app.kreate.android.service.NetworkService
 import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.VolumeObserver
+import app.kreate.android.utils.YTPlayerUtils
 import app.kreate.android.utils.centerCropBitmap
 import app.kreate.android.utils.centerCropToMatchScreenSize
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
@@ -66,6 +69,8 @@ import app.kreate.android.widget.Widget
 import app.kreate.database.models.Event
 import app.kreate.database.models.Song
 import com.google.common.util.concurrent.MoreExecutors
+import com.metrolist.innertube.InnerTube
+import com.metrolist.innertube.pages.NewPipeUtils
 import dagger.hilt.android.AndroidEntryPoint
 import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
@@ -103,6 +108,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -119,10 +125,10 @@ import kotlinx.coroutines.withTimeoutOrNull
 import me.knighthat.impl.DownloadHelperImpl
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
-import org.schabi.newpipe.extractor.NewPipe
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -193,6 +199,10 @@ class PlayerServiceModern:
 
     private lateinit var notificationActionReceiver: NotificationActionReceiver
 
+    private var wallpaperRevertJob: Job? = null
+    private var wallpaper_cleared: Boolean = false
+
+
     private fun onMediaItemTransition( mediaItem: MediaItem? ) {
         listener.updateMediaControl( this, player )
 
@@ -213,7 +223,8 @@ class PlayerServiceModern:
 
     @kotlin.OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     override fun onCreate() {
-        NewPipe.init( NewPipeDownloader() )
+        NewPipeUtils.client = NetworkService.engine
+        InnerTube.httpClient = NetworkService.client
 
         super.onCreate()
 
@@ -303,11 +314,7 @@ class PlayerServiceModern:
                         PendingIntent.FLAG_IMMUTABLE
                     )
                 )
-                .setBitmapLoader(CoilBitmapLoader(
-                    this,
-                    coroutineScope,
-                    512 * resources.displayMetrics.density.toInt()
-                ))
+                .setBitmapLoader( CoilBitmapLoader(coroutineScope) )
                 .build()
 
         listener = ExoPlayerListener(
@@ -415,8 +422,20 @@ class PlayerServiceModern:
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
 
     override fun onIsPlayingChanged( isPlaying: Boolean ) {
-        // FIXME: At this time, this event keeps firing on and off
-        //  when user seeks around the timeline.
+        wallpaperRevertJob?.cancel()
+
+
+        if (!isPlaying && Preferences.LIVE_WALLPAPER_RESET_DURATION.value != -1L) { // -1 means it should be disabled
+            wallpaperRevertJob = coroutineScope.launch {
+                delay(Preferences.LIVE_WALLPAPER_RESET_DURATION.value)
+                revertWallpaperToDefault()
+            }
+        } else {
+            if (wallpaper_cleared) {
+                wallpaper_cleared = false
+                updateWallpaper(bitmapProvider.bitmap)
+            }
+        }
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession =
@@ -638,6 +657,17 @@ class PlayerServiceModern:
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun getFlag(type: WallpaperType): Int{
+            return when (type) {
+                WallpaperType.BOTH -> FLAG_LOCK or FLAG_SYSTEM
+                WallpaperType.LOCKSCREEN -> FLAG_LOCK
+                WallpaperType.HOME -> FLAG_SYSTEM
+                // This is intended, [WallpaperType.DISABLED] must not present at this point
+                WallpaperType.DISABLED -> throw UnsupportedOperationException("WallpaperType.DISABLED is used")
+            }
+    }
+
     private fun updateWallpaper( bitmap: Bitmap ) {
         val type by Preferences.LIVE_WALLPAPER
         if( type == WallpaperType.DISABLED ) return
@@ -647,13 +677,7 @@ class PlayerServiceModern:
             val cropRect = with( bitmap ) { centerCropToMatchScreenSize( width, height ) }
 
             if( isAtLeastAndroid7 ) {
-                val flag = when( type ) {
-                    WallpaperType.BOTH          -> FLAG_LOCK or FLAG_SYSTEM
-                    WallpaperType.LOCKSCREEN    -> FLAG_LOCK
-                    WallpaperType.HOME          -> FLAG_SYSTEM
-                    // This is intended, [WallpaperType.DISABLED] must not present at this point
-                    WallpaperType.DISABLED      -> throw UnsupportedOperationException("WallpaperType.DISABLED is used")
-                }
+                val flag = getFlag(type)
 
                 mgr.setBitmap( bitmap, cropRect, true, flag )
             } else if( type != WallpaperType.LOCKSCREEN )
@@ -769,6 +793,25 @@ class PlayerServiceModern:
             }
         }
 
+    }
+
+
+    private fun revertWallpaperToDefault() {
+        val type by Preferences.LIVE_WALLPAPER
+        if (type == WallpaperType.DISABLED) return
+        coroutineScope.launch(Dispatchers.IO) {
+            val mgr = WallpaperManager.getInstance(this@PlayerServiceModern)
+            try {
+                if (isAtLeastAndroid7) {
+                    mgr.clear(getFlag(type))
+                } else {
+                    mgr.clear()
+                }
+                wallpaper_cleared = true
+            } catch (e: IOException) {
+                Toaster.e("Failed to revert wallpaper")
+            }
+        }
     }
 
     fun updateDownloadedState() {
@@ -1006,7 +1049,7 @@ class PlayerServiceModern:
             println("PlayerServiceModern toggleDownload currentMediaItem ${currentMediaItem.value} currentSongIsDownloaded ${currentSongStateDownload.value}")
             manageDownload(
                 context = this@PlayerServiceModern,
-                mediaItem = currentMediaItem.value ?: return,
+                mediaItem = binder.player.currentMediaItem ?: return,
                 downloadState = currentSongStateDownload.value == Download.STATE_COMPLETED
             )
         }

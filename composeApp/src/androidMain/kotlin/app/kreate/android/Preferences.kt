@@ -864,6 +864,9 @@ sealed class Preferences<T>(
         val LIVE_WALLPAPER by lazy {
             Enum(preferences, "LiveWallpaper", "", WallpaperType.DISABLED)
         }
+        val LIVE_WALLPAPER_RESET_DURATION by lazy {
+            Long(preferences, "LiveWallpaperResetDuration", "", -1L)
+        }
         val ANIMATED_GRADIENT by lazy {
             Enum( preferences, "AnimatedGradient", "animatedGradient", AnimatedGradient.Linear )
         }

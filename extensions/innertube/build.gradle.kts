@@ -19,7 +19,7 @@ dependencies {
     implementation(libs.okhttp3.logging.interceptor)
     implementation(libs.ktor.serialization.json)
     implementation(libs.ktor.serialization.protobuf)
-    implementation(libs.newpipe.extractor)
+    implementation(libs.extractor)
     implementation(libs.ksoup.html)
     implementation(libs.ksoup.entities)
 }
