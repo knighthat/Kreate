@@ -128,6 +128,13 @@ object PlayerModule {
 
         Timber.tag( LOG_TAG ).v( "processing $videoId at quality $audioQualityFormat with connection metered: $connectionMetered" )
 
+        // Checking cached urls
+        if( songUrlCache.contains( videoId ) ) {
+            val (url, expire) = songUrlCache[videoId]!!
+            if( expire > System.currentTimeMillis() )
+                return@runBlocking withUri( url.toUri() ).subrange( uriPositionOffset, CHUNK_LENGTH )
+        }
+
         val response = YTPlayerUtils.playerResponseForPlayback(
             videoId = videoId,
             audioQuality = audioQualityFormat,
