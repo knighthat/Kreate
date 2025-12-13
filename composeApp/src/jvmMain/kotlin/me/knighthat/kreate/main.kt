@@ -1,5 +1,6 @@
 package me.knighthat.kreate
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -14,6 +15,7 @@ import me.knighthat.kreate.di.initKoin
 import me.knighthat.kreate.logging.KoinBufferedLogger
 import me.knighthat.kreate.logging.setupLogging
 import me.knighthat.kreate.util.CrashHandler
+import me.knighthat.kreate.util.LocalApplicationScope
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import picocli.CommandLine
@@ -51,9 +53,13 @@ fun main( args: Array<String> ) {
             ),
             undecorated = true,
             transparent = true,
-            onKeyEvent = GlobalWindowActions::handleKeyEvent
+            onKeyEvent = {
+                GlobalWindowActions.handleKeyEvent( this, it )
+            }
         ) {
-            MainContentLayout()
+            CompositionLocalProvider(
+                LocalApplicationScope provides this@application
+            ) { MainContentLayout() }
         }
     }
 }

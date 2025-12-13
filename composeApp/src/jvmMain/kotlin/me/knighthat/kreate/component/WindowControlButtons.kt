@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import kreate.composeapp.generated.resources.Res
 import kreate.composeapp.generated.resources.button_close_app
 import me.knighthat.kreate.GlobalWindowActions
+import me.knighthat.kreate.util.LocalApplicationScope
 import org.jetbrains.compose.resources.stringResource
 
 
@@ -74,10 +75,13 @@ fun WindowControlButtons( modifier: Modifier = Modifier ) =
                                MAIN_TITLE_TYPOGRAPHY.lineHeight.value.dp
                            )
     ) {
+        val application = LocalApplicationScope.current
         Button(
             imageVector = Icons.Rounded.Close,
             contentDescription = stringResource( Res.string.button_close_app ),
             getColors = { if( it ) closeButtonColorsHovered else closeButtonColorsNormal },
-            onClick = GlobalWindowActions::closeApplication
+            onClick = {
+                GlobalWindowActions.closeApplication( application )
+            }
         )
     }
