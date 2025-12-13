@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.provider.MediaStore
 import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
+import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
@@ -33,7 +34,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.ktor.util.network.UnresolvedAddressException
 import it.fast4x.rimusic.Database
+import it.fast4x.rimusic.service.NoInternetException
+import it.fast4x.rimusic.service.UnknownException
 import it.fast4x.rimusic.utils.isConnectionMetered
 import it.fast4x.rimusic.utils.isNetworkAvailable
 import kotlinx.coroutines.CoroutineScope
@@ -62,6 +66,7 @@ object PlayerModule {
 
     private const val LOG_TAG = "dataspec"
     private const val CHUNK_LENGTH = 128 * 1024L     // 128Kb
+    private const val MAX_CHUNK_LENGTH = 5L * 1024 * 1024       // 5 Mb
 
     /**
      * Acts as a lock to keep [upsertSongFormat] from starting before
@@ -156,7 +161,19 @@ object PlayerModule {
         val streamUrl = response.streamUrl
         songUrlCache[videoId] = streamUrl to System.currentTimeMillis() + (response.streamExpiresInSeconds * 1000L)
 
-        withUri( streamUrl.toUri() ).subrange( uriPositionOffset, CHUNK_LENGTH )
+        val absolutePosition = uriPositionOffset + position
+        // This will make YT gives the song in whole
+        // If the format doesn't contain contentLength,
+        // or the song's size is larger than [MAX_CHUNK_LENGTH],
+        // use [MAX_CHUNK_LENGTH] instead.
+        val contentLength = (response.format.contentLength ?: MAX_CHUNK_LENGTH).coerceAtMost( MAX_CHUNK_LENGTH )
+
+        streamUrl.toUri()
+                 .buildUpon()
+                 .appendQueryParameter( "range", "$absolutePosition-$contentLength" )
+                 .build()
+                 .let( ::withUri )
+                 .subrange( absolutePosition, C.LENGTH_UNSET.toLong() )
     }
 
     /**
