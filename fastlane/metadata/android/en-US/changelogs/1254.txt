@@ -1,0 +1,15 @@
+Changes:
+- New YT's playback implementation, from Metrolist
+- Rework contributors section in About
+- Reimplement change thumbnail button for songs and albums
+- Reset live wallpaper when song stops (disabled by default)
+- New url caching to reduce playback load time
+
+Fixes:
+- App randomly starts playing songs in the background
+- Low resolution on some thumbnail
+- App crashes when shuffle an empty playlist
+- App crashes during queue export
+- Download button doesn't work in media control
+- Error when seek to uncached timestamp
+- App crashes randomly in the background

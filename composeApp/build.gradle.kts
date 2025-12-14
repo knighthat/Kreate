@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 val APP_NAME = "Kreate"
-val VERSION_CODE = 124
+val VERSION_CODE = 125
 
 private fun String.sha256(): String {
     val digest = MessageDigest.getInstance( "SHA-256" )
@@ -331,7 +331,7 @@ android {
                 signingConfig = signingConfigs.getByName( "production" )
 
             // App's properties
-            versionName = "1.8.4"
+            versionName = "1.8.5"
             manifestPlaceholders["appName"] = APP_NAME
             versionCode = VERSION_CODE
         }
@@ -447,7 +447,7 @@ licenseReport {
 val copyReleaseNote = tasks.register<Copy>("copyReleaseNote" ) {
     from( "$rootDir/fastlane/metadata/android/en-US/changelogs" )
 
-    val versionCode = (1 shl 20) or VERSION_CODE
+    val versionCode = (VERSION_CODE * 10) + 4       // x86_64 versionCode scheme
     val fileName = "$versionCode.txt"
     setIncludes( listOf( fileName ) )
 
