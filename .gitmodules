@@ -1,12 +1,12 @@
-[submodule "modules/innertube"]
+[submodule "innertube"]
 	path = modules/innertube
 	url = https://gitlab.com/tannguyen047/innertube-kotlin.git
-[submodule "scripts/strings-modifier"]
+[submodule "strings-modifier"]
 	path = scripts/strings-modifier
 	url = https://gitlab.com/tannguyen047/string-modifier
-[submodule "modules/discord"]
+[submodule "discord"]
 	path = modules/discord
 	url = https://gitlab.com/tannguyen047/discord-kotlin.git
-[submodule "modules/old-innertube"]
+[submodule "metrolist-innertube"]
 	path = modules/metrolist-innertube
 	url = https://github.com/knighthat/Metrolist-innertube
