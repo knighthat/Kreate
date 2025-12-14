@@ -447,7 +447,7 @@ licenseReport {
 val copyReleaseNote = tasks.register<Copy>("copyReleaseNote" ) {
     from( "$rootDir/fastlane/metadata/android/en-US/changelogs" )
 
-    val versionCode = (1 shl 20) or VERSION_CODE
+    val versionCode = (VERSION_CODE * 10) + 4       // x86_64 versionCode scheme
     val fileName = "$versionCode.txt"
     setIncludes( listOf( fileName ) )
 
