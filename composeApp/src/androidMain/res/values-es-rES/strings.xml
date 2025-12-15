@@ -227,7 +227,7 @@
     <string name="shows_the_number_of_songs_heard_and_their_listening_time">Muestra el número de canciones escuchadas y su tiempo de reproducción</string>
     <string name="app_update_dialog_new">¡La nueva versión %s puede ser descargada!</string>
     <string name="set_to">Establecer en</string>
-    <string name="end_of_song">fin de la canción</string>
+    <string name="end_of_song">(fin de la canción)</string>
     <string name="do_you_really_want_to_renumbering_positions_in_this_playlist">¿Seguro que quieres re-enumerar las posiciones en esta lista de reproducción?</string>
     <string name="renumber_songs_positions">Re-enumerar posiciones</string>
     <string name="do_you_really_want_to_delete_all_playback_events">¿Seguro que quieres eliminar todos los eventos de reproducción?</string>
@@ -237,7 +237,7 @@
     <string name="default_page">Página por defecto</string>
     <string name="keep_screen_on">Mantener pantalla encendida</string>
     <string name="prevents_screen_timeout">Evitar pantalla de tiempo de espera</string>
-    <string name="action_bar_show_sleep_timer_button">Botón del temporizador de sueño</string>
+    <string name="action_bar_show_sleep_timer_button">Mostrar botón del temporizador de apagado</string>
     <string name="sort_album_year">Año del álbum</string>
     <string name="sort_position">Posición</string>
     <string name="sort_title">Título</string>
@@ -259,9 +259,9 @@
     <string name="ask">Preguntar</string>
     <string name="item_select">Seleccionar</string>
     <string name="blacklisted_folders">Carpetas en lista negra</string>
-    <string name="edit_blacklist_for_on_device_songs">Editar lista negra para las canciones del dispositivo.</string>
+    <string name="edit_blacklist_for_on_device_songs">Editar lista negra para las canciones del dispositivo</string>
     <string name="add_folder">Añadir carpeta</string>
-    <string name="this_folder_already_exists">La carpeta ya existe.</string>
+    <string name="this_folder_already_exists">La carpeta ya existe</string>
     <string name="are_you_sure_you_want_to_remove_this_folder_from_the_blacklist">¿Seguro que quieres eliminar esta carpeta de la lista negra?</string>
     <string name="player_appearance">Apariencia del reproductor</string>
     <string name="player_action_bar">BARRA DE ACCIONES DEL REPRODUCTOR</string>
@@ -307,7 +307,7 @@
     <string name="item_deselect">Deseleccionar</string>
     <string name="show_next_songs_in_player">Mostrar mini cola en el reproductor</string>
     <string name="show_remaining_song_time">Mostrar tiempo restante de la canción</string>
-    <string name="click_lyrics_text">Pulsar texto de la letra</string>
+    <string name="click_lyrics_text">Saltar a la letra presionando la línea</string>
     <string name="folder_that_will_show_when_you_open_on_device_page">Carpeta que se mostrará al abrir la página en el dispositivo.</string>
     <string name="direction_top">Arriba</string>
     <string name="pick_from">Elegir desde</string>
@@ -325,7 +325,7 @@
     <string name="theme_material_you">Material You</string>
     <string name="show_statistics_in_navigation_bar">Mostrar estadísticas en la barra de navegación</string>
     <string name="settings">Ajustes</string>
-    <string name="page_not_been_loaded">La página no se ha cargado correctamente, intenta actualizar la página.</string>
+    <string name="page_not_been_loaded">La página no se ha cargado correctamente, intenta deslizando hacia abajo para actualizar la página.</string>
     <string name="info_show_hide_hidden_songs">Mostrar/ocultar canciones ocultas</string>
     <string name="info_shuffle">Aleatorio</string>
     <string name="info_enqueue_songs">Añadir canciones a la cola</string>
@@ -342,7 +342,7 @@
     <string name="info_not_find_application_audio">No se pudo encontrar una aplicación para ecualizar el audio</string>
     <string name="info_not_find_app_open_doc">No se pudo encontrar una aplicación para abrir documentos</string>
     <string name="info_not_find_app_browse_internet">No se pudo encontrar una aplicación para navegar por Internet</string>
-    <string name="show_floating_icon">Mostrar botón flotante</string>
+    <string name="show_floating_icon">Mostrar icono de búsqueda flotante</string>
     <string name="show_equalizer">Botón ecualizador</string>
     <string name="theme_pure_black">Negro puro</string>
     <string name="theme_modern_black">Negro moderno</string>
