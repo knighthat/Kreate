@@ -1,19 +1,19 @@
 <p>
-  Fork of <a href="https://github.com/fast4x/RiMusic">RiMusic</a>, performance is our top priority.
+  성능 중심으로 제작된 <a href="https://github.com/fast4x/RiMusic">RiMusic</a>의 포크입니다.
 </p>
 
-<b>Features:</b>
+<b>특징:</b>
 <ul>
-  <li>Support multiple languages</li>
-  <li>Friendly designs</li>
-  <li>Cache or download songs for offline playback</li>
-  <li>Background playback</li>
-  <li>Statistics and reports (stored and processed locally)</li>
-  <li>Various audio visualizers (some require mic permission, but disabled by default)</li>
-  <li>Sleep timer</li>
-  <li>Audio control: playback speed, pitch, normalization, skip silence</li>
-  <li>Support for Android Auto, Android TV, and YouTube video</li>
-  <li>Export cached/downloaded songs</li>
-  <li>Play music even when not connected to the internet</li>
-  <li>And many more...</li>
+  <li>다국어 지원</li>
+  <li>친숙한 디자인</li>
+  <li>오프라인 재생을 위한 다운로드와 캐시</li>
+  <li>백그라운드 재생</li>
+  <li>통계 및 기록 (로컬에서 처리되고 보관됨)</li>
+  <li>다양한 오디오 시각화 도구 (일부는 마이크 권한을 요구하나, 기본적으로 비활화됨)</li>
+  <li>수면 타이머</li>
+  <li>오디오 조절: 재생 속도, 음정, 정규화, 무음 건너뛰기</li>
+  <li>안드로이드 Auto, 안드로이드 TV, 유튜브 동영상 지원</li>
+  <li>캐시 또는 다운로드된 곡 내보내기</li>
+  <li>인터넷 없이도 가능한 음악 재생</li>
+  <li>그리고 더 많은...</li>
 </ul>
