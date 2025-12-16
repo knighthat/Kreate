@@ -850,6 +850,12 @@ Volume BAS : titre précédent</string>
     <string name="error_failed_to_load_developers">Échec du chargement des développeurs</string>
     <string name="error_failed_to_load_translators">Échec du chargement des traducteurs</string>
     <string name="error_check_for_updates_failed">La vérification des mises à jour a échoué.</string>
+    <string name="profiles">Profiles</string>
+    <string name="add_profile">Add profile</string>
+    <string name="remove_profile">Remove profile</string>
+    <string name="this_profile_alreaty_exist">This profile alreaty exist</string>
+    <string name="enter_profile_name">Enter profile name</string>
+    <string name="profile_restart_required">This will required a restart of the app</string>
     <string name="settings_entry_live_wallpaper_reset_duration">Revenir en arrière après</string>
     <string name="settings_description_live_wallpaper_reset_duration">Combien de temps faut-il attendre après la fin de la musique pour revenir au fond d\'écran normal ?</string>
     <string name="title_change_thumbnail">Changer la miniature</string>
