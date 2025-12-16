@@ -55,6 +55,13 @@ private fun HamburgerMenu(
             R.string.statistics
         ) { onItemClick( NavRoutes.statistics ) }
     )
+    // Profiles button
+    menu.add(
+        DropdownMenu.Item(
+            R.drawable.person,
+            R.string.profiles
+        ) { onItemClick( NavRoutes.PROFILES ) }
+    )
     // Picture in picture button
     if (isPipSupported && enablePictureInPicture)
         menu.add(

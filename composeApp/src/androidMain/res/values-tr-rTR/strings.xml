@@ -847,6 +847,12 @@
     <string name="error_failed_to_load_developers">Geliştiriciler yüklenemedi</string>
     <string name="error_failed_to_load_translators">Çevirmenler yüklenemedi</string>
     <string name="error_check_for_updates_failed">Güncelleme kontrolü başarısız oldu</string>
+    <string name="profiles">Profiles</string>
+    <string name="add_profile">Add profile</string>
+    <string name="remove_profile">Remove profile</string>
+    <string name="this_profile_alreaty_exist">This profile alreaty exist</string>
+    <string name="enter_profile_name">Enter profile name</string>
+    <string name="profile_restart_required">This will required a restart of the app</string>
     <string name="settings_entry_live_wallpaper_reset_duration">Switch back after</string>
     <string name="settings_description_live_wallpaper_reset_duration">How long to wait after music stopped playing to switch back to the regular wallpaper</string>
     <string name="title_change_thumbnail">Küçük resmi değiştir</string>

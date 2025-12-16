@@ -72,6 +72,7 @@ import it.fast4x.rimusic.ui.screens.mood.MoodsPageScreen
 import it.fast4x.rimusic.ui.screens.newreleases.NewreleasesScreen
 import it.fast4x.rimusic.ui.screens.player.Queue
 import it.fast4x.rimusic.ui.screens.podcast.PodcastScreen
+import it.fast4x.rimusic.ui.screens.profiles.ProfileScreen
 import it.fast4x.rimusic.ui.screens.search.SearchScreen
 import it.fast4x.rimusic.ui.screens.searchresult.SearchResultScreen
 import it.fast4x.rimusic.ui.screens.settings.SettingsScreen
@@ -434,6 +435,10 @@ fun AppNavigation(
             val id = navBackStackEntry.arguments?.getString("id").orEmpty()
 
             SongDetailsScreen( navController, id )
+        }
+
+        composable( NavRoutes.PROFILES.name ) {
+            ProfileScreen( navController, miniPlayer)
         }
     }
 
