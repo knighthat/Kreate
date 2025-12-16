@@ -60,7 +60,6 @@ import app.kreate.android.service.DownloadHelper
 import app.kreate.android.service.NetworkService
 import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.VolumeObserver
-import app.kreate.android.utils.YTPlayerUtils
 import app.kreate.android.utils.centerCropBitmap
 import app.kreate.android.utils.centerCropToMatchScreenSize
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
@@ -72,6 +71,7 @@ import com.google.common.util.concurrent.MoreExecutors
 import com.metrolist.innertube.InnerTube
 import com.metrolist.innertube.pages.NewPipeUtils
 import dagger.hilt.android.AndroidEntryPoint
+import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MainActivity
@@ -225,6 +225,7 @@ class PlayerServiceModern:
     override fun onCreate() {
         NewPipeUtils.client = NetworkService.engine
         InnerTube.httpClient = NetworkService.client
+        Innertube.client = NetworkService.client
 
         super.onCreate()
 

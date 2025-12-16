@@ -4,11 +4,6 @@ import com.zionhuang.innertube.pages.LibraryContinuationPage
 import com.zionhuang.innertube.pages.LibraryPage
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.compression.ContentEncoding
-import io.ktor.client.plugins.compression.brotli
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.headers
@@ -18,11 +13,8 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.http.userAgent
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.serialization.kotlinx.protobuf.protobuf
 import it.fast4x.innertube.clients.YouTubeLocale
 import it.fast4x.innertube.models.AccountInfo
 import it.fast4x.innertube.models.AccountMenuResponse
@@ -45,55 +37,20 @@ import it.fast4x.innertube.models.bodies.EditPlaylistBody
 import it.fast4x.innertube.models.bodies.LikeBody
 import it.fast4x.innertube.models.bodies.PlaylistDeleteBody
 import it.fast4x.innertube.models.bodies.SubscribeBody
-import it.fast4x.innertube.utils.ProxyPreferences
 import it.fast4x.innertube.utils.YoutubePreferences
-import it.fast4x.innertube.utils.getProxy
 import it.fast4x.innertube.utils.parseCookieString
 import it.fast4x.innertube.utils.sha1
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import java.net.Proxy
 import java.util.Locale
 
 object Innertube {
 
     private const val YOUTUBE_MUSIC_HOST = "music.youtube.com"
-    private const val VISITOR_DATA_PREFIX = "Cgt"
-    const val DEFAULT_VISITOR_DATA = "CgtMN0FkbDFaWERfdyi8t4u7BjIKCgJWThIEGgAgWQ%3D%3D"
 
     @OptIn(ExperimentalSerializationApi::class)
-    val client = HttpClient(OkHttp) {
-        expectSuccess = true
-
-        install(ContentNegotiation) {
-            protobuf()
-            json(Json {
-                ignoreUnknownKeys = true
-                explicitNulls = false
-                encodeDefaults = true
-            })
-        }
-
-        install(ContentEncoding) {
-            brotli(1.0F)
-            gzip(0.9F)
-            deflate(0.8F)
-        }
-
-        ProxyPreferences.preference?.let {
-            engine {
-                proxy = getProxy(it)
-            }
-        }
-
-        defaultRequest {
-            url( "https", YOUTUBE_MUSIC_HOST ) {
-                headers.append(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                parameters.append("prettyPrint", "false")
-            }
-        }
-    }
+    lateinit var client: HttpClient
 
     var proxy: Proxy? = null
         set(value) {
