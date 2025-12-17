@@ -246,7 +246,7 @@ jobs:
         run: rm -rf "$WORKFLOWS_FILENAME"
 
       - name: Download translators list
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: translators
           repository: knighthat/Kreate-docs
