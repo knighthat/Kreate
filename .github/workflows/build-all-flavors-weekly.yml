@@ -227,7 +227,7 @@ jobs:
 
     steps:
       - name: Download signed APKs
-        uses: actions/download-artifact@v6.0.0
+        uses: actions/download-artifact@v7
 
       - name: Upload built APK to release
         # Skip this step when running with nektos/act

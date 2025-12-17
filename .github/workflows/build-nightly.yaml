@@ -220,7 +220,7 @@ jobs:
         run: echo "${{ secrets.NIGHTLY_KEYSTORE_SHA256 }} $KEYSTORE_PATH/$KEYSTORE_FILENAME" | sha256sum -c
 
       - name: Download change logs
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: changelogs
           path: fastlane/metadata/android/en-US/changelogs/
@@ -288,7 +288,7 @@ jobs:
 
     steps:
       - name: Download APKs
-        uses: actions/download-artifact@v6.0.0
+        uses: actions/download-artifact@v7
         with:
           name: apk
 
