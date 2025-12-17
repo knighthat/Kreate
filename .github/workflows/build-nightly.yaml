@@ -172,7 +172,7 @@ jobs:
         run: cat "${{ steps.changelogs.outputs.filename }}"
 
       - name: Upload change logs file
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: changelogs
           path: ${{ steps.changelogs.outputs.filename }}
@@ -255,7 +255,7 @@ jobs:
         run: echo "path=composeApp/build/outputs/apk/githubUniversalNightly/release/Kreate-nightly.apk" >> $GITHUB_OUTPUT
 
       - name: Upload artifact for uploading
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: apk
           path: ${{ steps.build_path.outputs.path }}
