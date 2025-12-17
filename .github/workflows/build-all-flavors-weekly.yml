@@ -186,7 +186,7 @@ jobs:
         # actions/cache/restore only downloads the cache
         # This will save time uploading the cache, since cache
         # builder is handled by another workflow
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~/.gradle/caches
