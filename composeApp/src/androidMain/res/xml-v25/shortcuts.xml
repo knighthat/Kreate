@@ -20,4 +20,14 @@
             android:targetPackage="me.knighthat.kreate"
             android:action="COPY_CRASH_LOG" />
     </shortcut>
+    <shortcut
+        android:shortcutId="databaseExport"
+        android:enabled="true"
+        android:icon="@drawable/open"
+        android:shortcutShortLabel="@string/export_the_database">
+        <intent
+            android:targetClass="app.kreate.android.ExportDatabaseActivity"
+            android:targetPackage="me.knighthat.kreate"
+            android:action="EXPORT_DATABASE" />
+    </shortcut>
 </shortcuts>
