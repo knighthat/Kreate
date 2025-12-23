@@ -139,6 +139,7 @@ import me.knighthat.utils.Toaster
 import timber.log.Timber
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
@@ -324,15 +325,30 @@ fun HomeQuickPicks(
 
     val showSearchTab by Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR
 
-    val downloadedSongs = remember {
-        MyDownloadHelper.instance.downloads.value.filter {
-            it.value.state == Download.STATE_COMPLETED
-        }.keys.toList()
+    var cachedSongs by remember { mutableStateOf( emptyList<String>() ) }
+    LaunchedEffect( binder.cache ) {
+        val keys = try {
+            binder.cache.keys
+        } catch ( _: IllegalStateException ) {
+            // Sometimes this block runs before SimpleCache
+            // finishes it's init, it'll throw IllegalStateException
+            // if the process is running. To avoid, small delay is added
+            delay( 1.seconds )
+
+            binder.cache.keys
+        }.toMutableSet()
+
+        MyDownloadHelper.instance
+                        .downloads
+                        .value
+                        .filter {
+                            it.value.state == Download.STATE_COMPLETED
+                        }
+                        .keys
+                        .also { keys.addAll(it) }
+
+        cachedSongs = keys.toList()
     }
-    val cachedSongs = remember {
-        binder?.cache?.keys?.toMutableList()
-    }
-    cachedSongs?.addAll(downloadedSongs)
 
     PullToRefreshBox(
         isRefreshing = refreshing,
