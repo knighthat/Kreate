@@ -81,13 +81,6 @@ class CrashReportDialog(private val context: Context): Dialog() {
             super.showDialog()
     }
 
-    override fun hideDialog() {
-        super.hideDialog()
-
-        if( isAvailable() )
-            crashlogFile.deleteOnExit()
-    }
-
     @Composable
     override fun DialogBody() {
         val (colorPalette, typography) = LocalAppearance.current
