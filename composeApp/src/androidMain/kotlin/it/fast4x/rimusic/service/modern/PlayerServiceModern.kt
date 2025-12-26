@@ -86,7 +86,6 @@ import it.fast4x.rimusic.utils.AppLifecycleTracker
 import it.fast4x.rimusic.utils.CoilBitmapLoader
 import it.fast4x.rimusic.utils.TimerJob
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.broadCastPendingIntent
 import it.fast4x.rimusic.utils.collect
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.getEnum
@@ -491,16 +490,6 @@ class PlayerServiceModern:
         }
     }
 
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        if ( Preferences.CLOSE_BACKGROUND_JOB_IN_TASK_MANAGER.value ) {
-            broadCastPendingIntent<NotificationDismissReceiver>().send()
-            this.stopService(this.intent<MyDownloadService>())
-            this.stopService(this.intent<PlayerServiceModern>())
-            onDestroy()
-        }
-        super.onTaskRemoved(rootIntent)
-    }
-
     @UnstableApi
     override fun onDestroy() {
         runCatching {
@@ -829,21 +818,6 @@ class PlayerServiceModern:
         */
         println("PlayerServiceModern updateDownloadedState downloads count ${downloads.size} currentSongIsDownloaded ${currentSong.value?.id}")
         listener.updateMediaControl( this@PlayerServiceModern, player )
-    }
-
-    class NotificationDismissReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            kotlin.runCatching {
-                context.stopService(context.intent<MyDownloadService>())
-            }.onFailure {
-                Timber.e("Failed NotificationDismissReceiver stopService in PlayerServiceModern (MyDownloadService) ${it.stackTraceToString()}")
-            }
-            kotlin.runCatching {
-                context.stopService(context.intent<PlayerServiceModern>())
-            }.onFailure {
-                Timber.e("Failed NotificationDismissReceiver stopService in PlayerServiceModern (PlayerServiceModern) ${it.stackTraceToString()}")
-            }
-        }
     }
 
     inner class NotificationActionReceiver(private val player: Player) : BroadcastReceiver() {

@@ -222,10 +222,6 @@
                 android:value="true" />
         </service>
 
-        <receiver
-            android:name="it.fast4x.rimusic.service.modern.PlayerServiceModern$NotificationDismissReceiver"
-            android:exported="false" />
-
         <meta-data android:name="com.google.android.gms.car.application"
             android:resource="@xml/automotive_app_desc"/>
 

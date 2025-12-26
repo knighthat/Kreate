@@ -1013,6 +1013,23 @@ MainActivity :
     @UnstableApi
     override fun onDestroy() =
         try {
+            //<editor-fold desc="Stop player">
+            // Stop music
+            binder?.player?.run {
+                stop()
+                // FIXME: Android will try to recreate service if
+                //  there's some MediaItems left in the queue .
+                clearMediaItems()
+            }
+            // Unbind service (making sure there's no connection with the service)
+            unbindService( serviceConnection )
+            // Stop service (release resources)
+            val intent = Intent(this, PlayerServiceModern::class.java)
+            stopService( intent )
+
+            Timber.tag( "Main" ).d( "Successfully stop player and unbind PlayerServiceModern service" )
+            //</editor-fold>
+
             // Delete latest report
             val report = CrashReportDialog(this)
             if( report.isAvailable() ) {

@@ -197,14 +197,6 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
             action = SettingComponents.Action.RESTART_PLAYER_SERVICE
         )
     }
-    entry( search, R.string.close_background_player ) {
-        SettingComponents.BooleanEntry(
-            Preferences.CLOSE_BACKGROUND_JOB_IN_TASK_MANAGER,
-            R.string.close_background_player,
-            R.string.when_app_swipe_out_from_task_manager,
-            action = SettingComponents.Action.RESTART_PLAYER_SERVICE
-        )
-    }
     entry( search, R.string.skip_media_on_error ) {
         SettingComponents.BooleanEntry(
             Preferences.PLAYBACK_SKIP_ON_ERROR,

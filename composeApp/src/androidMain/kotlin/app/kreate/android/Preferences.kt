@@ -945,9 +945,6 @@ sealed class Preferences<T>(
         val RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE by lazy {
             Boolean( preferences, "ResumePlaybackWhenConnectToAudioDevice", "resumePlaybackWhenDeviceConnected", false )
         }
-        val CLOSE_BACKGROUND_JOB_IN_TASK_MANAGER by lazy {
-            Boolean( preferences, "CloseBackgroundJobInTaskManager", "closebackgroundPlayer", false )
-        }
         val CLOSE_APP_ON_BACK by lazy {
             Boolean( preferences, "CloseAppOnBack", "closeWithBackButton", true )
         }
