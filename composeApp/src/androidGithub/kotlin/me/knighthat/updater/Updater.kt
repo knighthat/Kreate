@@ -34,21 +34,7 @@ object Updater {
      */
     @Throws(NoSuchFileException::class)
     private fun extractBuild( assets: List<GithubRelease.Build> ): GithubRelease.Build {
-        // Ignore the warning `BuildConfig.FLAVOR_env == "nightly"` either `true` or `false`
-        // This condition is different based on the build
-        val suffix = if( BuildConfig.FLAVOR_env == "nightly" )
-            BuildConfig.FLAVOR_env
-        else when( BuildConfig.FLAVOR_arch ) {
-            "universal" -> "release"
-            "arm32"     -> "armeabi-v7a"
-            "arm64"     -> "arm64-v8a"
-            "x86"       -> "x86"
-            "x86_64"    -> "x86_64"
-            else -> throw IllegalStateException("Unknown architecture ${BuildConfig.FLAVOR_arch}")
-        }
-        // e.g. Release version will have name 'Kreate-release.apk'
-        val filename = "%s-%s.apk".format(BuildConfig.APP_NAME, suffix)
-
+        val filename = getFileName()
         return assets.fastFirstOrNull {
             // Get the first build that has name matches 'Kreate-<buildType>.apk'
             // with the exception of nightly build, which is `Kreate-nightly.apk`
@@ -156,5 +142,22 @@ object Updater {
             }
             Toaster.e( message )
         }
+    }
+
+    fun getFileName(): String {
+        // Ignore the warning `BuildConfig.FLAVOR_env == "nightly"` either `true` or `false`
+        // This condition is different based on the build
+        val suffix = if( BuildConfig.FLAVOR_env == "nightly" )
+            BuildConfig.FLAVOR_env
+        else when( BuildConfig.FLAVOR_arch ) {
+            "universal" -> "release"
+            "arm32"     -> "armeabi-v7a"
+            "arm64"     -> "arm64-v8a"
+            "x86"       -> "x86"
+            "x86_64"    -> "x86_64"
+            else -> throw IllegalStateException("Unknown architecture ${BuildConfig.FLAVOR_arch}")
+        }
+        // e.g. Release version will have name 'Kreate-release.apk'
+        return "%s-%s.apk".format(BuildConfig.APP_NAME, suffix)
     }
 }

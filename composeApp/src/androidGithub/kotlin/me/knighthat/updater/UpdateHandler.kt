@@ -24,9 +24,10 @@ fun UpdateHandler() {
     }
 
     LaunchedEffect( Unit ) {
+        val filename = Updater.getFileName()
         val apkFile = File(
             context.getExternalFilesDir( Environment.DIRECTORY_DOWNLOADS ),
-            "Kreate-${BuildConfig.BUILD_TYPE}.apk"
+            filename
         )
         if( apkFile.exists() && !BuildConfig.DEBUG )
             apkFile.delete()

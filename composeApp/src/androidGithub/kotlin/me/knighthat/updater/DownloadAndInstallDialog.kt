@@ -118,6 +118,9 @@ object DownloadAndInstallDialog: Dialog {
                 delay( 100 )
             }
         } else {
+            // Delete this file before downloading new one
+            if( apkFile.exists() ) apkFile.delete()
+
              val downloadId: Long = DownloadManager.Request( Updater.build.downloadUrl.toUri() )
                                                    .setDestinationUri( Uri.fromFile(apkFile) )
                                                    .let( downloadManager::enqueue )
