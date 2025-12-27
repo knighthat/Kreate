@@ -437,7 +437,7 @@
     <string name="setting_description_runtime_log">%s에서 발생하는 모든 작업을 기록 중입니다</string>
     <string name="copy_log_to_clipboard">클립보드에 로그 복사</string>
     <string name="fake_audio_bar">가짜 오디오 바</string>
-    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
+    <string name="copy_crash_log_to_clipboard">충돌 로그 복사</string>
     <string name="title_backup_and_restore">백업 및 복원</string>
     <string name="message_excluded_s_songs">%s개의 곡 제외됨</string>
     <string name="show_thumbnail">썸네일 표시</string>
@@ -571,7 +571,7 @@
     <string name="translators">번역가들</string>
     <string name="player_auto_load_songs_in_queue">대기열에서 곡 자동 로드</string>
     <string name="player_auto_load_songs_in_queue_description">대기열의 끝에 도달했을 때 곡을 추가합니다</string>
-    <string name="toggle_romanization">Toggle Romanization</string>
+    <string name="toggle_romanization">로마자 전환</string>
     <string name="edit_thumbnail">썸네일 편집</string>
     <string name="thumbnail_not_selected">썸네일이 선택되지 않음</string>
     <string name="reset_thumbnail">썸네일 초기화</string>
@@ -663,7 +663,7 @@
     <string name="albumCoverRotation">백그라운드 회전 애니메이션</string>
     <string name="enable_connection_metered">데이터를 절약하기 위해 제한된 연결 사용</string>
     <string name="info_enable_connection_metered">데이터 절약은 품질을 낮추므로, 제한된 데이터 연결인 경우에만 사용하세요</string>
-    <string name="disliked_this_collection">Cannot Perform this Action when all the Songs are Disliked</string>
+    <string name="disliked_this_collection">모든 곡이 싫어요 표시되었을 때 이 동작을 수행할 수 없습니다</string>
     <string name="toggle_controls_landscape">화면 컨트롤 표시 전환</string>
     <string name="delete_songs_not_in_library">라이브러리에 없는 곡 삭제</string>
     <string name="unmatched">맞춰지지 않은 곡</string>
@@ -692,7 +692,7 @@
     <string name="settings_audio_focus_info">자동으로 중지 및 재생을 허용합니다 (예: 전화가 끝난 후 재생하기)</string>
     <string name="songs_liked_yt">유튜브에서 좋아요됨</string>
     <string name="song_unliked_yt">유튜브에서 좋아요 해제됨</string>
-    <string name="add_rimusic_to_ytm_favorites">Like RiMusic Liked songs in Youtube</string>
+    <string name="add_rimusic_to_ytm_favorites">유튜브에서 좋아요된 곡을 Rimusic에서 좋아요 표시하기</string>
     <string name="songs_liked_yt_failed">유튜브에서 좋아요 표시에 실패했습니다</string>
     <string name="songs_unliked_yt_failed">유튜브에서 좋아요 표시 해제에 실패했습니다</string>
     <string name="adding_yt_to_pl_failed">다음 50곡에서 오류가 발생했습니다. 곡을 하나씩 추가합니다</string>
@@ -723,7 +723,7 @@
     <string name="store_settings_in_a_file">단일 파일에 설정을 저장합니다</string>
     <string name="description_exclude_credentials">보안상의 이유로 YouTube 로그인 등의 인증 정보는 제외됩니다</string>
     <string name="title_import_settings">가져오기 설정</string>
-    <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
+    <string name="restore_settings_from_file">\"%s\"에서 설정을 가져왔습니다</string>
     <string name="relative_listening_time">상대적 청취 시간</string>
     <string name="added_to_dislikes">%s를 싫어요에 추가함</string>
     <string name="removed_from_dislikes">%s를 싫어요에서 제거함</string>
@@ -734,10 +734,10 @@
     <string name="log_in_to_ytm">더 많은 컨텐츠를 위해서는 유튜브 뮤직에 로그인하세요</string>
     <string name="word_documentation">문서</string>
     <string name="opens_link_in_web_browser">웹 브라우저에서 링크 열기</string>
-    <string name="setting_entry_smart_rewind">Smart rewind</string>
-    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %s</string>
-    <string name="setting_entry_show_chip">Show \"%s\" chip</string>
-    <string name="show_quotes">Show \"%s\"</string>
+    <string name="setting_entry_smart_rewind">자동 되감기</string>
+    <string name="setting_description_smart_rewind">이전 버튼은 %s 이후에 되감기 버튼처럼 작동합니다</string>
+    <string name="setting_entry_show_chip">%s개의 칩 표시</string>
+    <string name="show_quotes">\"%s\" 표시</string>
     <string name="setting_entry_crash_log">충돌 로그</string>
     <string name="setting_entry_logs">로그</string>
     <string name="setting_description_copy_or_export_logs">여기를 눌러 내보내고, 아이콘을 눌러 복사</string>
