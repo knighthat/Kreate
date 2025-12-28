@@ -243,11 +243,7 @@ jobs:
           tag_name: v${{ needs.versioning.outputs.downstream }}
           make_latest: "true"
           body: |           
-            If you don't know what to download, please refer to article [Why are there so many APK files?](https://kreate.knighthat.me/usr/faq/why-are-there-so-many-apk-files)
-            ## What's `Kreate-izzy.apk`
-            
-            This is APK built specifically for IzzyOnDroid with update checker disabled. You shouldn't
-            download this version here.
+            If you don't know what to download, please refer to article [Why are there multiple APKs?](https://kreate.knighthat.me/usr/FAQ/multiple-apks)
             
             ## Changelogs
             
