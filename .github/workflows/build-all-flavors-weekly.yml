@@ -114,7 +114,7 @@ jobs:
           
   build-complex:
     needs: [build_time, verify-version]
-    name: Build all versions
+    name: Build
     runs-on: ubuntu-latest
 
     timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
