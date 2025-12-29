@@ -125,6 +125,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Setup python
+        uses: actions/setup-python@v6.1.0
+        with:
+          python-version: 3.12
+
+      - name: Install dependencies
+        run: |
+          cd scripts/langdetect
+          
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
       - name: Determining command flag
         id: flag
         run: |
@@ -141,10 +153,7 @@ jobs:
           echo "cmd=$flag" >> $GITHUB_OUTPUT
 
       - name: Detect languages
-        run: |
-          cd scripts/langdetect
-
-          python main.py "${{ steps.flag.outputs.cmd }}" "$TICKET_CONTENT"
+        run: python main.py "${{ steps.flag.outputs.cmd }}" "$TICKET_CONTENT"
 
       - name: Verify results
         id: major_language
