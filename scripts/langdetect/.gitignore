@@ -1,0 +1,9 @@
+results.md
+language.txt
+
+# Python
+__pycache__/
+.venv/
+
+# VSCode
+.vscode/

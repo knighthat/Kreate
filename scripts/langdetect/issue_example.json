@@ -1,0 +1,83 @@
+{
+	"url": "https://api.github.com/repos/knighthat/Kreate/issues/1265",
+	"repository_url": "https://api.github.com/repos/knighthat/Kreate",
+	"labels_url": "https://api.github.com/repos/knighthat/Kreate/issues/1265/labels{/name}",
+	"comments_url": "https://api.github.com/repos/knighthat/Kreate/issues/1265/comments",
+	"events_url": "https://api.github.com/repos/knighthat/Kreate/issues/1265/events",
+	"html_url": "https://github.com/knighthat/Kreate/issues/1265",
+	"id": 3765985342,
+	"node_id": "I_kwDOM13HXs7geGA-",
+	"number": 1265,
+	"title": "Repeating failure",
+	"user": {
+		"login": "vandabagr-cmyk",
+		"id": 251910244,
+		"node_id": "U_kgDODwPYZA",
+		"avatar_url": "https://avatars.githubusercontent.com/u/251910244?v=4",
+		"gravatar_id": "",
+		"url": "https://api.github.com/users/vandabagr-cmyk",
+		"html_url": "https://github.com/vandabagr-cmyk",
+		"followers_url": "https://api.github.com/users/vandabagr-cmyk/followers",
+		"following_url": "https://api.github.com/users/vandabagr-cmyk/following{/other_user}",
+		"gists_url": "https://api.github.com/users/vandabagr-cmyk/gists{/gist_id}",
+		"starred_url": "https://api.github.com/users/vandabagr-cmyk/starred{/owner}{/repo}",
+		"subscriptions_url": "https://api.github.com/users/vandabagr-cmyk/subscriptions",
+		"organizations_url": "https://api.github.com/users/vandabagr-cmyk/orgs",
+		"repos_url": "https://api.github.com/users/vandabagr-cmyk/repos",
+		"events_url": "https://api.github.com/users/vandabagr-cmyk/events{/privacy}",
+		"received_events_url": "https://api.github.com/users/vandabagr-cmyk/received_events",
+		"type": "User",
+		"user_view_type": "public",
+		"site_admin": false
+	},
+	"labels": [
+		{
+			"id": 7504565047,
+			"node_id": "LA_kwDOM13HXs8AAAABv06TNw",
+			"url": "https://api.github.com/repos/knighthat/Kreate/labels/bug",
+			"name": "bug",
+			"color": "d73a4a",
+			"default": true,
+			"description": "Something isn't working"
+		}
+	],
+	"state": "open",
+	"locked": false,
+	"assignee": null,
+	"assignees": [],
+	"milestone": null,
+	"comments": 0,
+	"created_at": "2025-12-28T20:31:38Z",
+	"updated_at": "2025-12-28T20:31:38Z",
+	"closed_at": null,
+	"author_association": "NONE",
+	"active_lock_reason": null,
+	"sub_issues_summary": {
+		"total": 0,
+		"completed": 0,
+		"percent_completed": 0
+	},
+	"issue_dependencies_summary": {
+		"blocked_by": 0,
+		"total_blocked_by": 0,
+		"blocking": 0,
+		"total_blocking": 0
+	},
+	"body": "### Version of Kreate\n\n1.8.4\n\n### Android version\n\n14 [UPSIDE_DOWN_CAKE]\n\n### Other Android version\n\n_No response_\n\n### TODOs before submitting a ticket\n\n- [x] Update my app to latest version\n- [x] (If I'm on latest version) Re-install app\n- [x] I have checked issue page and there's no problem like mine\n\n### Tell us how to trigger this bug\n\n1. Play some song in the background \n2. It usually happens with hell is forever from prime video and polymerus (epic the musical)\n3. Crash report: Version: 1.8.4-fdroid\nManufacturer: motorola\nModel: moto g24 power\nBrand: motorola\nDevice: fogorow\nProduct: fogorow_gpen\nHardware: mt6768\nSDK: 34\nRelease: 14\nBuild Incremental: 82-113-2\n\nandroid.app.ForegroundServiceStartNotAllowedException: startForegroundService() not allowed due to mAllowStartForeground false: service me.knighthat.kreate/it.fast4x.rimusic.service.modern.PlayerServiceModern\n\tat android.app.ForegroundServiceStartNotAllowedException$1.createFromParcel(ForegroundServiceStartNotAllowedException.java:54)\n\tat android.app.ForegroundServiceStartNotAllowedException$1.createFromParcel(ForegroundServiceStartNotAllowedException.java:50)\n\tat android.os.Parcel.readParcelableInternal(Parcel.java:4892)\n\tat android.os.Parcel.readParcelable(Parcel.java:4874)\n\tat android.os.Parcel.createExceptionOrNull(Parcel.java:3074)\n\tat android.os.Parcel.createException(Parcel.java:3063)\n\tat android.os.Parcel.readException(Parcel.java:3046)\n\tat android.os.Parcel.readException(Parcel.java:2988)\n\tat android.app.IActivityManager$Stub$Proxy.startService(IActivityManager.java:6051)\n\tat android.app.ContextImpl.startServiceCommon(ContextImpl.java:1932)\n\tat android.app.ContextImpl.startForegroundService(ContextImpl.java:1907)\n\tat android.content.ContextWrapper.startForegroundService(ContextWrapper.java:830)\n\tat coil3.util.BitmapsKt.startForegroundService(SourceFile:1)\n\tat androidx.media3.session.MediaNotificationManager.updateNotificationInternal(SourceFile:42)\n\tat androidx.media3.session.MediaLibrarySessionImpl$$ExternalSyntheticLambda0.run(SourceFile:80)\n\tat androidx.media3.common.util.Util.postOrRun(SourceFile:22)\n\tat androidx.media3.session.MediaControllerHolder$$ExternalSyntheticLambda1.execute(SourceFile:12)\n\tat androidx.media3.session.MediaSessionLegacyStub$LegacyError.onSuccess(SourceFile:49)\n\tat androidx.core.app.ActivityRecreator$1.run(SourceFile:560)\n\tat android.os.Handler.handleCallback(Handler.java:958)\n\tat android.os.Handler.dispatchMessage(Handler.java:99)\n\tat android.os.Looper.loopOnce(Looper.java:207)\n\tat android.os.Looper.loop(Looper.java:296)\n\tat android.app.ActivityThread.main(ActivityThread.java:8227)\n\tat java.lang.reflect.Method.invoke(Native Method)\n\tat com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:576)\n\tat com.android.internal.os.ZygoteInit.main(ZygoteInit.java:1049)\n\n\n### Submit a video\n\n_No response_\n\n### Logs\n\n<details>\n  <summary>Logs</summary>\n\n  [If you have multiple logs, please copy \"details\" for each log, name them appropriately, make sure they are different from each other]\n\n  <Paste your log here>\n</details>",
+	"closed_by": null,
+	"reactions": {
+		"url": "https://api.github.com/repos/knighthat/Kreate/issues/1265/reactions",
+		"total_count": 0,
+		"+1": 0,
+		"-1": 0,
+		"laugh": 0,
+		"hooray": 0,
+		"confused": 0,
+		"heart": 0,
+		"rocket": 0,
+		"eyes": 0
+	},
+	"timeline_url": "https://api.github.com/repos/knighthat/Kreate/issues/1265/timeline",
+	"performed_via_github_app": null,
+	"state_reason": null
+}

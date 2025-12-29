@@ -1,0 +1,83 @@
+{
+	"url": "https://api.github.com/repos/knighthat/Kreate/issues/1264",
+	"repository_url": "https://api.github.com/repos/knighthat/Kreate",
+	"labels_url": "https://api.github.com/repos/knighthat/Kreate/issues/1264/labels{/name}",
+	"comments_url": "https://api.github.com/repos/knighthat/Kreate/issues/1264/comments",
+	"events_url": "https://api.github.com/repos/knighthat/Kreate/issues/1264/events",
+	"html_url": "https://github.com/knighthat/Kreate/issues/1264",
+	"id": 3765819878,
+	"node_id": "I_kwDOM13HXs7gddnm",
+	"number": 1264,
+	"title": "[Feature]: \"Skips\" (prevent song from playing)",
+	"user": {
+		"login": "dreamAviator",
+		"id": 130237036,
+		"node_id": "U_kgDOB8NCbA",
+		"avatar_url": "https://avatars.githubusercontent.com/u/130237036?v=4",
+		"gravatar_id": "",
+		"url": "https://api.github.com/users/dreamAviator",
+		"html_url": "https://github.com/dreamAviator",
+		"followers_url": "https://api.github.com/users/dreamAviator/followers",
+		"following_url": "https://api.github.com/users/dreamAviator/following{/other_user}",
+		"gists_url": "https://api.github.com/users/dreamAviator/gists{/gist_id}",
+		"starred_url": "https://api.github.com/users/dreamAviator/starred{/owner}{/repo}",
+		"subscriptions_url": "https://api.github.com/users/dreamAviator/subscriptions",
+		"organizations_url": "https://api.github.com/users/dreamAviator/orgs",
+		"repos_url": "https://api.github.com/users/dreamAviator/repos",
+		"events_url": "https://api.github.com/users/dreamAviator/events{/privacy}",
+		"received_events_url": "https://api.github.com/users/dreamAviator/received_events",
+		"type": "User",
+		"user_view_type": "public",
+		"site_admin": false
+	},
+	"labels": [
+		{
+			"id": 7504565061,
+			"node_id": "LA_kwDOM13HXs8AAAABv06TRQ",
+			"url": "https://api.github.com/repos/knighthat/Kreate/labels/enhancement",
+			"name": "enhancement",
+			"color": "a2eeef",
+			"default": true,
+			"description": "New feature or request"
+		}
+	],
+	"state": "open",
+	"locked": false,
+	"assignee": null,
+	"assignees": [],
+	"milestone": null,
+	"comments": 1,
+	"created_at": "2025-12-28T16:46:41Z",
+	"updated_at": "2025-12-28T16:47:37Z",
+	"closed_at": null,
+	"author_association": "NONE",
+	"active_lock_reason": null,
+	"sub_issues_summary": {
+		"total": 0,
+		"completed": 0,
+		"percent_completed": 0
+	},
+	"issue_dependencies_summary": {
+		"blocked_by": 0,
+		"total_blocked_by": 0,
+		"blocking": 0,
+		"total_blocking": 0
+	},
+	"body": "### Description\n\nThis feature would prevent a song from ever playing unless the user wants it to.\n\n### Suggested Solution\n\n\n\nIf you add an album, when a song is marked as \"skip\" it will be skipped, and it will also never appear in the queue for recommendations or anything like that\n\nIf you want to play the song marked as skip, you can do so by selecting it; it will still play. What changes is that, naturally, it will not be playable, play the skip song it's the user's decision.\n\n### Alternatives\n\n_No response_\n\n### Additional Context\n\nThis idea was added by Luxxx on Discord, they don't have a github account\n\n<img width=\"416\" height=\"924\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/77e7da7c-d86e-43ad-8197-c42d050f263b\" />",
+	"closed_by": null,
+	"reactions": {
+		"url": "https://api.github.com/repos/knighthat/Kreate/issues/1264/reactions",
+		"total_count": 0,
+		"+1": 0,
+		"-1": 0,
+		"laugh": 0,
+		"hooray": 0,
+		"confused": 0,
+		"heart": 0,
+		"rocket": 0,
+		"eyes": 0
+	},
+	"timeline_url": "https://api.github.com/repos/knighthat/Kreate/issues/1264/timeline",
+	"performed_via_github_app": null,
+	"state_reason": null
+}
