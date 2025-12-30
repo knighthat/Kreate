@@ -1,0 +1,16 @@
+New:
+- Multi-profile system
+- Shortcut to export database
+- Replace thumbnail with local file or url
+
+Fixes:
+- Mismatch download icon background color
+- Crash report shows up on every startup
+- Error to play after closing app
+
+Changes:
+- Disabling "Close app on back" will not require confirmation on back
+- Closing app will not stop download service
+
+Removals:
+- "Stop player after swiping up from task manager" setting
