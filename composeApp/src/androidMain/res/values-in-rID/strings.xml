@@ -242,7 +242,7 @@
     <string name="sort_position">Position</string>
     <string name="sort_title">Title</string>
     <string name="sort_date_played">Date Played</string>
-    <string name="sort_artist">Artist</string>
+    <string name="sort_artist"></string>
     <string name="sort_listening_time">Listening Time</string>
     <string name="sort_date_added">Date Added</string>
     <string name="sorting_order">Sorting order</string>
@@ -256,7 +256,7 @@
     <string name="player_keep_minimized">Keep minimized</string>
     <string name="when_click_on_a_song_player_start_minimized">When click on a song, player start minimized</string>
     <string name="settings_use_font_type">Use font type</string>
-    <string name="ask">Ask</string>
+    <string name="ask"></string>
     <string name="item_select">Select</string>
     <string name="blacklisted_folders">Blacklisted folders</string>
     <string name="edit_blacklist_for_on_device_songs">Edit blacklist for on device songs.</string>
