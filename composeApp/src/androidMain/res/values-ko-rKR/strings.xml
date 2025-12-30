@@ -853,12 +853,6 @@
     <string name="this_profile_alreaty_exist">이미 존재하는 프로필입니다</string>
     <string name="enter_profile_name">프로필 이름을 입력하세요</string>
     <string name="profile_restart_required">앱을 다시 시작해야 합니다</string>
-    <string name="profiles">Profiles</string>
-    <string name="add_profile">Add profile</string>
-    <string name="remove_profile">Remove profile</string>
-    <string name="this_profile_alreaty_exist">This profile alreaty exist</string>
-    <string name="enter_profile_name">Enter profile name</string>
-    <string name="profile_restart_required">This will required a restart of the app</string>
     <string name="settings_entry_live_wallpaper_reset_duration">배경화면 되돌리기 시간</string>
     <string name="settings_description_live_wallpaper_reset_duration">재생이 멈춘 후 일반 배경화면으로 돌아가는데 걸리는 시간</string>
     <string name="title_change_thumbnail">썸네일 변경</string>

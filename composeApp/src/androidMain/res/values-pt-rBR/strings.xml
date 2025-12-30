@@ -853,12 +853,6 @@
     <string name="this_profile_alreaty_exist">Este perfil já existe</string>
     <string name="enter_profile_name">Digite o nome do perfil</string>
     <string name="profile_restart_required">Isto exigirá que o aplicativo seja reiniciado</string>
-    <string name="profiles">Profiles</string>
-    <string name="add_profile">Add profile</string>
-    <string name="remove_profile">Remove profile</string>
-    <string name="this_profile_alreaty_exist">This profile alreaty exist</string>
-    <string name="enter_profile_name">Enter profile name</string>
-    <string name="profile_restart_required">This will required a restart of the app</string>
     <string name="settings_entry_live_wallpaper_reset_duration">Mudar de volta depois</string>
     <string name="settings_description_live_wallpaper_reset_duration">Quanto tempo esperar após a música parar de tocar para voltar ao papel de parede normal</string>
     <string name="title_change_thumbnail">Mudar imagem da miniatura</string>
