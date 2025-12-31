@@ -153,7 +153,11 @@ jobs:
           echo "cmd=$flag" >> $GITHUB_OUTPUT
 
       - name: Detect languages
-        run: python main.py "${{ steps.flag.outputs.cmd }}" "$TICKET_CONTENT"
+        run: |
+          # Move to this folder again because each step resets path for some reason
+          cd scripts/langdetect
+          
+          python main.py "${{ steps.flag.outputs.cmd }}" "$TICKET_CONTENT"
 
       - name: Verify results
         id: major_language
