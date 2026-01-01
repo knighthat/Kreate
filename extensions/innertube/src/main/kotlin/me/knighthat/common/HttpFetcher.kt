@@ -6,7 +6,6 @@ import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.compression.ContentEncoding
-import io.ktor.client.plugins.compression.brotli
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.HttpRequestBuilder
@@ -24,9 +23,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import me.knighthat.common.HttpFetcher.CONNECT_TIMEOUT
+import me.knighthat.common.HttpFetcher.SOCKET_TIMEOUT
 import java.io.IOException
-import java.net.InetSocketAddress
-import java.net.Proxy
 
 internal object HttpFetcher {
 
@@ -84,7 +83,6 @@ internal object HttpFetcher {
             })
         }
         install(ContentEncoding) {
-            brotli(1.0F)
             gzip(0.9F)
             deflate(0.8F)
         }

@@ -10,7 +10,6 @@ sourceSets.all {
 
 dependencies {
     implementation(libs.kotlinx.coroutines)
-    implementation(projects.ktorClientBrotli)
 
     implementation(libs.ktor.core)
     implementation(libs.ktor.okhttp)

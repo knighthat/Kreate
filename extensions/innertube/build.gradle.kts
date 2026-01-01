@@ -10,15 +10,8 @@ sourceSets.all {
 }
 
 dependencies {
-    implementation(projects.ktorClientBrotli)
-
-    implementation(libs.ktor.core)
-    implementation(libs.ktor.okhttp)
-    implementation(libs.ktor.content.negotiation)
-    implementation(libs.ktor.encoding)
+    implementation( libs.bundles.ktor )
     implementation(libs.okhttp3.logging.interceptor)
-    implementation(libs.ktor.serialization.json)
-    implementation(libs.ktor.serialization.protobuf)
     implementation(libs.extractor)
     implementation(libs.ksoup.html)
     implementation(libs.ksoup.entities)
