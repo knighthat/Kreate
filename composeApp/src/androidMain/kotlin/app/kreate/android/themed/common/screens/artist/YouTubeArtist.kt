@@ -111,6 +111,7 @@ import me.knighthat.innertube.model.InnertubeAlbum
 import me.knighthat.innertube.model.InnertubeArtist
 import me.knighthat.innertube.model.InnertubeItem
 import me.knighthat.innertube.model.InnertubeSong
+import me.knighthat.innertube.model.Section
 import me.knighthat.utils.PropUtils
 import me.knighthat.utils.Toaster
 import timber.log.Timber
@@ -150,17 +151,20 @@ private fun updateArtistInDatabase( dbArtist: Artist?, innertubeArtist: Innertub
 
 private fun LazyListScope.renderSection(
     navController: NavController,
-    sections: List<InnertubeArtist.Section>,
+    sections: List<Section>,
     sectionTextModifier: Modifier,
     itemContent: LazyListScope.(String, String?, List<InnertubeItem>) -> Unit
 ) = sections.forEach { section ->
+    // Don't show section if the title is null or blank
+    if( section.title.isNullOrBlank() ) return@forEach
+
     stickyHeader( "${section.title}Header" ) {
         Row(
             verticalAlignment = Alignment.Bottom,
             modifier = sectionTextModifier.fillMaxWidth()
         ) {
             Text(
-                text = section.title,
+                text = section.title!!,
                 style = typography().m.semiBold,
                 modifier = Modifier.weight( 1f )
             )
@@ -187,7 +191,7 @@ private fun LazyListScope.renderSection(
         }
     }
 
-    itemContent( section.title, section.params, section.contents )
+    itemContent( section.title!!, section.params, section.contents )
 }
 
 @ExperimentalMaterial3Api

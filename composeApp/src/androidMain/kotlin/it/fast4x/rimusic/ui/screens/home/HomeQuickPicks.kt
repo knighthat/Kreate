@@ -853,8 +853,11 @@ fun HomeQuickPicks(
                         )
 
                         sections.forEach { section ->
+                            // Don't show section if the title is null or blank
+                            if( section.title.isNullOrBlank() ) return@forEach
+
                             BasicText(
-                                text = section.title,
+                                text = section.title!!,
                                 style = typography().l.semiBold,
                                 modifier = Modifier
                                     .padding(horizontal = 16.dp)

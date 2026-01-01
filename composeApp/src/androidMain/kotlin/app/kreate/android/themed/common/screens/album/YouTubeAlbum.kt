@@ -114,6 +114,7 @@ import me.knighthat.innertube.Constants
 import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubeAlbum
 import me.knighthat.innertube.model.InnertubeSong
+import me.knighthat.innertube.model.Section
 import me.knighthat.utils.PropUtils
 import me.knighthat.utils.Toaster
 import timber.log.Timber
@@ -159,7 +160,7 @@ private fun updateAlbumInDatabase(dbAlbum: Album?, innertubeAlbum: InnertubeAlbu
 @UnstableApi
 private fun LazyListScope.renderSection(
     navController: NavController,
-    section: InnertubeAlbum.Section,
+    section: Section,
     sectionTextModifier: Modifier,
     albumThumbnailSizePx: Int,
     albumThumbnailSizeDp: Dp
@@ -438,7 +439,7 @@ fun YouTubeAlbum(
 
                     item( "subtitle" ) {
                         BasicText(
-                            text = albumPage?.subtitle.orEmpty(),
+                            text = albumPage?.subtitle?.runs?.fastJoinToString( "" ) { it.text }.orEmpty(),
                             style = typography().xs.medium.copy( colorPalette().textSecondary ),
                             maxLines = 1
                         )
