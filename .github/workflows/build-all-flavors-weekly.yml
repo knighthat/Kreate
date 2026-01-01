@@ -106,7 +106,7 @@ jobs:
         # !: Not
         # -e: true if file exists
         run: |
-          FILE_PATH=fastlane/metadata/android/en-US/changelogs/${VERSION_CODE}4.txt
+          FILE_PATH=fastlane/metadata/android/en-US/changelogs/${VERSION_CODE}.txt
           if [ ! -e "$FILE_PATH" ]; then
             echo "::error::$FILE_PATH release note doesn't exist"
             exit 1
