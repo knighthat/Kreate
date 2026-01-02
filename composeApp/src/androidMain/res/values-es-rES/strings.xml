@@ -405,7 +405,7 @@
     <string name="bg_colors_blurred_cover_background">Fondo de portada desenfocado</string>
     <string name="pcontrols_modern">Moderno</string>
     <string name="pcontrols_essential">Esencial</string>
-    <string name="pcontrols_type">Tipo de controles</string>
+    <string name="pcontrols_type">Estilo de controles</string>
     <string name="player_swiping_down_is_disabled">El deslizando hacia abajo del reproductor está deshabilitado</string>
     <string name="player_position">Posición del reproductor</string>
     <string name="position_top">Arriba</string>
@@ -560,7 +560,7 @@
     <string name="add_to_favorites">Añadir a favoritos</string>
     <string name="import_favorites">Importar favoritos</string>
     <string name="skip_media_on_error">Saltar automáticamente en caso de error</string>
-    <string name="skip_media_on_error_description">Si ocurre un error, el contenido es cambiado</string>
+    <string name="skip_media_on_error_description">Si ocurre un error, salta a la siguiente canción</string>
     <string name="skip_media_on_error_message">Ocurrió un error al reproducir %1$s</string>
     <string name="login_required_to_play_this_media">Es necesario iniciar sesión para reproducir este contenido</string>
     <string name="search_results_for">Resultados de búsqueda para:</string>
@@ -848,10 +848,10 @@
     <string name="error_failed_to_load_translators">Error al cargar los traductores</string>
     <string name="error_check_for_updates_failed">Error al buscar actualizaciones</string>
     <string name="profiles">Perfiles</string>
-    <string name="add_profile">Add profile</string>
+    <string name="add_profile">Agregar perfil</string>
     <string name="remove_profile">Eliminar perfil</string>
     <string name="this_profile_alreaty_exist">Este perfil ya existe</string>
-    <string name="enter_profile_name">Enter profile name</string>
+    <string name="enter_profile_name">Colocar nombre al perfil</string>
     <string name="profile_restart_required">Esto requerirá reiniciar la aplicación</string>
     <string name="settings_entry_live_wallpaper_reset_duration">Switch back after</string>
     <string name="settings_description_live_wallpaper_reset_duration">Cuánto se esperará después de que la música pare para cambiar al fondo de pantalla del teléfono</string>
@@ -862,6 +862,6 @@
     <string name="error_invalid_path">Ruta no válida</string>
     <string name="description_validate_url">Validar URL</string>
     <string name="disabled">deshabilitado</string>
-    <string name="settings_live_wallpaper_reset_warning"> WARNING: this will switch back to your manufacturer’s default wallpaper. Unfortunately it is difficult to revert to your previous wallpaper</string>
+    <string name="settings_live_wallpaper_reset_warning"> ADVERTENCIA: esto cambiará al fondo de pantalla predeterminado del teléfono</string>
     <string name="ok">aceptar</string>
 </resources>
