@@ -1,6 +1,5 @@
 package it.fast4x.rimusic.utils
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -8,7 +7,6 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.BitmapLoader
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.coil3.ImageFactory
-import coil3.request.ImageRequest
 import coil3.request.allowHardware
 import coil3.request.bitmapConfig
 import coil3.toBitmap
@@ -16,13 +14,12 @@ import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.guava.future
-import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 @UnstableApi
 class CoilBitmapLoader(
     private val scope: CoroutineScope
 ) : BitmapLoader {
+
     override fun supportsMimeType(mimeType: String): Boolean = mimeType.startsWith("image/")
 
     override fun decodeBitmap(data: ByteArray): ListenableFuture<Bitmap> =
@@ -31,7 +28,7 @@ class CoilBitmapLoader(
         }
 
     override fun loadBitmap(uri: Uri): ListenableFuture<Bitmap> =
-        scope.future {
+        scope.future( Dispatchers.Main ) {
             val imageLoader = ImageFactory.imageLoader
             val request = ImageFactory.requestBuilder( uri.toString() ) {
                 bitmapConfig( Bitmap.Config.ARGB_8888 )

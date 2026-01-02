@@ -311,7 +311,7 @@ class PlayerServiceModern:
                         0,
                         Intent(this, MainActivity::class.java)
                             .putExtra("expandPlayerBottomSheet", true),
-                        PendingIntent.FLAG_IMMUTABLE
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 )
                 .setBitmapLoader( CoilBitmapLoader(coroutineScope) )
@@ -418,6 +418,13 @@ class PlayerServiceModern:
 
         discord.register()
     }
+
+    override fun onUpdateNotification( session: MediaSession, startInForegroundRequired: Boolean ) =
+        try {
+            super.onUpdateNotification(session, startInForegroundRequired)
+        } catch( err: Exception ) {
+            Timber.tag( "PLayerServiceModern" ).e( err, "failed to update notification" )
+        }
 
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
 
