@@ -853,7 +853,7 @@
     <string name="this_profile_alreaty_exist">Este perfil ya existe</string>
     <string name="enter_profile_name">Colocar nombre al perfil</string>
     <string name="profile_restart_required">Esto requerirá reiniciar la aplicación</string>
-    <string name="settings_entry_live_wallpaper_reset_duration">Switch back after</string>
+    <string name="settings_entry_live_wallpaper_reset_duration">Restaurar fondo si no hay reproducción</string>
     <string name="settings_description_live_wallpaper_reset_duration">Cuánto se esperará después de que la música pare para cambiar al fondo de pantalla del teléfono</string>
     <string name="title_change_thumbnail">Cambiar miniatura</string>
     <string name="description_change_thumbnail">Reemplaza la miniatura con una de tu elección</string>
