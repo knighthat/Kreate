@@ -15,5 +15,5 @@
   <li>Compatibilidad con Android Auto, Android TV y vídeos de YouTube</li>
   <li>Exportar canciones almacenadas en caché/descargadas</li>
   <li>Reproduce música incluso sin conexión a internet</li>
-  <li>Y mucho más... </li>
+  <li>Y mucho más...
 </ul>
