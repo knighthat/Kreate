@@ -91,6 +91,10 @@ object NetworkService {
             defaultRequest {
                 url( YouTubeClient.API_URL_YOUTUBE_MUSIC )
                 contentType( ContentType.Application.Json )
+
+                url {
+                    parameters.append("prettyPrint", "false")
+                }
             }
         }
     }
