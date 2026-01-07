@@ -85,7 +85,7 @@
 Chart and contributions are displayed in our [official website](https://kreate.knighthat.me/translators)
 
 <p align="center">
-    <b>Your language is not listed? [Request one](https://translate.kreate.knighthat.me/project/kreate) now.</b>
+    <b>Your language is not listed? <a href="https://translate.kreate.knighthat.me/project/kreate">Request one</a> now.</b>
 </p>
 
 
