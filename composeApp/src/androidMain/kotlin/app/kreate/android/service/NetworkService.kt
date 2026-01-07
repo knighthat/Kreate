@@ -34,7 +34,7 @@ object NetworkService {
 
     @OptIn(ExperimentalSerializationApi::class)
     val JSON: Json = Json {
-        encodeDefaults
+        encodeDefaults = true
         ignoreUnknownKeys = true
         explicitNulls = false
 
