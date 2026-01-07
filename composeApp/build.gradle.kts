@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 val APP_NAME = "Kreate"
-val VERSION_CODE = 126
+val VERSION_CODE = 127
 
 private fun String.sha256(): String {
     val digest = MessageDigest.getInstance( "SHA-256" )
@@ -331,7 +331,7 @@ android {
                 signingConfig = signingConfigs.getByName( "production" )
 
             // App's properties
-            versionName = "1.9.0"
+            versionName = "1.9.1"
             manifestPlaceholders["appName"] = APP_NAME
             versionCode = VERSION_CODE
         }
