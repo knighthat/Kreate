@@ -10,6 +10,8 @@ import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.serialization.kotlinx.protobuf.protobuf
@@ -32,6 +34,7 @@ object NetworkService {
 
     @OptIn(ExperimentalSerializationApi::class)
     val JSON: Json = Json {
+        encodeDefaults
         ignoreUnknownKeys = true
         explicitNulls = false
 
@@ -87,6 +90,7 @@ object NetworkService {
 
             defaultRequest {
                 url( YouTubeClient.API_URL_YOUTUBE_MUSIC )
+                contentType( ContentType.Application.Json )
             }
         }
     }
