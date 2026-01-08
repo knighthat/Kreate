@@ -142,8 +142,8 @@
     <string name="dynamic">Dynamique</string>
     <string name="discovery">Découverte</string>
     <string name="mood">Humeur</string>
-    <string name="new_albums">Nouveaux Albums</string>
-    <string name="moods_and_genres">Humeurs et Genres</string>
+    <string name="new_albums">Nouveautés</string>
+    <string name="moods_and_genres">Ambiance et Genres</string>
     <string name="search_queries">" requêtes de recherche"</string>
     <string name="not_find_battery_optimization_settings">Impossible de trouver les paramètres d\'optimisation de la batterie, veuillez les ajouter manuellement à la liste blanche</string>
     <string name="no">Non</string>
