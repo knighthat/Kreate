@@ -120,18 +120,19 @@ object PathUtils {
                 ),
                 overflow = TextOverflow.StartEllipsis,
                 maxLines = 1,
-                modifier = Modifier.clickable {
-                    val path = visiblePaths[index]
-                    val completePath =
-                        // If [currentPath] is an absolute path,
-                        // then this return value must be an absolute path.
-                        if( currentPath.startsWith( File.separator ) && !path.startsWith( File.separator ) )
-                            "/$path"
-                        else
-                            path
+                modifier = Modifier.weight( 1f, false )
+                                   .clickable {
+                                       val path = visiblePaths[index]
+                                       val completePath =
+                                           // If [currentPath] is an absolute path,
+                                           // then this return value must be an absolute path.
+                                           if( currentPath.startsWith( File.separator ) && !path.startsWith( File.separator ) )
+                                               "/$path"
+                                           else
+                                               path
 
-                    onSpecificAddressClick( completePath )
-                }
+                                       onSpecificAddressClick( completePath )
+                                   }
             )
         }
     }
