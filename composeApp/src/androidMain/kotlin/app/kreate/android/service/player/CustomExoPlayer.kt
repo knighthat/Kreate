@@ -287,4 +287,6 @@ class CustomExoPlayer(
             Timber.tag( this::class.java.simpleName ).e( e )
             0
         }
+
+    override fun getAudioSessionId(): Int = player.audioSessionId
 }
