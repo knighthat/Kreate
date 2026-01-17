@@ -177,7 +177,7 @@ android {
 
     defaultConfig {
         applicationId = "me.knighthat.kreate"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 36
 
         /*
