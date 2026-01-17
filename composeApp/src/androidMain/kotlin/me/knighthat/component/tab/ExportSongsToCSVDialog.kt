@@ -1,6 +1,7 @@
 package me.knighthat.component.tab
 
 import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -85,19 +86,35 @@ class ExportSongsToCSVDialog private constructor(
                 // Run in background to prevent UI thread
                 // from freezing due to large file.
                 CoroutineScope( Dispatchers.IO ).launch {
+                    val contentResolver = appContext().contentResolver
+                    val name = playlistName.ifBlank {
+                        contentResolver.query(
+                            uri,
+                            arrayOf(OpenableColumns.DISPLAY_NAME),
+                            null,
+                            null,
+                            null
+                        )?.use { cursor ->
+                            val index = cursor.getColumnIndex( OpenableColumns.DISPLAY_NAME )
+                            if( cursor.moveToFirst() && index >= 0 )
+                                cursor.getString( index )
+                            else
+                                null
+                        } ?: "Empty playlist name"
+                    }
+
                     val songsToWrite = songs().map {
                         SongCSV(
                             playlistBrowseId = playlistBrowseId,
-                            playlistName = playlistName.ifBlank { uri.toFile().nameWithoutExtension },
+                            playlistName = name,
                             song = it
                         )
                     }
 
-                    appContext().contentResolver
-                                .openOutputStream( uri )
-                                ?.use { outStream ->         // Use [use] because it closes stream on exit
-                                    writeToCsvFile( outStream, songsToWrite )
-                                }
+                    contentResolver.openOutputStream( uri )
+                                   ?.use { outStream ->         // Use [use] because it closes stream on exit
+                                       writeToCsvFile( outStream, songsToWrite )
+                                   }
                 }
             }
         )

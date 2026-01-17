@@ -91,7 +91,6 @@ jobs:
       - name: Close request
         run: gh issue close "$NUMBER"
   
-
   # Borked PR is when if implemented, the app will fail to compile
   # or will have some feature run in unexpected behavior
   borked:
@@ -106,3 +105,95 @@ jobs:
     steps:
       - name: Close pull request
         run: gh pr close "$NUMBER"
+
+  # Triggered when new issue ticket or feature request ticket is created
+  non-english-ticket:
+    if: ${{ github.event.label.name == 'bug' || github.event.label.name == 'enhancement' }}
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Allows GITHUB_TOKEN to add label(s)
+      issues: write
+
+    env:
+      TICKET_CONTENT: ${{ github.event.issue.body }}
+      RESULTS_MD: results.md
+      LANGUAGE_FILENAME: language.txt
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup python
+        uses: actions/setup-python@v6.1.0
+        with:
+          python-version: 3.12
+
+      - name: Install dependencies
+        run: |
+          cd scripts/langdetect
+          
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Determining command flag
+        id: flag
+        run: |
+          if [ "${{ github.event.label.name }}" == "bug" ]; then
+              flag="--issue"
+          elif [ "${{ github.event.label.name }}" == "enhancement" ]; then
+              flag="--request"
+          else
+              # Should not come to here
+              echo "::error::Unknown label name ${{ github.event.label.name }}"
+              exit 1
+          fi
+
+          echo "cmd=$flag" >> $GITHUB_OUTPUT
+
+      - name: Detect languages
+        run: |
+          # Move to this folder again because each step resets path for some reason
+          cd scripts/langdetect
+          
+          python main.py "${{ steps.flag.outputs.cmd }}" "$TICKET_CONTENT"
+
+      - name: Verify results
+        id: major_language
+        run: |
+          if [ ! -s "$LANGUAGE_FILENAME" ]; then
+            echo "::error::$LANGUAGE_FILENAME is empty"
+            exit 1
+          fi
+
+          echo "language=$(head -n 1 $LANGUAGE_FILENAME)" >> $GITHUB_OUTPUT
+
+      - name: "DEBUG: Print results & top language"
+        if: ${{ steps.major_language.outputs.language == 'en' }}
+        run: |
+          cat "$RESULTS_MD"
+          cat "$LANGUAGE_FILENAME"
+
+      - name: Load results markdown table to env
+        id: languages
+        run: echo "table=$(cat $RESULTS_MD)" >> $GITHUB_OUTPUT
+
+      - name: Add label
+        # Skip this step when running with nektos/act
+        if: ${{ !env.ACT }}
+        run: gh issue edit "$NUMBER" --add-label "need translation"
+
+      - name: Add comment
+        # Skip this step when running with nektos/act
+        if: ${{ !env.ACT }}
+        run: gh issue comment "$NUMBER" --body "$BODY"
+        env:
+          BODY: >
+            Detect non-English ticket. If this is true, please update your ticket to English
+
+            ${{ steps.languages.outputs.table }}
+
+            ---
+
+            A human moderator will have a look later to confirm validity of the process

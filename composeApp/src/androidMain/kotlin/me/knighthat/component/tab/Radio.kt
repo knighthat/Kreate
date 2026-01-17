@@ -36,7 +36,9 @@ class Radio private constructor(
         get() = stringResource( messageId )
 
     override fun onShortClick() {
-        binder?.startRadio( songs().random() )
+        val songs = songs()
+        if( songs.isNotEmpty() )
+            binder?.startRadio( songs.random() )
 
         menuState.hide()
     }

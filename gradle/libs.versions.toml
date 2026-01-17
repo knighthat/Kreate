@@ -1,12 +1,12 @@
 
 [versions]
-agp = "8.13.0"
-kotlin = "2.2.21"
-kotlin-ksp = "2.2.21-2.0.4"
+agp = "8.13.2"
+kotlin = "2.3.0"
+kotlin-ksp = "2.3.4"
 coil3 = "3.3.0"
 room = "2.8.4"
-media3 = "1.8.0"
-ktor = "3.3.2"
+media3 = "1.9.0"
+ktor = "3.3.3"
 brotli = "0.1.2"
 palette = "1.0.0"
 desugaring = "2.1.5"
@@ -30,17 +30,19 @@ hypnoticcanvas = "0.4.1"
 ksoup = "0.6.0"
 jetbrains-annotations = "26.0.2-1"
 lombok = "1.18.42"
-junit5 = "6.0.1"
-webkit = "1.14.0"
+junit5 = "6.0.2"
+webkit = "1.15.0"
 newpipe-extractor = "0.24.8"
-compose-kmp = "1.9.3"
+compose-kmp = "1.10.0"
 license-report = "3.0.1"
-hilt = "2.57.2"
+hilt = "2.58"
 material3-kmp = "1.9.0"
 junit4 = "4.13.2"
 robolectric = "4.16"
 androidTest = "1.7.0"
-lifecycle = "2.9.4"
+lifecycle = "2.10.0"
+extractor = "a194151"
+kotlinx-serialization = "1.9.0"
 
 
 [libraries]
@@ -48,6 +50,7 @@ lifecycle = "2.9.4"
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-guava = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-guava", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 # Room
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
@@ -104,6 +107,7 @@ hypnoticcanvas-shaders = { group = "com.mikepenz.hypnoticcanvas", name = "hypnot
 # Newpipe extractor
 newpipe-extractor = { group = "com.github.teamnewpipe.NewPipeExtractor", name = "extractor", version.ref = "newpipe-extractor" }
 nanojson = { group = "com.github.TeamNewPipe", name = "nanojson", version = "e9d656ddb49a412a5a0a5d5ef20ca7ef09549996" }
+extractor = { module = "com.github.mostafaalagamy:MetrolistExtractor", version.ref = "extractor" }
 
 # Annotations
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }

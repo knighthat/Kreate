@@ -65,12 +65,12 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
       - name: Setup Java 21
-        uses: actions/setup-java@v5.0.0
+        uses: actions/setup-java@v5.1.0
         with:
           java-version: "21"
           distribution: "corretto"
@@ -93,7 +93,7 @@ jobs:
       - name: Commit changes & make PR
         # Skip this step when running with nektos/act
         if: ${{ !env.ACT }}
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           title: Update license report
           commit-message: "Update license ${{ needs.date.outputs.dashes }}"
@@ -122,7 +122,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Get contributors
         env:
@@ -177,7 +177,7 @@ jobs:
       - name: Commit changes & make PR
         # Skip this step when running with nektos/act
         if: ${{ !env.ACT }}
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           title: Update contributors
           commit-message: "Update contributors ${{ needs.date.outputs.dashes }}"
@@ -206,7 +206,7 @@ jobs:
       WORKFLOWS_FILENAME: workflows.json
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       # actions/download-artifact doesn't know which workflow to download
       # artifact from when `repository` is assgined.
@@ -246,7 +246,7 @@ jobs:
         run: rm -rf "$WORKFLOWS_FILENAME"
 
       - name: Download translators list
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: translators
           repository: knighthat/Kreate-docs
@@ -260,7 +260,7 @@ jobs:
       - name: Commit changes & make PR
         # Skip this step when running with nektos/act
         if: ${{ !env.ACT }}
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           title: Update translators
           commit-message: "Update translators ${{ needs.date.outputs.dashes }}"
@@ -308,7 +308,7 @@ jobs:
           echo "Queried: $TOTAL_COUNT runs"
 
       - name: Upload queried workflows file
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: workflows
           path: workflows.json

@@ -72,6 +72,7 @@ import it.fast4x.rimusic.ui.screens.mood.MoodsPageScreen
 import it.fast4x.rimusic.ui.screens.newreleases.NewreleasesScreen
 import it.fast4x.rimusic.ui.screens.player.Queue
 import it.fast4x.rimusic.ui.screens.podcast.PodcastScreen
+import it.fast4x.rimusic.ui.screens.profiles.ProfileScreen
 import it.fast4x.rimusic.ui.screens.search.SearchScreen
 import it.fast4x.rimusic.ui.screens.searchresult.SearchResultScreen
 import it.fast4x.rimusic.ui.screens.settings.SettingsScreen
@@ -80,7 +81,6 @@ import kotlinx.coroutines.delay
 import me.knighthat.updater.ChangelogsDialog
 import me.knighthat.updater.UpdateHandler
 import me.knighthat.utils.Toaster
-import kotlin.system.exitProcess
 
 private val BROWSE_ID_ARG = navArgument( "browseId" ) {
     type = NavType.StringType
@@ -435,6 +435,10 @@ fun AppNavigation(
 
             SongDetailsScreen( navController, id )
         }
+
+        composable( NavRoutes.PROFILES.name ) {
+            ProfileScreen( navController, miniPlayer)
+        }
     }
 
     val crashReportDialog = remember( context ) {
@@ -467,18 +471,20 @@ fun AppNavigation(
         isWarned = false
     }
     BackHandler {
-        if( navController.previousBackStackEntry == null )
+        if( navController.previousBackStackEntry != null ) {
+            navController.popBackStack()
+            return@BackHandler
+        }
+
+        val activity = context as? Activity
+        if( Preferences.CLOSE_APP_ON_BACK.value ) {
             if( !isWarned ) {
                 Toaster.i( R.string.press_once_again_to_exit )
                 isWarned = true
-            } else {
-                val activity = context as? Activity
+            } else
                 activity?.finishAffinity()
-
-                if( Preferences.CLOSE_APP_ON_BACK.value )
-                    exitProcess( 0 )
-            }
-        else
-            navController.popBackStack()
+        } else
+            // Use `false` because compose app is single activity
+            activity?.moveTaskToBack( false )
     }
 }

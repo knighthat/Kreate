@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 val APP_NAME = "Kreate"
-val VERSION_CODE = 124
+val VERSION_CODE = 128
 
 private fun String.sha256(): String {
     val digest = MessageDigest.getInstance( "SHA-256" )
@@ -77,7 +77,7 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.guava)
-            implementation(libs.newpipe.extractor)
+            implementation(libs.extractor)
             implementation(libs.nanojson)
             implementation(libs.androidx.webkit)
 
@@ -121,6 +121,7 @@ kotlin {
             implementation(projects.kugou)
             implementation(projects.lrclib)
             implementation( projects.discord )
+            implementation( projects.metrolist )
 
             // Room KMP
             implementation( libs.room.runtime )
@@ -176,7 +177,7 @@ android {
 
     defaultConfig {
         applicationId = "me.knighthat.kreate"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 36
 
         /*
@@ -266,29 +267,29 @@ android {
 
             isDefault = true
         }
-        create("arm64") {
-            dimension = "arch"
-
-            // App's properties
-            versionCode = (1 shl 20) or VERSION_CODE
-
-            // Build architecture
-            ndk { abiFilters += "arm64-v8a" }
-        }
         create("arm32") {
             dimension = "arch"
 
             // App's properties
-            versionCode = (1 shl 19) or VERSION_CODE
+            versionCode = (VERSION_CODE * 10) + 1
 
             // Build architecture
             ndk { abiFilters += "armeabi-v7a" }
+        }
+        create("arm64") {
+            dimension = "arch"
+
+            // App's properties
+            versionCode = (VERSION_CODE * 10) + 2
+
+            // Build architecture
+            ndk { abiFilters += "arm64-v8a" }
         }
         create("x86") {
             dimension = "arch"
 
             // App's properties
-            versionCode = (1 shl 18) or VERSION_CODE
+            versionCode = (VERSION_CODE * 10) + 3
 
             // Build architecture
             ndk { abiFilters += "x86" }
@@ -297,7 +298,7 @@ android {
             dimension = "arch"
 
             // App's properties
-            versionCode = (1 shl 17) or VERSION_CODE
+            versionCode = (VERSION_CODE * 10) + 4
 
             // Build architecture
             ndk { abiFilters += "x86_64" }
@@ -330,7 +331,7 @@ android {
                 signingConfig = signingConfigs.getByName( "production" )
 
             // App's properties
-            versionName = "1.8.4"
+            versionName = "1.9.2"
             manifestPlaceholders["appName"] = APP_NAME
             versionCode = VERSION_CODE
         }
@@ -446,8 +447,7 @@ licenseReport {
 val copyReleaseNote = tasks.register<Copy>("copyReleaseNote" ) {
     from( "$rootDir/fastlane/metadata/android/en-US/changelogs" )
 
-    val versionCode = (1 shl 20) or VERSION_CODE
-    val fileName = "$versionCode.txt"
+    val fileName = "$VERSION_CODE.txt"
     setIncludes( listOf( fileName ) )
 
     into( "$rootDir/composeApp/src/androidMain/res/raw" )

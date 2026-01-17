@@ -2,7 +2,6 @@ package it.fast4x.rimusic
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.ActivityManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -87,6 +86,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.updater.UpdatePlugins
+import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import coil3.request.allowHardware
 import coil3.toBitmap
 import com.kieronquinn.monetcompat.core.MonetActivityAccessException
@@ -100,7 +100,6 @@ import it.fast4x.innertube.requests.playlistPage
 import it.fast4x.innertube.requests.song
 import it.fast4x.innertube.utils.LocalePreferenceItem
 import it.fast4x.innertube.utils.LocalePreferences
-import it.fast4x.rimusic.Dependencies.application
 import it.fast4x.rimusic.enums.AnimatedGradient
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
@@ -130,7 +129,6 @@ import it.fast4x.rimusic.ui.styling.colorPaletteOf
 import it.fast4x.rimusic.ui.styling.customColorPalette
 import it.fast4x.rimusic.ui.styling.dynamicColorPaletteOf
 import it.fast4x.rimusic.ui.styling.typographyOf
-import it.fast4x.rimusic.utils.AppLifecycleTracker
 import it.fast4x.rimusic.utils.LocalMonetCompat
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
@@ -1012,26 +1010,44 @@ MainActivity :
 
     }
 
-    override fun onStop() {
-        runCatching {
-            unbindService(serviceConnection)
-        }.onFailure {
-            Timber.e("MainActivity.onStop unbindService ${it.stackTraceToString()}")
-        }
-        super.onStop()
-    }
-
     @UnstableApi
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroy() =
+        try {
+            //<editor-fold desc="Stop player">
+            // Stop music
+            binder?.player?.run {
+                stop()
+                // FIXME: Android will try to recreate service if
+                //  there's some MediaItems left in the queue .
+                clearMediaItems()
+            }
+            // Unbind service (making sure there's no connection with the service)
+            unbindService( serviceConnection )
+            // Stop service (release resources)
+            val intent = Intent(this, PlayerServiceModern::class.java)
+            stopService( intent )
 
-        runCatching {
+            Timber.tag( "Main" ).d( "Successfully stop player and unbind PlayerServiceModern service" )
+            //</editor-fold>
+
+            // Delete latest report
+            val report = CrashReportDialog(this)
+            if( report.isAvailable() ) {
+                report.crashlogFile.delete()
+                Timber.tag( "Main" ).d( "Successfully deleted latest crashlog" )
+            }
+
             monet.removeMonetColorsChangedListener(this)
             _monet = null
-        }.onFailure {
-            Timber.e("MainActivity.onDestroy removeMonetColorsChangedListener ${it.stackTraceToString()}")
+            Timber.tag( "Main" ).d( "Successfully removed MonetColorsChangedListener" )
+
+            Preferences.unload()
+            Timber.tag( "Main" ).d( "Unloaded preferences" )
+        } catch( err: Exception ) {
+            Timber.tag( "Main" ).e( err, "onDestroy failed!" )
+        } finally {
+            super.onDestroy()
         }
-    }
 
     private fun setSystemBarAppearance(isDark: Boolean) {
         with(WindowCompat.getInsetsController(window, window.decorView.rootView)) {

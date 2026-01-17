@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastForEachIndexed
@@ -117,18 +118,21 @@ object PathUtils {
                     color = colorPalette().text,
                     fontWeight = FontWeight.Bold
                 ),
-                modifier = Modifier.clickable {
-                    val path = visiblePaths[index]
-                    val completePath =
-                        // If [currentPath] is an absolute path,
-                        // then this return value must be an absolute path.
-                        if( currentPath.startsWith( File.separator ) && !path.startsWith( File.separator ) )
-                            "/$path"
-                        else
-                            path
+                overflow = TextOverflow.StartEllipsis,
+                maxLines = 1,
+                modifier = Modifier.weight( 1f, false )
+                                   .clickable {
+                                       val path = visiblePaths[index]
+                                       val completePath =
+                                           // If [currentPath] is an absolute path,
+                                           // then this return value must be an absolute path.
+                                           if( currentPath.startsWith( File.separator ) && !path.startsWith( File.separator ) )
+                                               "/$path"
+                                           else
+                                               path
 
-                    onSpecificAddressClick( completePath )
-                }
+                                       onSpecificAddressClick( completePath )
+                                   }
             )
         }
     }

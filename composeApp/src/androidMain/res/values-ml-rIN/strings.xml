@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">കഴിഞ്ഞു</string>
     <string name="hidesong">Do you really want to hide this song? Its playback time and cache will be wiped. This action is irreversible.</string>
@@ -847,10 +847,21 @@
     <string name="error_failed_to_load_developers">Failed to load developers</string>
     <string name="error_failed_to_load_translators">Failed to load translators</string>
     <string name="error_check_for_updates_failed">Check for updates failed</string>
+    <string name="profiles">Profiles</string>
+    <string name="add_profile">Add profile</string>
+    <string name="remove_profile">Remove profile</string>
+    <string name="this_profile_alreaty_exist">This profile alreaty exist</string>
+    <string name="enter_profile_name">Enter profile name</string>
+    <string name="profile_restart_required">This will required a restart of the app</string>
+    <string name="settings_entry_live_wallpaper_reset_duration">Switch back after</string>
+    <string name="settings_description_live_wallpaper_reset_duration">How long to wait after music stopped playing to switch back to the regular wallpaper</string>
     <string name="title_change_thumbnail">Change thumbnail</string>
     <string name="description_change_thumbnail">Replace thumbnail with one of your choice</string>
     <string name="description_select_from_device">Select from device</string>
     <string name="error_failed_to_load_image">Failed to load image</string>
     <string name="error_invalid_path">Invalid path</string>
     <string name="description_validate_url">Validate url</string>
+    <string name="disabled">disabled</string>
+    <string name="settings_live_wallpaper_reset_warning"> WARNING: this will switch back to your manufacturer’s default wallpaper. Unfortunately it is difficult to revert to your previous wallpaper</string>
+    <string name="ok">ok</string>
 </resources>

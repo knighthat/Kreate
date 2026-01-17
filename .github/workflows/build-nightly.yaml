@@ -57,7 +57,7 @@ jobs:
             echo "timestamp=$LAST_SUCCESSFUL_RUN" >> $GITHUB_OUTPUT
           fi
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         if: ${{ !steps.last-successful-run.outputs.changes_made }}
         with:
           submodules: true
@@ -128,7 +128,7 @@ jobs:
       filename: ${{ steps.changelogs.outputs.filename }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
           # Always have a hard-coded limit of how many commits to fetch.
@@ -150,7 +150,7 @@ jobs:
           SINCE: ${{ needs.check-for-changes.outputs.since }}
           CODE: ${{ steps.version.outputs.code }}
         run: |
-          FILENAME="$((( 1 << 20 ) | $CODE)).txt"
+          FILENAME="${CODE}.txt"
           echo "filename=$FILENAME" >> $GITHUB_OUTPUT
 
           echo "Changes:" > "$FILENAME"
@@ -172,7 +172,7 @@ jobs:
         run: cat "${{ steps.changelogs.outputs.filename }}"
 
       - name: Upload change logs file
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: changelogs
           path: ${{ steps.changelogs.outputs.filename }}
@@ -200,7 +200,7 @@ jobs:
       # /home/runner/work/Kreate/.ignore.d/keystores/nightly.jks
       # Which will unintentionally make the build process fail because it
       # can't find the keystore to sign the apk
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
           # Only clone the latest version of repo.
@@ -220,7 +220,7 @@ jobs:
         run: echo "${{ secrets.NIGHTLY_KEYSTORE_SHA256 }} $KEYSTORE_PATH/$KEYSTORE_FILENAME" | sha256sum -c
 
       - name: Download change logs
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: changelogs
           path: fastlane/metadata/android/en-US/changelogs/
@@ -230,14 +230,14 @@ jobs:
 
 
       - name: Setup Java 21
-        uses: actions/setup-java@v5.0.0
+        uses: actions/setup-java@v5.1.0
         with:
           java-version: "21"
           distribution: "corretto"
 
       - name: Restore Gradle dependencies & build cache
         # This job also acts as a cache builder for release builds
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.gradle/caches
@@ -255,7 +255,7 @@ jobs:
         run: echo "path=composeApp/build/outputs/apk/githubUniversalNightly/release/Kreate-nightly.apk" >> $GITHUB_OUTPUT
 
       - name: Upload artifact for uploading
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: apk
           path: ${{ steps.build_path.outputs.path }}
@@ -288,7 +288,7 @@ jobs:
 
     steps:
       - name: Download APKs
-        uses: actions/download-artifact@v6.0.0
+        uses: actions/download-artifact@v7
         with:
           name: apk
 

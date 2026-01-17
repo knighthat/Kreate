@@ -48,7 +48,7 @@ jobs:
       GITHUB_REPOSITORY: ${{ github.action_repository }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -92,7 +92,7 @@ jobs:
             exit 1
           fi
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -106,14 +106,15 @@ jobs:
         # !: Not
         # -e: true if file exists
         run: |
-          if [ ! -e "fastlane/metadata/android/en-US/changelogs/$VERSION_CODE.txt" ]; then
-            echo "::error::$VERSION_CODE.txt release note doesn't exist"
+          FILE_PATH=fastlane/metadata/android/en-US/changelogs/${VERSION_CODE}.txt
+          if [ ! -e "$FILE_PATH" ]; then
+            echo "::error::$FILE_PATH release note doesn't exist"
             exit 1
           fi
           
   build-complex:
     needs: [build_time, verify-version]
-    name: Build all versions
+    name: Build
     runs-on: ubuntu-latest
 
     timeout-minutes: 60       # Prevent Github Action from terminating this workflow on first run
@@ -155,7 +156,7 @@ jobs:
       # /home/runner/work/Kreate/.ignore.d/keystores/production.jks
       # Which will unintentionally make the build process fail because it
       # can't find the keystore to sign the apk
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
           # Only clone the latest version of repo.
@@ -175,7 +176,7 @@ jobs:
         run: echo "${{ secrets.PROD_KEYSTORE_SHA256 }} $KEYSTORE_PATH/$KEYSTORE_FILENAME" | sha256sum -c
 
       - name: Setup Java 21
-        uses: actions/setup-java@v5.0.0
+        uses: actions/setup-java@v5.1.0
         with:
           java-version: "21"
           distribution: "corretto"
@@ -185,7 +186,7 @@ jobs:
         # actions/cache/restore only downloads the cache
         # This will save time uploading the cache, since cache
         # builder is handled by another workflow
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~/.gradle/caches
@@ -215,7 +216,7 @@ jobs:
           echo "path=composeApp/build/outputs/apk/$LOWERCASE_PLATFORM${ARCH}Prod/$LOWERCASE_BUILD_TYPE" >> $GITHUB_OUTPUT
 
       - name: Upload artifacts for uploading
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.platform }}-${{ matrix.architect }}-${{ matrix.type }}
           path: ${{ steps.build_path.outputs.path }}/*.apk
@@ -226,7 +227,10 @@ jobs:
 
     steps:
       - name: Download signed APKs
-        uses: actions/download-artifact@v6.0.0
+        uses: actions/download-artifact@v7
+        with:
+          # The downloaded artifacts will be in the same directory specified by path.
+          merge-multiple: true
 
       - name: Upload built APK to release
         # Skip this step when running with nektos/act
@@ -239,11 +243,7 @@ jobs:
           tag_name: v${{ needs.versioning.outputs.downstream }}
           make_latest: "true"
           body: |           
-            If you don't know what to download, please refer to article [Why are there so many APK files?](https://kreate.knighthat.me/usr/faq/why-are-there-so-many-apk-files)
-            ## What's `Kreate-izzy.apk`
-            
-            This is APK built specifically for IzzyOnDroid with update checker disabled. You shouldn't
-            download this version here.
+            If you don't know what to download, please refer to article [Why are there multiple APKs?](https://kreate.knighthat.me/usr/FAQ/multiple-apks)
             
             ## Changelogs
             

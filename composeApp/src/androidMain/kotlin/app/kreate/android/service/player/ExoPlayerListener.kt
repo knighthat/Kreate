@@ -124,7 +124,7 @@ class ExoPlayerListener(
                 addAll( buttons )
             }
 
-            mediaSession.setCustomLayout( layoutButton )
+            mediaSession.setMediaButtonPreferences( layoutButton )
         }
     }
 

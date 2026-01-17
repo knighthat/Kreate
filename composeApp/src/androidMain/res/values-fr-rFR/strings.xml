@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Fait</string>
     <string name="hidesong">Voulez-vous vraiment masquer ce titre ? Son temps de lecture et son cache seront effacés. Cette action est irréversible.</string>
@@ -847,13 +847,24 @@ Volume BAS : titre précédent</string>
     <string name="error_failed_to_get_charts">Impossible d\'obtenir les charts</string>
     <string name="error_failed_to_acquire_account_info">Échec de l\'acquisition des informations de compte</string>
     <string name="error_failed_to_sync_tab">Échec de la synchronisation de %s</string>
-    <string name="error_failed_to_load_developers">Failed to load developers</string>
-    <string name="error_failed_to_load_translators">Failed to load translators</string>
-    <string name="error_check_for_updates_failed">Check for updates failed</string>
-    <string name="title_change_thumbnail">Change thumbnail</string>
-    <string name="description_change_thumbnail">Replace thumbnail with one of your choice</string>
-    <string name="description_select_from_device">Select from device</string>
-    <string name="error_failed_to_load_image">Failed to load image</string>
-    <string name="error_invalid_path">Invalid path</string>
-    <string name="description_validate_url">Validate url</string>
+    <string name="error_failed_to_load_developers">Échec du chargement des développeurs</string>
+    <string name="error_failed_to_load_translators">Échec du chargement des traducteurs</string>
+    <string name="error_check_for_updates_failed">La vérification des mises à jour a échoué.</string>
+    <string name="profiles">Profils</string>
+    <string name="add_profile">Ajouter un profil</string>
+    <string name="remove_profile">Supprimer le profil</string>
+    <string name="this_profile_alreaty_exist">Ce profil existe déjà</string>
+    <string name="enter_profile_name">Saisissez le nom du profil</string>
+    <string name="profile_restart_required">Cela nécessitera un redémarrage de l\'application</string>
+    <string name="settings_entry_live_wallpaper_reset_duration">Revenir en arrière après</string>
+    <string name="settings_description_live_wallpaper_reset_duration">Combien de temps faut-il attendre après la fin de la musique pour revenir au fond d\'écran normal ?</string>
+    <string name="title_change_thumbnail">Changer la miniature</string>
+    <string name="description_change_thumbnail">Remplacez la miniature par une de vos images préférées</string>
+    <string name="description_select_from_device">Sélectionnez un appareil</string>
+    <string name="error_failed_to_load_image">Impossible de charger l\'image</string>
+    <string name="error_invalid_path">Chemin invalide</string>
+    <string name="description_validate_url">Valider l\'URL</string>
+    <string name="disabled">désactivé</string>
+    <string name="settings_live_wallpaper_reset_warning"> ATTENTION : cette action rétablira le fond d’écran par défaut de votre appareil. Malheureusement, il est difficile de revenir à votre fond d’écran précédent.</string>
+    <string name="ok">OK</string>
 </resources>

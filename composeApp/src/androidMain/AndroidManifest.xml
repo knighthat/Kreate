@@ -147,7 +147,21 @@
         <activity
                 android:name=".CopyCrashlogActivity"
                 android:theme="@style/Theme.RiMusic"
-                android:exported="true" />
+                android:exported="true">
+            <intent-filter>
+                <action android:name="COPY_CRASH_LOG" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ExportDatabaseActivity"
+            android:theme="@style/Theme.RiMusic"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="EXPORT_DATABASE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <receiver android:name=".widget.VerticalWidgetReceiver"
             android:exported="true">
@@ -207,10 +221,6 @@
                 android:name="autoStoreLocales"
                 android:value="true" />
         </service>
-
-        <receiver
-            android:name="it.fast4x.rimusic.service.modern.PlayerServiceModern$NotificationDismissReceiver"
-            android:exported="false" />
 
         <meta-data android:name="com.google.android.gms.car.application"
             android:resource="@xml/automotive_app_desc"/>

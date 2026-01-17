@@ -3,11 +3,15 @@ package app.kreate.android.service
 import android.widget.Toast
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
+import com.metrolist.innertube.models.YouTubeClient
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.serialization.kotlinx.protobuf.protobuf
@@ -30,6 +34,7 @@ object NetworkService {
 
     @OptIn(ExperimentalSerializationApi::class)
     val JSON: Json = Json {
+        encodeDefaults = true
         ignoreUnknownKeys = true
         explicitNulls = false
 
@@ -81,6 +86,15 @@ object NetworkService {
 
             engine {
                 preconfigured = engine
+            }
+
+            defaultRequest {
+                url( YouTubeClient.API_URL_YOUTUBE_MUSIC )
+                contentType( ContentType.Application.Json )
+
+                url {
+                    parameters.append("prettyPrint", "false")
+                }
             }
         }
     }
