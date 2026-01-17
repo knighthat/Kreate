@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.MainThread
+import androidx.annotation.OptIn
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.media3.common.AudioAttributes
@@ -26,9 +27,13 @@ import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
 import androidx.media3.extractor.DefaultExtractorsFactory
 import app.kreate.android.Preferences
 import app.kreate.android.service.Discord
+import dagger.hilt.android.qualifiers.ApplicationContext
 import it.fast4x.rimusic.utils.isAtLeastAndroid10
 import timber.log.Timber
 import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Named
+import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -38,13 +43,11 @@ import kotlin.math.pow
  * A custom ExoPlayer with additional features:
  * - Fading effect
  */
-@UnstableApi
-class CustomExoPlayer(
-    dataSourceFactory: DataSource.Factory,
-    preferences: SharedPreferences,
-    private val context: Context,
+@OptIn(UnstableApi::class)
+@Singleton
+class CustomExoPlayer private constructor(
     private val discord: Discord,
-    private val player: ExoPlayer = makeBasePlayer( context, preferences, dataSourceFactory )
+    private val player: ExoPlayer
 ): ExoPlayer by player {
 
     companion object {
@@ -117,6 +120,14 @@ class CustomExoPlayer(
                             .build()
         }
     }
+
+    @Inject
+    constructor(
+        @Named("playerDataSource") dataSourceFactory: DataSource.Factory,
+        @Named("plain") preferences: SharedPreferences,
+        @ApplicationContext context: Context,
+        discord: Discord
+    ) : this(discord, makeBasePlayer( context, preferences, dataSourceFactory ))
 
     private var volumeAnimator: ValueAnimator? = null
 

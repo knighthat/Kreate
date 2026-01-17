@@ -42,7 +42,6 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.analytics.PlaybackStats
 import androidx.media3.exoplayer.analytics.PlaybackStatsListener
@@ -58,6 +57,7 @@ import app.kreate.android.R
 import app.kreate.android.service.Discord
 import app.kreate.android.service.DownloadHelper
 import app.kreate.android.service.NetworkService
+import app.kreate.android.service.player.CustomExoPlayer
 import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.VolumeObserver
 import app.kreate.android.utils.centerCropBitmap
@@ -153,7 +153,7 @@ class PlayerServiceModern:
     Player.Listener
 {
     @Inject
-    lateinit var player: ExoPlayer
+    lateinit var player: CustomExoPlayer
 
     @Inject
     @Named("cache")
@@ -860,7 +860,7 @@ class PlayerServiceModern:
             get() = bitmapProvider.bitmap
 
 
-        val player: ExoPlayer
+        val player: CustomExoPlayer
             get() = this@PlayerServiceModern.player
 
         val cache: Cache

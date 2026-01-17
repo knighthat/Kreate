@@ -6,14 +6,13 @@ import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import androidx.media3.exoplayer.ExoPlayer
 import app.kreate.android.Preferences
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class VolumeObserver @Inject constructor(
     @param:ApplicationContext private val context: Context,
-    private val player: ExoPlayer
+    private val player: CustomExoPlayer
 ): ContentObserver(Handler(Looper.getMainLooper()))  {
 
     private val audioManager =
