@@ -10,7 +10,7 @@ def extract_section( text: str, section_header: str ) -> str | None:
     """
     Extracts text of a section, ends when new section detected or at EOF
     """
-    pattern = re.compile(rf'{re.escape(section_header)}\\n\\n(.*?)(?=\\n\\n### |\Z)', re.DOTALL)
+    pattern = re.compile(rf'{re.escape(section_header)}\n\n(.*?)(?=\n\n### |\Z)', re.DOTALL)
     match = pattern.search(text)
     if match:
         return match.group(1).strip()

@@ -6,4 +6,5 @@ def _remove_html( text: str ) -> str:
 
 
 def sanitize_text( text: str ) -> str:
-    return _remove_html( text )
+    non_html_text = _remove_html( text )
+    return "\n".join(line.lstrip() for line in non_html_text.splitlines())
