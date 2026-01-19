@@ -42,12 +42,12 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.song.SongItem
+import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Playlist
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.MONTHLY_PREFIX
@@ -64,7 +64,6 @@ import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.px
-import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.addSongToYtPlaylist
 import it.fast4x.rimusic.utils.asSong
@@ -694,14 +693,7 @@ fun MediaItemGridMenu (
                         .calculateBottomPadding()
                 ),
                 topContent = {
-                    var currentlyPlaying by remember { mutableStateOf(binder.player.currentMediaItem?.mediaId) }
-                    binder.player.DisposableListener {
-                        object : Player.Listener {
-                            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int ) {
-                                currentlyPlaying = mediaItem?.mediaId
-                            }
-                        }
-                    }
+                    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
                     val songItemValues = remember( colorPalette, typography ) {
                         SongItem.Values.from( colorPalette, typography )
                     }
@@ -711,7 +703,7 @@ fun MediaItemGridMenu (
                         context = context,
                         binder = binder,
                         hapticFeedback = hapticFeedback,
-                        isPlaying = mediaItem.mediaId == currentlyPlaying,
+                        isPlaying = mediaItem.shallowCompare( currentMediaItem ),
                         values = songItemValues,
                         navController = navController
                     )

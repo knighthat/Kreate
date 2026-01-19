@@ -8,10 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -19,14 +18,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.song.SongItem
+import app.kreate.android.utils.shallowCompare
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.ContinuationBody
 import it.fast4x.innertube.models.bodies.SearchBody
@@ -53,7 +51,7 @@ fun SearchYoutubeEntity (
     query: String,
     filter: Innertube.SearchFilter = Innertube.SearchFilter.Video
 ) {
-    val binder = LocalPlayerServiceBinder.current
+    val binder = LocalPlayerServiceBinder.current ?: return
     val menuState = LocalMenuState.current
     val hapticFeedback = LocalHapticFeedback.current
     val appearance = LocalAppearance.current
@@ -78,14 +76,7 @@ fun SearchYoutubeEntity (
                 .padding(top = 16.dp)
                 .padding(horizontal = 16.dp)
         ) {
-            var currentlyPlaying by remember { mutableStateOf(binder?.player?.currentMediaItem?.mediaId) }
-            binder?.player?.DisposableListener {
-                object : Player.Listener {
-                    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int ) {
-                        currentlyPlaying = mediaItem?.mediaId
-                    }
-                }
-            }
+            val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
             val songItemValues = remember( appearance ) {
                 SongItem.Values.from( appearance )
             }
@@ -126,7 +117,7 @@ fun SearchYoutubeEntity (
                         SongItem.Render(
                             innertubeVideo = video,
                             hapticFeedback = hapticFeedback,
-                            isPlaying = currentlyPlaying == video.key,
+                            isPlaying = video.shallowCompare( currentMediaItem ),
                             values = songItemValues,
                             thumbnailSizeDp = DpSize(thumbnailWidthDp, thumbnailHeightDp),
                             onClick = {

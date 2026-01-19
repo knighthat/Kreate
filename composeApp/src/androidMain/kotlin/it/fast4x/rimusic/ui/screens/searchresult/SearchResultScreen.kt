@@ -8,8 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
@@ -23,8 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
@@ -33,6 +31,7 @@ import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
+import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Album
 import app.kreate.database.models.SongAlbumMap
 import it.fast4x.compose.persist.persist
@@ -55,7 +54,6 @@ import it.fast4x.rimusic.ui.components.themed.Title
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.px
-import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
@@ -115,14 +113,7 @@ fun SearchResultScreen(
 
     val emptyItemsText = stringResource(R.string.no_results_found)
 
-    var currentlyPlaying by remember { mutableStateOf(binder.player.currentMediaItem?.mediaId) }
-    binder.player.DisposableListener {
-        object : Player.Listener {
-            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int ) {
-                currentlyPlaying = mediaItem?.mediaId
-            }
-        }
-    }
+    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
     val songItemValues = remember( colorPalette, typography ) {
         SongItem.Values.from( colorPalette, typography )
     }
@@ -199,7 +190,7 @@ fun SearchResultScreen(
                                     context = context,
                                     binder = binder,
                                     hapticFeedback = hapticFeedback,
-                                    isPlaying = currentlyPlaying == song.key,
+                                    isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
                                     navController = navController,
                                     onClick = {
@@ -483,7 +474,7 @@ fun SearchResultScreen(
                                 SongItem.Render(
                                     innertubeVideo = video,
                                     hapticFeedback = hapticFeedback,
-                                    isPlaying = currentlyPlaying == video.key,
+                                    isPlaying = video.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
                                     thumbnailSizeDp = DpSize(thumbnailWidthDp, thumbnailHeightDp),
                                     onLongClick = {

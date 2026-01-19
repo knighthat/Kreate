@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -28,13 +27,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastDistinctBy
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.song.SongItem
+import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Event
 import app.kreate.util.EXPLICIT_PREFIX
 import it.fast4x.compose.persist.persist
@@ -55,7 +53,6 @@ import it.fast4x.rimusic.ui.components.themed.Title
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeLoggedIn
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.forcePlay
@@ -146,14 +143,7 @@ fun HistoryList(
             )
     ) {
 
-        var currentlyPlaying by remember { mutableStateOf(binder.player.currentMediaItem?.mediaId) }
-        binder.player.DisposableListener {
-            object : Player.Listener {
-                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int ) {
-                    currentlyPlaying = mediaItem?.mediaId
-                }
-            }
-        }
+        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
         val songItemValues = remember( colorPalette, typography ) {
             SongItem.Values.from( colorPalette, typography )
         }
@@ -210,7 +200,7 @@ fun HistoryList(
                             context = context,
                             binder = binder,
                             hapticFeedback = hapticFeedback,
-                            isPlaying = currentlyPlaying == event.song.id,
+                            isPlaying = event.song.shallowCompare( currentMediaItem ),
                             values = songItemValues,
                             navController = navController,
                             onClick = {
@@ -243,7 +233,7 @@ fun HistoryList(
                             context = context,
                             binder = binder,
                             hapticFeedback = hapticFeedback,
-                            isPlaying = currentlyPlaying == mediaItem.mediaId,
+                            isPlaying = mediaItem.shallowCompare( currentMediaItem ),
                             values = songItemValues,
                             navController = navController,
                             onClick = {

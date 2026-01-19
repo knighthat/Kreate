@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,8 +28,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
@@ -40,6 +39,7 @@ import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.song.PeriodSelector
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.themed.rimusic.component.tab.Sort
+import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
 import app.kreate.util.EXPLICIT_PREFIX
 import app.kreate.util.toDuration
@@ -62,7 +62,6 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.onOverlay
 import it.fast4x.rimusic.ui.styling.overlay
-import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.center
@@ -236,14 +235,7 @@ fun HomeSongs(
     deleteDownloadsDialog.Render()
     //</editor-fold>
 
-    var currentlyPlaying by remember { mutableStateOf(binder.player.currentMediaItem?.mediaId) }
-    binder.player.DisposableListener {
-        object : Player.Listener {
-            override fun onMediaItemTransition( mediaItem: MediaItem?, reason: Int ) {
-                currentlyPlaying = mediaItem?.mediaId
-            }
-        }
-    }
+    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
     val songItemValues = remember( colorPalette, typography ) {
         SongItem.Values.from( colorPalette, typography )
     }
@@ -291,7 +283,7 @@ fun HomeSongs(
                     context = context,
                     binder = binder,
                     hapticFeedback = hapticFeedback,
-                    isPlaying = song.id == currentlyPlaying,
+                    isPlaying = song.shallowCompare( currentMediaItem ),
                     values = songItemValues,
                     itemSelector = itemSelector,
                     navController = navController,

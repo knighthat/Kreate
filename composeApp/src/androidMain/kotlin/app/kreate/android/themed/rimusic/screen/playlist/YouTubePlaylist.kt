@@ -46,8 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
@@ -62,6 +60,7 @@ import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toSong
 import app.kreate.android.utils.renderDescription
 import app.kreate.android.utils.scrollingText
+import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
 import app.kreate.util.EXPLICIT_PREFIX
 import it.fast4x.innertube.YtMusic
@@ -85,7 +84,6 @@ import it.fast4x.rimusic.ui.components.themed.PlaylistsMenu
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.collectLatest
@@ -299,14 +297,7 @@ fun YouTubePlaylist(
         downloadAllDialog.Render()
         deleteDownloadsDialog.Render()
 
-        var currentlyPlaying by remember { mutableStateOf(binder.player.currentMediaItem?.mediaId) }
-        binder.player.DisposableListener {
-            object : Player.Listener {
-                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int ) {
-                    currentlyPlaying = mediaItem?.mediaId
-                }
-            }
-        }
+        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
         val songItemValues = remember( colorPalette, typography ) {
             SongItem.Values.from( colorPalette, typography )
         }
@@ -465,7 +456,7 @@ fun YouTubePlaylist(
                                 context = context,
                                 binder = binder,
                                 hapticFeedback = hapticFeedback,
-                                isPlaying = currentlyPlaying == song.id,
+                                isPlaying = song.shallowCompare( currentMediaItem ),
                                 values = songItemValues,
                                 itemSelector = itemSelector,
                                 navController = navController,

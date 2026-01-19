@@ -34,6 +34,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -60,8 +61,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastFold
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
@@ -70,6 +69,7 @@ import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
+import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Playlist
 import app.kreate.util.toDuration
 import it.fast4x.compose.persist.persist
@@ -101,7 +101,6 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.favoritesIcon
 import it.fast4x.rimusic.ui.styling.px
-import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.addToYtPlaylist
 import it.fast4x.rimusic.utils.asMediaItem
@@ -240,14 +239,7 @@ fun Podcast(
                         1f
                 )
         ) {
-            var currentlyPlaying by remember { mutableStateOf(binder.player.currentMediaItem?.mediaId) }
-            binder.player.DisposableListener {
-                object : Player.Listener {
-                    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int ) {
-                        currentlyPlaying = mediaItem?.mediaId
-                    }
-                }
-            }
+            val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
             val songItemValues = remember( colorPalette, typography ) {
                 SongItem.Values.from( colorPalette, typography )
             }
@@ -721,7 +713,7 @@ fun Podcast(
                             binder = binder,
                             hapticFeedback = hapticFeedback,
                             values = songItemValues,
-                            isPlaying = song.videoId == currentlyPlaying,
+                            isPlaying = song.shallowCompare( currentMediaItem ),
                             onLongClick = {
                                 menuState.display {
                                     NonQueuedMediaItemMenu(

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +38,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -62,7 +62,6 @@ import it.fast4x.rimusic.ui.components.themed.RotateThumbnailCoverAnimation
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.DisposableListener
-import it.fast4x.rimusic.utils.currentWindow
 import it.fast4x.rimusic.utils.doubleShadowDrop
 import it.fast4x.rimusic.utils.isLandscape
 import me.knighthat.utils.Toaster
@@ -98,10 +97,6 @@ fun Thumbnail(
     }
 
     var showlyricsthumbnail by Preferences.LYRICS_SHOW_THUMBNAIL
-    var nullableWindow by remember {
-        mutableStateOf(player.currentWindow)
-    }
-
     var error by remember {
         mutableStateOf<PlaybackException?>(player.playerError)
     }
@@ -133,12 +128,9 @@ fun Thumbnail(
     var showvisthumbnail by Preferences.PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER
     //var expandedlyrics by rememberPreference(expandedlyricsKey,false)
 
+    val currentWindow by player.currentWindowState.collectAsState()
     player.DisposableListener {
         object : Player.Listener {
-            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                nullableWindow = player.currentWindow
-            }
-
             override fun onPlaybackStateChanged(playbackState: Int) {
                 error = player.playerError
             }
@@ -152,10 +144,8 @@ fun Thumbnail(
         }
     }
 
-    val window = nullableWindow ?: return
-
     val coverPainter = ImageFactory.rememberAsyncImagePainter(
-        thumbnailUrl = window.mediaItem.mediaMetadata.artworkUri.toString(),
+        thumbnailUrl = currentWindow?.mediaItem?.mediaMetadata?.artworkUri?.toString(),
         onError = { artImageAvailable = false },
         onSuccess = { artImageAvailable = true }
     )
@@ -165,7 +155,7 @@ fun Thumbnail(
 
 
     AnimatedContent(
-        targetState = window,
+        targetState = currentWindow ?: return,
         transitionSpec = {
             val duration = 500
             val slideDirection = if (targetState.firstPeriodIndex > initialState.firstPeriodIndex)

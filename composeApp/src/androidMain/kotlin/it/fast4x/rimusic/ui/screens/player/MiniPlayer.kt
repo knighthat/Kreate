@@ -55,7 +55,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -121,12 +120,11 @@ fun MiniPlayer(
         mutableStateOf<PlaybackException?>(binder.player.playerError)
     }
 
+    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+    val mediaItem = currentMediaItem ?: return
+
     binder.player.DisposableListener {
         object : Player.Listener {
-            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                nullableMediaItem = mediaItem
-            }
-
             override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
                 shouldBePlaying = if (playerError == null) binder.player.shouldBePlaying else false
             }
@@ -142,7 +140,6 @@ fun MiniPlayer(
         }
     }
 
-    val mediaItem = nullableMediaItem ?: return
 
     val isSongLiked by remember( mediaItem.mediaId ) {
         Database.songTable

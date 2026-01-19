@@ -52,8 +52,6 @@ import androidx.compose.ui.util.fastAll
 import androidx.compose.ui.util.fastFlatMap
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapNotNull
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.R
@@ -68,6 +66,7 @@ import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.innertube.toSong
 import app.kreate.android.utils.renderDescription
 import app.kreate.android.utils.scrollingText
+import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongArtistMap
@@ -87,7 +86,6 @@ import it.fast4x.rimusic.ui.components.themed.PlayNext
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.px
-import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.enqueue
@@ -289,14 +287,7 @@ fun YouTubeArtist(
         }
         LaunchedEffect( Unit ) { onRefresh() }
 
-        var currentlyPlaying by remember { mutableStateOf(binder.player.currentMediaItem?.mediaId) }
-        binder.player.DisposableListener {
-            object : Player.Listener {
-                override fun onMediaItemTransition( mediaItem: MediaItem?, reason: Int ) {
-                    currentlyPlaying = mediaItem?.mediaId
-                }
-            }
-        }
+        val currentMedia by binder.player.currentMediaItemState.collectAsState()
         val songItemValues = remember( colorPalette, typography ) {
             SongItem.Values.from( colorPalette, typography )
         }
@@ -442,7 +433,7 @@ fun YouTubeArtist(
                                     context = context,
                                     binder = binder,
                                     hapticFeedback = hapticFeedback,
-                                    isPlaying = currentlyPlaying == song.id,
+                                    isPlaying = song.shallowCompare( currentMedia ),
                                     values = songItemValues,
                                     navController = navController,
                                     showThumbnail = true,
@@ -484,7 +475,7 @@ fun YouTubeArtist(
                                              context = context,
                                              binder = binder,
                                              hapticFeedback = hapticFeedback,
-                                             isPlaying = currentlyPlaying == song.id,
+                                             isPlaying = song.shallowCompare( currentMedia ),
                                              values = songItemValues,
                                              navController = navController,
                                              showThumbnail = true,

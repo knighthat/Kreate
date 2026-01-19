@@ -61,7 +61,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.neverEqualPolicy
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -271,10 +270,6 @@ fun Player(
 
     if (binder.player.currentTimeline.windowCount == 0) return
 
-    var nullableMediaItem by remember {
-        mutableStateOf(binder.player.currentMediaItem, neverEqualPolicy())
-    }
-
     var shouldBePlaying by remember {
         mutableStateOf(binder.player.shouldBePlaying)
     }
@@ -358,11 +353,11 @@ fun Player(
         }
     }
 
+    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+    val mediaItem = currentMediaItem ?: return
+
     binder.player.DisposableListener {
         object : Player.Listener {
-            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                nullableMediaItem = mediaItem
-            }
 
             override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
                 shouldBePlaying = playerError == null && binder.player.shouldBePlaying
@@ -380,9 +375,6 @@ fun Player(
             }
         }
     }
-
-    val
-            mediaItem = nullableMediaItem ?: return
 
     val pagerState = rememberPagerState(pageCount = { mediaItems.size })
     val pagerStateFS = rememberPagerState(pageCount = { mediaItems.size })

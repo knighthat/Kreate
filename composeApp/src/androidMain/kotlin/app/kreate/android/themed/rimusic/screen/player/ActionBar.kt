@@ -42,7 +42,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -63,7 +62,6 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
@@ -99,6 +97,7 @@ import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shuffleQueue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.knighthat.component.player.PlaybackSpeed
 import me.knighthat.utils.Toaster
@@ -206,8 +205,13 @@ fun BoxScope.ActionBar(
                     val coroutine = rememberCoroutineScope()
                     var currentIndex by remember { mutableIntStateOf( binder.player.currentMediaItemIndex ) }
                     var nextIndex by remember { mutableIntStateOf( binder.player.nextMediaItemIndex ) }
-                    val mediaItems = remember { mutableStateListOf<MediaItem>() }
-
+                    val mediaItems: List<MediaItem> by binder.player
+                                                             .currentTimelineState
+                                                             .map { it.mediaItems }
+                                                             .collectAsState(
+                                                                 initial = emptyList(),
+                                                                 context = Dispatchers.Main
+                                                             )
                     val pagerStateQueue = rememberPagerState { mediaItems.size }
 
                     suspend fun scrollToNext() {
@@ -227,11 +231,6 @@ fun BoxScope.ActionBar(
 
                     binder.player.DisposableListener {
                         object : Player.Listener {
-                            override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-                                mediaItems.clear()
-                                mediaItems.addAll( timeline.mediaItems )
-                            }
-
                             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                                 currentIndex = binder.player.currentMediaItemIndex
                                 nextIndex = binder.player.nextMediaItemIndex
@@ -239,11 +238,6 @@ fun BoxScope.ActionBar(
                                 coroutine.launch { scrollToNext() }
                             }
                         }
-                    }
-
-                    LaunchedEffect( binder.player.mediaItems ) {
-                        mediaItems.clear()
-                        mediaItems.addAll( binder.player.mediaItems )
                     }
 
                     Row(

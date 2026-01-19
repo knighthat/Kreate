@@ -33,9 +33,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -50,8 +50,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
-import androidx.media3.common.Timeline
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
@@ -59,6 +57,7 @@ import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.playlist.PositionLock
 import app.kreate.android.themed.rimusic.component.song.SongItem
+import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
 import it.fast4x.compose.persist.persist
 import it.fast4x.compose.persist.persistList
@@ -81,7 +80,6 @@ import it.fast4x.rimusic.ui.components.themed.IconButton
 import it.fast4x.rimusic.ui.components.themed.PlaylistsMenu
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.enqueue
@@ -119,7 +117,7 @@ fun Queue(
     val binder = LocalPlayerServiceBinder.current ?: return
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
-    val player = binder?.player ?: return
+    val player = binder.player
     val menuState = LocalMenuState.current
 
     val rippleIndication = ripple(bounded = false)
@@ -129,16 +127,11 @@ fun Queue(
             tag = "queue/songs",
             player.currentTimeline.mediaItems.map( MediaItem::asSong )
         )
-        var currentlyPlaying by remember { mutableStateOf(binder.player.currentMediaItem?.mediaId) }
-        player.DisposableListener {
-            object : Player.Listener {
-                override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-                    items = player.currentTimeline.mediaItems.map( MediaItem::asSong )
-                }
-                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int ) {
-                    currentlyPlaying = mediaItem?.mediaId
-                }
-            }
+        val currentMediaItem by player.currentMediaItemState.collectAsState()
+        val currentTimeline by player.currentTimelineState.collectAsState()
+        // TODO: Merge this LaunchedEffect to [items]
+        LaunchedEffect( currentTimeline ) {
+            items = currentTimeline.mediaItems.map( MediaItem::asSong )
         }
         val songItemValues = remember( colorPalette, typography ) {
             SongItem.Values.from( colorPalette, typography )
@@ -307,7 +300,7 @@ fun Queue(
                                 context = context,
                                 binder = binder,
                                 hapticFeedback = hapticFeedback,
-                                isPlaying = currentlyPlaying == song.id,
+                                isPlaying = song.shallowCompare( currentMediaItem ),
                                 values = songItemValues,
                                 itemSelector = itemSelector,
                                 navController = navController,

@@ -59,8 +59,6 @@ import androidx.compose.ui.util.fastDistinctBy
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFilterNotNull
 import androidx.compose.ui.util.fastMapNotNull
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
@@ -74,6 +72,7 @@ import app.kreate.android.utils.ItemUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.scrollingText
+import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
 import app.kreate.util.MONTHLY_PREFIX
 import it.fast4x.compose.persist.persist
@@ -107,7 +106,6 @@ import it.fast4x.rimusic.ui.screens.settings.isYouTubeLoggedIn
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.px
-import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.WelcomeMessage
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
@@ -512,14 +510,7 @@ fun HomeQuickPicks(
                             .padding(bottom = 8.dp)
                     )
 
-                    var currentlyPlaying by remember { mutableStateOf(binder.player.currentMediaItem?.mediaId) }
-                    binder.player.DisposableListener {
-                        object : Player.Listener {
-                            override fun onMediaItemTransition( mediaItem: MediaItem?, reason: Int ) {
-                                currentlyPlaying = mediaItem?.mediaId
-                            }
-                        }
-                    }
+                    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
                     val songItemValues = remember( colorPalette, typography ) {
                         SongItem.Values.from( colorPalette, typography )
                     }
@@ -544,7 +535,7 @@ fun HomeQuickPicks(
                                     context = context,
                                     binder = binder,
                                     hapticFeedback = hapticFeedback,
-                                    isPlaying = song.id == currentlyPlaying,
+                                    isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
                                     modifier = Modifier.width( itemInHorizontalGridWidth ),
                                     navController = navController
@@ -571,7 +562,7 @@ fun HomeQuickPicks(
                                     context = context,
                                     binder = binder,
                                     hapticFeedback = hapticFeedback,
-                                    isPlaying = song.id == currentlyPlaying,
+                                    isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
                                     modifier = Modifier.width( itemInHorizontalGridWidth ),
                                     navController = navController
@@ -894,14 +885,7 @@ fun HomeQuickPicks(
                                 section.contents
                                     .fastMapNotNull { it as? InnertubeSong }
                                     .also { songs ->
-                                        var currentlyPlaying by remember { mutableStateOf(binder.player.currentMediaItem?.mediaId) }
-                                        binder.player.DisposableListener {
-                                            object : Player.Listener {
-                                                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int ) {
-                                                    currentlyPlaying = mediaItem?.mediaId
-                                                }
-                                            }
-                                        }
+                                        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
                                         val songItemValues = remember( colorPalette, typography ) {
                                             SongItem.Values.from( colorPalette, typography )
                                         }
@@ -938,7 +922,7 @@ fun HomeQuickPicks(
                                                         binder = binder,
                                                         hapticFeedback = hapticFeedback,
                                                         values = songItemValues,
-                                                        isPlaying = song.id == currentlyPlaying,
+                                                        isPlaying = song.shallowCompare( currentMediaItem ),
                                                         onClick = {
                                                             val mediaItem = song.toMediaItem
                                                             binder.stopRadio()
@@ -1034,19 +1018,12 @@ fun HomeQuickPicks(
                             modifier = Modifier.padding(horizontal = 16.dp).padding(vertical = 4.dp)
                         )
 
-                        var currentlyPlaying by remember { mutableStateOf(binder.player.currentMediaItem?.mediaId) }
-                        binder.player.DisposableListener {
-                            object : Player.Listener {
-                                override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int ) {
-                                    currentlyPlaying = mediaItem?.mediaId
-                                }
-                            }
-                        }
+                        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
                         ItemUtils.LazyRowItem(
                             navController = navController,
                             innertubeItems = it.items.fastFilterNotNull(),
                             thumbnailSizeDp = albumThumbnailSizeDp,
-                            currentlyPlaying = currentlyPlaying
+                            currentlyPlaying = currentMediaItem?.mediaId
                         )
                     }
                 } ?: if (!isYouTubeLoggedIn()) BasicText(
