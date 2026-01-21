@@ -141,9 +141,9 @@
     <string name="_default">Par défaut</string>
     <string name="dynamic">Dynamique</string>
     <string name="discovery">Découverte</string>
-    <string name="mood">Humeur</string>
-    <string name="new_albums">Nouveaux Albums</string>
-    <string name="moods_and_genres">Humeurs et Genres</string>
+    <string name="mood">Ambiance</string>
+    <string name="new_albums">Nouveautés</string>
+    <string name="moods_and_genres">Ambiance et Genres</string>
     <string name="search_queries">" requêtes de recherche"</string>
     <string name="not_find_battery_optimization_settings">Impossible de trouver les paramètres d\'optimisation de la batterie, veuillez les ajouter manuellement à la liste blanche</string>
     <string name="no">Non</string>
@@ -200,7 +200,7 @@
     <string name="audio_quality_automatic">Automatique</string>
     <string name="statistics_songs_heard">titres écoutés</string>
     <string name="statistics_of_time_taken">du temps écoulé</string>
-    <string name="statistics_max_number_of_items">Nombre maximum d\'items</string>
+    <string name="statistics_max_number_of_items">Nombre maximum d\'éléments</string>
     <string name="do_you_really_want_to_download_all">Voulez-vous vraiment tout télécharger ?</string>
     <string name="import_playlist">Importer une playlist</string>
     <string name="proxy">PROXY</string>
@@ -427,7 +427,7 @@
     <string name="player_swap_controls_with_timeline">Échanger les contrôles avec la barre de progression</string>
     <string name="player_enable_lyrics_popup_message">Activer les messages des paroles</string>
     <string name="exclude_songs_with_duration_limit">Exclure les titres avec une limite de durée</string>
-    <string name="exclude_songs_with_duration_limit_description">Si activé, les titres dont la durée dépasse la limite seront exclues, se sera appliqué à la file d\'attente de Mon Top et pour la fille d\'attente</string>
+    <string name="exclude_songs_with_duration_limit_description">Les titres dont la durée dépasse la limite seront exclus du classement et de la file d\'attente de lecture</string>
     <string name="no_log_available">Pas de journaux disponibles</string>
     <string name="enable_quick_picks_page">Activer la page de Sélection Rapide</string>
     <string name="parental_control">Contrôle parental</string>
@@ -734,7 +734,7 @@ Volume BAS : titre précédent</string>
     <string name="rotating_cover_title">Pochette d\'album rotative</string>
     <string name="title_playback_speed">Vitesse de lecture</string>
     <string name="description_playback_speed">Ajuster la vitesse du titre</string>
-    <string name="log_in_to_ytm">Connectez-vous à votre compte YTM pour plus de contenu</string>
+    <string name="log_in_to_ytm">Connectez-vous à votre compte YouTube Music pour plus de contenu</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Ouvre le lien dans le navigateur Web</string>
     <string name="setting_entry_smart_rewind">Rembobinage intelligent</string>

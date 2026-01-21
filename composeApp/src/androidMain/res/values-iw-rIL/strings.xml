@@ -563,10 +563,10 @@
     <string name="skip_media_on_error_description">If an error occurs, the media is changed</string>
     <string name="skip_media_on_error_message">The media %1$s went wrong</string>
     <string name="login_required_to_play_this_media">Login required to play this media</string>
-    <string name="search_results_for">Search results for:</string>
+    <string name="search_results_for">תוצאות חיפוש עבור:</string>
     <string name="statsfornerds">Stats for Nerds</string>
     <string name="actionbar">Action Bar</string>
-    <string name="center">Center</string>
+    <string name="center">מרכז</string>
     <string name="lyricsalignment">Lyrics Alignment</string>
     <string name="translators">מתרגמים</string>
     <string name="player_auto_load_songs_in_queue">טען שירים לתור באופן אוטומטי</string>
@@ -609,8 +609,8 @@
     <string name="show_cover_thumbnail_animation">Show cover thumbnail animation</string>
     <string name="cover_thumbnail_animation_type">Cover animation type</string>
     <string name="jump_previous_blank">Leave it Blank or 0 for Previous Button to Always Play the Previous Song</string>
-    <string name="delete_hidden_songs">Do you really want to delete all hidden songs from database? This action is irreversible.</string>
-    <string name="delete_hidden_songs_message">Delete hidden songs</string>
+    <string name="delete_hidden_songs">אתה באמת רוצה למחוק את כל השירים המוסתרים ממסד הנתונים? פעולה זו אינה הפיכה.</string>
+    <string name="delete_hidden_songs_message">מחק שירים מוסתרים</string>
     <string name="cover_type_vinyl">Vinyl</string>
     <string name="cover_type_cd">CD</string>
     <string name="cover_type_cd_with_cover">CD with Cover</string>
