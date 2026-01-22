@@ -103,6 +103,7 @@ kotlin {
 
             // Dependency injection
             implementation( libs.android.hilt )
+            implementation( libs.android.hilt.navigation )
 
             implementation(libs.androidx.lifecycle.runtime)
             implementation(libs.androidx.lifecycle.process)
