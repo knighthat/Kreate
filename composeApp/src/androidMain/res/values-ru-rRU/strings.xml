@@ -866,4 +866,5 @@
     <string name="disabled">отключен</string>
     <string name="settings_live_wallpaper_reset_warning"> WARNING: this will switch back to your manufacturer’s default wallpaper. Unfortunately it is difficult to revert to your previous wallpaper</string>
     <string name="ok">ок</string>
+    <string name="setting_entry_thumbnail_size">Thumbnail size</string>
 </resources>
