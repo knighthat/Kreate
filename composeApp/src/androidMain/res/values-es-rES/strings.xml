@@ -864,4 +864,5 @@
     <string name="disabled">deshabilitado</string>
     <string name="settings_live_wallpaper_reset_warning"> ADVERTENCIA: esto cambiará al fondo de pantalla predeterminado del fabricante. Desafortunadamente, es difícil volver al fondo de pantalla anterior</string>
     <string name="ok">aceptar</string>
+    <string name="setting_entry_thumbnail_size">Thumbnail size</string>
 </resources>
