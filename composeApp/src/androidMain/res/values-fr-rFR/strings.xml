@@ -867,4 +867,5 @@ Volume BAS : titre précédent</string>
     <string name="disabled">désactivé</string>
     <string name="settings_live_wallpaper_reset_warning"> ATTENTION : cette action rétablira le fond d’écran par défaut de votre appareil. Malheureusement, il est difficile de revenir à votre fond d’écran précédent.</string>
     <string name="ok">OK</string>
+    <string name="setting_entry_thumbnail_size">Thumbnail size</string>
 </resources>
