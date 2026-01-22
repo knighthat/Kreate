@@ -23,6 +23,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
@@ -50,8 +51,12 @@ object AlbumItem: Visual(), MultiplatformItem {
     const val ROW_SPACING = VERTICAL_SPACING * 4
     const val COLUMN_SPACING = HORIZONTAL_SPACING
 
+    const val MENU_THUMBNAIL_SIZE = 74
+
     override val platformIndicatorType: PlatformIndicatorType by Preferences.ALBUMS_PLATFORM_INDICATOR
     override val thumbnailRoundnessPercent: Preferences.Int = Preferences.ALBUM_THUMBNAIL_ROUNDNESS_PERCENT
+
+    override fun thumbnailSize() = DpSize(Preferences.ALBUM_THUMBNAIL_SIZE.value.dp, Preferences.ALBUM_THUMBNAIL_SIZE.value.dp)
 
     /**
      * Text is clipped if exceeds length limit, plus,
@@ -137,15 +142,15 @@ object AlbumItem: Visual(), MultiplatformItem {
     fun Thumbnail(
         albumId: String,
         thumbnailUrl: String?,
-        widthDp: Dp,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize()
     ) =
-        Box(
-            modifier.requiredSize( widthDp )
-                    .padding( bottom = VERTICAL_SPACING.dp )
+        Thumbnail(
+            url = thumbnailUrl,
+            contentScale = ContentScale.FillWidth,
+            modifier = modifier.padding( bottom = VERTICAL_SPACING.dp ),
+            sizeDp = sizeDp
         ) {
-            Thumbnail( thumbnailUrl, ContentScale.FillWidth )
-
             if( albumId.startsWith( "MPREb_" ) )
                 PlatformIndicator()
         }
@@ -209,15 +214,15 @@ object AlbumItem: Visual(), MultiplatformItem {
 
     @Composable
     fun VerticalPlaceholder(
-        widthDp: Dp,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showTitle: Boolean = false
     ) =
         VerticalStructure(
-            widthDp = widthDp,
+            widthDp = sizeDp.width,
             modifier = modifier,
             thumbnail = {
-                ItemUtils.ThumbnailPlaceholder( widthDp )
+                ItemUtils.ThumbnailPlaceholder( sizeDp )
             },
             firstLine = st@ {
                 if( !showTitle ) return@st
@@ -236,20 +241,20 @@ object AlbumItem: Visual(), MultiplatformItem {
     @Composable
     fun Vertical(
         album: Album,
-        widthDp: Dp,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showYear: Boolean = true,
         showArtists: Boolean = true,
         onClick: () -> Unit = {},
         onLongClick: () -> Unit = {}
     ) =
         VerticalStructure(
-            widthDp = widthDp,
+            widthDp = sizeDp.width,
             modifier = modifier,
             thumbnail = {
-                Thumbnail( album.id, album.cleanThumbnailUrl(), widthDp )
+                Thumbnail( album.id, album.cleanThumbnailUrl(), sizeDp = sizeDp )
             },
             firstLine = {
                 Title(
@@ -293,20 +298,20 @@ object AlbumItem: Visual(), MultiplatformItem {
     @Composable
     fun Horizontal(
         album: Album,
-        heightDp: Dp,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showYear: Boolean = true,
         showArtists: Boolean = true,
         onClick: () -> Unit = {},
         onLongClick: () -> Unit = {}
     ) =
         HorizontalStructure(
-            heightDp = heightDp,
+            heightDp = sizeDp.height,
             modifier = modifier,
             thumbnail = {
-                Thumbnail( album.id, album.cleanThumbnailUrl(), heightDp )
+                Thumbnail( album.id, album.cleanThumbnailUrl(), sizeDp = sizeDp )
             },
             firstLine = {
                 Title(
@@ -351,43 +356,43 @@ object AlbumItem: Visual(), MultiplatformItem {
     @Composable
     fun Horizontal(
         innertubeAlbum: Innertube.AlbumItem,
-        heightDp: Dp,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showYear: Boolean = true,
         showArtists: Boolean = true,
         onClick: () -> Unit = {},
         onLongClick: () -> Unit = {}
-    ) = Horizontal( innertubeAlbum.asAlbum, heightDp, values, navController, modifier, showYear, showArtists, onClick, onLongClick )
+    ) = Horizontal( innertubeAlbum.asAlbum, values, navController, modifier, sizeDp, showYear, showArtists, onClick, onLongClick )
 
     @Composable
     fun Vertical(
         innertubeAlbum: Innertube.AlbumItem,
-        widthDp: Dp,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showYear: Boolean = true,
         showArtists: Boolean = true,
         onClick: () -> Unit = {},
         onLongClick: () -> Unit = {}
     ) =
-        Vertical( innertubeAlbum.asAlbum, widthDp, values, navController, modifier, showYear, showArtists, onClick, onLongClick )
+        Vertical( innertubeAlbum.asAlbum, values, navController, modifier, sizeDp, showYear, showArtists, onClick, onLongClick )
 
     @Composable
     fun Vertical(
         innertubeAlbum: InnertubeAlbum,
-        widthDp: Dp,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showYear: Boolean = true,
         showArtists: Boolean = true,
         onClick: () -> Unit = {},
         onLongClick: () -> Unit = {}
     ) =
-        Vertical( innertubeAlbum.toAlbum, widthDp, values, navController, modifier,showYear, showArtists, onClick, onLongClick )
+        Vertical( innertubeAlbum.toAlbum, values, navController, modifier, sizeDp, showYear, showArtists, onClick, onLongClick )
 
     data class Values(
         val titleTextStyle: TextStyle,

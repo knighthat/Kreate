@@ -43,7 +43,6 @@ import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.secondary
 import kotlinx.coroutines.Dispatchers
@@ -62,9 +61,6 @@ fun NewAlbumsFromArtists(
     LaunchedEffect(Unit) {
         discoverPage = Innertube.discoverPageNewAlbums()
     }
-
-    val thumbnailSizeDp = Dimensions.thumbnails.album + 24.dp
-    val thumbnailSizePx = thumbnailSizeDp.px
 
     val navigationBarPosition by Preferences.NAVIGATION_BAR_POSITION
     val showSearchTab by Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR
@@ -136,7 +132,7 @@ fun NewAlbumsFromArtists(
                         items = newReleaseAlbumsFiltered.distinct(),
                         key = System::identityHashCode
                     ) { album ->
-                        AlbumItem.Vertical( album, thumbnailSizeDp, albumItemValues, navController )
+                        AlbumItem.Vertical( album, albumItemValues, navController )
                     }
                 } else {
                     item(

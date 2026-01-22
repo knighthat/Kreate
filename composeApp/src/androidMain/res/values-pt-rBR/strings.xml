@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Terminar</string>
     <string name="hidesong">Você realmente quer esconder essa música? O tempo de reprodução e a memória transitória serão apagados. Esta ação é irreversível.</string>
@@ -864,4 +864,5 @@
     <string name="disabled">desativado</string>
     <string name="settings_live_wallpaper_reset_warning"> AVISO: isto irá voltar para o papel de parede padrão do fabricante. Infelizmente, é difícil reverter para seu papel de parede anterior</string>
     <string name="ok">ok</string>
+    <string name="setting_entry_thumbnail_size">Thumbnail size</string>
 </resources>

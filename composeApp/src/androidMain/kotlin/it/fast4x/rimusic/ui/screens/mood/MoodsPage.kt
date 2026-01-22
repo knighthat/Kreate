@@ -60,7 +60,6 @@ fun MoodsPage(
     LaunchedEffect(Unit) {
         discoverPage = Innertube.discoverPage()
     }
-    val thumbnailSizeDp = Dimensions.thumbnails.album + 24.dp
 
     val moodAngGenresLazyGridState = rememberLazyGridState()
 
@@ -88,7 +87,7 @@ fun MoodsPage(
             repeat(4) {
                 Row {
                     repeat(6) {
-                        AlbumItem.VerticalPlaceholder( thumbnailSizeDp )
+                        AlbumItem.VerticalPlaceholder()
                     }
                 }
             }
@@ -131,7 +130,7 @@ fun MoodsPage(
                                         navController.currentBackStackEntry?.savedStateHandle?.set("mood", it.toUiMood())
                                         NavRoutes.mood.navigateHere( navController )
                                     } },
-                                    thumbnailSizeDp = thumbnailSizeDp,
+                                    thumbnailSizeDp = AlbumItem.thumbnailSize().width,
                                     modifier = Modifier
                                         .animateItem()
 

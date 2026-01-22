@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
@@ -52,9 +53,7 @@ import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.typography
-import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.isNetworkConnected
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.Dispatchers
@@ -107,11 +106,6 @@ fun PlaylistsItemGridMenu(
     }
 
     val binder = LocalPlayerServiceBinder.current
-    val thumbnailSizeDp = Dimensions.thumbnails.song + 20.dp
-    val thumbnailSizePx = thumbnailSizeDp.px
-    val thumbnailArtistSizeDp = Dimensions.thumbnails.song + 10.dp
-    val thumbnailArtistSizePx = thumbnailArtistSizeDp.px
-
 
     AnimatedContent(
         targetState = isViewingPlaylists,
@@ -364,12 +358,13 @@ fun PlaylistsItemGridMenu(
                         val playlistItemValues = remember( appearance ) {
                             PlaylistItem.Values.from( appearance )
                         }
+                        val sizeDp = DpSize(PlaylistItem.MENU_THUMBNAIL_SIZE.dp, PlaylistItem.MENU_THUMBNAIL_SIZE.dp)
 
                         PlaylistItem.Horizontal(
                             playlist = preview.playlist,
-                            heightDp = thumbnailSizeDp,
                             values = playlistItemValues,
                             modifier = Modifier.height( 90.dp ),
+                            sizeDp = sizeDp,
                             songCount = preview.songCount,
                             navController = null
                         )

@@ -40,6 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
@@ -146,6 +147,9 @@ fun HomeAlbums(
         Sort(menuState, Preferences.HOME_ALBUMS_SORT_BY, Preferences.HOME_ALBUM_SORT_ORDER)
     }
     val itemSize = remember { ItemSize(Preferences.HOME_ALBUM_ITEM_SIZE, menuState) }
+    val sizeDp by remember {derivedStateOf {
+        DpSize(itemSize.size.dp, itemSize.size.dp)
+    }}
 
     val randomizer = object: Randomizer<Album> {
         override fun getItems(): List<Album> = itemsOnDisplay
@@ -371,9 +375,9 @@ fun HomeAlbums(
                     ) { album ->
                         AlbumItem.Vertical(
                             innertubeAlbum = album,
-                            widthDp = itemSize.size.dp,
                             values = albumItemValues,
                             navController = navController,
+                            sizeDp = sizeDp,
                             onClick = search::hideIfEmpty
                         )
                     }
@@ -443,9 +447,9 @@ fun HomeAlbums(
 
                         AlbumItem.Vertical(
                             album = album,
-                            widthDp = itemSize.size.dp,
                             values = albumItemValues,
                             navController = navController,
+                            sizeDp = sizeDp,
                             onLongClick = {
                                 menuState.display {
                                     AlbumsItemMenu(

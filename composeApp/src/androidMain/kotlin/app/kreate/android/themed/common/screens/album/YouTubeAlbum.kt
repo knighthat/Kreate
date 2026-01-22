@@ -45,7 +45,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastAll
@@ -89,7 +88,6 @@ import it.fast4x.rimusic.ui.components.themed.PlayNext
 import it.fast4x.rimusic.ui.components.themed.PlaylistsMenu
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
@@ -160,9 +158,7 @@ private fun updateAlbumInDatabase(dbAlbum: Album?, innertubeAlbum: InnertubeAlbu
 private fun LazyListScope.renderSection(
     navController: NavController,
     section: Section,
-    sectionTextModifier: Modifier,
-    albumThumbnailSizePx: Int,
-    albumThumbnailSizeDp: Dp
+    sectionTextModifier: Modifier
 ) {
     stickyHeader( System.identityHashCode( section ) ) {
         Text(
@@ -191,7 +187,7 @@ private fun LazyListScope.renderSection(
                     items = it,
                     key = InnertubeAlbum::id
                 ) { item ->
-                    AlbumItem.Vertical( item, albumThumbnailSizeDp, albumItemValues, navController )
+                    AlbumItem.Vertical( item, albumItemValues, navController )
                 }
             }
         }
@@ -237,9 +233,6 @@ fun YouTubeAlbum(
         val sectionTextModifier = remember {
             Modifier.padding( 16.dp, 24.dp, 16.dp, 8.dp )
         }
-        val albumThumbnailSizeDp = 108.dp
-        val albumThumbnailSizePx = albumThumbnailSizeDp.px
-        val thumbnailSizeDp = Dimensions.thumbnails.song
 
         //<editor-fold desc="Buttons">
         val itemSelector = remember {
@@ -508,7 +501,7 @@ fun YouTubeAlbum(
                                                                 ),
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis,
-                                            modifier = Modifier.width( thumbnailSizeDp )
+                                            modifier = Modifier.width( SongItem.thumbnailSize().width )
                                                                .align( Alignment.Center )
                                         )
                                     },
@@ -537,9 +530,7 @@ fun YouTubeAlbum(
                         }
 
                     albumPage?.sections?.fastForEach {
-                        renderSection(
-                            navController, it, sectionTextModifier, albumThumbnailSizePx, albumThumbnailSizeDp
-                        )
+                        renderSection( navController, it, sectionTextModifier )
                     }
 
                     albumPage?.description?.also( this::renderDescription )

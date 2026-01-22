@@ -83,6 +83,26 @@ private fun ThumbnailRoundnessSlider( preference: Preferences.Int ) =
         )
     }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ThumbnailSizeSlider(
+    preference: Preferences.Int,
+    constraints: String,
+    valueRange: ClosedFloatingPointRange<Float>,
+    steps: Int
+) =
+    SettingComponents.SliderEntry(
+        preference = preference,
+        title = stringResource( R.string.setting_entry_thumbnail_size ),
+        constraints = constraints,
+        valueRange = valueRange,
+        steps = steps,
+        onTextDisplay = { it.roundToInt().toString() },
+        onValueChangeFinished = { pref, value ->
+            pref.value = value.roundToInt()
+        }
+    )
+
 @Composable
 fun UiSettings( paddingValues: PaddingValues ) {
     val scrollState = rememberLazyListState()
@@ -326,6 +346,14 @@ fun UiSettings( paddingValues: PaddingValues ) {
             entry( search, R.string.thumbnail_roundness, "songThumbnailRoundness" ) {
                 ThumbnailRoundnessSlider( Preferences.SONG_THUMBNAIL_ROUNDNESS_PERCENT )
             }
+            entry( search, R.string.setting_entry_thumbnail_size, "songThumbnailSize" ) {
+                ThumbnailSizeSlider(
+                    preference = Preferences.SONG_THUMBNAIL_SIZE,
+                    constraints = InputDialogConstraints.SONG_THUMBNAIL_SIZE,
+                    valueRange = 30f..80f,
+                    steps = 49
+                )
+            }
 
             header( R.string.playlists )
             item {
@@ -360,6 +388,14 @@ fun UiSettings( paddingValues: PaddingValues ) {
             entry( search, R.string.thumbnail_roundness, "playlistThumbnailRoundness" ) {
                 ThumbnailRoundnessSlider( Preferences.PLAYLIST_THUMBNAIL_ROUNDNESS_PERCENT )
             }
+            entry( search, R.string.setting_entry_thumbnail_size, "playlistThumbnailSize" ) {
+                ThumbnailSizeSlider(
+                    preference = Preferences.PLAYLIST_THUMBNAIL_SIZE,
+                    constraints = InputDialogConstraints.ALBUM_THUMBNAIL_SIZE,
+                    valueRange = 100f..170f,
+                    steps = 69
+                )
+            }
 
             header( R.string.albums )
             entry( search, R.string.setting_entry_platform_indicator, "albumsPlatformIndicator" ) {
@@ -371,7 +407,14 @@ fun UiSettings( paddingValues: PaddingValues ) {
             entry( search, R.string.thumbnail_roundness, "albumThumbnailRoundness" ) {
                 ThumbnailRoundnessSlider( Preferences.ALBUM_THUMBNAIL_ROUNDNESS_PERCENT )
             }
-
+            entry( search, R.string.setting_entry_thumbnail_size, "albumThumbnailSize" ) {
+                ThumbnailSizeSlider(
+                    preference = Preferences.ALBUM_THUMBNAIL_SIZE,
+                    constraints = InputDialogConstraints.ALBUM_THUMBNAIL_SIZE,
+                    valueRange = 100f..170f,
+                    steps = 69
+                )
+            }
 
             header( R.string.artists )
             entry( search, R.string.setting_entry_platform_indicator, "artistsPlatformIndicator" ) {
@@ -382,6 +425,14 @@ fun UiSettings( paddingValues: PaddingValues ) {
             }
             entry( search, R.string.thumbnail_roundness, "artistThumbnailRoundness" ) {
                 ThumbnailRoundnessSlider( Preferences.ARTIST_THUMBNAIL_ROUNDNESS_PERCENT )
+            }
+            entry( search, R.string.setting_entry_thumbnail_size, "artistThumbnailSize" ) {
+                ThumbnailSizeSlider(
+                    preference = Preferences.ARTIST_THUMBNAIL_SIZE,
+                    constraints = InputDialogConstraints.ALBUM_THUMBNAIL_SIZE,
+                    valueRange = 100f..170f,
+                    steps = 69
+                )
             }
 
             header( R.string.smart_recommendations )

@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
@@ -44,7 +43,7 @@ object ItemUtils {
 
     @Composable
     fun ThumbnailPlaceholder(
-        sizeDp: Dp,
+        sizeDp: DpSize,
         modifier: Modifier = Modifier
     ) =
         Box( modifier.size( sizeDp ).clip(thumbnailShape() ).shimmerEffect() )
@@ -55,7 +54,6 @@ object ItemUtils {
     fun LazyRowItem(
         navController: NavController,
         innertubeItems: List<Innertube.Item>,
-        thumbnailSizeDp: Dp,
         currentlyPlaying: String?,
         modifier: Modifier = Modifier
     ) {
@@ -105,8 +103,7 @@ object ItemUtils {
                             hapticFeedback = hapticFeedback,
                             isPlaying = currentlyPlaying == childItem.key,
                             values = songItemValues,
-                            // Made-up number
-                            thumbnailSizeDp = DpSize(thumbnailSizeDp, thumbnailSizeDp),
+                            thumbnailSizeDp = SongItem.thumbnailSize(),
                             onClick = {
                                 binder.stopRadio()
                                 if ( isVideoEnabled() )
@@ -119,21 +116,18 @@ object ItemUtils {
 
                     is Innertube.AlbumItem -> AlbumItem.Vertical(
                         innertubeAlbum = childItem,
-                        widthDp = thumbnailSizeDp,
                         values = albumItemValues,
                         navController = navController
                     )
 
                     is Innertube.ArtistItem -> ArtistItem.Render(
                         innertubeArtist = childItem,
-                        widthDp = thumbnailSizeDp,
                         values = artistItemValues,
                         navController = navController
                     )
 
                     is Innertube.PlaylistItem -> PlaylistItem.Vertical(
                         innertubePlaylist = childItem,
-                        widthDp = thumbnailSizeDp,
                         values = playlistItemValues,
                         navController = navController
                     )
@@ -147,7 +141,6 @@ object ItemUtils {
     fun LazyRowItem(
         navController: NavController,
         innertubeItems: List<InnertubeItem>,
-        thumbnailSizeDp: Dp,
         currentlyPlaying: String?,
         modifier: Modifier = Modifier
     ) {
@@ -188,21 +181,18 @@ object ItemUtils {
 
                     is InnertubeAlbum -> AlbumItem.Vertical(
                         innertubeAlbum = item,
-                        widthDp = thumbnailSizeDp,
                         values = albumIV,
                         navController = navController
                     )
 
                     is InnertubeArtist -> ArtistItem.Render(
                         innertubeArtist = item,
-                        widthDp = thumbnailSizeDp,
                         values = artistIV,
                         navController = navController
                     )
 
                     is InnertubePlaylist -> PlaylistItem.Vertical(
                         innertubePlaylist = item,
-                        widthDp = thumbnailSizeDp,
                         values = playlistIV,
                         navController = navController
                     )

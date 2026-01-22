@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
@@ -53,9 +54,7 @@ import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.typography
-import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.isNetworkConnected
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.Dispatchers
@@ -92,9 +91,6 @@ fun AlbumsItemGridMenu(
     var height by remember {
         mutableStateOf(0.dp)
     }
-
-    val thumbnailSizeDp = Dimensions.thumbnails.song + 20.dp
-    val thumbnailSizePx = thumbnailSizeDp.px
 
         AnimatedContent(
             targetState = isViewingPlaylists,
@@ -348,8 +344,9 @@ fun AlbumsItemGridMenu(
                         val albumItemValues = remember( appearance ) {
                             AlbumItem.Values.from( appearance )
                         }
+                        val sizeDp = DpSize(AlbumItem.MENU_THUMBNAIL_SIZE.dp, AlbumItem.MENU_THUMBNAIL_SIZE.dp)
 
-                        AlbumItem.Horizontal( album, thumbnailSizeDp, albumItemValues, navController )
+                        AlbumItem.Horizontal( album, albumItemValues, navController, sizeDp = sizeDp )
                     }
                 ) {
 

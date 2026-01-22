@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Tamam</string>
     <string name="hidesong">Bu şarkıyı gerçekten gizlemek istiyor musunuz? Çalma süresi ve önbelleği silinecek. Bu işlem geri alınamaz.</string>
@@ -864,4 +864,5 @@
     <string name="disabled">devre dışı</string>
     <string name="settings_live_wallpaper_reset_warning"> UYARI: Bu işlem, üreticinizin varsayılan duvar kağıdına geri dönecektir. Maalesef önceki duvar kağıdınıza geri dönmek zordur</string>
     <string name="ok">tamam</string>
+    <string name="setting_entry_thumbnail_size">Thumbnail size</string>
 </resources>

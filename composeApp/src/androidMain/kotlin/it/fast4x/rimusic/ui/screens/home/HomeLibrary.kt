@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMapNotNull
@@ -133,6 +134,9 @@ fun HomeLibrary(
         Sort(menuState, Preferences.HOME_LIBRARY_SORT_BY, Preferences.HOME_LIBRARY_SORT_ORDER)
     }
     val itemSize = remember { ItemSize(Preferences.HOME_LIBRARY_ITEM_SIZE, menuState) }
+    val sizeDp by remember {derivedStateOf {
+        DpSize(itemSize.size.dp, itemSize.size.dp)
+    }}
 
     //<editor-fold desc="Songs shuffler">
     /**
@@ -281,9 +285,9 @@ fun HomeLibrary(
                     ) { playlist ->
                         PlaylistItem.Vertical(
                             innertubePlaylist = playlist,
-                            widthDp = itemSize.size.dp,
                             values = playlistItemValues,
                             navController = null,
+                            sizeDp = sizeDp,
                             onClick = {
                                 search.hideIfEmpty()
 
@@ -300,10 +304,10 @@ fun HomeLibrary(
                     ) { preview ->
                         PlaylistItem.Vertical(
                             playlist = preview.playlist,
-                            widthDp = itemSize.size.dp,
                             values = playlistItemValues,
                             songCount = preview.songCount,
                             navController = navController,
+                            sizeDp = sizeDp,
                             onClick = search::hideIfEmpty
                         )
                     }

@@ -8,13 +8,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -68,7 +65,6 @@ import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
 import it.fast4x.rimusic.ui.components.themed.NonQueuedMediaItemMenu
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.ui.styling.shimmer
 import it.fast4x.rimusic.utils.UpdateYoutubeAlbum
 import it.fast4x.rimusic.utils.UpdateYoutubeArtist
@@ -104,23 +100,11 @@ fun StatisticsPage(
     val menuState = LocalMenuState.current
     val windowInsets = LocalPlayerAwareWindowInsets.current
 
-    val albumThumbnailSizeDp = 108.dp
-    val albumThumbnailSizePx = albumThumbnailSizeDp.px
-    val artistThumbnailSizeDp = 92.dp
-    val artistThumbnailSizePx = artistThumbnailSizeDp.px
-    val playlistThumbnailSizeDp = 108.dp
-    val playlistThumbnailSizePx = playlistThumbnailSizeDp.px
-
-    val endPaddingValues = windowInsets.only(WindowInsetsSides.End).asPaddingValues()
-
     val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
 
     val showStatsListeningTime by Preferences.SHOW_LISTENING_STATS
 
     val context = LocalContext.current
-
-    val thumbnailSizeDp = Dimensions.thumbnails.song
-    val thumbnailSize = thumbnailSizeDp.px
 
     val maxStatisticsItems by Preferences.MAX_NUMBER_OF_STATISTIC_ITEMS
     val from = remember( statisticsType ) { statisticsType.timeStampInMillis() }
@@ -209,7 +193,7 @@ fun StatisticsPage(
             LazyVerticalGrid(
                 state = lazyGridState,
                 columns = GridCells.Adaptive(
-                    if(statisticsCategory == StatisticsCategory.Songs) 200.dp else playlistThumbnailSizeDp
+                    if(statisticsCategory == StatisticsCategory.Songs) 200.dp else PlaylistItem.thumbnailSize().width
                 ),
                 modifier = Modifier
                     .background(colorPalette().background0)
@@ -318,7 +302,7 @@ fun StatisticsPage(
                                     style = typography().s.semiBold.center.color(colorPalette().text),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.width( thumbnailSizeDp )
+                                    modifier = Modifier.width( SongItem.thumbnailSize().width )
                                                        .align( Alignment.Center )
                                 )
                             },
@@ -351,7 +335,6 @@ fun StatisticsPage(
 
                         ArtistItem.Render(
                             artist = artist,
-                            widthDp = artistThumbnailSizeDp,
                             values = artistItemValues,
                             navController = navController
                         )
@@ -366,7 +349,6 @@ fun StatisticsPage(
 
                         AlbumItem.Vertical(
                             album = album,
-                            widthDp = albumThumbnailSizeDp,
                             values = albumItemValues,
                             showArtists = false,
                             showYear = false,
@@ -381,7 +363,6 @@ fun StatisticsPage(
                     ) { preview ->
                         PlaylistItem.Vertical(
                             playlist = preview.playlist,
-                            widthDp = playlistThumbnailSizeDp,
                             values = playlistItemValues,
                             songCount = preview.songCount,
                             navController = null,

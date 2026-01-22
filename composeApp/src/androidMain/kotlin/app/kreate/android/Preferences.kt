@@ -147,6 +147,18 @@ sealed class Preferences<T>(
         val HOME_LIBRARY_ITEM_SIZE by lazy {
             Enum( preferences, "HomeLibraryItemSize", "LibraryItemSizeEnum", HomeItemSize.SMALL )
         }
+        val SONG_THUMBNAIL_SIZE by lazy {
+            Int(preferences, "SongItemSize", "", 54)
+        }
+        val ALBUM_THUMBNAIL_SIZE by lazy {
+            Int(preferences, "AlbumItemSize", "", 128)
+        }
+        val ARTIST_THUMBNAIL_SIZE by lazy {
+            Int(preferences, "ArtistItemSize", "", 128)
+        }
+        val PLAYLIST_THUMBNAIL_SIZE by lazy {
+            Int(preferences, "PlaylistItemSize", "", 128)
+        }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Sort by">
         val HOME_SONGS_SORT_BY by lazy {

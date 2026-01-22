@@ -204,9 +204,6 @@ fun SearchResultScreen(
                 }
 
                 1 -> {
-                    val thumbnailSizeDp = 108.dp
-                    val thumbnailSizePx = thumbnailSizeDp.px
-
                     ItemsPage(
                         tag = "searchResults/$query/albums",
                         itemsPageProvider = { continuation ->
@@ -386,19 +383,16 @@ fun SearchResultScreen(
                                     AlbumItem.Values.from( appearance )
                                 }
 
-                                AlbumItem.Horizontal( album, thumbnailSizeDp, albumItemValues, navController )
+                                AlbumItem.Horizontal( album, albumItemValues, navController )
                             }
                         },
                         itemPlaceholderContent = {
-                            AlbumItem.VerticalPlaceholder( thumbnailSizeDp )
+                            AlbumItem.VerticalPlaceholder()
                         }
                     )
                 }
 
                 2 -> {
-                    val thumbnailSizeDp = 64.dp
-                    val thumbnailSizePx = thumbnailSizeDp.px
-
                     val artistItemValues = remember( colorPalette, typography ) {
                         ArtistItem.Values.from( colorPalette, typography )
                     }
@@ -424,10 +418,10 @@ fun SearchResultScreen(
                         emptyItemsText = emptyItemsText,
                         headerContent = headerContent,
                         itemContent = { artist ->
-                            ArtistItem.Render( artist, thumbnailSizeDp, artistItemValues, navController )
+                            ArtistItem.Render( artist, artistItemValues, navController )
                         },
                         itemPlaceholderContent = {
-                            ArtistItem.Placeholder( thumbnailSizeDp )
+                            ArtistItem.Placeholder()
                         }
                     )
                 }
@@ -508,9 +502,6 @@ fun SearchResultScreen(
                 }
 
                 4, 5 -> {
-                    val thumbnailSizeDp = Dimensions.thumbnails.playlist
-                    val thumbnailSizePx = thumbnailSizeDp.px
-
                     val playlistItemValues = remember( colorPalette, typography ) {
                         PlaylistItem.Values.from( colorPalette, typography )
                     }
@@ -545,13 +536,12 @@ fun SearchResultScreen(
                         itemContent = { playlist ->
                             PlaylistItem.Horizontal(
                                 innertubePlaylist = playlist,
-                                heightDp = thumbnailSizeDp,
                                 values = playlistItemValues,
                                 navController = navController
                             )
                         },
                         itemPlaceholderContent = {
-                            PlaylistItem.VerticalPlaceholder( thumbnailSizeDp )
+                            PlaylistItem.VerticalPlaceholder()
                         }
                     )
                 }
@@ -586,7 +576,6 @@ fun SearchResultScreen(
                         itemContent = { playlist ->
                             PlaylistItem.Vertical(
                                 innertubePlaylist = playlist,
-                                widthDp = thumbnailSizeDp,
                                 values = playlistItemValues,
                                 navController = null,
                                 modifier = Modifier.clickable {
@@ -595,7 +584,7 @@ fun SearchResultScreen(
                             )
                         },
                         itemPlaceholderContent = {
-                            PlaylistItem.VerticalPlaceholder( thumbnailSizeDp )
+                            PlaylistItem.VerticalPlaceholder()
                         }
                     )
                 }

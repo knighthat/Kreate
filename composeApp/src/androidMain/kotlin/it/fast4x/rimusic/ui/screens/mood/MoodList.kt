@@ -45,7 +45,6 @@ import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.HeaderPlaceholder
 import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
 import it.fast4x.rimusic.ui.styling.Dimensions
-import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.secondary
 import it.fast4x.rimusic.utils.semiBold
@@ -69,9 +68,6 @@ fun MoodList(
     LaunchedEffect(Unit) {
         moodPage = Innertube.browse(BrowseBodyWithLocale(browseId = browseId, params = mood.params))
     }
-
-    val thumbnailSizeDp = Dimensions.thumbnails.album
-    val thumbnailSizePx = thumbnailSizeDp.px
 
     val lazyListState = rememberLazyListState()
 
@@ -99,7 +95,7 @@ fun MoodList(
             repeat(4) {
                 Row {
                     repeat(6) {
-                        AlbumItem.VerticalPlaceholder( thumbnailSizeDp )
+                        AlbumItem.VerticalPlaceholder()
                     }
                 }
             }
@@ -143,7 +139,6 @@ fun MoodList(
                             ItemUtils.LazyRowItem(
                                 navController = navController,
                                 innertubeItems = item.items.fastFilter { it.key != defaultBrowseId },
-                                thumbnailSizeDp = thumbnailSizeDp,
                                 // SongItem and VideoItem are not available here
                                 currentlyPlaying = null
                             )

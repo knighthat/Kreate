@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Fet</string>
     <string name="hidesong">Vols amagar aquesta cançó? El seu temps de reproducció i la memòria cau s\'esborrarà. Aquesta acció no es pot desfer.</string>
@@ -864,4 +864,5 @@
     <string name="disabled">disabled</string>
     <string name="settings_live_wallpaper_reset_warning"> WARNING: this will switch back to your manufacturer’s default wallpaper. Unfortunately it is difficult to revert to your previous wallpaper</string>
     <string name="ok">ok</string>
+    <string name="setting_entry_thumbnail_size">Thumbnail size</string>
 </resources>

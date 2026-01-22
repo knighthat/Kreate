@@ -1,12 +1,10 @@
 package app.kreate.android.themed.rimusic.component.artist
 
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +17,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
@@ -49,7 +48,9 @@ object ArtistItem: Visual(), MultiplatformItem {
     override val platformIndicatorType: PlatformIndicatorType by Preferences.ARTISTS_PLATFORM_INDICATOR
     override val thumbnailRoundnessPercent: Preferences.Int = Preferences.ARTIST_THUMBNAIL_ROUNDNESS_PERCENT
 
-        /**
+    override fun thumbnailSize() = DpSize(Preferences.ARTIST_THUMBNAIL_SIZE.value.dp, Preferences.ARTIST_THUMBNAIL_SIZE.value.dp)
+
+    /**
      * Text is clipped if exceeds length limit, plus,
      * conditional marquee effect is applied by default.
      *
@@ -80,16 +81,16 @@ object ArtistItem: Visual(), MultiplatformItem {
     fun Thumbnail(
         artistId: String,
         thumbnailUrl: String?,
-        widthDp: Dp,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showPlatformIcon: Boolean = true
     ) =
-        Box(
-            modifier.requiredSize( widthDp )
-                               .padding( bottom = VERTICAL_SPACING.dp ),
+        Thumbnail(
+            url = thumbnailUrl,
+            contentScale = ContentScale.FillWidth,
+            modifier = modifier.padding( bottom = VERTICAL_SPACING.dp ),
+            sizeDp = sizeDp
         ) {
-            Thumbnail( thumbnailUrl, ContentScale.FillWidth )
-
             if( showPlatformIcon && artistId.startsWith( "UC" ) )
                 PlatformIndicator()
         }
@@ -119,15 +120,15 @@ object ArtistItem: Visual(), MultiplatformItem {
 
     @Composable
     fun Placeholder(
-        widthDp: Dp,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showTitle: Boolean = false
     ) =
         Structure(
-            widthDp = widthDp,
+            widthDp = sizeDp.width,
             modifier = modifier,
             thumbnail = {
-                ItemUtils.ThumbnailPlaceholder( widthDp )
+                ItemUtils.ThumbnailPlaceholder( sizeDp )
             },
             firstLine = st@ {
                 if( !showTitle ) return@st
@@ -146,19 +147,19 @@ object ArtistItem: Visual(), MultiplatformItem {
     @Composable
     fun Render(
         artist: Artist,
-        widthDp: Dp,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showTitle: Boolean = true,
         onClick: () -> Unit = {},
         onLongClick: () -> Unit = {}
     ) =
         Structure(
-            widthDp = widthDp,
+            widthDp = sizeDp.width,
             modifier = modifier,
             thumbnail = {
-                Thumbnail( artist.id, artist.thumbnailUrl, widthDp )
+                Thumbnail( artist.id, artist.thumbnailUrl, sizeDp = sizeDp )
             },
             firstLine = st@ {
                 val cleanedName = artist.cleanName()
@@ -184,26 +185,26 @@ object ArtistItem: Visual(), MultiplatformItem {
     @Composable
     fun Render(
         innertubeArtist: Innertube.ArtistItem,
-        widthDp: Dp,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showTitle: Boolean = true,
         onClick: () -> Unit = {},
         onLongClick: () -> Unit = {}
-    ) = Render( innertubeArtist.asArtist, widthDp, values, navController, modifier, showTitle, onClick, onLongClick )
+    ) = Render( innertubeArtist.asArtist, values, navController, modifier, sizeDp, showTitle, onClick, onLongClick )
 
     @Composable
     fun Render(
         innertubeArtist: InnertubeArtist,
-        widthDp: Dp,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showTitle: Boolean = true,
         onClick: () -> Unit = {},
         onLongClick: () -> Unit = {}
-    ) = Render( innertubeArtist.toArtist, widthDp, values, navController, modifier, showTitle, onClick, onLongClick )
+    ) = Render( innertubeArtist.toArtist, values, navController, modifier, sizeDp, showTitle, onClick, onLongClick )
 
     data class Values(
         val titleTextStyle: TextStyle,

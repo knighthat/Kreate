@@ -78,7 +78,6 @@ import it.fast4x.rimusic.ui.components.themed.NonQueuedMediaItemMenu
 import it.fast4x.rimusic.ui.components.themed.TitleMiniSection
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.align
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
@@ -167,8 +166,6 @@ fun OnlineSearch(
     var downloadState by remember {
         mutableStateOf(Download.STATE_STOPPED)
     }
-    val songThumbnailSizeDp = Dimensions.thumbnails.song
-    val songThumbnailSizePx = songThumbnailSizeDp.px
     val menuState = LocalMenuState.current
     val hapticFeedback = LocalHapticFeedback.current
     val binder = LocalPlayerServiceBinder.current ?: return
@@ -375,7 +372,7 @@ fun OnlineSearch(
                             AlbumItem.Values.from( appearance )
                         }
 
-                        AlbumItem.Horizontal( album, songThumbnailSizeDp, albumItemValues, navController )
+                        AlbumItem.Horizontal( album, albumItemValues, navController )
                     }
                 }
                 suggestions.recommendedArtist?.let { artist ->
@@ -384,7 +381,7 @@ fun OnlineSearch(
                             ArtistItem.Values.from( appearance )
                         }
 
-                        ArtistItem.Render( artist, songThumbnailSizeDp, artistItemValues, navController )
+                        ArtistItem.Render( artist, artistItemValues, navController )
                     }
                 }
 

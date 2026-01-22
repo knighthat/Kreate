@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
@@ -136,6 +137,9 @@ fun HomeArtists(
         Sort(menuState, Preferences.HOME_ARTISTS_SORT_BY, Preferences.HOME_ARTISTS_SORT_ORDER)
     }
     val itemSize = remember { ItemSize(Preferences.HOME_ARTIST_ITEM_SIZE, menuState) }
+    val sizeDp by remember {derivedStateOf {
+        DpSize(itemSize.size.dp, itemSize.size.dp)
+    }}
 
     val randomizer = object: Randomizer<Artist> {
         override fun getItems(): List<Artist> = itemsOnDisplay
@@ -339,9 +343,9 @@ fun HomeArtists(
                     ) { artist ->
                         ArtistItem.Render(
                             innertubeArtist = artist,
-                            widthDp = itemSize.size.dp,
                             values = artistItemValues,
                             navController = navController,
+                            sizeDp = sizeDp,
                             onClick = search::hideIfEmpty
                         )
                     }
@@ -352,9 +356,9 @@ fun HomeArtists(
                     ) { artist ->
                         ArtistItem.Render(
                             artist = artist,
-                            widthDp = itemSize.size.dp,
                             values = artistItemValues,
                             navController = navController,
+                            sizeDp = sizeDp,
                             onClick = search::hideIfEmpty,
                         )
                     }

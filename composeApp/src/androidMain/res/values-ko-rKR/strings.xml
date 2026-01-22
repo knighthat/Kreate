@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">완료</string>
     <string name="hidesong">정말로 이 곡을 숨기실건가요? 재생 시간과 캐시는 지워집니다.\n이 작업은 되돌릴 수 없습니다.</string>
@@ -864,4 +864,5 @@
     <string name="disabled">비활성화</string>
     <string name="settings_live_wallpaper_reset_warning"> 경고: 이렇게 하면 제조사의 기본 배경화면으로 돌아갑니다. 안타깝게도 기존 배경화면으로 되돌리기는 어렵습니다</string>
     <string name="ok">확인</string>
+    <string name="setting_entry_thumbnail_size">Thumbnail size</string>
 </resources>

@@ -332,7 +332,7 @@ fun Podcast(
                                     .fillMaxWidth()
                                     .aspectRatio(4f / 3)
                             ) {
-                                AlbumItem.VerticalPlaceholder( 200.dp )
+                                AlbumItem.VerticalPlaceholder()
 
                                 BasicText(
                                     text = stringResource(R.string.info_wait_it_may_take_a_few_minutes),

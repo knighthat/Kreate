@@ -406,7 +406,7 @@ fun YouTubeArtist(
 
                         items( 2 ) {
                             ItemUtils.PlaceholderRowItem {
-                                AlbumItem.VerticalPlaceholder( Dimensions.thumbnails.album )
+                                AlbumItem.VerticalPlaceholder()
                             }
                         }
                     } else if( artistPage == null && songs.isNotEmpty() ) {
@@ -496,7 +496,6 @@ fun YouTubeArtist(
                                 ItemUtils.LazyRowItem(
                                     navController = navController,
                                     innertubeItems = items,
-                                    thumbnailSizeDp = albumThumbnailSizeDp,
                                     currentlyPlaying = null
                                 )
                             }

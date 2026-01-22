@@ -107,7 +107,6 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.onOverlay
 import it.fast4x.rimusic.ui.styling.overlay
-import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.DeletePlaylist
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
@@ -443,9 +442,6 @@ fun LocalPlaylistSongs(
     downloadAllDialog.Render()
     deleteDownloadsDialog.Render()
 
-    val playlistThumbnailSizeDp = Dimensions.thumbnails.playlist
-    val playlistThumbnailSizePx = playlistThumbnailSizeDp.px
-
     val rippleIndication = ripple(bounded = false)
 
     val playlistNotMonthlyType =
@@ -516,7 +512,6 @@ fun LocalPlaylistSongs(
                     playlist?.let {
                         PlaylistItem.Thumbnail(
                             playlist = it,
-                            sizeDp = playlistThumbnailSizeDp,
                             modifier = Modifier.padding( all = 14.dp ),
                             showPlatformIcon = false
                         )

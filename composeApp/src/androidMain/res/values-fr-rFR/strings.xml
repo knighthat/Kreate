@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Fait</string>
     <string name="hidesong">Voulez-vous vraiment masquer ce titre ? Son temps de lecture et son cache seront effacés. Cette action est irréversible.</string>
@@ -867,4 +867,5 @@ Volume BAS : titre précédent</string>
     <string name="disabled">désactivé</string>
     <string name="settings_live_wallpaper_reset_warning"> ATTENTION : cette action rétablira le fond d’écran par défaut de votre appareil. Malheureusement, il est difficile de revenir à votre fond d’écran précédent.</string>
     <string name="ok">OK</string>
+    <string name="setting_entry_thumbnail_size">Thumbnail size</string>
 </resources>

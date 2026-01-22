@@ -29,7 +29,6 @@ import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.ui.components.Skeleton
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.ui.styling.px
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,8 +45,6 @@ fun ArtistAlbums(
     val lazyGridState = rememberLazyGridState()
 
     var isRefreshing by remember { mutableStateOf( false ) }
-    val thumbnailSizeDp = Dimensions.thumbnails.album + 24.dp
-    val thumbnailSizePx = thumbnailSizeDp.px
 
     val albums = remember { mutableStateListOf<Innertube.AlbumItem>() }
     suspend fun fetchAlbums() {
@@ -113,7 +110,7 @@ fun ArtistAlbums(
                     items = albums.distinctBy( Innertube.AlbumItem::key ),
                     key = Innertube.AlbumItem::key
                 ) { album ->
-                    AlbumItem.Vertical( album, thumbnailSizeDp, albumItemValues, navController )
+                    AlbumItem.Vertical( album, albumItemValues, navController )
                 }
             }
         }

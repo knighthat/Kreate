@@ -36,7 +36,6 @@ import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.ui.styling.px
 
 @ExperimentalTextApi
 @UnstableApi
@@ -51,9 +50,6 @@ fun NewAlbums(
     LaunchedEffect(Unit) {
         discoverPage = Innertube.discoverPage()
     }
-
-    val thumbnailSizeDp = Dimensions.thumbnails.album + 24.dp
-    val thumbnailSizePx = thumbnailSizeDp.px
 
     val navigationBarPosition by Preferences.NAVIGATION_BAR_POSITION
 
@@ -110,7 +106,7 @@ fun NewAlbums(
                     items = page.newReleaseAlbums.distinct(),
                     key = System::identityHashCode
                 ) { album ->
-                    AlbumItem.Vertical( album, thumbnailSizeDp, albumItemValues, navController )
+                    AlbumItem.Vertical( album, albumItemValues, navController )
                 }
                 item(
                     key = "footer",

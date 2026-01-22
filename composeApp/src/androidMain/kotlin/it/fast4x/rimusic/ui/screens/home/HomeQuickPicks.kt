@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
@@ -105,7 +103,6 @@ import it.fast4x.rimusic.ui.components.themed.Title2Actions
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeLoggedIn
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.WelcomeMessage
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
@@ -298,15 +295,6 @@ fun HomeQuickPicks(
             refreshing = false
         }
     }
-
-    val songThumbnailSizeDp = Dimensions.thumbnails.song
-    val songThumbnailSizePx = songThumbnailSizeDp.px
-    val albumThumbnailSizeDp = 108.dp
-    val albumThumbnailSizePx = albumThumbnailSizeDp.px
-    val artistThumbnailSizeDp = 92.dp
-    val artistThumbnailSizePx = artistThumbnailSizeDp.px
-    val playlistThumbnailSizeDp = 108.dp
-    val playlistThumbnailSizePx = playlistThumbnailSizeDp.px
 
     val scrollState = rememberScrollState()
     val quickPicksLazyGridState = rememberLazyGridState()
@@ -619,7 +607,7 @@ fun HomeQuickPicks(
                                     items = newReleaseAlbumsFiltered.distinctBy { it.key },
                                     key = System::identityHashCode
                                 ) { album ->
-                                    AlbumItem.Vertical( album, albumThumbnailSizeDp, albumItemValues, navController )
+                                    AlbumItem.Vertical( album, albumItemValues, navController )
                                 }
                             }
 
@@ -640,7 +628,7 @@ fun HomeQuickPicks(
                                 items = page.newReleaseAlbums.distinctBy { it.key },
                                 key = System::identityHashCode
                             ) { album ->
-                                AlbumItem.Vertical( album, albumThumbnailSizeDp, albumItemValues, navController )
+                                AlbumItem.Vertical( album, albumItemValues, navController )
                             }
                         }
                     }
@@ -662,7 +650,7 @@ fun HomeQuickPicks(
                                 items = albums.distinctBy { it.key },
                                 key = System::identityHashCode
                             ) { album ->
-                                AlbumItem.Vertical( album, albumThumbnailSizeDp, albumItemValues, navController )
+                                AlbumItem.Vertical( album, albumItemValues, navController )
                             }
                         }
                     }
@@ -685,7 +673,6 @@ fun HomeQuickPicks(
                             ) { artist ->
                                 ArtistItem.Render(
                                     innertubeArtist = artist,
-                                    widthDp = artistThumbnailSizeDp,
                                     values = artistItemValues,
                                     navController = navController
                                 )
@@ -713,7 +700,6 @@ fun HomeQuickPicks(
                             ) { playlist ->
                                 PlaylistItem.Vertical(
                                     innertubePlaylist = playlist,
-                                    widthDp = playlistThumbnailSizeDp,
                                     values = playlistItemValues,
                                     navController = navController
                                 )
@@ -794,7 +780,6 @@ fun HomeQuickPicks(
                                 ) { preview ->
                                     PlaylistItem.Vertical(
                                         playlist = preview.playlist,
-                                        widthDp = playlistThumbnailSizeDp,
                                         values = playlistItemValues,
                                         showSongCount = false,
                                         navController = navController
@@ -874,7 +859,6 @@ fun HomeQuickPicks(
                                             ) { playlist ->
                                                 PlaylistItem.Vertical(
                                                     innertubePlaylist = playlist,
-                                                    widthDp = playlistThumbnailSizeDp,
                                                     values = playlistItemValues,
                                                     navController = navController
                                                 )
@@ -954,7 +938,7 @@ fun HomeQuickPicks(
                                                     horizontalArrangement = Arrangement.spacedBy( 10.dp ),
                                                     verticalAlignment = Alignment.CenterVertically,
                                                     modifier = Modifier.padding( start = 16.dp )
-                                                                       .requiredHeight( songThumbnailSizeDp )
+                                                                       .requiredHeight( ArtistItem.thumbnailSize().height )
                                                 ) {
                                                     BasicText(
                                                         text = artist.rank,
@@ -965,18 +949,15 @@ fun HomeQuickPicks(
                                                         overflow = TextOverflow.Ellipsis
                                                     )
 
-                                                    Box( Modifier.requiredSize( songThumbnailSizeDp ) ) {
-                                                        ArtistItem.Thumbnail(
-                                                            artistId = artist.id,
-                                                            thumbnailUrl = artist.thumbnails.firstOrNull()?.url,
-                                                            widthDp = songThumbnailSizeDp,
-                                                            showPlatformIcon = false
-                                                        )
-                                                    }
+                                                    ArtistItem.Thumbnail(
+                                                        artistId = artist.id,
+                                                        thumbnailUrl = artist.thumbnails.firstOrNull()?.url,
+                                                        showPlatformIcon = false
+                                                    )
 
                                                     Column(
                                                         verticalArrangement = Arrangement.Center,
-                                                        modifier = Modifier.requiredHeight( songThumbnailSizeDp )
+                                                        modifier = Modifier.fillMaxHeight()
                                                     ) {
                                                         ArtistItem.Title(
                                                             title = artist.name,
@@ -1022,7 +1003,6 @@ fun HomeQuickPicks(
                         ItemUtils.LazyRowItem(
                             navController = navController,
                             innertubeItems = it.items.fastFilterNotNull(),
-                            thumbnailSizeDp = albumThumbnailSizeDp,
                             currentlyPlaying = currentMediaItem?.mediaId
                         )
                     }
@@ -1052,7 +1032,7 @@ fun HomeQuickPicks(
                         )
 
                         ItemUtils.PlaceholderRowItem {
-                            AlbumItem.VerticalPlaceholder( albumThumbnailSizeDp )
+                            AlbumItem.VerticalPlaceholder()
                         }
                     }
                 }

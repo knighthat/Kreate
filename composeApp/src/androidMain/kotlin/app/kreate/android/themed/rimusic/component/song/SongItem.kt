@@ -92,6 +92,8 @@ object SongItem: Visual() {
     val itemShape: Shape by lazy { RoundedCornerShape(10.dp) }
     override val thumbnailRoundnessPercent: Preferences.Int = Preferences.SONG_THUMBNAIL_ROUNDNESS_PERCENT
 
+    override fun thumbnailSize() = DpSize(Preferences.SONG_THUMBNAIL_SIZE.value.dp, Preferences.SONG_THUMBNAIL_SIZE.value.dp)
+
     /**
      * Text is clipped if exceeds length limit, plus,
      * conditional marquee effect is applied by default.
@@ -296,17 +298,17 @@ object SongItem: Visual() {
         isPlaying: Boolean = false ,
         isLiked: Boolean = false,
         showThumbnail: Boolean = true,
-        sizeDp: DpSize = DpSize(Dimensions.thumbnails.song, Dimensions.thumbnails.song),
+        sizeDp: DpSize = thumbnailSize(),
         thumbnailOverlay: @Composable BoxScope.() -> Unit = {}
     ) =
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = modifier.size( sizeDp )
+        Thumbnail(
+            url = thumbnailUrl,
+            modifier = modifier,
+            showThumbnail = showThumbnail,
+            contentScale = ContentScale.FillHeight,
+            sizeDp = sizeDp,
+            contentAlignment = Alignment.Center
         ) {
-            // Actual thumbnail (from cache or fetch from url)
-            if( showThumbnail )
-                Thumbnail( thumbnailUrl, ContentScale.FillHeight )
-
             if( isPlaying )
                 MusicAnimation(
                     color = values.nowPlayingIndicatorColor,

@@ -32,6 +32,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastJoinToString
@@ -68,11 +69,14 @@ object PlaylistItem: Visual(), MultiplatformItem {
     const val HORIZONTAL_SPACING = 10
     const val ROW_SPACING = VERTICAL_SPACING * 4
     const val COLUMN_SPACING = HORIZONTAL_SPACING
+    const val MENU_THUMBNAIL_SIZE = 74
 
     val REGEX_PLAYLIST_ID = Regex("^(PL|UU|LL|RD|OL|VL)")
     val CORNERS = listOf( Alignment.TopStart, Alignment.TopEnd, Alignment.BottomStart, Alignment.BottomEnd )
     override val platformIndicatorType: PlatformIndicatorType by Preferences.PLAYLISTS_PLATFORM_INDICATOR
     override val thumbnailRoundnessPercent: Preferences.Int = Preferences.PLAYLIST_THUMBNAIL_ROUNDNESS_PERCENT
+
+    override fun thumbnailSize() = DpSize(Preferences.PLAYLIST_THUMBNAIL_SIZE.value.dp, Preferences.PLAYLIST_THUMBNAIL_SIZE.value.dp)
 
     /**
      * Text is clipped if exceeds length limit, plus,
@@ -132,16 +136,16 @@ object PlaylistItem: Visual(), MultiplatformItem {
     fun Thumbnail(
         browseId: String?,
         thumbnailUrl: String?,
-        widthDp: Dp,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showPlatformIcon: Boolean = true
     ) =
-        Box(
-            modifier = modifier.requiredSize( widthDp )
-                               .padding( bottom = VERTICAL_SPACING.dp ),
+        Thumbnail(
+            url = thumbnailUrl,
+            contentScale = ContentScale.FillWidth,
+            modifier = modifier.padding( bottom = VERTICAL_SPACING.dp ),
+            sizeDp = sizeDp
         ) {
-            Thumbnail( thumbnailUrl, ContentScale.FillWidth )
-
             if( showPlatformIcon && browseId?.matches( REGEX_PLAYLIST_ID ) == true )
                 PlatformIndicator()
         }
@@ -173,8 +177,8 @@ object PlaylistItem: Visual(), MultiplatformItem {
     fun Thumbnail(
         browseId: String?,
         thumbnailUrls: Set<String>,
-        sizeDp: Dp,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showPlatformIcon: Boolean = true,
         useRandom: Boolean = true,
         thumbnailContent: @Composable BoxScope.() -> Unit = {}
@@ -233,8 +237,8 @@ object PlaylistItem: Visual(), MultiplatformItem {
     @Composable
     fun Thumbnail(
         playlist: Playlist,
-        sizeDp: Dp,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showPlatformIcon: Boolean = true,
         useRandom: Boolean = true,
         thumbnailContent: @Composable BoxScope.() -> Unit = {}
@@ -246,7 +250,7 @@ object PlaylistItem: Visual(), MultiplatformItem {
         }.collectAsState( emptySet(), Dispatchers.IO )
 
         Thumbnail(
-            playlist.browseId, thumbnails, sizeDp, modifier, showPlatformIcon, useRandom, thumbnailContent
+            playlist.browseId, thumbnails, modifier, sizeDp, showPlatformIcon, useRandom, thumbnailContent
         )
     }
 
@@ -324,15 +328,15 @@ object PlaylistItem: Visual(), MultiplatformItem {
 
     @Composable
     fun VerticalPlaceholder(
-        widthDp: Dp,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showTitle: Boolean = false
     ) =
         VerticalStructure(
-            widthDp = widthDp,
+            widthDp = sizeDp.width,
             modifier = modifier,
             thumbnail = {
-                ItemUtils.ThumbnailPlaceholder( widthDp )
+                ItemUtils.ThumbnailPlaceholder( sizeDp )
             },
             firstLine = st@ {
                 if( !showTitle ) return@st
@@ -352,10 +356,10 @@ object PlaylistItem: Visual(), MultiplatformItem {
     @Composable
     fun Vertical(
         playlist: Playlist,
-        widthDp: Dp,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         songCount: Int = 0,
         showSongCount: Boolean = true,
         showPlatformIcon: Boolean = true,
@@ -363,12 +367,12 @@ object PlaylistItem: Visual(), MultiplatformItem {
         onLongClick: () -> Unit = {}
     ) =
         VerticalStructure(
-            widthDp = widthDp,
+            widthDp = sizeDp.width,
             modifier = modifier,
             thumbnail = {
                 Thumbnail(
                     playlist = playlist,
-                    sizeDp = widthDp,
+                    sizeDp = sizeDp,
                     showPlatformIcon = showPlatformIcon,
                     modifier = Modifier.padding( bottom = VERTICAL_SPACING.dp )
                 ) thumb@ {
@@ -401,22 +405,22 @@ object PlaylistItem: Visual(), MultiplatformItem {
     @Composable
     fun Vertical(
         innertubePlaylist: Innertube.PlaylistItem,
-        widthDp: Dp,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showPlatformIcon: Boolean = true,
         onClick: () -> Unit = {},
         onLongClick: () -> Unit = {}
     ) =
         VerticalStructure(
-            widthDp = widthDp,
+            widthDp = sizeDp.width,
             modifier = modifier,
             thumbnail = {
                 Thumbnail(
                     browseId = innertubePlaylist.key,
                     thumbnailUrl = innertubePlaylist.thumbnail?.url,
-                    widthDp = widthDp,
+                    sizeDp = sizeDp,
                     showPlatformIcon = showPlatformIcon
                 )
             },
@@ -439,23 +443,23 @@ object PlaylistItem: Visual(), MultiplatformItem {
     @Composable
     fun Vertical(
         innertubePlaylist: InnertubePlaylist,
-        widthDp: Dp,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showSubtitle: Boolean = true,
         showPlatformIcon: Boolean = true,
         onClick: () -> Unit = {},
         onLongClick: () -> Unit = {}
     ) =
         VerticalStructure(
-            widthDp = widthDp,
+            widthDp = sizeDp.width,
             modifier = modifier,
             thumbnail = {
                 Thumbnail(
                     browseId = innertubePlaylist.id,
                     thumbnailUrl = innertubePlaylist.thumbnails.firstOrNull()?.url,
-                    widthDp = widthDp,
+                    sizeDp = sizeDp,
                     showPlatformIcon = showPlatformIcon
                 )
             },
@@ -497,10 +501,10 @@ object PlaylistItem: Visual(), MultiplatformItem {
     @Composable
     fun Horizontal(
         playlist: Playlist,
-        heightDp: Dp,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         songCount: Int = 0,
         showSongCount: Boolean = true,
         showPlatformIcon: Boolean = true,
@@ -509,12 +513,12 @@ object PlaylistItem: Visual(), MultiplatformItem {
         onLongClick: () -> Unit = {}
     ) =
         HorizontalStructure(
-            heightDp = heightDp,
+            heightDp = sizeDp.height,
             modifier = modifier,
             thumbnail = {
                 Thumbnail(
                     playlist = playlist,
-                    sizeDp = heightDp,
+                    sizeDp = sizeDp,
                     showPlatformIcon = showPlatformIcon,
                     useRandom = useRandom,
                     modifier = Modifier.padding( bottom = VERTICAL_SPACING.dp )
@@ -549,22 +553,22 @@ object PlaylistItem: Visual(), MultiplatformItem {
     @Composable
     fun Horizontal(
         innertubePlaylist: Innertube.PlaylistItem,
-        heightDp: Dp,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
         showPlatformIcon: Boolean = true,
         onClick: () -> Unit = {},
         onLongClick: () -> Unit = {}
     ) =
         HorizontalStructure(
-            heightDp = heightDp,
+            heightDp = sizeDp.height,
             modifier = modifier,
             thumbnail = {
                 Thumbnail(
                     browseId = innertubePlaylist.key,
                     thumbnailUrl = innertubePlaylist.thumbnail?.url,
-                    widthDp = heightDp,
+                    sizeDp = sizeDp,
                     showPlatformIcon = showPlatformIcon
                 )
             },

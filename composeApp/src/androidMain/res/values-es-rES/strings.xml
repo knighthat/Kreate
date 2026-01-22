@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Hecho</string>
     <string name="hidesong">¿Seguro que quieres ocultar esta canción? El tiempo de reproducción y la caché se eliminarán. Esta acción es irreversible.</string>
@@ -864,4 +864,5 @@
     <string name="disabled">deshabilitado</string>
     <string name="settings_live_wallpaper_reset_warning"> WARNING: this will switch back to your manufacturer’s default wallpaper. Unfortunately it is difficult to revert to your previous wallpaper</string>
     <string name="ok">aceptar</string>
+    <string name="setting_entry_thumbnail_size">Thumbnail size</string>
 </resources>
