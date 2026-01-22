@@ -306,7 +306,7 @@ fun LocalPlaylistSongs(
     }
     val resetThumbnail = ResetThumbnail { resetThumbnail() }
 
-    val locator = Locator( lazyListState, ::getSongs )
+    val locator = Locator( lazyListState, ::getSongs, 3 )
 
     //<editor-fold defaultstate="collapsed" desc="Smart recommendation">
     val recommendationsNumber by Preferences.MAX_NUMBER_OF_SMART_RECOMMENDATIONS

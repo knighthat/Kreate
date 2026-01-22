@@ -27,6 +27,7 @@ class Locator private constructor(
     firstColorState: MutableState<Boolean>,
     private val binder: PlayerServiceModern.Binder?,
     private val scrollableState: ScrollableState,
+    private val offset: Int,
     private val getSongs: () -> List<Song>
 ): MenuIcon, DynamicColor, Descriptive {
 
@@ -34,7 +35,8 @@ class Locator private constructor(
         @Composable
         operator fun invoke(
             scrollableState: ScrollableState,
-            getSongs: () -> List<Song>
+            getSongs: () -> List<Song>,
+            offset: Int = 0
         ): Locator {
             val binder = LocalPlayerServiceBinder.current
             val mediaItem = binder?.player?.currentMediaItem
@@ -45,13 +47,14 @@ class Locator private constructor(
                 },
                 binder = binder,
                 scrollableState = scrollableState,
+                offset = offset,
                 getSongs = getSongs
             )
         }
     }
 
     val position: Int
-        get() = getSongs().map( Song::id ).indexOf( binder?.player?.currentMediaItem?.mediaId )
+        get() = getSongs().map( Song::id ).indexOf( binder?.player?.currentMediaItem?.mediaId ) + offset
 
     override val iconId: Int = R.drawable.locate
     override val messageId: Int = R.string.info_find_the_song_that_is_playing
