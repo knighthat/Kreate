@@ -10,6 +10,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -467,9 +468,7 @@ fun LocalPlaylistSongs(
         //LookaheadScope {
         LazyColumn(
             state = reorderingState.lazyListState,
-            //contentPadding = LocalPlayerAwareWindowInsets.current
-            //    .only(WindowInsetsSides.Vertical + WindowInsetsSides.End)
-            //    .asPaddingValues(),
+            contentPadding = PaddingValues(bottom = Dimensions.bottomSpacer),
             modifier = Modifier
                 .background(colorPalette().background0)
                 .fillMaxSize()
@@ -776,13 +775,6 @@ fun LocalPlaylistSongs(
                     }
                 }
 
-            }
-
-            item(
-                key = "footer",
-                contentType = 0,
-            ) {
-                Spacer(modifier = Modifier.height(Dimensions.bottomSpacer))
             }
         }
 
