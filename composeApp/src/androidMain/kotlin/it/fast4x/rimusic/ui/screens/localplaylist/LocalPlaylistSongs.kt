@@ -469,9 +469,8 @@ fun LocalPlaylistSongs(
         LazyColumn(
             state = reorderingState.lazyListState,
             contentPadding = PaddingValues(bottom = Dimensions.bottomSpacer),
-            modifier = Modifier
-                .background(colorPalette().background0)
-                .fillMaxSize()
+            verticalArrangement = Arrangement.spacedBy( 5.dp ),
+            modifier = Modifier.fillMaxSize()
         ) {
             item(
                 key = "header",
@@ -480,8 +479,7 @@ fun LocalPlaylistSongs(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
 
                     HeaderWithIcon(
@@ -489,8 +487,7 @@ fun LocalPlaylistSongs(
                         iconId = R.drawable.playlist,
                         enabled = true,
                         showIcon = false,
-                        modifier = Modifier
-                            .padding(bottom = 8.dp),
+                        modifier = Modifier.padding(bottom = 8.dp),
                         onClick = {}
                     )
 
@@ -499,13 +496,11 @@ fun LocalPlaylistSongs(
                 Row(
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        //.background(colorPalette().background4)
-                        .fillMaxSize(0.99F)
-                        .background(
-                            color = colorPalette().background1,
-                            shape = thumbnailRoundness.shape
-                        )
+                    modifier = Modifier.fillMaxSize( 0.99F )
+                                       .background(
+                                           color = colorPalette().background1,
+                                           shape = thumbnailRoundness.shape
+                                       )
                 ) {
 
                     playlist?.let {
@@ -577,8 +572,11 @@ fun LocalPlaylistSongs(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                if ( autosync && playlist?.browseId.isNullOrBlank() )
+                    sync()
+            }
 
+            stickyHeader( "action_buttons" ) {
                 TabToolBar.Buttons(
                     mutableListOf<Button>().apply {
                         if (playlistNotMonthlyType)
@@ -604,24 +602,19 @@ fun LocalPlaylistSongs(
                         this.add( thumbnailPicker )
                         this.add( resetThumbnail )
                         this.add( resetCache )
-                    }
+                    },
+                    modifier = Modifier.background( colorPalette.background0 )
+                                       .zIndex( 3f )       // SongItem has zIndex of 2f
                 )
+            }
 
-                if ( autosync && playlist?.browseId.isNullOrBlank() ) {
-                    sync()
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                /*        */
+            item( "sort_section" ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp)
-                        .fillMaxWidth()
+                    modifier = Modifier.padding( horizontal = 10.dp )
+                                       .fillMaxWidth()
                 ) {
-
                     sort.ToolBarButton()
 
                     Row(
@@ -629,7 +622,6 @@ fun LocalPlaylistSongs(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) { locator.ToolBarButton() }
-
                 }
 
                 search.SearchBar()
