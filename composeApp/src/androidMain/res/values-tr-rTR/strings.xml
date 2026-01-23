@@ -865,4 +865,5 @@
     <string name="settings_live_wallpaper_reset_warning"> UYARI: Bu işlem, üreticinizin varsayılan duvar kağıdına geri dönecektir. Maalesef önceki duvar kağıdınıza geri dönmek zordur</string>
     <string name="ok">tamam</string>
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
+    <string name="warning_end_of_list">End of list</string>
 </resources>

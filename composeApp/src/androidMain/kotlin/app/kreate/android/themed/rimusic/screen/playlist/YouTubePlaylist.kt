@@ -17,20 +17,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,25 +39,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.themed.common.component.LoadMoreContentType
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
 import app.kreate.android.themed.rimusic.component.ItemSelector
-import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.song.SongItem
-import app.kreate.android.utils.innertube.CURRENT_LOCALE
-import app.kreate.android.utils.innertube.toSong
 import app.kreate.android.utils.renderDescription
 import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
+import app.kreate.android.viewmodel.YouTubePlaylistViewModel
 import app.kreate.database.models.Song
-import app.kreate.util.EXPLICIT_PREFIX
 import it.fast4x.innertube.YtMusic
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
@@ -86,7 +80,6 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.collectLatest
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.fadingEdge
 import it.fast4x.rimusic.utils.forcePlayAtIndex
@@ -99,9 +92,7 @@ import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.knighthat.component.tab.ExportSongsToCSVDialog
 import me.knighthat.component.tab.LikeComponent
@@ -109,9 +100,6 @@ import me.knighthat.component.tab.Radio
 import me.knighthat.component.tab.SongShuffler
 import me.knighthat.component.ui.screens.DynamicOrientationLayout
 import me.knighthat.innertube.Constants
-import me.knighthat.innertube.Innertube
-import me.knighthat.innertube.model.InnertubePlaylist
-import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import timber.log.Timber
 
@@ -121,13 +109,14 @@ import timber.log.Timber
 @Composable
 fun YouTubePlaylist(
     navController: NavController,
-    browseId: String,
-    params: String?,
-    useLogin: Boolean,
+    viewModel: YouTubePlaylistViewModel = hiltViewModel(),
     miniPlayer: @Composable () -> Unit = {}
 ) {
     val context = LocalContext.current
     val menuState = LocalMenuState.current
+    val binder = LocalPlayerServiceBinder.current ?: return
+    val (colorPalette, typography) = LocalAppearance.current
+    val hapticFeedback = LocalHapticFeedback.current
 
     Skeleton(
         navController = navController,
@@ -136,24 +125,18 @@ fun YouTubePlaylist(
             item(0, stringResource(R.string.songs), R.drawable.musical_notes)
         }
     ) {
-        val binder = LocalPlayerServiceBinder.current ?: return@Skeleton
-        val (colorPalette, typography) = LocalAppearance.current
-        val hapticFeedback = LocalHapticFeedback.current
-        val lazyListState = rememberLazyListState()
-
-        var playlistPage: InnertubePlaylist? by remember { mutableStateOf(null) }
-        var continuation: String? by remember { mutableStateOf(null) }
-        val items = remember { mutableStateListOf<Song>() }
-        val itemsOnDisplay = remember { mutableStateListOf<Song>() }
+        val playlistPage by viewModel.playlistPage.collectAsStateWithLifecycle()
+        val continuation by viewModel.continuation.collectAsStateWithLifecycle()
+        val songs by viewModel.songs.collectAsStateWithLifecycle()
+        val currentMediaItem by binder.player.currentMediaItemState.collectAsStateWithLifecycle()
 
         val itemSelector = remember {
-            ItemSelector(menuState) { addAll( itemsOnDisplay ) }
+            ItemSelector(menuState) { addAll( songs ) }
         }
-        fun getSongs() = itemSelector.ifEmpty { itemsOnDisplay }
+        fun getSongs() = itemSelector.ifEmpty { songs }
         fun getMediaItems() = getSongs().map( Song::asMediaItem )
 
         //<editor-fold desc="Toolbar buttons">
-        val search = remember { Search(lazyListState) }
         val shuffle = SongShuffler ( ::getSongs )
         val exportDialog = ExportSongsToCSVDialog(
             playlistBrowseId = playlistPage?.id.orEmpty(),
@@ -203,101 +186,22 @@ fun YouTubePlaylist(
 
                     CoroutineScope( Dispatchers.IO ).launch {
                         YtMusic.removelikePlaylistOrAlbum(
-                            browseId.substringAfter("VL")
+                            viewModel.browseId.substringAfter("VL")
                         )
 
                         Database.playlistTable
-                                .findByBrowseId( browseId.substringAfter("VL") )
+                                .findByBrowseId( viewModel.browseId.substringAfter("VL") )
                                 .first()
                                 ?.let( Database.playlistTable::delete )
                     }
                 }
             }
         }
-        //</editor-fold>
-
-        val pageProvider: suspend (String?) -> Unit by rememberUpdatedState {
-            if ( it.isNullOrBlank() )
-                Innertube.browsePlaylist( browseId, CURRENT_LOCALE, useLogin )
-                         .onSuccess { page ->
-                             playlistPage = page
-
-                             items.addAll( playlistPage!!.songs.map( InnertubeSong::toSong ) )
-                             continuation = playlistPage!!.songContinuation
-                         }
-                         .onFailure { err ->
-                             Timber.tag( "YouTubePlaylist" ).e( err )
-                             Toaster.e( R.string.error_failed_to_load_playlist )
-                         }
-            else if ( playlistPage?.visitorData != null || useLogin )
-                Innertube.playlistContinued(
-                             if( useLogin ) null else playlistPage!!.visitorData!!,
-                             it,
-                             CURRENT_LOCALE,
-                             params,
-                             useLogin
-                         )
-                         .onSuccess { continued ->
-                             items.addAll(
-                                 continued.songs
-                                          .map( InnertubeSong::toSong )
-                             )
-                             continuation = continued.continuation
-                         }
-                         .onFailure { err ->
-                             Timber.tag( "YouTubePlaylist" ).e( err )
-                             Toaster.e( R.string.error_failed_to_get_playlists_next_songs )
-                         }
-        }
-
-        val dislikedSongs by remember {
-            Database.songTable
-                .allDisliked()
-                .map { list ->
-                    list.map( Song::id )
-                }
-                .distinctUntilChanged()
-        }.collectAsState( emptyList(), Dispatchers.IO )
-
-        LaunchedEffect( lazyListState ) {
-            snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo.any { it.key == "loading" } }
-                .collect { shouldLoadMore ->
-                    if (!shouldLoadMore) return@collect
-
-                    CoroutineScope(Dispatchers.IO).launch {
-                        pageProvider(continuation)
-                    }
-                }
-        }
-        LaunchedEffect( Unit ) {
-            // [items] uses [mutableStateListOf] which is content observable'
-            // not reference observable.
-            snapshotFlow { items.toList() to search.input.text }
-                .collectLatest(
-                    CoroutineScope(Dispatchers.Default)
-                ) { (list, query) ->
-                    list.fastFilter { it.id !in dislikedSongs }
-                        .fastFilter {
-                            !Preferences.PARENTAL_CONTROL.value || !it.title.startsWith( EXPLICIT_PREFIX, true )
-                        }
-                        .fastFilter {
-                            val containsTitle = it.cleanTitle().contains( query, true )
-                            val containsArtist = it.cleanArtistsText().contains( query, true )
-
-                            containsTitle || containsArtist
-                        }
-                        .also {
-                            itemsOnDisplay.clear()
-                            itemsOnDisplay.addAll( it )
-                        }
-                }
-        }
 
         exportDialog.Render()
         downloadAllDialog.Render()
         deleteDownloadsDialog.Render()
-
-        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+        //</editor-fold>
         val songItemValues = remember( colorPalette, typography ) {
             SongItem.Values.from( colorPalette, typography )
         }
@@ -308,8 +212,8 @@ fun YouTubePlaylist(
         DynamicOrientationLayout(thumbnailPainter) {
             Box( Modifier.fillMaxSize() ) {
                 LazyColumn(
-                    state = lazyListState,
-                    userScrollEnabled = items.isNotEmpty(),
+                    state = viewModel.listState,
+                    userScrollEnabled = songs.isNotEmpty(),
                     contentPadding = PaddingValues(bottom = Dimensions.bottomSpacer),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxSize()
@@ -399,7 +303,7 @@ fun YouTubePlaylist(
                         Box( Modifier.fillMaxWidth( .8f ) ) {
                             TabToolBar.Buttons(
                                 buildList {
-                                    add( search )
+                                    add( viewModel.search )
                                     add( downloadAllDialog )
                                     add( deleteDownloadsDialog )
                                     add( enqueue )
@@ -413,7 +317,7 @@ fun YouTubePlaylist(
                             )
                         }
 
-                        search.SearchBar()
+                        viewModel.search.SearchBar()
                     }
 
                     playlistPage?.description?.let {
@@ -421,7 +325,7 @@ fun YouTubePlaylist(
                     }
 
                     itemsIndexed(
-                        items = itemsOnDisplay,
+                        items = songs,
                         // Include index to key so when reposition happens, the content
                         // will get updated accordingly
                         key = { i, s -> "${System.identityHashCode(s)} - $i" }
@@ -472,7 +376,7 @@ fun YouTubePlaylist(
                                         )
                                     else
                                         binder.player.forcePlayAtIndex(
-                                            itemsOnDisplay.fastMap( Song::asMediaItem ),
+                                            songs.fastMap( Song::asMediaItem ),
                                             index
                                         )
                                 }
@@ -480,27 +384,28 @@ fun YouTubePlaylist(
                         }
                     }
 
-
-                    if ( playlistPage == null || continuation != null )
-                        item("loading") { SongItem.Placeholder() }
+                    if ( !continuation.isNullOrEmpty() )
+                        item( "loading", LoadMoreContentType ) {
+                            repeat( 5 ) { SongItem.Placeholder() }
+                        }
                 }
 
                 val showFloatingIcon by Preferences.SHOW_FLOATING_ICON
                 if( UiType.ViMusic.isCurrent() && showFloatingIcon )
                     FloatingActionsContainerWithScrollToTop(
-                        lazyListState = lazyListState,
+                        lazyListState = viewModel.listState,
                         iconId = R.drawable.shuffle,
                         onClick = {
-                            if( items.all { it.id in dislikedSongs } ) {
-                                Toaster.e( R.string.disliked_this_collection )
-                                return@FloatingActionsContainerWithScrollToTop
-                            }
-
                             binder.stopRadio()
                             binder.player.forcePlayFromBeginning( getMediaItems() )
                         }
                     )
             }
+        }
+
+        // Run once on start
+        LaunchedEffect( Unit ) {
+            if( playlistPage == null ) viewModel.onFetch()
         }
     }
 }

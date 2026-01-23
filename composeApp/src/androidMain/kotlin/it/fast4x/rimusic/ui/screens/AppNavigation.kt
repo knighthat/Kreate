@@ -245,12 +245,7 @@ fun AppNavigation(
             route = "${NavRoutes.YT_PLAYLIST}/{browseId}?params={params}&useLogin={useLogin}",
             arguments = listOf( BROWSE_ID_ARG, PARAM_ARG, USE_LOGIN_ARG )
         ) {
-            // browseId must not be empty or null in any case
-            val browseId = it.arguments!!.getString( "browseId" )!!
-            val params = it.arguments!!.getString( "params" )
-            val useLogin = it.arguments!!.getBoolean( "useLogin" )
-
-            YouTubePlaylist( navController, browseId, params, useLogin, miniPlayer )
+            YouTubePlaylist( navController, miniPlayer = miniPlayer )
         }
 
         composable(

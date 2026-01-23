@@ -865,4 +865,5 @@
     <string name="settings_live_wallpaper_reset_warning"> WARNING: this will switch back to your manufacturer’s default wallpaper. Unfortunately it is difficult to revert to your previous wallpaper</string>
     <string name="ok">ok</string>
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
+    <string name="warning_end_of_list">End of list</string>
 </resources>

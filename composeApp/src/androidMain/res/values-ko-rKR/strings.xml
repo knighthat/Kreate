@@ -865,4 +865,5 @@
     <string name="settings_live_wallpaper_reset_warning"> 경고: 이렇게 하면 제조사의 기본 배경화면으로 돌아갑니다. 안타깝게도 기존 배경화면으로 되돌리기는 어렵습니다</string>
     <string name="ok">확인</string>
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
+    <string name="warning_end_of_list">End of list</string>
 </resources>
