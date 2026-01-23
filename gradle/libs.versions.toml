@@ -92,6 +92,7 @@ compose-kmp-animation = { group = "org.jetbrains.compose.animation", name = "ani
 
 # OkHttp
 okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp3" }
+okhttp3-dns-over-https = { group = "com.squareup.okhttp3", name = "okhttp-dnsoverhttps", version.ref = "okhttp3" }
 
 # Coil
 coil3-compose-core = { group = "io.coil-kt.coil3", name = "coil-compose-core", version.ref = "coil3" }

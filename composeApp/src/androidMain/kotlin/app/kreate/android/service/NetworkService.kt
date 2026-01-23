@@ -3,6 +3,7 @@ package app.kreate.android.service
 import android.widget.Toast
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
+import app.kreate.android.enums.DohServer
 import com.metrolist.innertube.models.YouTubeClient
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -24,8 +25,10 @@ import me.knighthat.utils.Toaster
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import okhttp3.dnsoverhttps.DnsOverHttps
 import okhttp3.logging.HttpLoggingInterceptor
 import timber.log.Timber
+import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.concurrent.TimeUnit
@@ -61,6 +64,18 @@ object NetworkService {
                     addInterceptor(
                         HttpLoggingInterceptor().setLevel( HttpLoggingInterceptor.Level.BODY )
                     )
+
+                if( Preferences.DOH_SERVER.value != DohServer.NONE ) {
+                    val url = Preferences.DOH_SERVER.value.url!!        // Cannot be null if other than NONE
+                    val addresses = Preferences.DOH_SERVER.value.address.map( InetAddress::getByName )
+
+                    DnsOverHttps.Builder()
+                                .client( build() )
+                                .url( url )
+                                .bootstrapDnsHosts( addresses )
+                                .build()
+                                .also( ::dns )
+                }
             }
             .build()
     }

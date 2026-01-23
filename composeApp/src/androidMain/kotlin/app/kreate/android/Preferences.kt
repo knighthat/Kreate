@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import app.kreate.android.enums.DohServer
 import app.kreate.android.enums.PlatformIndicatorType
 import app.kreate.android.utils.innertube.getSystemCountryCode
 import app.kreate.constant.Language
@@ -707,6 +708,11 @@ sealed class Preferences<T>(
         }
         val PROXY_PORT  by lazy {
             Int( preferences, "ProxyPort", "proxyPort", 1080 )
+        }
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="DoH">
+        val DOH_SERVER by lazy {
+            Enum(preferences, "DnsOverHttpsServer", "", DohServer.NONE)
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Custom light colors">

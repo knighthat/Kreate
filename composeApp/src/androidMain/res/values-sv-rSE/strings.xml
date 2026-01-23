@@ -860,4 +860,15 @@
     <string name="description_validate_url">Validate url</string>
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
     <string name="warning_end_of_list">End of list</string>
+    <string name="setting_header_dns_over_https">DNS over HTTPS</string>
+    <string name="doh_none">None</string>
+    <string name="doh_cloudflare">Cloudflare</string>
+    <string name="doh_cloudflare_family">Cloudflare (family)</string>
+    <string name="doh_quad9">Quad9</string>
+    <string name="doh_quad9_secured">Quad9 (secured)</string>
+    <string name="doh_libredns">LibreDNS</string>
+    <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
+    <string name="doh_mullvad">Mullvad</string>
+    <string name="doh_mullvad_family">Mullvad (family)</string>
+    <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
 </resources>

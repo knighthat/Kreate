@@ -118,6 +118,18 @@ fun NetworkSettings( paddingValues: PaddingValues ) {
                         )
                 }
             }
+
+            header(
+                titleId = R.string.setting_header_dns_over_https,
+                subtitle = { stringResource( R.string.restarting_rimusic_is_required ) }
+            )
+            entry( search, R.string.setting_entry_select_dns_over_https_server ) {
+                SettingComponents.EnumEntry(
+                    preference = Preferences.DOH_SERVER,
+                    title = stringResource( R.string.setting_entry_select_dns_over_https_server ),
+                    action = SettingComponents.Action.RESTART_APP
+                )
+            }
         }
     }
 }

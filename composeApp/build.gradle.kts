@@ -144,6 +144,7 @@ kotlin {
 
             implementation( libs.bundles.ktor )
             implementation( libs.okhttp3.logging.interceptor )
+            implementation( libs.okhttp3.dns.over.https )
 
             implementation( libs.math3 )
 
