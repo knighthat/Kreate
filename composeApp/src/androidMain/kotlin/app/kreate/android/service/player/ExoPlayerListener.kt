@@ -124,7 +124,9 @@ class ExoPlayerListener(
                 addAll( buttons )
             }
 
-            mediaSession.setMediaButtonPreferences( layoutButton )
+            withContext( Dispatchers.Main ) {
+                mediaSession.setMediaButtonPreferences( layoutButton )
+            }
         }
     }
 
