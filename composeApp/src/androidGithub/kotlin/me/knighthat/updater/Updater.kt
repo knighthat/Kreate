@@ -116,8 +116,10 @@ object Updater {
             fetchUpdate()
 
             val isNewUpdateAvailable = trimVersion( BuildConfig.VERSION_NAME ) != trimVersion( tagName )
-            if( !isNewUpdateAvailable && (Preferences.SHOW_CHECK_UPDATE_STATUS.value || isForced) )
+            if( !isNewUpdateAvailable && (Preferences.SHOW_CHECK_UPDATE_STATUS.value || isForced) ) {
                 Toaster.i( R.string.info_no_update_available )
+                return@launch
+            }
 
             when( Preferences.CHECK_UPDATE.value ) {
                 CheckUpdateState.ASK                -> NewUpdatePrompt.isActive = isNewUpdateAvailable
