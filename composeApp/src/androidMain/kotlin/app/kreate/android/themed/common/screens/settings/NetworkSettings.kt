@@ -39,7 +39,7 @@ fun NetworkSettings( paddingValues: PaddingValues ) {
     val scrollState = rememberLazyListState()
 
     val search = remember {
-        SettingEntrySearch( scrollState, R.string.tab_general, R.drawable.app_icon_monochrome )
+        SettingEntrySearch( scrollState, R.string.tab_network, R.drawable.app_icon_monochrome )
     }
 
     Column(
