@@ -65,7 +65,7 @@ import app.kreate.android.utils.innertube.toSong
 import app.kreate.android.utils.renderDescription
 import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
-import app.kreate.android.viewmodel.YTArtistViewModel
+import app.kreate.android.viewmodel.YoutubeArtistViewModel
 import app.kreate.database.models.Song
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.appContext
@@ -257,7 +257,7 @@ private fun LazyListScope.renderLibrarySongs(
 fun YouTubeArtist(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: YTArtistViewModel = hiltViewModel(),
+    viewModel: YoutubeArtistViewModel = hiltViewModel(),
     miniPlayer: @Composable () -> Unit = {}
 ) {
     val context = LocalContext.current

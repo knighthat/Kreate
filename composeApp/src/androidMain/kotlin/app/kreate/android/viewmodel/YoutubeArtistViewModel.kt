@@ -48,7 +48,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class YTArtistViewModel @Inject constructor(
+class YoutubeArtistViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     @param:ApplicationContext private val context: Context,
 ) : ViewModel() {
