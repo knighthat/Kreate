@@ -468,5 +468,7 @@ fun YouTubeArtist(
     }
 
     // Run once on start
-    LaunchedEffect( Unit ) { viewModel.onRefresh() }
+    LaunchedEffect( Unit ) {
+        if( artistPage == null ) viewModel.onRefresh()
+    }
 }
