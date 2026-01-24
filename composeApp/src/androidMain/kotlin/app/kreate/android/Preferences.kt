@@ -1086,6 +1086,9 @@ sealed class Preferences<T>(
         val ACTIVE_PROFILE by lazy {
             String(profilePreferences, "ActiveProfile", "", "default")
         }
+        val QUEUE_JUMP_TO_PLAYING_SONG by lazy {
+            Boolean(preferences, "QueueJumpToPlayingSong", "", true)
+        }
 
         fun isLoggedInToDiscord(): kotlin.Boolean =
             DISCORD_LOGIN.value && DISCORD_ACCESS_TOKEN.value.isNotBlank()

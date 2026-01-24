@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -42,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -89,6 +91,7 @@ import it.fast4x.rimusic.utils.isNowPlaying
 import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.mediaItems
 import it.fast4x.rimusic.utils.shouldBePlaying
+import kotlinx.coroutines.delay
 import me.knighthat.component.tab.ExportSongsToCSVDialog
 import me.knighthat.component.tab.Locator
 import me.knighthat.component.ui.screens.player.DeleteFromQueue
@@ -98,6 +101,7 @@ import me.knighthat.component.ui.screens.player.Repeat
 import me.knighthat.component.ui.screens.player.ShuffleQueue
 import me.knighthat.utils.Toaster
 import timber.log.Timber
+import kotlin.time.Duration.Companion.seconds
 
 
 @ExperimentalTextApi
@@ -427,6 +431,19 @@ fun Queue(
                         queueArrow.ToolBarButton()
                 }
             }
+        }
+
+        val statusBarOffset = WindowInsets.statusBars.getTop( LocalDensity.current )
+        LaunchedEffect( Unit ) {
+            if( !Preferences.QUEUE_JUMP_TO_PLAYING_SONG.value )
+                return@LaunchedEffect
+            else
+                // Fake delay, find a better way to wait until
+                // components are visible before scrolling to them
+                delay( 1.seconds )
+
+            val index = itemsOnDisplay.indexOfFirst { it.id == currentMediaItem?.mediaId }
+            lazyListState.animateScrollToItem( index, statusBarOffset )
         }
 
         FloatingActionsContainerWithScrollToTop(
