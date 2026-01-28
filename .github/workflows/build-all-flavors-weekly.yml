@@ -176,7 +176,7 @@ jobs:
         run: echo "${{ secrets.PROD_KEYSTORE_SHA256 }} $KEYSTORE_PATH/$KEYSTORE_FILENAME" | sha256sum -c
 
       - name: Setup Java 21
-        uses: actions/setup-java@v5.1.0
+        uses: actions/setup-java@v5.2.0
         with:
           java-version: "21"
           distribution: "corretto"
