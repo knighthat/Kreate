@@ -463,7 +463,7 @@
     <string name="set_cache_location">Emplacement du cache</string>
     <string name="info_private_cache_location_can_t_cleaned">Emplacement du cache privé, ne peut pas être nettoyé par le système</string>
     <string name="error_file_unsupported_format">Ce fichier semble avoir un format non supporté</string>
-    <string name="charts">Hits</string>
+    <string name="charts">Classements</string>
     <string name="thumbnailtype">Type de pochette d\'album</string>
     <string name="showvisthumbnail">Afficher la pochette pour le visualiseur</string>
     <string name="androidheadunit">Unité principale Android</string>
@@ -844,7 +844,7 @@ Volume BAS : titre précédent</string>
     <string name="error_failed_to_load_album">Échec du chargement de l\'album</string>
     <string name="error_failed_to_fetch_songs_info">Échec de la récupération des informations sur le titre</string>
     <string name="error_song_radio_failed">Impossible de lancer la radio</string>
-    <string name="error_failed_to_get_charts">Impossible d\'obtenir les charts</string>
+    <string name="error_failed_to_get_charts">Impossible d\'obtenir les classements</string>
     <string name="error_failed_to_acquire_account_info">Échec de l\'acquisition des informations de compte</string>
     <string name="error_failed_to_sync_tab">Échec de la synchronisation de %s</string>
     <string name="error_failed_to_load_developers">Échec du chargement des développeurs</string>
@@ -867,5 +867,17 @@ Volume BAS : titre précédent</string>
     <string name="disabled">désactivé</string>
     <string name="settings_live_wallpaper_reset_warning"> ATTENTION : cette action rétablira le fond d’écran par défaut de votre appareil. Malheureusement, il est difficile de revenir à votre fond d’écran précédent.</string>
     <string name="ok">OK</string>
-    <string name="setting_entry_thumbnail_size">Thumbnail size</string>
+    <string name="setting_entry_thumbnail_size">Taille des vignettes</string>
+    <string name="warning_end_of_list">End of list</string>
+    <string name="setting_header_dns_over_https">DNS over HTTPS</string>
+    <string name="doh_none">None</string>
+    <string name="doh_cloudflare">Cloudflare</string>
+    <string name="doh_cloudflare_family">Cloudflare (family)</string>
+    <string name="doh_quad9">Quad9</string>
+    <string name="doh_quad9_secured">Quad9 (secured)</string>
+    <string name="doh_libredns">LibreDNS</string>
+    <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
+    <string name="doh_mullvad">Mullvad</string>
+    <string name="doh_mullvad_family">Mullvad (family)</string>
+    <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
 </resources>
