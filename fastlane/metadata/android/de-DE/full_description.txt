@@ -4,8 +4,8 @@
 
 <b>Features:</b>
 <ul>
-  <li>Support multiple languages</li>
-  <li>Friendly designs</li>
+  <li>Unterstützt verschiedene Sprachen</li>
+  <li>Freundliches design</li>
   <li>Cache or download songs for offline playback</li>
   <li>Background playback</li>
   <li>Statistics and reports (stored and processed locally)</li>
