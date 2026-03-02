@@ -13,8 +13,6 @@ import app.kreate.database.models.Artist
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
-import app.kreate.util.MONTHLY_PREFIX
-import app.kreate.util.PINNED_PREFIX
 import it.fast4x.rimusic.enums.PlaylistSortBy
 import it.fast4x.rimusic.enums.SortOrder
 import kotlinx.coroutines.flow.Flow
@@ -45,7 +43,7 @@ interface PlaylistTable {
         FROM SongPlaylistMap spm
         JOIN Song S ON S.id = spm.songId
         JOIN Playlist P ON P.id = spm.playlistId
-        WHERE P.name LIKE '$PINNED_PREFIX%' COLLATE NOCASE
+        WHERE P.is_pinned
         ORDER BY S.ROWID
         LIMIT :limit
     """)
@@ -73,7 +71,7 @@ interface PlaylistTable {
         FROM SongPlaylistMap spm
         JOIN Song S ON S.id = spm.songId
         JOIN Playlist P ON P.id = spm.playlistId
-        WHERE P.name LIKE '$MONTHLY_PREFIX%' COLLATE NOCASE
+        WHERE P.is_monthly
         ORDER BY S.ROWID
         LIMIT :limit
     """)
@@ -245,10 +243,10 @@ interface PlaylistTable {
      */
     @Query("""
         UPDATE Playlist
-        SET name = 
+        SET is_pinned = 
             CASE
-                WHEN name LIKE '$PINNED_PREFIX%' THEN SUBSTR(name, LENGTH('$PINNED_PREFIX') + 1)
-                ELSE '$PINNED_PREFIX' || name
+                WHEN 1 THEN 0
+                ELSE 1
             END
         WHERE id = :playlistId
     """)
