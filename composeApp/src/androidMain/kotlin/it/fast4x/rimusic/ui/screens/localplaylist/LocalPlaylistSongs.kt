@@ -65,7 +65,6 @@ import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongPlaylistMap
-import app.kreate.util.EXPLICIT_PREFIX
 import app.kreate.util.MONTHLY_PREFIX
 import app.kreate.util.cleanPrefix
 import app.kreate.util.toDuration
@@ -346,18 +345,15 @@ fun LocalPlaylistSongs(
                  ?.take( recommendationsNumber.toInt() )
                  ?.associate { songItem ->
                      with( songItem ) {
-                         // Do NOT use [Utils#Innertube.SongItem.asSong]
-                         // It doesn't have explicit prefix
-                         val prefix = if( explicit ) EXPLICIT_PREFIX else ""
-
                          Song(
                              // Song's ID & title must not be "null". If they are,
                              // Something is wrong with Innertube.
-                             id = "$prefix${info!!.endpoint!!.videoId!!}",
+                             id = info!!.endpoint!!.videoId!!,
                              title = info!!.name!!,
                              artistsText = authors?.joinToString { author -> author.name ?: "" },
                              durationText = durationText,
-                             thumbnailUrl = thumbnail?.url
+                             thumbnailUrl = thumbnail?.url,
+                             isExplicit = explicit
                          ) to (0..items.size).random()      // Map this song with a random position from [items]
                      }
                  }
@@ -380,7 +376,7 @@ fun LocalPlaylistSongs(
                  }
              }
              .distinctBy( Song::id )
-             .filter { !parentalControlEnabled || !it.title.startsWith( EXPLICIT_PREFIX ) }
+             .filter { !parentalControlEnabled || !it.isExplicit }
              .filter { song ->
                  // Without cleaning, user can search explicit songs with "e:"
                  // I kinda want this to be a feature, but it seems unnecessary

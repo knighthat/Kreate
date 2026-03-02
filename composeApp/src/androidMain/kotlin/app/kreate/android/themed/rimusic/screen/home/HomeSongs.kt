@@ -41,7 +41,6 @@ import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
-import app.kreate.util.EXPLICIT_PREFIX
 import app.kreate.util.toDuration
 import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
@@ -204,7 +203,7 @@ fun HomeSongs(
     }
 
     LaunchedEffect( items, search.input ) {
-    items.filter { !parentalControlEnabled || !it.title.startsWith( EXPLICIT_PREFIX, true ) }
+    items.filter { !parentalControlEnabled || !it.isExplicit }
          .filter {
              // Without cleaning, user can search explicit songs with "e:"
              // I kinda want this to be a feature, but it seems unnecessary

@@ -24,7 +24,6 @@ import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Lyrics
 import app.kreate.database.models.Song
-import app.kreate.util.EXPLICIT_PREFIX
 import app.kreate.util.cleanPrefix
 import app.kreate.util.toDuration
 import com.zionhuang.innertube.pages.LibraryPage
@@ -121,10 +120,13 @@ val Innertube.SongItem.asMediaItem: MediaItem
 val Innertube.SongItem.asSong: Song
     get() = Song (
         id = key,
-        title = (if( explicit ) EXPLICIT_PREFIX else "").plus( info?.name ?: "" ),
+        // Song's title must not be "null". If they are,
+        // Something is wrong with Innertube.
+        title = info!!.name!!,
         artistsText = authors?.joinToString(", ") { it.name ?: "" },
         durationText = durationText,
-        thumbnailUrl = thumbnail?.url
+        thumbnailUrl = thumbnail?.url,
+        isExplicit = explicit
     )
 
 val Innertube.VideoItem.asMediaItem: MediaItem
@@ -169,7 +171,7 @@ val Song.asMediaItem: MediaItem
                 .setExtras(
                     bundleOf(
                         "durationText" to durationText,
-                        EXPLICIT_BUNDLE_TAG to title.startsWith( EXPLICIT_PREFIX, true )
+                        EXPLICIT_BUNDLE_TAG to isExplicit
                     )
                 )
                 .build()
@@ -195,7 +197,7 @@ val Song.asCleanedMediaItem: MediaItem
                 .setExtras(
                     bundleOf(
                         "durationText" to durationText,
-                        EXPLICIT_BUNDLE_TAG to title.startsWith( EXPLICIT_PREFIX, true )
+                        EXPLICIT_BUNDLE_TAG to isExplicit
                     )
                 )
                 .build()
@@ -253,12 +255,7 @@ val MediaItem.isVideo: Boolean
     get() = mediaMetadata.extras?.getBoolean("isVideo") == true
 
 val MediaItem.isExplicit: Boolean
-    get() {
-        val isTitleContain = mediaMetadata.title?.startsWith( EXPLICIT_PREFIX, true )
-        val isBundleContain = mediaMetadata.extras?.getBoolean( EXPLICIT_BUNDLE_TAG )
-
-        return isTitleContain == true || isBundleContain == true
-    }
+    get() = mediaMetadata.extras?.getBoolean( EXPLICIT_BUNDLE_TAG ) == true
 
 fun String.resize(
     width: Int? = null,
