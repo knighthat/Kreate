@@ -868,16 +868,16 @@ Volume BAS : titre précédent</string>
     <string name="settings_live_wallpaper_reset_warning"> ATTENTION : cette action rétablira le fond d’écran par défaut de votre appareil. Malheureusement, il est difficile de revenir à votre fond d’écran précédent.</string>
     <string name="ok">OK</string>
     <string name="setting_entry_thumbnail_size">Taille des vignettes</string>
-    <string name="warning_end_of_list">End of list</string>
-    <string name="setting_header_dns_over_https">DNS over HTTPS</string>
-    <string name="doh_none">None</string>
+    <string name="warning_end_of_list">Fin de la liste</string>
+    <string name="setting_header_dns_over_https">DNS sur HTTPS</string>
+    <string name="doh_none">Aucun</string>
     <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (family)</string>
+    <string name="doh_cloudflare_family">Cloudflare (famille)</string>
     <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (secured)</string>
+    <string name="doh_quad9_secured">Quad9 (sécurisé)</string>
     <string name="doh_libredns">LibreDNS</string>
-    <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
+    <string name="doh_libredns_trackers">LibreDNS (publicités &amp; traqueurs)</string>
     <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (family)</string>
-    <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
+    <string name="doh_mullvad_family">Mullvad (famille)</string>
+    <string name="setting_entry_select_dns_over_https_server">Sélectionner le serveur DoH</string>
 </resources>
