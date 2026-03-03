@@ -209,19 +209,6 @@ android {
             manifestPlaceholders["appName"] = "$APP_NAME-debug"
         }
 
-        // To test compatibility after minification process
-        create( "debugR8" ) {
-            initWith( maybeCreate( "debug" ) )
-
-            // Package optimization
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-defaults.txt"),
-                "debug-proguard-rules.pro"
-            )
-        }
-
         release {
             isDefault = true
 
