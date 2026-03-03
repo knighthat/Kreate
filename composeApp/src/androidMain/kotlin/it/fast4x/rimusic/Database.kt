@@ -25,7 +25,6 @@ import it.fast4x.rimusic.Database.asyncQuery
 import it.fast4x.rimusic.Database.asyncTransaction
 import it.fast4x.rimusic.Database.insertIgnore
 import it.fast4x.rimusic.models.QueuedMediaItem
-import it.fast4x.rimusic.models.SortedSongPlaylistMap
 import it.fast4x.rimusic.utils.asSong
 import kotlinx.coroutines.flow.first
 import me.knighthat.database.AlbumTable
@@ -54,6 +53,7 @@ import me.knighthat.database.migration.From26To27Migration
 import me.knighthat.database.migration.From27To28Migration
 import me.knighthat.database.migration.From28To29Migration
 import me.knighthat.database.migration.From29To30Migration
+import me.knighthat.database.migration.From30To31Migration
 import me.knighthat.database.migration.From3To4Migration
 import me.knighthat.database.migration.From7To8Migration
 import me.knighthat.database.migration.From8To9Migration
@@ -354,10 +354,7 @@ object Database {
         Event::class,
         Lyrics::class,
     ],
-    views = [
-        SortedSongPlaylistMap::class
-    ],
-    version = 30,
+    version = 31,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -378,6 +375,7 @@ object Database {
         AutoMigration(from = 19, to = 20),
         AutoMigration(from = 20, to = 21, spec = From20To21Migration::class),
         AutoMigration(from = 21, to = 22, spec = From21To22Migration::class),
+        AutoMigration(from = 30, to = 31, spec = From30To31Migration::class),
     ],
 )
 @TypeConverters(Converters::class)

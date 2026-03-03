@@ -29,7 +29,7 @@ interface SongPlaylistMapTable {
      *
      * @return number of rows affected by this operation
      */
-    @Query("DELETE FROM SongPlaylistMap WHERE songId = :songId")
+    @Query("DELETE FROM  song_playlist_map WHERE songId = :songId")
     fun deleteBySongId( songId: String ): Int
 
     /**
@@ -37,7 +37,7 @@ interface SongPlaylistMapTable {
      *
      * @return number of rows affected by this operation
      */
-    @Query("DELETE FROM SongPlaylistMap WHERE songId = :songId AND playlistId = :playlistId")
+    @Query("DELETE FROM  song_playlist_map WHERE songId = :songId AND playlistId = :playlistId")
     fun deleteBySongId( songId: String, playlistId: Long ): Int
 
     /**
@@ -47,7 +47,7 @@ interface SongPlaylistMapTable {
      *
      * @return number of rows affected by this operation
      */
-    @Query("DELETE FROM SongPlaylistMap WHERE playlistId = :playlistId")
+    @Query("DELETE FROM  song_playlist_map WHERE playlistId = :playlistId")
     fun clear( playlistId: Long ): Int
 
     /**
@@ -56,10 +56,10 @@ interface SongPlaylistMapTable {
      * @return number of rows affected by this operation
      */
     @Query("""
-        DELETE FROM SongPlaylistMap 
+        DELETE FROM  song_playlist_map 
         WHERE songId NOT IN (
             SELECT DISTINCT id
-            FROM Song
+            FROM songs
         )
     """)
     fun clearGhostMaps(): Int
@@ -70,8 +70,8 @@ interface SongPlaylistMapTable {
      */
     @Query("""
         SELECT DISTINCT S.*
-        FROM SongPlaylistMap SPM
-        JOIN Song S ON S.id = SPM.songId
+        FROM  song_playlist_map SPM
+        JOIN songs S ON S.id = SPM.songId
         WHERE SPM.playlistId = :playlistId
         ORDER BY SPM.ROWID
         LIMIT :limit
@@ -84,8 +84,8 @@ interface SongPlaylistMapTable {
      */
     @Query("""
         SELECT DISTINCT S.*
-        FROM SongPlaylistMap SPM
-        JOIN Song S ON S.id = SPM.songId
+        FROM  song_playlist_map SPM
+        JOIN songs S ON S.id = SPM.songId
         WHERE SPM.playlistId = :playlistId
         ORDER BY RANDOM()
         LIMIT :limit
@@ -101,7 +101,7 @@ interface SongPlaylistMapTable {
      *
      * @return [SongPlaylistMap] that has [Song.id] matches [songId] and [Playlist.id] matches [playlistId]
      */
-    @Query("SELECT * FROM SongPlaylistMap WHERE playlistId = :playlistId AND songId = :songId")
+    @Query("SELECT * FROM  song_playlist_map WHERE playlistId = :playlistId AND songId = :songId")
     fun findById( songId: String, playlistId: Long ): Flow<SongPlaylistMap?>
 
     /**
@@ -111,7 +111,7 @@ interface SongPlaylistMapTable {
         SELECT COALESCE(
             (
                 SELECT 'position'
-                FROM SongPlaylistMap 
+                FROM  song_playlist_map 
                 WHERE songId = :songId 
                 AND playlistId = :playlistId
             ),
@@ -125,8 +125,8 @@ interface SongPlaylistMapTable {
      */
     @Query("""
         SELECT COUNT(s.id) > 0
-        FROM Song s
-        JOIN SongPlaylistMap spm ON spm.songId = s.id 
+        FROM songs s
+        JOIN  song_playlist_map spm ON spm.songId = s.id 
         WHERE s.id = :songId
     """)
     fun isMapped( songId: String ): Flow<Boolean>
@@ -136,7 +136,7 @@ interface SongPlaylistMapTable {
      */
     @Query("""
         SELECT playlistId
-        FROM SongPlaylistMap
+        FROM song_playlist_map
         WHERE songId = :songId
     """)
     fun mappedTo( songId: String ): Flow<List<Long>>
@@ -149,15 +149,15 @@ interface SongPlaylistMapTable {
      */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Query("""
-        UPDATE SongPlaylistMap 
+        UPDATE  song_playlist_map 
         SET position = shuffled.new_position
         FROM (
             SELECT spm1.songId, ROW_NUMBER() OVER (ORDER BY RANDOM()) - 1 AS new_position
-            FROM SongPlaylistMap spm1
+            FROM  song_playlist_map spm1
             WHERE spm1.playlistId = :playlistId
         ) AS shuffled
         WHERE playlistId = :playlistId
-        AND shuffled.songId = SongPlaylistMap.songId 
+        AND shuffled.songId = song_playlist_map.songId 
     """)
     // You'll get complain from IDE that "shuffled" and "FROM"
     // aren't exist, that's OK - IGNORE it.
@@ -172,7 +172,7 @@ interface SongPlaylistMapTable {
      */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Query("""
-        UPDATE SongPlaylistMap
+        UPDATE song_playlist_map
         SET position = updated.new_position
         FROM (
             SELECT 
@@ -184,11 +184,11 @@ interface SongPlaylistMapTable {
                     WHEN spm.position < :from AND spm.position >= :to THEN position + 1 
                     ELSE spm.position
                 END AS new_position
-            FROM SongPlaylistMap spm
+            FROM  song_playlist_map spm
             WHERE spm.playlistId = :playlistId
         ) AS updated
         WHERE playlistId = :playlistId
-        AND updated.songId = SongPlaylistMap.songId
+        AND updated.songId = song_playlist_map.songId
     """)
     // You'll get complain from IDE that "updated" and "FROM"
     // aren't exist, that's OK - IGNORE it.
@@ -205,14 +205,14 @@ interface SongPlaylistMapTable {
      * @param playlistId playlist to add song into
      */
     @Query("""
-        INSERT OR IGNORE INTO SongPlaylistMap ( songId, playlistId, position )
+        INSERT OR IGNORE INTO  song_playlist_map ( songId, playlistId, position )
         VALUES( 
             :songId,
             :playlistId,
             COALESCE(
                 (
                     SELECT MAX(position) + 1 
-                    FROM SongPlaylistMap 
+                    FROM  song_playlist_map 
                     WHERE playlistId = :playlistId
                 ), 
                 0
@@ -229,8 +229,8 @@ interface SongPlaylistMapTable {
      */
     @Query("""
         SELECT DISTINCT s.*
-        FROM SongPlaylistMap spm
-        LEFT JOIN Song s ON s.id = spm.songId
+        FROM  song_playlist_map spm
+        LEFT JOIN songs s ON s.id = spm.songId
         WHERE spm.playlistId = :playlistId
         ORDER BY s.totalPlayTimeMs DESC
         LIMIT :limit
@@ -262,10 +262,10 @@ interface SongPlaylistMapTable {
     //<editor-fold defaultstate="collapsed" desc="Sort songs of playlist">
     @Query("""
         SELECT DISTINCT S.*
-        FROM SongPlaylistMap spm
-        LEFT JOIN Song S ON S.id = spm.songId
-        LEFT JOIN SongAlbumMap sam ON sam.songId = S.id
-        LEFT JOIN Album A ON A.id = sam.albumId
+        FROM  song_playlist_map spm
+        LEFT JOIN songs S ON S.id = spm.songId
+        LEFT JOIN song_album_map sam ON sam.songId = S.id
+        LEFT JOIN albums A ON A.id = sam.albumId
         WHERE spm.playlistId = :playlistId
         ORDER BY 
             A.title IS NULL, 
@@ -279,10 +279,10 @@ interface SongPlaylistMapTable {
 
     @Query("""
         SELECT DISTINCT S.*
-        FROM SongPlaylistMap spm
-        LEFT JOIN Song S ON S.id = spm.songId
-        LEFT JOIN SongAlbumMap sam ON sam.songId = S.id
-        LEFT JOIN Album A ON A.id = sam.albumId
+        FROM  song_playlist_map spm
+        LEFT JOIN songs S ON S.id = spm.songId
+        LEFT JOIN song_album_map sam ON sam.songId = S.id
+        LEFT JOIN albums A ON A.id = sam.albumId
         WHERE spm.playlistId = :playlistId
         ORDER BY A.year IS NULL, A.year
         LIMIT :limit
@@ -296,10 +296,10 @@ interface SongPlaylistMapTable {
 
     @Query("""
         SELECT DISTINCT S.*
-        FROM SongPlaylistMap spm
-        LEFT JOIN Song S ON S.id = spm.songId
-        LEFT JOIN SongAlbumMap sam ON sam.songId = S.id
-        LEFT JOIN Album A ON A.id = sam.albumId
+        FROM  song_playlist_map spm
+        LEFT JOIN songs S ON S.id = spm.songId
+        LEFT JOIN song_album_map sam ON sam.songId = S.id
+        LEFT JOIN albums A ON A.id = sam.albumId
         WHERE spm.playlistId = :playlistId
         ORDER BY 
             A.title IS NULL, 
@@ -318,9 +318,9 @@ interface SongPlaylistMapTable {
 
     @Query("""
         SELECT S.*
-        FROM SongPlaylistMap spm
-        LEFT JOIN Song S ON S.id = spm.songId
-        LEFT JOIN Event E ON E.songId = S.id
+        FROM  song_playlist_map spm
+        LEFT JOIN songs S ON S.id = spm.songId
+        LEFT JOIN playback_history E ON E.songId = S.id
         WHERE spm.playlistId = :playlistId
         ORDER BY E.timestamp
         LIMIT :limit
@@ -339,8 +339,8 @@ interface SongPlaylistMapTable {
 
     @Query("""
         SELECT S.*
-        FROM SongPlaylistMap spm
-        LEFT JOIN Song S ON S.id = spm.songId
+        FROM  song_playlist_map spm
+        LEFT JOIN songs S ON S.id = spm.songId
         WHERE spm.playlistId = :playlistId
         ORDER BY spm.position
         LIMIT :limit

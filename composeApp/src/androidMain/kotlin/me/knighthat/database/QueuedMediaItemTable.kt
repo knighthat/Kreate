@@ -17,7 +17,7 @@ interface QueuedMediaItemTable {
      */
     @Query("""
         SELECT DISTINCT * 
-        FROM QueuedMediaItem
+        FROM persistent_queue
         LIMIT :limit
     """)
     fun all( limit: Int = Int.MAX_VALUE ): Flow<List<QueuedMediaItem>>
@@ -43,6 +43,6 @@ interface QueuedMediaItemTable {
     @Throws(SQLException::class)
     fun insert( queuedMediaItems: List<QueuedMediaItem> )
 
-    @Query("DELETE FROM QueuedMediaItem")
+    @Query("DELETE FROM persistent_queue")
     fun deleteAll(): Int
 }

@@ -32,7 +32,7 @@ interface SongAlbumMapTable {
      *
      * @return number of rows affected by this operation
      */
-    @Query("DELETE FROM SongAlbumMap WHERE albumId = :albumId")
+    @Query("DELETE FROM song_album_map WHERE albumId = :albumId")
     fun clear( albumId: String ): Int
 
     /**
@@ -41,10 +41,10 @@ interface SongAlbumMapTable {
      * @return number of rows affected by this operation
      */
     @Query("""
-        DELETE FROM SongAlbumMap 
+        DELETE FROM song_album_map 
         WHERE songId NOT IN (
             SELECT DISTINCT id
-            FROM Song
+            FROM songs
         )
     """)
     fun clearGhostMaps(): Int
@@ -59,9 +59,9 @@ interface SongAlbumMapTable {
      * sorted by song's position in album
      */
     @Query("""
-        SELECT DISTINCT Song.*
-        FROM SongAlbumMap
-        JOIN Song ON id = songId
+        SELECT DISTINCT songs.*
+        FROM song_album_map
+        JOIN songs ON id = songId
         WHERE albumId = :albumId
         ORDER BY position
         LIMIT :limit
@@ -73,15 +73,15 @@ interface SongAlbumMapTable {
      */
     @Query("""
         SELECT A.*
-        FROM Album A
-        JOIN SongAlbumMap SAM ON SAM.albumId = A.id
+        FROM albums A
+        JOIN song_album_map SAM ON SAM.albumId = A.id
         WHERE SAM.songId = :songId
         LIMIT :limit
     """)
     fun findAlbumOf( songId: String, limit: Int = Int.MAX_VALUE ): Flow<Album?>
 
     @Query("""
-        INSERT OR IGNORE INTO SongAlbumMap ( songId, albumId, position )
+        INSERT OR IGNORE INTO song_album_map ( songId, albumId, position )
         VALUES( 
             :songId,
             :albumId,
@@ -89,7 +89,7 @@ interface SongAlbumMapTable {
                 WHEN :position < 0 THEN COALESCE(
                     (
                         SELECT MAX(position) + 1 
-                        FROM SongAlbumMap 
+                        FROM song_album_map 
                         WHERE albumId = :albumId
                     ), 
                     0

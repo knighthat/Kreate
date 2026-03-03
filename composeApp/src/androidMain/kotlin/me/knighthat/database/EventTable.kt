@@ -19,11 +19,11 @@ import me.knighthat.database.ext.EventWithSong
 @RewriteQueriesToDropUnusedColumns
 interface EventTable {
 
-    @Query("SELECT COUNT(*) FROM Event")
+    @Query("SELECT COUNT(*) FROM playback_history")
     fun countAll(): Flow<Long>
 
     @Transaction
-    @Query("SELECT DISTINCT * FROM Event LIMIT :limit")
+    @Query("SELECT DISTINCT * FROM playback_history LIMIT :limit")
     fun allWithSong( limit: Int = Int.MAX_VALUE ): Flow<List<EventWithSong>>
 
     /**
@@ -45,8 +45,8 @@ interface EventTable {
      */
     @Query("""
         SELECT DISTINCT S.*
-        FROM Song S
-        JOIN Event E ON E.songId = S.id
+        FROM songs S
+        JOIN playback_history E ON E.songId = S.id
         WHERE E."timestamp" BETWEEN :from AND :to
         GROUP BY E.songId 
         ORDER BY SUM(E.playtime) DESC
@@ -77,9 +77,9 @@ interface EventTable {
      */
     @Query("""
         SELECT DISTINCT A.*
-        FROM Artist A
-        JOIN SongArtistMap SAM ON SAM.artistId = A.id
-        JOIN Event E ON E.songId = SAM.songId
+        FROM artists A
+        JOIN song_artist_map SAM ON SAM.artistId = A.id
+        JOIN playback_history E ON E.songId = SAM.songId
         WHERE E."timestamp" BETWEEN :from AND :to
         GROUP BY A.id
         ORDER BY SUM(E.playtime) DESC
@@ -110,9 +110,9 @@ interface EventTable {
      */
     @Query("""
         SELECT DISTINCT A.*
-        FROM Album A
-        JOIN SongAlbumMap SAM ON SAM.albumId = A.id
-        JOIN Event E ON E.songId = SAM.songId
+        FROM albums A
+        JOIN song_album_map SAM ON SAM.albumId = A.id
+        JOIN playback_history E ON E.songId = SAM.songId
         WHERE E."timestamp" BETWEEN :from AND :to
         GROUP BY A.id
         ORDER BY SUM(E.playtime) DESC
@@ -144,9 +144,9 @@ interface EventTable {
      */
     @Query("""
         SELECT DISTINCT P.*, COUNT(SPM.songId) AS songCount
-        FROM Playlist P
-        JOIN SongPlaylistMap SPM ON SPM.playlistId = P.id
-        JOIN Event E ON E.songId = SPM.songId
+        FROM playlists P
+        JOIN song_playlist_map SPM ON SPM.playlistId = P.id
+        JOIN playback_history E ON E.songId = SPM.songId
         WHERE E."timestamp" BETWEEN :from AND :to
         GROUP BY P.id
         ORDER BY SUM(E.playtime) DESC
@@ -176,6 +176,6 @@ interface EventTable {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertIgnore( event: Event )
 
-    @Query("DELETE FROM Event")
+    @Query("DELETE FROM playback_history")
     fun deleteAll(): Int
 }

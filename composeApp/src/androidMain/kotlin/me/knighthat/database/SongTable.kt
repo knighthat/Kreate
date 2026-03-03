@@ -28,7 +28,7 @@ interface SongTable {
      */
     @Query("""
         SELECT DISTINCT * 
-        FROM Song 
+        FROM songs 
         WHERE totalPlayTimeMs >= :excludeHidden
         ORDER BY ROWID 
         LIMIT :limit
@@ -43,7 +43,7 @@ interface SongTable {
      */
     @Query("""
         SELECT DISTINCT * 
-        FROM Song 
+        FROM songs 
         WHERE totalPlayTimeMs >= :excludeHidden
         ORDER BY RANDOM()
         LIMIT :limit
@@ -58,7 +58,7 @@ interface SongTable {
      */
     @Query("""
         SELECT DISTINCT * 
-        FROM Song 
+        FROM songs 
         WHERE id LIKE '$LOCAL_KEY_PREFIX%'
         LIMIT :limit
     """)
@@ -69,7 +69,7 @@ interface SongTable {
      */
     @Query("""
         SELECT DISTINCT * 
-        FROM Song 
+        FROM songs 
         WHERE likedAt IS NOT NULL AND likedAt > 0
         ORDER BY ROWID
         LIMIT :limit
@@ -81,7 +81,7 @@ interface SongTable {
      */
     @Query("""
         SELECT DISTINCT * 
-        FROM Song 
+        FROM songs 
         WHERE likedAt IS NOT NULL AND likedAt > 0
         ORDER BY RANDOM()
         LIMIT :limit
@@ -90,7 +90,7 @@ interface SongTable {
 
     @Query("""
         SELECT DISTINCT * 
-        FROM Song 
+        FROM songs 
         WHERE likedAt IS NOT NULL AND likedAt < 0
         ORDER BY ROWID
         LIMIT :limit
@@ -102,7 +102,7 @@ interface SongTable {
      *
      * @return number of rows affected by this operation
      */
-    @Query("DELETE FROM Song WHERE totalPlayTimeMs = 0")
+    @Query("DELETE FROM songs WHERE totalPlayTimeMs = 0")
     fun clearHiddenSongs(): Int
 
     /**
@@ -110,7 +110,7 @@ interface SongTable {
      *
      * @return [Song] that has [Song.id] matches [songId]
      */
-    @Query("SELECT DISTINCT * FROM Song WHERE id = :songId")
+    @Query("SELECT DISTINCT * FROM songs WHERE id = :songId")
     fun findById( songId: String ): Flow<Song?>
 
     /**
@@ -124,7 +124,7 @@ interface SongTable {
      */
     @Query("""
         SELECT DISTINCT * 
-        FROM Song 
+        FROM songs 
         WHERE title LIKE '%' || :searchTerm || '%' COLLATE NOCASE
         OR artistsText LIKE '%' || :searchTerm || '%' COLLATE NOCASE
     """)
@@ -142,7 +142,7 @@ interface SongTable {
      */
     @Query("""
         SELECT DISTINCT * 
-        FROM Song 
+        FROM songs 
         WHERE trim(
             CASE 
                 WHEN artistsText LIKE '$MODIFIED_PREFIX%' THEN SUBSTR(artistsText, LENGTH('$MODIFIED_PREFIX') + 1)
@@ -225,7 +225,7 @@ interface SongTable {
     /**
      * @return whether any record in [Song] table has id [songId]
      */
-    @Query("SELECT COUNT(*) > 0 FROM Song WHERE id = :songId")
+    @Query("SELECT COUNT(*) > 0 FROM songs WHERE id = :songId")
     fun exists( songId: String ): Flow<Boolean>
 
     /**
@@ -241,7 +241,7 @@ interface SongTable {
         SELECT COALESCE(
             (
                 SELECT likedAt IS NOT NULL AND likedAt > 0
-                FROM Song 
+                FROM songs 
                 WHERE id = :songId
             )
             , 0
@@ -266,7 +266,7 @@ interface SongTable {
                 WHEN likedAt < 0 THEN 0 
                 ELSE NULL 
             END 
-        FROM Song 
+        FROM songs 
         WHERE id = :songId
     """)
     fun likeState( songId: String ): Flow<Boolean?>
@@ -283,7 +283,7 @@ interface SongTable {
      * @return number of rows affected by this operation
      */
     @Query("""
-        UPDATE Song  
+        UPDATE songs  
         SET likedAt = 
             CASE  
                 WHEN likedAt = -1 THEN NULL
@@ -306,7 +306,7 @@ interface SongTable {
      * @return number of rows affected
      */
     @Query("""
-        UPDATE Song
+        UPDATE songs
         SET likedAt = 
             CASE 
                 WHEN likedAt IS NOT NULL THEN NULL
@@ -327,7 +327,7 @@ interface SongTable {
      * @return number of rows affected
      */
     @Query("""
-        UPDATE Song
+        UPDATE songs
         SET likedAt = 
             CASE
                 WHEN :likeState = 0 THEN -1
@@ -344,7 +344,7 @@ interface SongTable {
      *
      * @return number of albums affected by this operation
      */
-    @Query("UPDATE Song SET title = :title WHERE id = :songId")
+    @Query("UPDATE songs SET title = :title WHERE id = :songId")
     fun updateTitle( songId: String, title: String ): Int
 
     /**
@@ -353,7 +353,7 @@ interface SongTable {
      *
      * @return number of albums affected by this operation
      */
-    @Query("UPDATE Song SET artistsText = :artistsText WHERE id = :songId")
+    @Query("UPDATE songs SET artistsText = :artistsText WHERE id = :songId")
     fun updateArtists( songId: String, artistsText: String ): Int
 
     /**
@@ -362,7 +362,7 @@ interface SongTable {
      *
      * @return number of albums affected by this operation
      */
-    @Query("UPDATE Song SET thumbnailUrl = :thumbnailUrl WHERE id = :songId")
+    @Query("UPDATE songs SET thumbnailUrl = :thumbnailUrl WHERE id = :songId")
     fun updateThumbnail( songId: String, thumbnailUrl: String? ): Int
 
     /**
@@ -378,7 +378,7 @@ interface SongTable {
      */
     @Query(
         """
-        UPDATE Song 
+        UPDATE songs 
         SET totalPlayTimeMs = 
             CASE
                 WHEN :isIncrement = 0 THEN :value
@@ -407,8 +407,8 @@ interface SongTable {
 
     @Query("""
         SELECT DISTINCT S.* 
-        FROM Song S 
-        LEFT JOIN Event E ON E.songId = S.id 
+        FROM songs S 
+        LEFT JOIN playback_history E ON E.songId = S.id 
         WHERE totalPlayTimeMs >= :excludeHidden
         ORDER BY E.timestamp
         LIMIT :limit
@@ -432,9 +432,9 @@ interface SongTable {
 
     @Query("""
         SELECT DISTINCT S.*
-        FROM Song S
-        LEFT JOIN SongAlbumMap sam ON sam.songId = S.id
-        LEFT JOIN Album A ON A.id = sam.albumId
+        FROM songs S
+        LEFT JOIN song_album_map sam ON sam.songId = S.id
+        LEFT JOIN albums A ON A.id = sam.albumId
         WHERE totalPlayTimeMs >= :excludeHidden
         ORDER BY 
             CASE 
@@ -517,8 +517,8 @@ interface SongTable {
 
     @Query("""
         SELECT DISTINCT S.* 
-        FROM Song S 
-        LEFT JOIN Event E ON E.songId = S.id 
+        FROM songs S 
+        LEFT JOIN playback_history E ON E.songId = S.id 
         WHERE likedAt IS NOT NULL AND likedAt > 0
         ORDER BY E.timestamp
         LIMIT :limit
@@ -532,9 +532,9 @@ interface SongTable {
 
     @Query("""
         SELECT DISTINCT S.*
-        FROM Song S
-        LEFT JOIN SongAlbumMap sam ON sam.songId = S.id
-        LEFT JOIN Album A ON A.id = sam.albumId
+        FROM songs S
+        LEFT JOIN song_album_map sam ON sam.songId = S.id
+        LEFT JOIN albums A ON A.id = sam.albumId
         WHERE likedAt IS NOT NULL AND likedAt > 0
         ORDER BY 
             CASE 

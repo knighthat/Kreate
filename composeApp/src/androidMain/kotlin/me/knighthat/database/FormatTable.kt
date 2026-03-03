@@ -23,8 +23,8 @@ interface FormatTable {
      */
     @Query("""
         SELECT DISTINCT F.*, S.* 
-        FROM Format F
-        JOIN Song S ON S.id = F.songId
+        FROM formats F
+        JOIN songs S ON S.id = F.songId
         WHERE totalPlayTimeMs >= :excludeHidden
         ORDER BY S.ROWID 
         LIMIT :limit
@@ -39,8 +39,8 @@ interface FormatTable {
      */
     @Query("""
         SELECT DISTINCT F.*, S.* 
-        FROM Format F
-        JOIN Song S ON S.id = F.songId
+        FROM formats F
+        JOIN songs S ON S.id = F.songId
         WHERE totalPlayTimeMs >= :excludeHidden
         ORDER BY RANDOM()
         LIMIT :limit
@@ -55,7 +55,7 @@ interface FormatTable {
      *
      * @return number of rows affected by this operation
      */
-    @Query("DELETE FROM Format WHERE songId IN (:songIds)")
+    @Query("DELETE FROM formats WHERE songId IN (:songIds)")
     fun deleteBySongId( songIds: List<String> ): Int
 
     fun deleteBySongId( vararg songIds: String ): Int = deleteBySongId( songIds.toList() )
@@ -65,7 +65,7 @@ interface FormatTable {
      * @param songId of song to look for
      * @return [Format] that has [Format.songId] matches [songId]
      */
-    @Query("SELECT DISTINCT * FROM Format WHERE songId = :songId")
+    @Query("SELECT DISTINCT * FROM formats WHERE songId = :songId")
     fun findBySongId( songId: String ): Flow<Format?>
 
     /**
@@ -87,7 +87,7 @@ interface FormatTable {
         SELECT COALESCE(
             (
                 SELECT contentLength
-                FROM Format
+                FROM formats
                 WHERE songId = :songId
             ),
             0
@@ -100,7 +100,7 @@ interface FormatTable {
      *
      * @return number of rows affected by this operation
      */
-    @Query("UPDATE Format SET contentLength = :contentLength WHERE songId = :songId")
+    @Query("UPDATE formats SET contentLength = :contentLength WHERE songId = :songId")
     fun updateContentLengthOf( songId: String, contentLength: Long = 0L ): Int
 
     //<editor-fold defaultstate="collapsed" desc="Sort all with songs">
@@ -121,9 +121,9 @@ interface FormatTable {
 
     @Query("""
         SELECT DISTINCT F.*, S.*
-        FROM Format F
-        JOIN Song S ON S.id = F.songId
-        LEFT JOIN Event E ON E.songId = F.songId 
+        FROM formats F
+        JOIN songs S ON S.id = F.songId
+        LEFT JOIN playback_history E ON E.songId = F.songId 
         WHERE totalPlayTimeMs >= :excludeHidden
         ORDER BY E.timestamp
         LIMIT :limit
@@ -147,10 +147,10 @@ interface FormatTable {
 
     @Query("""
         SELECT DISTINCT F.*, S.*
-        FROM Format F
-        JOIN Song S ON S.id = F.songId
-        LEFT JOIN SongAlbumMap sam ON sam.songId = S.id
-        LEFT JOIN Album A ON A.id = sam.albumId
+        FROM formats F
+        JOIN songs S ON S.id = F.songId
+        LEFT JOIN song_album_map sam ON sam.songId = S.id
+        LEFT JOIN albums A ON A.id = sam.albumId
         WHERE totalPlayTimeMs >= :excludeHidden
         ORDER BY 
             CASE 

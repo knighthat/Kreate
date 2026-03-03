@@ -14,7 +14,7 @@ import kotlin.time.toDuration
 
 @Serializable
 @Immutable
-@Entity
+@Entity(tableName = "songs")
 data class Song(
     @PrimaryKey val id: String,
     val title: String,

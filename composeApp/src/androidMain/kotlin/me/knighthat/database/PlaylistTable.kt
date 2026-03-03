@@ -28,8 +28,8 @@ interface PlaylistTable {
      */
     @Query("""
         SELECT DISTINCT S.*
-        FROM SongPlaylistMap spm
-        JOIN Song S ON S.id = spm.songId
+        FROM song_playlist_map spm
+        JOIN songs S ON S.id = spm.songId
         ORDER BY S.ROWID
         LIMIT :limit
     """)
@@ -40,9 +40,9 @@ interface PlaylistTable {
      */
     @Query("""
         SELECT DISTINCT S.*
-        FROM SongPlaylistMap spm
-        JOIN Song S ON S.id = spm.songId
-        JOIN Playlist P ON P.id = spm.playlistId
+        FROM song_playlist_map spm
+        JOIN songs S ON S.id = spm.songId
+        JOIN playlists P ON P.id = spm.playlistId
         WHERE P.is_pinned
         ORDER BY S.ROWID
         LIMIT :limit
@@ -54,9 +54,9 @@ interface PlaylistTable {
      */
     @Query("""
         SELECT DISTINCT S.*
-        FROM SongPlaylistMap spm
-        JOIN Song S ON S.id = spm.songId
-        JOIN Playlist P ON P.id = spm.playlistId
+        FROM song_playlist_map spm
+        JOIN songs S ON S.id = spm.songId
+        JOIN playlists P ON P.id = spm.playlistId
         WHERE P.isYoutubePlaylist
         ORDER BY S.ROWID
         LIMIT :limit
@@ -68,9 +68,9 @@ interface PlaylistTable {
      */
     @Query("""
         SELECT DISTINCT S.*
-        FROM SongPlaylistMap spm
-        JOIN Song S ON S.id = spm.songId
-        JOIN Playlist P ON P.id = spm.playlistId
+        FROM song_playlist_map spm
+        JOIN songs S ON S.id = spm.songId
+        JOIN playlists P ON P.id = spm.playlistId
         WHERE P.is_monthly
         ORDER BY S.ROWID
         LIMIT :limit
@@ -85,10 +85,10 @@ interface PlaylistTable {
             *,
             (
                 SELECT COUNT(songId)
-                FROM SongPlaylistMap
+                FROM song_playlist_map
                 WHERE playlistId = id
             ) as songCount
-        FROM Playlist
+        FROM playlists
         ORDER BY ROWID
         LIMIT :limit
     """)
@@ -102,10 +102,10 @@ interface PlaylistTable {
             *,
             (
                 SELECT COUNT(songId)
-                FROM SongPlaylistMap
+                FROM song_playlist_map
                 WHERE playlistId = id
             ) as songCount
-        FROM Playlist
+        FROM playlists
         ORDER BY RANDOM()
         LIMIT :limit
     """)
@@ -115,7 +115,7 @@ interface PlaylistTable {
      * @param browseId of playlist to look for
      * @return [Playlist] that has [Playlist.browseId] matches [browseId]
      */
-    @Query("SELECT DISTINCT * FROM Playlist WHERE browseId = :browseId")
+    @Query("SELECT DISTINCT * FROM playlists WHERE browseId = :browseId")
     fun findByBrowseId( browseId: String ): Flow<Playlist?>
 
     /**
@@ -123,7 +123,7 @@ interface PlaylistTable {
      */
     @Query("""
         SELECT DISTINCT * 
-        FROM Playlist 
+        FROM playlists 
         WHERE trim(name) COLLATE NOCASE = trim(:playlistName) COLLATE NOCASE
         LIMIT 1
     """)
@@ -132,7 +132,7 @@ interface PlaylistTable {
     /**
      * @return playlist with id [playlistId]
      */
-    @Query("SELECT * FROM Playlist WHERE id = :playlistId")
+    @Query("SELECT * FROM playlists WHERE id = :playlistId")
     fun findById( playlistId: Long ): Flow<Playlist?>
 
     /**
@@ -225,7 +225,7 @@ interface PlaylistTable {
      */
     @Query("""
         SELECT COUNT(*) > 0
-        FROM Playlist
+        FROM playlists
         WHERE name = :playlistName
     """)
     fun exists( playlistName: String ): Flow<Boolean>
@@ -242,7 +242,7 @@ interface PlaylistTable {
      * @return number of rows affected
      */
     @Query("""
-        UPDATE Playlist
+        UPDATE playlists
         SET is_pinned = 
             CASE
                 WHEN 1 THEN 0
@@ -255,9 +255,9 @@ interface PlaylistTable {
     //<editor-fold defaultstate="collapsed" desc="Sort as preview">
     @Query("""
         SELECT DISTINCT P.*, COUNT(spm.songId) as songCount
-        FROM SongPlaylistMap spm
-        JOIN Playlist P ON P.id = spm.playlistId
-        JOIN Song S ON S.id = spm.songId
+        FROM song_playlist_map spm
+        JOIN playlists P ON P.id = spm.playlistId
+        JOIN songs S ON S.id = spm.songId
         GROUP BY P.id
         ORDER BY SUM(S.totalPlayTimeMs)
         LIMIT :limit

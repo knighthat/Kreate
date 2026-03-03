@@ -7,7 +7,7 @@ import app.kreate.util.cleanPrefix
 
 
 @Immutable
-@Entity
+@Entity(tableName = "artists")
 data class Artist(
     @PrimaryKey val id: String,
     val name: String? = null,

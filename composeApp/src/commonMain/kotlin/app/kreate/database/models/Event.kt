@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey
 
 @Immutable
 @Entity(
+    tableName = "playback_history",
     foreignKeys = [
         ForeignKey(
             entity = Song::class,

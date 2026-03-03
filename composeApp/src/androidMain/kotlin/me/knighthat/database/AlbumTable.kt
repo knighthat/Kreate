@@ -23,7 +23,7 @@ interface AlbumTable {
     /**
      * @return all records from this table
      */
-    @Query("SELECT DISTINCT * FROM Album LIMIT :limit")
+    @Query("SELECT DISTINCT * FROM albums LIMIT :limit")
     fun all( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
 
     /**
@@ -31,7 +31,7 @@ interface AlbumTable {
      */
     @Query("""
         SELECT DISTINCT *
-        FROM Album
+        FROM albums
         WHERE bookmarkedAt IS NOT NULL
         ORDER BY ROWID
         LIMIT :limit
@@ -43,7 +43,7 @@ interface AlbumTable {
      */
     @Query("""
         SELECT DISTINCT *
-        FROM Album
+        FROM albums
         WHERE bookmarkedAt IS NOT NULL
         ORDER BY RANDOM()
         LIMIT :limit
@@ -55,9 +55,9 @@ interface AlbumTable {
      */
     @Query("""
         SELECT DISTINCT A.*
-        FROM Album A
-        JOIN SongAlbumMap sam ON sam.albumId = A.id
-        JOIN SongPlaylistMap spm ON spm.songId = sam.songId 
+        FROM albums A
+        JOIN song_album_map sam ON sam.albumId = A.id
+        JOIN song_playlist_map spm ON spm.songId = sam.songId 
         ORDER BY A.ROWID
         LIMIT :limit
     """)
@@ -68,9 +68,9 @@ interface AlbumTable {
      */
     @Query("""
         SELECT DISTINCT A.*
-        FROM Album A
-        JOIN SongAlbumMap sam ON sam.albumId = A.id
-        JOIN SongPlaylistMap spm ON spm.songId = sam.songId 
+        FROM albums A
+        JOIN song_album_map sam ON sam.albumId = A.id
+        JOIN song_playlist_map spm ON spm.songId = sam.songId 
         ORDER BY RANDOM()
         LIMIT :limit
     """)
@@ -81,9 +81,9 @@ interface AlbumTable {
      */
     @Query("""
         SELECT DISTINCT S.*
-        FROM SongAlbumMap sam
-        JOIN Album A ON A.id = sam.albumId
-        JOIN Song S ON S.id = sam.songId
+        FROM song_album_map sam
+        JOIN albums A ON A.id = sam.albumId
+        JOIN songs S ON S.id = sam.songId
         WHERE A.bookmarkedAt IS NOT NULL
         ORDER BY S.ROWID
         LIMIT :limit
@@ -94,16 +94,16 @@ interface AlbumTable {
      * @param albumId of album to look for
      * @return [Album] that has [Album.id] matches [albumId]
      */
-    @Query("SELECT DISTINCT * FROM Album WHERE id = :albumId")
+    @Query("SELECT DISTINCT * FROM albums WHERE id = :albumId")
     fun findById( albumId: String ): Flow<Album?>
 
     /**
      * @return [Album] that has song with id [songId]
      */
     @Query("""
-        SELECT Album.*
-        FROM SongAlbumMap 
-        JOIN Album ON id = albumId
+        SELECT albums.*
+        FROM song_album_map 
+        JOIN albums ON id = albumId
         WHERE songId = :songId
     """)
     fun findBySongId( songId: String ): Flow<Album?>
@@ -197,7 +197,7 @@ interface AlbumTable {
                 WHEN bookmarkedAt IS NOT NULL THEN 1   
                 ELSE 0
             END
-        FROM Album
+        FROM albums
         WHERE id = :albumId 
     """)
     fun isBookmarked( albumId: String ): Flow<Boolean>
@@ -218,7 +218,7 @@ interface AlbumTable {
      * @return number of albums updated by this operation
      */
     @Query("""
-        UPDATE Album
+        UPDATE albums
         SET bookmarkedAt = 
             CASE 
                 WHEN bookmarkedAt IS NULL THEN strftime('%s', 'now') * 1000
@@ -234,7 +234,7 @@ interface AlbumTable {
      *
      * @return number of albums affected by this operation
      */
-    @Query("UPDATE Album SET thumbnailUrl = :thumbnailUrl WHERE id = :albumId")
+    @Query("UPDATE albums SET thumbnailUrl = :thumbnailUrl WHERE id = :albumId")
     fun updateCover( albumId: String, thumbnailUrl: String ): Int
 
     /**
@@ -243,7 +243,7 @@ interface AlbumTable {
      *
      * @return number of albums affected by this operation
      */
-    @Query("UPDATE Album SET authorsText = :authors WHERE id = :albumId")
+    @Query("UPDATE albums SET authorsText = :authors WHERE id = :albumId")
     fun updateAuthors( albumId: String, authors: String ): Int
 
     /**
@@ -252,7 +252,7 @@ interface AlbumTable {
      *
      * @return number of albums affected by this operation
      */
-    @Query("UPDATE Album SET title = :title WHERE id = :albumId")
+    @Query("UPDATE albums SET title = :title WHERE id = :albumId")
     fun updateTitle( albumId: String, title: String ): Int
 
     //<editor-fold defaultstate="collapsed" desc="Sort bookmarked">
@@ -273,8 +273,8 @@ interface AlbumTable {
 
     @Query("""
         SELECT DISTINCT A.* 
-        FROM Album A
-        JOIN SongAlbumMap sam ON sam.albumId = A.id 
+        FROM albums A
+        JOIN song_album_map sam ON sam.albumId = A.id 
         WHERE A.bookmarkedAt IS NOT NULL
         GROUP BY A.id
         ORDER BY COUNT(sam.songId)
@@ -284,9 +284,9 @@ interface AlbumTable {
 
     @Query("""
         SELECT DISTINCT A.*
-        FROM Album A
-        JOIN SongAlbumMap sam ON sam.albumId = A.id
-        JOIN Song S ON S.id = sam.songId
+        FROM albums A
+        JOIN song_album_map sam ON sam.albumId = A.id
+        JOIN songs S ON S.id = sam.songId
         WHERE A.bookmarkedAt IS NOT NULL
         GROUP BY A.id
         ORDER BY SUM(
@@ -360,9 +360,9 @@ interface AlbumTable {
 
     @Query("""
         SELECT DISTINCT A.*
-        FROM SongPlaylistMap spm
-        JOIN SongAlbumMap sam ON sam.songId = spm.songId
-        JOIN Album A ON A.id = sam.albumId
+        FROM song_playlist_map spm
+        JOIN song_album_map sam ON sam.songId = spm.songId
+        JOIN albums A ON A.id = sam.albumId
         GROUP BY A.id
         ORDER BY COUNT(sam.songId)
         LIMIT :limit
@@ -371,10 +371,10 @@ interface AlbumTable {
 
     @Query("""
         SELECT DISTINCT A.*
-        FROM SongPlaylistMap spm
-        JOIN SongAlbumMap sam ON sam.songId = spm.songId
-        JOIN Album A ON A.id = sam.albumId
-        JOIN Song S ON S.id = sam.songId
+        FROM song_playlist_map spm
+        JOIN song_album_map sam ON sam.songId = spm.songId
+        JOIN albums A ON A.id = sam.albumId
+        JOIN songs S ON S.id = sam.songId
         GROUP BY A.id
         ORDER BY SUM(
             CASE 

@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 
 @Immutable
 @Entity(
+    tableName = "lyrics",
     foreignKeys = [
         ForeignKey(
             entity = Song::class,

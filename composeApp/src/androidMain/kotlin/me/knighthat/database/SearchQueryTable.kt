@@ -25,7 +25,7 @@ interface SearchQueryTable {
      */
     @Query("""
         SELECT DISTINCT * 
-        FROM SearchQuery 
+        FROM search_history 
         WHERE `query` LIKE '%' || :searchTerm || '%' COLLATE NOCASE
         """)
     fun findAllContain( searchTerm: String ): Flow<List<SearchQuery>>
@@ -65,6 +65,6 @@ interface SearchQueryTable {
     @Delete
     fun delete( searchQuery: List<SearchQuery> ): Int
 
-    @Query("DELETE FROM SearchQuery")
+    @Query("DELETE FROM search_history")
     fun deleteAll(): Int
 }

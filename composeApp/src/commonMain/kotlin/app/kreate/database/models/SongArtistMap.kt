@@ -8,6 +8,7 @@ import androidx.room.ForeignKey
 
 @Immutable
 @Entity(
+    tableName = "song_artist_map",
     primaryKeys = ["songId", "artistId"],
     foreignKeys = [
         ForeignKey(

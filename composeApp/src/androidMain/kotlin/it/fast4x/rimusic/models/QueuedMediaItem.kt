@@ -7,7 +7,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Immutable
-@Entity
+@Entity(tableName = "persistent_queue")
 class QueuedMediaItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB) val mediaItem: MediaItem,

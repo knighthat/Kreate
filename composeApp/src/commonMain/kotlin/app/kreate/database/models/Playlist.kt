@@ -8,7 +8,7 @@ import app.kreate.util.cleanPrefix
 
 
 @Immutable
-@Entity
+@Entity(tableName = "playlists")
 data class Playlist(
     val name: String,
 
