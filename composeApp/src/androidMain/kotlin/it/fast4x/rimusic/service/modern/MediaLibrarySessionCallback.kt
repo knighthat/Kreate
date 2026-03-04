@@ -9,6 +9,7 @@ import androidx.annotation.OptIn
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
 import androidx.core.net.toUri
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
@@ -22,6 +23,7 @@ import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
 import app.kreate.util.cleanPrefix
 import com.google.common.collect.ImmutableList
@@ -380,7 +382,7 @@ class MediaLibrarySessionCallback(
         database.songTable
                 .findById( mediaId )
                 .first()
-                ?.toMediaItem()
+                ?.asMediaItem
                 ?.let {
                     LibraryResult.ofItem( it, null )
                 }
@@ -463,7 +465,7 @@ class MediaLibrarySessionCallback(
             startIdx = queryList.indexOfFirst { it.id == songId }.coerceAtLeast( 0 )
         }
 
-        return@future MediaSession.MediaItemsWithStartPosition( queryList.map{ it.toMediaItem() }, startIdx, startPositionMs )
+        return@future MediaSession.MediaItemsWithStartPosition( queryList.map( Song::asMediaItem ), startIdx, startPositionMs )
     }
 
     override fun onPlaybackResumption(
@@ -481,24 +483,12 @@ class MediaLibrarySessionCallback(
             return Futures.immediateFuture(defaultResult)
 
         scope.future {
-            val startIndex: Int
-            val startPositionMs: Long
-            val mediaItems: List<MediaItem>
+            val queue = database.queueTable.allBlocking()
+            val startIndex = queue.indexOfFirst { it.position != null }
+            val startPositionMs = queue[startIndex].position ?: C.TIME_UNSET
+            val mediaItems = queue.map { it.song.asMediaItem.buildUpon().setTag( PersistentQueue.Tag ).build() }
+            val resumptionPlaylist = MediaSession.MediaItemsWithStartPosition( mediaItems, startIndex, startPositionMs )
 
-            database.queueTable.all().first().run {
-                indexOfFirst { it.position != null }.coerceAtLeast( 0 )
-                                                    .let {
-                                                        startIndex = it
-                                                        startPositionMs = it.toLong()
-                                                    }
-                mediaItems = map { it.mediaItem.asSong.toMediaItem( true ) }
-            }
-
-            val resumptionPlaylist = MediaSession.MediaItemsWithStartPosition(
-                mediaItems,
-                startIndex,
-                startPositionMs
-            )
             settablePlaylist.set(resumptionPlaylist)
         }
         return settablePlaylist
@@ -548,20 +538,6 @@ class MediaLibrarySessionCallback(
                     .build()
             )
             .build()
-
-    private fun Song.toMediaItem( isFromPersistentQueue: Boolean = false ): MediaItem {
-        val bundle = Bundle().apply {
-            putBoolean( Preferences.ENABLE_PERSISTENT_QUEUE.key, isFromPersistentQueue )
-        }
-
-        val mediaItem = asMediaItem
-        val metadata: MediaMetadata = mediaItem.mediaMetadata
-                                               .buildUpon()
-                                               .setExtras( bundle )
-                                               .build()
-
-        return mediaItem.buildUpon().setMediaMetadata( metadata ).build()
-    }
 
     private fun getCountCachedSongs() =
         database.formatTable

@@ -87,6 +87,7 @@ import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.updater.UpdatePlugins
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
+import app.kreate.database.models.PersistentQueue
 import coil3.request.allowHardware
 import coil3.toBitmap
 import com.kieronquinn.monetcompat.core.MonetActivityAccessException
@@ -872,9 +873,8 @@ MainActivity :
                     val listener = object : Player.Listener {
                         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                             if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED && mediaItem != null) {
-                                if (mediaItem.mediaMetadata.extras?.getBoolean("isFromPersistentQueue") != true) {
+                                if ( mediaItem.localConfiguration?.tag !== PersistentQueue.Tag )
                                     showPlayer = !Preferences.PLAYER_KEEP_MINIMIZED.value
-                                }
                             }
 
                             setDynamicPalette(mediaItem?.mediaMetadata?.artworkUri.thumbnail(1200).toString())

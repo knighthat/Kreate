@@ -5,25 +5,22 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
-import it.fast4x.rimusic.models.QueuedMediaItem
-import kotlinx.coroutines.flow.Flow
+import app.kreate.database.models.PersistentQueue
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
 interface QueuedMediaItemTable {
 
-    /**
-     * @return all records from this table
-     */
     @Query("""
-        SELECT DISTINCT * 
-        FROM persistent_queue
+        SELECT *
+        FROM persistent_queue q
+        JOIN songs s ON s.id = q.song_id 
         LIMIT :limit
     """)
-    fun all( limit: Int = Int.MAX_VALUE ): Flow<List<QueuedMediaItem>>
+    suspend fun allBlocking( limit: Int = Int.MAX_VALUE ): List<PersistentQueue.Item>
 
     /**
-     * Attempt to write the list of [QueuedMediaItem] to database.
+     * Attempt to write the list of [PersistentQueue] to database.
      *
      * ### Standalone use
      *
@@ -37,11 +34,11 @@ interface QueuedMediaItemTable {
      * considered failed, **the entire transaction rolls back**
      * and passes exception to caller.
      *
-     * @param queuedMediaItems list of [QueuedMediaItem] to insert to database
+     * @param queuedMediaItems list of [PersistentQueue] to insert to database
      */
     @Insert
     @Throws(SQLException::class)
-    fun insert( queuedMediaItems: List<QueuedMediaItem> )
+    fun insert( queuedMediaItems: List<PersistentQueue> )
 
     @Query("DELETE FROM persistent_queue")
     fun deleteAll(): Int

@@ -15,6 +15,7 @@ import app.kreate.database.models.Artist
 import app.kreate.database.models.Event
 import app.kreate.database.models.Format
 import app.kreate.database.models.Lyrics
+import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.SearchQuery
 import app.kreate.database.models.Song
@@ -24,7 +25,6 @@ import app.kreate.database.models.SongPlaylistMap
 import it.fast4x.rimusic.Database.asyncQuery
 import it.fast4x.rimusic.Database.asyncTransaction
 import it.fast4x.rimusic.Database.insertIgnore
-import it.fast4x.rimusic.models.QueuedMediaItem
 import it.fast4x.rimusic.utils.asSong
 import kotlinx.coroutines.flow.first
 import me.knighthat.database.AlbumTable
@@ -56,6 +56,7 @@ import me.knighthat.database.migration.From29To30Migration
 import me.knighthat.database.migration.From30To31Migration
 import me.knighthat.database.migration.From31To32Migration
 import me.knighthat.database.migration.From32To33Migration
+import me.knighthat.database.migration.From34To35Migration
 import me.knighthat.database.migration.From3To4Migration
 import me.knighthat.database.migration.From7To8Migration
 import me.knighthat.database.migration.From8To9Migration
@@ -351,12 +352,12 @@ object Database {
         Album::class,
         SongAlbumMap::class,
         SearchQuery::class,
-        QueuedMediaItem::class,
+        PersistentQueue::class,
         Format::class,
         Event::class,
         Lyrics::class,
     ],
-    version = 34,
+    version = 35,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -380,7 +381,7 @@ object Database {
         AutoMigration(from = 30, to = 31, spec = From30To31Migration::class),
         AutoMigration(from = 31, to = 32, spec = From31To32Migration::class),
         AutoMigration(from = 32, to = 33, spec = From32To33Migration::class),
-        AutoMigration(from = 33, to = 34)       // Adding `onUpdate = ForeignKey.CASCADE` to several tables
+        AutoMigration(from = 33, to = 34),       // Adding `onUpdate = ForeignKey.CASCADE` to several tables,
     ],
 )
 @TypeConverters(Converters::class)
@@ -416,7 +417,8 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
                     From26To27Migration(),
                     From27To28Migration(),
                     From28To29Migration(),
-                    From29To30Migration()
+                    From29To30Migration(),
+                    From34To35Migration()
                 )
                 .build()
         }
