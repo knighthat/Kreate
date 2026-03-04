@@ -308,7 +308,7 @@ jobs:
           echo "Queried: $TOTAL_COUNT runs"
 
       - name: Upload queried workflows file
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: workflows
           path: workflows.json
