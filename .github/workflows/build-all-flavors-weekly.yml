@@ -224,7 +224,7 @@ jobs:
 
     steps:
       - name: Download signed APKs
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           # The downloaded artifacts will be in the same directory specified by path.
           merge-multiple: true
