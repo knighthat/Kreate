@@ -356,7 +356,7 @@ object Database {
         Event::class,
         Lyrics::class,
     ],
-    version = 33,
+    version = 34,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -380,6 +380,7 @@ object Database {
         AutoMigration(from = 30, to = 31, spec = From30To31Migration::class),
         AutoMigration(from = 31, to = 32, spec = From31To32Migration::class),
         AutoMigration(from = 32, to = 33, spec = From32To33Migration::class),
+        AutoMigration(from = 33, to = 34)       // Adding `onUpdate = ForeignKey.CASCADE` to several tables
     ],
 )
 @TypeConverters(Converters::class)

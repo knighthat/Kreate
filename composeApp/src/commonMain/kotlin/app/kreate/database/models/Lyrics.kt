@@ -15,7 +15,8 @@ import androidx.room.PrimaryKey
             entity = Song::class,
             parentColumns = ["id"],
             childColumns = ["song_id"],
-            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
         )
     ]
 )
