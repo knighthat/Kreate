@@ -4,7 +4,6 @@ import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import org.jetbrains.annotations.ApiStatus
 
 
 @Immutable
@@ -36,14 +35,5 @@ data class SongPlaylistMap(
     val position: Int,
 
     @ColumnInfo(name = "set_video_id")
-    val setVideoId: String? = null,
-
-    @ApiStatus.ScheduledForRemoval
-    val dateAdded: Long? = null
-){
-    fun default(): SongPlaylistMap {
-        return copy(
-            dateAdded = System.currentTimeMillis()
-        )
-    }
-}
+    val setVideoId: String? = null
+)

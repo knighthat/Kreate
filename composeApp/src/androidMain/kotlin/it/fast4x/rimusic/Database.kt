@@ -55,6 +55,7 @@ import me.knighthat.database.migration.From28To29Migration
 import me.knighthat.database.migration.From29To30Migration
 import me.knighthat.database.migration.From30To31Migration
 import me.knighthat.database.migration.From31To32Migration
+import me.knighthat.database.migration.From32To33Migration
 import me.knighthat.database.migration.From3To4Migration
 import me.knighthat.database.migration.From7To8Migration
 import me.knighthat.database.migration.From8To9Migration
@@ -355,7 +356,7 @@ object Database {
         Event::class,
         Lyrics::class,
     ],
-    version = 32,
+    version = 33,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -378,6 +379,7 @@ object Database {
         AutoMigration(from = 21, to = 22, spec = From21To22Migration::class),
         AutoMigration(from = 30, to = 31, spec = From30To31Migration::class),
         AutoMigration(from = 31, to = 32, spec = From31To32Migration::class),
+        AutoMigration(from = 32, to = 33, spec = From32To33Migration::class),
     ],
 )
 @TypeConverters(Converters::class)
