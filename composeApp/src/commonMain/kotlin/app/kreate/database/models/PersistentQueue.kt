@@ -2,14 +2,22 @@ package app.kreate.database.models
 
 import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 
+/**
+ * Represents an item in the queue.
+ *
+ * @param songId identifier of the song
+ * @param position non-null value indicates
+ * currently playing song, and timestamp
+ */
 @Immutable
 @Entity(
-    tableName = "formats",
+    tableName = "persistent_queue",
     foreignKeys = [
         ForeignKey(
             entity = Song::class,
@@ -20,25 +28,15 @@ import androidx.room.PrimaryKey
         )
     ]
 )
-data class Format(
+data class PersistentQueue(
     @PrimaryKey
     @ColumnInfo(name = "song_id")
     val songId: String,
 
-    @ColumnInfo(name = "yt_itag")
-    val itag: Int? = null,
+    val position: Long? = null
+) {
 
-    @ColumnInfo(name = "mimetype")
-    val mimeType: String? = null,
+    data class Item(@Embedded val song: Song, val position: Long?)
 
-    val bitrate: Long? = null,
-
-    @ColumnInfo(name = "length")
-    val contentLength: Long? = null,
-
-    @ColumnInfo(name = "updated_at")
-    val lastModified: Long? = null,
-
-    @ColumnInfo(name = "loudness")
-    val loudnessDb: Float? = null
-)
+    object Tag
+}

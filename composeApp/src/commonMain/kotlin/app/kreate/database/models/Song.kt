@@ -1,6 +1,7 @@
 package app.kreate.database.models
 
 import androidx.compose.runtime.Immutable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import app.kreate.util.cleanPrefix
@@ -13,15 +14,33 @@ import kotlin.time.toDuration
 
 @Serializable
 @Immutable
-@Entity
+@Entity(tableName = "songs")
 data class Song(
-    @PrimaryKey val id: String,
+    @PrimaryKey
+    val id: String,
+
     val title: String,
+
+    @ColumnInfo(name = "artists")
     val artistsText: String? = null,
+
+    @ColumnInfo(name = "duration")
     val durationText: String?,
+
+    @ColumnInfo(name = "thumbnail_url")
     val thumbnailUrl: String?,
+
+    @ColumnInfo(name = "liked_at")
     val likedAt: Long? = null,
-    val totalPlayTimeMs: Long = 0
+
+    @ColumnInfo(name = "total_playtime")
+    val totalPlayTimeMs: Long = 0,
+
+    @ColumnInfo(name = "is_explicit")
+    val isExplicit: Boolean = false,
+
+    @ColumnInfo(name = "is_local")
+    val isLocal: Boolean = false
 ) {
 
     val formattedTotalPlayTime: String

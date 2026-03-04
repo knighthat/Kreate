@@ -64,8 +64,10 @@ import app.kreate.android.utils.centerCropBitmap
 import app.kreate.android.utils.centerCropToMatchScreenSize
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
+import app.kreate.android.utils.isLocalFile
 import app.kreate.android.widget.Widget
 import app.kreate.database.models.Event
+import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
 import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.AndroidEntryPoint
@@ -116,7 +118,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import me.knighthat.impl.DownloadHelperImpl
@@ -137,10 +138,7 @@ import android.os.Binder as AndroidBinder
 import me.knighthat.innertube.Innertube as NewInnertube
 
 
-const val LOCAL_KEY_PREFIX = "local:"
-
-val MediaItem.isLocal get() = mediaId.startsWith(LOCAL_KEY_PREFIX)
-val Song.isLocal get() = id.startsWith(LOCAL_KEY_PREFIX)
+val MediaItem.isLocal get() = localConfiguration?.uri?.isLocalFile() ?: false
 
 @AndroidEntryPoint
 @UnstableApi
@@ -760,32 +758,26 @@ class PlayerServiceModern:
     private fun maybeRestorePlayerQueue() {
         if ( !Preferences.ENABLE_PERSISTENT_QUEUE.value ) return
 
-        Database.asyncQuery {
-            val queuedSong = runBlocking {
-                queueTable.all().first()
+        CoroutineScope(Dispatchers.IO).launch {
+            val queue = Database.queueTable.allBlocking()
+
+            if( queue.isEmpty() ) {
+                Timber.tag( "PersistentQueue" ).i( "Persistent queue empty, not resuming!" )
+                return@launch
             }
 
-            if (queuedSong.isEmpty()) return@asyncQuery
-
-            val index = queuedSong.indexOfFirst { it.position != null }.coerceAtLeast(0)
-
-            runBlocking(Dispatchers.Main) {
-                player.setMediaItems(
-                    queuedSong.map { mediaItem ->
-                        mediaItem.mediaItem.buildUpon()
-                            .setUri(mediaItem.mediaItem.mediaId)
-                            .setCustomCacheKey(mediaItem.mediaItem.mediaId)
-                            .build().apply {
-                                mediaMetadata.extras?.putBoolean("isFromPersistentQueue", true)
-                            }
-                    },
-                    index,
-                    queuedSong[index].position ?: C.TIME_UNSET
-                )
+            val startIndex = queue.indexOfFirst { it.position != null }
+            val startPositionMs = queue[startIndex].position ?: C.TIME_UNSET
+            val mediaItems = withContext( Dispatchers.Default ) {
+                queue.map {
+                    it.song.asMediaItem.buildUpon().setTag( PersistentQueue.Tag ).build()
+                }
+            }
+            withContext( Dispatchers.Main ) {
+                player.setMediaItems( mediaItems, startIndex, startPositionMs )
                 player.prepare()
             }
         }
-
     }
 
 

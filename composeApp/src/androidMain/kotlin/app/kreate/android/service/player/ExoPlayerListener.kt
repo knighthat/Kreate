@@ -20,11 +20,11 @@ import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.database.models.PersistentQueue
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.NotificationButtons
 import it.fast4x.rimusic.enums.QueueLoopType
-import it.fast4x.rimusic.models.QueuedMediaItem
 import it.fast4x.rimusic.service.LoginRequiredException
 import it.fast4x.rimusic.service.MissingDecipherKeyException
 import it.fast4x.rimusic.service.NoInternetException
@@ -83,8 +83,8 @@ class ExoPlayerListener(
             }
 
             queue.fastMapIndexed { i, m ->
-                QueuedMediaItem(
-                    mediaItem = m,
+                PersistentQueue(
+                    songId = m.mediaId,
                     position = if( i == index ) playerPos else null
                 )
             }.also { list ->

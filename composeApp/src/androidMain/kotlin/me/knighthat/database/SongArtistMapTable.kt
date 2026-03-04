@@ -71,11 +71,11 @@ interface SongArtistMapTable {
      * @return all [Song]s that were mapped to artist has [Artist.id] matches [artistId]
      */
     @Query("""
-        SELECT DISTINCT Song.*
-        FROM SongArtistMap sam 
-        JOIN Song ON Song.id = sam.songId
-        WHERE sam.artistId = :artistId
-        ORDER BY Song.ROWID
+        SELECT DISTINCT songs.*
+        FROM song_artist_map sam 
+        JOIN songs ON songs.id = sam.song_id
+        WHERE sam.artist_id = :artistId
+        ORDER BY songs.ROWID
         LIMIT :limit
     """)
     fun allSongsBy( artistId: String, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
@@ -85,9 +85,9 @@ interface SongArtistMapTable {
      */
     @Query("""
         SELECT DISTINCT A.*
-        FROM Artist A
-        JOIN SongArtistMap SAM ON SAM.artistId = A.id
-        WHERE SAM.songId = :songId
+        FROM artists A
+        JOIN song_artist_map SAM ON SAM.artist_id = A.id
+        WHERE SAM.song_id = :songId
         ORDER BY A.ROWID
         LIMIT :limit
     """)
@@ -95,11 +95,11 @@ interface SongArtistMapTable {
 
     @Query("""
         SELECT DISTINCT S.*
-        FROM Song S
-        JOIN SongArtistMap SAM ON SAM.songId = S.id
-        JOIN Artist A ON A.id = SAM.artistId
+        FROM songs S
+        JOIN song_artist_map SAM ON SAM.song_id = S.id
+        JOIN artists A ON A.id = SAM.artist_id
         WHERE A.id = :artistId
-        ORDER BY S.totalPlayTimeMs DESC
+        ORDER BY S.total_playtime DESC
         LIMIT :limit
     """)
     fun findArtistMostPlayedSongs( artistId: String, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
@@ -110,10 +110,10 @@ interface SongArtistMapTable {
      * @return number of rows affected by this operation
      */
     @Query("""
-        DELETE FROM SongArtistMap 
-        WHERE songId NOT IN (
+        DELETE FROM song_artist_map 
+        WHERE song_id NOT IN (
             SELECT DISTINCT id
-            FROM Song
+            FROM songs
         )
     """)
     fun clearGhostMaps(): Int

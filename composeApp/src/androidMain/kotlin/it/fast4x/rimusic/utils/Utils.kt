@@ -24,7 +24,6 @@ import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Lyrics
 import app.kreate.database.models.Song
-import app.kreate.util.EXPLICIT_PREFIX
 import app.kreate.util.cleanPrefix
 import app.kreate.util.toDuration
 import com.zionhuang.innertube.pages.LibraryPage
@@ -45,8 +44,6 @@ import it.fast4x.lrclib.LrcLib
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.service.MyDownloadHelper
-import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
-import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -121,10 +118,13 @@ val Innertube.SongItem.asMediaItem: MediaItem
 val Innertube.SongItem.asSong: Song
     get() = Song (
         id = key,
-        title = (if( explicit ) EXPLICIT_PREFIX else "").plus( info?.name ?: "" ),
+        // Song's title must not be "null". If they are,
+        // Something is wrong with Innertube.
+        title = info!!.name!!,
         artistsText = authors?.joinToString(", ") { it.name ?: "" },
         durationText = durationText,
-        thumbnailUrl = thumbnail?.url
+        thumbnailUrl = thumbnail?.url,
+        isExplicit = explicit
     )
 
 val Innertube.VideoItem.asMediaItem: MediaItem
@@ -169,33 +169,7 @@ val Song.asMediaItem: MediaItem
                 .setExtras(
                     bundleOf(
                         "durationText" to durationText,
-                        EXPLICIT_BUNDLE_TAG to title.startsWith( EXPLICIT_PREFIX, true )
-                    )
-                )
-                .build()
-        )
-        .setMediaId(id)
-        .setUri(
-            if (isLocal) ContentUris.withAppendedId(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                id.substringAfter(LOCAL_KEY_PREFIX).toLong()
-            ) else id.toUri()
-        )
-        .setCustomCacheKey(id)
-        .build()
-
-val Song.asCleanedMediaItem: MediaItem
-    get() = MediaItem.Builder()
-        .setMediaMetadata(
-            MediaMetadata.Builder()
-                .setTitle( cleanTitle() )
-                .setArtist( cleanArtistsText() )
-                .setArtworkUri( cleanThumbnailUrl()?.toUri() )
-                .setDurationMs( durationText.toDuration().inWholeMilliseconds )
-                .setExtras(
-                    bundleOf(
-                        "durationText" to durationText,
-                        EXPLICIT_BUNDLE_TAG to title.startsWith( EXPLICIT_PREFIX, true )
+                        EXPLICIT_BUNDLE_TAG to isExplicit
                     )
                 )
                 .build()
@@ -204,8 +178,8 @@ val Song.asCleanedMediaItem: MediaItem
         .setUri(
             if ( isLocal )
                 ContentUris.withAppendedId(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                id.substringAfter(LOCAL_KEY_PREFIX).toLong()
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    id.toLong()
                 )
             else
                 id.toUri()
@@ -253,12 +227,7 @@ val MediaItem.isVideo: Boolean
     get() = mediaMetadata.extras?.getBoolean("isVideo") == true
 
 val MediaItem.isExplicit: Boolean
-    get() {
-        val isTitleContain = mediaMetadata.title?.startsWith( EXPLICIT_PREFIX, true )
-        val isBundleContain = mediaMetadata.extras?.getBoolean( EXPLICIT_BUNDLE_TAG )
-
-        return isTitleContain == true || isBundleContain == true
-    }
+    get() = mediaMetadata.extras?.getBoolean( EXPLICIT_BUNDLE_TAG ) == true
 
 fun String.resize(
     width: Int? = null,

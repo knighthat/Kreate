@@ -15,18 +15,16 @@ import app.kreate.database.models.Artist
 import app.kreate.database.models.Event
 import app.kreate.database.models.Format
 import app.kreate.database.models.Lyrics
+import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.SearchQuery
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongAlbumMap
 import app.kreate.database.models.SongArtistMap
 import app.kreate.database.models.SongPlaylistMap
-import app.kreate.util.EXPLICIT_PREFIX
 import it.fast4x.rimusic.Database.asyncQuery
 import it.fast4x.rimusic.Database.asyncTransaction
 import it.fast4x.rimusic.Database.insertIgnore
-import it.fast4x.rimusic.models.QueuedMediaItem
-import it.fast4x.rimusic.models.SortedSongPlaylistMap
 import it.fast4x.rimusic.utils.asSong
 import kotlinx.coroutines.flow.first
 import me.knighthat.database.AlbumTable
@@ -53,6 +51,13 @@ import me.knighthat.database.migration.From24To25Migration
 import me.knighthat.database.migration.From25To26Migration
 import me.knighthat.database.migration.From26To27Migration
 import me.knighthat.database.migration.From27To28Migration
+import me.knighthat.database.migration.From28To29Migration
+import me.knighthat.database.migration.From29To30Migration
+import me.knighthat.database.migration.From30To31Migration
+import me.knighthat.database.migration.From31To32Migration
+import me.knighthat.database.migration.From32To33Migration
+import me.knighthat.database.migration.From34To35Migration
+import me.knighthat.database.migration.From35To36Migration
 import me.knighthat.database.migration.From3To4Migration
 import me.knighthat.database.migration.From7To8Migration
 import me.knighthat.database.migration.From8To9Migration
@@ -135,7 +140,7 @@ object Database {
             id = innertubeSong.id,
             title = PropUtils.retainIfModified(
                 dbSong?.title,
-                "%s%s".format( if( innertubeSong.isExplicit ) EXPLICIT_PREFIX else "", innertubeSong.name )
+                innertubeSong.name
             ).orEmpty(),
             artistsText = PropUtils.retainIfModified( dbSong?.artistsText, innertubeSong.artistsText ),
             durationText = innertubeSong.durationText,       // Force update to new duration text
@@ -348,15 +353,12 @@ object Database {
         Album::class,
         SongAlbumMap::class,
         SearchQuery::class,
-        QueuedMediaItem::class,
+        PersistentQueue::class,
         Format::class,
         Event::class,
         Lyrics::class,
     ],
-    views = [
-        SortedSongPlaylistMap::class
-    ],
-    version = 28,
+    version = 36,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -377,6 +379,10 @@ object Database {
         AutoMigration(from = 19, to = 20),
         AutoMigration(from = 20, to = 21, spec = From20To21Migration::class),
         AutoMigration(from = 21, to = 22, spec = From21To22Migration::class),
+        AutoMigration(from = 30, to = 31, spec = From30To31Migration::class),
+        AutoMigration(from = 31, to = 32, spec = From31To32Migration::class),
+        AutoMigration(from = 32, to = 33, spec = From32To33Migration::class),
+        AutoMigration(from = 33, to = 34),       // Adding `onUpdate = ForeignKey.CASCADE` to several tables,
     ],
 )
 @TypeConverters(Converters::class)
@@ -410,7 +416,11 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
                     From24To25Migration(),
                     From25To26Migration(),
                     From26To27Migration(),
-                    From27To28Migration()
+                    From27To28Migration(),
+                    From28To29Migration(),
+                    From29To30Migration(),
+                    From34To35Migration(),
+                    From35To36Migration()
                 )
                 .build()
         }

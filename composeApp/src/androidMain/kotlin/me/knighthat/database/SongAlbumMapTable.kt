@@ -32,7 +32,7 @@ interface SongAlbumMapTable {
      *
      * @return number of rows affected by this operation
      */
-    @Query("DELETE FROM SongAlbumMap WHERE albumId = :albumId")
+    @Query("DELETE FROM song_album_map WHERE album_id = :albumId")
     fun clear( albumId: String ): Int
 
     /**
@@ -41,10 +41,10 @@ interface SongAlbumMapTable {
      * @return number of rows affected by this operation
      */
     @Query("""
-        DELETE FROM SongAlbumMap 
-        WHERE songId NOT IN (
+        DELETE FROM song_album_map 
+        WHERE song_id NOT IN (
             SELECT DISTINCT id
-            FROM Song
+            FROM songs
         )
     """)
     fun clearGhostMaps(): Int
@@ -59,10 +59,10 @@ interface SongAlbumMapTable {
      * sorted by song's position in album
      */
     @Query("""
-        SELECT DISTINCT Song.*
-        FROM SongAlbumMap
-        JOIN Song ON id = songId
-        WHERE albumId = :albumId
+        SELECT DISTINCT songs.*
+        FROM song_album_map
+        JOIN songs ON id = song_id
+        WHERE album_id = :albumId
         ORDER BY position
         LIMIT :limit
     """)
@@ -73,15 +73,15 @@ interface SongAlbumMapTable {
      */
     @Query("""
         SELECT A.*
-        FROM Album A
-        JOIN SongAlbumMap SAM ON SAM.albumId = A.id
-        WHERE SAM.songId = :songId
+        FROM albums A
+        JOIN song_album_map SAM ON SAM.song_id = A.id
+        WHERE SAM.song_id = :songId
         LIMIT :limit
     """)
     fun findAlbumOf( songId: String, limit: Int = Int.MAX_VALUE ): Flow<Album?>
 
     @Query("""
-        INSERT OR IGNORE INTO SongAlbumMap ( songId, albumId, position )
+        INSERT OR IGNORE INTO song_album_map ( song_id, album_id, position )
         VALUES( 
             :songId,
             :albumId,
@@ -89,8 +89,8 @@ interface SongAlbumMapTable {
                 WHEN :position < 0 THEN COALESCE(
                     (
                         SELECT MAX(position) + 1 
-                        FROM SongAlbumMap 
-                        WHERE albumId = :albumId
+                        FROM song_album_map 
+                        WHERE album_id = :albumId
                     ), 
                     0
                 )

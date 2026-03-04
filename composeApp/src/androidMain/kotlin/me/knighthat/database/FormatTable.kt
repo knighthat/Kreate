@@ -23,9 +23,9 @@ interface FormatTable {
      */
     @Query("""
         SELECT DISTINCT F.*, S.* 
-        FROM Format F
-        JOIN Song S ON S.id = F.songId
-        WHERE totalPlayTimeMs >= :excludeHidden
+        FROM formats F
+        JOIN songs S ON S.id = F.song_id
+        WHERE total_playtime >= :excludeHidden
         ORDER BY S.ROWID 
         LIMIT :limit
     """)
@@ -39,9 +39,9 @@ interface FormatTable {
      */
     @Query("""
         SELECT DISTINCT F.*, S.* 
-        FROM Format F
-        JOIN Song S ON S.id = F.songId
-        WHERE totalPlayTimeMs >= :excludeHidden
+        FROM formats F
+        JOIN songs S ON S.id = F.song_id
+        WHERE total_playtime >= :excludeHidden
         ORDER BY RANDOM()
         LIMIT :limit
     """)
@@ -55,7 +55,7 @@ interface FormatTable {
      *
      * @return number of rows affected by this operation
      */
-    @Query("DELETE FROM Format WHERE songId IN (:songIds)")
+    @Query("DELETE FROM formats WHERE song_id IN (:songIds)")
     fun deleteBySongId( songIds: List<String> ): Int
 
     fun deleteBySongId( vararg songIds: String ): Int = deleteBySongId( songIds.toList() )
@@ -65,7 +65,7 @@ interface FormatTable {
      * @param songId of song to look for
      * @return [Format] that has [Format.songId] matches [songId]
      */
-    @Query("SELECT DISTINCT * FROM Format WHERE songId = :songId")
+    @Query("SELECT DISTINCT * FROM formats WHERE song_id = :songId")
     fun findBySongId( songId: String ): Flow<Format?>
 
     /**
@@ -86,9 +86,9 @@ interface FormatTable {
     @Query("""
         SELECT COALESCE(
             (
-                SELECT contentLength
-                FROM Format
-                WHERE songId = :songId
+                SELECT length
+                FROM formats
+                WHERE song_id = :songId
             ),
             0
         )
@@ -100,7 +100,7 @@ interface FormatTable {
      *
      * @return number of rows affected by this operation
      */
-    @Query("UPDATE Format SET contentLength = :contentLength WHERE songId = :songId")
+    @Query("UPDATE formats SET length = :contentLength WHERE song_id = :songId")
     fun updateContentLengthOf( songId: String, contentLength: Long = 0L ): Int
 
     //<editor-fold defaultstate="collapsed" desc="Sort all with songs">
@@ -121,11 +121,11 @@ interface FormatTable {
 
     @Query("""
         SELECT DISTINCT F.*, S.*
-        FROM Format F
-        JOIN Song S ON S.id = F.songId
-        LEFT JOIN Event E ON E.songId = F.songId 
-        WHERE totalPlayTimeMs >= :excludeHidden
-        ORDER BY E.timestamp
+        FROM formats F
+        JOIN songs S ON S.id = F.song_id
+        LEFT JOIN playback_history E ON E.song_id = F.song_id 
+        WHERE total_playtime >= :excludeHidden
+        ORDER BY E.created_at
         LIMIT :limit
     """)
     fun sortAllWithSongsByDatePlayed( limit: Int = Int.MAX_VALUE, excludeHidden: Boolean = false ): Flow<List<FormatWithSong>>
@@ -147,11 +147,11 @@ interface FormatTable {
 
     @Query("""
         SELECT DISTINCT F.*, S.*
-        FROM Format F
-        JOIN Song S ON S.id = F.songId
-        LEFT JOIN SongAlbumMap sam ON sam.songId = S.id
-        LEFT JOIN Album A ON A.id = sam.albumId
-        WHERE totalPlayTimeMs >= :excludeHidden
+        FROM formats F
+        JOIN songs S ON S.id = F.song_id
+        LEFT JOIN song_album_map sam ON sam.song_id = S.id
+        LEFT JOIN albums A ON A.id = sam.album_id
+        WHERE total_playtime >= :excludeHidden
         ORDER BY 
             CASE 
                 WHEN A.title LIKE '$MODIFIED_PREFIX%' THEN SUBSTR(A.title, LENGTH('$MODIFIED_PREFIX') + 1)

@@ -13,8 +13,6 @@ import app.kreate.database.models.Artist
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
-import app.kreate.util.MONTHLY_PREFIX
-import app.kreate.util.PINNED_PREFIX
 import it.fast4x.rimusic.enums.PlaylistSortBy
 import it.fast4x.rimusic.enums.SortOrder
 import kotlinx.coroutines.flow.Flow
@@ -30,8 +28,8 @@ interface PlaylistTable {
      */
     @Query("""
         SELECT DISTINCT S.*
-        FROM SongPlaylistMap spm
-        JOIN Song S ON S.id = spm.songId
+        FROM song_playlist_map spm
+        JOIN songs S ON S.id = spm.song_id
         ORDER BY S.ROWID
         LIMIT :limit
     """)
@@ -42,10 +40,10 @@ interface PlaylistTable {
      */
     @Query("""
         SELECT DISTINCT S.*
-        FROM SongPlaylistMap spm
-        JOIN Song S ON S.id = spm.songId
-        JOIN Playlist P ON P.id = spm.playlistId
-        WHERE P.name LIKE '$PINNED_PREFIX%' COLLATE NOCASE
+        FROM song_playlist_map spm
+        JOIN songs S ON S.id = spm.song_id
+        JOIN playlists P ON P.id = spm.playlist_id
+        WHERE P.is_pinned
         ORDER BY S.ROWID
         LIMIT :limit
     """)
@@ -56,10 +54,10 @@ interface PlaylistTable {
      */
     @Query("""
         SELECT DISTINCT S.*
-        FROM SongPlaylistMap spm
-        JOIN Song S ON S.id = spm.songId
-        JOIN Playlist P ON P.id = spm.playlistId
-        WHERE P.isYoutubePlaylist
+        FROM song_playlist_map spm
+        JOIN songs S ON S.id = spm.song_id
+        JOIN playlists P ON P.id = spm.playlist_id
+        WHERE P.youtube
         ORDER BY S.ROWID
         LIMIT :limit
     """)
@@ -70,10 +68,10 @@ interface PlaylistTable {
      */
     @Query("""
         SELECT DISTINCT S.*
-        FROM SongPlaylistMap spm
-        JOIN Song S ON S.id = spm.songId
-        JOIN Playlist P ON P.id = spm.playlistId
-        WHERE P.name LIKE '$MONTHLY_PREFIX%' COLLATE NOCASE
+        FROM song_playlist_map spm
+        JOIN songs S ON S.id = spm.song_id
+        JOIN playlists P ON P.id = spm.playlist_id
+        WHERE P.is_monthly
         ORDER BY S.ROWID
         LIMIT :limit
     """)
@@ -86,11 +84,11 @@ interface PlaylistTable {
         SELECT DISTINCT 
             *,
             (
-                SELECT COUNT(songId)
-                FROM SongPlaylistMap
-                WHERE playlistId = id
+                SELECT COUNT(song_id)
+                FROM song_playlist_map
+                WHERE playlist_id = id
             ) as songCount
-        FROM Playlist
+        FROM playlists
         ORDER BY ROWID
         LIMIT :limit
     """)
@@ -103,11 +101,11 @@ interface PlaylistTable {
         SELECT DISTINCT 
             *,
             (
-                SELECT COUNT(songId)
-                FROM SongPlaylistMap
-                WHERE playlistId = id
+                SELECT COUNT(song_id)
+                FROM song_playlist_map
+                WHERE playlist_id = id
             ) as songCount
-        FROM Playlist
+        FROM playlists
         ORDER BY RANDOM()
         LIMIT :limit
     """)
@@ -117,7 +115,7 @@ interface PlaylistTable {
      * @param browseId of playlist to look for
      * @return [Playlist] that has [Playlist.browseId] matches [browseId]
      */
-    @Query("SELECT DISTINCT * FROM Playlist WHERE browseId = :browseId")
+    @Query("SELECT DISTINCT * FROM playlists WHERE browse_id = :browseId")
     fun findByBrowseId( browseId: String ): Flow<Playlist?>
 
     /**
@@ -125,7 +123,7 @@ interface PlaylistTable {
      */
     @Query("""
         SELECT DISTINCT * 
-        FROM Playlist 
+        FROM playlists 
         WHERE trim(name) COLLATE NOCASE = trim(:playlistName) COLLATE NOCASE
         LIMIT 1
     """)
@@ -134,7 +132,7 @@ interface PlaylistTable {
     /**
      * @return playlist with id [playlistId]
      */
-    @Query("SELECT * FROM Playlist WHERE id = :playlistId")
+    @Query("SELECT * FROM playlists WHERE id = :playlistId")
     fun findById( playlistId: Long ): Flow<Playlist?>
 
     /**
@@ -227,7 +225,7 @@ interface PlaylistTable {
      */
     @Query("""
         SELECT COUNT(*) > 0
-        FROM Playlist
+        FROM playlists
         WHERE name = :playlistName
     """)
     fun exists( playlistName: String ): Flow<Boolean>
@@ -244,11 +242,11 @@ interface PlaylistTable {
      * @return number of rows affected
      */
     @Query("""
-        UPDATE Playlist
-        SET name = 
+        UPDATE playlists
+        SET is_pinned = 
             CASE
-                WHEN name LIKE '$PINNED_PREFIX%' THEN SUBSTR(name, LENGTH('$PINNED_PREFIX') + 1)
-                ELSE '$PINNED_PREFIX' || name
+                WHEN 1 THEN 0
+                ELSE 1
             END
         WHERE id = :playlistId
     """)
@@ -256,12 +254,12 @@ interface PlaylistTable {
 
     //<editor-fold defaultstate="collapsed" desc="Sort as preview">
     @Query("""
-        SELECT DISTINCT P.*, COUNT(spm.songId) as songCount
-        FROM SongPlaylistMap spm
-        JOIN Playlist P ON P.id = spm.playlistId
-        JOIN Song S ON S.id = spm.songId
+        SELECT DISTINCT P.*, COUNT(spm.song_id) as songCount
+        FROM song_playlist_map spm
+        JOIN playlists P ON P.id = spm.playlist_id
+        JOIN songs S ON S.id = spm.song_id
         GROUP BY P.id
-        ORDER BY SUM(S.totalPlayTimeMs)
+        ORDER BY SUM(S.total_playtime)
         LIMIT :limit
     """)
     fun sortPreviewsByMostPlayed( limit: Int = Int.MAX_VALUE ): Flow<List<PlaylistPreview>>

@@ -34,7 +34,6 @@ import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Event
-import app.kreate.util.EXPLICIT_PREFIX
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.YtMusic
 import it.fast4x.innertube.requests.HistoryPage
@@ -103,7 +102,7 @@ fun HistoryList(
                 .allWithSong()
                 .distinctUntilChanged()
                 .map { list ->
-                    list.filter { !parentalControlEnabled || it.song.title.startsWith( EXPLICIT_PREFIX, true ) }
+                    list.filter { !parentalControlEnabled || it.song.isExplicit }
                         .reversed()
                         .groupBy {
                             val diffMillis = currentMillis - it.event.timestamp

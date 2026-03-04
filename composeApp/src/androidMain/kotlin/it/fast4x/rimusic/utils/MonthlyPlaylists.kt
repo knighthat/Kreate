@@ -8,7 +8,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import app.kreate.android.R
 import app.kreate.database.models.Playlist
-import app.kreate.util.MONTHLY_PREFIX
 import it.fast4x.rimusic.Database
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -27,7 +26,7 @@ private suspend fun addMonthlyPlaylist( from: LocalDate, to: LocalDate, playlist
             .let {
                 Database.asyncTransaction {
                     mapIgnore(
-                        playlist = Playlist(name = playlistName),
+                        playlist = Playlist(name = playlistName, isMonthly = true),
                         songs = it.toTypedArray()
                     )
                 }
@@ -41,8 +40,8 @@ fun CheckMonthlyPlaylist() {
     }
 
     LaunchedEffect( lastMonth, thisMonth ) {
-        // I.E. April 2025 returns "monthly:202504"
-        val playlistName = "$MONTHLY_PREFIX${thisMonth.year}${thisMonth.monthValue}"
+        // I.E. April 2025 returns "202504"
+        val playlistName = "${thisMonth.year}${thisMonth.monthValue}"
 
         Database.playlistTable
                 .exists( playlistName )

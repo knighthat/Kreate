@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 
 @Immutable
 @Entity(
+    tableName = "search_history",
     indices = [
         Index(
             value = ["query"],
@@ -17,6 +18,7 @@ import androidx.room.PrimaryKey
 )
 data class SearchQuery(
     val query: String,
+
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0
 )

@@ -19,11 +19,11 @@ import me.knighthat.database.ext.EventWithSong
 @RewriteQueriesToDropUnusedColumns
 interface EventTable {
 
-    @Query("SELECT COUNT(*) FROM Event")
+    @Query("SELECT COUNT(*) FROM playback_history")
     fun countAll(): Flow<Long>
 
     @Transaction
-    @Query("SELECT DISTINCT * FROM Event LIMIT :limit")
+    @Query("SELECT DISTINCT * FROM playback_history LIMIT :limit")
     fun allWithSong( limit: Int = Int.MAX_VALUE ): Flow<List<EventWithSong>>
 
     /**
@@ -45,11 +45,11 @@ interface EventTable {
      */
     @Query("""
         SELECT DISTINCT S.*
-        FROM Song S
-        JOIN Event E ON E.songId = S.id
-        WHERE E."timestamp" BETWEEN :from AND :to
-        GROUP BY E.songId 
-        ORDER BY SUM(E.playtime) DESC
+        FROM songs S
+        JOIN playback_history E ON E.song_id = S.id
+        WHERE E.created_at BETWEEN :from AND :to
+        GROUP BY E.song_id 
+        ORDER BY SUM(E.time_spent) DESC
         LIMIT :limit
     """)
     fun findSongsMostPlayedBetween(
@@ -77,12 +77,12 @@ interface EventTable {
      */
     @Query("""
         SELECT DISTINCT A.*
-        FROM Artist A
-        JOIN SongArtistMap SAM ON SAM.artistId = A.id
-        JOIN Event E ON E.songId = SAM.songId
-        WHERE E."timestamp" BETWEEN :from AND :to
+        FROM artists A
+        JOIN song_artist_map SAM ON SAM.artist_id = A.id
+        JOIN playback_history E ON E.song_id = SAM.song_id
+        WHERE E.created_at BETWEEN :from AND :to
         GROUP BY A.id
-        ORDER BY SUM(E.playtime) DESC
+        ORDER BY SUM(E.time_spent) DESC
         LIMIT :limit
     """)
     fun findArtistsMostPlayedBetween(
@@ -110,12 +110,12 @@ interface EventTable {
      */
     @Query("""
         SELECT DISTINCT A.*
-        FROM Album A
-        JOIN SongAlbumMap SAM ON SAM.albumId = A.id
-        JOIN Event E ON E.songId = SAM.songId
-        WHERE E."timestamp" BETWEEN :from AND :to
+        FROM albums A
+        JOIN song_album_map SAM ON SAM.album_id = A.id
+        JOIN playback_history E ON E.song_id = SAM.song_id
+        WHERE E.created_at BETWEEN :from AND :to
         GROUP BY A.id
-        ORDER BY SUM(E.playtime) DESC
+        ORDER BY SUM(E.time_spent) DESC
         LIMIT :limit
     """)
     fun findAlbumsMostPlayedBetween(
@@ -143,13 +143,13 @@ interface EventTable {
      * @return [PlaylistPreview] that their songs were listened to at least once in period in descending order
      */
     @Query("""
-        SELECT DISTINCT P.*, COUNT(SPM.songId) AS songCount
-        FROM Playlist P
-        JOIN SongPlaylistMap SPM ON SPM.playlistId = P.id
-        JOIN Event E ON E.songId = SPM.songId
-        WHERE E."timestamp" BETWEEN :from AND :to
+        SELECT DISTINCT P.*, COUNT(SPM.song_id) AS songCount
+        FROM playlists P
+        JOIN song_playlist_map SPM ON SPM.playlist_id = P.id
+        JOIN playback_history E ON E.song_id = SPM.song_id
+        WHERE E.created_at BETWEEN :from AND :to
         GROUP BY P.id
-        ORDER BY SUM(E.playtime) DESC
+        ORDER BY SUM(E.time_spent) DESC
         LIMIT :limit
     """)
     fun findPlaylistMostPlayedBetweenAsPreview(
@@ -176,6 +176,6 @@ interface EventTable {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertIgnore( event: Event )
 
-    @Query("DELETE FROM Event")
+    @Query("DELETE FROM playback_history")
     fun deleteAll(): Int
 }

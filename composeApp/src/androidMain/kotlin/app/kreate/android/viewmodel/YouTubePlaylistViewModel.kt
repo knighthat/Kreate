@@ -17,7 +17,6 @@ import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toSong
 import app.kreate.database.models.Song
-import app.kreate.util.EXPLICIT_PREFIX
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import it.fast4x.rimusic.utils.isNetworkConnected
@@ -81,7 +80,7 @@ class YouTubePlaylistViewModel @Inject constructor(
             .combine( snapshotFlow { search.input } ) { songs, input ->
                 songs.fastFilter {
                          !Preferences.PARENTAL_CONTROL.value
-                                 || !it.name.startsWith( EXPLICIT_PREFIX, true )
+                                 || !it.isExplicit
                      }
                      .fastFilter {
                          val query = input.text
