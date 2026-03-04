@@ -9,7 +9,11 @@ import androidx.room.PrimaryKey
 @Immutable
 @Entity(tableName = "persistent_queue")
 class QueuedMediaItem(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(typeAffinity = ColumnInfo.BLOB) val mediaItem: MediaItem,
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+
+    @ColumnInfo(typeAffinity = ColumnInfo.BLOB, name = "song")
+    val mediaItem: MediaItem,
+
     var position: Long?
 )

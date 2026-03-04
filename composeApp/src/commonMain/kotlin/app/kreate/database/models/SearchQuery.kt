@@ -18,6 +18,7 @@ import androidx.room.PrimaryKey
 )
 data class SearchQuery(
     val query: String,
+
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0
 )

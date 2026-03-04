@@ -9,7 +9,7 @@ data class EventWithSong(
     @Embedded val event: Event,
     @Relation(
         entity = Song::class,
-        parentColumn = "songId",
+        parentColumn = "song_id",
         entityColumn = "id"
     )
     val song: Song

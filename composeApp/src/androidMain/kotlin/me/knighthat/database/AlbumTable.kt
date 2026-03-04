@@ -32,7 +32,7 @@ interface AlbumTable {
     @Query("""
         SELECT DISTINCT *
         FROM albums
-        WHERE bookmarkedAt IS NOT NULL
+        WHERE bookmarked_at IS NOT NULL
         ORDER BY ROWID
         LIMIT :limit
     """)
@@ -44,7 +44,7 @@ interface AlbumTable {
     @Query("""
         SELECT DISTINCT *
         FROM albums
-        WHERE bookmarkedAt IS NOT NULL
+        WHERE bookmarked_at IS NOT NULL
         ORDER BY RANDOM()
         LIMIT :limit
     """)
@@ -56,8 +56,8 @@ interface AlbumTable {
     @Query("""
         SELECT DISTINCT A.*
         FROM albums A
-        JOIN song_album_map sam ON sam.albumId = A.id
-        JOIN song_playlist_map spm ON spm.songId = sam.songId 
+        JOIN song_album_map sam ON sam.album_id = A.id
+        JOIN song_playlist_map spm ON spm.song_id = sam.song_id 
         ORDER BY A.ROWID
         LIMIT :limit
     """)
@@ -69,8 +69,8 @@ interface AlbumTable {
     @Query("""
         SELECT DISTINCT A.*
         FROM albums A
-        JOIN song_album_map sam ON sam.albumId = A.id
-        JOIN song_playlist_map spm ON spm.songId = sam.songId 
+        JOIN song_album_map sam ON sam.album_id = A.id
+        JOIN song_playlist_map spm ON spm.song_id = sam.song_id 
         ORDER BY RANDOM()
         LIMIT :limit
     """)
@@ -82,9 +82,9 @@ interface AlbumTable {
     @Query("""
         SELECT DISTINCT S.*
         FROM song_album_map sam
-        JOIN albums A ON A.id = sam.albumId
-        JOIN songs S ON S.id = sam.songId
-        WHERE A.bookmarkedAt IS NOT NULL
+        JOIN albums A ON A.id = sam.album_id
+        JOIN songs S ON S.id = sam.song_id
+        WHERE A.bookmarked_at IS NOT NULL
         ORDER BY S.ROWID
         LIMIT :limit
     """)
@@ -103,8 +103,8 @@ interface AlbumTable {
     @Query("""
         SELECT albums.*
         FROM song_album_map 
-        JOIN albums ON id = albumId
-        WHERE songId = :songId
+        JOIN albums ON id = album_id
+        WHERE song_id = :songId
     """)
     fun findBySongId( songId: String ): Flow<Album?>
 
@@ -194,7 +194,7 @@ interface AlbumTable {
     @Query("""
         SELECT 
             CASE
-                WHEN bookmarkedAt IS NOT NULL THEN 1   
+                WHEN bookmarked_at IS NOT NULL THEN 1   
                 ELSE 0
             END
         FROM albums
@@ -219,9 +219,9 @@ interface AlbumTable {
      */
     @Query("""
         UPDATE albums
-        SET bookmarkedAt = 
+        SET bookmarked_at = 
             CASE 
-                WHEN bookmarkedAt IS NULL THEN strftime('%s', 'now') * 1000
+                WHEN bookmarked_at IS NULL THEN strftime('%s', 'now') * 1000
                 ELSE NULL
             END
         WHERE id = :albumId
@@ -234,7 +234,7 @@ interface AlbumTable {
      *
      * @return number of albums affected by this operation
      */
-    @Query("UPDATE albums SET thumbnailUrl = :thumbnailUrl WHERE id = :albumId")
+    @Query("UPDATE albums SET thumbnail_url = :thumbnailUrl WHERE id = :albumId")
     fun updateCover( albumId: String, thumbnailUrl: String ): Int
 
     /**
@@ -243,7 +243,7 @@ interface AlbumTable {
      *
      * @return number of albums affected by this operation
      */
-    @Query("UPDATE albums SET authorsText = :authors WHERE id = :albumId")
+    @Query("UPDATE albums SET artists = :authors WHERE id = :albumId")
     fun updateAuthors( albumId: String, authors: String ): Int
 
     /**
@@ -274,10 +274,10 @@ interface AlbumTable {
     @Query("""
         SELECT DISTINCT A.* 
         FROM albums A
-        JOIN song_album_map sam ON sam.albumId = A.id 
-        WHERE A.bookmarkedAt IS NOT NULL
+        JOIN song_album_map sam ON sam.album_id = A.id 
+        WHERE A.bookmarked_at IS NOT NULL
         GROUP BY A.id
-        ORDER BY COUNT(sam.songId)
+        ORDER BY COUNT(sam.song_id)
         LIMIT :limit
     """)
     fun sortBookmarkedBySongsCount( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
@@ -285,20 +285,20 @@ interface AlbumTable {
     @Query("""
         SELECT DISTINCT A.*
         FROM albums A
-        JOIN song_album_map sam ON sam.albumId = A.id
-        JOIN songs S ON S.id = sam.songId
-        WHERE A.bookmarkedAt IS NOT NULL
+        JOIN song_album_map sam ON sam.album_id = A.id
+        JOIN songs S ON S.id = sam.song_id
+        WHERE A.bookmarked_at IS NOT NULL
         GROUP BY A.id
         ORDER BY SUM(
             CASE 
-                WHEN S.durationText LIKE '%:%:%' THEN (
-                    (SUBSTR(S.durationText, 1, INSTR(S.durationText, ':') - 1) * 3600) + 
-                    (SUBSTR(S.durationText, INSTR(S.durationText, ':') + 1, INSTR(SUBSTR(S.durationText, INSTR(S.durationText, ':') + 1), ':') - 1) * 60) + 
-                    SUBSTR(S.durationText, INSTR(S.durationText, ':') + INSTR(SUBSTR(S.durationText, INSTR(S.durationText, ':') + 1), ':') + 1)
+                WHEN S.duration LIKE '%:%:%' THEN (
+                    (SUBSTR(S.duration, 1, INSTR(S.duration, ':') - 1) * 3600) + 
+                    (SUBSTR(S.duration, INSTR(S.duration, ':') + 1, INSTR(SUBSTR(S.duration, INSTR(S.duration, ':') + 1), ':') - 1) * 60) + 
+                    SUBSTR(S.duration, INSTR(S.duration, ':') + INSTR(SUBSTR(S.duration, INSTR(S.duration, ':') + 1), ':') + 1)
                 )
                 ELSE (
-                    (SUBSTR(S.durationText, 1, INSTR(S.durationText, ':') - 1) * 60) + 
-                    (SUBSTR(S.durationText, INSTR(S.durationText, ':') + 1))
+                    (SUBSTR(S.duration, 1, INSTR(S.duration, ':') - 1) * 60) + 
+                    (SUBSTR(S.duration, INSTR(S.duration, ':') + 1))
                 )
             END 
         )
@@ -361,10 +361,10 @@ interface AlbumTable {
     @Query("""
         SELECT DISTINCT A.*
         FROM song_playlist_map spm
-        JOIN song_album_map sam ON sam.songId = spm.songId
-        JOIN albums A ON A.id = sam.albumId
+        JOIN song_album_map sam ON sam.song_id = spm.song_id
+        JOIN albums A ON A.id = sam.album_id
         GROUP BY A.id
-        ORDER BY COUNT(sam.songId)
+        ORDER BY COUNT(sam.song_id)
         LIMIT :limit
     """)
     fun sortInLibraryBySongsCount( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
@@ -372,20 +372,20 @@ interface AlbumTable {
     @Query("""
         SELECT DISTINCT A.*
         FROM song_playlist_map spm
-        JOIN song_album_map sam ON sam.songId = spm.songId
-        JOIN albums A ON A.id = sam.albumId
-        JOIN songs S ON S.id = sam.songId
+        JOIN song_album_map sam ON sam.song_id = spm.song_id
+        JOIN albums A ON A.id = sam.album_id
+        JOIN songs S ON S.id = sam.song_id
         GROUP BY A.id
         ORDER BY SUM(
             CASE 
-                WHEN S.durationText LIKE '%:%:%' THEN (
-                    (SUBSTR(S.durationText, 1, INSTR(S.durationText, ':') - 1) * 3600) + 
-                    (SUBSTR(S.durationText, INSTR(S.durationText, ':') + 1, INSTR(SUBSTR(S.durationText, INSTR(S.durationText, ':') + 1), ':') - 1) * 60) + 
-                    SUBSTR(S.durationText, INSTR(S.durationText, ':') + INSTR(SUBSTR(S.durationText, INSTR(S.durationText, ':') + 1), ':') + 1)
+                WHEN S.duration LIKE '%:%:%' THEN (
+                    (SUBSTR(S.duration, 1, INSTR(S.duration, ':') - 1) * 3600) + 
+                    (SUBSTR(S.duration, INSTR(S.duration, ':') + 1, INSTR(SUBSTR(S.duration, INSTR(S.duration, ':') + 1), ':') - 1) * 60) + 
+                    SUBSTR(S.duration, INSTR(S.duration, ':') + INSTR(SUBSTR(S.duration, INSTR(S.duration, ':') + 1), ':') + 1)
                 )
                 ELSE (
-                    (SUBSTR(S.durationText, 1, INSTR(S.durationText, ':') - 1) * 60) + 
-                    (SUBSTR(S.durationText, INSTR(S.durationText, ':') + 1))
+                    (SUBSTR(S.duration, 1, INSTR(S.duration, ':') - 1) * 60) + 
+                    (SUBSTR(S.duration, INSTR(S.duration, ':') + 1))
                 )
             END 
         )

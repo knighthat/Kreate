@@ -29,7 +29,7 @@ interface SongTable {
     @Query("""
         SELECT DISTINCT * 
         FROM songs 
-        WHERE totalPlayTimeMs >= :excludeHidden
+        WHERE total_playtime >= :excludeHidden
         ORDER BY ROWID 
         LIMIT :limit
     """)
@@ -44,7 +44,7 @@ interface SongTable {
     @Query("""
         SELECT DISTINCT * 
         FROM songs 
-        WHERE totalPlayTimeMs >= :excludeHidden
+        WHERE total_playtime >= :excludeHidden
         ORDER BY RANDOM()
         LIMIT :limit
     """)
@@ -70,7 +70,7 @@ interface SongTable {
     @Query("""
         SELECT DISTINCT * 
         FROM songs 
-        WHERE likedAt IS NOT NULL AND likedAt > 0
+        WHERE liked_at IS NOT NULL AND liked_at > 0
         ORDER BY ROWID
         LIMIT :limit
     """)
@@ -82,7 +82,7 @@ interface SongTable {
     @Query("""
         SELECT DISTINCT * 
         FROM songs 
-        WHERE likedAt IS NOT NULL AND likedAt > 0
+        WHERE liked_at IS NOT NULL AND liked_at > 0
         ORDER BY RANDOM()
         LIMIT :limit
     """)
@@ -91,7 +91,7 @@ interface SongTable {
     @Query("""
         SELECT DISTINCT * 
         FROM songs 
-        WHERE likedAt IS NOT NULL AND likedAt < 0
+        WHERE liked_at IS NOT NULL AND liked_at < 0
         ORDER BY ROWID
         LIMIT :limit
     """)
@@ -102,7 +102,7 @@ interface SongTable {
      *
      * @return number of rows affected by this operation
      */
-    @Query("DELETE FROM songs WHERE totalPlayTimeMs = 0")
+    @Query("DELETE FROM songs WHERE total_playtime = 0")
     fun clearHiddenSongs(): Int
 
     /**
@@ -126,7 +126,7 @@ interface SongTable {
         SELECT DISTINCT * 
         FROM songs 
         WHERE title LIKE '%' || :searchTerm || '%' COLLATE NOCASE
-        OR artistsText LIKE '%' || :searchTerm || '%' COLLATE NOCASE
+        OR artists LIKE '%' || :searchTerm || '%' COLLATE NOCASE
     """)
     fun findAllTitleArtistContains( searchTerm: String ): Flow<List<Song>>
 
@@ -145,8 +145,8 @@ interface SongTable {
         FROM songs 
         WHERE trim(
             CASE 
-                WHEN artistsText LIKE '$MODIFIED_PREFIX%' THEN SUBSTR(artistsText, LENGTH('$MODIFIED_PREFIX') + 1)
-                ELSE artistsText
+                WHEN artists LIKE '$MODIFIED_PREFIX%' THEN SUBSTR(artists, LENGTH('$MODIFIED_PREFIX') + 1)
+                ELSE artists
             END
         ) COLLATE NOCASE = trim(:artistName) COLLATE NOCASE
     """)
@@ -240,7 +240,7 @@ interface SongTable {
     @Query("""
         SELECT COALESCE(
             (
-                SELECT likedAt IS NOT NULL AND likedAt > 0
+                SELECT liked_at IS NOT NULL AND liked_at > 0
                 FROM songs 
                 WHERE id = :songId
             )
@@ -262,8 +262,8 @@ interface SongTable {
     @Query("""
         SELECT 
             CASE 
-                WHEN likedAt > 0 THEN 1 
-                WHEN likedAt < 0 THEN 0 
+                WHEN liked_at > 0 THEN 1 
+                WHEN liked_at < 0 THEN 0 
                 ELSE NULL 
             END 
         FROM songs 
@@ -284,10 +284,10 @@ interface SongTable {
      */
     @Query("""
         UPDATE songs  
-        SET likedAt = 
+        SET liked_at = 
             CASE  
-                WHEN likedAt = -1 THEN NULL
-                WHEN likedAt IS NULL THEN strftime('%s','now') * 1000
+                WHEN liked_at = -1 THEN NULL
+                WHEN liked_at IS NULL THEN strftime('%s','now') * 1000
                 ELSE -1
             END  
         WHERE id = :songId
@@ -307,9 +307,9 @@ interface SongTable {
      */
     @Query("""
         UPDATE songs
-        SET likedAt = 
+        SET liked_at = 
             CASE 
-                WHEN likedAt IS NOT NULL THEN NULL
+                WHEN liked_at IS NOT NULL THEN NULL
                 ELSE strftime('%s', 'now') * 1000
             END
         WHERE id = :songId
@@ -328,7 +328,7 @@ interface SongTable {
      */
     @Query("""
         UPDATE songs
-        SET likedAt = 
+        SET liked_at = 
             CASE
                 WHEN :likeState = 0 THEN -1
                 WHEN :likeState = 1 THEN strftime('%s', 'now') * 1000 
@@ -353,7 +353,7 @@ interface SongTable {
      *
      * @return number of albums affected by this operation
      */
-    @Query("UPDATE songs SET artistsText = :artistsText WHERE id = :songId")
+    @Query("UPDATE songs SET artists = :artistsText WHERE id = :songId")
     fun updateArtists( songId: String, artistsText: String ): Int
 
     /**
@@ -362,7 +362,7 @@ interface SongTable {
      *
      * @return number of albums affected by this operation
      */
-    @Query("UPDATE songs SET thumbnailUrl = :thumbnailUrl WHERE id = :songId")
+    @Query("UPDATE songs SET thumbnail_url = :thumbnailUrl WHERE id = :songId")
     fun updateThumbnail( songId: String, thumbnailUrl: String? ): Int
 
     /**
@@ -379,10 +379,10 @@ interface SongTable {
     @Query(
         """
         UPDATE songs 
-        SET totalPlayTimeMs = 
+        SET total_playtime = 
             CASE
                 WHEN :isIncrement = 0 THEN :value
-                ELSE totalPlayTimeMs + :value
+                ELSE total_playtime + :value
             END
         WHERE id = :songId
     """
@@ -408,9 +408,9 @@ interface SongTable {
     @Query("""
         SELECT DISTINCT S.* 
         FROM songs S 
-        LEFT JOIN playback_history E ON E.songId = S.id 
-        WHERE totalPlayTimeMs >= :excludeHidden
-        ORDER BY E.timestamp
+        LEFT JOIN playback_history E ON E.song_id = S.id 
+        WHERE total_playtime >= :excludeHidden
+        ORDER BY E.created_at
         LIMIT :limit
     """)
     fun sortAllByDatePlayed( limit: Int = Int.MAX_VALUE, excludeHidden: Boolean = false ): Flow<List<Song>>
@@ -433,9 +433,9 @@ interface SongTable {
     @Query("""
         SELECT DISTINCT S.*
         FROM songs S
-        LEFT JOIN song_album_map sam ON sam.songId = S.id
-        LEFT JOIN albums A ON A.id = sam.albumId
-        WHERE totalPlayTimeMs >= :excludeHidden
+        LEFT JOIN song_album_map sam ON sam.song_id = S.id
+        LEFT JOIN albums A ON A.id = sam.album_id
+        WHERE total_playtime >= :excludeHidden
         ORDER BY 
             CASE 
                 WHEN A.title LIKE '$MODIFIED_PREFIX%' THEN SUBSTR(A.title, LENGTH('$MODIFIED_PREFIX') + 1)
@@ -518,9 +518,9 @@ interface SongTable {
     @Query("""
         SELECT DISTINCT S.* 
         FROM songs S 
-        LEFT JOIN playback_history E ON E.songId = S.id 
-        WHERE likedAt IS NOT NULL AND likedAt > 0
-        ORDER BY E.timestamp
+        LEFT JOIN playback_history E ON E.song_id = S.id 
+        WHERE liked_at IS NOT NULL AND liked_at > 0
+        ORDER BY E.created_at
         LIMIT :limit
     """)
     fun sortFavoritesByDatePlayed( limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
@@ -533,9 +533,9 @@ interface SongTable {
     @Query("""
         SELECT DISTINCT S.*
         FROM songs S
-        LEFT JOIN song_album_map sam ON sam.songId = S.id
-        LEFT JOIN albums A ON A.id = sam.albumId
-        WHERE likedAt IS NOT NULL AND likedAt > 0
+        LEFT JOIN song_album_map sam ON sam.song_id = S.id
+        LEFT JOIN albums A ON A.id = sam.album_id
+        WHERE liked_at IS NOT NULL AND liked_at > 0
         ORDER BY 
             CASE 
                 WHEN A.title LIKE '$MODIFIED_PREFIX%' THEN SUBSTR(A.title, LENGTH('$MODIFIED_PREFIX') + 1)

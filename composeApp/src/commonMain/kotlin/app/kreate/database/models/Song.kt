@@ -16,13 +16,26 @@ import kotlin.time.toDuration
 @Immutable
 @Entity(tableName = "songs")
 data class Song(
-    @PrimaryKey val id: String,
+    @PrimaryKey
+    val id: String,
+
     val title: String,
+
+    @ColumnInfo(name = "artists")
     val artistsText: String? = null,
+
+    @ColumnInfo(name = "duration")
     val durationText: String?,
+
+    @ColumnInfo(name = "thumbnail_url")
     val thumbnailUrl: String?,
+
+    @ColumnInfo(name = "liked_at")
     val likedAt: Long? = null,
+
+    @ColumnInfo(name = "total_playtime")
     val totalPlayTimeMs: Long = 0,
+
     @ColumnInfo(name = "is_explicit")
     val isExplicit: Boolean = false
 ) {

@@ -46,10 +46,10 @@ interface EventTable {
     @Query("""
         SELECT DISTINCT S.*
         FROM songs S
-        JOIN playback_history E ON E.songId = S.id
-        WHERE E."timestamp" BETWEEN :from AND :to
-        GROUP BY E.songId 
-        ORDER BY SUM(E.playtime) DESC
+        JOIN playback_history E ON E.song_id = S.id
+        WHERE E.created_at BETWEEN :from AND :to
+        GROUP BY E.song_id 
+        ORDER BY SUM(E.time_spent) DESC
         LIMIT :limit
     """)
     fun findSongsMostPlayedBetween(
@@ -78,11 +78,11 @@ interface EventTable {
     @Query("""
         SELECT DISTINCT A.*
         FROM artists A
-        JOIN song_artist_map SAM ON SAM.artistId = A.id
-        JOIN playback_history E ON E.songId = SAM.songId
-        WHERE E."timestamp" BETWEEN :from AND :to
+        JOIN song_artist_map SAM ON SAM.artist_id = A.id
+        JOIN playback_history E ON E.song_id = SAM.song_id
+        WHERE E.created_at BETWEEN :from AND :to
         GROUP BY A.id
-        ORDER BY SUM(E.playtime) DESC
+        ORDER BY SUM(E.time_spent) DESC
         LIMIT :limit
     """)
     fun findArtistsMostPlayedBetween(
@@ -111,11 +111,11 @@ interface EventTable {
     @Query("""
         SELECT DISTINCT A.*
         FROM albums A
-        JOIN song_album_map SAM ON SAM.albumId = A.id
-        JOIN playback_history E ON E.songId = SAM.songId
-        WHERE E."timestamp" BETWEEN :from AND :to
+        JOIN song_album_map SAM ON SAM.album_id = A.id
+        JOIN playback_history E ON E.song_id = SAM.song_id
+        WHERE E.created_at BETWEEN :from AND :to
         GROUP BY A.id
-        ORDER BY SUM(E.playtime) DESC
+        ORDER BY SUM(E.time_spent) DESC
         LIMIT :limit
     """)
     fun findAlbumsMostPlayedBetween(
@@ -143,13 +143,13 @@ interface EventTable {
      * @return [PlaylistPreview] that their songs were listened to at least once in period in descending order
      */
     @Query("""
-        SELECT DISTINCT P.*, COUNT(SPM.songId) AS songCount
+        SELECT DISTINCT P.*, COUNT(SPM.song_id) AS songCount
         FROM playlists P
-        JOIN song_playlist_map SPM ON SPM.playlistId = P.id
-        JOIN playback_history E ON E.songId = SPM.songId
-        WHERE E."timestamp" BETWEEN :from AND :to
+        JOIN song_playlist_map SPM ON SPM.playlist_id = P.id
+        JOIN playback_history E ON E.song_id = SPM.song_id
+        WHERE E.created_at BETWEEN :from AND :to
         GROUP BY P.id
-        ORDER BY SUM(E.playtime) DESC
+        ORDER BY SUM(E.time_spent) DESC
         LIMIT :limit
     """)
     fun findPlaylistMostPlayedBetweenAsPreview(

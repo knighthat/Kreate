@@ -12,10 +12,13 @@ import app.kreate.util.cleanPrefix
 data class Playlist(
     val name: String,
 
+    @ColumnInfo(name = "browse_id")
     val browseId: String? = null,
 
+    @ColumnInfo(name = "editable")
     val isEditable: Boolean = true,
 
+    @ColumnInfo(name = "youtube")
     val isYoutubePlaylist: Boolean = browseId?.matches( youTubePlaylistRegex ) == true,
 
     @PrimaryKey(autoGenerate = true)

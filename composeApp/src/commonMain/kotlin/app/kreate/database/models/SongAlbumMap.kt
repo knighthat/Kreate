@@ -9,24 +9,28 @@ import androidx.room.ForeignKey
 @Immutable
 @Entity(
     tableName = "song_album_map",
-    primaryKeys = ["songId", "albumId"],
+    primaryKeys = ["song_id", "album_id"],
     foreignKeys = [
         ForeignKey(
             entity = Song::class,
             parentColumns = ["id"],
-            childColumns = ["songId"],
+            childColumns = ["song_id"],
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = Album::class,
             parentColumns = ["id"],
-            childColumns = ["albumId"],
+            childColumns = ["album_id"],
             onDelete = ForeignKey.CASCADE
         )
     ]
 )
 data class SongAlbumMap(
-    @ColumnInfo(index = true) val songId: String,
-    @ColumnInfo(index = true) val albumId: String,
+    @ColumnInfo(index = true, name = "song_id")
+    val songId: String,
+
+    @ColumnInfo(index = true, name = "album_id")
+    val albumId: String,
+
     val position: Int?
 )

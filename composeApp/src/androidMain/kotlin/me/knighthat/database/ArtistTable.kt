@@ -26,7 +26,7 @@ interface ArtistTable {
     @Query("""
         SELECT DISTINCT * 
         FROM artists
-        WHERE bookmarkedAt IS NOT NULL
+        WHERE bookmarked_at IS NOT NULL
         ORDER BY ROWID 
         LIMIT :limit
     """)
@@ -38,7 +38,7 @@ interface ArtistTable {
     @Query("""
         SELECT DISTINCT * 
         FROM artists
-        WHERE bookmarkedAt IS NOT NULL
+        WHERE bookmarked_at IS NOT NULL
         ORDER BY RANDOM()
         LIMIT :limit
     """)
@@ -50,8 +50,8 @@ interface ArtistTable {
     @Query("""
         SELECT DISTINCT A.*
         FROM artists A
-        JOIN song_artist_map sam ON sam.artistId = A.id
-        JOIN song_playlist_map spm ON spm.songId = sam.songId
+        JOIN song_artist_map sam ON sam.artist_id = A.id
+        JOIN song_playlist_map spm ON spm.song_id = sam.song_id
         ORDER BY A.ROWID
         LIMIT :limit
     """)
@@ -63,8 +63,8 @@ interface ArtistTable {
     @Query("""
         SELECT DISTINCT A.*
         FROM artists A
-        JOIN song_artist_map sam ON sam.artistId = A.id
-        JOIN song_playlist_map spm ON spm.songId = sam.songId
+        JOIN song_artist_map sam ON sam.artist_id = A.id
+        JOIN song_playlist_map spm ON spm.song_id = sam.song_id
         ORDER BY RANDOM()
         LIMIT :limit
     """)
@@ -76,9 +76,9 @@ interface ArtistTable {
     @Query("""
         SELECT DISTINCT S.*
         FROM song_artist_map sam
-        JOIN artists A ON A.id = sam.artistId
-        JOIN songs S ON S.id = sam.songId
-        WHERE A.bookmarkedAt IS NOT NULL
+        JOIN artists A ON A.id = sam.artist_id
+        JOIN songs S ON S.id = sam.song_id
+        WHERE A.bookmarked_at IS NOT NULL
         ORDER BY S.ROWID
         LIMIT :limit
     """)
@@ -94,8 +94,8 @@ interface ArtistTable {
     @Query("""
         SELECT DISTINCT artists.*
         FROM song_artist_map
-        JOIN artists ON id = artistId
-        WHERE songId = :songId
+        JOIN artists ON id = artist_id
+        WHERE song_id = :songId
     """)
     fun findBySongId( songId: String ): Flow<List<Artist>>
 
@@ -109,7 +109,7 @@ interface ArtistTable {
                 SELECT 1 
                 FROM artists 
                 WHERE id = :artistId 
-                AND bookmarkedAt IS NOT NULL 
+                AND bookmarked_at IS NOT NULL 
             ),
             0
         )
@@ -208,8 +208,8 @@ interface ArtistTable {
      */
     @Query("""
         UPDATE artists
-        SET bookmarkedAt = CASE
-            WHEN bookmarkedAt IS NULL THEN strftime('%s', 'now') * 1000
+        SET bookmarked_at = CASE
+            WHEN bookmarked_at IS NULL THEN strftime('%s', 'now') * 1000
             ELSE NULL
         END
         WHERE id = :artistId

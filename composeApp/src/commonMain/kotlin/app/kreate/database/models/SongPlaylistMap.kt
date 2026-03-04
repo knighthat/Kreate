@@ -4,32 +4,41 @@ import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import org.jetbrains.annotations.ApiStatus
 
 
 @Immutable
 @Entity(
     tableName = "song_playlist_map",
-    primaryKeys = ["songId", "playlistId"],
+    primaryKeys = ["song_id", "playlist_id"],
     foreignKeys = [
         ForeignKey(
             entity = Song::class,
             parentColumns = ["id"],
-            childColumns = ["songId"],
+            childColumns = ["song_id"],
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = Playlist::class,
             parentColumns = ["id"],
-            childColumns = ["playlistId"],
+            childColumns = ["playlist_id"],
             onDelete = ForeignKey.CASCADE
         )
     ]
 )
 data class SongPlaylistMap(
-    @ColumnInfo(index = true) val songId: String,
-    @ColumnInfo(index = true) val playlistId: Long,
+    @ColumnInfo(index = true, name = "song_id")
+    val songId: String,
+
+    @ColumnInfo(index = true, name = "playlist_id")
+    val playlistId: Long,
+
     val position: Int,
+
+    @ColumnInfo(name = "set_video_id")
     val setVideoId: String? = null,
+
+    @ApiStatus.ScheduledForRemoval
     val dateAdded: Long? = null
 ){
     fun default(): SongPlaylistMap {

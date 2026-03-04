@@ -29,7 +29,7 @@ interface PlaylistTable {
     @Query("""
         SELECT DISTINCT S.*
         FROM song_playlist_map spm
-        JOIN songs S ON S.id = spm.songId
+        JOIN songs S ON S.id = spm.song_id
         ORDER BY S.ROWID
         LIMIT :limit
     """)
@@ -41,8 +41,8 @@ interface PlaylistTable {
     @Query("""
         SELECT DISTINCT S.*
         FROM song_playlist_map spm
-        JOIN songs S ON S.id = spm.songId
-        JOIN playlists P ON P.id = spm.playlistId
+        JOIN songs S ON S.id = spm.song_id
+        JOIN playlists P ON P.id = spm.playlist_id
         WHERE P.is_pinned
         ORDER BY S.ROWID
         LIMIT :limit
@@ -55,9 +55,9 @@ interface PlaylistTable {
     @Query("""
         SELECT DISTINCT S.*
         FROM song_playlist_map spm
-        JOIN songs S ON S.id = spm.songId
-        JOIN playlists P ON P.id = spm.playlistId
-        WHERE P.isYoutubePlaylist
+        JOIN songs S ON S.id = spm.song_id
+        JOIN playlists P ON P.id = spm.playlist_id
+        WHERE P.youtube
         ORDER BY S.ROWID
         LIMIT :limit
     """)
@@ -69,8 +69,8 @@ interface PlaylistTable {
     @Query("""
         SELECT DISTINCT S.*
         FROM song_playlist_map spm
-        JOIN songs S ON S.id = spm.songId
-        JOIN playlists P ON P.id = spm.playlistId
+        JOIN songs S ON S.id = spm.song_id
+        JOIN playlists P ON P.id = spm.playlist_id
         WHERE P.is_monthly
         ORDER BY S.ROWID
         LIMIT :limit
@@ -84,9 +84,9 @@ interface PlaylistTable {
         SELECT DISTINCT 
             *,
             (
-                SELECT COUNT(songId)
+                SELECT COUNT(song_id)
                 FROM song_playlist_map
-                WHERE playlistId = id
+                WHERE playlist_id = id
             ) as songCount
         FROM playlists
         ORDER BY ROWID
@@ -101,9 +101,9 @@ interface PlaylistTable {
         SELECT DISTINCT 
             *,
             (
-                SELECT COUNT(songId)
+                SELECT COUNT(song_id)
                 FROM song_playlist_map
-                WHERE playlistId = id
+                WHERE playlist_id = id
             ) as songCount
         FROM playlists
         ORDER BY RANDOM()
@@ -115,7 +115,7 @@ interface PlaylistTable {
      * @param browseId of playlist to look for
      * @return [Playlist] that has [Playlist.browseId] matches [browseId]
      */
-    @Query("SELECT DISTINCT * FROM playlists WHERE browseId = :browseId")
+    @Query("SELECT DISTINCT * FROM playlists WHERE browse_id = :browseId")
     fun findByBrowseId( browseId: String ): Flow<Playlist?>
 
     /**
@@ -254,12 +254,12 @@ interface PlaylistTable {
 
     //<editor-fold defaultstate="collapsed" desc="Sort as preview">
     @Query("""
-        SELECT DISTINCT P.*, COUNT(spm.songId) as songCount
+        SELECT DISTINCT P.*, COUNT(spm.song_id) as songCount
         FROM song_playlist_map spm
-        JOIN playlists P ON P.id = spm.playlistId
-        JOIN songs S ON S.id = spm.songId
+        JOIN playlists P ON P.id = spm.playlist_id
+        JOIN songs S ON S.id = spm.song_id
         GROUP BY P.id
-        ORDER BY SUM(S.totalPlayTimeMs)
+        ORDER BY SUM(S.total_playtime)
         LIMIT :limit
     """)
     fun sortPreviewsByMostPlayed( limit: Int = Int.MAX_VALUE ): Flow<List<PlaylistPreview>>

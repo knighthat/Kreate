@@ -15,7 +15,7 @@ interface LyricsTable {
      * @param songId of song to look for
      * @return [Lyrics] that has [Lyrics.songId] matches [songId]
      */
-    @Query("SELECT DISTINCT * FROM lyrics WHERE songId = :songId")
+    @Query("SELECT DISTINCT * FROM lyrics WHERE song_id = :songId")
     fun findBySongId( songId: String ): Flow<Lyrics?>
 
     /**

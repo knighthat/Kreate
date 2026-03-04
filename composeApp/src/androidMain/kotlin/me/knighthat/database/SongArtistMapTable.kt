@@ -73,8 +73,8 @@ interface SongArtistMapTable {
     @Query("""
         SELECT DISTINCT songs.*
         FROM song_artist_map sam 
-        JOIN songs ON songs.id = sam.songId
-        WHERE sam.artistId = :artistId
+        JOIN songs ON songs.id = sam.song_id
+        WHERE sam.artist_id = :artistId
         ORDER BY songs.ROWID
         LIMIT :limit
     """)
@@ -86,8 +86,8 @@ interface SongArtistMapTable {
     @Query("""
         SELECT DISTINCT A.*
         FROM artists A
-        JOIN song_artist_map SAM ON SAM.artistId = A.id
-        WHERE SAM.songId = :songId
+        JOIN song_artist_map SAM ON SAM.artist_id = A.id
+        WHERE SAM.song_id = :songId
         ORDER BY A.ROWID
         LIMIT :limit
     """)
@@ -96,10 +96,10 @@ interface SongArtistMapTable {
     @Query("""
         SELECT DISTINCT S.*
         FROM songs S
-        JOIN song_artist_map SAM ON SAM.songId = S.id
-        JOIN artists A ON A.id = SAM.artistId
+        JOIN song_artist_map SAM ON SAM.song_id = S.id
+        JOIN artists A ON A.id = SAM.artist_id
         WHERE A.id = :artistId
-        ORDER BY S.totalPlayTimeMs DESC
+        ORDER BY S.total_playtime DESC
         LIMIT :limit
     """)
     fun findArtistMostPlayedSongs( artistId: String, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
@@ -111,7 +111,7 @@ interface SongArtistMapTable {
      */
     @Query("""
         DELETE FROM song_artist_map 
-        WHERE songId NOT IN (
+        WHERE song_id NOT IN (
             SELECT DISTINCT id
             FROM songs
         )
