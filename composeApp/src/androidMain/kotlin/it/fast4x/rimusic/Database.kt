@@ -57,6 +57,7 @@ import me.knighthat.database.migration.From30To31Migration
 import me.knighthat.database.migration.From31To32Migration
 import me.knighthat.database.migration.From32To33Migration
 import me.knighthat.database.migration.From34To35Migration
+import me.knighthat.database.migration.From35To36Migration
 import me.knighthat.database.migration.From3To4Migration
 import me.knighthat.database.migration.From7To8Migration
 import me.knighthat.database.migration.From8To9Migration
@@ -357,7 +358,7 @@ object Database {
         Event::class,
         Lyrics::class,
     ],
-    version = 35,
+    version = 36,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -418,7 +419,8 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
                     From27To28Migration(),
                     From28To29Migration(),
                     From29To30Migration(),
-                    From34To35Migration()
+                    From34To35Migration(),
+                    From35To36Migration()
                 )
                 .build()
         }

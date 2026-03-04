@@ -1,9 +1,7 @@
 package app.kreate.android.di
 
-import android.content.ContentUris
 import android.content.Context
 import android.content.SharedPreferences
-import android.provider.MediaStore
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastFilter
 import androidx.core.net.toUri
@@ -30,7 +28,6 @@ import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.isLocalFile
 import app.kreate.database.models.Format
-import app.kreate.util.LOCAL_KEY_PREFIX
 import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonWriter
 import dagger.Module
@@ -425,36 +422,21 @@ object PlayerModule {
         context: Context,
         vararg cashes: Cache
     ) = ResolvingDataSource.Resolver { dataSpec ->
+        if( dataSpec.uri.isLocalFile() ) {
+            Timber.tag( LOG_TAG ).d( "playing local song: ${dataSpec.uri}" )
+            return@Resolver dataSpec
+        }
+
         val videoId = dataSpec.uri.toString().substringAfter( "watch?v=" )
+        upsertSongInfo( context, videoId )
 
         // Delay this block until called. Song can be local too
         val cacheLength = dataSpec.length.takeIf { it != -1L } ?: CHUNK_LENGTH
-        fun isCached() = cashes.any {
+        val isCached = cashes.any {
             it.isCached( videoId, dataSpec.position, cacheLength )
         }
-        // When player resumes from persistent queue, the videoId isn't path to the file,
-        // but the following format: local:id. Therefore, checking for prefix is needed.
-        val isLocal = videoId.startsWith(LOCAL_KEY_PREFIX, true )
-                || dataSpec.uri.isLocalFile()
 
-        if( !isLocal )
-            upsertSongInfo( context, videoId )
-
-        return@Resolver if( isLocal ) {
-            Timber.tag( LOG_TAG ).d( "$videoId is local song" )
-
-            if( videoId.startsWith(LOCAL_KEY_PREFIX, true ) )
-                // This will take id from videoId and return path to that media file
-                // For example: `local:id` becomes `content:/path/to/media/id`
-                ContentUris.withAppendedId(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    videoId.substringAfter(LOCAL_KEY_PREFIX).toLong()
-                ).also {
-                    Timber.tag( LOG_TAG ).v( "Resolved path: $it" )
-                }.let( dataSpec::withUri )
-            else
-                dataSpec
-        } else if( isCached() ) {
+        if( isCached ) {
             Timber.tag( LOG_TAG ).d( "$videoId exists in cache, proceeding to use from cache" )
             // No need to fetch online for already cached data
             dataSpec

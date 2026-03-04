@@ -14,7 +14,6 @@ import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.toDuration
 import it.fast4x.rimusic.enums.SongSortBy
 import it.fast4x.rimusic.enums.SortOrder
-import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
@@ -54,12 +53,12 @@ interface SongTable {
     ): Flow<List<Song>>
 
     /**
-     * @return all records that have [Song.id] start with [LOCAL_KEY_PREFIX]
+     * @return all records with [Song.isLocal] being `true`
      */
     @Query("""
         SELECT DISTINCT * 
         FROM songs 
-        WHERE id LIKE '$LOCAL_KEY_PREFIX%'
+        WHERE is_local = 1
         LIMIT :limit
     """)
     fun allOnDevice( limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
@@ -248,6 +247,9 @@ interface SongTable {
         ) 
     """)
     fun isLiked( songId: String ): Flow<Boolean>
+
+    @Query("SELECT is_local FROM songs WHERE id = :songId")
+    fun isLocal( songId: String ): Flow<Boolean>
 
     /**
      * A tri-state represents 3 different states of like.

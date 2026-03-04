@@ -44,8 +44,6 @@ import it.fast4x.lrclib.LrcLib
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.service.MyDownloadHelper
-import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
-import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -176,38 +174,12 @@ val Song.asMediaItem: MediaItem
                 )
                 .build()
         )
-        .setMediaId(id)
-        .setUri(
-            if (isLocal) ContentUris.withAppendedId(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                id.substringAfter(LOCAL_KEY_PREFIX).toLong()
-            ) else id.toUri()
-        )
-        .setCustomCacheKey(id)
-        .build()
-
-val Song.asCleanedMediaItem: MediaItem
-    get() = MediaItem.Builder()
-        .setMediaMetadata(
-            MediaMetadata.Builder()
-                .setTitle( cleanTitle() )
-                .setArtist( cleanArtistsText() )
-                .setArtworkUri( cleanThumbnailUrl()?.toUri() )
-                .setDurationMs( durationText.toDuration().inWholeMilliseconds )
-                .setExtras(
-                    bundleOf(
-                        "durationText" to durationText,
-                        EXPLICIT_BUNDLE_TAG to isExplicit
-                    )
-                )
-                .build()
-        )
         .setMediaId( id )
         .setUri(
             if ( isLocal )
                 ContentUris.withAppendedId(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                id.substringAfter(LOCAL_KEY_PREFIX).toLong()
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    id.toLong()
                 )
             else
                 id.toUri()

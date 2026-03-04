@@ -64,6 +64,7 @@ import app.kreate.android.utils.centerCropBitmap
 import app.kreate.android.utils.centerCropToMatchScreenSize
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
+import app.kreate.android.utils.isLocalFile
 import app.kreate.android.widget.Widget
 import app.kreate.database.models.Event
 import app.kreate.database.models.PersistentQueue
@@ -137,10 +138,7 @@ import android.os.Binder as AndroidBinder
 import me.knighthat.innertube.Innertube as NewInnertube
 
 
-const val LOCAL_KEY_PREFIX = "local:"
-
-val MediaItem.isLocal get() = mediaId.startsWith(LOCAL_KEY_PREFIX)
-val Song.isLocal get() = id.startsWith(LOCAL_KEY_PREFIX)
+val MediaItem.isLocal get() = localConfiguration?.uri?.isLocalFile() ?: false
 
 @AndroidEntryPoint
 @UnstableApi

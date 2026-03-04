@@ -1,7 +1,6 @@
 package app.kreate.util
 
 const val MODIFIED_PREFIX = "modified:"
-const val LOCAL_KEY_PREFIX = "local:"
 
 
 /**
@@ -15,7 +14,7 @@ fun cleanPrefix(text: String): String {
     val splitText = text.split(":")
     var i = 0
     while (i < splitText.size-1) {
-        if ("${splitText[i]}:" !in listOf(MODIFIED_PREFIX, LOCAL_KEY_PREFIX)) {
+        if ("${splitText[i]}:" !in listOf(MODIFIED_PREFIX)) {
             break
         }
         i++

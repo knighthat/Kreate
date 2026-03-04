@@ -37,7 +37,10 @@ data class Song(
     val totalPlayTimeMs: Long = 0,
 
     @ColumnInfo(name = "is_explicit")
-    val isExplicit: Boolean = false
+    val isExplicit: Boolean = false,
+
+    @ColumnInfo(name = "is_local")
+    val isLocal: Boolean = false
 ) {
 
     val formattedTotalPlayTime: String

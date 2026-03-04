@@ -50,7 +50,6 @@ import it.fast4x.rimusic.enums.BuiltInPlaylist
 import it.fast4x.rimusic.enums.DurationInMinutes
 import it.fast4x.rimusic.enums.SongSortBy
 import it.fast4x.rimusic.service.MyDownloadHelper
-import it.fast4x.rimusic.service.modern.LOCAL_KEY_PREFIX
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.typography
@@ -148,7 +147,7 @@ fun HomeSongs(
                                            .map { list ->
                                                // Include local songs if enabled
                                                list.fastFilter {
-                                                   !includeLocalSongs || !it.id.startsWith( LOCAL_KEY_PREFIX, true )
+                                                   !includeLocalSongs || !it.isLocal
                                                }
                                            }
 
