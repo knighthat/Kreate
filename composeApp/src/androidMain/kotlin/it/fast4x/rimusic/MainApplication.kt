@@ -15,9 +15,11 @@ import app.kreate.android.service.innertube.InnertubeProvider
 import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.CrashHandler
 import app.kreate.android.utils.logging.RollingFileLoggingTree
+import app.kreate.di.initKoin
 import dagger.hilt.android.HiltAndroidApp
 import it.fast4x.rimusic.utils.AppLifecycleTracker
 import me.knighthat.innertube.Innertube
+import org.koin.android.ext.koin.androidContext
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
@@ -37,6 +39,10 @@ class MainApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        initKoin {
+            androidContext( this@MainApplication )
+        }
 
         Preferences.load(profilePreferences, preferences, encryptedPreferences )
 

@@ -103,6 +103,7 @@ kotlin {
             // Dependency injection
             implementation( libs.android.hilt )
             implementation( libs.android.hilt.navigation )
+            implementation( libs.koin.android )
 
             implementation(libs.androidx.lifecycle.runtime)
             implementation(libs.androidx.lifecycle.process)
@@ -148,6 +149,10 @@ kotlin {
             implementation( libs.math3 )
 
             implementation( libs.material.icons.kmp )
+
+            // Dependency injection
+            implementation( libs.koin.core )
+            implementation( libs.koin.navigation )
         }
         commonTest.dependencies {
             implementation( libs.kotlin.test )

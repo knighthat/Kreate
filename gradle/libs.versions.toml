@@ -48,6 +48,7 @@ androidTest = "1.7.0"
 lifecycle = "2.10.0"
 extractor = "a194151"
 kotlinx-serialization = "1.9.0"
+koin = "4.1.1"
 
 
 [libraries]
@@ -139,6 +140,9 @@ androidmaterial = { group = "com.google.android.material", name = "material", ve
 android-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 android-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 android-hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-navigation = { module = "io.insert-koin:koin-compose-viewmodel-navigation", version.ref = "koin" }
 
 # Extras
 translator = {  group = "com.github.therealbush", name = "translator", version.ref = "translator" }
