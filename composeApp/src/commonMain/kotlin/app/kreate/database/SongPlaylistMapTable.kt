@@ -1,7 +1,5 @@
-package me.knighthat.database
+package app.kreate.database
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
@@ -146,7 +144,6 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
      *
      * @return number of rows affected by this operation
      */
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Query("""
         UPDATE  song_playlist_map 
         SET position = shuffled.new_position
@@ -169,7 +166,6 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
      *
      * @return number of rows affected by this operation
      */
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Query("""
         UPDATE song_playlist_map
         SET position = updated.new_position

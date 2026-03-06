@@ -1,4 +1,4 @@
-package me.knighthat.database
+package app.kreate.database
 
 import androidx.room.Dao
 import androidx.room.Query

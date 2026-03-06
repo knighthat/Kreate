@@ -1,6 +1,5 @@
-package me.knighthat.database
+package app.kreate.database
 
-import android.database.SQLException
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -15,6 +14,7 @@ import app.kreate.database.table.DatabaseTable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
+import java.sql.SQLException
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
@@ -140,12 +140,12 @@ interface PlaylistTable: DatabaseTable<Playlist> {
      *
      * ### Standalone use
      *
-     * When error occurs and [SQLException] is thrown,
+     * When error occurs and [android.database.SQLException] is thrown,
      * the process is cancel and passes exception to caller.
      *
      * ### Transaction use
      *
-     * When error occurs and [SQLException] is thrown,
+     * When error occurs and [android.database.SQLException] is thrown,
      * **the entire transaction rolls back** and passes exception to caller.
      *
      * > Note: Use this if inserting record is crucial for
@@ -153,7 +153,7 @@ interface PlaylistTable: DatabaseTable<Playlist> {
      *
      * @param playlist intended to insert in to database
      * @return ROWID of this new record, throws exception when fail
-     * @throws SQLException when there's a conflict
+     * @throws android.database.SQLException when there's a conflict
      */
     @Insert
     @Throws(SQLException::class)
