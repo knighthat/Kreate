@@ -4,7 +4,7 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastZip
 import androidx.media3.common.MediaItem
 import androidx.room.Transaction
-import androidx.sqlite.db.SimpleSQLiteQuery
+import androidx.room.useWriterConnection
 import app.kreate.android.Preferences
 import app.kreate.database.AlbumTable
 import app.kreate.database.ArtistTable
@@ -32,6 +32,7 @@ import it.fast4x.rimusic.utils.asSong
 import kotlinx.coroutines.flow.first
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.PropUtils
+import timber.log.Timber
 
 object Database {
     val FILE_NAME = if ( Preferences.ACTIVE_PROFILE.value == "default" ) "data.db" else "data_${Preferences.ACTIVE_PROFILE.value}.db"
@@ -306,10 +307,17 @@ object Database {
             this.block()
         }
 
-    fun checkpoint() = _internal.query( SimpleSQLiteQuery("PRAGMA wal_checkpoint(FULL)") )
-                                     .use {
-                                         if( it.moveToFirst() ) it.getInt( 0 ) else -1
-                                     }
+    suspend fun checkpoint() = _internal.useWriterConnection { connection ->
+        connection.usePrepared("PRAGMA wal_checkpoint(FULL)") { statement ->
+            if (statement.step()) {
+                val isBusy = statement.getLong(0) // 0 if not busy, 1 if busy
+                val logFrames = statement.getLong(1)
+                val checkpointedFrames = statement.getLong(2)
+
+                Timber.tag("database").d( "Checkpoint performed! (is busy: $isBusy, logged frames: $logFrames, checkpointed frames: $checkpointedFrames)" )
+            }
+        }
+    }
 
     fun close() = _internal.close()
 }
