@@ -1,4 +1,4 @@
-package me.knighthat.database.migration
+package app.kreate.database.migration
 
 import androidx.room.DeleteColumn
 import androidx.room.migration.AutoMigrationSpec

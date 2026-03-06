@@ -1,4 +1,4 @@
-package me.knighthat.database.migration
+package app.kreate.database.migration
 
 import androidx.room.RenameTable
 import androidx.room.migration.AutoMigrationSpec
