@@ -69,6 +69,7 @@ import app.kreate.android.widget.Widget
 import app.kreate.database.models.Event
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.AndroidEntryPoint
 import it.fast4x.innertube.Innertube
@@ -123,6 +124,8 @@ import kotlinx.coroutines.withTimeoutOrNull
 import me.knighthat.impl.DownloadHelperImpl
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -130,7 +133,6 @@ import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.inject.Named
 import kotlin.math.roundToInt
 import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.seconds
@@ -146,14 +148,14 @@ class PlayerServiceModern:
     MediaLibraryService(),
     PlaybackStatsListener.Callback,
     SharedPreferences.OnSharedPreferenceChangeListener,
-    Player.Listener
+    Player.Listener,
+    KoinComponent
 {
+    private val cache: Cache by inject(CacheType.CACHE)
+
     @Inject
     lateinit var player: CustomExoPlayer
 
-    @Inject
-    @Named("cache")
-    lateinit var cache: Cache
     @Inject
     lateinit var downloadHelper: DownloadHelper
 

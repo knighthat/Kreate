@@ -27,6 +27,7 @@ import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.isLocalFile
 import app.kreate.database.models.Format
+import app.kreate.di.CacheType
 import app.kreate.di.PrefType
 import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonWriter
@@ -95,6 +96,8 @@ object PlayerModule : KoinComponent {
     private var databaseWorker: Job = Job()
 
     private val preferences: SharedPreferences by inject(PrefType.DEFAULT)
+    private val cache: Cache by inject(CacheType.CACHE)
+    private val downloadCache: Cache by inject(CacheType.DOWNLOAD)
     /**
      * Store id of song just added to the database.
      * This is created to reduce load to Room
@@ -476,7 +479,6 @@ object PlayerModule : KoinComponent {
     @Singleton
     fun providesDownloadDataSource(
         @ApplicationContext context: Context,
-        @Named("downloadCache") downloadCache: Cache,
         @Named("defaultDatasource") defaultDatasource: DataSource.Factory
     ): DataSource.Factory =
         ResolvingDataSource.Factory(
@@ -491,8 +493,6 @@ object PlayerModule : KoinComponent {
     @Singleton
     fun providesPlayerDataSource(
         @ApplicationContext context: Context,
-        @Named("cache") cache: Cache,
-        @Named("downloadCache") downloadCache: Cache,
         @Named("defaultDatasource") defaultDatasource: DataSource.Factory
     ): DataSource.Factory =
         ResolvingDataSource.Factory(
