@@ -14,6 +14,7 @@ import app.kreate.android.utils.DiscordLogger
 import app.kreate.android.utils.isLocalFile
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
+import app.kreate.di.PrefType
 import app.kreate.util.cleanPrefix
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.request.forms.formData
@@ -45,11 +46,12 @@ import me.knighthat.utils.ImageProcessor
 import me.knighthat.utils.Repository
 import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Contract
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import java.net.UnknownHostException
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
-import javax.inject.Named
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.time.Duration.Companion.seconds
@@ -58,10 +60,8 @@ import me.knighthat.discord.Discord as DiscordLib
 
 // TODO: Localize strings
 class Discord @Inject constructor(
-    @param:ApplicationContext private val context: Context,
-    @param:Named("plain") private val preferences: SharedPreferences,
-    @param:Named("private") private val privatePreferences: SharedPreferences
-) {
+    @param:ApplicationContext private val context: Context
+) : KoinComponent {
 
     companion object {
         private const val APPLICATION_ID = "1370148610158759966"
@@ -75,6 +75,8 @@ class Discord @Inject constructor(
         const val LOGGING_TAG = "discord-integration"
     }
 
+    private val preferences: SharedPreferences by inject(PrefType.DEFAULT)
+    private val privatePreferences: SharedPreferences by inject(PrefType.CREDENTIALS)
     private val templateActivity by lazy {
         Activity(
             name = BuildConfig.APP_NAME,

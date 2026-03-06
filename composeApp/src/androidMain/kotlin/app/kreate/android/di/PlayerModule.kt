@@ -15,7 +15,6 @@ import androidx.media3.datasource.cache.CacheDataSink
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR
 import androidx.media3.datasource.okhttp.OkHttpDataSource
-import androidx.media3.exoplayer.ExoPlayer
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.di.PlayerModule.upsertSongFormat
@@ -28,6 +27,7 @@ import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.isLocalFile
 import app.kreate.database.models.Format
+import app.kreate.di.PrefType
 import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonWriter
 import dagger.Module
@@ -64,6 +64,8 @@ import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.UserAgents
 import me.knighthat.innertube.response.PlayerResponse
 import me.knighthat.utils.Toaster
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.schabi.newpipe.extractor.localization.ContentCountry
 import org.schabi.newpipe.extractor.localization.Localization
 import org.schabi.newpipe.extractor.services.youtube.YoutubeJavaScriptPlayerManager
@@ -81,7 +83,7 @@ import me.knighthat.innertube.request.body.Context as InnertubeContext
 @InstallIn(SingletonComponent::class)
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalSerializationApi::class)
-object PlayerModule {
+object PlayerModule : KoinComponent {
 
     private const val LOG_TAG = "dataspec"
     private const val CHUNK_LENGTH = 128 * 1024L     // 128Kb
@@ -92,6 +94,7 @@ object PlayerModule {
      */
     private var databaseWorker: Job = Job()
 
+    private val preferences: SharedPreferences by inject(PrefType.DEFAULT)
     /**
      * Store id of song just added to the database.
      * This is created to reduce load to Room
@@ -515,9 +518,8 @@ object PlayerModule {
     fun providesExoPlayer(
         @ApplicationContext context: Context,
         @Named("playerDataSource") dataSourceFactory: DataSource.Factory,
-        @Named("plain") preferences: SharedPreferences,
         discord: Discord
-    ): ExoPlayer = CustomExoPlayer(dataSourceFactory, preferences, context, discord)
+    ): CustomExoPlayer = CustomExoPlayer(dataSourceFactory, preferences, context, discord)
 
     /**
      * Remove cached url of [songId].

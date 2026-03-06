@@ -29,15 +29,12 @@ import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
 import androidx.media3.extractor.DefaultExtractorsFactory
 import app.kreate.android.Preferences
 import app.kreate.android.service.Discord
-import dagger.hilt.android.qualifiers.ApplicationContext
 import it.fast4x.rimusic.utils.isAtLeastAndroid10
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
 import java.io.IOException
-import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
@@ -127,11 +124,10 @@ class CustomExoPlayer private constructor(
         }
     }
 
-    @Inject
     constructor(
-        @Named("playerDataSource") dataSourceFactory: DataSource.Factory,
-        @Named("plain") preferences: SharedPreferences,
-        @ApplicationContext context: Context,
+        dataSourceFactory: DataSource.Factory,
+        preferences: SharedPreferences,
+        context: Context,
         discord: Discord
     ) : this(discord, makeBasePlayer( context, preferences, dataSourceFactory ))
 
