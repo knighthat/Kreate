@@ -40,6 +40,7 @@ import app.kreate.android.themed.rimusic.component.song.PeriodSelector
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.utils.shallowCompare
+import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.Song
 import app.kreate.util.toDuration
 import it.fast4x.compose.persist.persistList
@@ -77,7 +78,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import me.knighthat.component.tab.ExportSongsToCSVDialog
 import me.knighthat.component.tab.HiddenSongs
-import me.knighthat.database.ext.FormatWithSong
 
 @UnstableApi
 @ExperimentalFoundationApi
