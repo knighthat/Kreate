@@ -8,9 +8,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.util.fastAny
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
-import app.kreate.android.di.PlayerModule
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.database.models.Song
+import app.kreate.di.clearCachedStreamUrlOf
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
@@ -144,7 +144,7 @@ class ResetSongDialog private constructor(
 
             Database.asyncTransaction {
                 if( items.first { it.id == CACHE_CHECKBOX_ID }.selected ) {
-                    PlayerModule.clearCachedStreamUrlOf( song.id )
+                    clearCachedStreamUrlOf( song.id )
 
                     binder?.cache?.removeResource( song.id )
                     binder?.downloadCache?.removeResource( song.id )

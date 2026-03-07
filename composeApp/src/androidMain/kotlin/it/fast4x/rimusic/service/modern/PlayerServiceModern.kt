@@ -121,7 +121,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import me.knighthat.impl.DownloadHelperImpl
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
@@ -132,7 +131,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import kotlin.math.roundToInt
 import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.seconds
@@ -152,18 +150,10 @@ class PlayerServiceModern:
     KoinComponent
 {
     private val cache: Cache by inject(CacheType.CACHE)
-
-    @Inject
-    lateinit var player: CustomExoPlayer
-
-    @Inject
-    lateinit var downloadHelper: DownloadHelper
-
-    @Inject
-    lateinit var discord: Discord
-
-    @Inject
-    lateinit var volumeObserver: VolumeObserver
+    private val discord: Discord by inject()
+    private val player: CustomExoPlayer by inject()
+    private val downloadHelper: DownloadHelper by inject()
+    private val volumeObserver: VolumeObserver by inject()
 
     private lateinit var listener: ExoPlayerListener
     private val coroutineScope = CoroutineScope(Dispatchers.IO) + Job()
@@ -836,7 +826,7 @@ class PlayerServiceModern:
         }
     }
 
-    open inner class Binder : AndroidBinder() {
+    open inner class Binder : AndroidBinder(), KoinComponent {
         val service: PlayerServiceModern
             get() = this@PlayerServiceModern
 
@@ -856,8 +846,7 @@ class PlayerServiceModern:
         val cache: Cache
             get() = this@PlayerServiceModern.cache
 
-        val downloadCache: Cache
-            get() = (this@PlayerServiceModern.downloadHelper as DownloadHelperImpl).downloadCache
+        val downloadCache: Cache by inject(CacheType.DOWNLOAD)
 
         val sleepTimerMillisLeft: StateFlow<Long?>?
             get() = timerJob?.millisLeft

@@ -7,11 +7,9 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import app.kreate.android.Preferences
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
 
-class VolumeObserver @Inject constructor(
-    @param:ApplicationContext private val context: Context,
+class VolumeObserver(
+    private val context: Context,
     private val player: CustomExoPlayer
 ): ContentObserver(Handler(Looper.getMainLooper()))  {
 

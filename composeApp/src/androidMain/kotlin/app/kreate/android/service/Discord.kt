@@ -16,7 +16,6 @@ import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.di.PrefType
 import app.kreate.util.cleanPrefix
-import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.statement.bodyAsText
@@ -51,7 +50,6 @@ import org.koin.core.component.inject
 import timber.log.Timber
 import java.net.UnknownHostException
 import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.time.Duration.Companion.seconds
@@ -59,9 +57,7 @@ import me.knighthat.discord.Discord as DiscordLib
 
 
 // TODO: Localize strings
-class Discord @Inject constructor(
-    @param:ApplicationContext private val context: Context
-) : KoinComponent {
+class Discord(private val context: Context) : KoinComponent {
 
     companion object {
         private const val APPLICATION_ID = "1370148610158759966"
