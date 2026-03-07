@@ -13,7 +13,6 @@ import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.PlatformScheduler
 import app.kreate.android.R
 import app.kreate.android.service.DownloadHelper
-import dagger.hilt.android.AndroidEntryPoint
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -21,7 +20,6 @@ private const val JOB_ID = 8888
 private const val FOREGROUND_NOTIFICATION_ID = 8989
 
 
-@AndroidEntryPoint
 @UnstableApi
 class MyDownloadService : DownloadService(
     FOREGROUND_NOTIFICATION_ID,

@@ -37,7 +37,6 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import timber.log.Timber
 import java.io.IOException
-import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -49,7 +48,6 @@ import kotlin.math.pow
  * - Observable states (current mediaItem, timeline, window, etc.)
  */
 @OptIn(UnstableApi::class)
-@Singleton
 class CustomExoPlayer private constructor(
     private val player: ExoPlayer
 ): ExoPlayer by player, Player.Listener, KoinComponent {

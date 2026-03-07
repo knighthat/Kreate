@@ -15,13 +15,12 @@ import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.CrashHandler
 import app.kreate.android.utils.logging.RollingFileLoggingTree
 import app.kreate.di.initKoin
-import dagger.hilt.android.HiltAndroidApp
 import it.fast4x.rimusic.utils.AppLifecycleTracker
 import me.knighthat.innertube.Innertube
 import org.koin.android.ext.koin.androidContext
 import timber.log.Timber
 
-@HiltAndroidApp
+
 class MainApplication : Application() {
 
     override fun onCreate() {

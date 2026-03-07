@@ -71,7 +71,6 @@ import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import com.google.common.util.concurrent.MoreExecutors
-import dagger.hilt.android.AndroidEntryPoint
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
@@ -140,7 +139,6 @@ import me.knighthat.innertube.Innertube as NewInnertube
 
 val MediaItem.isLocal get() = localConfiguration?.uri?.isLocalFile() ?: false
 
-@AndroidEntryPoint
 @UnstableApi
 class PlayerServiceModern:
     MediaLibraryService(),

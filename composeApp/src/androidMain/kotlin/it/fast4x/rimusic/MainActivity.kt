@@ -93,7 +93,6 @@ import coil3.toBitmap
 import com.kieronquinn.monetcompat.core.MonetActivityAccessException
 import com.kieronquinn.monetcompat.core.MonetCompat
 import com.kieronquinn.monetcompat.interfaces.MonetColorsChangedListener
-import dagger.hilt.android.AndroidEntryPoint
 import dev.kdrag0n.monet.theme.ColorScheme
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBody
@@ -161,7 +160,7 @@ import java.util.Objects
 import kotlin.math.sqrt
 import kotlin.system.exitProcess
 
-@AndroidEntryPoint
+
 @UnstableApi
 class
 MainActivity :
