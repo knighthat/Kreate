@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">完了</string>
     <string name="hidesong">この曲を非表示にしますか？再生時間とキャッシュは消去されます。\nこの操作は元に戻せません。</string>
