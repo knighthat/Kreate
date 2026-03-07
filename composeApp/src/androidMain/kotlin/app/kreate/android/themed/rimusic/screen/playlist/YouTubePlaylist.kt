@@ -40,7 +40,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastMap
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
@@ -62,7 +61,6 @@ import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.UiType
-import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.Skeleton
@@ -101,6 +99,7 @@ import me.knighthat.component.tab.SongShuffler
 import me.knighthat.component.ui.screens.DynamicOrientationLayout
 import me.knighthat.innertube.Constants
 import me.knighthat.utils.Toaster
+import org.koin.compose.viewmodel.koinViewModel
 import timber.log.Timber
 
 @ExperimentalAnimationApi
@@ -109,7 +108,7 @@ import timber.log.Timber
 @Composable
 fun YouTubePlaylist(
     navController: NavController,
-    viewModel: YouTubePlaylistViewModel = hiltViewModel(),
+    viewModel: YouTubePlaylistViewModel = koinViewModel(),
     miniPlayer: @Composable () -> Unit = {}
 ) {
     val context = LocalContext.current
