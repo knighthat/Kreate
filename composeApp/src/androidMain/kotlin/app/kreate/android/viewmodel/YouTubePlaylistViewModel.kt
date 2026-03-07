@@ -17,8 +17,6 @@ import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toSong
 import app.kreate.database.models.Song
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import it.fast4x.rimusic.utils.isNetworkConnected
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,13 +37,11 @@ import me.knighthat.innertube.model.InnertubePlaylist
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import timber.log.Timber
-import javax.inject.Inject
 
 
-@HiltViewModel
-class YouTubePlaylistViewModel @Inject constructor(
+class YouTubePlaylistViewModel(
     savedStateHandle: SavedStateHandle,
-    @param:ApplicationContext private val context: Context
+    private val context: Context
 ) : ViewModel() {
 
     private val _playlistPage = MutableStateFlow<InnertubePlaylist?>(null)

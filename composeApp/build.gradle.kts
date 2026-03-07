@@ -37,7 +37,6 @@ plugins {
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias( libs.plugins.license.report )
-    alias( libs.plugins.hilt )
 }
 
 repositories {
@@ -101,8 +100,7 @@ kotlin {
             implementation( libs.toasty )
 
             // Dependency injection
-            implementation( libs.android.hilt )
-            implementation( libs.android.hilt.navigation )
+            implementation( libs.koin.android )
 
             implementation(libs.androidx.lifecycle.runtime)
             implementation(libs.androidx.lifecycle.process)
@@ -148,6 +146,10 @@ kotlin {
             implementation( libs.math3 )
 
             implementation( libs.material.icons.kmp )
+
+            // Dependency injection
+            implementation( libs.koin.core )
+            implementation( libs.koin.navigation )
         }
         commonTest.dependencies {
             implementation( libs.kotlin.test )
@@ -405,8 +407,6 @@ dependencies {
     // Room
     add( "kspAndroid", libs.room.compiler )
     add( "kspJvm", libs.room.compiler )
-    // Dependency injector
-    add( "kspAndroid", libs.android.hilt.compiler )
 
     coreLibraryDesugaring(libs.desugaring.nio)
 }

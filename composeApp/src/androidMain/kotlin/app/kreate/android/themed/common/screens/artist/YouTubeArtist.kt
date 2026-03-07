@@ -48,7 +48,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastAll
 import androidx.compose.ui.util.fastMapNotNull
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
@@ -99,6 +98,7 @@ import me.knighthat.innertube.Constants
 import me.knighthat.innertube.model.InnertubeAlbum
 import me.knighthat.innertube.model.InnertubeArtist
 import me.knighthat.innertube.model.InnertubeSong
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @OptIn(UnstableApi::class)
@@ -257,7 +257,7 @@ private fun LazyListScope.renderLibrarySongs(
 fun YouTubeArtist(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: YoutubeArtistViewModel = hiltViewModel(),
+    viewModel: YoutubeArtistViewModel = koinViewModel(),
     miniPlayer: @Composable () -> Unit = {}
 ) {
     val context = LocalContext.current

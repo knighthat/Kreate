@@ -7,6 +7,7 @@ import androidx.room.Transaction
 import androidx.room.useWriterConnection
 import app.kreate.android.Preferences
 import app.kreate.database.AlbumTable
+import app.kreate.database.AppDatabase
 import app.kreate.database.ArtistTable
 import app.kreate.database.EventTable
 import app.kreate.database.FormatTable
@@ -18,8 +19,6 @@ import app.kreate.database.SongAlbumMapTable
 import app.kreate.database.SongArtistMapTable
 import app.kreate.database.SongPlaylistMapTable
 import app.kreate.database.SongTable
-import app.kreate.database.getAppDatabase
-import app.kreate.database.getAppDatabaseBuilder
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Playlist
@@ -32,15 +31,14 @@ import it.fast4x.rimusic.utils.asSong
 import kotlinx.coroutines.flow.first
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.PropUtils
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 
-object Database {
+object Database : KoinComponent {
     val FILE_NAME = if ( Preferences.ACTIVE_PROFILE.value == "default" ) "data.db" else "data_${Preferences.ACTIVE_PROFILE.value}.db"
 
-    private val _internal by lazy {
-        val builder = getAppDatabaseBuilder( appContext() )
-        getAppDatabase( builder )
-    }
+    private val _internal by inject<AppDatabase>()
 
     val songTable: SongTable
         get() = _internal.songTable

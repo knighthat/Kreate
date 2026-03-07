@@ -13,24 +13,22 @@ import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.PlatformScheduler
 import app.kreate.android.R
 import app.kreate.android.service.DownloadHelper
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private const val JOB_ID = 8888
 private const val FOREGROUND_NOTIFICATION_ID = 8989
 
 
-@AndroidEntryPoint
 @UnstableApi
 class MyDownloadService : DownloadService(
     FOREGROUND_NOTIFICATION_ID,
     DEFAULT_FOREGROUND_NOTIFICATION_UPDATE_INTERVAL,
     DownloadHelper.DOWNLOAD_NOTIFICATION_CHANNEL_ID,
     R.string.download, 0
-) {
+), KoinComponent {
 
-    @Inject
-    lateinit var downloadHelper: DownloadHelper
+    private val downloadHelper: DownloadHelper by inject()
 
     override fun getDownloadManager(): DownloadManager {
         MyDownloadHelper.instance = downloadHelper

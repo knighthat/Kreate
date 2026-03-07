@@ -29,16 +29,14 @@ import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
 import androidx.media3.extractor.DefaultExtractorsFactory
 import app.kreate.android.Preferences
 import app.kreate.android.service.Discord
-import dagger.hilt.android.qualifiers.ApplicationContext
 import it.fast4x.rimusic.utils.isAtLeastAndroid10
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import java.io.IOException
-import javax.inject.Inject
-import javax.inject.Named
-import javax.inject.Singleton
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -50,11 +48,9 @@ import kotlin.math.pow
  * - Observable states (current mediaItem, timeline, window, etc.)
  */
 @OptIn(UnstableApi::class)
-@Singleton
 class CustomExoPlayer private constructor(
-    private val discord: Discord,
     private val player: ExoPlayer
-): ExoPlayer by player, Player.Listener {
+): ExoPlayer by player, Player.Listener, KoinComponent {
 
     companion object {
 
@@ -127,17 +123,16 @@ class CustomExoPlayer private constructor(
         }
     }
 
-    @Inject
     constructor(
-        @Named("playerDataSource") dataSourceFactory: DataSource.Factory,
-        @Named("plain") preferences: SharedPreferences,
-        @ApplicationContext context: Context,
-        discord: Discord
-    ) : this(discord, makeBasePlayer( context, preferences, dataSourceFactory ))
+        dataSourceFactory: DataSource.Factory,
+        preferences: SharedPreferences,
+        context: Context
+    ) : this(makeBasePlayer( context, preferences, dataSourceFactory ))
 
     private val _currentMediaItemState = MutableStateFlow<MediaItem?>(null)
     private val _currentTimelineState = MutableStateFlow(Timeline.EMPTY)
     private val _currentWindowState = MutableStateFlow<Timeline.Window?>(null)
+    private val discord: Discord by inject()
 
     private var volumeAnimator: ValueAnimator? = null
 

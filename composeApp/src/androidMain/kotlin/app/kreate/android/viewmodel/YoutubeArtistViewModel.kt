@@ -25,8 +25,6 @@ import app.kreate.android.utils.innertube.toSong
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongArtistMap
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.isNetworkConnected
@@ -44,13 +42,11 @@ import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.PropUtils
 import me.knighthat.utils.Toaster
 import timber.log.Timber
-import javax.inject.Inject
 
 
-@HiltViewModel
-class YoutubeArtistViewModel @Inject constructor(
+class YoutubeArtistViewModel(
     savedStateHandle: SavedStateHandle,
-    @param:ApplicationContext private val context: Context,
+    private val context: Context,
 ) : ViewModel() {
 
     private val _artistPage = MutableStateFlow<InnertubeArtist?>(null)

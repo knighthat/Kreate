@@ -1,46 +1,35 @@
-package app.kreate.android.di
+package app.kreate.di
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.compose.ui.util.fastForEach
 import androidx.core.content.edit
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Named
-import javax.inject.Singleton
+import org.koin.core.qualifier.Qualifier
+import org.koin.core.qualifier.QualifierValue
+import org.koin.dsl.module
 
 
-@Module
-@InstallIn(SingletonComponent::class)
-object PreferenceModule {
+private const val PROFILE_PREFERENCES_FILENAME = "profiles"
+private const val ACTIVE_PROFILE_KEY = "ActiveProfile"
+private const val PREFERENCES_BASE_FILENAME = "preferences"
+private const val PRIVATE_PREFERENCES_BASE_FILENAME = "private_preferences"
 
-    private const val PROFILE_PREFERENCES_FILENAME = "profiles"
-    private const val ACTIVE_PROFILE_KEY = "ActiveProfile"
-    private const val PREFERENCES_BASE_FILENAME = "preferences"
-    private const val PRIVATE_PREFERENCES_BASE_FILENAME = "private_preferences"
+val preferencesModule = module {
+    single( PrefType.PROFILES, true ) {
+        val context: Context = get()
+        context.getSharedPreferences( PROFILE_PREFERENCES_FILENAME, Context.MODE_PRIVATE )
+    }
 
-    @Named("profiles")
-    @Provides
-    @Singleton
-    fun provideProfilePreferences( @ApplicationContext context: Context ): SharedPreferences =
-        context.getSharedPreferences(PROFILE_PREFERENCES_FILENAME, Context.MODE_PRIVATE)
-
-    @Named("plain")
-    @Provides
-    @Singleton
-    fun providePlainPreferences(
-        @ApplicationContext context: Context,
-        @Named("profiles") profile: SharedPreferences
-    ): SharedPreferences {
-        val profileName = profile.getString(ACTIVE_PROFILE_KEY, "default")
+    single( PrefType.DEFAULT, true ) {
+        val context: Context = get()
+        val profile: SharedPreferences = get(PrefType.PROFILES )
+        val profileName = profile.getString( ACTIVE_PROFILE_KEY, "default" )!!
         val filename = if (profileName == "default") {
             PREFERENCES_BASE_FILENAME
         } else {
             PREFERENCES_BASE_FILENAME + "_$profileName"
         }
+
         val result = context.getSharedPreferences( filename, Context.MODE_PRIVATE )
         result.edit {
             // Using reflection to get unused keys would be a better
@@ -58,22 +47,25 @@ object PreferenceModule {
                 "exoPlayerDiskCacheMaxSize"
             ).fastForEach( this::remove )
         }
-        return result
-    }
 
-    @Named("private")
-    @Provides
-    @Singleton
-    fun providesPrivatePreferences(
-        @ApplicationContext context: Context,
-        @Named("profiles") profile: SharedPreferences
-    ): SharedPreferences {
-        val profileName = profile.getString(ACTIVE_PROFILE_KEY, "default")
+        return@single result
+    }
+    single( PrefType.CREDENTIALS, true ) {
+        val context: Context = get()
+        val profile: SharedPreferences = get( PrefType.PROFILES )
+        val profileName = profile.getString( ACTIVE_PROFILE_KEY, "default" )
         val filename = if (profileName == "default") {
             PRIVATE_PREFERENCES_BASE_FILENAME
         } else {
             PRIVATE_PREFERENCES_BASE_FILENAME + "_$profileName"
         }
-        return context.getSharedPreferences(filename, Context.MODE_PRIVATE)
+
+        return@single context.getSharedPreferences( filename, Context.MODE_PRIVATE )
     }
+}
+
+enum class PrefType : Qualifier {
+    DEFAULT, CREDENTIALS, PROFILES;
+
+    override val value: QualifierValue = toString().lowercase()
 }

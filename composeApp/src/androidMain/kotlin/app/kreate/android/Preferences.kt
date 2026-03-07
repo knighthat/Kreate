@@ -22,6 +22,7 @@ import app.kreate.constant.PlaylistSongSortBy
 import app.kreate.constant.PlaylistSortBy
 import app.kreate.constant.SongSortBy
 import app.kreate.constant.SortOrder
+import app.kreate.di.PrefType
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.AlbumSwipeAction
 import it.fast4x.rimusic.enums.AlbumsType
@@ -96,6 +97,8 @@ import it.fast4x.rimusic.utils.getDeviceVolume
 import me.knighthat.innertube.Constants
 import org.jetbrains.annotations.Blocking
 import org.jetbrains.annotations.NonBlocking
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.net.Proxy
 
 /**
@@ -129,14 +132,11 @@ sealed class Preferences<T>(
      * is first called, it'll remain uninitialized, no computation power, nor
      * memory will be consumed.
      */
-    companion object {
+    companion object : KoinComponent {
 
-        lateinit var profilePreferences: SharedPreferences
-            private set
-        lateinit var preferences: SharedPreferences
-            private set
-        lateinit var encryptedPreferences: SharedPreferences
-            private set
+        val profilePreferences: SharedPreferences by inject<SharedPreferences>(PrefType.PROFILES)
+        val preferences: SharedPreferences by inject<SharedPreferences>(PrefType.DEFAULT)
+        val encryptedPreferences: SharedPreferences by inject<SharedPreferences>(PrefType.CREDENTIALS)
 
         //<editor-fold defaultstate="collapsed" desc="Item size">
         val HOME_ARTIST_ITEM_SIZE by lazy {
@@ -1089,27 +1089,6 @@ sealed class Preferences<T>(
 
         fun isLoggedInToDiscord(): kotlin.Boolean =
             DISCORD_LOGIN.value && DISCORD_ACCESS_TOKEN.value.isNotBlank()
-
-        /**
-         * Initialize needed properties for settings to use.
-         *
-         * **ATTENTION**: Must be call as early as possible to prevent
-         * because all preference require [preferences] to be initialized
-         * to work.
-         */
-        fun load(profilePreferences: SharedPreferences, preferences: SharedPreferences, encryptedPreferences: SharedPreferences ) {
-            // Only set once to prevent unwanted injection
-            if ( !::profilePreferences.isInitialized )
-                this.profilePreferences = profilePreferences
-
-            // Only set once to prevent unwanted injection
-            if( !::preferences.isInitialized )
-                this.preferences = preferences
-
-            // Only set once to prevent unwanted injection
-            if( !::encryptedPreferences.isInitialized )
-                this.encryptedPreferences = encryptedPreferences
-        }
 
         /**
          * Finalize all changes and write it to disk.
