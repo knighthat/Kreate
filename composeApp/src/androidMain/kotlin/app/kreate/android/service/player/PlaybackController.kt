@@ -79,7 +79,7 @@ object PlaybackController {
             }
 
             NotificationButtons.Search,
-            NotificationButtons.Radio -> button.iconId
+            NotificationButtons.Radio -> button.androidIconId
         }
 
     suspend fun makeButton(
@@ -89,7 +89,7 @@ object PlaybackController {
         builder: CommandButton.Builder.() -> Unit = {}
     ): CommandButton =
         CommandButton.Builder( CommandButton.ICON_UNDEFINED )
-                     .setDisplayName( context.resources.getString( button.textId ) )
+                     .setDisplayName( context.resources.getString( button.androidTextId ) )
                      .setSessionCommand( button.sessionCommand )
                      .apply {
                          getIconId( player, button ).also( ::setCustomIconResId )

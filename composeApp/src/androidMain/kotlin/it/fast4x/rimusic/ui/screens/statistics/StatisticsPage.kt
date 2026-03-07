@@ -206,7 +206,7 @@ fun StatisticsPage(
                 ) {
                     HeaderWithIcon(
                         title = statisticsType.text,
-                        iconId = statisticsType.iconId,
+                        iconId = statisticsType.androidIconId,
                         enabled = true,
                         showIcon = true,
                         modifier = Modifier,

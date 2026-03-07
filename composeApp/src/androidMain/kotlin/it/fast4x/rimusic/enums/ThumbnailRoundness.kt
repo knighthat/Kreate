@@ -9,7 +9,7 @@ import me.knighthat.enums.TextView
 
 enum class ThumbnailRoundness(
     val shape: Shape,
-    @field:StringRes override val textId: Int
+    @field:StringRes override val androidTextId: Int
 ): TextView {
 
     None( RoundedCornerShape(0.dp), R.string.none ),

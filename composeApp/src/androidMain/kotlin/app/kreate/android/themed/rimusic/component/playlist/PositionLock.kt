@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import app.kreate.android.R
-import it.fast4x.rimusic.enums.SortOrder
+import app.kreate.constant.SortOrder
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.DualIcon
 import it.fast4x.rimusic.ui.components.tab.toolbar.DynamicColor
@@ -18,7 +18,7 @@ class PositionLock(
     colorState: MutableState<Boolean>
 ): MenuIcon, DualIcon, DynamicColor, Descriptive {
 
-    constructor( sortOrder: SortOrder ): this(mutableStateOf( sortOrder == SortOrder.Ascending ))
+    constructor( sortOrder: SortOrder ): this(mutableStateOf( sortOrder == SortOrder.ASCENDING ))
     constructor(): this(mutableStateOf( true ))
 
     override val secondIconId: Int = R.drawable.unlocked

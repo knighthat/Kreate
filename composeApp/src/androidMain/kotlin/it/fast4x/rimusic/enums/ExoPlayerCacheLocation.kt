@@ -5,7 +5,7 @@ import app.kreate.android.R
 import me.knighthat.enums.TextView
 
 enum class ExoPlayerCacheLocation(
-    @field:StringRes override val textId: Int,
+    @field:StringRes override val androidTextId: Int,
     @field:StringRes val subtitleId: Int
 ): TextView {
 

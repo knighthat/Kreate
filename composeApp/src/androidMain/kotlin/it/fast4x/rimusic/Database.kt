@@ -3,72 +3,44 @@ package it.fast4x.rimusic
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastZip
 import androidx.media3.common.MediaItem
-import androidx.room.AutoMigration
-import androidx.room.Room
-import androidx.room.RoomDatabase
 import androidx.room.Transaction
-import androidx.room.TypeConverters
-import androidx.sqlite.db.SimpleSQLiteQuery
+import androidx.room.useWriterConnection
 import app.kreate.android.Preferences
+import app.kreate.database.AlbumTable
+import app.kreate.database.ArtistTable
+import app.kreate.database.EventTable
+import app.kreate.database.FormatTable
+import app.kreate.database.LyricsTable
+import app.kreate.database.PlaylistTable
+import app.kreate.database.QueuedMediaItemTable
+import app.kreate.database.SearchQueryTable
+import app.kreate.database.SongAlbumMapTable
+import app.kreate.database.SongArtistMapTable
+import app.kreate.database.SongPlaylistMapTable
+import app.kreate.database.SongTable
+import app.kreate.database.getAppDatabase
+import app.kreate.database.getAppDatabaseBuilder
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
-import app.kreate.database.models.Event
-import app.kreate.database.models.Format
-import app.kreate.database.models.Lyrics
-import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Playlist
-import app.kreate.database.models.SearchQuery
 import app.kreate.database.models.Song
-import app.kreate.database.models.SongAlbumMap
 import app.kreate.database.models.SongArtistMap
-import app.kreate.database.models.SongPlaylistMap
 import it.fast4x.rimusic.Database.asyncQuery
 import it.fast4x.rimusic.Database.asyncTransaction
 import it.fast4x.rimusic.Database.insertIgnore
 import it.fast4x.rimusic.utils.asSong
 import kotlinx.coroutines.flow.first
-import me.knighthat.database.AlbumTable
-import me.knighthat.database.ArtistTable
-import me.knighthat.database.Converters
-import me.knighthat.database.EventTable
-import me.knighthat.database.FormatTable
-import me.knighthat.database.LyricsTable
-import me.knighthat.database.PlaylistTable
-import me.knighthat.database.QueuedMediaItemTable
-import me.knighthat.database.SearchQueryTable
-import me.knighthat.database.SongAlbumMapTable
-import me.knighthat.database.SongArtistMapTable
-import me.knighthat.database.SongPlaylistMapTable
-import me.knighthat.database.SongTable
-import me.knighthat.database.migration.From10To11Migration
-import me.knighthat.database.migration.From11To12Migration
-import me.knighthat.database.migration.From14To15Migration
-import me.knighthat.database.migration.From20To21Migration
-import me.knighthat.database.migration.From21To22Migration
-import me.knighthat.database.migration.From22To23Migration
-import me.knighthat.database.migration.From23To24Migration
-import me.knighthat.database.migration.From24To25Migration
-import me.knighthat.database.migration.From25To26Migration
-import me.knighthat.database.migration.From26To27Migration
-import me.knighthat.database.migration.From27To28Migration
-import me.knighthat.database.migration.From28To29Migration
-import me.knighthat.database.migration.From29To30Migration
-import me.knighthat.database.migration.From30To31Migration
-import me.knighthat.database.migration.From31To32Migration
-import me.knighthat.database.migration.From32To33Migration
-import me.knighthat.database.migration.From34To35Migration
-import me.knighthat.database.migration.From35To36Migration
-import me.knighthat.database.migration.From3To4Migration
-import me.knighthat.database.migration.From7To8Migration
-import me.knighthat.database.migration.From8To9Migration
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.PropUtils
+import timber.log.Timber
 
 object Database {
     val FILE_NAME = if ( Preferences.ACTIVE_PROFILE.value == "default" ) "data.db" else "data_${Preferences.ACTIVE_PROFILE.value}.db"
 
-    private val _internal: DatabaseInitializer
-        get() = DatabaseInitializer.Instance
+    private val _internal by lazy {
+        val builder = getAppDatabaseBuilder( appContext() )
+        getAppDatabase( builder )
+    }
 
     val songTable: SongTable
         get() = _internal.songTable
@@ -335,94 +307,17 @@ object Database {
             this.block()
         }
 
-    fun checkpoint() = _internal.query( SimpleSQLiteQuery("PRAGMA wal_checkpoint(FULL)") )
-                                     .use {
-                                         if( it.moveToFirst() ) it.getInt( 0 ) else -1
-                                     }
+    suspend fun checkpoint() = _internal.useWriterConnection { connection ->
+        connection.usePrepared("PRAGMA wal_checkpoint(FULL)") { statement ->
+            if (statement.step()) {
+                val isBusy = statement.getLong(0) // 0 if not busy, 1 if busy
+                val logFrames = statement.getLong(1)
+                val checkpointedFrames = statement.getLong(2)
 
-    fun close() = _internal.close()
-}
-
-@androidx.room.Database(
-    entities = [
-        Song::class,
-        SongPlaylistMap::class,
-        Playlist::class,
-        Artist::class,
-        SongArtistMap::class,
-        Album::class,
-        SongAlbumMap::class,
-        SearchQuery::class,
-        PersistentQueue::class,
-        Format::class,
-        Event::class,
-        Lyrics::class,
-    ],
-    version = 36,
-    exportSchema = true,
-    autoMigrations = [
-        AutoMigration(from = 1, to = 2),
-        AutoMigration(from = 2, to = 3),
-        AutoMigration(from = 3, to = 4, spec = From3To4Migration::class),
-        AutoMigration(from = 4, to = 5),
-        AutoMigration(from = 5, to = 6),
-        AutoMigration(from = 6, to = 7),
-        AutoMigration(from = 7, to = 8, spec = From7To8Migration::class),
-        AutoMigration(from = 9, to = 10),
-        AutoMigration(from = 11, to = 12, spec = From11To12Migration::class),
-        AutoMigration(from = 12, to = 13),
-        AutoMigration(from = 13, to = 14),
-        AutoMigration(from = 15, to = 16),
-        AutoMigration(from = 16, to = 17),
-        AutoMigration(from = 17, to = 18),
-        AutoMigration(from = 18, to = 19),
-        AutoMigration(from = 19, to = 20),
-        AutoMigration(from = 20, to = 21, spec = From20To21Migration::class),
-        AutoMigration(from = 21, to = 22, spec = From21To22Migration::class),
-        AutoMigration(from = 30, to = 31, spec = From30To31Migration::class),
-        AutoMigration(from = 31, to = 32, spec = From31To32Migration::class),
-        AutoMigration(from = 32, to = 33, spec = From32To33Migration::class),
-        AutoMigration(from = 33, to = 34),       // Adding `onUpdate = ForeignKey.CASCADE` to several tables,
-    ],
-)
-@TypeConverters(Converters::class)
-abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
-    abstract val albumTable: AlbumTable
-    abstract val artistTable: ArtistTable
-    abstract val eventTable: EventTable
-    abstract val formatTable: FormatTable
-    abstract val lyricsTable: LyricsTable
-    abstract val playlistTable: PlaylistTable
-    abstract val queueTable: QueuedMediaItemTable
-    abstract val searchQueryTable: SearchQueryTable
-    abstract val songAlbumMapTable: SongAlbumMapTable
-    abstract val songArtistMapTable: SongArtistMapTable
-    abstract val songPlaylistMapTable: SongPlaylistMapTable
-    abstract val songTable: SongTable
-
-    companion object {
-        val Instance: DatabaseInitializer by lazy {
-            Room.databaseBuilder(
-                    context = appContext(),
-                    klass = DatabaseInitializer::class.java,
-                    name = Database.FILE_NAME
-                )
-                .addMigrations(
-                    From8To9Migration(),
-                    From10To11Migration(),
-                    From14To15Migration(),
-                    From22To23Migration(),
-                    From23To24Migration(),
-                    From24To25Migration(),
-                    From25To26Migration(),
-                    From26To27Migration(),
-                    From27To28Migration(),
-                    From28To29Migration(),
-                    From29To30Migration(),
-                    From34To35Migration(),
-                    From35To36Migration()
-                )
-                .build()
+                Timber.tag("database").d( "Checkpoint performed! (is busy: $isBusy, logged frames: $logFrames, checkpointed frames: $checkpointedFrames)" )
+            }
         }
     }
+
+    fun close() = _internal.close()
 }

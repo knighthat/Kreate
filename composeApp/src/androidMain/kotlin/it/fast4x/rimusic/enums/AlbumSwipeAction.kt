@@ -6,8 +6,8 @@ import app.kreate.android.R
 import me.knighthat.enums.TextView
 
 enum class AlbumSwipeAction(
-    @field:DrawableRes override val iconId: Int,
-    @field:StringRes override val textId: Int,
+    @field:DrawableRes override val androidIconId: Int,
+    @field:StringRes override val androidTextId: Int,
 ): Drawable, TextView {
 
     NoAction( R.drawable.close, R.string.none ),
@@ -25,7 +25,7 @@ enum class AlbumSwipeAction(
                 else -> R.drawable.bookmark
             }
             NoAction -> null
-            else -> iconId
+            else -> androidIconId
         }
     }
 }

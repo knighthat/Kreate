@@ -4,17 +4,18 @@ import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import app.kreate.component.Drawable
 
-interface Drawable {
+interface Drawable: Drawable {
 
     @get:DrawableRes
-    val iconId: Int
+    val androidIconId: Int
         get() = throw NotImplementedError("""
             This setting uses [${this::class.simpleName}#icon] directly 
             or its [${this::class.simpleName}#iconId] hasn't initialized!
         """.trimIndent())
 
-    val icon: Painter
+    override val icon: Painter
         @Composable
-        get() = painterResource( this.iconId )
+        get() = painterResource( this.androidIconId )
 }

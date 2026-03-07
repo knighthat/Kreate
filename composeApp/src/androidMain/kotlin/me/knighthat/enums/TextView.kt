@@ -3,17 +3,18 @@ package me.knighthat.enums
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import app.kreate.component.TextView
 
-interface TextView {
+interface TextView: TextView {
 
     @get:StringRes
-    val textId: Int
+    val androidTextId: Int
         get() = throw NotImplementedError("""
                 This setting uses [${this::class.simpleName}#text] directly 
                 or its [${this::class.simpleName}#textId] hasn't initialized!
         """.trimIndent())
 
-    val text: String
+    override val text: String
         @Composable
-        get() = stringResource( this.textId )
+        get() = stringResource( this.androidTextId )
 }

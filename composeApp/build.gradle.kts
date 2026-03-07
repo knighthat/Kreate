@@ -124,6 +124,7 @@ kotlin {
 
             // Room KMP
             implementation( libs.room.runtime )
+            implementation( libs.sqlite.bundled )
 
             implementation(libs.navigation.kmp)
 
@@ -401,7 +402,10 @@ room {
 }
 
 dependencies {
+    // Room
     add( "kspAndroid", libs.room.compiler )
+    add( "kspJvm", libs.room.compiler )
+    // Dependency injector
     add( "kspAndroid", libs.android.hilt.compiler )
 
     coreLibraryDesugaring(libs.desugaring.nio)

@@ -6,8 +6,8 @@ import app.kreate.android.R
 import me.knighthat.enums.TextView
 
 enum class PlayEventsType(
-    @field:StringRes override val textId: Int,
-    @field:DrawableRes override val iconId: Int
+    @field:StringRes override val androidTextId: Int,
+    @field:DrawableRes override val androidIconId: Int
 ): TextView, Drawable {
 
     MostPlayed( R.string.by_most_played_song, R.drawable.chevron_up ),

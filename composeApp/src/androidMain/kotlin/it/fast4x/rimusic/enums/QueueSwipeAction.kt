@@ -8,8 +8,8 @@ import app.kreate.android.R
 import me.knighthat.enums.TextView
 
 enum class QueueSwipeAction(
-    @field:DrawableRes override val iconId: Int,
-    @field:StringRes override val textId: Int,
+    @field:DrawableRes override val androidIconId: Int,
+    @field:StringRes override val androidTextId: Int,
 ): Drawable, TextView {
 
     NoAction( R.drawable.close, R.string.none ),
@@ -33,15 +33,15 @@ enum class QueueSwipeAction(
                     androidx.media3.exoplayer.offline.Download.STATE_DOWNLOADING -> R.drawable.download_progress
                     androidx.media3.exoplayer.offline.Download.STATE_QUEUED -> R.drawable.download_progress
                     androidx.media3.exoplayer.offline.Download.STATE_RESTARTING -> R.drawable.download_progress
-                    else -> downloadedStateMedia.iconId
+                    else -> downloadedStateMedia.androidIconId
                 }
-                else -> downloadedStateMedia.iconId
+                else -> downloadedStateMedia.androidIconId
             }
             Favourite -> when( likeState ) {
                 false -> R.drawable.heart_dislike
                 null  -> R.drawable.heart_outline
                 else  -> R.drawable.heart
             }
-            else -> iconId
+            else -> androidIconId
         }
 }

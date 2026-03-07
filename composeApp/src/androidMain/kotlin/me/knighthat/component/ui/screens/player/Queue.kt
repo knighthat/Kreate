@@ -74,7 +74,7 @@ class Repeat private constructor(
         get() = stringResource( messageId )
     override val icon: Painter
         @Composable
-        get() = painterResource( type.iconId )
+        get() = painterResource( type.androidIconId )
 
     override fun onShortClick() { type = type.next() }
 }

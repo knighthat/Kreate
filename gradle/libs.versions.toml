@@ -8,6 +8,7 @@ kotlin = "2.3.0"
 kotlin-ksp = "2.3.4"
 coil3 = "3.3.0"
 room = "2.8.4"
+sqlite = "2.6.2"
 media3 = "1.9.0"
 ktor = "3.3.3"
 brotli = "0.1.2"
@@ -59,6 +60,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 # Room
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 
 # Media
 media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }

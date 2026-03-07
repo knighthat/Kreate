@@ -6,7 +6,7 @@ import app.kreate.android.R
 import me.knighthat.enums.TextView
 
 enum class NavigationBarPosition(
-    @field:StringRes override val textId: Int
+    @field:StringRes override val androidTextId: Int
 ): TextView {
 
     Left( R.string.direction_left ),

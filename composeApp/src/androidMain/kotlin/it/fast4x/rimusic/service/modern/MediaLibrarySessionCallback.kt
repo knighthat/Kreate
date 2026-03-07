@@ -23,6 +23,7 @@ import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
 import app.kreate.util.cleanPrefix
@@ -53,7 +54,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
-import me.knighthat.database.ext.FormatWithSong
 
 @UnstableApi
 class MediaLibrarySessionCallback(
@@ -235,7 +235,7 @@ class MediaLibrarySessionCallback(
                     )
                 }
 
-                PlayerServiceModern.ALBUM -> database.albumTable.all().first().map { album ->
+                PlayerServiceModern.ALBUM -> database.albumTable.blockingAll().map { album ->
                     browsableMediaItem(
                         "${PlayerServiceModern.ALBUM}/${album.id}",
                         album.title ?: "",
@@ -411,7 +411,7 @@ class MediaLibrarySessionCallback(
                 }
                 PlayerServiceModern.SONG -> {
                     songId = paths[1]
-                    queryList = database.songTable.all().first()
+                    queryList = database.songTable.blockingAll()
                 }
                 PlayerServiceModern.ARTIST -> {
                     songId = paths[2]
@@ -483,7 +483,7 @@ class MediaLibrarySessionCallback(
             return Futures.immediateFuture(defaultResult)
 
         scope.future {
-            val queue = database.queueTable.allBlocking()
+            val queue = database.queueTable.blockingItems()
             val startIndex = queue.indexOfFirst { it.position != null }
             val startPositionMs = queue[startIndex].position ?: C.TIME_UNSET
             val mediaItems = queue.map { it.song.asMediaItem.buildUpon().setTag( PersistentQueue.Tag ).build() }

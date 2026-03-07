@@ -6,8 +6,8 @@ import app.kreate.android.R
 import me.knighthat.enums.TextView
 
 enum class OnDeviceFolderSortBy(
-    @field:StringRes override val textId: Int,
-    @field:DrawableRes override val iconId: Int
+    @field:StringRes override val androidTextId: Int,
+    @field:DrawableRes override val androidIconId: Int
 ): TextView, Drawable {
 
     Title( R.string.sort_title, R.drawable.text ),

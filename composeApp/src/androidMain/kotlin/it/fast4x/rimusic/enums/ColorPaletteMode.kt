@@ -5,7 +5,7 @@ import app.kreate.android.R
 import me.knighthat.enums.TextView
 
 enum class ColorPaletteMode(
-    @field:StringRes override val textId: Int
+    @field:StringRes override val androidTextId: Int
 ): TextView {
 
     Light( R.string.theme_light ),

@@ -9,7 +9,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 
 enum class DohServer(
-    @field:StringRes override val textId: Int,
+    @field:StringRes override val androidTextId: Int,
     val url: HttpUrl?,
     vararg val address: String
 ) : TextView {

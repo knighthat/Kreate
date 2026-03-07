@@ -5,7 +5,7 @@ import app.kreate.android.R
 import me.knighthat.enums.TextView
 
 enum class PlayerType(
-    @field:StringRes override val textId: Int
+    @field:StringRes override val androidTextId: Int
 ): TextView {
 
     Essential( R.string.pcontrols_modern ),

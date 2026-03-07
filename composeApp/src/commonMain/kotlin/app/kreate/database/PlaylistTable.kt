@@ -1,0 +1,247 @@
+package app.kreate.database
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.RewriteQueriesToDropUnusedColumns
+import app.kreate.constant.PlaylistSortBy
+import app.kreate.constant.SortOrder
+import app.kreate.database.models.Artist
+import app.kreate.database.models.Playlist
+import app.kreate.database.models.PlaylistPreview
+import app.kreate.database.models.Song
+import app.kreate.database.table.DatabaseTable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
+import java.sql.SQLException
+
+@Dao
+@RewriteQueriesToDropUnusedColumns
+interface PlaylistTable: DatabaseTable<Playlist> {
+
+    override val tableName: String
+        get() = "playlists"
+
+    /**
+     * @return list of songs that were mapped to at least 1 playlist
+     */
+    @Query("""
+        SELECT DISTINCT S.*
+        FROM song_playlist_map spm
+        JOIN songs S ON S.id = spm.song_id
+        ORDER BY S.ROWID
+        LIMIT :limit
+    """)
+    fun allSongs( limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+
+    /**
+     * @return list of songs that were mapped to at least 1 **pinned** playlist
+     */
+    @Query("""
+        SELECT DISTINCT S.*
+        FROM song_playlist_map spm
+        JOIN songs S ON S.id = spm.song_id
+        JOIN playlists P ON P.id = spm.playlist_id
+        WHERE P.is_pinned
+        ORDER BY S.ROWID
+        LIMIT :limit
+    """)
+    fun allPinnedSongs( limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+
+    /**
+     * @return list of songs that belong YouTube private playlist
+     */
+    @Query("""
+        SELECT DISTINCT S.*
+        FROM song_playlist_map spm
+        JOIN songs S ON S.id = spm.song_id
+        JOIN playlists P ON P.id = spm.playlist_id
+        WHERE P.youtube
+        ORDER BY S.ROWID
+        LIMIT :limit
+    """)
+    fun allYTPlaylistSongs( limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+
+    /**
+     * @return list of songs that were mapped to at least 1 **monthly** playlist
+     */
+    @Query("""
+        SELECT DISTINCT S.*
+        FROM song_playlist_map spm
+        JOIN songs S ON S.id = spm.song_id
+        JOIN playlists P ON P.id = spm.playlist_id
+        WHERE P.is_monthly
+        ORDER BY S.ROWID
+        LIMIT :limit
+    """)
+    fun allMonthlySongs( limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+
+    /**
+     * @return all playlists from this table with number of songs they carry
+     */
+    @Query("""
+        SELECT DISTINCT 
+            *,
+            (
+                SELECT COUNT(song_id)
+                FROM song_playlist_map
+                WHERE playlist_id = id
+            ) as songCount
+        FROM playlists
+        ORDER BY ROWID
+        LIMIT :limit
+    """)
+    fun allAsPreview( limit: Int = Int.MAX_VALUE ): Flow<List<PlaylistPreview>>
+
+    /**
+     * @return all playlists from this table with number of songs they carry in randomized order
+     */
+    @Query("""
+        SELECT DISTINCT 
+            *,
+            (
+                SELECT COUNT(song_id)
+                FROM song_playlist_map
+                WHERE playlist_id = id
+            ) as songCount
+        FROM playlists
+        ORDER BY RANDOM()
+        LIMIT :limit
+    """)
+    fun allAsPreviewRandomized( limit: Int = Int.MAX_VALUE ): Flow<List<PlaylistPreview>>
+
+    /**
+     * @param browseId of playlist to look for
+     * @return [Playlist] that has [Playlist.browseId] matches [browseId]
+     */
+    @Query("SELECT DISTINCT * FROM playlists WHERE browse_id = :browseId")
+    fun findByBrowseId( browseId: String ): Flow<Playlist?>
+
+    /**
+     * @return [Playlist] that has [Playlist.name] equals to [playlistName], case-insensitive
+     */
+    @Query("""
+        SELECT DISTINCT * 
+        FROM playlists 
+        WHERE trim(name) COLLATE NOCASE = trim(:playlistName) COLLATE NOCASE
+        LIMIT 1
+    """)
+    fun findByName( playlistName: String ): Flow<Playlist?>
+
+    /**
+     * @return playlist with id [playlistId]
+     */
+    @Query("SELECT * FROM playlists WHERE id = :playlistId")
+    fun findById( playlistId: Long ): Flow<Playlist?>
+
+    /**
+     * Attempt to write [playlist] into database.
+     *
+     * ### Standalone use
+     *
+     * When error occurs and [android.database.SQLException] is thrown,
+     * the process is cancel and passes exception to caller.
+     *
+     * ### Transaction use
+     *
+     * When error occurs and [android.database.SQLException] is thrown,
+     * **the entire transaction rolls back** and passes exception to caller.
+     *
+     * > Note: Use this if inserting record is crucial for
+     * > the transaction to continue.
+     *
+     * @param playlist intended to insert in to database
+     * @return ROWID of this new record, throws exception when fail
+     * @throws android.database.SQLException when there's a conflict
+     */
+    @Insert
+    @Throws(SQLException::class)
+    fun insert( playlist: Playlist ): Long
+
+    /**
+     * @return whether a playlist with name [playlistName] exists in the database
+     */
+    @Query("""
+        SELECT COUNT(*) > 0
+        FROM playlists
+        WHERE name = :playlistName
+    """)
+    fun exists( playlistName: String ): Flow<Boolean>
+
+    /**
+     * ### If playlist **IS NOT** pinned
+     *
+     * Add [PINNED_PREFIX] to [Playlist.name]
+     *
+     * ### If playlist **IS** pinned
+     *
+     * Remove [PINNED_PREFIX] from [Playlist.name]
+     *
+     * @return number of rows affected
+     */
+    @Query("""
+        UPDATE playlists
+        SET is_pinned = 
+            CASE
+                WHEN 1 THEN 0
+                ELSE 1
+            END
+        WHERE id = :playlistId
+    """)
+    fun togglePin( playlistId: Long ): Int
+
+    //<editor-fold defaultstate="collapsed" desc="Sort as preview">
+    @Query("""
+        SELECT DISTINCT P.*, COUNT(spm.song_id) as songCount
+        FROM song_playlist_map spm
+        JOIN playlists P ON P.id = spm.playlist_id
+        JOIN songs S ON S.id = spm.song_id
+        GROUP BY P.id
+        ORDER BY SUM(S.total_playtime)
+        LIMIT :limit
+    """)
+    fun sortPreviewsByMostPlayed( limit: Int = Int.MAX_VALUE ): Flow<List<PlaylistPreview>>
+
+    fun sortPreviewsByName( limit: Int = Int.MAX_VALUE ): Flow<List<PlaylistPreview>> =
+        allAsPreview( limit ).map { list ->
+            list.sortedBy { it.playlist.cleanName() }
+        }
+
+    fun sortPreviewsBySongCount( limit: Int = Int.MAX_VALUE ): Flow<List<PlaylistPreview>> =
+        allAsPreview( limit ).map { list ->
+            list.sortedBy( PlaylistPreview::songCount )
+        }
+
+    /**
+     * Fetch all playlists, sort them according to [sortBy] and [sortOrder],
+     * and return [PlaylistPreview] as the result.
+     *
+     * [sortBy] sorts all based on each playlist's property
+     * such as [PlaylistSortBy.Name], [PlaylistSortBy.DateAdded], etc.
+     * While [sortOrder] arranges order of sorted songs
+     * to follow alphabetical order A to Z, or numerical order 0 to 9, etc.
+     *
+     * @param sortBy which playlist's property is used to sorts
+     * @param sortOrder what order should results be in
+     * @param limit stop query once number of results reaches this number
+     *
+     * @return a **SORTED** list of [Artist]'s that are continuously
+     * updated to reflect changes within the database - wrapped by [Flow]
+     *
+     * @see PlaylistSortBy
+     * @see SortOrder
+     */
+    fun sortPreviews(
+        sortBy: PlaylistSortBy,
+        sortOrder: SortOrder,
+        limit: Int = Int.MAX_VALUE
+    ): Flow<List<PlaylistPreview>> = when( sortBy ) {
+        PlaylistSortBy.TOTAL_PLAY_TIME  -> sortPreviewsByMostPlayed()
+        PlaylistSortBy.TITLE            -> sortPreviewsByName()
+        PlaylistSortBy.DATE_ADDED       -> allAsPreview()       // Already sorted by ROWID
+        PlaylistSortBy.SONG_COUNT       -> sortPreviewsBySongCount()
+        PlaylistSortBy.RANDOM           -> allAsPreviewRandomized()
+    }.map( sortOrder::applyTo ).take( limit )
+    //</editor-fold>
+}

@@ -92,7 +92,7 @@ class ExoPlayerListener(
 
                 Database.asyncTransaction {
                     queueTable.deleteAll()
-                    queueTable.insert( list )
+                    queueTable.insertIgnore( list )
                 }
             }
         }
