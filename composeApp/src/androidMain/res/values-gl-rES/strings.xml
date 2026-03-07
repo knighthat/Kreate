@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Feito</string>
     <string name="hidesong">Realmente queres agochar esta canción? O tempo de reprodución e a caché serán borrados. Esta acción é irreversible.</string>
@@ -864,7 +864,7 @@
     <string name="disabled">desactivado</string>
     <string name="settings_live_wallpaper_reset_warning"> AVISO: isto volverá ao fondo de pantalla predeterminado do fabricante. Desafortunadamente, é difícil volver ao fondo de pantalla anterior</string>
     <string name="ok">aceptar</string>
-    <string name="setting_entry_thumbnail_size">Thumbnail size</string>
+    <string name="setting_entry_thumbnail_size">Tamaño da miniatura</string>
     <string name="warning_end_of_list">End of list</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
     <string name="doh_none">None</string>
