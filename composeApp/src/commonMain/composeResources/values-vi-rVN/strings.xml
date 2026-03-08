@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="locale_system">Ngôn ngữ hệ thống</string>
-    <string name="sort_random">Random</string>
+    <string name="sort_random">Ngẫu nhiên</string>
     <string name="sort_album_title">Album</string>
-    <string name="sort_album_year">Album Year</string>
-    <string name="sort_date_added">Date Added</string>
-    <string name="sort_artist">Artist</string>
-    <string name="sort_songs_count">Songs Number</string>
+    <string name="sort_album_year">Năm album</string>
+    <string name="sort_date_added">Ngày thêm vào</string>
+    <string name="sort_artist">Nghệ sĩ</string>
+    <string name="sort_songs_count">Số lượng bài hát</string>
     <string name="sort_total_duration">Thời lượng</string>
-    <string name="sort_listening_time">Listening Time</string>
-    <string name="sort_title">Title</string>
-    <string name="sort_date_played">Date Played</string>
+    <string name="sort_listening_time">Thời gian nghe</string>
+    <string name="sort_title">Tiêu đề</string>
+    <string name="sort_date_played">Ngày phát</string>
     <string name="sort_date_liked">Ngày yêu thích</string>
-    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_relative_listening_time">Số lần nghe</string>
     <string name="sort_position">Vị trí</string>
-    <string name="sort_song_duration">Duration</string>
-    <string name="sort_album_and_artist">Album title and artist name</string>
+    <string name="sort_song_duration">Thời lượng</string>
+    <string name="sort_album_and_artist">Tên album và tên nghệ sĩ</string>
 </resources>
