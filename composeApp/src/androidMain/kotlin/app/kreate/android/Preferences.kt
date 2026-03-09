@@ -470,7 +470,7 @@ sealed class Preferences<T>(
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Cache">
         val EXO_CACHE_LOCATION by lazy {
-            Enum( preferences, "ExoCacheLocation", "exoPlayerCacheLocationKey", ExoPlayerCacheLocation.System )
+            Enum( preferences, "ExoCacheLocation", "exoPlayerCacheLocationKey", ExoPlayerCacheLocation.SPLIT )
         }
         val IMAGE_CACHE_SIZE by lazy {
             Long(preferences, "ThumbnailCacheSizeBytes", "", kotlin.Long.MAX_VALUE)
