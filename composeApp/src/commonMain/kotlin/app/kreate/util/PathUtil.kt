@@ -20,13 +20,18 @@ expect fun getDataDir(): File
 expect fun getCacheDir(): File
 
 /**
+ * @return user accessible cache location
+ */
+expect fun getExternalCacheDir(): File
+
+/**
  * @return location to store logs as app runs. Can be wiped by the OS
  *
  * @throws IOException if destination isn't a directory
  */
 @Throws(IOException::class)
 fun getRuntimeLogDir(): File {
-    val dir = getCacheDir().resolve( "logs" )
+    val dir = getExternalCacheDir().resolve( "logs" )
 
     if( !dir.exists() )
         dir.mkdirs()
