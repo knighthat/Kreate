@@ -6,7 +6,7 @@ import androidx.compose.ui.util.fastFirstOrNull
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.service.NetworkService
+import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.get
@@ -19,15 +19,19 @@ import kotlinx.serialization.SerializationException
 import me.knighthat.updater.Updater.build
 import me.knighthat.utils.Repository
 import me.knighthat.utils.Toaster
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import java.nio.file.NoSuchFileException
 import kotlin.time.ExperimentalTime
 
 
-object Updater {
+object Updater : KoinComponent {
     private lateinit var tagName: String
 
     lateinit var build: GithubRelease.Build
+
+    private val client by inject<HttpClient>()
 
     /**
      * @throws NoSuchFileException when there's no build matches current build
@@ -56,9 +60,8 @@ object Updater {
         // https://api.github.com/repos/knighthat/Kreate/releases/latest
         val url = "${Repository.GITHUB_API}/repos/${Repository.LATEST_TAG_URL}"
 
-        return NetworkService.client
-                             .get( url )
-                             .body<GithubRelease>()
+        return client.get( url )
+                     .body<GithubRelease>()
     }
 
     /**
@@ -72,13 +75,12 @@ object Updater {
         // https://api.github.com/repos/knighthat/Kreate/releases
         val url = "${Repository.GITHUB_API}/repos/${Repository.REPO}/releases"
 
-        return NetworkService.client
-                             .get( url )
-                             .body<List<GithubRelease>>()
-                             .filter( GithubRelease::prerelease )
-                             .sortedBy(GithubRelease::publishedAt )
-                             .reversed()
-                             .first()
+        return client.get( url )
+                     .body<List<GithubRelease>>()
+                     .filter( GithubRelease::prerelease )
+                     .sortedBy(GithubRelease::publishedAt )
+                     .reversed()
+                     .first()
     }
 
     /**

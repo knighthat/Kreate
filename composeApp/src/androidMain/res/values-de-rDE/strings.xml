@@ -813,7 +813,7 @@
     <string name="setting_description_runtime_log_max_size_per_file">Must be at least %s before rolling over</string>
     <string name="setting_entry_sync_quotes">Synchronisiere \"%s\"</string>
     <string name="setting_entry_test_proxy">Proxy testen</string>
-    <string name="info_proxy_verified">Proxy ist korrekt konfiguriert</string>
+    <string name="success_proxy_verified">Proxy ist korrekt konfiguriert</string>
     <string name="cache_location_split">Aufteilen</string>
     <string name="setting_description_cache_location_system">Zwischengespeicherte und heruntergeladene Titel im Cache der App speichern</string>
     <string name="setting_description_cache_location_private">Zwischengespeicherte und heruntergeladene Titel im privaten Speicher der App speichern</string>

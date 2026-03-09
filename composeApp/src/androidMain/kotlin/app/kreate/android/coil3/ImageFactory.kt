@@ -12,7 +12,6 @@ import androidx.compose.ui.util.fastCoerceAtLeast
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.drawable.AppIcon
-import app.kreate.android.service.NetworkService
 import app.kreate.util.thumbnail
 import coil3.Image
 import coil3.ImageLoader
@@ -30,10 +29,12 @@ import coil3.request.placeholder
 import coil3.request.transformations
 import coil3.toBitmap
 import coil3.transform.Transformation
+import io.ktor.client.HttpClient
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.annotations.Contract
+import org.koin.java.KoinJavaComponent.inject
 import kotlin.contracts.ExperimentalContracts
 
 object ImageFactory {
@@ -85,8 +86,9 @@ object ImageFactory {
                            errorPlaceholder.asImage()
                        )
                        .components {
+                           val client: HttpClient by inject(HttpClient::class.java)
                            add(
-                               KtorNetworkFetcherFactory(NetworkService.client)
+                               KtorNetworkFetcherFactory(client)
                            )
                        }
                        .apply {

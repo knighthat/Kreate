@@ -813,7 +813,7 @@
     <string name="setting_description_runtime_log_max_size_per_file">Debe ser polo menos %s antes de renovar</string>
     <string name="setting_entry_sync_quotes">Sincronizar \"%s\"</string>
     <string name="setting_entry_test_proxy">Probar proxy</string>
-    <string name="info_proxy_verified">O proxy está configurado correctamente</string>
+    <string name="success_proxy_verified">O proxy está configurado correctamente</string>
     <string name="cache_location_split">Dividir</string>
     <string name="setting_description_cache_location_system">Almacenar tanto o contido en caché como o descargado na caché da aplicación, que se pode borrar ao limpar a caché nas configuracións</string>
     <string name="setting_description_cache_location_private">Almacenar tanto as cancións en caché como as descargadas no almacenamento privado da aplicación, que só se pode borrar se se elimina o contido da aplicación</string>

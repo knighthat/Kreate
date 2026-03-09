@@ -18,7 +18,6 @@ import androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERR
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.service.NetworkService
 import app.kreate.android.service.player.CustomExoPlayer
 import app.kreate.android.utils.CharUtils
 import app.kreate.android.utils.ConnectivityUtils
@@ -27,6 +26,7 @@ import app.kreate.android.utils.isLocalFile
 import app.kreate.database.models.Format
 import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonWriter
+import io.ktor.client.HttpClient
 import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.request.head
 import io.ktor.http.URLBuilder
@@ -56,9 +56,11 @@ import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.UserAgents
 import me.knighthat.innertube.response.PlayerResponse
 import me.knighthat.utils.Toaster
+import okhttp3.OkHttpClient
 import org.koin.core.qualifier.Qualifier
 import org.koin.core.qualifier.QualifierValue
 import org.koin.dsl.module
+import org.koin.java.KoinJavaComponent.inject
 import org.schabi.newpipe.extractor.localization.ContentCountry
 import org.schabi.newpipe.extractor.localization.Localization
 import org.schabi.newpipe.extractor.services.youtube.YoutubeJavaScriptPlayerManager
@@ -100,6 +102,7 @@ private val jsonParser =
         useArrayPolymorphism = true
         explicitNulls = false
     }
+private val client: HttpClient by inject(HttpClient::class.java)
 
 //<editor-fold desc="Database handlers">
 /**
@@ -235,7 +238,7 @@ private fun extractStreamUrl( videoId: String, format: PlayerResponse.StreamingD
 //</editor-fold>
 //<editor-fold desc="Validators">
 private suspend fun validateStreamUrl( streamUrl: String ): Boolean =
-    NetworkService.client
+    client
         .head( streamUrl ) {
             Timber.tag( LOG_TAG ).v( "Validating `streamUrl`..." )
 
@@ -441,9 +444,10 @@ val playerModule = module {
     // data from local files.
     // Normal HTTP requests are handled by [OkHttpDataSource.Factory]
     single {
+        val engine: OkHttpClient = get()
         DefaultDataSource.Factory(
             get(),
-            OkHttpDataSource.Factory( NetworkService.engine )
+            OkHttpDataSource.Factory( engine )
                 .setUserAgent( UserAgents.CHROME_WINDOWS )
         )
     }

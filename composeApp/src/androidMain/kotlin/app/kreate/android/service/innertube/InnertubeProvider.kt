@@ -3,13 +3,14 @@ package app.kreate.android.service.innertube
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import app.kreate.android.Preferences
-import app.kreate.android.service.NetworkService
 import io.ktor.client.HttpClient
 import me.knighthat.innertube.Innertube
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 
 
-class InnertubeProvider: Innertube.KtorProvider {
+class InnertubeProvider: Innertube.KtorProvider, KoinComponent {
 
     companion object {
         val COOKIE_MAP by derivedStateOf {
@@ -31,9 +32,7 @@ class InnertubeProvider: Innertube.KtorProvider {
         }
     }
 
-    override val client: HttpClient
-        get() = NetworkService.client
-
+    override val client: HttpClient by inject()
     override val cookies: String by Preferences.YOUTUBE_COOKIES
     override val dataSyncId: String by Preferences.YOUTUBE_SYNC_ID
     override val visitorData: String by Preferences.YOUTUBE_VISITOR_DATA

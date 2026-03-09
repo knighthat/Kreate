@@ -18,7 +18,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.service.NetworkService
+import app.kreate.android.enums.DohServer
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
@@ -32,6 +32,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.component.dialog.InputDialogConstraints
 import me.knighthat.utils.Toaster
+import okhttp3.Dns
+import org.koin.java.KoinJavaComponent.inject
 import java.net.Proxy
 
 @Composable
@@ -111,8 +113,10 @@ fun NetworkSettings( paddingValues: PaddingValues ) {
                             title = stringResource( R.string.setting_entry_test_proxy ),
                             onClick = {
                                 CoroutineScope( Dispatchers.IO ).launch {
-                                    if( NetworkService.verifyProxy(NetworkService.proxy ) )
-                                        Toaster.s( R.string.info_proxy_verified )
+                                    val proxy: Proxy by inject(Proxy::class.java)
+                                    if( proxy !== Proxy.NO_PROXY )
+                                        Toaster.s( R.string.success_proxy_verified )
+                                    // Failed proxy message will be displayed automatically
                                 }
                             }
                         )
@@ -128,6 +132,23 @@ fun NetworkSettings( paddingValues: PaddingValues ) {
                     preference = Preferences.DOH_SERVER,
                     title = stringResource( R.string.setting_entry_select_dns_over_https_server ),
                     action = SettingComponents.Action.RESTART_APP
+                )
+            }
+            entry(
+                search = search,
+                titleId = R.string.setting_entry_test_doh,
+                additionalCheck =  Preferences.DOH_SERVER.value != DohServer.NONE
+            ) {
+                SettingComponents.Text(
+                    title = stringResource( R.string.setting_entry_test_doh ),
+                    onClick = {
+                        CoroutineScope( Dispatchers.IO ).launch {
+                            val dns: Dns by inject(Dns::class.java)
+                            if( dns !== Dns.SYSTEM )
+                                Toaster.s( R.string.success_doh_verified )
+                            // Failed dns message will be displayed automatically
+                        }
+                    }
                 )
             }
         }

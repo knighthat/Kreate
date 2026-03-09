@@ -16,6 +16,7 @@ import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.di.PrefType
 import app.kreate.util.cleanPrefix
+import io.ktor.client.HttpClient
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.statement.bodyAsText
@@ -71,6 +72,7 @@ class Discord(private val context: Context) : KoinComponent {
         const val LOGGING_TAG = "discord-integration"
     }
 
+    private val client: HttpClient by inject()
     private val preferences: SharedPreferences by inject(PrefType.DEFAULT)
     private val privatePreferences: SharedPreferences by inject(PrefType.CREDENTIALS)
     private val templateActivity by lazy {
@@ -154,9 +156,8 @@ class Discord(private val context: Context) : KoinComponent {
                 })
             }
 
-            NetworkService.client
-                          .submitFormWithBinaryData( TEMP_FILE_HOST, formData )
-                          .bodyAsText()
+            client.submitFormWithBinaryData( TEMP_FILE_HOST, formData )
+                  .bodyAsText()
         }.onSuccess {
             Timber.tag( LOGGING_TAG ).d( "Local artwork uploaded successfully" )
         }.onFailure {
@@ -361,7 +362,7 @@ class Discord(private val context: Context) : KoinComponent {
     //</editor-fold>
 
     fun register() {
-        DiscordLib.setClient( NetworkService.client )
+        DiscordLib.setClient( client )
         Logger.handler = DiscordLogger()
 
         val loginKey = Preferences.DISCORD_LOGIN.key

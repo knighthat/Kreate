@@ -813,7 +813,7 @@
     <string name="setting_description_runtime_log_max_size_per_file">다음 단계로 가려면 %s 이상이어야 합니다</string>
     <string name="setting_entry_sync_quotes">\"%s\" 동기화</string>
     <string name="setting_entry_test_proxy">프록시 테스트</string>
-    <string name="info_proxy_verified">프록시가 올바르게 설정됨</string>
+    <string name="success_proxy_verified">프록시가 올바르게 설정됨</string>
     <string name="cache_location_split">분할</string>
     <string name="setting_description_cache_location_system">캐시와 다운로드를 모두 앱의 캐시에 저장하며, 설정에서 캐시를 지우면 삭제할 수 있습니다</string>
     <string name="setting_description_cache_location_private">캐시와 다운로드를 모두 앱의 개인 저장소에 저장되며, 앱을 지울 때만 제거할 수 있습니다</string>

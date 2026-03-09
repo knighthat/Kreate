@@ -56,7 +56,6 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.Discord
 import app.kreate.android.service.DownloadHelper
-import app.kreate.android.service.NetworkService
 import app.kreate.android.service.player.CustomExoPlayer
 import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.VolumeObserver
@@ -71,6 +70,7 @@ import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import com.google.common.util.concurrent.MoreExecutors
+import io.ktor.client.HttpClient
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
@@ -208,7 +208,7 @@ class PlayerServiceModern:
 
     @kotlin.OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     override fun onCreate() {
-        Innertube.client = NetworkService.client
+        Innertube.client = inject<HttpClient>().value
 
         super.onCreate()
 
