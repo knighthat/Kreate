@@ -40,8 +40,6 @@ fun DiscordLoginAndGetToken( onDone: () -> Unit ) {
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
 
-                WebView.setWebContentsDebuggingEnabled(true)
-
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
                 settings.setSupportZoom(true)
