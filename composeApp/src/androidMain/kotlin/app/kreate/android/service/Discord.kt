@@ -365,8 +365,8 @@ class Discord(private val context: Context) : KoinComponent {
         DiscordLib.setClient( client )
         Logger.handler = DiscordLogger()
 
-        val loginKey = Preferences.DISCORD_LOGIN.key
-        val tokenKey = Preferences.DISCORD_ACCESS_TOKEN.key
+        val loginKey = Preferences.Key.DISCORD_LOGIN
+        val tokenKey = Preferences.Key.DISCORD_ACCESS_TOKEN
 
         registerLoginListener( loginKey, tokenKey )
         registerTokenListener( tokenKey )

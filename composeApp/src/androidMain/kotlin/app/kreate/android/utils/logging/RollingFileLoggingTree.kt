@@ -65,10 +65,10 @@ class RollingFileLoggingTree(
 
     init {
         require( fileCount > 0 ) {
-            "${Preferences.RUNTIME_LOG_FILE_COUNT.key} must be a positive number! ${Preferences.RUNTIME_LOG_FILE_COUNT.value}"
+            "${Preferences.Key.RUNTIME_LOG_FILE_COUNT} must be a positive number! ${Preferences.RUNTIME_LOG_FILE_COUNT.value}"
         }
         require( maxSizePerFile > 0L ) {
-            "${Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE.key} must be a positive number! ${Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE.value}"
+            "${Preferences.Key.RUNTIME_LOG_MAX_SIZE_PER_FILE} must be a positive number! ${Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE.value}"
         }
 
         if( !logDir.exists() ) logDir.mkdirs()

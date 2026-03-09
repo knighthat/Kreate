@@ -529,21 +529,21 @@ class PlayerServiceModern:
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         when (key) {
-            Preferences.AUDIO_VOLUME_NORMALIZATION.key,
-            Preferences.AUDIO_VOLUME_NORMALIZATION_TARGET.key -> listener.maybeNormalizeVolume()
+            Preferences.Key.AUDIO_VOLUME_NORMALIZATION,
+            Preferences.Key.AUDIO_VOLUME_NORMALIZATION_TARGET -> listener.maybeNormalizeVolume()
 
-            Preferences.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE.key -> maybeResumePlaybackWhenDeviceConnected()
+            Preferences.Key.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE -> maybeResumePlaybackWhenDeviceConnected()
 
-            Preferences.AUDIO_SKIP_SILENCE.key ->
+            Preferences.Key.AUDIO_SKIP_SILENCE ->
                 player.skipSilenceEnabled = sharedPreferences.getBoolean( key, Preferences.AUDIO_SKIP_SILENCE.defaultValue )
 
-            Preferences.QUEUE_LOOP_TYPE.key ->
+            Preferences.Key.QUEUE_LOOP_TYPE ->
                 player.repeatMode = sharedPreferences.getEnum( key, Preferences.QUEUE_LOOP_TYPE.defaultValue ).type
 
-            Preferences.AUDIO_BASS_BOOST_LEVEL.key,
-            Preferences.AUDIO_BASS_BOOSTED.key -> maybeBassBoost()
+            Preferences.Key.AUDIO_BASS_BOOST_LEVEL,
+            Preferences.Key.AUDIO_BASS_BOOSTED -> maybeBassBoost()
 
-            Preferences.AUDIO_REVERB_PRESET.key -> maybeReverb()
+            Preferences.Key.AUDIO_REVERB_PRESET -> maybeReverb()
         }
     }
 

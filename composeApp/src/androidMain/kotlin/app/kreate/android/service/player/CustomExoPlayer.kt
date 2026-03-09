@@ -74,7 +74,7 @@ class CustomExoPlayer private constructor(
                     enableFloatOutput: Boolean,
                     enableAudioTrackPlaybackParams: Boolean
                 ): AudioSink {
-                    val skipSilenceLength = preferences.getLong( Preferences.AUDIO_SKIP_SILENCE_LENGTH.key, 1_000L )
+                    val skipSilenceLength = preferences.getLong( Preferences.Key.AUDIO_SKIP_SILENCE_LENGTH, 1_000L )
                     val minimumSilenceDuration = skipSilenceLength.coerceIn( 1_000L..2_000_000L )
 
                     return DefaultAudioSink.Builder(context)
@@ -108,7 +108,7 @@ class CustomExoPlayer private constructor(
                                                                   .setContentType( C.AUDIO_CONTENT_TYPE_MUSIC )
                                                                   .build()
             val handleAudioFocus = preferences.getBoolean(
-                Preferences.AUDIO_SMART_PAUSE_DURING_CALLS.key,
+                Preferences.Key.AUDIO_SMART_PAUSE_DURING_CALLS,
                 false
             )
 
