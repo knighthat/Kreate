@@ -150,19 +150,10 @@ fun LazyListScope.debugSection(search: SettingEntrySearch ) {
                     )
 
                 if( search appearsIn R.string.setting_entry_runtime_log_level )
-                    SettingComponents.ListEntry(
-                        preference = Preferences.RUNTIME_LOG_LEVEL,
+                    SettingComponents.EnumEntry(
+                        preference = Preferences.RUNTIME_LOG_SEVERITY,
                         title = stringResource( R.string.setting_entry_runtime_log_level ),
-                        getName = {
-                            RollingFileLoggingTree.levelStringMapping[it]!!
-                                                  .lowercase()
-                                                  .replaceFirstChar( Char::uppercase )
-                        },
-                        getList = {
-                            RollingFileLoggingTree.levelStringMapping.keys.sorted().toTypedArray()
-                        },
-                        subtitle = RollingFileLoggingTree.levelStringMapping[Preferences.RUNTIME_LOG_LEVEL.value]!!,
-                        action = SettingComponents.Action.NONE
+                        getName = { it.name }
                     )
 
                 if( search appearsIn R.string.setting_entry_runtime_log_file_count ) {
