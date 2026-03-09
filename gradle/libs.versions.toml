@@ -20,7 +20,6 @@ constraintlayout = "1.1.1"
 translator = "1.1.1"
 kotlin-csv = "1.10.0"
 monetcompat = "0.4.1"
-timber = "5.0.1"
 okhttp3 = "5.3.2"
 math3 = "3.6.1"
 toasty = "1.5.2"
@@ -144,7 +143,6 @@ kermit-io = { module = "co.touchlab:kermit-io", version.ref = "kermit" }
 # Extras
 translator = {  group = "com.github.therealbush", name = "translator", version.ref = "translator" }
 kotlin-csv = {  group = "com.jsoizo", name = "kotlin-csv-jvm", version.ref = "kotlin-csv" }
-timber = {  group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 math3 = { group = "org.apache.commons", name = "commons-math3", version.ref = "math3" }
 toasty = { group = "com.github.GrenderG", name = "Toasty", version.ref = "toasty" }
 androidyoutubeplayer = { group = "com.pierfrancescosoffritti.androidyoutubeplayer", name = "core", version.ref = "androidyoutubeplayer" }

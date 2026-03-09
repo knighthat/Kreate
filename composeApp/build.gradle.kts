@@ -95,8 +95,6 @@ kotlin {
             implementation( libs.media3.datasource.okhttp )
             implementation( libs.androidyoutubeplayer )
 
-            implementation( libs.timber )
-
             implementation( libs.toasty )
 
             // Dependency injection
