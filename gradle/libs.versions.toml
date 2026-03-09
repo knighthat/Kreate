@@ -45,6 +45,7 @@ androidTest = "1.7.0"
 lifecycle = "2.10.0"
 kotlinx-serialization = "1.9.0"
 koin = "4.1.1"
+kermit = "2.1.0"
 
 
 [libraries]
@@ -135,6 +136,10 @@ androidmaterial = { group = "com.google.android.material", name = "material", ve
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-navigation = { module = "io.insert-koin:koin-compose-viewmodel-navigation", version.ref = "koin" }
+
+# Logging
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+kermit-io = { module = "co.touchlab:kermit-io", version.ref = "kermit" }
 
 # Extras
 translator = {  group = "com.github.therealbush", name = "translator", version.ref = "translator" }

@@ -150,6 +150,10 @@ kotlin {
             // Dependency injection
             implementation( libs.koin.core )
             implementation( libs.koin.navigation )
+
+            // Logging
+            implementation( libs.kermit )
+            implementation( libs.kermit.io )
         }
         commonTest.dependencies {
             implementation( libs.kotlin.test )
