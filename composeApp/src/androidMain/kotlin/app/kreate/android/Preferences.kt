@@ -2,13 +2,13 @@ package app.kreate.android
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
+import android.os.Looper
 import android.util.Log
 import androidx.annotation.ColorRes
+import androidx.annotation.MainThread
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SnapshotMutationPolicy
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
@@ -95,10 +95,12 @@ import it.fast4x.rimusic.ui.styling.DefaultDarkColorPalette
 import it.fast4x.rimusic.ui.styling.DefaultLightColorPalette
 import it.fast4x.rimusic.utils.getDeviceVolume
 import me.knighthat.innertube.Constants
+import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Blocking
 import org.jetbrains.annotations.NonBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import timber.log.Timber
 import java.net.Proxy
 
 /**
@@ -133,6 +135,8 @@ sealed class Preferences<T>(
      * memory will be consumed.
      */
     companion object : KoinComponent {
+
+        private const val LOGGING_TAG = "Preferences"
 
         val profilePreferences: SharedPreferences by inject<SharedPreferences>(PrefType.PROFILES)
         val preferences: SharedPreferences by inject<SharedPreferences>(PrefType.DEFAULT)
@@ -1106,10 +1110,30 @@ sealed class Preferences<T>(
         }
     }
 
+    protected abstract val delegate: MutableState<T>
+
     /**
      * How old and new value are processed
      */
     protected abstract val policy: SnapshotMutationPolicy<T>
+
+    override var value: T
+        @MainThread
+        get() = delegate.value
+        @MainThread
+        set(value) {
+            if( Looper.myLooper() != Looper.getMainLooper() ) {
+                val threadName = Looper.myLooper()?.thread?.name ?: "unknown"
+                Timber.tag( LOGGING_TAG )
+                      .e(Throwable(), "$key is being written on thread \"$threadName\"")
+
+                Toaster.e( R.string.error_required_report )
+
+                return
+            }
+
+            delegate.value = value
+        }
 
     /**
      * Extract value from [SharedPreferences]. Return value
@@ -1191,7 +1215,7 @@ sealed class Preferences<T>(
 
         override val policy = ReferentialEqualityPolicy()
 
-        override var value: E by mutableStateOf(
+        override var delegate = mutableStateOf(
             value = getFromSharedPreferences() ?: defaultValue.also( ::write ),
             policy = this.policy
         )
@@ -1260,7 +1284,7 @@ sealed class Preferences<T>(
 
         override val policy = ReferentialEqualityPolicy()
 
-        override var value: kotlin.String by mutableStateOf(
+        override var delegate = mutableStateOf(
             value = getFromSharedPreferences() ?: defaultValue.also( ::write ),
             policy = this.policy
         )
@@ -1317,7 +1341,7 @@ sealed class Preferences<T>(
 
         override val policy = StructuralEqualityPolicy()
 
-        override var value: Set<kotlin.String> by mutableStateOf(
+        override var delegate = mutableStateOf(
             value = getFromSharedPreferences() ?: defaultValue.also( ::write ),
             policy = this.policy
         )
@@ -1374,7 +1398,7 @@ sealed class Preferences<T>(
 
         override val policy = DecimalEqualityPolicy()
 
-        override var value: kotlin.Int by mutableStateOf(
+        override var delegate = mutableStateOf(
             value = getFromSharedPreferences() ?: defaultValue.also( ::write ),
             policy = this.policy
         )
@@ -1431,7 +1455,7 @@ sealed class Preferences<T>(
 
         override val policy = DecimalEqualityPolicy()
 
-        override var value: kotlin.Long by mutableStateOf(
+        override var delegate = mutableStateOf(
             value = getFromSharedPreferences() ?: defaultValue.also( ::write ),
             policy = this.policy
         )
@@ -1488,7 +1512,7 @@ sealed class Preferences<T>(
 
         override val policy = DecimalEqualityPolicy()
 
-        override var value: kotlin.Float by mutableStateOf(
+        override var delegate = mutableStateOf(
             value = getFromSharedPreferences() ?: defaultValue.also( ::write ),
             policy = this.policy
         )
@@ -1545,7 +1569,7 @@ sealed class Preferences<T>(
 
         override val policy = ReferentialEqualityPolicy()
 
-        override var value: kotlin.Boolean by mutableStateOf(
+        override var delegate = mutableStateOf(
             value = getFromSharedPreferences() ?: defaultValue.also( ::write ),
             policy = this.policy
         )
@@ -1617,7 +1641,7 @@ sealed class Preferences<T>(
 
         override val policy = StructuralEqualityPolicy()
 
-        override var value: androidx.compose.ui.graphics.Color by mutableStateOf(
+        override var delegate = mutableStateOf(
             value = getFromSharedPreferences() ?: defaultValue.also( ::write ),
             policy = this.policy
         )
