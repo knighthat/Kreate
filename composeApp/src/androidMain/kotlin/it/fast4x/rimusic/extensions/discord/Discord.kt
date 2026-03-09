@@ -19,6 +19,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
+import me.knighthat.innertube.UserAgents
 import me.knighthat.utils.Toaster
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -44,6 +45,7 @@ fun DiscordLoginAndGetToken( onDone: () -> Unit ) {
                 settings.domStorageEnabled = true
                 settings.setSupportZoom(true)
                 settings.builtInZoomControls = true
+                settings.userAgentString = UserAgents.CHROME_WINDOWS
 
                 CookieManager.getInstance().apply {
                     removeAllCookies(null)
