@@ -4,6 +4,7 @@ import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.enums.DohServer
+import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.compression.ContentEncoding
@@ -30,7 +31,6 @@ import okhttp3.dnsoverhttps.DnsOverHttps
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.Module
 import org.koin.dsl.module
-import timber.log.Timber
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
@@ -67,26 +67,26 @@ private fun verifyProxy( proxy: Proxy, url: String = "https://httpbin.org/ip" ):
                     .execute()
                     .use( Response::isSuccessful )
     }.onFailure { err ->
-        Timber.tag( LOGGING_TAG ).e( err, "Failed to connect to $url via proxy $proxy" )
+        Logger.e( err, LOGGING_TAG ) { "Failed to connect to $url via proxy $proxy" }
         Toaster.w( R.string.error_failed_to_verify_proxy )
     }.getOrDefault( false )
 
 private fun verifyDoH( resolver: DnsOverHttps, addresses: List<InetAddress>, domain: String = "google.com" ): Boolean =
     runCatching {
         val results = resolver.lookup( domain )
-        Timber.tag( LOGGING_TAG ).d( "Resolved $domain to ${results.size} addresses" )
+        Logger.d( tag = LOGGING_TAG ) { "Resolved $domain to ${results.size} addresses" }
 
         return results.isNotEmpty()
     }.onFailure { err ->
         // Failed to resolve "google.com" with [/1.1.1.1, /1.0.0.1, /2606:4700:4700::1111, /2606:4700:4700::1001]
-        Timber.tag( LOGGING_TAG ).e( err, "Failed to resolve \"$domain\" with $addresses")
+        Logger.e( err, LOGGING_TAG ) { "Failed to resolve \"$domain\" with $addresses" }
         Toaster.w( R.string.error_failed_to_verify_doh )
     }.getOrDefault( false )
 
 actual val networkModule: Module = module {
     factory<Proxy> {       // Recreate proxy instance every time it's called
         if( !Preferences.IS_PROXY_ENABLED.value ) {
-            Timber.tag( LOGGING_TAG ).d( "Proxy is not enabled" )
+            Logger.d( tag = LOGGING_TAG ) { "Proxy is not enabled" }
             return@factory Proxy.NO_PROXY
         }
 
@@ -99,7 +99,7 @@ actual val networkModule: Module = module {
     }
     factory<Dns> {
         if( Preferences.DOH_SERVER.value == DohServer.NONE ) {
-            Timber.tag( LOGGING_TAG ).d( "DoH is not enabled. Using system's DNS" )
+            Logger.d( tag = LOGGING_TAG ) { "DoH is not enabled. Using system's DNS" }
             return@factory Dns.SYSTEM
         }
 

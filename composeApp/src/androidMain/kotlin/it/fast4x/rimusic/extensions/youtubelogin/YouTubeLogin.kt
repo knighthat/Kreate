@@ -15,6 +15,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -22,7 +23,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.innertube.Innertube
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 @OptIn(
     DelicateCoroutinesApi::class,
@@ -58,7 +58,7 @@ fun YouTubeLogin( onDone: () -> Unit ) {
                                              Preferences.YOUTUBE_ACCOUNT_AVATAR.value = it.thumbnailUrl.firstOrNull()?.url.orEmpty()
                                          }
                                          .onFailure { err ->
-                                             Timber.tag( "YouTubeLogin" ).e( err )
+                                             Logger.e( "", err, "YouTubeLogin" )
                                              Toaster.e( R.string.error_failed_to_acquire_account_info )
                                          }
                             }

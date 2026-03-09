@@ -11,6 +11,7 @@ import app.kreate.android.R
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.database.models.Song
 import app.kreate.di.clearCachedStreamUrlOf
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
@@ -24,7 +25,6 @@ import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Contract
-import timber.log.Timber
 import java.util.Optional
 
 @UnstableApi
@@ -120,7 +120,7 @@ class ResetSongDialog private constructor(
                 Innertube.songBasicInfo( song.id, CURRENT_LOCALE )
                          .onSuccess { innertubeSong = it }
                          .onFailure { err ->
-                             Timber.tag( "ResetSongDialog" ).e( err )
+                             Logger.e( "", err, "ResetSongDialog" )
                              Toaster.e( R.string.error_failed_to_fetch_songs_info )
                          }
 

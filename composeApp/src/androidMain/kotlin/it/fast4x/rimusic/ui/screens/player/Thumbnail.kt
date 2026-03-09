@@ -44,6 +44,7 @@ import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
@@ -65,7 +66,6 @@ import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.doubleShadowDrop
 import it.fast4x.rimusic.utils.isLandscape
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 import java.net.UnknownHostException
 import java.nio.channels.UnresolvedAddressException
 
@@ -366,7 +366,7 @@ fun Thumbnail(
                 if (error != null) {
                     errorCounter = errorCounter.plus(1)
                     if (errorCounter < 3) {
-                        Timber.e("Playback error: ${error?.cause?.cause}")
+                        Logger.e( error?.cause?.cause ) { "Playback error" }
                         Toaster.e(
                             if (currentWindow.mediaItem.isLocal)
                                 localMusicFileNotFoundError

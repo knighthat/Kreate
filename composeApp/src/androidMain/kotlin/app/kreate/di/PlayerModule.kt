@@ -24,6 +24,7 @@ import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.isLocalFile
 import app.kreate.database.models.Format
+import co.touchlab.kermit.Logger
 import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonWriter
 import io.ktor.client.HttpClient
@@ -65,14 +66,12 @@ import org.schabi.newpipe.extractor.localization.ContentCountry
 import org.schabi.newpipe.extractor.localization.Localization
 import org.schabi.newpipe.extractor.services.youtube.YoutubeJavaScriptPlayerManager
 import org.schabi.newpipe.extractor.services.youtube.YoutubeStreamHelper
-import timber.log.Timber
 import java.net.UnknownHostException
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration.Companion.seconds
 import me.knighthat.innertube.request.body.Context as InnertubeContext
 
 
-private const val LOG_TAG = "dataspec"
 private const val CHUNK_LENGTH = 128 * 1024L     // 128Kb
 
 /**
@@ -103,6 +102,7 @@ private val jsonParser =
         explicitNulls = false
     }
 private val client: HttpClient by inject(HttpClient::class.java)
+private val logger = Logger.withTag( "dataspec" )
 
 //<editor-fold desc="Database handlers">
 /**
@@ -129,19 +129,19 @@ private fun upsertSongInfo( context: Context, videoId: String ) {       // Use t
     if( videoId == justInserted.get() || !isNetworkAvailable( context ) )
         return
 
-    Timber.tag( LOG_TAG ).v( "fetching and upserting $videoId's information to the database" )
+    logger.v { "fetching and upserting $videoId's information to the database" }
 
     databaseWorker = CoroutineScope(Dispatchers.IO ).launch {
         Innertube.songBasicInfo( videoId, CURRENT_LOCALE )
             .onSuccess{
-                Timber.tag( LOG_TAG ).v( "$videoId's information successfully found and parsed" )
+                logger.v { "$videoId's information successfully found and parsed" }
 
                 Database.upsert( it )
 
-                Timber.tag( LOG_TAG ).d( "$videoId's information successfully upserted to the database" )
+                logger.d { "$videoId's information successfully upserted to the database" }
             }
             .onFailure {
-                Timber.tag( LOG_TAG ).e( it, "failed to upsert $videoId's information to database" )
+                logger.e( "failed to upsert $videoId's information to database", it )
                 Toaster.e( R.string.error_failed_to_fetch_songs_info )
             }
     }
@@ -156,7 +156,7 @@ private fun upsertSongFormat( videoId: String, format: PlayerResponse.StreamingD
     // Skip adding if it's just added in previous call
     if( videoId == justInserted.get() ) return
 
-    Timber.tag( LOG_TAG ).v( "upserting format ${format.itag} of song $videoId to the database" )
+    logger.v { "upserting format ${format.itag} of song $videoId to the database" }
 
     CoroutineScope(Dispatchers.IO ).launch {
         // Wait until this job is finish to make sure song's info
@@ -176,7 +176,7 @@ private fun upsertSongFormat( videoId: String, format: PlayerResponse.StreamingD
                 )
             )
 
-            Timber.tag( LOG_TAG ).d( "$videoId is successfully upserted to the database" )
+            logger.d { "$videoId is successfully upserted to the database" }
 
             // Format must be added successfully before setting variable
             justInserted.set( videoId )
@@ -191,7 +191,7 @@ private fun extractFormat(
     audioQualityFormat: AudioQualityFormat,
     connectionMetered: Boolean
 ): PlayerResponse.StreamingData.Format {
-    Timber.tag(LOG_TAG).v( "extracting format with quality $audioQualityFormat and metered connection: $connectionMetered")
+    logger.v { "extracting format with quality $audioQualityFormat and metered connection: $connectionMetered" }
 
     val sortedAudioFormats =
         streamingData?.adaptiveFormats
@@ -213,14 +213,14 @@ private fun extractFormat(
             else
                 sortedAudioFormats.last()
     }.also {
-        Timber.tag(LOG_TAG).d( "extracted format ${it.itag}" )
+        logger.d { "extracted format ${it.itag}" }
     }
 }
 
 @Throws(MissingDecipherKeyException::class)
 private fun extractStreamUrl( videoId: String, format: PlayerResponse.StreamingData.Format ): String =
     format.signatureCipher?.let { signatureCipher ->
-        Timber.tag(LOG_TAG).v( "deobfuscating signature $signatureCipher" )
+        logger.v { "deobfuscating signature $signatureCipher" }
 
         val (s, sp, url) = with( parseQueryString( signatureCipher ) ) {
             val signature = this["s"] ?: throw MissingDecipherKeyException("s")
@@ -240,19 +240,19 @@ private fun extractStreamUrl( videoId: String, format: PlayerResponse.StreamingD
 private suspend fun validateStreamUrl( streamUrl: String ): Boolean =
     client
         .head( streamUrl ) {
-            Timber.tag( LOG_TAG ).v( "Validating `streamUrl`..." )
+            logger.v { "Validating `streamUrl`..." }
 
             expectSuccess = false
         }
         .status
         .value
         .also {
-            Timber.tag( LOG_TAG ).d( "`streamUrl` returns code $it" )
+            logger.d { "`streamUrl` returns code $it" }
         } == 200
 
 private fun checkPlayabilityStatus( playabilityStatus: PlayerResponse.PlayabilityStatus ) =
     when( playabilityStatus.status ) {
-        "OK"                -> Timber.tag( LOG_TAG ).d( "`playabilityStatus` is OK" )
+        "OK"                -> logger.d { "`playabilityStatus` is OK" }
         "LOGIN_REQUIRED"    -> throw LoginRequiredException(playabilityStatus.reason)
         else                -> throw UnplayableException(playabilityStatus.reason)
     }
@@ -339,8 +339,8 @@ private suspend fun getPlayerResponse(
                         e.message?.also( Toaster::e )
 
                     if( index < CONTEXTS.size )
-                        Timber.tag( LOG_TAG )
-                            .e( e, "${CONTEXTS[index].client.clientName} returns error" )
+                        logger
+                            .e( "${CONTEXTS[index].client.clientName} returns error", e )
                 }
             }
 
@@ -362,24 +362,24 @@ private fun DataSpec.process(
 ): DataSpec = runBlocking( Dispatchers.IO ) {
     val audioQualityFormat by Preferences.AUDIO_QUALITY
 
-    Timber.tag( LOG_TAG ).v( "processing $videoId at quality $audioQualityFormat with connection metered: $connectionMetered" )
+    logger.v { "processing $videoId at quality $audioQualityFormat with connection metered: $connectionMetered" }
 
     val cache: StreamCache
     if( cachedStreamUrl.contains( videoId ) ) {
-        Timber.tag( LOG_TAG ).d( "Found $videoId in cachedStreamUrl" )
+        logger.d { "Found $videoId in cachedStreamUrl" }
 
         cache = cachedStreamUrl[videoId]!!
 
         // Handle expired url with 30secs offset
         if( cache.expiredTimeMillis - 30.seconds.inWholeMilliseconds <= System.currentTimeMillis() ) {
-            Timber.tag( LOG_TAG ).d( "url for $videoId has expired!" )
+            logger.d { "url for $videoId has expired!" }
 
             cachedStreamUrl.remove( videoId )
 
             return@runBlocking process( videoId, connectionMetered )
         }
     } else {
-        Timber.tag( LOG_TAG ).d( "url for $videoId isn't stored! Fetching new url" )
+        logger.d { "url for $videoId isn't stored! Fetching new url" }
 
         cachedStreamUrl[videoId] = getPlayerResponse( videoId, audioQualityFormat, connectionMetered )
         cache = cachedStreamUrl[videoId]!!
@@ -402,7 +402,7 @@ private fun resolver(
     vararg cashes: Cache
 ) = ResolvingDataSource.Resolver { dataSpec ->
     if( dataSpec.uri.isLocalFile() ) {
-        Timber.tag( LOG_TAG ).d( "playing local song: ${dataSpec.uri}" )
+        logger.d { "playing local song: ${dataSpec.uri}" }
         return@Resolver dataSpec
     }
 
@@ -416,7 +416,7 @@ private fun resolver(
     }
 
     if( isCached ) {
-        Timber.tag( LOG_TAG ).d( "$videoId exists in cache, proceeding to use from cache" )
+        logger.d { "$videoId exists in cache, proceeding to use from cache" }
         // No need to fetch online for already cached data
         dataSpec
     } else

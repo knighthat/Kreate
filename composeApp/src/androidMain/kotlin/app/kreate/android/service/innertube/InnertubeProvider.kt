@@ -3,11 +3,11 @@ package app.kreate.android.service.innertube
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import app.kreate.android.Preferences
+import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import me.knighthat.innertube.Innertube
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import timber.log.Timber
 
 
 class InnertubeProvider: Innertube.KtorProvider, KoinComponent {
@@ -26,8 +26,7 @@ class InnertubeProvider: Innertube.KtorProvider, KoinComponent {
                                k.trim() to v.trim()
                            }
             }.onFailure {
-                it.printStackTrace()
-                Timber.tag( "InnertubeProvider" ).e( "Cookie parser failed!" )
+                Logger.e( it, "InnertubeProvider" ) { "Cookie parser failed!" }
             }.getOrElse { emptyMap() }
         }
     }

@@ -72,6 +72,7 @@ import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
+import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persist
 import it.fast4x.compose.persist.persistList
 import it.fast4x.innertube.Innertube
@@ -130,7 +131,6 @@ import me.knighthat.innertube.model.InnertubePlaylist
 import me.knighthat.innertube.model.InnertubeRankedArtist
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
@@ -265,12 +265,9 @@ fun HomeQuickPicks(
                 homePageResult = YtMusic.getHomePage()
 
         }.onFailure {
-            Timber.e("Failed loadData in QuickPicsModern ${it.stackTraceToString()}")
-            println("Failed loadData in QuickPicsModern ${it.stackTraceToString()}")
+            Logger.e( tag = "HomeQuickPicks" ) { "loadData failed!" }
             loadedData = false
         }.onSuccess {
-            Timber.d("Success loadData in QuickPicsModern")
-            println("Success loadData in QuickPicsModern")
             loadedData = true
         }
     }
@@ -796,7 +793,7 @@ fun HomeQuickPicks(
                         CoroutineScope( Dispatchers.IO ).launch {
                             me.knighthat.innertube.Innertube.charts( CURRENT_LOCALE, countryCode, null )
                                 .onFailure { err ->
-                                    Timber.tag( "HomeQuickPicks" ).e( err )
+                                    Logger.e( "", err, "HomeQuickPicks" )
                                     Toaster.e( R.string.error_failed_to_get_charts )
                                 }
                                 .getOrNull()

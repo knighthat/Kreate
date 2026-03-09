@@ -39,6 +39,7 @@ import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -56,7 +57,6 @@ import me.knighthat.component.settings.Developer
 import me.knighthat.component.settings.Translator
 import me.knighthat.utils.Repository
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 
 // Prevent this from being init until it's needed
@@ -75,7 +75,7 @@ private inline fun <reified T: Contributor> getContributors(resources: Resources
                      json.decodeFromStream<List<T>>( inStream )
                  }
     }.onFailure { err ->
-        Timber.tag( "About" ).e( err )
+        Logger.e( "", err, "About" )
         Toaster.e(
             if( T::class == Developer::class )
                 R.string.error_failed_to_load_developers

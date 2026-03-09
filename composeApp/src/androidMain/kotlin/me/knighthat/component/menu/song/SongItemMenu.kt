@@ -32,12 +32,12 @@ import app.kreate.android.R
 import app.kreate.android.themed.common.ChangeSongThumbnail
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.database.models.Song
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.MenuStyle
-import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.MenuState
 import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
@@ -70,7 +70,6 @@ import me.knighthat.component.tab.DeleteSongDialog
 import me.knighthat.component.tab.LikeComponent
 import me.knighthat.component.tab.Radio
 import me.knighthat.sync.YouTubeSync
-import timber.log.Timber
 import java.util.Optional
 
 @UnstableApi
@@ -144,7 +143,9 @@ class SongItemMenu private constructor(
             navController = navController,
             mediaItems = { _ -> listOf(song.asMediaItem) },
             onFailure = { throwable, preview ->
-                Timber.e( "Failed to add songs to playlist ${preview.playlist.name} on HomeSongs" )
+                Logger.e( throwable, "SongItemMenu" ) {
+                    "Failed to add songs to playlist ${preview.playlist.name}"
+                }
                 throwable.printStackTrace()
             },
             finalAction = {}

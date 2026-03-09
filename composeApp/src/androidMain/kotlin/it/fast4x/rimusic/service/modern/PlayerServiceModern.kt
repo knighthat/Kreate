@@ -69,6 +69,7 @@ import app.kreate.database.models.Event
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
+import co.touchlab.kermit.Logger
 import com.google.common.util.concurrent.MoreExecutors
 import io.ktor.client.HttpClient
 import it.fast4x.innertube.Innertube
@@ -124,7 +125,6 @@ import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -152,6 +152,7 @@ class PlayerServiceModern:
     private val player: CustomExoPlayer by inject()
     private val downloadHelper: DownloadHelper by inject()
     private val volumeObserver: VolumeObserver by inject()
+    private val logger = Logger.withTag( this::class.java.simpleName )
 
     private lateinit var listener: ExoPlayerListener
     private val coroutineScope = CoroutineScope(Dispatchers.IO) + Job()
@@ -224,8 +225,7 @@ class PlayerServiceModern:
         coroutineScope.launch {
             connectivityObserver.networkStatus.collect { isAvailable ->
                 isNetworkAvailable.value = isAvailable
-                Timber.d("PlayerServiceModern network status: $isAvailable")
-                println("PlayerServiceModern network status: $isAvailable")
+                logger.d { "PlayerServiceModern network status: $isAvailable" }
                 if (isAvailable && waitingForNetwork.value) {
                     waitingForNetwork.value = false
                     withContext( Dispatchers.Main ) {
@@ -247,7 +247,7 @@ class PlayerServiceModern:
                 }
             )
         }.onFailure {
-            Timber.e("Failed init bitmap provider in PlayerService ${it.stackTraceToString()}")
+            logger.e( it ) { "Failed init bitmap provider" }
         }
 
         val preferences = preferences
@@ -407,7 +407,7 @@ class PlayerServiceModern:
         try {
             super.onUpdateNotification(session, startInForegroundRequired)
         } catch( err: Exception ) {
-            Timber.tag( "PLayerServiceModern" ).e( err, "failed to update notification" )
+            logger.e( err ) { "failed to update notification" }
         }
 
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
@@ -497,7 +497,7 @@ class PlayerServiceModern:
             try{
                 unregisterReceiver(notificationActionReceiver)
             } catch (e: Exception){
-                Timber.e("PlayerServiceModern onDestroy unregisterReceiver notificationActionReceiver ${e.stackTraceToString()}")
+                logger.e( e ) { "onDestroy unregisterReceiver notificationActionReceiver failed!" }
             }
 
 
@@ -521,7 +521,7 @@ class PlayerServiceModern:
 
             preferences.unregisterOnSharedPreferenceChangeListener(this)
         }.onFailure {
-            Timber.e("Failed onDestroy in PlayerService ${it.stackTraceToString()}")
+            logger.e( it ) { "onDestroy failed!" }
         }
         super.onDestroy()
     }
@@ -752,7 +752,7 @@ class PlayerServiceModern:
             val queue = Database.queueTable.blockingItems()
 
             if( queue.isEmpty() ) {
-                Timber.tag( "PersistentQueue" ).i( "Persistent queue empty, not resuming!" )
+                logger.i { "Persistent queue empty, not resuming!" }
                 return@launch
             }
 
@@ -952,7 +952,7 @@ class PlayerServiceModern:
                                     }
                                 }
                 }.onFailure { err ->
-                    Timber.tag( "SongRadio" ).e( err )
+                    logger.e( "", err )
                     Toaster.e( R.string.error_song_radio_failed )
                 }
 

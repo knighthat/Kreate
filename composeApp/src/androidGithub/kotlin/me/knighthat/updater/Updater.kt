@@ -6,6 +6,7 @@ import androidx.compose.ui.util.fastFirstOrNull
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
@@ -21,7 +22,6 @@ import me.knighthat.utils.Repository
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import timber.log.Timber
 import java.nio.file.NoSuchFileException
 import kotlin.time.ExperimentalTime
 
@@ -129,7 +129,7 @@ object Updater : KoinComponent {
                 CheckUpdateState.DISABLED           -> NewUpdatePrompt.isActive = isForced && isNewUpdateAvailable
             }
         } catch( e: Exception ) {
-            Timber.tag( "Updater" ).e( e )
+            Logger.e( e, "Updater" ) { "Failed to fetch new updates" }
 
             if( e is NoSuchElementException && Preferences.SHOW_CHECK_UPDATE_STATUS.value ) {
                 Toaster.i( R.string.info_no_update_available )

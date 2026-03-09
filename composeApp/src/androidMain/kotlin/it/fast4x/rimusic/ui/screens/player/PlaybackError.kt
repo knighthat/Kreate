@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.service.FakeException
 import it.fast4x.rimusic.service.LoginRequiredException
@@ -44,7 +45,6 @@ import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.currentWindow
 import it.fast4x.rimusic.utils.medium
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 import java.net.UnknownHostException
 import java.nio.channels.UnresolvedAddressException
 
@@ -81,7 +81,7 @@ fun PlayerError(error: PlaybackException) {
     errorCounter = errorCounter.plus(1)
 
     if (errorCounter < 2) {
-        Timber.e("Playback error: ${error.cause?.cause}")
+        Logger.e( error.cause?.cause, "PlaybackErrorHandler" ) { "Playback error" }
         Toaster.w(
             if (binder?.player?.currentWindow?.mediaItem?.isLocal == true)
                 localMusicFileNotFoundError

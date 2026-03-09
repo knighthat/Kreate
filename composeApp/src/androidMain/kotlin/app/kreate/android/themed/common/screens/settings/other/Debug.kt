@@ -34,7 +34,8 @@ import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.android.themed.common.screens.settings.StorageSizeEntry
-import app.kreate.android.utils.logging.RollingFileLoggingTree
+import app.kreate.util.getRuntimeLogDir
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.utils.textCopyToClipboard
 import kotlinx.coroutines.CoroutineScope
@@ -44,7 +45,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import me.knighthat.component.dialog.InputDialogConstraints
 import me.knighthat.utils.TimeDateUtils
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 import java.io.File
 import java.util.UUID
 import kotlin.io.path.createTempFile
@@ -91,7 +91,7 @@ fun LazyListScope.debugSection(search: SettingEntrySearch ) {
             ActivityResultContracts.CreateDocument( "text/plain" )
         ) { uri ->
             if( from == null || uri == null ) {
-                Timber.tag( "Logs" ).e( "Can't export from `null` or to `null` file" )
+                Logger.e( tag = "Logs" ) { "Can't export from `null` or to `null` file" }
                 Toaster.e( R.string.error_failed_to_export_logs )
                 return@rememberLauncherForActivityResult
             }
@@ -186,20 +186,20 @@ fun LazyListScope.debugSection(search: SettingEntrySearch ) {
                     )
                 }
 
-                val logDir = RollingFileLoggingTree.getDir( context )
-                if( search appearsIn R.string.setting_entry_runtime_log
-                    && logDir.exists()
-                    && logDir.isDirectory
-                ) {
-                    val logFiles = remember( logDir ) {
+                if(  search appearsIn R.string.setting_entry_runtime_log ) {
+                    val logFiles = remember {
                         val fileNameFormat = TimeDateUtils.logFileName()
-
-                        RollingFileLoggingTree.getLogFiles( logDir, fileNameFormat )
-                            .apply {
-                                sortByDescending {
+                        getRuntimeLogDir()
+                            .listFiles()
+                            .orEmpty()
+                            .sortedByDescending {
+                                try {
                                     fileNameFormat.parse( it.nameWithoutExtension )
+                                } catch( _: Exception ) {
+                                    null
                                 }
-                            } as Array<File>
+                            }
+                            .toTypedArray()
                     }
 
                     SettingComponents.ListEntry(

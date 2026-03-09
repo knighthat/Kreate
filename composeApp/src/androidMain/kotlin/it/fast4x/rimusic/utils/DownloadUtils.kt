@@ -11,6 +11,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import app.kreate.android.R
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalDownloadHelper
 import it.fast4x.rimusic.LocalPlayerServiceBinder
@@ -20,7 +21,6 @@ import it.fast4x.rimusic.service.modern.isLocal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 
 @UnstableApi
@@ -50,7 +50,7 @@ fun downloadedStateMedia( mediaId: String ): DownloadedStateMedia {
             else -> Toaster.e( R.string.error_access_cache_failed )
         }
 
-        Timber.tag( "DownloadUtil" ).e( e )
+        Logger.e( "", e, "DownloadUtil" )
 
         return DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED
     }

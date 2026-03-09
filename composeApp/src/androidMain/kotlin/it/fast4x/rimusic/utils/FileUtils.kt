@@ -5,9 +5,9 @@ import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import app.kreate.android.R
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.enums.LogType
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -27,7 +27,7 @@ fun moveDir(src: Path, dest: Path): Boolean {
         Files.move(src, dest, StandardCopyOption.REPLACE_EXISTING)
         true
     } catch (e: IOException) {
-        Timber.e(e)
+        Logger.e("", e, "FileUtils" )
         false
     }
 }
@@ -49,7 +49,7 @@ fun saveImageToInternalStorage(context: Context, imageUri: Uri, dirPath: String,
 
         // Create a new file in the app's internal storage
         if ( !createDirIfNotExists(context, dirPath)) {
-            Timber.e("Failed to create directory: $dirPath")
+            Logger.e( tag = "FileUtils" ) { "Failed to create directory: $dirPath" }
             return null
         }
         val outputFile = File(context.filesDir, "$dirPath/$thumbnailName")
@@ -67,7 +67,7 @@ fun saveImageToInternalStorage(context: Context, imageUri: Uri, dirPath: String,
         // Return the URI to the saved file in internal storage
         return Uri.fromFile(outputFile)
     } catch (e: IOException) {
-        Timber.e(e)
+        Logger.e("", e, "FileUtils" )
         return null
     }
 }
@@ -148,9 +148,6 @@ fun saveFileToInternalStorage(context: Context, fileName: String, fileContent: S
         val file = File(context.filesDir.resolve("logs"), fileName)
         file.writeText(fileContent)
     } catch (e: IOException) {
-        Timber.e("Failed to save file $fileName to internal storage: $e")
-
+        Logger.e( e, "FileUtils" ) { "Failed to save file $fileName to internal storage" }
     }
-
-
 }
