@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import me.knighthat.utils.Toaster
 
@@ -64,10 +65,10 @@ fun DiscordLoginAndGetToken( onDone: () -> Unit ) {
                     @JavascriptInterface
                     @Suppress("unused")     // To stop IDE from complaining
                     fun onFailure( message: String ) {
-                        if ( message == "null" )
-                            Toaster.e( R.string.error_failed_to_extract_discord_acess_token )
-                        else
-                            Toaster.e( message )
+                        if( message != "null" )
+                            Logger.e( tag = "Discord" ) { message }
+
+                        Toaster.e( R.string.error_failed_to_extract_discord_acess_token )
 
                         onDone()
                     }
