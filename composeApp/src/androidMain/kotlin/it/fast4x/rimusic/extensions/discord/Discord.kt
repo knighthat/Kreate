@@ -76,22 +76,16 @@ fun DiscordLoginAndGetToken( onDone: () -> Unit ) {
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView, url: String) {
                         if ( url.contains("/channels/@me") || url.contains("/app") ) {
+                            // Source: https://gist.github.com/MarvNC/e601f3603df22f36ebd3102c501116c6
                             view.evaluateJavascript(
                                 """
                                 (function() {
                                     try {
-                                        var token = localStorage.getItem("token");
+                                        const iframe = document.createElement('iframe');
+                                        const token = JSON.parse(document.body.appendChild(iframe).contentWindow.localStorage.token);
+
                                         if (token) {
-                                            Android.onRetrieveToken(token.slice(1, -1));
-                                        } else {
-                                            var i = document.createElement('iframe');
-                                            document.body.appendChild(i);
-                                            
-                                            token = i.contentWindow.localStorage.token;
-                                        }
-                                        
-                                        if (token) {
-                                            Android.onRetrieveToken(token.slice(1, -1));
+                                            Android.onRetrieveToken(token);
                                         } else {
                                             Android.onFailure("null");
                                         }
