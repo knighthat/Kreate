@@ -1,7 +1,10 @@
 
 [versions]
-version-code = "130"
-version-name = "2.0.0"
+# App properties
+versionCode = "130"
+versionName = "2.0.0"
+compileSdk = "36"
+minSdk = "23"
 
 agp = "9.0.1"
 kotlin = "2.3.10"

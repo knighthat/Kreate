@@ -56,13 +56,13 @@ jobs:
         id: downstream
         # Output is current version located inside gradle/libs.versions.toml
         # [versions]
-        #   version-code = "129"
-        #   version-name = "1.9.3"
+        #   versionCode = "129"
+        #   versionName = "1.9.3"
         run: |
-          VERSION_NAME=$(grep -E '^\s*version-name\s*= "' gradle/libs.versions.toml | awk -F '"' '{print $2}')
+          VERSION_NAME=$(grep -E '^\s*versionName\s*= "' gradle/libs.versions.toml | awk -F '"' '{print $2}')
           echo "version=$VERSION_NAME" >> $GITHUB_OUTPUT
           
-          VERSION_CODE=$(grep -E '^\s*version-code\s*= "' gradle/libs.versions.toml | awk -F '"' '{print $2}')
+          VERSION_CODE=$(grep -E '^\s*versionCode\s*= "' gradle/libs.versions.toml | awk -F '"' '{print $2}')
           echo "code=$VERSION_CODE" >> $GITHUB_OUTPUT
 
       - name: Get upstream version

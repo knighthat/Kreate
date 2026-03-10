@@ -178,12 +178,12 @@ android {
         compose = true
     }
 
-    compileSdk = 36
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "me.knighthat.kreate"
-        minSdk = 23
-        targetSdk = 36
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.compileSdk.get().toInt()
 
         /*
                 UNIVERSAL VARIABLES
@@ -234,7 +234,7 @@ android {
     flavorDimensions += listOf( "platform", "arch", "env" )
     //noinspection ChromeOsAbiSupport
     productFlavors {
-        val vCode = libs.versions.version.code.get().toInt()
+        val vCode = libs.versions.versionCode.get().toInt()
 
         //<editor-fold desc="Platforms">
         create("github") {
@@ -325,7 +325,7 @@ android {
                 signingConfig = signingConfigs.getByName( "production" )
 
             // App's properties
-            versionName = libs.versions.version.name.get()
+            versionName = libs.versions.versionName.get()
             manifestPlaceholders["appName"] = APP_NAME
             versionCode = vCode
         }
@@ -442,7 +442,7 @@ licenseReport {
 val copyReleaseNote = tasks.register<Copy>("copyReleaseNote" ) {
     from( "$rootDir/fastlane/metadata/android/en-US/changelogs" )
 
-    val fileName = "${libs.versions.version.code.get()}.txt"
+    val fileName = "${libs.versions.versionCode.get()}.txt"
     setIncludes( listOf( fileName ) )
 
     into( "$rootDir/composeApp/src/androidMain/res/raw" )

@@ -138,7 +138,7 @@ jobs:
       - name: Extract version code
         id: version
         run: |
-          VERSION_CODE=$(grep -E '^\s*version-code\s*= "' gradle/libs.versions.toml | awk -F '"' '{print $2}')
+          VERSION_CODE=$(grep -E '^\s*versionCode\s*= "' gradle/libs.versions.toml | awk -F '"' '{print $2}')
           echo "code=$VERSION_CODE" >> $GITHUB_OUTPUT
 
       - name: "DEBUG: Print version code"
