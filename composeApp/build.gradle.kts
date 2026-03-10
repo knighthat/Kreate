@@ -127,7 +127,7 @@ kotlin {
             implementation(libs.navigation.kmp)
 
             //coil3 mp
-            implementation(libs.coil3.compose.core)
+            implementation( libs.coil3.compose )
             implementation( libs.coil3.network.ktor )
 
             implementation(libs.translator)

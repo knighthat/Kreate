@@ -88,6 +88,7 @@ import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.updater.UpdatePlugins
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.database.models.PersistentQueue
+import coil3.imageLoader
 import coil3.request.allowHardware
 import coil3.toBitmap
 import com.kieronquinn.monetcompat.core.MonetActivityAccessException
@@ -425,7 +426,7 @@ MainActivity :
                 coroutineScope.launch(Dispatchers.Main) {
                     val result = ImageFactory.requestBuilder( url ) {
                         allowHardware( false )
-                    }.let { ImageFactory.imageLoader.execute( it ) }
+                    }.let { imageLoader.execute( it ) }
                     val isPicthBlack = colorPaletteMode == ColorPaletteMode.PitchBlack
                     val isDark =
                         colorPaletteMode == ColorPaletteMode.Dark || isPicthBlack || (colorPaletteMode == ColorPaletteMode.System && isSystemInDarkTheme)

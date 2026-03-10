@@ -26,6 +26,7 @@ import androidx.core.net.toUri
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.utils.isLocalFile
+import coil3.imageLoader
 import coil3.request.SuccessResult
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
@@ -59,7 +60,7 @@ abstract class ChangeThumbnail(
 
     private suspend fun validateUrl( url: String ): Boolean {
         val request = ImageFactory.requestBuilder( url )
-        val result = ImageFactory.imageLoader.execute( request )
+        val result = context.imageLoader.execute( request )
 
         if( result !is SuccessResult )
             withContext(Dispatchers.Main) {

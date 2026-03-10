@@ -26,7 +26,6 @@ import androidx.media3.common.util.UnstableApi
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.themed.common.component.settings.RestartPlayerService
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
@@ -35,6 +34,7 @@ import app.kreate.android.themed.common.component.settings.data.ExoCacheIndicato
 import app.kreate.android.themed.common.component.settings.data.ImageCacheIndicator
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
+import coil3.imageLoader
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
@@ -142,36 +142,37 @@ fun DataSettings( paddingValues: PaddingValues ) {
                 subtitle = { stringResource( R.string.cache_cleared ) }
             )
             entry( search, R.string.image_cache_max_size ) {
-                ImageFactory.diskCache.let { cache ->
-                    val indicator = remember( cache ) {
-                        ImageCacheIndicator( cache )
+                val diskCache = context.imageLoader.diskCache
+                val indicator = remember( diskCache ) {
+                    diskCache?.let( ::ImageCacheIndicator )
+                }
+                val cacheSize = diskCache?.maxSize ?: 0
+                // indicator's progress is observable, and is actually gets updated when
+                // cache is cleared. So this is used to re-compose subtitle when action is performed.
+                val subtitle by remember( indicator?.progress ) {
+                    cacheSubtitle( context, Preferences.IMAGE_CACHE_SIZE ) {
+                        diskCache?.size ?: 0
                     }
-                    // indicator's progress is observable, and is actually gets updated when
-                    // cache is cleared. So this is used to re-compose subtitle when action is performed.
-                    val subtitle by remember( indicator.progress ) {
-                        cacheSubtitle( context, Preferences.IMAGE_CACHE_SIZE, cache::size )
-                    }
-                    val maxCacheSize by Preferences.IMAGE_CACHE_SIZE
+                }
 
-                    SettingComponents.StorageSizeEntry(
-                        context = context,
-                        preference = Preferences.IMAGE_CACHE_SIZE,
-                        title = stringResource( R.string.image_cache_max_size ),
-                        subtitle = subtitle,
-                        currentValue = cache.size,
-                        action = SettingComponents.Action.RESTART_APP
-                    ) {
-                        if( maxCacheSize > 0 )
-                            indicator.ToolBarButton()
-                    }
+                SettingComponents.StorageSizeEntry(
+                    context = context,
+                    preference = Preferences.IMAGE_CACHE_SIZE,
+                    title = stringResource( R.string.image_cache_max_size ),
+                    subtitle = subtitle,
+                    currentValue = diskCache?.size ?: 0,
+                    action = SettingComponents.Action.RESTART_APP
+                ) {
+                    if( cacheSize > 0 )
+                        indicator?.ToolBarButton()
+                }
 
-                    if( maxCacheSize > 0 )
-                        indicator.ProgressBar( progressBarModifier )
+                if( cacheSize > 0 )
+                    indicator?.ProgressBar( progressBarModifier )
 
-                    LaunchedEffect( maxCacheSize ) {
-                        if( 0L == maxCacheSize )
-                            indicator.onConfirm()
-                    }
+                LaunchedEffect( diskCache ) {
+                    if( 0L == cacheSize )
+                        indicator?.onConfirm()
                 }
             }
             entry( search, R.string.song_cache_max_size ) {

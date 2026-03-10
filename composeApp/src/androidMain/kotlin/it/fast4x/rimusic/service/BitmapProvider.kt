@@ -1,23 +1,30 @@
 package it.fast4x.rimusic.service
 
 
+import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.core.graphics.applyCanvas
 import app.kreate.android.coil3.ImageFactory
+import coil3.imageLoader
 import coil3.request.Disposable
 import coil3.request.allowHardware
 import coil3.toBitmap
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.utils.thumbnail
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 
 //context(Context)
 class BitmapProvider(
     private val bitmapSize: Int,
     private val colorProvider: (isSystemInDarkMode: Boolean) -> Int
-) {
+) : KoinComponent {
+
+    private val context: Context by inject()
+
     var lastUri: Uri? = null
         private set
 
@@ -87,7 +94,7 @@ class BitmapProvider(
                         //listener?.invoke(lastBitmap)
                     }
                 )
-            }.let(ImageFactory.imageLoader::enqueue )
+            }.let(context.imageLoader::enqueue )
         }.onFailure {
             Timber.e("Failed enqueue in BitmapProvider ${it.stackTraceToString()}")
         }
