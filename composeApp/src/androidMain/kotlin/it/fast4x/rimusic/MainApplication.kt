@@ -13,6 +13,7 @@ import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.CrashHandler
 import app.kreate.di.THUMBNAIL_SIZE
 import app.kreate.di.initKoin
+import app.kreate.logging.CoilLogger
 import app.kreate.logging.KoinBufferedLogger
 import app.kreate.logging.setupLogging
 import coil3.ImageLoader
@@ -80,6 +81,7 @@ class MainApplication : Application(), SingletonImageLoader.Factory {
         // user to "re-fetch" the image data again after a period of time.
         // This will potentially double the storage.
         return ImageLoader.Builder(context)
+                          .logger( CoilLogger() )
                           .coroutineContext( Dispatchers.IO )
                           .decoderCoroutineContext( Dispatchers.Default )
                           .crossfade( true )
