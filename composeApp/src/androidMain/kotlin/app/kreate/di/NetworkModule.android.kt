@@ -4,6 +4,7 @@ import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.enums.DohServer
+import app.kreate.logging.OkHttpLogger
 import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -120,15 +121,21 @@ actual val networkModule: Module = module {
     }
 
     single {
+        val interceptor = HttpLoggingInterceptor(OkHttpLogger())
+        interceptor.setLevel(
+            if( BuildConfig.DEBUG )
+                HttpLoggingInterceptor.Level.BODY
+            else
+                // Production doesn't need full body to be logged because
+                // it may contain user's credential(s).
+                // Basic request's destination and response code is enough
+                HttpLoggingInterceptor.Level.BASIC
+        )
+
         OkHttpClient.Builder()
                     .proxy( get() )
                     .dns( get() )
-                    .apply {
-                        if( BuildConfig.DEBUG )
-                            addInterceptor(
-                                HttpLoggingInterceptor().setLevel( HttpLoggingInterceptor.Level.BODY )
-                            )
-                    }
+                    .addInterceptor( interceptor )
                     .build()
     }
     single {
