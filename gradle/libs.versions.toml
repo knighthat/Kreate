@@ -48,6 +48,7 @@ lifecycle = "2.10.0"
 kotlinx-serialization = "1.10.0"
 koin = "4.1.1"
 kermit = "2.1.0"
+javax = "1"
 
 
 [libraries]
@@ -151,17 +152,22 @@ toasty = { group = "com.github.GrenderG", name = "Toasty", version.ref = "toasty
 androidyoutubeplayer = { group = "com.pierfrancescosoffritti.androidyoutubeplayer", name = "core", version.ref = "androidyoutubeplayer" }
 vlcj = {  group = "uk.co.caprica", name = "vlcj", version.ref = "vlcj" }
 desugaring-nio = { group = "com.android.tools", name = "desugar_jdk_libs_nio", version.ref = "desugaring" }
+# This lib isn't used by the project, but it provides @Inject for discord module.
+# Doing this is easier than removing unsused files every update with the upstream
+javax = { module = "javax.inject:javax.inject", version.ref = "javax" }
 
 
 [plugins]
 # Multiplatform
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-kmp" }
+room = { id = "androidx.room", version.ref = "room" }
 
 # Android
 android-application = { id = "com.android.application", version.ref = "agp" }
-room = { id = "androidx.room", version.ref = "room" }
+android-lint = { id = "com.android.lint", version.ref = "agp" }
 
 # Others
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }

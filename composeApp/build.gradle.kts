@@ -116,7 +116,7 @@ kotlin {
             implementation(projects.oldtube)
             implementation(projects.kugou)
             implementation(projects.lrclib)
-            implementation( projects.oldcord )
+            implementation( projects.discord )
 
             // Room KMP
             implementation( libs.room.runtime )
