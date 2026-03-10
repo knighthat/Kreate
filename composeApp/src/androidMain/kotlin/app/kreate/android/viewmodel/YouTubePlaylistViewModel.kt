@@ -17,6 +17,7 @@ import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toSong
 import app.kreate.database.models.Song
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.utils.isNetworkConnected
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +37,6 @@ import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubePlaylist
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 
 class YouTubePlaylistViewModel(
@@ -114,7 +114,7 @@ class YouTubePlaylistViewModel(
                      _continuation.update { page.songContinuation }
                  }
                  .onFailure { err ->
-                     Timber.tag( "YouTubePlaylist" ).e( err )
+                     Logger.e( "", err, "YouTubePlaylist" )
                      Toaster.e( R.string.error_failed_to_load_playlist )
                  }
     }
@@ -144,7 +144,7 @@ class YouTubePlaylistViewModel(
             _continued.update { it + continued.songs }
             _continuation.update { continued.continuation }
         }.onFailure { err ->
-            Timber.tag( "YouTubePlaylist" ).e( err )
+            Logger.e( "", err, "YouTubePlaylist" )
             Toaster.e( R.string.error_failed_to_get_playlists_next_songs )
         }
     }

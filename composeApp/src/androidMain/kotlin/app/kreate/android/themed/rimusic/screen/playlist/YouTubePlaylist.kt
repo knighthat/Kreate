@@ -56,6 +56,7 @@ import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
 import app.kreate.android.viewmodel.YouTubePlaylistViewModel
 import app.kreate.database.models.Song
+import co.touchlab.kermit.Logger
 import it.fast4x.innertube.YtMusic
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
@@ -100,7 +101,6 @@ import me.knighthat.component.ui.screens.DynamicOrientationLayout
 import me.knighthat.innertube.Constants
 import me.knighthat.utils.Toaster
 import org.koin.compose.viewmodel.koinViewModel
-import timber.log.Timber
 
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
@@ -152,7 +152,7 @@ fun YouTubePlaylist(
             navController = navController,
             mediaItems = { _ -> getMediaItems() },
             onFailure = { throwable, preview ->
-                Timber.e( "Failed to add songs to playlist ${preview.playlist.name} on HomeSongs" )
+                Logger.e { "Failed to add songs to playlist ${preview.playlist.name} on YouTubePlaylist" }
                 throwable.printStackTrace()
             },
             finalAction = {

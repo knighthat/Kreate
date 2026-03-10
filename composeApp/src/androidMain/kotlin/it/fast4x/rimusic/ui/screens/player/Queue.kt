@@ -59,6 +59,7 @@ import app.kreate.android.themed.rimusic.component.playlist.PositionLock
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
+import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persist
 import it.fast4x.compose.persist.persistList
 import it.fast4x.compose.reordering.draggedItem
@@ -68,7 +69,6 @@ import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.enums.QueueType
-import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.SwipeableQueueItem
@@ -97,7 +97,6 @@ import me.knighthat.component.ui.screens.player.QueueArrow
 import me.knighthat.component.ui.screens.player.Repeat
 import me.knighthat.component.ui.screens.player.ShuffleQueue
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 
 @ExperimentalTextApi
@@ -200,7 +199,7 @@ fun Queue(
             navController = navController,
             mediaItems = { getSongs().map( Song::asMediaItem ) },
             onFailure = { throwable, preview ->
-                Timber.e( "Failed to add songs to playlist ${preview.playlist.name} on HomeSongs" )
+                Logger.e( throwable, "Queue" ) { "Failed to add songs to playlist ${preview.playlist.name}" }
                 throwable.printStackTrace()
             },
             finalAction = {

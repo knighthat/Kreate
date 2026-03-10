@@ -24,6 +24,7 @@ import app.kreate.database.models.Artist
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongArtistMap
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database.asyncQuery
 import it.fast4x.rimusic.Database.asyncTransaction
 import it.fast4x.rimusic.Database.insertIgnore
@@ -33,7 +34,6 @@ import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.PropUtils
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import timber.log.Timber
 
 object Database : KoinComponent {
     val FILE_NAME = if ( Preferences.ACTIVE_PROFILE.value == "default" ) "data.db" else "data_${Preferences.ACTIVE_PROFILE.value}.db"
@@ -312,7 +312,9 @@ object Database : KoinComponent {
                 val logFrames = statement.getLong(1)
                 val checkpointedFrames = statement.getLong(2)
 
-                Timber.tag("database").d( "Checkpoint performed! (is busy: $isBusy, logged frames: $logFrames, checkpointed frames: $checkpointedFrames)" )
+                Logger.d( tag = "database" ) {
+                    "Checkpoint performed! (is busy: $isBusy, logged frames: $logFrames, checkpointed frames: $checkpointedFrames)"
+                }
             }
         }
     }

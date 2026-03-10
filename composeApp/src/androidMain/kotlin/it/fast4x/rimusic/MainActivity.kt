@@ -88,6 +88,7 @@ import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.updater.UpdatePlugins
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.database.models.PersistentQueue
+import co.touchlab.kermit.Logger
 import coil3.imageLoader
 import coil3.request.allowHardware
 import coil3.toBitmap
@@ -152,10 +153,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.knighthat.invidious.Invidious
-import me.knighthat.piped.Piped
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 import java.util.Locale
 import java.util.Objects
 import kotlin.math.sqrt
@@ -196,6 +194,7 @@ MainActivity :
     private val monet get() = _monet ?: throw MonetActivityAccessException()
 
     private val pipState: MutableState<Boolean> = mutableStateOf(false)
+    private val logger = Logger.withTag( this::class.java.simpleName )
 
     override fun onStart() {
         super.onStart()
@@ -203,7 +202,7 @@ MainActivity :
         runCatching {
             bindService(intent<PlayerServiceModern>(), serviceConnection, Context.BIND_AUTO_CREATE)
         }.onFailure {
-            Timber.e("MainActivity.onStart bindService ${it.stackTraceToString()}")
+            logger.e( it ) { "Failed to bind PlayerServiceModern" }
         }
     }
 
@@ -251,16 +250,6 @@ MainActivity :
                         .getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                     SensorManager.SENSOR_DELAY_NORMAL
                 )
-        }
-
-        // Fetch Piped & Invidious instances
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                Piped.fetchInstances()
-                Invidious.fetchInstances()
-            } catch (e: Exception) {
-                Timber.e(e, "MainActivity Error fetching Piped & Invidious instances")
-            }
         }
     }
 
@@ -990,7 +979,7 @@ MainActivity :
                 ), SensorManager.SENSOR_DELAY_NORMAL
             )
         }.onFailure {
-            Timber.e("MainActivity.onResume registerListener sensorManager ${it.stackTraceToString()}")
+            logger.e( it ) { "onResume failed" }
         }
     }
 
@@ -999,7 +988,7 @@ MainActivity :
         runCatching {
             sensorListener.let { sensorManager?.unregisterListener(it) }
         }.onFailure {
-            Timber.e("MainActivity.onPause unregisterListener sensorListener ${it.stackTraceToString()}")
+            logger.e( it ) { "onPause failed" }
         }
     }
 
@@ -1027,24 +1016,24 @@ MainActivity :
             val intent = Intent(this, PlayerServiceModern::class.java)
             stopService( intent )
 
-            Timber.tag( "Main" ).d( "Successfully stop player and unbind PlayerServiceModern service" )
+            logger.d { "Successfully stop player and unbind PlayerServiceModern service" }
             //</editor-fold>
 
             // Delete latest report
             val report = CrashReportDialog(this)
             if( report.isAvailable() ) {
                 report.crashlogFile.delete()
-                Timber.tag( "Main" ).d( "Successfully deleted latest crashlog" )
+                logger.d { "Successfully deleted latest crashlog" }
             }
 
             monet.removeMonetColorsChangedListener(this)
             _monet = null
-            Timber.tag( "Main" ).d( "Successfully removed MonetColorsChangedListener" )
+            logger.d { "Successfully removed MonetColorsChangedListener" }
 
             Preferences.unload()
-            Timber.tag( "Main" ).d( "Unloaded preferences" )
+            logger.d { "Unloaded preferences" }
         } catch( err: Exception ) {
-            Timber.tag( "Main" ).e( err, "onDestroy failed!" )
+            logger.e( err ) { "onDestroy failed!" }
         } finally {
             super.onDestroy()
         }

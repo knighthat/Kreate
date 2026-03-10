@@ -55,6 +55,7 @@ import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.InnertubeUtils
 import app.kreate.database.models.Artist
+import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persistList
 import it.fast4x.innertube.YtMusic
 import it.fast4x.rimusic.Database
@@ -89,7 +90,6 @@ import me.knighthat.component.tab.SongShuffler
 import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubeArtist
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 @ExperimentalMaterial3Api
 @UnstableApi
@@ -200,7 +200,7 @@ fun HomeArtists(
                          onlineArtists = results.fastMapNotNull { it as? InnertubeArtist }
                      }
                      .onFailure { err ->
-                         Timber.tag( "HomeArtists" ).e( err )
+                         Logger.e( "", err, "HomeArtists" )
                          Toaster.e(
                              R.string.error_failed_to_sync_tab,
                              context.getString( R.string.artists ).lowercase()

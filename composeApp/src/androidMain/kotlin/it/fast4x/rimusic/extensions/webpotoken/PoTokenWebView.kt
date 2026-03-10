@@ -11,6 +11,7 @@ import androidx.annotation.MainThread
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import app.kreate.android.R
+import co.touchlab.kermit.Logger
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.isDebugModeEnabled
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +22,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.Headers.Companion.toHeaders
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
-import timber.log.Timber
 import java.time.Instant
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -33,6 +33,7 @@ class PoTokenWebView private constructor(
 ) {
     private val webView = WebView(context)
     private val poTokenContinuations = mutableMapOf<String, Continuation<String>>()
+    private val logger = Logger.withTag( this::class.java.simpleName )
     private lateinit var expirationInstant: Instant
 
     //region Initialization
@@ -58,7 +59,7 @@ class PoTokenWebView private constructor(
                     // supports a really old version of JS.
 
                     val fmt = "\"${m.message()}\", source: ${m.sourceId()} (${m.lineNumber()})"
-                    Timber.tag(TAG).e("This WebView implementation is broken: $fmt")
+                    logger.e { "This WebView implementation is broken: $fmt" }
 
                     // This can only happen during initialization, where there is no try-catch
                     onInitializationErrorCloseAndCancel(BadWebViewException(fmt))
@@ -75,7 +76,7 @@ class PoTokenWebView private constructor(
      */
     private fun loadHtmlAndObtainBotguard(context: Context) {
         if (isDebugModeEnabled()) {
-            Timber.tag(TAG).d("loadHtmlAndObtainBotguard() called")
+            logger.d { "loadHtmlAndObtainBotguard() called" }
         }
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -109,7 +110,7 @@ class PoTokenWebView private constructor(
     @JavascriptInterface
     fun downloadAndRunBotguard() {
         if (isDebugModeEnabled()) {
-            Timber.tag(TAG).d("downloadAndRunBotguard() called")
+            logger.d { "downloadAndRunBotguard() called" }
         }
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -144,7 +145,7 @@ class PoTokenWebView private constructor(
     @JavascriptInterface
     fun onJsInitializationError(error: String) {
         if (isDebugModeEnabled()) {
-            Timber.tag(TAG).e("Initialization error from JavaScript: $error")
+            logger.e { "Initialization error from JavaScript: $error" }
         }
         onInitializationErrorCloseAndCancel(buildExceptionForJsError(error))
     }
@@ -170,7 +171,7 @@ class PoTokenWebView private constructor(
                     "this.integrityToken = $integrityToken"
                 ) {
                     if (isDebugModeEnabled()) {
-                        Timber.tag(TAG).d("initialization finished, expiration=${expirationTimeInSeconds}s")
+                        logger.d { "initialization finished, expiration=${expirationTimeInSeconds}s" }
                     }
                     generatorContinuation.resume(this@PoTokenWebView)
                 }
@@ -182,7 +183,7 @@ class PoTokenWebView private constructor(
     //region Obtaining poTokens
     suspend fun generatePoToken(identifier: String): String {
         if (isDebugModeEnabled()) {
-            Timber.tag(TAG).d("generatePoToken() called with identifier $identifier")
+            logger.d { "generatePoToken() called with identifier $identifier" }
         }
         return suspendCancellableCoroutine { continuation ->
             poTokenContinuations[identifier] = continuation
@@ -215,7 +216,7 @@ class PoTokenWebView private constructor(
     @JavascriptInterface
     fun onObtainPoTokenError(identifier: String, error: String) {
         if (isDebugModeEnabled()) {
-            Timber.tag(TAG).e("obtainPoToken error from JavaScript: $error")
+            logger.e { "obtainPoToken error from JavaScript: $error" }
         }
         poTokenContinuations.remove(identifier)?.resumeWithException(buildExceptionForJsError(error))
     }
@@ -227,7 +228,7 @@ class PoTokenWebView private constructor(
     @JavascriptInterface
     fun onObtainPoTokenResult(identifier: String, poTokenU8: String) {
         if (isDebugModeEnabled()) {
-            Timber.tag(TAG).d("Generated poToken (before decoding): identifier=$identifier poTokenU8=$poTokenU8")
+            logger.d { "Generated poToken (before decoding): identifier=$identifier poTokenU8=$poTokenU8" }
         }
         val poToken = try {
             u8ToBase64(poTokenU8)
@@ -237,7 +238,7 @@ class PoTokenWebView private constructor(
         }
 
         if (isDebugModeEnabled()) {
-            Timber.tag(TAG).d("Generated poToken: identifier=$identifier poToken=$poToken")
+            logger.d { "Generated poToken: identifier=$identifier poToken=$poToken" }
         }
         poTokenContinuations.remove(identifier)?.resume(poToken)
     }

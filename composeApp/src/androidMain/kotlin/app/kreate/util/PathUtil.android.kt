@@ -16,3 +16,8 @@ actual fun getCacheDir(): File {
     val context: Context by inject( Context::class.java )
     return context.cacheDir
 }
+
+actual fun getExternalCacheDir(): File {
+    val context: Context by inject( Context::class.java )
+    return context.externalCacheDir ?: context.cacheDir
+}

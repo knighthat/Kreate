@@ -3,11 +3,11 @@ package com.dd3boh.outertune.utils.potoken
 import android.os.Handler
 import android.os.Looper
 import android.webkit.CookieManager
+import co.touchlab.kermit.Logger
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.context
 import it.fast4x.rimusic.isDebugModeEnabled
 import kotlinx.coroutines.runBlocking
-import timber.log.Timber
 
 class PoTokenGenerator {
     private val TAG = PoTokenGenerator::class.simpleName
@@ -30,7 +30,7 @@ class PoTokenGenerator {
             when (e) {
                 is BadWebViewException -> {
                     if (TAG != null) {
-                        Timber.tag(TAG).e(e, "Could not obtain poToken because WebView is broken")
+                        Logger.e( tag = TAG ) { "Could not obtain poToken because WebView is broken" }
                     }
                     webViewBadImpl = true
                     return null
@@ -105,7 +105,7 @@ class PoTokenGenerator {
                 // this might happen for example if NewPipe goes in the background and the WebView
                 // content is lost
                 if (TAG != null) {
-                    Timber.tag(TAG).e(throwable, "Failed to obtain poToken, retrying")
+                    Logger.e( throwable, TAG ) { "Failed to obtain poToken, retrying" }
                 }
                 return getWebClientPoToken(videoId = videoId, forceRecreate = true)
             }
@@ -113,10 +113,9 @@ class PoTokenGenerator {
 
         if (isDebugModeEnabled()) {
             if (TAG != null) {
-                Timber.tag(TAG).d(
-                    "poToken for $videoId: playerPot=$playerPot, " +
-                            "streamingPot=$streamingPot, sessionIdentifier=$sessionIdentifier"
-                )
+                Logger.d( tag = TAG ) {
+                    "poToken for $videoId: playerPot=$playerPot, streamingPot=$streamingPot, sessionIdentifier=$sessionIdentifier"
+                }
             }
         }
 

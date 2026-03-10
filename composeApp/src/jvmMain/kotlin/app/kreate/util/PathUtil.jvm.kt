@@ -138,3 +138,5 @@ enum class OperatingSystem {
     MACOS,
     UNIX;       // Including Linux
 }
+
+actual fun getExternalCacheDir(): File = getCacheDir()

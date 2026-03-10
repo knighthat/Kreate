@@ -15,6 +15,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import co.touchlab.kermit.Logger
 import it.fast4x.compose.reordering.ReorderingState
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.ui.components.tab.toolbar.ConfirmDialog
@@ -29,7 +30,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 @SuppressLint("ComposableNaming")
 @Composable
@@ -98,7 +98,7 @@ fun ShuffleQueue(
             reorderingState.lazyListState.animateScrollToItem( index )
         }.invokeOnCompletion {
             if( it != null ) {
-                Timber.tag( "QueueShuffler" ).e( it )
+                Logger.e( "", it, "QueueShuffler" )
                 it.message?.also( Toaster::e )
 
                 return@invokeOnCompletion

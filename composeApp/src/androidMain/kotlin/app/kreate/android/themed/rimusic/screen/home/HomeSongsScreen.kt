@@ -31,6 +31,7 @@ import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.screen.home.onDevice.OnDeviceSong
 import app.kreate.database.models.Song
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
@@ -58,7 +59,6 @@ import me.knighthat.component.tab.ImportSongsFromCSV
 import me.knighthat.component.tab.LikeComponent
 import me.knighthat.component.tab.Locator
 import me.knighthat.component.tab.SongShuffler
-import timber.log.Timber
 
 @UnstableApi
 @ExperimentalMaterial3Api
@@ -102,7 +102,7 @@ fun HomeSongsScreen(navController: NavController ) {
         navController = navController,
         mediaItems = { _ -> getMediaItems() },
         onFailure = { throwable, preview ->
-            Timber.e( "Failed to add songs to playlist ${preview.playlist.name} on HomeSongs" )
+            Logger.e { "Failed to add songs to playlist ${preview.playlist.name} on HomeSongsScreen" }
             throwable.printStackTrace()
         },
         finalAction = {

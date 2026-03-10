@@ -68,6 +68,7 @@ import app.kreate.database.models.Song
 import app.kreate.database.models.SongPlaylistMap
 import app.kreate.util.cleanPrefix
 import app.kreate.util.toDuration
+import co.touchlab.kermit.Logger
 import com.github.doyaaaaaken.kotlincsv.client.KotlinCsvExperimental
 import it.fast4x.compose.persist.persistList
 import it.fast4x.compose.reordering.draggedItem
@@ -135,7 +136,6 @@ import me.knighthat.component.tab.LikeComponent
 import me.knighthat.component.tab.Locator
 import me.knighthat.component.tab.SongShuffler
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 import kotlin.time.Duration
 
 
@@ -263,7 +263,7 @@ fun LocalPlaylistSongs(
         navController,
         { getMediaItems() },
         { throwable, preview ->
-            Timber.e( "Failed to add songs to playlist ${preview.playlist.name} on LocalPlaylistSongs" )
+            Logger.e( tag = "LocalPlaylistSongs" ) { "Failed to add songs to playlist ${preview.playlist.name}" }
             throwable.printStackTrace()
         },
         {

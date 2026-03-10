@@ -10,10 +10,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.edit
 import app.kreate.database.models.Song
+import co.touchlab.kermit.Logger
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.requests.HomePage
 import kotlinx.serialization.json.Json
-import timber.log.Timber
 
 const val quickPicsTrendingSongKey = "quickPicsTrendingSong"
 const val quickPicsRelatedPageKey = "quickPicsRelatedPage"
@@ -51,7 +51,7 @@ fun rememberPreference(key: String, defaultValue: Song?): MutableState<Song?> {
                 context.preferences.getString(key, json)
                     ?.let { Json.decodeFromString<Song>(it) }
             } catch (e: Exception) {
-                Timber.e("RememberPreference RelatedPage Error: ${ e.stackTraceToString() }")
+                Logger.e("RememberPreference RelatedPage Error", e, "LegacyPreferences" )
                 null
             }
         ) {
@@ -73,7 +73,7 @@ fun rememberPreference(key: String, defaultValue: Innertube.DiscoverPage?): Muta
                 context.preferences.getString(key, json)
                     ?.let { Json.decodeFromString<Innertube.DiscoverPage>(it) }
             } catch (e: Exception) {
-                Timber.e("RememberPreference DiscoverPage Error: ${ e.stackTraceToString() }")
+                Logger.e("RememberPreference DiscoverPage Error", e, "LegacyPreferences" )
                 null
             }
         ) {
@@ -95,7 +95,7 @@ fun rememberPreference(key: String, defaultValue: Innertube.ChartsPage?): Mutabl
                 context.preferences.getString(key, json)
                     ?.let { Json.decodeFromString<Innertube.ChartsPage>(it) }
             } catch (e: Exception) {
-                Timber.e("RememberPreference ChartsPage Error: ${ e.stackTraceToString() }")
+                Logger.e("RememberPreference ChartsPage Error", e, "LegacyPreferences" )
                 null
             }
         ) {
@@ -117,7 +117,7 @@ fun rememberPreference(key: String, defaultValue: Innertube.RelatedPage?): Mutab
                 context.preferences.getString(key, json)
                     ?.let { Json.decodeFromString<Innertube.RelatedPage>(it) }
             } catch (e: Exception) {
-                Timber.e("RememberPreference RelatedPage Error: ${ e.stackTraceToString() }")
+                Logger.e("RememberPreference RelatedPage Error", e, "LegacyPreferences" )
                 null
             }
         ) {
@@ -139,7 +139,7 @@ fun rememberPreference(key: String, defaultValue: HomePage?): MutableState<HomeP
                 context.preferences.getString(key, json)
                     ?.let { Json.decodeFromString<HomePage>(it) }
             } catch (e: Exception) {
-                Timber.e("RememberPreference HomePage Error: ${ e.stackTraceToString() }")
+                Logger.e("RememberPreference HomePage Error", e, "LegacyPreferences" )
                 null
             }
         ) {
@@ -155,7 +155,7 @@ fun clearPreference(context: Context, key: String): Unit {
     try {
         context.preferences.edit { remove(key) }
     } catch (e: Exception) {
-        Timber.e("ClearPreference Error: ${e.stackTraceToString()}")
+        Logger.e("ClearPreference Error", e, "LegacyPreferences" )
     }
 }
 

@@ -11,8 +11,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import app.kreate.android.R
+import co.touchlab.kermit.Logger
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 
 fun textCopyToClipboard(textCopied:String, context: Context) {
@@ -20,7 +20,7 @@ fun textCopyToClipboard(textCopied:String, context: Context) {
     runCatching {
         clipboardManager.setPrimaryClip(ClipData.newPlainText("", textCopied))
     }.onFailure {
-        Timber.e(it.stackTraceToString())
+        Logger.e( "", it, "CopyToClipboard" )
         Toaster.e( "Failed to copy text to clipboard, try again" )
     }
     // Only show a toast for Android 12 and lower.
@@ -35,7 +35,7 @@ fun textCopyFromClipboard(context: Context): String {
     runCatching {
         textCopied = clipboardManager.primaryClip?.getItemAt(0)?.coerceToText(context).toString()
     }.onFailure {
-        Timber.e(it.stackTraceToString())
+        Logger.e( "", it, "CopyToClipboard" )
         Toaster.e( "Failed to copy text to clipboard, try again" )
     }
     // Only show a toast for Android 12 and lower.

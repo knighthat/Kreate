@@ -2,7 +2,6 @@ package it.fast4x.rimusic.extensions.nextvisualizer.utils
 
 import android.media.audiofx.Visualizer
 import android.os.Handler
-import timber.log.Timber
 
 class VisualizerHelper(sessionId: Int) {
 

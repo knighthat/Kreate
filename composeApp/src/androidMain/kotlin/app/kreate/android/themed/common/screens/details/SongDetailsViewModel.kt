@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import app.kreate.android.R
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -14,7 +15,6 @@ import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.innertube.model.InnertubeSongDetails
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 class SongDetailsViewModel(private val songId: String): ViewModel() {
 
@@ -32,7 +32,7 @@ class SongDetailsViewModel(private val songId: String): ViewModel() {
         Innertube.songInfo( songId, CURRENT_LOCALE)
                  .onSuccess { songDetails = it }
                  .onFailure { err ->
-                     Timber.tag( "SongDetails" ).e( err )
+                     Logger.e( "", err, "SongDetails" )
                      Toaster.e(  R.string.error_failed_to_fetch_songs_info )
                  }
     }
@@ -41,7 +41,7 @@ class SongDetailsViewModel(private val songId: String): ViewModel() {
         Innertube.songBasicInfo( songId, CURRENT_LOCALE)
                  .onSuccess { songBasicInfo = it }
                  .onFailure { err ->
-                     Timber.tag( "SongDetails" ).e( err )
+                     Logger.e( "", err, "SongDetails" )
                      Toaster.e( R.string.error_failed_to_fetch_songs_info )
                  }
     }

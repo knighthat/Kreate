@@ -16,6 +16,7 @@ import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.di.PrefType
 import app.kreate.util.cleanPrefix
+import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
@@ -41,14 +42,12 @@ import me.knighthat.discord.payload.Activity
 import me.knighthat.discord.payload.Identify
 import me.knighthat.discord.payload.Presence
 import me.knighthat.innertube.Constants
-import me.knighthat.logging.Logger
 import me.knighthat.utils.ImageProcessor
 import me.knighthat.utils.Repository
 import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Contract
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import timber.log.Timber
 import java.net.UnknownHostException
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.contracts.ExperimentalContracts
@@ -68,6 +67,7 @@ class Discord(private val context: Context) : KoinComponent {
         private const val KREATE_IMAGE_URL = "https://i.ibb.co/bgZZ7bFx/discord-rpc-kreate.png"
 
         private val cachedExternalUrls = ConcurrentHashMap<String, String>()
+        private val logger = Logger.withTag(LOGGING_TAG)
 
         const val LOGGING_TAG = "discord-integration"
     }
@@ -121,7 +121,7 @@ class Discord(private val context: Context) : KoinComponent {
                 if( ConnectivityUtils.isAvailable.value )
                     register()
             } catch ( e: Exception ) {
-                Timber.tag( "discord" ).e( e )
+                logger.e( e ) { "Login failed!" }
                 e.message?.also( Toaster::e )
             }
         }
@@ -129,7 +129,7 @@ class Discord(private val context: Context) : KoinComponent {
     //<editor-fold defaultstate="collapsed" desc="External image handler">
     private suspend fun uploadArtwork( artworkUri: Uri ): Result<String> =
         runCatching {
-            Timber.tag( LOGGING_TAG ).v( "Uploading local artwork \"$artworkUri\" to online bucket" )
+            logger.v { "Uploading local artwork \"$artworkUri\" to online bucket" }
 
             val uploadableUri = ImageProcessor.compressArtwork(
                 context,
@@ -139,9 +139,12 @@ class Discord(private val context: Context) : KoinComponent {
                 MAX_FILE_SIZE_BYTES
             )
 
-            Timber.tag( LOGGING_TAG ).d(
-                if( artworkUri !== uploadableUri ) "Upload compressed version $uploadableUri" else "No compression needed"
-            )
+            logger.d {
+                if( artworkUri !== uploadableUri )
+                    "Upload compressed version $uploadableUri"
+                else
+                    "No compression needed"
+            }
 
             val formData = formData {
                 val (mimeType, fileData) = with( context.contentResolver ) {
@@ -159,9 +162,9 @@ class Discord(private val context: Context) : KoinComponent {
             client.submitFormWithBinaryData( TEMP_FILE_HOST, formData )
                   .bodyAsText()
         }.onSuccess {
-            Timber.tag( LOGGING_TAG ).d( "Local artwork uploaded successfully" )
+            logger.d { "Local artwork uploaded successfully" }
         }.onFailure {
-            Timber.tag( LOGGING_TAG ).e( it, "Error occurs while uploading local artwork" )
+            logger.e( it ) { "Error occurs while uploading local artwork" }
         }
 
     @Contract("_,null->null")
@@ -172,11 +175,11 @@ class Discord(private val context: Context) : KoinComponent {
         }
         artworkUri ?: return null
 
-        Timber.tag( LOGGING_TAG ).v( "Getting external url for artwork $artworkUri" )
+        logger.v { "Getting external url for artwork $artworkUri" }
 
         val artworkCacheKey = artworkUri.toString()
         if( cachedExternalUrls.containsKey( artworkCacheKey ) ) {
-            Timber.tag( LOGGING_TAG ).d( "artwork is cached" )
+            logger.d { "artwork is cached" }
             return cachedExternalUrls[artworkCacheKey]
         }
 
@@ -204,20 +207,20 @@ class Discord(private val context: Context) : KoinComponent {
 
     private suspend fun getAppLogoUrl(): String? =
         if ( ::smallImage.isInitialized ) {
-            Timber.tag( LOGGING_TAG ).v( "Small image is cached" )
+            logger.v { "Small image is cached" }
 
             smallImage
         } else
             DiscordLib.getExternalImageUrl( KREATE_IMAGE_URL, APPLICATION_ID )
                       .onFailure {
-                          Timber.tag( LOGGING_TAG ).e( it, "Failed to upload small image" )
+                          logger.e( it ) { "Failed to upload small image" }
                           it.message?.also( Toaster::e )
                       }
                       .getOrNull()
                       ?.also {
                           smallImage = it
 
-                          Timber.tag( LOGGING_TAG ).d( "Small image: $it" )
+                          logger.d { "Small image: $it" }
                       }
     //</editor-fold>
 
@@ -248,7 +251,7 @@ class Discord(private val context: Context) : KoinComponent {
         }
 
     private suspend fun makeActivity( mediaItem: MediaItem, timeStart: Long ): Activity {
-        Timber.tag( LOGGING_TAG ).v( "Making new activity from media item ${mediaItem.mediaId} at $timeStart" )
+        logger.v { "Making new activity from media item ${mediaItem.mediaId} at $timeStart" }
 
         val metadata = mediaItem.mediaMetadata
         val isLocal = mediaItem.isLocal
@@ -299,12 +302,12 @@ class Discord(private val context: Context) : KoinComponent {
             if( key != loginKey )
                 return@OnSharedPreferenceChangeListener
             if( !prefs.getBoolean( loginKey, false ) ) {
-                Timber.tag( LOGGING_TAG ).v( "disabling DiscordRPC" )
+                logger.v { "disabling DiscordRPC" }
                 DiscordLib.logout()
 
                 return@OnSharedPreferenceChangeListener
             } else
-                Timber.tag( LOGGING_TAG ).v( "enabling DiscordRPC" )
+                logger.v { "enabling DiscordRPC" }
 
             val token = privatePreferences.getString( tokenKey, null )
             if( !token.isNullOrBlank() )
@@ -319,7 +322,7 @@ class Discord(private val context: Context) : KoinComponent {
         tokenListener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
             if( key != tokenKey ) return@OnSharedPreferenceChangeListener
 
-            Timber.tag( LOGGING_TAG ).v( "access token's changed" )
+            logger.v { "access token's changed" }
 
             // When access token's changed, all previous connection must be dropped.
             // If new token is present, attempt to open a new connection with new token.
@@ -363,7 +366,7 @@ class Discord(private val context: Context) : KoinComponent {
 
     fun register() {
         DiscordLib.setClient( client )
-        Logger.handler = DiscordLogger()
+        me.knighthat.logging.Logger.handler = DiscordLogger()
 
         val loginKey = Preferences.Key.DISCORD_LOGIN
         val tokenKey = Preferences.Key.DISCORD_ACCESS_TOKEN
@@ -398,7 +401,7 @@ class Discord(private val context: Context) : KoinComponent {
         updateActivityJob = CoroutineScope( Dispatchers.IO ).launch {
             delay( 1000 )
 
-            Timber.tag( LOGGING_TAG ).v( "Update activity to new media item" )
+            logger.v { "Update activity to new media item" }
 
             val activity = makeActivity( mediaItem, timeStart )
             DiscordLib.updatePresence {
@@ -410,7 +413,7 @@ class Discord(private val context: Context) : KoinComponent {
     fun stop() {
         if( !DiscordLib.isReady() ) return
 
-        Timber.tag( LOGGING_TAG ).v( "Sending stop activity to Discord" )
+        logger.v { "Sending stop activity to Discord" }
 
         CoroutineScope( Dispatchers.IO ).launch {
             DiscordLib.updatePresence {
@@ -427,7 +430,7 @@ class Discord(private val context: Context) : KoinComponent {
         updateActivityJob = CoroutineScope( Dispatchers.IO ).launch {
             delay( 1000 )
 
-            Timber.tag( LOGGING_TAG ).v( "Sending pause activity to Discord" )
+            logger.v { "Sending pause activity to Discord" }
 
             val generated = makeActivity( mediaItem, timeStart )
 

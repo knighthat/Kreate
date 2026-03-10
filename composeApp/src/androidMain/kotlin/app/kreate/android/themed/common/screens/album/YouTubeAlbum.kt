@@ -72,6 +72,7 @@ import app.kreate.database.models.Album
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongAlbumMap
 import app.kreate.util.MODIFIED_PREFIX
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.appContext
@@ -114,7 +115,6 @@ import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.innertube.model.Section
 import me.knighthat.utils.PropUtils
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 private fun updateAlbumInDatabase(dbAlbum: Album?, innertubeAlbum: InnertubeAlbum ) = Database.asyncTransaction {
     val onlineAlbum = Album(
@@ -274,7 +274,9 @@ fun YouTubeAlbum(
             navController,
             { getMediaItems() },
             { throwable, preview ->
-                Timber.e( "Failed to add songs to playlist ${preview.playlist.name} on HomeSongs" )
+                Logger.e( throwable, "YouTubeAlbum" ) {
+                    "Failed to add songs to playlist ${preview.playlist.name} on HomeSongs"
+                }
                 throwable.printStackTrace()
             },
             {
@@ -320,7 +322,7 @@ fun YouTubeAlbum(
                          updateAlbumInDatabase( dbAlbum, it )
                      }
                      .onFailure { err ->
-                         Timber.tag( "YouTubeAlbum" ).e( err )
+                         Logger.e( "", err, "YouTubeAlbum" )
                          Toaster.e( R.string.error_failed_to_load_album )
                      }
 

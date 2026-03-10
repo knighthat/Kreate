@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.core.graphics.applyCanvas
 import app.kreate.android.coil3.ImageFactory
+import co.touchlab.kermit.Logger
 import coil3.imageLoader
 import coil3.request.Disposable
 import coil3.request.allowHardware
@@ -15,7 +16,6 @@ import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.utils.thumbnail
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import timber.log.Timber
 
 //context(Context)
 class BitmapProvider(
@@ -44,6 +44,8 @@ class BitmapProvider(
             value?.invoke(lastBitmap)
         }
 
+    private val logger = Logger.withTag( this::class.java.simpleName )
+
     init {
         setDefaultBitmap()
     }
@@ -62,14 +64,14 @@ class BitmapProvider(
                     drawColor(colorProvider(isSystemInDarkMode))
                 }
         }.onFailure {
-            Timber.e("Failed set default bitmap in BitmapProvider ${it.stackTraceToString()}")
+            logger.e( it ) { "Failed set default bitmap" }
         }
 
         return lastBitmap == null
     }
 
     fun load(uri: Uri?, onDone: (Bitmap) -> Unit) {
-        Timber.d("BitmapProvider load method being called")
+        logger.d("BitmapProvider load method being called")
         if (lastUri == uri) {
             listener?.invoke(lastBitmap)
             return
@@ -83,7 +85,7 @@ class BitmapProvider(
                 allowHardware( false )
                 listener(
                     onError = { _, result ->
-                        Timber.e("Failed to load bitmap ${result.throwable.stackTraceToString()}")
+                        logger.e( result.throwable ) { "Failed to load bitmap" }
                         lastBitmap = null
                         onDone(bitmap)
                         //listener?.invoke(lastBitmap)
@@ -96,7 +98,7 @@ class BitmapProvider(
                 )
             }.let(context.imageLoader::enqueue )
         }.onFailure {
-            Timber.e("Failed enqueue in BitmapProvider ${it.stackTraceToString()}")
+            logger.e( it ) { "Failed enqueue" }
         }
     }
 }

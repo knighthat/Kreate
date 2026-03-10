@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import app.kreate.android.R
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.database.models.Song
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.NavRoutes
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.innertube.Innertube
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 import java.util.Optional
 
 class GoToArtist(
@@ -65,7 +65,7 @@ class GoToArtist(
                                      }
                              }
                              .onFailure { err ->
-                                 Timber.tag( "GoToArtist" ).e( err )
+                                 Logger.e( "", err, "GoToArtist" )
                                  Toaster.e( R.string.error_failed_to_load_artist )
                              }
                 }

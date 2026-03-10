@@ -46,6 +46,7 @@ import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.InnertubeUtils
 import app.kreate.database.models.PlaylistPreview
+import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
@@ -78,7 +79,6 @@ import me.knighthat.component.tab.SongShuffler
 import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubePlaylist
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -174,7 +174,7 @@ fun HomeLibrary(
                          onlinePlaylists = results.fastMapNotNull { it as? InnertubePlaylist }
                      }
                      .onFailure { err ->
-                         Timber.tag( "HomePlaylist" ).e( err )
+                         Logger.e( "", err, "HomePlaylist" )
                          Toaster.e(
                              R.string.error_failed_to_sync_tab,
                              context.getString( R.string.playlists ).lowercase()

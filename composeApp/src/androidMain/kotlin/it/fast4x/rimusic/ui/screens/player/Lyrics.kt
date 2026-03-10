@@ -94,6 +94,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.database.models.Lyrics
 import app.kreate.util.cleanPrefix
+import co.touchlab.kermit.Logger
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.NextBody
 import it.fast4x.innertube.requests.lyrics
@@ -147,12 +148,13 @@ import kotlinx.coroutines.withContext
 import me.bush.translator.Language
 import me.bush.translator.Translator
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 import kotlin.Float.Companion.POSITIVE_INFINITY
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import app.kreate.constant.Language as LyricsLanguage
 
+
+private val logger = Logger.withTag( "Lyrics" )
 val textFieldColors: TextFieldColors
     @Composable
     get() {
@@ -409,11 +411,8 @@ fun Lyrics(
                         }
                         outputText?.replace("\\r","\r")?.replace("\\n","\n")
                     } catch (e: Exception) {
-                        if(isSync){
-                            Timber.e("Lyrics sync translation ${e.stackTraceToString()}")
-                        } else {
-                            Timber.e("Lyrics not sync translation ${e.stackTraceToString()}")
-                        }
+                        val type = if( isSync ) "synced" else "static"
+                        logger.e( e ) { "Failed to load $type lyrics" }
                     }
                 }
                 val translatedText =
@@ -541,11 +540,11 @@ fun Lyrics(
                                             isError = true
                                         }
                                     }.onFailure {
-                                        Timber.e("Lyrics Kugou get error ${it.stackTraceToString()}")
+                                        logger.e( it ) { "Failed to fetch lyrics from KoGou" }
                                     }
                                 }
                             }.onFailure {
-                                Timber.e("Lyrics get error ${it.stackTraceToString()}")
+                                logger.e( it ) { "Failed to fetch lyrics" }
                             }
 
                         } else if (!isShowingSynchronizedLyrics && currentLyrics?.fixed == null) {
@@ -567,7 +566,7 @@ fun Lyrics(
                                     isError = true
                                 }
                             }.onFailure {
-                                Timber.e("Lyrics Innertube get error ${it.stackTraceToString()}")
+                                logger.e( it ) { "Failed to fetch lyrics from Innertube" }
                             }
                             checkedLyricsInnertube = true
                         } else {
@@ -783,7 +782,7 @@ fun Lyrics(
                         error = true
                     } ?: run { loading = false }
                 }.onFailure {
-                    Timber.e("Lyrics get error 1 ${it.stackTraceToString()}")
+                    logger.e( it ) { "Failed to fetch lyrics" }
                 }
             }
 

@@ -12,7 +12,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import androidx.core.app.ServiceCompat
-import timber.log.Timber
+import co.touchlab.kermit.Logger
 
 // https://stackoverflow.com/q/53502244/16885569
 // I found four ways to make the system not kill the stopped foreground service: e.g. when
@@ -93,7 +93,7 @@ abstract class InvincibleService : Service() {
                                 }
                             )
                     }.onFailure {
-                        Timber.e("Failed startForeground in InvincibleService onReceive ${it.stackTraceToString()}")
+                        Logger.e( it, this::class.java.simpleName ) { "startForeground failed!" }
                     }
                 }
             }
@@ -136,12 +136,12 @@ abstract class InvincibleService : Service() {
                             }
                         )
                     }.onFailure {
-                        Timber.e("Failed startForeground in InvincibleService run ${it.stackTraceToString()}")
+                        Logger.e( "", it, this::class.java.simpleName )
                     }
                     runCatching {
                         stopForeground(false)
                     }.onFailure {
-                        Timber.e("Failed stopForeground in InvincibleService run ${it.stackTraceToString()}")
+                        Logger.e( "", it, this::class.java.simpleName )
                     }
                     handler.postDelayed(this, intervalMs)
                 }

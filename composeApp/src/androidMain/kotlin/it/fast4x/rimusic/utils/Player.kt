@@ -18,13 +18,13 @@ import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.util.toDuration
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.enums.DurationInMinutes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 import java.util.ArrayDeque
 
 var GlobalVolume: Float = 0.5f
@@ -296,7 +296,7 @@ fun Player.excludeMediaItems(mediaItems: List<MediaItem>, context: Context): Lis
                 Toaster.n( R.string.message_excluded_s_songs, arrayOf( excludedSongs ) )
         }
     }.onFailure {
-        Timber.e(it.message)
+        Logger.e( "", it, "Player" )
     }
 
     return filteredMediaItems
@@ -317,8 +317,7 @@ fun Player.excludeMediaItem(mediaItem: MediaItem): Boolean {
             return excludedSong
         }
     }.onFailure {
-        //it.printStackTrace()
-        Timber.e(it.message)
+        Logger.e( "", it, "Player" )
         return false
     }
 

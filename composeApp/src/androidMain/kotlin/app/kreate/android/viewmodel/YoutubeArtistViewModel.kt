@@ -25,6 +25,7 @@ import app.kreate.android.utils.innertube.toSong
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongArtistMap
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.isNetworkConnected
@@ -41,7 +42,6 @@ import me.knighthat.innertube.model.InnertubeArtist
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.PropUtils
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 
 class YoutubeArtistViewModel(
@@ -139,7 +139,7 @@ class YoutubeArtistViewModel(
                          }
                      }
                      .onFailure { err ->
-                         Timber.tag( "YouTubeArtist" ).e( err )
+                         Logger.e( "", err, "YouTubeArtist" )
                          Toaster.e( R.string.error_failed_to_load_artist )
                      }
 

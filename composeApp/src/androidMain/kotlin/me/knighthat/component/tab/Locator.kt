@@ -13,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
 import app.kreate.database.models.Song
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
@@ -20,7 +21,6 @@ import it.fast4x.rimusic.ui.components.tab.toolbar.DynamicColor
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import kotlinx.coroutines.runBlocking
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 @UnstableApi
 class Locator private constructor(
@@ -71,7 +71,9 @@ class Locator private constructor(
             // when a list is captured multiple times
             val songs = getSongs()
 
-            Timber.tag("locator").d("LocateComponent.onShortClick songs ${songs.size} -> mediaItem ${mediaItem?.mediaId}")
+            Logger.d( tag = "locator" ) {
+                "LocateComponent.onShortClick songs ${songs.size} -> mediaItem ${mediaItem?.mediaId}"
+            }
 
             if( position == -1 )      // Playing song isn't inside [songs()]
                 Toaster.i( R.string.playing_song_not_found_on_current_list )

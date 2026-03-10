@@ -59,6 +59,7 @@ import app.kreate.database.AlbumTable
 import app.kreate.database.models.Album
 import app.kreate.database.models.Song
 import app.kreate.util.MODIFIED_PREFIX
+import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
@@ -101,7 +102,6 @@ import me.knighthat.component.tab.SongShuffler
 import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubeAlbum
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalTextApi
@@ -231,7 +231,7 @@ fun HomeAlbums(
                          onlineAlbums = results.fastMapNotNull { it as? InnertubeAlbum }
                      }
                      .onFailure { err ->
-                         Timber.tag( "HomeAlbums" ).e( err )
+                         Logger.e( "", err, "HomeAlbum" )
                          Toaster.e(
                              R.string.error_failed_to_sync_tab,
                              context.getString( R.string.albums ).lowercase()

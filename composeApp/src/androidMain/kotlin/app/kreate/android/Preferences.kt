@@ -23,6 +23,8 @@ import app.kreate.constant.PlaylistSortBy
 import app.kreate.constant.SongSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.di.PrefType
+import co.touchlab.kermit.Logger
+import co.touchlab.kermit.Severity
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.AlbumSwipeAction
 import it.fast4x.rimusic.enums.AlbumsType
@@ -100,7 +102,6 @@ import org.jetbrains.annotations.Blocking
 import org.jetbrains.annotations.NonBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import timber.log.Timber
 import java.net.Proxy
 
 /**
@@ -793,6 +794,9 @@ sealed class Preferences<T>(
         val RUNTIME_LOG_LEVEL by lazy {
             Int(preferences, Key.RUNTIME_LOG_LEVEL, "", Log.INFO)
         }
+        val RUNTIME_LOG_SEVERITY by lazy {
+            Enum(preferences, Key.RUNTIME_LOG_SEVERITY, "", Severity.Info)
+        }
         val RUNTIME_LOG_FILE_COUNT by lazy {
             Int(preferences, Key.RUNTIME_LOG_FILE_COUNT, "", 5)
         }
@@ -1124,8 +1128,9 @@ sealed class Preferences<T>(
         set(value) {
             if( Looper.myLooper() != Looper.getMainLooper() ) {
                 val threadName = Looper.myLooper()?.thread?.name ?: "unknown"
-                Timber.tag( LOGGING_TAG )
-                      .e(Throwable(), "$key is being written on thread \"$threadName\"")
+                Logger.e( Throwable(), LOGGING_TAG ) {
+                    "$key is being written on thread \"$threadName\""
+                }
 
                 Toaster.e( R.string.error_required_report )
 
@@ -1894,6 +1899,7 @@ sealed class Preferences<T>(
         const val RUNTIME_LOG = "DebugLog"
         const val RUNTIME_LOG_SHARED = "DebugLogShared"
         const val RUNTIME_LOG_LEVEL = "DebugLogLevel"
+        const val RUNTIME_LOG_SEVERITY = "DebugLogSeverity"
         const val RUNTIME_LOG_FILE_COUNT = "DebugLogFileCount"
         const val RUNTIME_LOG_MAX_SIZE_PER_FILE = "DebugLogMaxSizePerFile"
         const val ALBUMS_PLATFORM_INDICATOR = "AlbumPlatformIndicator"

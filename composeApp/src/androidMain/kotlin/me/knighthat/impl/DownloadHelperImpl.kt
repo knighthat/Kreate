@@ -19,6 +19,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.DownloadHelper
 import app.kreate.database.models.Song
+import co.touchlab.kermit.Logger
 import coil3.request.allowHardware
 import coil3.request.bitmapConfig
 import it.fast4x.rimusic.Database
@@ -45,7 +46,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
-import timber.log.Timber
 import java.util.concurrent.Executors
 
 
@@ -162,8 +162,7 @@ class DownloadHelperImpl(
             context.download<MyDownloadService>(downloadRequest).exceptionOrNull()?.let {
                 if (it is CancellationException) throw it
 
-                Timber.e("MyDownloadHelper scheduleDownload exception ${it.stackTraceToString()}")
-                println("MyDownloadHelper scheduleDownload exception ${it.stackTraceToString()}")
+                Logger.e( it, "DownloadHelperImpl" ) { "addDownload failed!"}
             }
             downloadSyncedLyrics( mediaItem.asSong )
 
@@ -182,8 +181,7 @@ class DownloadHelperImpl(
             context.removeDownload<MyDownloadService>(mediaItem.mediaId).exceptionOrNull()?.let {
                 if (it is CancellationException) throw it
 
-                Timber.e(it.stackTraceToString())
-                println("MyDownloadHelper removeDownload exception ${it.stackTraceToString()}")
+                Logger.e( it, "DownloadHelperImpl" ) { "removeDownload failed!"}
             }
         }
     }

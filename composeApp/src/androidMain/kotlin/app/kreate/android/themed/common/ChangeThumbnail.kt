@@ -26,6 +26,7 @@ import androidx.core.net.toUri
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.utils.isLocalFile
+import co.touchlab.kermit.Logger
 import coil3.imageLoader
 import coil3.request.SuccessResult
 import it.fast4x.rimusic.appContext
@@ -39,7 +40,6 @@ import kotlinx.coroutines.withContext
 import me.knighthat.component.dialog.InputDialogConstraints
 import me.knighthat.component.dialog.TextInputDialog
 import me.knighthat.utils.Toaster
-import timber.log.Timber
 
 
 abstract class ChangeThumbnail(
@@ -126,7 +126,7 @@ abstract class ChangeThumbnail(
                                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                        )
                                    } catch( e: Exception ) {
-                                       Timber.tag("ChangeThumbnail").e( e )
+                                       Logger.e( "", e, "ChangeThumbnail" )
                                        Toaster.e( R.string.error_failed_to_load_image )
                                    }
                                }
