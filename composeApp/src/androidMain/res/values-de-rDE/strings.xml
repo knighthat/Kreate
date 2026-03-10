@@ -813,7 +813,7 @@
     <string name="setting_description_runtime_log_max_size_per_file">Must be at least %s before rolling over</string>
     <string name="setting_entry_sync_quotes">Synchronisiere \"%s\"</string>
     <string name="setting_entry_test_proxy">Proxy testen</string>
-    <string name="info_proxy_verified">Proxy ist korrekt konfiguriert</string>
+    <string name="success_proxy_verified">Proxy ist korrekt konfiguriert</string>
     <string name="cache_location_split">Aufteilen</string>
     <string name="setting_description_cache_location_system">Zwischengespeicherte und heruntergeladene Titel im Cache der App speichern</string>
     <string name="setting_description_cache_location_private">Zwischengespeicherte und heruntergeladene Titel im privaten Speicher der App speichern</string>
@@ -877,4 +877,9 @@
     <string name="doh_mullvad">Mullvad</string>
     <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
+    <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
+    <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>
+    <string name="error_failed_to_verify_doh">Failed to verify DoH</string>
+    <string name="setting_entry_test_doh">Test DoH</string>
+    <string name="success_doh_verified">DoH verified successfully</string>
 </resources>
