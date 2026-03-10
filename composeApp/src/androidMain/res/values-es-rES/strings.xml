@@ -813,7 +813,7 @@
     <string name="setting_description_runtime_log_max_size_per_file">Debe tener al menos %s antes de renovar</string>
     <string name="setting_entry_sync_quotes">Sincronizar \"%s\"</string>
     <string name="setting_entry_test_proxy">Probar proxy</string>
-    <string name="info_proxy_verified">El proxy está configurado correctamente</string>
+    <string name="success_proxy_verified">El proxy está configurado correctamente</string>
     <string name="cache_location_split">Dividir</string>
     <string name="setting_description_cache_location_system">Almacena tanto el contenido en como las descargas en el caché de la aplicación, que se pueden eliminar borrando la caché en los ajustes</string>
     <string name="setting_description_cache_location_private">Almacena tanto las canciones como las descargas en el caché del almacenamiento privado de la aplicación, que solo se pueden eliminar si se borran los datos de la aplicación</string>
@@ -877,4 +877,9 @@
     <string name="doh_mullvad">Mullvad</string>
     <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
+    <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
+    <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>
+    <string name="error_failed_to_verify_doh">Failed to verify DoH</string>
+    <string name="setting_entry_test_doh">Test DoH</string>
+    <string name="success_doh_verified">DoH verified successfully</string>
 </resources>
