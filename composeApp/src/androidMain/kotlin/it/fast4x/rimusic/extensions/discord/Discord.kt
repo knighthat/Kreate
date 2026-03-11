@@ -1,6 +1,7 @@
 package it.fast4x.rimusic.extensions.discord
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
@@ -15,10 +16,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import me.knighthat.innertube.UserAgents
 import me.knighthat.utils.Toaster
 
@@ -58,7 +62,17 @@ fun DiscordLoginAndGetToken( onDone: () -> Unit ) {
                     @JavascriptInterface
                     @Suppress("unused")     // To stop IDE from complaining
                     fun onRetrieveToken( token: String ) {
-                        Preferences.DISCORD_ACCESS_TOKEN.value = token
+                        if( token.isNotBlank() && BuildConfig.DEBUG )
+                            // This is intentional, using logcat bypasses Kermit,
+                            // Which bypasses logging to file
+                            Log.v( "Discord", token )
+
+                        // This function is usually called on worker thread
+                        // Enforce writing on main to prevent crashing the app.
+                        runBlocking( Dispatchers.Main ) {
+                            Preferences.DISCORD_ACCESS_TOKEN.value = token
+                        }
+
                         onDone()
                     }
 
