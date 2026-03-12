@@ -29,6 +29,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonArray
@@ -71,12 +72,11 @@ class DiscordImpl : Discord, KoinComponent {
     private val context: Context by inject()
     private val logger = Logger.withTag( LOGGING_TAG )
     private val lock = Mutex()
+    private val smallImage by lazy(::getAppLogoUrl)
     private val _session = AtomicReference<DiscordWebSocket?>(null)
     private val _token = MutableStateFlow<String?>(null)
     private val _isActive = AtomicBoolean(false)
 
-    @Volatile
-    private lateinit var smallImage: String
     @Volatile
     private var previousPresence: Presence? = null
     @Volatile
@@ -176,7 +176,7 @@ class DiscordImpl : Discord, KoinComponent {
             returns( null ) implies( artworkUri == null )
         }
         if( artworkUri == null || artworkUri.toString().isBlank() )
-            return if( ::smallImage.isInitialized ) smallImage else null
+            return smallImage
 
         logger.v { "Getting external url for artwork $artworkUri" }
 
@@ -194,37 +194,29 @@ class DiscordImpl : Discord, KoinComponent {
                 artworkUri.toString()
 
         return submitArtworkUrlToDiscord( artworkUri, APPLICATION_ID )
-            .fold(
-                onSuccess = {
-                    logger.v { "Discord assigns $it as image url" }
-
-                    cachedExternalUrls[artworkCacheKey] = it
-
-                    it
-                },
-                onFailure = {
-                    logger.e( it ) { "Upload image to Discord failed" }
-                    getAppLogoUrl()
-                }
-            )
+            .onSuccess {
+                logger.v { "Discord assigns $it as image url" }
+                cachedExternalUrls[artworkCacheKey] = it
+            }
+            .onFailure {
+                logger.e( it ) { "Upload image to Discord failed" }
+            }
+            .getOrDefault( smallImage )
     }
 
-    private suspend fun getAppLogoUrl(): String? =
-        if ( ::smallImage.isInitialized ) {
-            logger.v { "Small image is cached" }
-
-            smallImage
-        } else
-            submitArtworkUrlToDiscord( KREATE_IMAGE_URL, APPLICATION_ID )
-                .onFailure {
-                    logger.e( it ) { "Failed to upload small image" }
-                }
-                .getOrNull()
-                ?.also {
-                    smallImage = it
-
-                    logger.d { "Small image: $it" }
-                }
+    /**
+     * This function shouldn't be called anywhere other than initialization of [smallImage]
+     */
+    private fun getAppLogoUrl(): String? = runBlocking {
+        submitArtworkUrlToDiscord( KREATE_IMAGE_URL, APPLICATION_ID )
+            .onSuccess {
+                logger.d { "Small image: $it" }
+            }
+            .onFailure {
+                logger.e( it ) { "Failed to upload app logo!" }
+            }
+            .getOrNull()
+    }
     //</editor-fold>
 
     private fun onTokenChanged() = scope.launch {
@@ -251,11 +243,11 @@ class DiscordImpl : Discord, KoinComponent {
     }
 
     private suspend fun makeAssets( largeImage: Uri?, smallImage: Uri? ): Assets {
-        val largeImage = getImageUrl( largeImage ) ?: getAppLogoUrl()
-        val smallImage = if( largeImage == getAppLogoUrl() && smallImage == null )
+        val largeImage = getImageUrl( largeImage )
+        val smallImage = if( largeImage == this.smallImage && smallImage == null )
             null
         else
-            getImageUrl( smallImage ) ?: getAppLogoUrl()
+            getImageUrl( smallImage )
 
         return Assets(largeImage, smallImage)
     }
@@ -397,7 +389,7 @@ class DiscordImpl : Discord, KoinComponent {
                  */
                 val session = _session.load() ?: throw SessionNotAvailableException()
                 val assets = Assets(
-                    largeImage = getAppLogoUrl(),
+                    largeImage = smallImage,
                     smallImage = null
                 )
                 val now = System.currentTimeMillis()
