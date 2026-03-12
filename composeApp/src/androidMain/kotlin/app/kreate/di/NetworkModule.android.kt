@@ -4,6 +4,7 @@ import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.enums.DohServer
+import app.kreate.android.service.NewPipeDownloaderImpl
 import app.kreate.logging.OkHttpLogger
 import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
@@ -32,6 +33,7 @@ import okhttp3.dnsoverhttps.DnsOverHttps
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import org.schabi.newpipe.extractor.NewPipe
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
@@ -137,6 +139,9 @@ actual val networkModule: Module = module {
                     .dns( get() )
                     .addInterceptor( interceptor )
                     .build()
+                    .also {
+                        NewPipe.init( NewPipeDownloaderImpl(it) )
+                    }
     }
     single {
         HttpClient(OkHttp) {
