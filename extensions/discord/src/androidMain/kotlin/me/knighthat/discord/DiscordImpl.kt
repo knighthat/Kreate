@@ -3,6 +3,7 @@ package me.knighthat.discord
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
+import android.webkit.MimeTypeMap
 import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -99,11 +100,12 @@ class DiscordImpl : Discord, KoinComponent {
                 val (mimeType, fileData) = with( context.contentResolver ) {
                     getType( uploadableUri )!! to openInputStream( uploadableUri )!!.readBytes()
                 }
+                val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType( mimeType )
 
                 append("reqtype", "fileupload")
                 append("time", "1h")
                 append("fileToUpload", fileData, Headers.build {
-                    append( HttpHeaders.ContentDisposition, "filename=\"${System.currentTimeMillis()}\"" )
+                    append( HttpHeaders.ContentDisposition, "filename=\"${System.currentTimeMillis()}.$extension\"" )
                     append( HttpHeaders.ContentType, mimeType )
                 })
             }
