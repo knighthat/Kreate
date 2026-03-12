@@ -27,12 +27,12 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
 import androidx.media3.extractor.DefaultExtractorsFactory
 import app.kreate.android.Preferences
+import app.kreate.android.service.PlayerEventUpdateDiscord
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.utils.isAtLeastAndroid10
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
 import me.knighthat.discord.Discord
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -142,6 +142,7 @@ class CustomExoPlayer private constructor(
 
     init {
         this.addListener( this )
+        this.addListener( PlayerEventUpdateDiscord() )
     }
 
     private fun stopFadingEffect() {
@@ -222,32 +223,6 @@ class CustomExoPlayer private constructor(
         }
     }
 
-    private fun pause0( updateDiscord: Boolean ) {
-        fun action() {
-            player.pause()
-
-            if( updateDiscord )
-                onIsPlayingChanged( false )
-        }
-
-        val duration = Preferences.AUDIO_FADE_DURATION.value.asMillis
-        if( duration == 0L ) {
-            action()
-            return
-        }
-
-        val originalVolume = volume
-        startFade(
-            start = volume,
-            end = 0f,
-            durationInMillis = duration,
-            doOnEnd = {
-                action()
-                volume = originalVolume
-            }
-        )
-    }
-
     override fun getSecondaryRenderer( index: Int ) = player.getSecondaryRenderer( index )
 
     override fun release() {
@@ -282,14 +257,23 @@ class CustomExoPlayer private constructor(
         )
     }
 
-    override fun pause() = this.pause0( true )
+    override fun pause() {
+        val duration = Preferences.AUDIO_FADE_DURATION.value.asMillis
+        if( duration == 0L ) {
+            player.pause()
+            return
+        }
 
-    override fun stop() {
-        this.pause0( false )
-        player.stop()
-
-        if( Preferences.isLoggedInToDiscord() )
-            runBlocking { discord.logout() }
+        val originalVolume = volume
+        startFade(
+            start = volume,
+            end = 0f,
+            durationInMillis = duration,
+            doOnEnd = {
+                player.pause()
+                volume = originalVolume
+            }
+        )
     }
 
     override fun getBufferedPercentage(): Int =
@@ -317,17 +301,4 @@ class CustomExoPlayer private constructor(
 
     override fun onTimelineChanged( timeline: Timeline, reason: Int ) =
         _currentTimelineState.update { timeline }
-
-    override fun onIsPlayingChanged( isPlaying: Boolean ) {
-        if( !Preferences.isLoggedInToDiscord() )
-            return
-
-        val mediaItem = player.currentMediaItem ?: return
-        val startTime = System.currentTimeMillis() - player.currentPosition
-//        @SuppressLint("NewApi")     // [Preferences.isLoggedInToDiscord] already verified it
-//        if( isPlaying )
-//            discord.updateMediaItem( mediaItem, startTime )
-//        else
-//            discord.pause( mediaItem, startTime )
-    }
 }

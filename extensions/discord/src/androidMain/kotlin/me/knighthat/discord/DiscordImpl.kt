@@ -17,6 +17,10 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import kizzy.gateway.DiscordWebSocket
 import kizzy.gateway.DiscordWebSocketImpl
+import kizzy.gateway.entities.presence.Activity
+import kizzy.gateway.entities.presence.Assets
+import kizzy.gateway.entities.presence.Presence
+import kizzy.gateway.entities.presence.Timestamps
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -256,6 +260,96 @@ class DiscordImpl : Discord, KoinComponent {
             logger.e( e ) { "Failed to close connection" }
 
             return false
+        }
+    }
+
+    override suspend fun listening( song: ListeningActivity ) {
+        val session = _session.load()
+        if( session == null || !session.isWebSocketConnected() ) {
+            logger.v { "Session not available" }
+            return
+        }
+
+        try {
+            val assets = Assets(
+                largeImage = getImageUrl( song.thumbnailUrl ),
+                smallImage = getImageUrl( song.artistThumbnailUrl ) ?: getAppLogoUrl(),
+                largeText = song.artistName,
+                smallText = "Listening"
+            )
+            val activity = Activity(
+                name = song.songName,
+                type = Type.LISTENING,
+                timestamps = Timestamps(song.timeStart + song.duration, song.timeStart),
+                applicationId = APPLICATION_ID,
+                details = song.albumName,
+                url = song.artistUrl.toString(),
+                assets = assets
+            )
+            val presence = Presence(listOf(activity), false)
+            session.sendActivity( presence )
+        } catch( e: Exception ) {
+            logger.e( e ) { "Send listening activity failed!" }
+        }
+    }
+
+    override suspend fun pause( song: ListeningActivity ) {
+        val session = _session.load()
+        if( session == null || !session.isWebSocketConnected() ) {
+            logger.v { "Session not available" }
+            return
+        }
+
+        try {
+            val assets = Assets(
+                largeImage = getImageUrl( song.thumbnailUrl ),
+                smallImage = getImageUrl( song.artistThumbnailUrl ) ?: getAppLogoUrl(),
+                largeText = song.artistName,
+                smallText = "Pausing"
+            )
+            val activity = Activity(
+                name = song.songName,
+                type = Type.LISTENING,
+                timestamps = Timestamps(null, song.timeStart),
+                applicationId = APPLICATION_ID,
+                details = song.albumName,
+                url = song.artistUrl.toString(),
+                assets = assets
+            )
+            val presence = Presence(listOf(activity), true, System.currentTimeMillis())
+            session.sendActivity( presence )
+        } catch( e: Exception ) {
+            logger.e( e ) { "Send pause activity failed!" }
+        }
+    }
+
+    override suspend fun reset() {
+        val session = _session.load()
+        if( session == null || !session.isWebSocketConnected() ) {
+            logger.v { "Session not available" }
+            return
+        }
+
+        try {
+            val assets = Assets(
+                largeImage = getAppLogoUrl(),
+                smallImage = null,
+                largeText = "Kreate Music",
+                smallText = "Pausing"
+            )
+            val now = System.currentTimeMillis()
+            val activity = Activity(
+                name = null,        // Only display `Listening`
+                type = Type.LISTENING,
+                timestamps = Timestamps(null, now),
+                applicationId = APPLICATION_ID,
+                details = "Browsing",
+                assets = assets
+            )
+            val presence = Presence(listOf(activity), true, now)
+            session.sendActivity( presence )
+        } catch( e: Exception ) {
+            logger.e( e ) { "Reset activity failed!" }
         }
     }
 }

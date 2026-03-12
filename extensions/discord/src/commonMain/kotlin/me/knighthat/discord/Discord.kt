@@ -23,4 +23,21 @@ interface Discord {
      * to stop using DiscordRPC
      */
     suspend fun logout(): Boolean
+
+    /**
+     * Update rich presence to provided [song] activity
+     */
+    suspend fun listening( song: ListeningActivity )
+
+    /**
+     * Update rich presence to stop timeline and
+     * switch to pausing (idling) state, while
+     * still showing the [song].
+     */
+    suspend fun pause( song: ListeningActivity )
+
+    /**
+     * Reset presence to only show app's name and logo
+     */
+    suspend fun reset()
 }
