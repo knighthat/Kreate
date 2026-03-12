@@ -7,5 +7,4 @@ actual val platformModules: Array<out Module> = arrayOf(
     preferencesModule,
     cacheModule,
     playerModule,
-    externalServicesModule
 )

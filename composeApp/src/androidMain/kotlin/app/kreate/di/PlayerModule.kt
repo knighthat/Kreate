@@ -2,6 +2,7 @@
 
 package app.kreate.di
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.compose.runtime.getValue
@@ -18,7 +19,9 @@ import androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERR
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.DownloadHelper
 import app.kreate.android.service.player.CustomExoPlayer
+import app.kreate.android.service.player.VolumeObserver
 import app.kreate.android.utils.CharUtils
 import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
@@ -52,12 +55,14 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.json.Json
+import me.knighthat.impl.DownloadHelperImpl
 import me.knighthat.innertube.Endpoints
 import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.UserAgents
 import me.knighthat.innertube.response.PlayerResponse
 import me.knighthat.utils.Toaster
 import okhttp3.OkHttpClient
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.Qualifier
 import org.koin.core.qualifier.QualifierValue
 import org.koin.dsl.module
@@ -487,12 +492,20 @@ val playerModule = module {
         )
     }
 
+    singleOf( ::VolumeObserver )
     single {
-        val dataSourceFactory: ResolvingDataSource.Factory by inject(DatasourceType.PLAYER)
-        val preferences: SharedPreferences by inject(PrefType.DEFAULT)
-        val context: Context by inject()
+        val dataSourceFactory: ResolvingDataSource.Factory = get(DatasourceType.PLAYER)
+        val preferences: SharedPreferences = get(PrefType.DEFAULT)
+        val context: Context = get()
 
-        return@single CustomExoPlayer(dataSourceFactory, preferences, context)
+        CustomExoPlayer(dataSourceFactory, preferences, context)
+    }
+    @SuppressLint("UnsafeOptInUsageError")
+    single<DownloadHelper> {
+        val dataSourceFactory: ResolvingDataSource.Factory = get(DatasourceType.DOWNLOADER)
+        val downloadCache: Cache = get(CacheType.DOWNLOAD)
+
+        DownloadHelperImpl(dataSourceFactory, get(), downloadCache)
     }
 }
 

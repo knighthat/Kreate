@@ -1,6 +1,7 @@
 package it.fast4x.rimusic.extensions.discord
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
@@ -15,15 +16,21 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import me.knighthat.discord.Discord
+import me.knighthat.innertube.UserAgents
 import me.knighthat.utils.Toaster
 
 @SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DiscordLoginAndGetToken( onDone: () -> Unit ) {
+fun DiscordLoginAndGetToken( discord: Discord, onDone: () -> Unit ) {
     var webView: WebView? = null
 
     // This section is ripped from Metrolist - Full credit to their team
@@ -39,12 +46,11 @@ fun DiscordLoginAndGetToken( onDone: () -> Unit ) {
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
 
-                WebView.setWebContentsDebuggingEnabled(true)
-
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
                 settings.setSupportZoom(true)
                 settings.builtInZoomControls = true
+                settings.userAgentString = UserAgents.CHROME_WINDOWS
 
                 CookieManager.getInstance().apply {
                     removeAllCookies(null)
@@ -57,17 +63,29 @@ fun DiscordLoginAndGetToken( onDone: () -> Unit ) {
                     @JavascriptInterface
                     @Suppress("unused")     // To stop IDE from complaining
                     fun onRetrieveToken( token: String ) {
-                        Preferences.DISCORD_ACCESS_TOKEN.value = token
+                        if( token.isNotBlank() && BuildConfig.DEBUG )
+                            // This is intentional, using logcat bypasses Kermit,
+                            // Which bypasses logging to file
+                            Log.v( "Discord", token )
+
+                        // This function is usually called on worker thread
+                        // Enforce writing on main to prevent crashing the app.
+                        runBlocking( Dispatchers.Main ) {
+                            Preferences.DISCORD_ACCESS_TOKEN.value = token
+                        }
+
+                        discord.login( token )
+
                         onDone()
                     }
 
                     @JavascriptInterface
                     @Suppress("unused")     // To stop IDE from complaining
                     fun onFailure( message: String ) {
-                        if ( message == "null" )
-                            Toaster.e( R.string.error_failed_to_extract_discord_acess_token )
-                        else
-                            Toaster.e( message )
+                        if( message != "null" )
+                            Logger.e( tag = "Discord" ) { message }
+
+                        Toaster.e( R.string.error_failed_to_extract_discord_acess_token )
 
                         onDone()
                     }
@@ -77,22 +95,16 @@ fun DiscordLoginAndGetToken( onDone: () -> Unit ) {
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView, url: String) {
                         if ( url.contains("/channels/@me") || url.contains("/app") ) {
+                            // Source: https://gist.github.com/MarvNC/e601f3603df22f36ebd3102c501116c6
                             view.evaluateJavascript(
                                 """
                                 (function() {
                                     try {
-                                        var token = localStorage.getItem("token");
+                                        const iframe = document.createElement('iframe');
+                                        const token = JSON.parse(document.body.appendChild(iframe).contentWindow.localStorage.token);
+
                                         if (token) {
-                                            Android.onRetrieveToken(token.slice(1, -1));
-                                        } else {
-                                            var i = document.createElement('iframe');
-                                            document.body.appendChild(i);
-                                            
-                                            token = i.contentWindow.localStorage.token;
-                                        }
-                                        
-                                        if (token) {
-                                            Android.onRetrieveToken(token.slice(1, -1));
+                                            Android.onRetrieveToken(token);
                                         } else {
                                             Android.onFailure("null");
                                         }

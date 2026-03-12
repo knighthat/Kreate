@@ -6,14 +6,14 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.OpenableColumns
-import app.kreate.android.utils.isLocalFile
 import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.contracts.ExperimentalContracts
-import kotlin.io.path.createTempFile
 import kotlin.math.roundToInt
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-object ImageProcessor {
+internal object ImageProcessor {
 
     private fun calculateInSampleSize(
         srcWidth: Int,
@@ -86,7 +86,7 @@ object ImageProcessor {
      * @throws IOException other read/write related issues
      * @throws OutOfMemoryError when heap is overflown
      */
-    @OptIn(ExperimentalContracts::class)
+    @OptIn(ExperimentalContracts::class, ExperimentalUuidApi::class)
     @Throws(
         IllegalArgumentException::class,
         SecurityException::class,
@@ -94,7 +94,7 @@ object ImageProcessor {
         OutOfMemoryError::class
     )
     fun compressArtwork( context: Context, artworkUri: Uri, maxWidth: Int, maxHeight: Int, maxSize: Long ): Uri {
-        require(artworkUri.isLocalFile()) {
+        require( artworkUri.isLocalFile() ) {
             "$artworkUri is NOT a local file!"
         }
 
@@ -130,9 +130,7 @@ object ImageProcessor {
             if (decodedBitmap == null)
                 throw IllegalArgumentException("Failed to decode image into Bitmap from URI: $artworkUri")
 
-            val outputFile = createTempFile( "ImageProcessor_compressArtwork_${System.currentTimeMillis()}" ).toFile()
-            outputFile.deleteOnExit()
-
+            val outputFile = context.cacheDir.resolve( "image_processor/${Uuid.generateV4()}" )
             FileOutputStream(outputFile).use { outStream ->
                 val success = decodedBitmap.compress(Bitmap.CompressFormat.PNG, 70, outStream)
                 decodedBitmap.recycle() // Release memory
