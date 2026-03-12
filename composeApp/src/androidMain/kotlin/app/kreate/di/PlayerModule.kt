@@ -5,11 +5,13 @@ package app.kreate.di
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastFilter
+import androidx.core.content.getSystemService
 import androidx.core.net.toUri
+import androidx.media3.common.C
 import androidx.media3.datasource.DataSource
-import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.datasource.cache.Cache
@@ -28,12 +30,11 @@ import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.isLocalFile
 import app.kreate.database.models.Format
 import co.touchlab.kermit.Logger
-import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonWriter
 import io.ktor.client.HttpClient
-import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.request.head
 import io.ktor.http.URLBuilder
+import io.ktor.http.isSuccess
 import io.ktor.http.parseQueryString
 import io.ktor.util.collections.ConcurrentMap
 import io.ktor.util.network.UnresolvedAddressException
@@ -44,7 +45,6 @@ import it.fast4x.rimusic.service.MissingDecipherKeyException
 import it.fast4x.rimusic.service.NoInternetException
 import it.fast4x.rimusic.service.PlayableFormatNotFoundException
 import it.fast4x.rimusic.service.UnplayableException
-import it.fast4x.rimusic.utils.isConnectionMetered
 import it.fast4x.rimusic.utils.isNetworkAvailable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -74,10 +74,12 @@ import org.schabi.newpipe.extractor.services.youtube.YoutubeStreamHelper
 import java.net.UnknownHostException
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.time.Duration.Companion.seconds
-import me.knighthat.innertube.request.body.Context as InnertubeContext
 
 
-private const val CHUNK_LENGTH = 128 * 1024L     // 128Kb
+private const val CHUNK_LENGTH = 512 * 1024L     // 512KB
+private const val ONE_HOUR = 3_600_000L
+private const val METHOD_ANDROID = 1
+private const val METHOD_IOS = 2
 
 /**
  * Acts as a lock to keep [upsertSongFormat] from starting before
@@ -91,14 +93,6 @@ private var databaseWorker: Job = Job()
  */
 private val justInserted = AtomicReference("")
 private val cachedStreamUrl = ConcurrentMap<String, StreamCache>()
-private val CONTEXTS = arrayOf(
-    InnertubeContext.WEB_REMIX_DEFAULT,
-    InnertubeContext.ANDROID_VR_DEFAULT,
-    InnertubeContext.IOS_DEFAULT,
-    InnertubeContext.TVHTML5_EMBEDDED_PLAYER_DEFAULT,
-    InnertubeContext.ANDROID_DEFAULT,
-    InnertubeContext.WEB_DEFAULT
-)
 private val jsonParser =
     Json {
         ignoreUnknownKeys = true
@@ -107,6 +101,7 @@ private val jsonParser =
         explicitNulls = false
     }
 private val client: HttpClient by inject(HttpClient::class.java)
+private val context: Context by inject(Context::class.java)
 private val logger = Logger.withTag( "dataspec" )
 
 //<editor-fold desc="Database handlers">
@@ -243,190 +238,149 @@ private fun extractStreamUrl( videoId: String, format: PlayerResponse.StreamingD
 //</editor-fold>
 //<editor-fold desc="Validators">
 private suspend fun validateStreamUrl( streamUrl: String ): Boolean =
-    client
-        .head( streamUrl ) {
-            logger.v { "Validating `streamUrl`..." }
-
-            expectSuccess = false
-        }
-        .status
-        .value
-        .also {
-            logger.d { "`streamUrl` returns code $it" }
-        } == 200
-
-private fun checkPlayabilityStatus( playabilityStatus: PlayerResponse.PlayabilityStatus ) =
-    when( playabilityStatus.status ) {
-        "OK"                -> logger.d { "`playabilityStatus` is OK" }
-        "LOGIN_REQUIRED"    -> throw LoginRequiredException(playabilityStatus.reason)
-        else                -> throw UnplayableException(playabilityStatus.reason)
-    }
+    client.head( "$streamUrl&range=0-$CHUNK_LENGTH" )
+          .status
+          .also {
+              if( it.isSuccess() )
+                  logger.d { "Stream url validated successfully" }
+              else
+                  logger.w { "Stream url validation returns code ${it.value} - ${it.description}" }
+          }
+          .isSuccess()
 //</editor-fold>
 //<editor-fold desc="Get response">
-private fun getPlayerResponseFromNewPipe(
-    index: Int,
-    songId: String,
-    cpn: String
-): PlayerResponse {
-    fun parsePlayerResponseViaReflection( jsonObject: JsonObject): PlayerResponse {
-        val serializerClass = Class.forName("me.knighthat.internal.response.PlayerResponseImpl$\$serializer")
-        val serializerInstance = serializerClass.getDeclaredField("INSTANCE").get(null) as KSerializer<*>
-
-        return jsonParser.decodeFromString(
-            serializerInstance, JsonWriter.string( jsonObject )
-        ) as PlayerResponse
-    }
-
-    val (gl, hl) = with( CURRENT_LOCALE ) {
-        ContentCountry(regionCode) to Localization(languageCode)
-    }
-    val jsonResponse = if( index == 1 )
-        YoutubeStreamHelper.getAndroidReelPlayerResponse( gl, hl, songId, cpn )
-    else
-        YoutubeStreamHelper.getIosPlayerResponse( gl, hl, songId, cpn, null )
-
-    return parsePlayerResponseViaReflection( jsonResponse )
-}
-
 @OptIn(ExperimentalSerializationApi::class)
-private suspend fun getPlayerResponse(
+private suspend fun makeStreamCache(
     songId: String,
-    audioQualityFormat: AudioQualityFormat,
-    connectionMetered: Boolean
+    isConnectionMetered: Boolean,
+    audioQuality: AudioQualityFormat,
+    method: Int = METHOD_ANDROID
 ): StreamCache {
-    var cache: StreamCache? = null
+    logger.v { "Getting online stream url for \"$songId\" with method $method" }
+    logger.d { "Is connection metered: $isConnectionMetered" }
+    logger.d { "Audio format: $audioQuality" }
 
     val cpn = CharUtils.randomString( 12 )
-    var lastException: Throwable? = null
-
-    for( index in 0..2 ) {
-        try {
-            val response = getPlayerResponseFromNewPipe( index, songId, cpn )
-
-            checkPlayabilityStatus(
-                requireNotNull( response.playabilityStatus )
-            )
-
-            val format = extractFormat( response.streamingData, audioQualityFormat, connectionMetered )
-            val streamUrl = extractStreamUrl( songId, format )
-
-            if( validateStreamUrl( streamUrl ) ) {
-                // This variable must be set to [null] here
-                // Otherwise, error will be thrown as soon as the while-loop ends
-                lastException = null
-
-                format.also {
-                    upsertSongFormat( songId, it )
-                }
-
-                cache = StreamCache(
-                    cpn,
-                    format.contentLength?.toLong() ?: CHUNK_LENGTH,
-                    streamUrl,
-                    response.streamingData?.expiresInSeconds?.toLong() ?: 0L
-                )
-
-                break
-            }
-        } catch ( e: Exception ) {
-            when( e ) {
-                is UnknownHostException,
-                is UnresolvedAddressException -> {
-                    // Make sure it's not a temporary network fluctuation
-                    if( !ConnectivityUtils.isAvailable.value )
-                        throw NoInternetException(e)
-                }
-
-                else -> {
-                    // Only show this exception because this needs update
-                    // Other errors might be because of unsuccessful stream extraction
-                    if( e is MissingFieldException )
-                        e.message?.also( Toaster::e )
-
-                    if( index < CONTEXTS.size )
-                        logger
-                            .e( "${CONTEXTS[index].client.clientName} returns error", e )
-                }
-            }
-
-            lastException = e
+    try {
+        //<editor-fold desc="Getting response">
+        val (gl, hl) = with( CURRENT_LOCALE ) {
+            ContentCountry(regionCode) to Localization(languageCode)
         }
+        val jsonResponse = if( method == METHOD_ANDROID )
+            YoutubeStreamHelper.getAndroidReelPlayerResponse( gl, hl, songId, cpn )
+        else
+            YoutubeStreamHelper.getIosPlayerResponse( gl, hl, songId, cpn, null )
+        val serializerClass = Class.forName("me.knighthat.internal.response.PlayerResponseImpl$\$serializer")
+        val serializerInstance = serializerClass.getDeclaredField("INSTANCE").get(null) as KSerializer<*>
+        val response = jsonParser.decodeFromString(
+            serializerInstance, JsonWriter.string( jsonResponse )
+        ) as PlayerResponse
+        //</editor-fold>
+        //<editor-fold desc="Verify playability">
+        val playabilityStatus = requireNotNull( response.playabilityStatus ) {
+            "playabilityStatus is null!"
+        }
+        when( playabilityStatus.status ) {
+            "OK"                -> logger.d { "playabilityStatus is OK" }
+            "LOGIN_REQUIRED"    -> throw LoginRequiredException(playabilityStatus.reason)
+            else                -> throw UnplayableException(playabilityStatus.reason)
+        }
+        //</editor-fold>
+        //<editor-fold desc="Extract and validate stream url">
+        val format = extractFormat( response.streamingData, audioQuality, isConnectionMetered )
+        val streamUrl = extractStreamUrl( songId, format )
+        val validateResult = validateStreamUrl( streamUrl )
+        //</editor-fold>
+
+        return if( validateResult ) {
+            upsertSongFormat( songId, format )
+
+            val contentLength = format.contentLength?.toLong() ?: CHUNK_LENGTH
+            val playableUrl = response.streamingData?.expiresInSeconds?.toLong() ?: ONE_HOUR
+            StreamCache(cpn, contentLength, streamUrl, playableUrl)
+        } else
+            // Try again with IOS setup
+            makeStreamCache( songId, isConnectionMetered, audioQuality, METHOD_IOS )
+    } catch( e: Exception ) {
+        if( method == METHOD_ANDROID )
+            return makeStreamCache( songId, isConnectionMetered, audioQuality, METHOD_IOS )
+
+        when( e ) {
+            is UnknownHostException,
+            is UnresolvedAddressException -> {
+                // Make sure it's not a temporary network fluctuation
+                if( !ConnectivityUtils.isAvailable.value )
+                    throw NoInternetException(e)
+            }
+
+            // Only show this exception because this needs update
+            // Other errors might be because of unsuccessful stream extraction
+            is MissingFieldException -> {
+                e.message?.also( Toaster::e )
+                logger.e( "", e )
+            }
+        }
+
+        throw e
+    }
+}
+
+private fun getPlayableUrl( songId: String ): StreamCache = runBlocking( Dispatchers.IO ) {
+    logger.v { "Processing $songId" }
+
+    val cache: StreamCache
+    if( cachedStreamUrl.contains(songId) ) {
+        cache = cachedStreamUrl[songId]!!
+        // Handle expired url with 30secs offset
+        if( cache.expiredTimeMillis - 30.seconds.inWholeMilliseconds <= System.currentTimeMillis() ) {
+            logger.d { "Cached stream url of $songId expired" }
+
+            cachedStreamUrl.remove( songId )
+            return@runBlocking getPlayableUrl( songId )
+        } else
+            logger.d { "Stream url of $songId is cached" }
+    } else {
+        val connManager = context.getSystemService<ConnectivityManager>()
+        val isConnectionMetered = connManager?.isActiveNetworkMetered ?: false
+        val audioQuality by Preferences.AUDIO_QUALITY
+
+        cache = makeStreamCache( songId, isConnectionMetered, audioQuality )
+        cachedStreamUrl[songId] = cache
     }
 
-    if( lastException != null ) throw lastException
-
-    return requireNotNull( cache ) {
-        "`streamUrl` is verified but `cache` is still null"
-    }
+    cache
 }
 //</editor-fold>
 //<editor-fold desc="Resolvers">
-private fun DataSpec.process(
-    videoId: String,
-    connectionMetered: Boolean
-): DataSpec = runBlocking( Dispatchers.IO ) {
-    val audioQualityFormat by Preferences.AUDIO_QUALITY
-
-    logger.v { "processing $videoId at quality $audioQualityFormat with connection metered: $connectionMetered" }
-
-    val cache: StreamCache
-    if( cachedStreamUrl.contains( videoId ) ) {
-        logger.d { "Found $videoId in cachedStreamUrl" }
-
-        cache = cachedStreamUrl[videoId]!!
-
-        // Handle expired url with 30secs offset
-        if( cache.expiredTimeMillis - 30.seconds.inWholeMilliseconds <= System.currentTimeMillis() ) {
-            logger.d { "url for $videoId has expired!" }
-
-            cachedStreamUrl.remove( videoId )
-
-            return@runBlocking process( videoId, connectionMetered )
+private fun resolver( queryInChunks: Boolean, vararg cashes: Cache ) =
+    ResolvingDataSource.Resolver { dataSpec ->
+        if( dataSpec.uri.isLocalFile() ) {
+            logger.d { "playing local song: ${dataSpec.uri}" }
+            return@Resolver dataSpec
         }
-    } else {
-        logger.d { "url for $videoId isn't stored! Fetching new url" }
 
-        cachedStreamUrl[videoId] = getPlayerResponse( videoId, audioQualityFormat, connectionMetered )
-        cache = cachedStreamUrl[videoId]!!
+        val songId = dataSpec.uri.toString()
+        upsertSongInfo( context, songId )
+
+        // Delay this block until called. Song can be local too
+        val position = dataSpec.position
+        val length = dataSpec.length.takeIf { it > C.LENGTH_UNSET } ?: CHUNK_LENGTH
+        val isCached = cashes.any {
+            it.isCached( songId, position, length )
+        }
+        if( isCached ) {
+            logger.v { "Chunk $position - ${position + length} of $songId is cached" }
+            // No need to fetch online for already cached data
+            dataSpec
+        } else {
+            val cache = getPlayableUrl( songId )
+            val deobUrl = YoutubeJavaScriptPlayerManager.getUrlWithThrottlingParameterDeobfuscated( songId, cache.playableUrl )
+            val uri = "$deobUrl&cpn=${cache.cpn}".toUri()
+            val length = CHUNK_LENGTH.takeIf { queryInChunks } ?: cache.contentLength
+
+            dataSpec.withUri( uri ).subrange( dataSpec.uriPositionOffset, length )
+        }
     }
-
-    YoutubeJavaScriptPlayerManager.getUrlWithThrottlingParameterDeobfuscated( videoId, cache.playableUrl )
-                                  .toUri()
-                                  .buildUpon()
-                                  .appendQueryParameter( "cpn", cache.cpn )
-                                  .build()
-                                  .let( ::withUri )
-}
-
-/**
- * Used to determined whether the song can be played from cached,
- * or a call to online service must be made to get needed data.
- */
-private fun resolver(
-    context: Context,
-    vararg cashes: Cache
-) = ResolvingDataSource.Resolver { dataSpec ->
-    if( dataSpec.uri.isLocalFile() ) {
-        logger.d { "playing local song: ${dataSpec.uri}" }
-        return@Resolver dataSpec
-    }
-
-    val videoId = dataSpec.uri.toString().substringAfter( "watch?v=" )
-    upsertSongInfo( context, videoId )
-
-    // Delay this block until called. Song can be local too
-    val cacheLength = dataSpec.length.takeIf { it != -1L } ?: CHUNK_LENGTH
-    val isCached = cashes.any {
-        it.isCached( videoId, dataSpec.position, cacheLength )
-    }
-
-    if( isCached ) {
-        logger.d { "$videoId exists in cache, proceeding to use from cache" }
-        // No need to fetch online for already cached data
-        dataSpec
-    } else
-        dataSpec.process( videoId, context.isConnectionMetered() )
-}
 //</editor-fold>
 
 /**
@@ -457,7 +411,6 @@ val playerModule = module {
         )
     }
     single( DatasourceType.PLAYER ) {
-        val context: Context = get()
         val cache: Cache = get(CacheType.CACHE)
         val downloadCache: Cache = get(CacheType.DOWNLOAD)
         val defaultDatasource: DefaultDataSource.Factory = get()
@@ -476,11 +429,10 @@ val playerModule = module {
                         )
                         .setFlags( FLAG_IGNORE_CACHE_ON_ERROR )
                 ),
-            resolver( context, cache, downloadCache )
+            resolver( true, cache, downloadCache )
         )
     }
     single( DatasourceType.DOWNLOADER ) {
-        val context: Context = get()
         val downloadCache: Cache = get(CacheType.DOWNLOAD)
         val defaultDatasource: DefaultDataSource.Factory = get()
 
@@ -488,7 +440,7 @@ val playerModule = module {
             dataSourceFactoryFrom( downloadCache )
                 .setUpstreamDataSourceFactory( defaultDatasource )
                 .setCacheWriteDataSinkFactory( null ),
-            resolver( context, downloadCache )
+            resolver( false, downloadCache )
         )
     }
 
