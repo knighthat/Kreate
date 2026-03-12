@@ -54,7 +54,6 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.service.Discord
 import app.kreate.android.service.DownloadHelper
 import app.kreate.android.service.player.CustomExoPlayer
 import app.kreate.android.service.player.ExoPlayerListener
@@ -119,8 +118,10 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import me.knighthat.discord.Discord
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
@@ -170,7 +171,7 @@ class PlayerServiceModern:
 
     val currentMediaItem = MutableStateFlow<MediaItem?>(null)
 
-    @kotlin.OptIn(ExperimentalCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     private val currentSong = currentMediaItem.flatMapLatest { mediaItem ->
         Database.songTable.findById( mediaItem?.mediaId ?: "" )
     }.stateIn(coroutineScope, SharingStarted.Lazily, null)
@@ -200,14 +201,15 @@ class PlayerServiceModern:
             if( !Preferences.isLoggedInToDiscord() )
                 return
 
-            val startTime = System.currentTimeMillis() - player.currentPosition
-            discord.updateMediaItem( mediaItem, startTime )
-        } else if( Preferences.isLoggedInToDiscord() )
-            discord.stop()
+//            val startTime = System.currentTimeMillis() - player.currentPosition
+//            discord.updateMediaItem( mediaItem, startTime )
+        }
+//        else if( Preferences.isLoggedInToDiscord() )
+//            discord.stop()
     }
 
 
-    @kotlin.OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     override fun onCreate() {
         Innertube.client = inject<HttpClient>().value
 
@@ -400,7 +402,10 @@ class PlayerServiceModern:
 
         }
 
-        discord.register()
+        if( Preferences.isLoggedInToDiscord() ) {
+            val token by Preferences.DISCORD_ACCESS_TOKEN
+            discord.login( token )
+        }
     }
 
     override fun onUpdateNotification( session: MediaSession, startInForegroundRequired: Boolean ) =
@@ -517,7 +522,7 @@ class PlayerServiceModern:
 
             coroutineScope.cancel()
 
-            discord.release()
+            runBlocking { discord.logout() }
 
             preferences.unregisterOnSharedPreferenceChangeListener(this)
         }.onFailure {

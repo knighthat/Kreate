@@ -24,6 +24,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,12 +51,20 @@ import it.fast4x.rimusic.extensions.youtubelogin.YouTubeLogin
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.ui.components.CustomModalBottomSheet
 import it.fast4x.rimusic.ui.styling.Dimensions
+import kotlinx.coroutines.launch
+import me.knighthat.discord.Discord
+import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 
 @ExperimentalMaterial3Api
 @Composable
-fun AccountSettings( paddingValues: PaddingValues ) {
+fun AccountSettings(
+    paddingValues: PaddingValues,
+    discord: Discord = koinInject()
+) {
     val context = LocalContext.current
     val scrollState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
 
     val search = remember {
         SettingEntrySearch( scrollState, R.string.tab_accounts, R.drawable.person )
@@ -228,8 +237,22 @@ fun AccountSettings( paddingValues: PaddingValues ) {
             header( { "discord" } )
             entry( search, R.string.discord_enable_rich_presence ) {
                 SettingComponents.BooleanEntry(
-                    Preferences.DISCORD_LOGIN,
-                    R.string.discord_enable_rich_presence
+                    preference = Preferences.DISCORD_LOGIN,
+                    title = stringResource( R.string.discord_enable_rich_presence ),
+                    onValueChanged = {
+                        val token by Preferences.DISCORD_ACCESS_TOKEN
+                        if( token.isBlank() ) return@BooleanEntry
+
+                        if( it )
+                            discord.login( token )
+                        else
+                            coroutineScope.launch {
+                                if( discord.logout() )
+                                    Toaster.s( R.string.success_discord_log_out )
+                                else
+                                    Toaster.e( R.string.error_discord_log_out )
+                            }
+                    }
                 )
             }
             animatedEntry(
@@ -249,10 +272,19 @@ fun AccountSettings( paddingValues: PaddingValues ) {
                         title = stringResource( titleId ),
                         subtitle = subtitle,
                         onClick = {
-                            loginDiscord = Preferences.DISCORD_ACCESS_TOKEN.value.isBlank()
+                            val preference = Preferences.DISCORD_ACCESS_TOKEN
+                            loginDiscord = preference.value.isBlank()
 
-                            if( !loginDiscord )
-                                Preferences.DISCORD_ACCESS_TOKEN.reset()
+                            if( !loginDiscord ) {
+                                preference.reset()
+
+                                coroutineScope.launch {
+                                    if( discord.logout() )
+                                        Toaster.s( R.string.success_discord_log_out )
+                                    else
+                                        Toaster.e( R.string.error_discord_log_out )
+                                }
+                            }
                         }
                     ) {
                         Image(
@@ -277,7 +309,7 @@ fun AccountSettings( paddingValues: PaddingValues ) {
                     },
                     shape = Preferences.THUMBNAIL_BORDER_RADIUS.value.shape
                 ) {
-                    DiscordLoginAndGetToken { loginDiscord = false }
+                    DiscordLoginAndGetToken( discord ) { loginDiscord = false }
                 }
             }
         }

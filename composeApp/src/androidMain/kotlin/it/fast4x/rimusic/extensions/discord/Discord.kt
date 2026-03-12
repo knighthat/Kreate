@@ -23,13 +23,14 @@ import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import me.knighthat.discord.Discord
 import me.knighthat.innertube.UserAgents
 import me.knighthat.utils.Toaster
 
 @SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DiscordLoginAndGetToken( onDone: () -> Unit ) {
+fun DiscordLoginAndGetToken( discord: Discord, onDone: () -> Unit ) {
     var webView: WebView? = null
 
     // This section is ripped from Metrolist - Full credit to their team
@@ -72,6 +73,8 @@ fun DiscordLoginAndGetToken( onDone: () -> Unit ) {
                         runBlocking( Dispatchers.Main ) {
                             Preferences.DISCORD_ACCESS_TOKEN.value = token
                         }
+
+                        discord.login( token )
 
                         onDone()
                     }

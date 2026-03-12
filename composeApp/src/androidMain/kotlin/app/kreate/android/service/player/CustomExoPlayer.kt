@@ -2,7 +2,6 @@ package app.kreate.android.service.player
 
 import android.animation.Animator
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.MainThread
@@ -28,12 +27,13 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
 import androidx.media3.extractor.DefaultExtractorsFactory
 import app.kreate.android.Preferences
-import app.kreate.android.service.Discord
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.utils.isAtLeastAndroid10
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.runBlocking
+import me.knighthat.discord.Discord
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.io.IOException
@@ -289,7 +289,7 @@ class CustomExoPlayer private constructor(
         player.stop()
 
         if( Preferences.isLoggedInToDiscord() )
-            discord.stop()
+            runBlocking { discord.logout() }
     }
 
     override fun getBufferedPercentage(): Int =
@@ -324,10 +324,10 @@ class CustomExoPlayer private constructor(
 
         val mediaItem = player.currentMediaItem ?: return
         val startTime = System.currentTimeMillis() - player.currentPosition
-        @SuppressLint("NewApi")     // [Preferences.isLoggedInToDiscord] already verified it
-        if( isPlaying )
-            discord.updateMediaItem( mediaItem, startTime )
-        else
-            discord.pause( mediaItem, startTime )
+//        @SuppressLint("NewApi")     // [Preferences.isLoggedInToDiscord] already verified it
+//        if( isPlaying )
+//            discord.updateMediaItem( mediaItem, startTime )
+//        else
+//            discord.pause( mediaItem, startTime )
     }
 }
