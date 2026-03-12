@@ -240,6 +240,16 @@ class DiscordImpl : Discord, KoinComponent {
         }
     }
 
+    private suspend fun makeAssets( largeImage: Uri?, smallImage: Uri? ): Assets {
+        val largeImage = getImageUrl( largeImage ) ?: getAppLogoUrl()
+        val smallImage = if( largeImage == getAppLogoUrl() && smallImage == null )
+            null
+        else
+            getImageUrl( smallImage ) ?: getAppLogoUrl()
+
+        return Assets(largeImage, smallImage)
+    }
+
     override fun login( token: String ) {
         val isSimilarToken = _token.value == token
         if( isSimilarToken && _isActive.load() ) {
@@ -273,20 +283,16 @@ class DiscordImpl : Discord, KoinComponent {
         }
 
         try {
-            val assets = Assets(
-                largeImage = getImageUrl( song.thumbnailUrl ),
-                smallImage = getImageUrl( song.artistThumbnailUrl ) ?: getAppLogoUrl(),
-                largeText = song.artistName,
-                smallText = "Listening"
-            )
+            val assets = makeAssets( song.thumbnailUrl, song.artistThumbnailUrl )
             val activity = Activity(
-                name = song.songName,
+                name = "Kreate",
+                state = song.artistName,
+                details = song.songName,
                 type = Type.LISTENING,
                 timestamps = Timestamps(song.timeStart + song.duration, song.timeStart),
+                assets = assets,
                 applicationId = APPLICATION_ID,
-                details = song.albumName,
-                url = song.artistUrl.toString(),
-                assets = assets
+                url = "https://github.com/knighthat/Kreate"
             )
             val presence = Presence(listOf(activity), false)
             session.sendActivity( presence )
@@ -303,20 +309,16 @@ class DiscordImpl : Discord, KoinComponent {
         }
 
         try {
-            val assets = Assets(
-                largeImage = getImageUrl( song.thumbnailUrl ),
-                smallImage = getImageUrl( song.artistThumbnailUrl ) ?: getAppLogoUrl(),
-                largeText = song.artistName,
-                smallText = "Pausing"
-            )
+            val assets = makeAssets( song.thumbnailUrl, song.artistThumbnailUrl )
             val activity = Activity(
-                name = song.songName,
+                name = "Kreate",
+                state = "Pausing",
+                details = song.songName,
                 type = Type.LISTENING,
                 timestamps = Timestamps(null, song.timeStart),
+                assets = assets,
                 applicationId = APPLICATION_ID,
-                details = song.albumName,
-                url = song.artistUrl.toString(),
-                assets = assets
+                url = "https://github.com/knighthat/Kreate"
             )
             val presence = Presence(listOf(activity), true, System.currentTimeMillis())
             session.sendActivity( presence )
@@ -335,18 +337,17 @@ class DiscordImpl : Discord, KoinComponent {
         try {
             val assets = Assets(
                 largeImage = getAppLogoUrl(),
-                smallImage = null,
-                largeText = "Kreate Music",
-                smallText = "Pausing"
+                smallImage = null
             )
             val now = System.currentTimeMillis()
             val activity = Activity(
-                name = null,        // Only display `Listening`
+                name = "Kreate",
+                details = "Music your way",
+                state = "Browsing",
                 type = Type.LISTENING,
                 timestamps = Timestamps(null, now),
-                applicationId = APPLICATION_ID,
-                details = "Browsing",
-                assets = assets
+                assets = assets,
+                applicationId = APPLICATION_ID
             )
             val presence = Presence(listOf(activity), true, now)
             session.sendActivity( presence )
