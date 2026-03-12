@@ -29,12 +29,15 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.putJsonArray
+import me.knighthat.exception.SessionNotAvailableException
 import me.knighthat.utils.ImageProcessor
 import me.knighthat.utils.isLocalFile
 import org.koin.core.component.KoinComponent
@@ -67,12 +70,17 @@ class DiscordImpl : Discord, KoinComponent {
     private val client: HttpClient by inject()
     private val context: Context by inject()
     private val logger = Logger.withTag( LOGGING_TAG )
+    private val lock = Mutex()
     private val _session = AtomicReference<DiscordWebSocket?>(null)
     private val _token = MutableStateFlow<String?>(null)
     private val _isActive = AtomicBoolean(false)
 
     @Volatile
     private lateinit var smallImage: String
+    @Volatile
+    private var previousPresence: Presence? = null
+    @Volatile
+    private var state: State = State.BROWSING
 
     init { onTokenChanged() }
 
@@ -230,8 +238,10 @@ class DiscordImpl : Discord, KoinComponent {
             }
 
             try {
-                val session = DiscordWebSocketImpl(token, DiscordLogger)
-                _session.store( session )
+                val session = lock.withLock {
+                    DiscordWebSocketImpl(token, DiscordLogger)
+                        .also( _session::store )
+                }
 
                 session.connect()
             } catch( e: Exception ) {
@@ -264,8 +274,16 @@ class DiscordImpl : Discord, KoinComponent {
         logger.v { "Closing connection to Discord" }
 
         try {
-            val existingConnection = _session.fetchAndUpdate { null }
-            existingConnection?.close()
+            // Obtaining the lock here does 2 main things:
+            // - Prevent new update from being sent to Discord
+            // - Wait for all update to finish before disconnecting
+            val existingConnection = lock.withLock {
+                _session.fetchAndUpdate { null }
+                        ?.also(DiscordWebSocket::close )
+            }
+
+            previousPresence = null
+            state = State.BROWSING
 
             return existingConnection != null
         } catch( e: Exception ) {
@@ -276,83 +294,150 @@ class DiscordImpl : Discord, KoinComponent {
     }
 
     override suspend fun listening( song: ListeningActivity ) {
-        val session = _session.load()
-        if( session == null || !session.isWebSocketConnected() ) {
-            logger.v { "Session not available" }
-            return
-        }
-
         try {
-            val assets = makeAssets( song.thumbnailUrl, song.artistThumbnailUrl )
-            val activity = Activity(
-                name = "Kreate",
-                state = song.artistName,
-                details = song.songName,
-                type = Type.LISTENING,
-                timestamps = Timestamps(song.timeStart + song.duration, song.timeStart),
-                assets = assets,
-                applicationId = APPLICATION_ID,
-                url = "https://github.com/knighthat/Kreate"
-            )
-            val presence = Presence(listOf(activity), false)
-            session.sendActivity( presence )
-        } catch( e: Exception ) {
-            logger.e( e ) { "Send listening activity failed!" }
+            lock.withLock {
+                /**
+                 * At first, we only check if websocket is established.
+                 * This is quick and reliable enough for the program
+                 * to start setting up other parts such as uploading artwork,
+                 * making [Activity], etc. These don't need websocket connection to work.
+                 */
+                val session = _session.load() ?: throw SessionNotAvailableException()
+                val assets = makeAssets( song.thumbnailUrl, song.artistThumbnailUrl )
+                val activity = Activity(
+                    name = "Kreate",
+                    state = song.artistName,
+                    details = song.songName,
+                    type = Type.LISTENING,
+                    timestamps = Timestamps(song.timeStart + song.duration, song.timeStart),
+                    assets = assets,
+                    applicationId = APPLICATION_ID,
+                    url = "https://github.com/knighthat/Kreate"
+                )
+                val presence = Presence(listOf(activity), false)
+
+                // Update listening state can be triggered due to many factors:
+                // changing song, seeking to new position, skipping, etc.
+                // So we only check whether the request is duplicated.
+                if( presence == previousPresence ) {
+                    logger.w { "Duplicate listening activity detected. Skipping..." }
+                    return@withLock
+                }
+
+                // Now, before sending this request away, we must validate session.
+                if( session.isWebSocketConnected() ) {
+                    session.sendActivity( presence )
+                    state = State.PLAYING       // Only update state if activity sent successfully
+                    previousPresence = presence
+                } else
+                    throw SessionNotAvailableException()
+            }
+        } catch ( e: Exception ) {
+            if( e is SessionNotAvailableException )
+                logger.w { "Session not available!" }
+            else
+                logger.e( e ) { "Send listening activity failed!" }
         }
     }
 
     override suspend fun pause( song: ListeningActivity ) {
-        val session = _session.load()
-        if( session == null || !session.isWebSocketConnected() ) {
-            logger.v { "Session not available" }
-            return
-        }
-
         try {
-            val assets = makeAssets( song.thumbnailUrl, song.artistThumbnailUrl )
-            val activity = Activity(
-                name = "Kreate",
-                state = "Pausing",
-                details = song.songName,
-                type = Type.LISTENING,
-                timestamps = Timestamps(null, song.timeStart),
-                assets = assets,
-                applicationId = APPLICATION_ID,
-                url = "https://github.com/knighthat/Kreate"
-            )
-            val presence = Presence(listOf(activity), true, System.currentTimeMillis())
-            session.sendActivity( presence )
+            lock.withLock {
+                /**
+                 * At first, we only check if websocket is established.
+                 * This is quick and reliable enough for the program
+                 * to start setting up other parts such as uploading artwork,
+                 * making [Activity], etc. These don't need websocket connection to work.
+                 */
+                val session = _session.load() ?: throw SessionNotAvailableException()
+                val assets = makeAssets( song.thumbnailUrl, song.artistThumbnailUrl )
+                val activity = Activity(
+                    name = "Kreate",
+                    state = "Pausing",
+                    details = song.songName,
+                    type = Type.LISTENING,
+                    timestamps = Timestamps(null, song.timeStart),
+                    assets = assets,
+                    applicationId = APPLICATION_ID,
+                    url = "https://github.com/knighthat/Kreate"
+                )
+                val presence = Presence(listOf(activity), true, System.currentTimeMillis())
+
+                // For pausing, only enact if it's not previously
+                val previousState = previousPresence?.activities?.firstOrNull()?.state
+                if( previousState == "Pausing" ) {
+                    logger.w { "Duplicate pausing activity detected. Skipping..." }
+                    return@withLock
+                }
+
+                // Now, before sending this request away, we must validate session.
+                if( session.isWebSocketConnected() ) {
+                    session.sendActivity( presence )
+                    state = State.PAUSING       // Only update state if activity sent successfully
+                    previousPresence = presence
+                } else
+                    throw SessionNotAvailableException()
+            }
         } catch( e: Exception ) {
-            logger.e( e ) { "Send pause activity failed!" }
+            if( e is SessionNotAvailableException )
+                logger.w { "Session not available!" }
+            else
+                logger.e( e ) { "Send pause activity failed!" }
         }
     }
 
     override suspend fun reset() {
-        val session = _session.load()
-        if( session == null || !session.isWebSocketConnected() ) {
-            logger.v { "Session not available" }
-            return
-        }
-
         try {
-            val assets = Assets(
-                largeImage = getAppLogoUrl(),
-                smallImage = null
-            )
-            val now = System.currentTimeMillis()
-            val activity = Activity(
-                name = "Kreate",
-                details = "Music your way",
-                state = "Browsing",
-                type = Type.LISTENING,
-                timestamps = Timestamps(null, now),
-                assets = assets,
-                applicationId = APPLICATION_ID
-            )
-            val presence = Presence(listOf(activity), true, now)
-            session.sendActivity( presence )
+            lock.withLock {
+                /**
+                 * At first, we only check if websocket is established.
+                 * This is quick and reliable enough for the program
+                 * to start setting up other parts such as uploading artwork,
+                 * making [Activity], etc. These don't need websocket connection to work.
+                 */
+                val session = _session.load() ?: throw SessionNotAvailableException()
+                val assets = Assets(
+                    largeImage = getAppLogoUrl(),
+                    smallImage = null
+                )
+                val now = System.currentTimeMillis()
+                val activity = Activity(
+                    name = "Kreate",
+                    details = "Music your way",
+                    state = "Browsing",
+                    type = Type.LISTENING,
+                    timestamps = Timestamps(null, now),
+                    assets = assets,
+                    applicationId = APPLICATION_ID
+                )
+                val presence = Presence(listOf(activity), true, now)
+
+                // Similarly to pausing, resetting presence requires
+                // user not in the state already.
+                val previousState = previousPresence?.activities?.firstOrNull()?.state
+                if( previousState == "Browsing") {
+                    logger.w { "Duplicate browsing activity detected. Skipping..." }
+                    return@withLock
+                }
+
+                // Now, before sending this request away, we must validate session.
+                if( session.isWebSocketConnected() ) {
+                    session.sendActivity( presence )
+                    state = State.BROWSING       // Only update state if activity sent successfully
+                    previousPresence = presence
+                } else
+                    throw SessionNotAvailableException()
+            }
         } catch( e: Exception ) {
-            logger.e( e ) { "Reset activity failed!" }
+            if( e is SessionNotAvailableException )
+                logger.w { "Session not available!" }
+            else
+                logger.e( e ) { "Reset activity failed!" }
         }
+    }
+
+    enum class State {
+
+        BROWSING, PAUSING, PLAYING;
     }
 }
