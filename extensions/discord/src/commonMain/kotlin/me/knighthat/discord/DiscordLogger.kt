@@ -6,7 +6,7 @@ import co.touchlab.kermit.Logger as Kermit
 
 internal object DiscordLogger : Logger {
 
-    private const val LOGGING_TAG = "Discord"
+    private const val LOGGING_TAG = "Kizzy"
 
     override fun clear() = Kermit.v( NotImplementedError(), LOGGING_TAG ) { "Clear called but not implemented" }
 
