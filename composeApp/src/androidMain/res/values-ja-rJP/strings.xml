@@ -882,4 +882,6 @@
     <string name="error_failed_to_verify_doh">Failed to verify DoH</string>
     <string name="setting_entry_test_doh">Test DoH</string>
     <string name="success_doh_verified">DoH verified successfully</string>
+    <string name="success_discord_log_out">Successfully logged out</string>
+    <string name="error_discord_log_out">Log out failed</string>
 </resources>
