@@ -194,4 +194,29 @@ interface FormatTable: DatabaseTable<Format> {
         SongSortBy.RANDOM               -> allWithSongsRandomized()
     }.map( sortOrder::applyTo )
     //</editor-fold>
+
+    /**
+     * Delete a record with matching [Format.songId].
+     *
+     * @param songId identifier of column to delete
+     * @return number of records deleted
+     */
+    @Query("""
+        DELETE FROM formats
+        WHERE song_id = :songId
+    """)
+    fun deleteById( songId: String ): Int
+
+    /**
+     * Delete all records that have [Format.songId] match
+     * provided [songIds].
+     *
+     * @param songIds list of identifiers to delete
+     * @return number of records deleted
+     */
+    @Query("""
+        DELETE FROM formats
+        WHERE song_id IN (:songIds)
+    """)
+    fun deleteByIds( songIds: List<String> ): Int
 }
