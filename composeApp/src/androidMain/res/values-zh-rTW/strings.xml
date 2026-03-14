@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">完成</string>
     <string name="hidesong">你真的要隱藏這首歌曲嗎? 播放記錄和暫存將被清除. \n此動作不可逆.</string>
@@ -155,7 +155,7 @@
     <string name="play_next">播放下一首</string>
     <string name="toggle_lyrics">開關歌詞</string>
     <string name="by_tapping_on_the_thumbnail">在縮圖上點擊</string>
-    <string name="require_mic_permission">請授予麥克風權限以啟用視覺化效果.</string>
+    <string name="require_mic_permission">請授予麥克風權限以啟用視覺化效果。</string>
     <string name="vt_circular">循環</string>
     <string name="vt_disabled">已停用</string>
     <string name="new_albums_of_your_artists">你追隨藝人的新專輯</string>
@@ -322,7 +322,7 @@
     <string name="yesterday">昨天</string>
     <string name="last_week">上週</string>
     <string name="by_casual_played_song">平常播放的歌曲</string>
-    <string name="theme_material_you">Material You</string>
+    <string name="theme_material_you">Material You設計</string>
     <string name="show_statistics_in_navigation_bar">在導航列中顯示統計數據</string>
     <string name="settings">設定</string>
     <string name="page_not_been_loaded">頁面未加載正確，請嘗試刷新頁面</string>
@@ -391,7 +391,7 @@
     <string name="color_background_4">背景 4</string>
     <string name="color_background_5">背景 5</string>
     <string name="color_text">文字</string>
-    <string name="color_text_secondary">Text secondary</string>
+    <string name="color_text_secondary">文字副顏色</string>
     <string name="color_text_disabled">已禁用文字</string>
     <string name="color_icon_button_player">Icon button player</string>
     <string name="color_accent">強調色</string>
@@ -437,7 +437,7 @@
     <string name="setting_description_runtime_log">所有日誌都會儲存在 %s</string>
     <string name="copy_log_to_clipboard">將記錄複製到剪貼簿</string>
     <string name="fake_audio_bar">Fake Audio Bar</string>
-    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
+    <string name="copy_crash_log_to_clipboard">複製崩潰日誌</string>
     <string name="title_backup_and_restore">備份與還原</string>
     <string name="message_excluded_s_songs">排除 %s 歌曲</string>
     <string name="show_thumbnail">顯示縮圖</string>
@@ -503,7 +503,7 @@
     <string name="searches_saved_searches">已儲存的的搜尋記錄</string>
     <string name="event_volumekeys">使用音量鍵來切換歌曲</string>
     <string name="event_volumekeysinfo">按下音量調高鍵切換到下一首歌，按下音量調低鍵切換到上一首歌</string>
-    <string name="searches_no_suggestions">No suggestions</string>
+    <string name="searches_no_suggestions">無建議</string>
     <string name="action_bar_show_discover_button">顯示探索按鈕</string>
     <string name="playertype">播放器類型</string>
     <string name="noblur">No Blur when Lyrics is Disabled</string>
@@ -513,7 +513,7 @@
     <string name="addednext">加入到播放序列的下一首</string>
     <string name="effect_fade_audio">淡出/淡入音效</string>
     <string name="effect_fade_audio_description">當歌曲暫停/播放時，淡入/淡出音效</string>
-    <string name="autosync">Auto Sync Imported Playlists</string>
+    <string name="autosync">自動同步匯入播放清單</string>
     <string name="songs_number_to_show">Songs number to show</string>
     <string name="discover_has_been_applied_to_queue">探索模式已應用於播放佇列，已移除歌曲：%s</string>
     <string name="player_pause_on_volume_zero">靜音時暫停播放</string>
@@ -541,8 +541,8 @@
     <string name="update">更新</string>
     <string name="update_song">Do you really want to refetch this song? Playback time and cached data will be wiped.\\nThis action is irreversible.</string>
     <string name="player_pause_listen_history_info">不保存用於統計、記錄和縮圖建議的播放事件</string>
-    <string name="vertical_widget">Vertical widget</string>
-    <string name="horizontal_widget">Horizontal widget</string>
+    <string name="vertical_widget">垂直元件</string>
+    <string name="horizontal_widget">水平元件</string>
     <string name="sleep_timer_ended">睡眠計時結束</string>
     <string name="discord_enable_rich_presence">啟用 Discord 狀態 (RPC)</string>
     <string name="discord_disconnect">中斷連接</string>
@@ -572,7 +572,7 @@
     <string name="player_auto_load_songs_in_queue">自動加入歌曲到播放佇列中</string>
     <string name="player_auto_load_songs_in_queue_description">當播放佇列即將結束時添加歌曲</string>
     <string name="toggle_romanization">Toggle Romanization</string>
-    <string name="edit_thumbnail">Edit Thumbnail</string>
+    <string name="edit_thumbnail">編輯縮圖</string>
     <string name="thumbnail_not_selected">Thumbnail Not Selected</string>
     <string name="reset_thumbnail">Reset Thumbnail</string>
     <string name="no_thumbnail_present">No Thumbnail Present</string>
@@ -597,15 +597,15 @@
     <string name="music_animations_bars">Bars</string>
     <string name="music_animations_crazy_bars">Crazy Bars</string>
     <string name="music_animations_crazy_points">Crazy Points</string>
-    <string name="music_animations_bubbles">Bubbles</string>
+    <string name="music_animations_bubbles">泡泡</string>
     <string name="now_playing_indicator">Now Playing Indicator</string>
     <string name="good_morning">早上好</string>
     <string name="good_afternoon">下午好</string>
     <string name="good_evening">晚上好</string>
     <string name="good_night">晚安</string>
-    <string name="colored_bar">Colored bar</string>
+    <string name="colored_bar">顏色條</string>
     <string name="about_developers_designers">開發者 / 設計師</string>
-    <string name="set_custom_value">Custom value</string>
+    <string name="set_custom_value">自訂值</string>
     <string name="show_cover_thumbnail_animation">Show cover thumbnail animation</string>
     <string name="cover_thumbnail_animation_type">Cover animation type</string>
     <string name="jump_previous_blank">Leave it Blank or 0 for Previous Button to Always Play the Previous Song</string>
@@ -877,4 +877,11 @@
     <string name="doh_mullvad">Mullvad</string>
     <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
+    <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
+    <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>
+    <string name="error_failed_to_verify_doh">Failed to verify DoH</string>
+    <string name="setting_entry_test_doh">Test DoH</string>
+    <string name="success_doh_verified">DoH verified successfully</string>
+    <string name="success_discord_log_out">Successfully logged out</string>
+    <string name="error_discord_log_out">Log out failed</string>
 </resources>

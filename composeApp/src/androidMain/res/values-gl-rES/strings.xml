@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Feito</string>
     <string name="hidesong">Realmente queres agochar esta canción? O tempo de reprodución e a caché serán borrados. Esta acción é irreversible.</string>
@@ -864,7 +864,7 @@
     <string name="disabled">desactivado</string>
     <string name="settings_live_wallpaper_reset_warning"> AVISO: isto volverá ao fondo de pantalla predeterminado do fabricante. Desafortunadamente, é difícil volver ao fondo de pantalla anterior</string>
     <string name="ok">aceptar</string>
-    <string name="setting_entry_thumbnail_size">Thumbnail size</string>
+    <string name="setting_entry_thumbnail_size">Tamaño da miniatura</string>
     <string name="warning_end_of_list">End of list</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
     <string name="doh_none">None</string>
@@ -877,4 +877,11 @@
     <string name="doh_mullvad">Mullvad</string>
     <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
+    <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
+    <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>
+    <string name="error_failed_to_verify_doh">Failed to verify DoH</string>
+    <string name="setting_entry_test_doh">Test DoH</string>
+    <string name="success_doh_verified">DoH verified successfully</string>
+    <string name="success_discord_log_out">Successfully logged out</string>
+    <string name="error_discord_log_out">Log out failed</string>
 </resources>

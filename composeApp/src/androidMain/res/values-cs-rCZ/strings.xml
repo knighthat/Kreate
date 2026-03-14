@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Hotovo</string>
     <string name="hidesong">Opravdu chcete tuto skladbu skrýt? Její čas přehrávání a mezipaměť budou vymazány. Tato akce je nevratná.</string>
@@ -165,8 +165,8 @@
     <string name="listen_on_piped">Poslouchat na Piped</string>
     <string name="listen_on_invidious">Poslouchat na Invidious</string>
     <string name="disable_horizontal_swipe">Zakázat vodorovné přejetí</string>
-    <string name="disable_vertical_swipe">Disable song switching via Vertical swipe</string>
-    <string name="disable_vertical_swipe_secondary">It affects only when the Expanded Player is off</string>
+    <string name="disable_vertical_swipe">Zakázat přepínání skladeb vertikálním přejetím prstem</string>
+    <string name="disable_vertical_swipe_secondary">Ovlivňuje pouze v případě, že je rozšířený přehrávač vypnutý</string>
     <string name="disable_song_switching_via_swipe">Zakázat přepínání skladeb přejetím</string>
     <string name="interface_in_use">Použité prostředí</string>
     <string name="user_interface">Uživatelské prostředí</string>
@@ -203,7 +203,7 @@
     <string name="statistics_max_number_of_items">Maximální počet položek</string>
     <string name="do_you_really_want_to_download_all">Opravdu chcete stahovat vše?</string>
     <string name="import_playlist">Importovat playlist</string>
-    <string name="proxy">PROXY</string>
+    <string name="proxy">Proxy</string>
     <string name="enable_proxy">Povolit Proxy</string>
     <string name="proxy_mode">Režim proxy</string>
     <string name="proxy_host">Hostitel proxy</string>
@@ -279,7 +279,7 @@
     <string name="avoid_closing_the_player_cleaning_queue_by_swiping_down">Vyhněte se zavírání přehrávače a vyčištění fronty přejetím prstem dolů, když je minimalizovaný</string>
     <string name="sort_date_liked">Datum oblíbení</string>
     <string name="export_playlist">Exportovat playlist</string>
-    <string name="playlist_top">Top Playlist</string>
+    <string name="playlist_top">Nejlepší Playlist</string>
     <string name="my_playlist_top">Moje Top %s</string>
     <string name="navigation_bar_position">Pozice navigačního panelu</string>
     <string name="direction_left">Vlevo</string>
@@ -322,7 +322,7 @@
     <string name="yesterday">Včera</string>
     <string name="last_week">Minulý týden</string>
     <string name="by_casual_played_song">Podle náhodně přehrávané skladby</string>
-    <string name="theme_material_you">Material You</string>
+    <string name="theme_material_you">Materiál, který potřebujete</string>
     <string name="show_statistics_in_navigation_bar">Zobrazit statistiky v navigačním panelu</string>
     <string name="settings">Nastavení</string>
     <string name="page_not_been_loaded">Stránka nebyla načtena správně, zkuste obnovit stránku.</string>
@@ -369,7 +369,7 @@
     <string name="month_december_s">Prosinec %s</string>
     <string name="info_reorder_is_possible_only_in_ascending_sort">Změna pořadí je možná pouze při vzestupném řazení</string>
     <string name="info_lyrics_found_on_s">Písňový text nalezeny na %s</string>
-    <string name="info_lyrics_not_found_on_s_try_on_s">Lyrics not found on %1$s, try on %2$s</string>
+    <string name="info_lyrics_not_found_on_s_try_on_s">Text písně nebyl nalezen na %1$s, zkuste %2$s</string>
     <string name="info_lyrics_not_found_on_s">Písňový text nebyl nalezen na %s</string>
     <string name="info_lyrics_tracks_found_on_s">Skladby s písňovými texty nalezeny na %s</string>
     <string name="background_colors">Barvy pozadí</string>
@@ -433,11 +433,11 @@
     <string name="cache_location_private">Soukromé</string>
     <string name="cache_location_system">Systémové</string>
     <string name="debug">DEBUG</string>
-    <string name="setting_entry_runtime_log">Runtime log</string>
-    <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
+    <string name="setting_entry_runtime_log">Provozní protokol</string>
+    <string name="setting_description_runtime_log">Zaznamenávání všeho, co se děje v %s</string>
     <string name="copy_log_to_clipboard">Zkopírovat log do schránky</string>
     <string name="fake_audio_bar">Falešná lišta zvuku</string>
-    <string name="copy_crash_log_to_clipboard">Copy crash log</string>
+    <string name="copy_crash_log_to_clipboard">Kopírovat protokol o selhání</string>
     <string name="title_backup_and_restore">ZÁLOHA A OBNOVENÍ</string>
     <string name="message_excluded_s_songs">Vyloučeno %s skladeb</string>
     <string name="show_thumbnail">Zobrazit miniaturu</string>
@@ -663,12 +663,12 @@
     <string name="albumCoverRotation">Animace rotace pozadí</string>
     <string name="enable_connection_metered">Použití měřeného připojení pro úsporu dat</string>
     <string name="info_enable_connection_metered">Úspora dat snižuje kvalitu, používejte pouze v případě, že máte připojení s omezeným objemem dat</string>
-    <string name="disliked_this_collection">Cannot Perform this Action when all the Songs are Disliked</string>
-    <string name="toggle_controls_landscape">Toggle On-screen Controls</string>
-    <string name="delete_songs_not_in_library">Delete Songs not in the Library</string>
-    <string name="unmatched">Unmatched Songs</string>
-    <string name="match_song">Rematch this Song</string>
-    <string name="match_song_grid">Rematch Song</string>
+    <string name="disliked_this_collection">Tuto akci nelze provést, pokud se nelíbí všechny skladby</string>
+    <string name="toggle_controls_landscape">Zapnout ovládací prvky na obrazovce</string>
+    <string name="delete_songs_not_in_library">Smazat písničky, které nejsou v knihovně</string>
+    <string name="unmatched">Nesrovnatelné písně</string>
+    <string name="match_song">Zopakovat tuto skladbu</string>
+    <string name="match_song_grid">Zopakovat skladbu</string>
     <string name="swipe_Animation_No_Thumbnail">Swipe Animation</string>
     <string name="online_songs">Online Songs</string>
     <string name="explicit">Explicit</string>
@@ -877,4 +877,11 @@
     <string name="doh_mullvad">Mullvad</string>
     <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
+    <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
+    <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>
+    <string name="error_failed_to_verify_doh">Failed to verify DoH</string>
+    <string name="setting_entry_test_doh">Test DoH</string>
+    <string name="success_doh_verified">DoH verified successfully</string>
+    <string name="success_discord_log_out">Successfully logged out</string>
+    <string name="error_discord_log_out">Log out failed</string>
 </resources>

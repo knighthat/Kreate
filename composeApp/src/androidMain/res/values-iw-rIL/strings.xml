@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">בוצע</string>
     <string name="hidesong">האם באמת תרצו להסתיר את השיר? זמן ההשמעה וזיכרון המטמון שלו ימחקו.\n הפעולה הזאת לא ניתנת לביטול.</string>
@@ -877,4 +877,11 @@
     <string name="doh_mullvad">Mullvad</string>
     <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
+    <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
+    <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>
+    <string name="error_failed_to_verify_doh">Failed to verify DoH</string>
+    <string name="setting_entry_test_doh">Test DoH</string>
+    <string name="success_doh_verified">DoH verified successfully</string>
+    <string name="success_discord_log_out">Successfully logged out</string>
+    <string name="error_discord_log_out">Log out failed</string>
 </resources>
