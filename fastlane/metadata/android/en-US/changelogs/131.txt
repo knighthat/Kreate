@@ -1,0 +1,6 @@
+Changes:
+- Improve error handling, logging, and error messages
+- Reduce playback and download wait time
+
+Fixes:
+- Split isn't default cache location
