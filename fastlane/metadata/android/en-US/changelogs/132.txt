@@ -1,0 +1,3 @@
+Fixes:
+- "failed to get song's info" prevents playback
+- Download fail rate
