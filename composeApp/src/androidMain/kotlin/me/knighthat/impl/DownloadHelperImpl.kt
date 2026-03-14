@@ -2,9 +2,9 @@ package me.knighthat.impl
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.database.StandaloneDatabaseProvider
@@ -141,8 +141,7 @@ class DownloadHelperImpl(
         val downloadRequest = DownloadRequest
             .Builder(
                 /* id      = */ mediaItem.mediaId,
-                /* uri     = */ mediaItem.requestMetadata.mediaUri
-                    ?: Uri.parse("https://music.youtube.com/watch?v=${mediaItem.mediaId}")
+                /* uri     = */ mediaItem.mediaId.toUri()
             )
             .setCustomCacheKey(mediaItem.mediaId)
             .setData("${mediaItem.mediaMetadata.artist.toString()} - ${mediaItem.mediaMetadata.title.toString()}".encodeToByteArray()) // Title in notification
