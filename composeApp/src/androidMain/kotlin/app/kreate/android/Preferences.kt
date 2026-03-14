@@ -480,6 +480,9 @@ sealed class Preferences<T>(
         val EXO_DOWNLOAD_SIZE by lazy {
             Long(preferences, Key.EXO_DOWNLOAD_SIZE, "", kotlin.Long.MAX_VALUE)
         }
+        val DOWNLOAD_MAX_PARALLEL by lazy {
+            Int(preferences, Key.DOWNLOAD_MAX_PARALLEL, "", 3)
+        }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Notification">
         val MEDIA_NOTIFICATION_FIRST_ICON by lazy {
@@ -1805,6 +1808,7 @@ sealed class Preferences<T>(
         const val IMAGE_CACHE_SIZE = "ThumbnailCacheSizeBytes"
         const val EXO_CACHE_SIZE = "SongCacheSizeBytes"
         const val EXO_DOWNLOAD_SIZE = "SongDownloadSizeBytes"
+        const val DOWNLOAD_MAX_PARALLEL = "DownloadMaxParallel"
         const val MEDIA_NOTIFICATION_FIRST_ICON = "MediaNotificationFirstIcon"
         const val MEDIA_NOTIFICATION_SECOND_ICON = "MediaNotificationSecondIcon"
         const val LYRICS_SIZE = "LyricsSize"
