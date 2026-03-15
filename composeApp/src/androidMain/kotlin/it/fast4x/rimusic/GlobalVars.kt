@@ -22,9 +22,6 @@ fun showSearchIconInNav() = Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR.value
 @Composable
 fun showStatsIconInNav() = Preferences.SHOW_STATS_IN_NAVIGATION_BAR.value
 
-@Composable
-fun binder() = LocalPlayerServiceBinder.current?.service
-
 fun appContext(): Context = Dependencies.application.applicationContext
 fun context(): Context = Dependencies.application
 

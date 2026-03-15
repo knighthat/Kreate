@@ -76,13 +76,7 @@ class MediaLibrarySessionCallback(
     private val cache: Cache by inject(CacheType.CACHE)
 
     private val scope = CoroutineScope(Dispatchers.Main) + Job()
-    lateinit var binder: PlayerServiceModern.Binder
     lateinit var listener: ExoPlayerListener
-    var toggleDownload: () -> Unit = {}
-    var toggleRepeat: () -> Unit = {}
-    var toggleShuffle: () -> Unit = {}
-    var startRadio: () -> Unit = {}
-    var callPause: () -> Unit = {}
     var searchedSongs: List<Song> = emptyList()
 
     fun toggleLike( player: Player ) {
@@ -173,12 +167,13 @@ class MediaLibrarySessionCallback(
         customCommand: SessionCommand,
         args: Bundle,
     ): ListenableFuture<SessionResult> {
+        val player = session.player as StatefulPlayer
         when (customCommand.customAction) {
-            MediaSessionConstants.ACTION_TOGGLE_LIKE -> toggleLike( session.player)
-            MediaSessionConstants.ACTION_TOGGLE_DOWNLOAD -> toggleDownload()
-            MediaSessionConstants.ACTION_TOGGLE_SHUFFLE -> toggleShuffle()
-            MediaSessionConstants.ACTION_TOGGLE_REPEAT_MODE -> toggleRepeat()
-            MediaSessionConstants.ACTION_START_RADIO -> startRadio()
+            MediaSessionConstants.ACTION_TOGGLE_LIKE -> toggleLike( player )
+            MediaSessionConstants.ACTION_TOGGLE_DOWNLOAD -> player.downloadCurrentMediaItem()
+            MediaSessionConstants.ACTION_TOGGLE_SHUFFLE -> player.toggleShuffleMode()
+            MediaSessionConstants.ACTION_TOGGLE_REPEAT_MODE -> player.cycleRepeatMode()
+            MediaSessionConstants.ACTION_START_RADIO -> player.startRadio()
             MediaSessionConstants.ACTION_SEARCH -> onSearch()
         }
         return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))

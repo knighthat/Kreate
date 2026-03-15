@@ -248,16 +248,6 @@ class PlayerServiceModern:
                 }
             }
 
-        mediaLibrarySessionCallback.apply {
-            binder = this@PlayerServiceModern.binder
-            listener = this@PlayerServiceModern.listener
-            toggleDownload = player::downloadCurrentMediaItem
-            toggleRepeat = player::cycleRepeatMode
-            toggleShuffle = player::toggleShuffleMode
-            startRadio = player::startRadio
-            callPause = player::pause
-        }
-
         // Build the media library session
         mediaSession =
             MediaLibrarySession.Builder(this, forwardingPlayer, mediaLibrarySessionCallback)
@@ -297,6 +287,10 @@ class PlayerServiceModern:
         )
         binder.player.volume = Preferences.AUDIO_VOLUME.value
         binder.player.setGlobalVolume(binder.player.volume)
+
+        mediaLibrarySessionCallback.apply {
+            listener = this@PlayerServiceModern.listener
+        }
 
         // Keep a connected controller so that notification works
         val sessionToken = SessionToken(this, ComponentName(this, PlayerServiceModern::class.java))
@@ -793,19 +787,6 @@ class PlayerServiceModern:
     }
 
     open inner class Binder : AndroidBinder(), KoinComponent {
-        val service: PlayerServiceModern
-            get() = this@PlayerServiceModern
-
-        /*
-        fun setBitmapListener(listener: ((Bitmap?) -> Unit)?) {
-            bitmapProvider.listener = listener
-        }
-
-        */
-        val bitmap: Bitmap
-            get() = bitmapProvider.bitmap
-
-
         val player: StatefulPlayer
             get() = this@PlayerServiceModern.player
 
