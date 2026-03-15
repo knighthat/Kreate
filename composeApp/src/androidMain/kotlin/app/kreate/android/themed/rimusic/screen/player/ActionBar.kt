@@ -97,7 +97,6 @@ import it.fast4x.rimusic.utils.playAtIndex
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shuffleQueue
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.knighthat.component.player.PlaybackSpeed
@@ -605,8 +604,7 @@ fun BoxScope.ActionBar(
 
                 val showButtonPlayerSleepTimer by Preferences.PLAYER_ACTION_SLEEP_TIMER
                 if (showButtonPlayerSleepTimer) {
-                    val sleepTimerMillisLeft: Long? by
-                        (binder.sleepTimerMillisLeft ?: flowOf(null)).collectAsState( null )
+                    val sleepTimerMillisLeft: Long? by player.sleepTimerRemaining().collectAsState( null )
 
                     IconButton(
                         icon = R.drawable.sleep,

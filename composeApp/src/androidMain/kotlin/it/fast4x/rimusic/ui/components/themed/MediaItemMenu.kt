@@ -105,7 +105,6 @@ import it.fast4x.rimusic.utils.removeYTSongFromPlaylist
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
 import me.knighthat.utils.Toaster
@@ -1160,13 +1159,12 @@ fun MediaItemMenu(
                 // TODO: find solution to this shit
                 onShowSleepTimer?.let {
                     val binder = LocalPlayerServiceBinder.current
+                    val player: StatefulPlayer = koinInject()
                     var isShowingSleepTimerDialog by remember {
                         mutableStateOf(false)
                     }
 
-                    val sleepTimerMillisLeft by (binder?.sleepTimerMillisLeft
-                        ?: flowOf(null))
-                        .collectAsState(initial = null)
+                    val sleepTimerMillisLeft by player.sleepTimerRemaining().collectAsState(initial = null)
 
                     val positionAndDuration = binder?.player?.positionAndDurationState()
 
@@ -1186,7 +1184,7 @@ fun MediaItemMenu(
                                 confirmText = stringResource(R.string.stop),
                                 onDismiss = { isShowingSleepTimerDialog = false },
                                 onConfirm = {
-                                    binder?.cancelSleepTimer()
+                                    player.stopSleepTimer()
                                     onDismiss()
                                 }
                             )
@@ -1284,7 +1282,9 @@ fun MediaItemMenu(
                                                 + timeRemaining.toDuration( DurationUnit.MILLISECONDS ).readableText()
                                                 + " " + stringResource(R.string.end_of_song),
                                         onClick = {
-                                            binder?.startSleepTimer(timeRemaining)
+                                            player.startSleepTimer(
+                                                timeRemaining.toDuration( DurationUnit.MILLISECONDS )
+                                            )
                                             isShowingSleepTimerDialog = false
                                         }
                                     )
@@ -1309,7 +1309,9 @@ fun MediaItemMenu(
                                     IconButton(
                                         enabled = amount > 0,
                                         onClick = {
-                                            binder?.startSleepTimer(amount * 5 * 60 * 1000L)
+                                            player.startSleepTimer(
+                                                (amount * 5 * 60 * 1000L).toDuration( DurationUnit.MILLISECONDS )
+                                            )
                                             isShowingSleepTimerDialog = false
                                         },
                                         icon = R.drawable.checkmark,

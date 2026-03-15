@@ -5,7 +5,9 @@ import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
 import app.kreate.database.models.Song
 import it.fast4x.innertube.models.NavigationEndpoint
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlin.time.Duration
 
 interface StatefulPlayer : ExoPlayer {
 
@@ -59,4 +61,21 @@ interface StatefulPlayer : ExoPlayer {
      * Queue download for this media.
      */
     fun downloadCurrentMediaItem()
+
+    /**
+     * Starts a countdown internally.
+     *
+     * When it reaches **0**, player will stop playing music
+     */
+    fun startSleepTimer( duration: Duration )
+
+    /**
+     * Cancel running sleep timer (if active)
+     */
+    fun stopSleepTimer()
+
+    /**
+     * @return remaining time of **sleep timer**. `null` if **sleep timer** isn't active
+     */
+    fun sleepTimerRemaining(): Flow<Long?>
 }

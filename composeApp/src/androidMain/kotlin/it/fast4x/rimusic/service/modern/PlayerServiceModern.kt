@@ -27,7 +27,6 @@ import android.os.Looper
 import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.media3.common.AuxEffectInfo
 import androidx.media3.common.C
@@ -76,7 +75,6 @@ import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.utils.AppLifecycleTracker
 import it.fast4x.rimusic.utils.CoilBitmapLoader
-import it.fast4x.rimusic.utils.TimerJob
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.collect
 import it.fast4x.rimusic.utils.getEnum
@@ -87,7 +85,6 @@ import it.fast4x.rimusic.utils.playNext
 import it.fast4x.rimusic.utils.playPrevious
 import it.fast4x.rimusic.utils.preferences
 import it.fast4x.rimusic.utils.setGlobalVolume
-import it.fast4x.rimusic.utils.timer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -97,7 +94,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -118,7 +114,6 @@ import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
-import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.seconds
 import android.os.Binder as AndroidBinder
 
@@ -150,9 +145,6 @@ class PlayerServiceModern:
     private lateinit var downloadListener: DownloadManager.Listener
 
     private var binder = Binder()
-
-    lateinit var sleepTimer: SleepTimer
-    private var timerJob: TimerJob? = null
 
     val currentMediaItem = MutableStateFlow<MediaItem?>(null)
 
@@ -239,8 +231,6 @@ class PlayerServiceModern:
 
         val preferences = preferences
         MyDownloadHelper.instance = this.downloadHelper
-
-        sleepTimer = SleepTimer(coroutineScope, player).also( player::addListener )
 
         PlaybackStatsListener(false, this@PlayerServiceModern)
             .also( player::addAnalyticsListener )
@@ -495,9 +485,6 @@ class PlayerServiceModern:
             MyDownloadHelper.instance.downloadManager.removeListener(downloadListener)
 
             listener.loudnessEnhancer?.release()
-
-            timerJob?.cancel()
-            timerJob = null
 
             notificationManager?.cancel(NotificationId)
             notificationManager?.cancelAll()
@@ -828,37 +815,6 @@ class PlayerServiceModern:
 
         val player: StatefulPlayer
             get() = this@PlayerServiceModern.player
-
-        val sleepTimerMillisLeft: StateFlow<Long?>?
-            get() = timerJob?.millisLeft
-
-        fun startSleepTimer(delayMillis: Long) {
-            timerJob?.cancel()
-
-
-
-            timerJob = coroutineScope.timer(delayMillis) {
-                val notification = NotificationCompat
-                    .Builder(this@PlayerServiceModern, SleepTimerNotificationChannelId)
-                    .setContentTitle(getString(R.string.sleep_timer_ended))
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setAutoCancel(true)
-                    .setOnlyAlertOnce(true)
-                    .setShowWhen(true)
-                    .setSmallIcon(R.drawable.app_icon_monochrome)
-                    .build()
-
-                notificationManager?.notify(SleepTimerNotificationId, notification)
-
-                stopSelf()
-                exitProcess(0)
-            }
-        }
-
-        fun cancelSleepTimer() {
-            timerJob?.cancel()
-            timerJob = null
-        }
 
         /**
          * This method should ONLY be called when the application (sc. activity) is in the foreground!

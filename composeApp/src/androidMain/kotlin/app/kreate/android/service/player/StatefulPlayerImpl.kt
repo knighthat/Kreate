@@ -2,6 +2,7 @@ package app.kreate.android.service.player
 
 import android.animation.Animator
 import android.animation.ValueAnimator
+import android.app.NotificationManager
 import android.content.Context
 import androidx.annotation.MainThread
 import androidx.annotation.OptIn
@@ -9,6 +10,8 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
+import androidx.core.app.NotificationCompat
+import androidx.core.content.getSystemService
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Player.REPEAT_MODE_ALL
@@ -28,16 +31,21 @@ import co.touchlab.kermit.Logger
 import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.service.MyDownloadHelper
+import it.fast4x.rimusic.service.modern.PlayerServiceModern.Companion.SleepTimerNotificationId
+import it.fast4x.rimusic.utils.TimerJob
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.mediaItems
+import it.fast4x.rimusic.utils.timer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,10 +53,12 @@ import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.koin.java.KoinJavaComponent.inject
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.time.Duration
 
 
 /**
@@ -61,6 +71,11 @@ class StatefulPlayerImpl(
     private val player: ExoPlayer
 ): ExoPlayer by player, StatefulPlayer, Player.Listener, KoinComponent {
 
+    companion object {
+        const val NotificationId = 1001
+        const val SleepTimerNotificationChannelId = "sleep_timer_channel_id"
+    }
+
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val logger = Logger.withTag("StatefulPlayer")
     private val _currentMediaItemState = MutableStateFlow<MediaItem?>(null)
@@ -69,6 +84,7 @@ class StatefulPlayerImpl(
 
     private var volumeAnimator: ValueAnimator? = null
     private var radioJob: Job? = null
+    private var timerJob: TimerJob? = null
 
     override val currentMediaItemState = _currentMediaItemState.asStateFlow()
     override val currentTimelineState = _currentTimelineState.asStateFlow()
@@ -279,6 +295,32 @@ class StatefulPlayerImpl(
             Toaster.i( R.string.info_song_already_downlaoded )
     }
 
+    override fun startSleepTimer( duration: Duration ) {
+        val context: Context by inject()
+        val title = context.getString( R.string.sleep_timer_ended )
+        timerJob = coroutineScope.timer( duration.inWholeMilliseconds ) {
+            pause()
+
+            val notification = NotificationCompat
+                .Builder(context, SleepTimerNotificationChannelId)
+                .setContentTitle(title)
+                .setAutoCancel( true )
+                .setOnlyAlertOnce( true )
+                .setShowWhen( true )
+                .setSmallIcon( R.drawable.time )
+                .build()
+            val manager = context.getSystemService<NotificationManager>()
+            manager?.notify( SleepTimerNotificationId, notification )
+        }
+    }
+
+    override fun stopSleepTimer() {
+        timerJob?.cancel()
+        timerJob = null
+    }
+
+    override fun sleepTimerRemaining(): Flow<Long?> = timerJob?.millisLeft ?: flowOf( null )
+
     /*
             ExoPlayer
      */
@@ -364,6 +406,8 @@ class StatefulPlayerImpl(
 
     override fun stop() {
         stopRadio()
+        stopSleepTimer()
+        stopFadingEffect()
         player.stop()
     }
 }

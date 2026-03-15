@@ -122,6 +122,7 @@ import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.drawable.AppIcon
 import app.kreate.android.screens.player.background.BlurredCover
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.screen.player.ActionBar
 import app.kreate.util.readableText
 import app.kreate.util.toDuration
@@ -193,6 +194,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import me.knighthat.component.player.BlurAdjuster
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import kotlin.Float.Companion.POSITIVE_INFINITY
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
@@ -217,6 +219,7 @@ fun Player(
     val configuration = LocalConfiguration.current
     val menuState = LocalMenuState.current
     val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     // Settings
     val disablePlayerHorizontalSwipe by Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED
     val showlyricsthumbnail by Preferences.LYRICS_SHOW_THUMBNAIL
@@ -385,9 +388,7 @@ fun Player(
         mutableStateOf(false)
     }
 
-    val sleepTimerMillisLeft by (binder.sleepTimerMillisLeft
-        ?: flowOf(null))
-        .collectAsState(initial = null)
+    val sleepTimerMillisLeft by player.sleepTimerRemaining().collectAsState(initial = null)
 
     val positionAndDuration by binder.player.positionAndDurationState()
     var timeRemaining by remember { mutableLongStateOf(0) }
@@ -395,8 +396,9 @@ fun Player(
 
     if (sleepTimerMillisLeft != null)
         if (sleepTimerMillisLeft!! < timeRemaining && !delayedSleepTimer)  {
-            binder.cancelSleepTimer()
-            binder.startSleepTimer(timeRemaining)
+            player.startSleepTimer(
+                timeRemaining.toDuration( DurationUnit.MILLISECONDS )
+            )
             delayedSleepTimer = true
             Toaster.n( R.string.info_sleep_timer_delayed_at_end_of_song )
         }
@@ -451,7 +453,7 @@ fun Player(
                 confirmText = stringResource(R.string.stop),
                 onDismiss = { isShowingSleepTimerDialog = false },
                 onConfirm = {
-                    binder.cancelSleepTimer()
+                    player.stopSleepTimer()
                     delayedSleepTimer = false
                     //onDismiss()
                 }
@@ -550,7 +552,9 @@ fun Player(
                                 + timeRemaining.toDuration( DurationUnit.MILLISECONDS ).readableText()
                                 + " " + stringResource(R.string.end_of_song),
                         onClick = {
-                            binder.startSleepTimer(timeRemaining)
+                            player.startSleepTimer(
+                                timeRemaining.toDuration( DurationUnit.MILLISECONDS )
+                            )
                             isShowingSleepTimerDialog = false
                         }
                     )
@@ -575,7 +579,9 @@ fun Player(
                     IconButton(
                         enabled = amount > 0,
                         onClick = {
-                            binder.startSleepTimer(amount * 5 * 60 * 1000L)
+                            player.startSleepTimer(
+                                (amount * 5 * 60 * 1000L).toDuration( DurationUnit.MILLISECONDS )
+                            )
                             isShowingSleepTimerDialog = false
                         },
                         icon = R.drawable.checkmark,
