@@ -252,7 +252,7 @@ class PlayerServiceModern:
 
         mediaLibrarySessionCallback.apply {
             binder = this@PlayerServiceModern.binder
-            toggleLike = binder::toggleLike
+            listener = this@PlayerServiceModern.listener
             toggleDownload = player::downloadCurrentMediaItem
             toggleRepeat = player::cycleRepeatMode
             toggleShuffle = player::toggleShuffleMode
@@ -780,7 +780,7 @@ class PlayerServiceModern:
         listener.updateMediaControl( this@PlayerServiceModern, player )
     }
 
-    inner class NotificationActionReceiver(private val player: Player) : BroadcastReceiver() {
+    inner class NotificationActionReceiver(private val player: StatefulPlayer) : BroadcastReceiver() {
         @ExperimentalCoroutinesApi
         @FlowPreview
         override fun onReceive(context: Context, intent: Intent) {
@@ -789,12 +789,12 @@ class PlayerServiceModern:
                 Action.play.value       -> player::play
                 Action.next.value       -> player::playNext
                 Action.previous.value   -> player::playPrevious
-                Action.like.value       -> mediaLibrarySessionCallback::toggleLike
-                Action.download.value   -> mediaLibrarySessionCallback::toggleDownload
-                Action.playradio.value  -> mediaLibrarySessionCallback.startRadio
-                Action.shuffle.value    -> mediaLibrarySessionCallback::toggleShuffle
+                Action.like.value       -> mediaLibrarySessionCallback.toggleLike( player )
+                Action.download.value   -> player::downloadCurrentMediaItem
+                Action.playradio.value  -> player::startRadio
+                Action.shuffle.value    -> player::toggleShuffleMode
                 Action.search.value     -> mediaLibrarySessionCallback::actionSearch
-                Action.repeat.value     -> mediaLibrarySessionCallback::toggleRepeat
+                Action.repeat.value     -> player::cycleRepeatMode
             }
         }
     }
@@ -822,19 +822,6 @@ class PlayerServiceModern:
         fun restartForegroundOrStop() {
             player.pause()
             stopSelf()
-        }
-
-        fun toggleLike() {
-            val mediaItem = player.currentMediaItem ?: return
-
-            Database.asyncTransaction {
-                songTable.rotateLikeState( mediaItem.mediaId )
-                         .also {
-                             listener.updateMediaControl( this@PlayerServiceModern, player )
-                         }
-            }
-
-            MyDownloadHelper.autoDownloadWhenLiked( mediaItem )
         }
 
         fun actionSearch() {

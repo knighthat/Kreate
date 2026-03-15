@@ -12,6 +12,7 @@ import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
@@ -24,6 +25,8 @@ import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.ExoPlayerListener
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
@@ -58,7 +61,6 @@ import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.java.KoinJavaComponent.inject
 
 @UnstableApi
 class MediaLibrarySessionCallback(
@@ -71,7 +73,7 @@ class MediaLibrarySessionCallback(
 
     private val scope = CoroutineScope(Dispatchers.Main) + Job()
     lateinit var binder: PlayerServiceModern.Binder
-    var toggleLike: () -> Unit = {}
+    lateinit var listener: ExoPlayerListener
     var toggleDownload: () -> Unit = {}
     var toggleRepeat: () -> Unit = {}
     var toggleShuffle: () -> Unit = {}
@@ -79,6 +81,20 @@ class MediaLibrarySessionCallback(
     var callPause: () -> Unit = {}
     var actionSearch: () -> Unit = {}
     var searchedSongs: List<Song> = emptyList()
+
+    fun toggleLike( player: Player ) {
+        val mediaItem = player.currentMediaItem ?: return
+        val context: Context by inject()
+        val player: StatefulPlayer by inject()
+        Database.asyncTransaction {
+            songTable.rotateLikeState( mediaItem.mediaId )
+                     .also {
+                         listener.updateMediaControl( context, player )
+                     }
+        }
+
+        MyDownloadHelper.autoDownloadWhenLiked( mediaItem )
+    }
 
     override fun onConnect(
         session: MediaSession,
@@ -149,7 +165,7 @@ class MediaLibrarySessionCallback(
         args: Bundle,
     ): ListenableFuture<SessionResult> {
         when (customCommand.customAction) {
-            MediaSessionConstants.ACTION_TOGGLE_LIKE -> toggleLike()
+            MediaSessionConstants.ACTION_TOGGLE_LIKE -> toggleLike( session.player)
             MediaSessionConstants.ACTION_TOGGLE_DOWNLOAD -> toggleDownload()
             MediaSessionConstants.ACTION_TOGGLE_SHUFFLE -> toggleShuffle()
             MediaSessionConstants.ACTION_TOGGLE_REPEAT_MODE -> toggleRepeat()
