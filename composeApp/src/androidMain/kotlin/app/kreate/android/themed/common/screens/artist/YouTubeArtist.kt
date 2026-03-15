@@ -54,6 +54,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
@@ -98,6 +99,7 @@ import me.knighthat.innertube.Constants
 import me.knighthat.innertube.model.InnertubeAlbum
 import me.knighthat.innertube.model.InnertubeArtist
 import me.knighthat.innertube.model.InnertubeSong
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -110,7 +112,8 @@ private fun LazyListScope.renderSections(
     currentMedia: MediaItem?,
     songItemValues: SongItem.Values,
     artistPage: InnertubeArtist,
-    sectionTextModifier: Modifier
+    sectionTextModifier: Modifier,
+    player: StatefulPlayer
 ) = artistPage.sections.forEach { section ->
     // Don't show section if the title or contents is null or blank
     if( section.title.isNullOrBlank() || section.contents.isEmpty() ) return@forEach
@@ -178,7 +181,7 @@ private fun LazyListScope.renderSections(
                            navController = navController,
                            showThumbnail = true,
                            onClick = {
-                               binder.stopRadio()
+                               player.stopRadio()
                                binder.player.forcePlayAtIndex(
                                    songs.map( InnertubeSong::toMediaItem ),
                                    index
@@ -211,7 +214,8 @@ private fun LazyListScope.renderLibrarySongs(
     currentMedia: MediaItem?,
     songItemValues: SongItem.Values,
     sectionTextModifier: Modifier,
-    songs: List<Song>
+    songs: List<Song>,
+    player: StatefulPlayer
 ) {
     item( "songs" ) {
         Text(
@@ -241,7 +245,7 @@ private fun LazyListScope.renderLibrarySongs(
                 navController = navController,
                 showThumbnail = true,
                 onClick = {
-                    binder.stopRadio()
+                    player.stopRadio()
                     binder.player.forcePlayAtIndex(
                         songs.map( Song::asMediaItem ),
                         index
@@ -262,6 +266,7 @@ fun YouTubeArtist(
 ) {
     val context = LocalContext.current
     val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
     val saveableStateHolder = rememberSaveableStateHolder()
@@ -446,7 +451,8 @@ fun YouTubeArtist(
                                 currentMedia = currentMedia,
                                 songItemValues = songItemValues,
                                 artistPage = artistPage!!,
-                                sectionTextModifier = viewModel.sectionTextModifier
+                                sectionTextModifier = viewModel.sectionTextModifier,
+                                player = player
                             )
                         else if( currentTabIndex == 1 )
                             renderLibrarySongs(
@@ -457,7 +463,8 @@ fun YouTubeArtist(
                                 currentMedia = currentMedia,
                                 songItemValues = songItemValues,
                                 sectionTextModifier = viewModel.sectionTextModifier,
-                                songs = artistLibrarySongs
+                                songs = artistLibrarySongs,
+                                player = player
                             )
 
                         artistPage?.description?.also( this::renderDescription )

@@ -17,6 +17,7 @@ import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.di.CacheType
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.context
@@ -36,8 +37,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
-import kotlin.getValue
 
 @ExperimentalTextApi
 @ExperimentalAnimationApi
@@ -52,6 +53,7 @@ fun PlayerMenu(
     onMatchingSong: (() -> Unit)? = null
     ) {
     val menuState = LocalMenuState.current
+    val player: StatefulPlayer = koinInject()
     val menuStyle by Preferences.MENU_STYLE
 
     //val context = LocalContext.current
@@ -91,7 +93,7 @@ fun PlayerMenu(
             mediaItem = mediaItem,
             onDismiss = onDismiss,
             onStartRadio = {
-                binder.startRadio( mediaItem )
+                player.startRadio( mediaItem )
 
                 menuState.hide()
             },
@@ -119,7 +121,7 @@ fun PlayerMenu(
             navController = navController,
             mediaItem = mediaItem,
             onStartRadio = {
-                binder.startRadio( mediaItem )
+                player.startRadio( mediaItem )
 
                 menuState.hide()
             },

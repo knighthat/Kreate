@@ -63,6 +63,7 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
@@ -155,6 +156,7 @@ fun HomeQuickPicks(
     val context = LocalContext.current
     val hapticFeedback = LocalHapticFeedback.current
     val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val menuState = LocalMenuState.current
     val windowInsets = LocalPlayerAwareWindowInsets.current
@@ -481,7 +483,7 @@ fun HomeQuickPicks(
                         },
                         icon2 = R.drawable.play,
                         onClick2 = {
-                            binder?.stopRadio()
+                            player.stopRadio()
                             trending?.let { binder?.player?.forcePlay(it.asMediaItem) }
                             binder?.player?.addMediaItems(relatedInit?.songs?.map { it.asMediaItem }
                                 ?: emptyList())
@@ -528,7 +530,7 @@ fun HomeQuickPicks(
                                     modifier = Modifier.width( itemInHorizontalGridWidth ),
                                     navController = navController
                                 ) {
-                                    binder.startRadio( song, true )
+                                    player.startRadio( song, true )
                                 }
                             }
                         }
@@ -555,7 +557,7 @@ fun HomeQuickPicks(
                                     modifier = Modifier.width( itemInHorizontalGridWidth ),
                                     navController = navController
                                 ) {
-                                    binder.startRadio( song, true )
+                                    player.startRadio( song, true )
                                 }
                             }
                         }
@@ -907,7 +909,7 @@ fun HomeQuickPicks(
                                                         isPlaying = song.shallowCompare( currentMediaItem ),
                                                         onClick = {
                                                             val mediaItem = song.toMediaItem
-                                                            binder.stopRadio()
+                                                            player.stopRadio()
                                                             binder.player.forcePlay(mediaItem)
                                                             binder.player.addMediaItems(songs.map { it.toMediaItem })
                                                         }

@@ -47,6 +47,7 @@ import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.LoadMoreContentType
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
@@ -102,6 +103,7 @@ import me.knighthat.component.tab.SongShuffler
 import me.knighthat.component.ui.screens.DynamicOrientationLayout
 import me.knighthat.innertube.Constants
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.java.KoinJavaComponent.inject
 
@@ -117,6 +119,7 @@ fun YouTubePlaylist(
     val context = LocalContext.current
     val menuState = LocalMenuState.current
     val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
 
@@ -369,7 +372,7 @@ fun YouTubePlaylist(
                                 navController = navController,
                                 modifier = Modifier.animateItem(),
                                 onClick = {
-                                    binder.stopRadio()
+                                    player.stopRadio()
 
                                     val selectedSongs = getSongs()
                                     if( song in selectedSongs )
@@ -399,7 +402,7 @@ fun YouTubePlaylist(
                         lazyListState = viewModel.listState,
                         iconId = R.drawable.shuffle,
                         onClick = {
-                            binder.stopRadio()
+                            player.stopRadio()
                             binder.player.forcePlayFromBeginning( getMediaItems() )
                         }
                     )

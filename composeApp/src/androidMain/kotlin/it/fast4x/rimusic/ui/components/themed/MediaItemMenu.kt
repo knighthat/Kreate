@@ -63,6 +63,7 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Playlist
@@ -108,6 +109,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
 import java.time.LocalTime.now
 import java.time.format.DateTimeFormatter
@@ -232,6 +234,7 @@ fun NonQueuedMediaItemMenuLibrary(
     onMatchingSong: (() -> Unit)? = null
 ) {
     val binder = LocalPlayerServiceBinder.current
+    val player: StatefulPlayer = koinInject()
 
     var isHiding by remember {
         mutableStateOf(false)
@@ -265,7 +268,7 @@ fun NonQueuedMediaItemMenuLibrary(
             mediaItem = mediaItem,
             onDismiss = onDismiss,
             onStartRadio = {
-                binder?.startRadio( mediaItem )
+                player.startRadio( mediaItem )
             },
             onPlayNext = { binder?.player?.addNext(mediaItem) },
             onEnqueue = { binder?.player?.enqueue(mediaItem) },
@@ -297,7 +300,7 @@ fun NonQueuedMediaItemMenuLibrary(
             mediaItem = mediaItem,
             onDismiss = onDismiss,
             onStartRadio = {
-                binder?.startRadio( mediaItem )
+                player.startRadio( mediaItem )
             },
             onPlayNext = { binder?.player?.addNext(mediaItem) },
             onEnqueue = { binder?.player?.enqueue(mediaItem)},
@@ -344,6 +347,7 @@ fun NonQueuedMediaItemMenu(
     onMatchingSong: (() -> Unit)? = null
 ) {
     val binder = LocalPlayerServiceBinder.current
+    val player: StatefulPlayer = koinInject()
 
     val menuStyle by Preferences.MENU_STYLE
 
@@ -355,7 +359,7 @@ fun NonQueuedMediaItemMenu(
             mediaItem = mediaItem,
             onDismiss = onDismiss,
             onStartRadio = {
-                binder?.startRadio( mediaItem )
+                player.startRadio( mediaItem )
             },
             onPlayNext = { binder?.player?.addNext(mediaItem) },
             onEnqueue = { binder?.player?.enqueue(mediaItem) },
@@ -375,7 +379,7 @@ fun NonQueuedMediaItemMenu(
             mediaItem = mediaItem,
             onDismiss = onDismiss,
             onStartRadio = {
-                binder?.startRadio( mediaItem )
+                player.startRadio( mediaItem )
             },
             onPlayNext = { binder?.player?.addNext(mediaItem) },
             onEnqueue = { binder?.player?.enqueue(mediaItem) },
@@ -405,6 +409,7 @@ fun QueuedMediaItemMenu(
     modifier: Modifier = Modifier
 ) {
     val binder = LocalPlayerServiceBinder.current
+    val player: StatefulPlayer = koinInject()
 
     val menuStyle by Preferences.MENU_STYLE
 
@@ -419,7 +424,7 @@ fun QueuedMediaItemMenu(
             }) else null,
             onPlayNext = { binder?.player?.addNext(mediaItem) },
             onStartRadio = {
-                binder?.startRadio( mediaItem )
+                player.startRadio( mediaItem )
             },
             modifier = modifier,
             onGoToPlaylist = {
@@ -452,7 +457,7 @@ fun QueuedMediaItemMenu(
             }) else null,
             onPlayNext = { binder?.player?.addNext(mediaItem) },
             onStartRadio = {
-                binder?.startRadio( mediaItem )
+                player.startRadio( mediaItem )
             },
             modifier = modifier,
             onGoToPlaylist = {

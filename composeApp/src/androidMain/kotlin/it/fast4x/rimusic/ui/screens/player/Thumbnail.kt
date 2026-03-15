@@ -44,6 +44,7 @@ import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.player.StatefulPlayer
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
@@ -66,6 +67,7 @@ import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.doubleShadowDrop
 import it.fast4x.rimusic.utils.isLandscape
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import java.net.UnknownHostException
 import java.nio.channels.UnresolvedAddressException
 
@@ -88,7 +90,7 @@ fun Thumbnail(
     println("Thumbnail call")
     val context = LocalContext.current
     val binder = LocalPlayerServiceBinder.current
-    val player = binder?.player ?: return
+    val player: StatefulPlayer = koinInject()
 
     println("Thumbnail call after return")
 
@@ -137,7 +139,7 @@ fun Thumbnail(
 
             override fun onPlayerError(playbackException: PlaybackException) {
                 error = playbackException
-                binder.stopRadio()
+                player.stopRadio()
                 //context.stopService(context.intent<PlayerService>())
                 //context.stopService(context.intent<MyDownloadService>())
             }

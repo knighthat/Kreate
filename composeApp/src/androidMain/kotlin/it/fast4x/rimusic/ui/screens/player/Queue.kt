@@ -54,6 +54,7 @@ import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.playlist.PositionLock
@@ -99,6 +100,7 @@ import me.knighthat.component.ui.screens.player.QueueArrow
 import me.knighthat.component.ui.screens.player.Repeat
 import me.knighthat.component.ui.screens.player.ShuffleQueue
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
 
 
@@ -117,9 +119,9 @@ fun Queue(
     val context = LocalContext.current
     val windowInsets = WindowInsets.systemBars
     val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
-    val player = binder.player
     val menuState = LocalMenuState.current
 
     val rippleIndication = ripple(bounded = false)
@@ -336,7 +338,7 @@ fun Queue(
                     }
                 }
 
-                if( binder.isLoadingRadio )
+                if( player.isLoadingRadio() )
                     items( 3 ) {
                         SongItem.Placeholder()
                     }

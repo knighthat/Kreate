@@ -67,6 +67,7 @@ import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
 import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.Database
@@ -101,6 +102,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.knighthat.component.player.PlaybackSpeed
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 
 private class PagerViewPort(
     private val showSongsState: MutableState<SongsNumber>,
@@ -136,6 +138,7 @@ fun BoxScope.ActionBar(
     // Essentials
     val context = LocalContext.current
     val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val menuState = LocalMenuState.current
 
     val mediaItem = binder?.player?.currentMediaItem ?: return
@@ -655,7 +658,7 @@ fun BoxScope.ActionBar(
                         icon = R.drawable.radio,
                         color = colorPalette().accent,
                         onClick = {
-                            binder.startRadio( mediaItem )
+                            player.startRadio( mediaItem )
                         },
                         modifier = Modifier.size( 24.dp )
                     )

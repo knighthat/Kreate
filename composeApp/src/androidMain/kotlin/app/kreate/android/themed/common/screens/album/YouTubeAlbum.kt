@@ -57,6 +57,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
 import app.kreate.android.themed.rimusic.component.ItemSelector
@@ -115,6 +116,7 @@ import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.innertube.model.Section
 import me.knighthat.utils.PropUtils
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 
 private fun updateAlbumInDatabase(dbAlbum: Album?, innertubeAlbum: InnertubeAlbum ) = Database.asyncTransaction {
     val onlineAlbum = Album(
@@ -213,6 +215,7 @@ fun YouTubeAlbum(
     ) {
         //<editor-fold desc="Essentials">
         val binder = LocalPlayerServiceBinder.current ?: return@Skeleton
+        val player: StatefulPlayer = koinInject()
         val hapticFeedback = LocalHapticFeedback.current
         val (colorPalette, typography) = LocalAppearance.current
         val context = LocalContext.current
@@ -508,7 +511,7 @@ fun YouTubeAlbum(
                                         )
                                     },
                                     onClick = {
-                                        binder.stopRadio()
+                                        player.stopRadio()
 
                                         val selectedSongs = getSongs()
                                         if( song in selectedSongs )

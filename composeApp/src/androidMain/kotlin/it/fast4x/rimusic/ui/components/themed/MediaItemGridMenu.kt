@@ -46,6 +46,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Playlist
@@ -74,6 +75,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -90,13 +92,14 @@ fun NonQueuedMediaItemGridMenu(
     onDownload: (() -> Unit)? = null
 ) {
     val binder = LocalPlayerServiceBinder.current
+    val player: StatefulPlayer = koinInject()
 
     BaseMediaItemGridMenu(
         navController = navController,
         mediaItem = mediaItem,
         onDismiss = onDismiss,
         onStartRadio = {
-            binder?.startRadio( mediaItem )
+            player.startRadio( mediaItem )
         },
         onPlayNext = { binder?.player?.addNext(mediaItem) },
         onEnqueue = { binder?.player?.enqueue(mediaItem) },

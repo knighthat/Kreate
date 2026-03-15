@@ -39,6 +39,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
@@ -60,6 +61,7 @@ import it.fast4x.rimusic.utils.medium
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import org.koin.compose.koinInject
 
 @ExperimentalTextApi
 @SuppressLint("SuspiciousIndentation")
@@ -78,6 +80,7 @@ fun LocalSongSearch(
     onAction4: () -> Unit,
 ) {
     val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val menuState = LocalMenuState.current
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
@@ -264,7 +267,7 @@ fun LocalSongSearch(
                         }
                     },
                     onClick = {
-                        binder.startRadio( song )
+                        player.startRadio( song )
                     }
                 )
             }

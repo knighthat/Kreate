@@ -68,6 +68,7 @@ import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
@@ -122,8 +123,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
-import org.koin.java.KoinJavaComponent.inject
-import kotlin.getValue
 import kotlin.time.Duration
 
 
@@ -139,6 +138,7 @@ fun Podcast(
     browseId: String,
     params: String?,
     maxDepth: Int?,
+    player: StatefulPlayer = koinInject()
 ) {
     val binder = LocalPlayerServiceBinder.current ?: return
     val (colorPalette, typography) = LocalAppearance.current
@@ -469,7 +469,7 @@ fun Podcast(
                                     .combinedClickable(
                                         onClick = {
                                             if (podcastPage?.listEpisode?.isNotEmpty() == true) {
-                                                binder?.stopRadio()
+                                                player.stopRadio()
                                                 podcastPage?.listEpisode?.shuffled()?.map(Innertube.Podcast.EpisodeItem::asMediaItem)
                                                     ?.let {
                                                         binder?.player?.forcePlayFromBeginning(
@@ -494,7 +494,7 @@ fun Podcast(
                                     .combinedClickable(
                                         onClick = {
                                             val mediaItem = binder?.player?.currentMediaItem ?: podcastPage?.listEpisode?.first()?.asMediaItem
-                                            mediaItem?.let { binder?.startRadio( it ) }
+                                            mediaItem?.let { player.startRadio( it ) }
                                         },
                                         onLongClick = {
                                             Toaster.i( R.string.info_start_radio )
@@ -735,7 +735,7 @@ fun Podcast(
                                 filter = null
                                 podcastPage?.listEpisode?.map(Innertube.Podcast.EpisodeItem::asMediaItem)
                                     ?.let { mediaItems ->
-                                        binder.stopRadio()
+                                        player.stopRadio()
                                         binder.player.forcePlayAtIndex(mediaItems, index)
                                     }
                             }
@@ -763,7 +763,7 @@ fun Podcast(
                 onClick = {
                     podcastPage?.listEpisode?.let { songs ->
                         if (songs.isNotEmpty()) {
-                            binder?.stopRadio()
+                            player.stopRadio()
                             binder?.player?.forcePlayFromBeginning(
                                 songs.shuffled().map(Innertube.Podcast.EpisodeItem::asMediaItem)
                             )

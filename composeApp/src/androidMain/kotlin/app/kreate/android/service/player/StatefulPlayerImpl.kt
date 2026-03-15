@@ -2,22 +2,50 @@ package app.kreate.android.service.player
 
 import android.animation.Animator
 import android.animation.ValueAnimator
+import android.content.Context
 import androidx.annotation.MainThread
 import androidx.annotation.OptIn
+import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastMap
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Player.REPEAT_MODE_ALL
+import androidx.media3.common.Player.REPEAT_MODE_OFF
+import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.offline.Download
 import app.kreate.android.Preferences
+import app.kreate.android.R
 import app.kreate.android.service.PlayerEventUpdateDiscord
+import app.kreate.android.utils.innertube.CURRENT_LOCALE
+import app.kreate.android.utils.innertube.toMediaItem
+import app.kreate.database.models.Song
 import co.touchlab.kermit.Logger
+import it.fast4x.innertube.models.NavigationEndpoint
+import it.fast4x.rimusic.Database
+import it.fast4x.rimusic.service.MyDownloadHelper
+import it.fast4x.rimusic.utils.asMediaItem
+import it.fast4x.rimusic.utils.forcePlay
+import it.fast4x.rimusic.utils.manageDownload
+import it.fast4x.rimusic.utils.mediaItems
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import me.knighthat.innertube.Innertube
+import me.knighthat.innertube.model.InnertubeSong
+import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
+import org.koin.java.KoinJavaComponent.inject
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -33,11 +61,14 @@ class StatefulPlayerImpl(
     private val player: ExoPlayer
 ): ExoPlayer by player, StatefulPlayer, Player.Listener, KoinComponent {
 
+    private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val logger = Logger.withTag("StatefulPlayer")
     private val _currentMediaItemState = MutableStateFlow<MediaItem?>(null)
     private val _currentTimelineState = MutableStateFlow(Timeline.EMPTY)
     private val _currentWindowState = MutableStateFlow<Timeline.Window?>(null)
 
     private var volumeAnimator: ValueAnimator? = null
+    private var radioJob: Job? = null
 
     override val currentMediaItemState = _currentMediaItemState.asStateFlow()
     override val currentTimelineState = _currentTimelineState.asStateFlow()
@@ -125,6 +156,131 @@ class StatefulPlayerImpl(
             start()
         }
     }
+
+    /*
+            StatefulPlayer
+     */
+
+    override fun isLoadingRadio(): Boolean = radioJob?.isActive == true
+
+    override fun startRadio() { currentMediaItem?.let( ::startRadio ) }
+
+    override fun startRadio(
+        mediaItem: MediaItem,
+        append: Boolean,
+        endpoint: NavigationEndpoint.Endpoint.Watch?
+    ) {
+        this.stopRadio()
+
+        // Play song immediately while other songs are being loaded
+        if( player.currentMediaItem?.mediaId != mediaItem.mediaId )
+            player.forcePlay( mediaItem )
+
+        // Prevent UI from freezing up while data is being fetched
+        radioJob = coroutineScope.launch {
+            Innertube.radio(
+                mediaItem.mediaId,
+                CURRENT_LOCALE,
+                endpoint?.playlistId ?: "RDAMVM${mediaItem.mediaId}",
+                endpoint?.params
+            ).onSuccess { relatedSongs ->
+                // Launch another coroutine to make it run
+                // in parallel with the rest of of block.
+                launch( Dispatchers.IO ) {
+                    relatedSongs.fastForEach {
+                        Database.upsert( it )
+                    }
+                }
+
+                // Any call to [player] must happen on Main thread
+                val currentQueue = withContext( Dispatchers.Main ) {
+                    player.mediaItems.fastMap( MediaItem::mediaId )
+                }
+
+                // Songs with the same id as provided [Song] should be removed.
+                // The song usually lives at the the first index, but this
+                // way is safer to implement, as it can live through changes in position.
+                relatedSongs.dropWhile { it.id == mediaItem.mediaId || it.id in currentQueue }
+                            .fastMap( InnertubeSong::toMediaItem )
+                            .also {
+                                // Any call to [player] must happen on Main thread
+                                withContext( Dispatchers.Main ) {
+                                    /*
+                                        There are 2 possible outcomes when append is not enabled.
+                                        User starts radio on currently playing song,
+                                        or on a completely different song.
+
+                                        When radio is activated on the same song, remain position
+                                        of currently playing song, delete next songs, and append
+                                        it with new songs.
+
+                                        When new song is used for radio, replace entire queue with new songs.
+                                      */
+                                    val curIndex = player.currentMediaItemIndex
+                                    val endIndex = player.mediaItemCount
+                                    if( !append && player.mediaItemCount > 1 ) {
+                                        player.moveMediaItem( curIndex, 0 )
+                                        player.removeMediaItems( curIndex + 1, endIndex )
+                                    }
+
+                                    player.addMediaItems(it)
+                                }
+                            }
+            }.onFailure { err ->
+                logger.e( "", err )
+                Toaster.e( R.string.error_song_radio_failed )
+            }
+        }
+    }
+
+    override fun startRadio(
+        song: Song,
+        append: Boolean,
+        endpoint: NavigationEndpoint.Endpoint.Watch?
+    ) = startRadio( song.asMediaItem, append, endpoint )
+
+    override fun stopRadio() {
+        radioJob?.cancel()
+    }
+
+    override fun cycleRepeatMode() {
+        repeatMode = when( repeatMode ) {
+            REPEAT_MODE_OFF -> REPEAT_MODE_ONE
+            REPEAT_MODE_ONE -> REPEAT_MODE_ALL
+            REPEAT_MODE_ALL -> REPEAT_MODE_OFF
+            // "else" shouldn't be executed at all,
+            // if app crashes here, something went wrong, really wrong.
+            else -> throw IllegalStateException()
+        }
+
+        if( repeatMode != REPEAT_MODE_OFF )
+            shuffleModeEnabled = false
+    }
+
+    override fun toggleShuffleMode() {
+        shuffleModeEnabled = !shuffleModeEnabled
+
+        if( shuffleModeEnabled )
+            repeatMode = REPEAT_MODE_OFF
+    }
+
+    override fun downloadCurrentMediaItem() {
+
+        val mediaItem = currentMediaItem ?: return
+        val mediaId = mediaItem.mediaId
+        val isDownloaded = MyDownloadHelper.instance.downloads.value[mediaId]?.state == Download.STATE_COMPLETED
+        if( !isDownloaded ) {
+            logger.v { "Downloading current media item ($mediaId)" }
+
+            val context: Context by inject(Context::class.java)
+            manageDownload( context, mediaItem, false )
+        } else
+            Toaster.i( R.string.info_song_already_downlaoded )
+    }
+
+    /*
+            ExoPlayer
+     */
 
     override fun getSecondaryRenderer( index: Int ) = player.getSecondaryRenderer( index )
 

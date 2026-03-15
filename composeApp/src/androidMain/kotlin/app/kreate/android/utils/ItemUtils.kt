@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
@@ -35,6 +36,7 @@ import me.knighthat.innertube.model.InnertubeArtist
 import me.knighthat.innertube.model.InnertubeItem
 import me.knighthat.innertube.model.InnertubePlaylist
 import me.knighthat.innertube.model.InnertubeSong
+import org.koin.compose.koinInject
 
 
 object ItemUtils {
@@ -59,6 +61,7 @@ object ItemUtils {
     ) {
         val context = LocalContext.current
         val binder = LocalPlayerServiceBinder.current ?: return
+        val player: StatefulPlayer = koinInject()
         val hapticFeedback = LocalHapticFeedback.current
         val appearance = LocalAppearance.current
         val songItemValues = remember( appearance ) {
@@ -105,7 +108,7 @@ object ItemUtils {
                             values = songItemValues,
                             thumbnailSizeDp = SongItem.thumbnailSize(),
                             onClick = {
-                                binder.stopRadio()
+                                player.stopRadio()
                                 if ( isVideoEnabled() )
                                     binder.player.playVideo( childItem.asMediaItem )
                                 else

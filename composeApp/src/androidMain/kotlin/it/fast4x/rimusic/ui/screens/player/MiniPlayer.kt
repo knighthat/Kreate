@@ -62,6 +62,7 @@ import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
 import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.Database
@@ -90,6 +91,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import kotlin.math.absoluteValue
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -103,6 +105,7 @@ fun MiniPlayer(
     navController: NavController? = null,
 ) {
     val binder = LocalPlayerServiceBinder.current
+    val player: StatefulPlayer = koinInject()
     binder?.player ?: return
 
     val context = LocalContext.current
@@ -261,7 +264,7 @@ fun MiniPlayer(
                             if (dragAmount < 0) showPlayer()
                             else if (dragAmount > 20) {
                                 if (!disableClosingPlayerSwipingDown) {
-                                    binder.stopRadio()
+                                    player.stopRadio()
                                     binder.player.clearMediaItems()
                                     hidePlayer()
                                     runCatching {

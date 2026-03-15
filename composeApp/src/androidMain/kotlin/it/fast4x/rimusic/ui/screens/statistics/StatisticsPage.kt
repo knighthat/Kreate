@@ -44,6 +44,7 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
@@ -78,6 +79,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import org.koin.compose.koinInject
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -95,6 +97,7 @@ fun StatisticsPage(
     statisticsType: StatisticsType
 ) {
     val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
     val menuState = LocalMenuState.current
@@ -316,7 +319,7 @@ fun StatisticsPage(
                                 }
                             },
                             onClick = {
-                                binder.stopRadio()
+                                player.stopRadio()
                                 binder.player.forcePlayAtIndex(
                                     songs.map(Song::asMediaItem),
                                     index

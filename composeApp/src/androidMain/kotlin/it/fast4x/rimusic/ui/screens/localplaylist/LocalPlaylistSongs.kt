@@ -55,6 +55,7 @@ import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
 import app.kreate.android.themed.rimusic.component.ItemSelector
@@ -138,6 +139,7 @@ import me.knighthat.component.tab.LikeComponent
 import me.knighthat.component.tab.Locator
 import me.knighthat.component.tab.SongShuffler
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
 import kotlin.time.Duration
 
@@ -159,6 +161,7 @@ fun LocalPlaylistSongs(
     // Essentials
     val context = LocalContext.current
     val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val hapticFeedback = LocalHapticFeedback.current
     val (colorPalette, typography) = LocalAppearance.current
     val lazyListState = rememberLazyListState()
@@ -748,7 +751,7 @@ fun LocalPlaylistSongs(
                                 }
                             },
                             onClick = {
-                                binder.stopRadio()
+                                player.stopRadio()
 
                                 val selectedSongs = getSongs()
                                 if( song in selectedSongs )
@@ -787,7 +790,7 @@ fun LocalPlaylistSongs(
                 onClick = {
                     getMediaItems().let { songs ->
                         if (songs.isNotEmpty()) {
-                            binder?.stopRadio()
+                            player.stopRadio()
                             binder?.player
                                   ?.forcePlayFromBeginning( songs.shuffled() )
                         }

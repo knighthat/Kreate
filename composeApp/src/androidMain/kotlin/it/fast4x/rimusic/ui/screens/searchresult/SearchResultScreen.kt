@@ -28,6 +28,7 @@ import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
@@ -71,8 +72,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
-import kotlin.getValue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalTextApi
@@ -90,6 +91,7 @@ fun SearchResultScreen(
 ) {
     val context = LocalContext.current
     val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val saveableStateHolder = rememberSaveableStateHolder()
     val (tabIndex, onTabIndexChanges) = Preferences.SEARCH_RESULTS_TAB_INDEX
@@ -199,7 +201,7 @@ fun SearchResultScreen(
                                     values = songItemValues,
                                     navController = navController,
                                     onClick = {
-                                        binder?.startRadio( song.asMediaItem, false, song.info?.endpoint )
+                                        player.startRadio( song.asMediaItem, false, song.info?.endpoint )
                                     }
                                 )
                             }
@@ -489,7 +491,7 @@ fun SearchResultScreen(
                                         )
                                     },
                                     onClick = {
-                                        localBinder?.stopRadio()
+                                        player.stopRadio()
                                         if (isVideoEnabled)
                                             localBinder?.player?.playVideo(video.asMediaItem)
                                         else

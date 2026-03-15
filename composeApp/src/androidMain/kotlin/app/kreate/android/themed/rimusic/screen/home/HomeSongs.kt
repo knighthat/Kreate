@@ -33,6 +33,7 @@ import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
 import app.kreate.android.themed.rimusic.component.ItemSelector
@@ -97,6 +98,7 @@ fun HomeSongs(
 ) {
     // Essentials
     val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val cache: Cache = koinInject(CacheType.CACHE)
     val context = LocalContext.current
     val menuState = LocalMenuState.current
@@ -326,7 +328,7 @@ fun HomeSongs(
                     onClick = {
                         search.hideIfEmpty()
 
-                        binder.stopRadio()
+                        player.stopRadio()
 
                         val selectedSongs = getSongs()
                         if( song in selectedSongs )
