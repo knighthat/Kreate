@@ -6,26 +6,30 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
+import androidx.media3.exoplayer.offline.DownloadService
 import app.kreate.android.R
+import app.kreate.di.CacheType
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.MenuState
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.java.KoinJavaComponent.inject
 
 @UnstableApi
 class HideSongDialog private constructor(
     activeState: MutableState<Boolean>,
-    menuState: MenuState,
-    private val binder: PlayerServiceModern.Binder?
-) : DeleteSongDialog(activeState, menuState, binder) {
+    menuState: MenuState
+) : DeleteSongDialog(activeState, menuState) {
 
     companion object {
         @Composable
         operator fun invoke() = HideSongDialog(
             remember { mutableStateOf(false) },
-            LocalMenuState.current,
-            LocalPlayerServiceBinder.current
+            LocalMenuState.current
         )
     }
 
@@ -39,8 +43,9 @@ class HideSongDialog private constructor(
         song.ifPresent {
             Database.asyncTransaction {
                 menuState.hide()
-                binder?.cache?.removeResource( it.id )
-                binder?.downloadCache?.removeResource( it.id )
+                cache.removeResource( it.id )
+                // FIXME: This is unsafe, use [DownloadService.sendRemoveDownload] instead
+                downloadCache.removeResource( it.id )
                 formatTable.updateContentLengthOf( it.id )
                 songTable.updateTotalPlayTime( it.id, 0 )
             }

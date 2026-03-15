@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
@@ -56,6 +57,7 @@ import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
 import app.kreate.android.viewmodel.YouTubePlaylistViewModel
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.YtMusic
 import it.fast4x.rimusic.Database
@@ -101,6 +103,7 @@ import me.knighthat.component.ui.screens.DynamicOrientationLayout
 import me.knighthat.innertube.Constants
 import me.knighthat.utils.Toaster
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.java.KoinJavaComponent.inject
 
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
@@ -143,10 +146,10 @@ fun YouTubePlaylist(
             songs = ::getSongs
         )
         val downloadAllDialog = remember {
-            DownloadAllDialog( binder, context, ::getSongs )
+            DownloadAllDialog( context, ::getSongs )
         }
         val deleteDownloadsDialog = remember {
-            DeleteAllDownloadedDialog( binder, context, ::getSongs )
+            DeleteAllDownloadedDialog(::getSongs)
         }
         val addToPlaylist = PlaylistsMenu.init(
             navController = navController,
@@ -338,7 +341,8 @@ fun YouTubePlaylist(
                                 binder.player.addNext( song.asMediaItem )
                             },
                             onDownload = {
-                                binder.cache.removeResource( song.id )
+                                val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
+                                cache.removeResource( song.id )
                                 Database.asyncTransaction {
                                     formatTable.updateContentLengthOf( song.id )
                                 }

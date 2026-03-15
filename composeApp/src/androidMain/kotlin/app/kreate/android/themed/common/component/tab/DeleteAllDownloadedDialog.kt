@@ -32,10 +32,8 @@ import kotlinx.coroutines.launch
 
 @UnstableApi
 class DeleteAllDownloadedDialog(
-    binder: PlayerServiceModern.Binder,
-    private val context: Context,
     private val getSongs: () -> List<Song>
-) : AbstractMediaDownloadDialog(binder), MenuIcon, Descriptive {
+) : AbstractMediaDownloadDialog(), MenuIcon, Descriptive {
 
     override val messageId: Int = R.string.info_remove_all_downloaded_songs
     override val iconId: Int = R.drawable.download

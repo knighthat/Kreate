@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
@@ -43,6 +44,7 @@ import app.kreate.android.utils.shallowCompare
 import app.kreate.constant.SongSortBy
 import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import app.kreate.util.toDuration
 import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
@@ -78,6 +80,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import me.knighthat.component.tab.ExportSongsToCSVDialog
 import me.knighthat.component.tab.HiddenSongs
+import org.koin.compose.koinInject
 
 @UnstableApi
 @ExperimentalFoundationApi
@@ -94,6 +97,7 @@ fun HomeSongs(
 ) {
     // Essentials
     val binder = LocalPlayerServiceBinder.current ?: return
+    val cache: Cache = koinInject(CacheType.CACHE)
     val context = LocalContext.current
     val menuState = LocalMenuState.current
     val hapticFeedback = LocalHapticFeedback.current
@@ -118,10 +122,10 @@ fun HomeSongs(
         songs = getSongs
     )
     val downloadAllDialog = remember {
-        DownloadAllDialog( binder, context, getSongs )
+        DownloadAllDialog( context, getSongs )
     }
     val deleteDownloadsDialog = remember {
-        DeleteAllDownloadedDialog( binder, context, getSongs )
+        DeleteAllDownloadedDialog(getSongs)
     }
 
     /**
@@ -172,7 +176,7 @@ fun HomeSongs(
                                                .map { list ->
                                                    list.fastFilter {
                                                        val contentLength = it.format.contentLength ?: return@fastFilter false
-                                                       binder?.cache?.isCached( it.song.id, 0, contentLength ) == true
+                                                       cache.isCached( it.song.id, 0, contentLength )
                                                    }.map( FormatWithSong::song )
                                                }
 
@@ -260,7 +264,7 @@ fun HomeSongs(
                 onPlayNext = { binder?.player?.addNext( mediaItem ) },
                 onDownload = {
                     if( builtInPlaylist != BuiltInPlaylist.OnDevice ) {
-                        binder?.cache?.removeResource(mediaItem.mediaId)
+                        cache.removeResource(mediaItem.mediaId)
                         Database.asyncTransaction {
                             formatTable.updateContentLengthOf( mediaItem.mediaId )
                         }

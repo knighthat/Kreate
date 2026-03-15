@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastJoinToString
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
@@ -52,6 +53,7 @@ import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.innertube.toSong
 import app.kreate.android.utils.scrollingText
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
@@ -79,6 +81,7 @@ import kotlinx.coroutines.Dispatchers
 import me.knighthat.component.menu.song.SongItemMenu
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
+import org.koin.java.KoinJavaComponent.inject
 
 object SongItem: Visual() {
 
@@ -465,7 +468,8 @@ object SongItem: Visual() {
 
                 if( !song.isLocal )
                     CacheAndDownloadIcon( song.id, song, values, MyDownloadHelper::handleDownload , modifier ) {
-                        binder.cache.removeResource( song.id )
+                        val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
+                        cache.removeResource( song.id )
                     }
             },
             trailingContent = {

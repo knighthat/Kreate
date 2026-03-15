@@ -13,9 +13,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.di.CacheType
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.context
 import it.fast4x.rimusic.enums.MenuStyle
@@ -34,6 +36,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.utils.Toaster
+import org.koin.java.KoinJavaComponent.inject
+import kotlin.getValue
 
 @ExperimentalTextApi
 @ExperimentalAnimationApi
@@ -67,8 +71,12 @@ fun PlayerMenu(
             onDismiss = { isHiding = false },
             onConfirm = {
                 onDismiss()
-                binder.cache.removeResource(mediaItem.mediaId)
-                binder.downloadCache.removeResource(mediaItem.mediaId)
+
+                val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
+                val downloadCache: Cache by inject(Cache::class.java, CacheType.DOWNLOAD)
+
+                cache.removeResource(mediaItem.mediaId)
+                downloadCache.removeResource(mediaItem.mediaId)
                 Database.asyncTransaction {
                     songTable.updateTotalPlayTime( mediaItem.mediaId, 0 )
                 }

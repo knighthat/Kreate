@@ -24,6 +24,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
@@ -34,6 +35,7 @@ import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Album
 import app.kreate.database.models.SongAlbumMap
+import app.kreate.di.CacheType
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBody
@@ -69,6 +71,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
+import org.koin.java.KoinJavaComponent.inject
+import kotlin.getValue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalTextApi
@@ -171,7 +175,8 @@ fun SearchResultScreen(
                                     localBinder?.player?.addNext(song.asMediaItem)
                                 },
                                 onDownload = {
-                                    localBinder?.cache?.removeResource(song.asMediaItem.mediaId)
+                                    val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
+                                    cache.removeResource(song.asMediaItem.mediaId)
                                     Database.asyncTransaction {
                                         formatTable.updateContentLengthOf( song.key )
                                     }

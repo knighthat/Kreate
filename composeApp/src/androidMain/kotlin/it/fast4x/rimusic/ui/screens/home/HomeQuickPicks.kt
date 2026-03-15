@@ -58,6 +58,7 @@ import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFilterNotNull
 import androidx.compose.ui.util.fastMapNotNull
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
@@ -131,6 +132,7 @@ import me.knighthat.innertube.model.InnertubePlaylist
 import me.knighthat.innertube.model.InnertubeRankedArtist
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
@@ -307,17 +309,19 @@ fun HomeQuickPicks(
 
     val showSearchTab by Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR
 
+    val cache: Cache = koinInject()
     var cachedSongs by remember { mutableStateOf( emptyList<String>() ) }
-    LaunchedEffect( binder.cache ) {
+    // FIXME: This practically run once on start
+    LaunchedEffect( cache ) {
         val keys = try {
-            binder.cache.keys
+            cache.keys
         } catch ( _: IllegalStateException ) {
             // Sometimes this block runs before SimpleCache
             // finishes it's init, it'll throw IllegalStateException
             // if the process is running. To avoid, small delay is added
             delay( 1.seconds )
 
-            binder.cache.keys
+            cache.keys
         }.toMutableSet()
 
         MyDownloadHelper.instance

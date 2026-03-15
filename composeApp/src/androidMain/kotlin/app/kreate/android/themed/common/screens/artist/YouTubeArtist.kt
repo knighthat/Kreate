@@ -288,10 +288,10 @@ fun YouTubeArtist(
     val followButton = FollowButton { dbArtist }
     val shuffler = SongShuffler( viewModel::getSongs )
     val downloadAllDialog = remember {
-        DownloadAllDialog( binder, context, viewModel::getSongs )
+        DownloadAllDialog( context, viewModel::getSongs )
     }
     val deleteAllDownloadsDialog = remember {
-        DeleteAllDownloadedDialog( binder, context, viewModel::getSongs )
+        DeleteAllDownloadedDialog(viewModel::getSongs)
     }
     val radio = Radio(viewModel::getSongs)
     val playNext = PlayNext {
