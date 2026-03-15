@@ -216,7 +216,7 @@ class PlayerServiceModern:
                 if (isAvailable && waitingForNetwork.value) {
                     waitingForNetwork.value = false
                     withContext( Dispatchers.Main ) {
-                        binder.gracefulPlay()
+                        player.play()
                     }
                 }
             }
@@ -678,7 +678,7 @@ class PlayerServiceModern:
         )
 
         val actions = Triple(
-            if( status.third ) binder::gracefulPause else binder::gracefulPlay,
+            if( status.third ) player::pause else player::play,
             binder.player::seekToPrevious,
             binder.player::seekToNext
         )
@@ -727,7 +727,7 @@ class PlayerServiceModern:
         if( Preferences.ENABLE_PERSISTENT_QUEUE.value
             && Preferences.RESUME_PLAYBACK_ON_STARTUP.value
             && AppLifecycleTracker.isInForeground()
-        ) binder.gracefulPlay()
+        ) player.play()
     }
 
     @ExperimentalCoroutinesApi
@@ -798,8 +798,8 @@ class PlayerServiceModern:
         @FlowPreview
         override fun onReceive(context: Context, intent: Intent) {
             when ( intent.action ) {
-                Action.pause.value      -> binder::gracefulPause
-                Action.play.value       -> binder::gracefulPlay
+                Action.pause.value      -> player::pause
+                Action.play.value       -> player::play
                 Action.next.value       -> player::playNext
                 Action.previous.value   -> player::playPrevious
                 Action.like.value       -> mediaLibrarySessionCallback::toggleLike
@@ -859,18 +859,6 @@ class PlayerServiceModern:
             timerJob?.cancel()
             timerJob = null
         }
-
-        /**
-         * Pause with fade out effect
-         */
-        @MainThread
-        fun gracefulPause() = player.pause()
-
-        /**
-         * Start playing with fade in effect
-         */
-        @MainThread
-        fun gracefulPlay() = player.play()
 
         /**
          * This method should ONLY be called when the application (sc. activity) is in the foreground!

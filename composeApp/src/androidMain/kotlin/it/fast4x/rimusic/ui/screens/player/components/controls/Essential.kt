@@ -52,6 +52,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
 import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.appContext
@@ -82,6 +83,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
+import org.koin.compose.koinInject
 
 
 @UnstableApi
@@ -359,6 +361,7 @@ fun ControlsEssential(
     mediaId: String,
     playerPlayButtonType: PlayerPlayButtonType,
     isGradientBackgroundEnabled: Boolean,
+    player: StatefulPlayer = koinInject(),
     onShowSpeedPlayerDialog: () -> Unit,
 ) {
     val colorPaletteName by Preferences.COLOR_PALETTE
@@ -438,9 +441,9 @@ fun ControlsEssential(
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = {
                     if (shouldBePlaying) {
-                        binder.gracefulPause()
+                        player.pause()
                     } else {
-                        binder.gracefulPlay()
+                        player.play()
                     }
                     if (effectRotationEnabled) isRotated = !isRotated
                 },

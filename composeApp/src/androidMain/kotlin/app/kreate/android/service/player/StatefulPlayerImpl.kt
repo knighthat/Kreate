@@ -241,6 +241,7 @@ class StatefulPlayerImpl(
 
     override fun stopRadio() {
         radioJob?.cancel()
+        radioJob = null
     }
 
     override fun cycleRepeatMode() {
@@ -360,4 +361,9 @@ class StatefulPlayerImpl(
 
     override fun onTimelineChanged( timeline: Timeline, reason: Int ) =
         _currentTimelineState.update { timeline }
+
+    override fun stop() {
+        stopRadio()
+        player.stop()
+    }
 }

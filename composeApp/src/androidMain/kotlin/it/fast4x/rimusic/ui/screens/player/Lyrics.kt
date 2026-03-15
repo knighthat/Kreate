@@ -92,6 +92,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.database.models.Lyrics
 import app.kreate.util.cleanPrefix
 import co.touchlab.kermit.Logger
@@ -148,6 +149,7 @@ import kotlinx.coroutines.withContext
 import me.bush.translator.Language
 import me.bush.translator.Translator
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import kotlin.Float.Companion.POSITIVE_INFINITY
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -196,6 +198,7 @@ fun Lyrics(
         val menuState = LocalMenuState.current
         val currentView = LocalView.current
         val binder = LocalPlayerServiceBinder.current
+        val player: StatefulPlayer = koinInject()
 
         var showlyricsthumbnail by Preferences.LYRICS_SHOW_THUMBNAIL
         var isShowingSynchronizedLyrics by Preferences.LYRICS_SYNCHRONIZED
@@ -1794,9 +1797,9 @@ fun Lyrics(
                                     interactionSource = remember { MutableInteractionSource() },
                                     onClick = {
                                         if (binder?.player?.isPlaying == true) {
-                                            binder.gracefulPause()
+                                            player.pause()
                                         } else {
-                                            binder?.player?.play()
+                                            player.play()
                                         }
                                     },
                                 )

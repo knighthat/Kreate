@@ -49,6 +49,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
@@ -79,6 +80,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
+import org.koin.compose.koinInject
 
 
 @UnstableApi
@@ -358,6 +360,7 @@ fun ControlsModern(
     playbackSpeed: Float,
     shouldBePlaying: Boolean,
     playerPlayButtonType: PlayerPlayButtonType,
+    player: StatefulPlayer = koinInject(),
     onShowSpeedPlayerDialog: () -> Unit
 ) {
     var effectRotationEnabled by Preferences.ROTATION_EFFECT
@@ -408,9 +411,9 @@ fun ControlsModern(
                      interactionSource = remember { MutableInteractionSource() },
                      onClick = {
                          if (shouldBePlaying) {
-                             binder.gracefulPause()
+                             player.pause()
                          } else {
-                             binder.gracefulPlay()
+                             player.play()
                          }
                          if (effectRotationEnabled) isRotated = !isRotated
                      },
@@ -471,9 +474,9 @@ fun ControlsModern(
                       interactionSource = remember { MutableInteractionSource() },
                       onClick = {
                           if (shouldBePlaying) {
-                              binder.gracefulPause()
+                              player.pause()
                           } else {
-                              binder.gracefulPlay()
+                              player.play()
                           }
                           if (effectRotationEnabled) isRotated = !isRotated
                       },
@@ -638,9 +641,9 @@ fun ControlsModern(
                           indication = null,
                           onClick = {
                               if (shouldBePlaying) {
-                                  binder.gracefulPause()
+                                  player.pause()
                               } else {
-                                  binder.gracefulPlay()
+                                  player.play()
                               }
                               if (effectRotationEnabled) isRotated = !isRotated
                           },

@@ -439,7 +439,7 @@ fun BoxScope.ActionBar(
                         icon = R.drawable.video,
                         color = colorPalette().accent,
                         onClick = {
-                            binder.gracefulPause()
+                            player.pause()
                             showSearchEntityState.value = true
                         },
                         modifier = Modifier.size( 24.dp )

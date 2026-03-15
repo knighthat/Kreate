@@ -379,9 +379,9 @@ fun MiniPlayer(
                         .clip(RoundedCornerShape(playPauseRoundness))
                         .clickable {
                             if (shouldBePlaying) {
-                                binder.gracefulPause()
+                                player.pause()
                             } else {
-                                binder.gracefulPlay()
+                                player.play()
                             }
                             if (effectRotationEnabled) isRotated = !isRotated
                         }
