@@ -846,11 +846,6 @@ class PlayerServiceModern:
         val player: StatefulPlayer
             get() = this@PlayerServiceModern.player
 
-        val cache: Cache
-            get() = this@PlayerServiceModern.cache
-
-        val downloadCache: Cache by inject(CacheType.DOWNLOAD)
-
         val sleepTimerMillisLeft: StateFlow<Long?>?
             get() = timerJob?.millisLeft
 

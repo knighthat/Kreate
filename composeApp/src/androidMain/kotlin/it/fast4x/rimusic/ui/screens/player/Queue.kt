@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.media3.common.MediaItem
+import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
@@ -59,6 +60,7 @@ import app.kreate.android.themed.rimusic.component.playlist.PositionLock
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persist
 import it.fast4x.compose.persist.persistList
@@ -97,6 +99,7 @@ import me.knighthat.component.ui.screens.player.QueueArrow
 import me.knighthat.component.ui.screens.player.Repeat
 import me.knighthat.component.ui.screens.player.ShuffleQueue
 import me.knighthat.utils.Toaster
+import org.koin.java.KoinJavaComponent.inject
 
 
 @ExperimentalTextApi
@@ -276,7 +279,8 @@ fun Queue(
                                 binder.player.moveMediaItem( index, binder.player.currentMediaItemIndex + 1 )
                             },
                             onDownload = {
-                                binder.cache.removeResource(song.id)
+                                val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
+                                cache.removeResource(song.id)
                                 if (!isLocal)
                                     manageDownload(
                                         context = context,

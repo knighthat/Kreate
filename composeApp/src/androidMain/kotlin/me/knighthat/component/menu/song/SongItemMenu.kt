@@ -160,7 +160,7 @@ class SongItemMenu private constructor(
             GoToAlbum( navController, song )
         }
         val resetDialog = ResetSongDialog( song )
-        val exportCacheDialog = ExportCacheDialog( binder ) { song }
+        val exportCacheDialog = ExportCacheDialog { song }
         val info = remember { Information(navController, song.id) }
 
         buttons = mutableListOf<Button>().apply {

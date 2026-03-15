@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
@@ -31,6 +32,7 @@ import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.screen.home.onDevice.OnDeviceSong
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.appContext
@@ -59,13 +61,17 @@ import me.knighthat.component.tab.ImportSongsFromCSV
 import me.knighthat.component.tab.LikeComponent
 import me.knighthat.component.tab.Locator
 import me.knighthat.component.tab.SongShuffler
+import org.koin.compose.koinInject
 
 @UnstableApi
 @ExperimentalMaterial3Api
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @Composable
-fun HomeSongsScreen(navController: NavController ) {
+fun HomeSongsScreen(
+    navController: NavController,
+    cache: Cache = koinInject(CacheType.CACHE)
+) {
     // Essentials
     val binder = LocalPlayerServiceBinder.current ?: return
     val lazyListState = rememberLazyListState()
@@ -189,13 +195,13 @@ fun HomeSongsScreen(navController: NavController ) {
 
                     when (builtInPlaylist) {
                         BuiltInPlaylist.Downloaded, BuiltInPlaylist.Offline -> {
-                            val indicator = remember( builtInPlaylist, binder.cache ) {
+                            val indicator = remember( builtInPlaylist, cache ) {
                                 val preference = if( builtInPlaylist === BuiltInPlaylist.Downloaded )
                                     Preferences.EXO_DOWNLOAD_SIZE
                                 else
                                     Preferences.EXO_CACHE_SIZE
 
-                                ExoCacheIndicator(preference, binder.cache)
+                                ExoCacheIndicator(preference, cache)
                             }
                             indicator.ProgressBar(
                                 Modifier.padding(

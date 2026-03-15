@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
@@ -67,6 +68,7 @@ import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.cleanPrefix
 import app.kreate.util.readableText
@@ -106,6 +108,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
 import me.knighthat.utils.Toaster
+import org.koin.java.KoinJavaComponent.inject
 import java.time.LocalTime.now
 import java.time.format.DateTimeFormatter
 import kotlin.time.DurationUnit
@@ -240,12 +243,14 @@ fun NonQueuedMediaItemMenuLibrary(
             onDismiss = { isHiding = false },
             onConfirm = {
                 onDismiss()
-                if (binder != null) {
-                    binder.cache.removeResource(mediaItem.mediaId)
-                    binder.downloadCache.removeResource(mediaItem.mediaId)
-                    Database.asyncTransaction {
-                        songTable.updateTotalPlayTime( mediaItem.mediaId, 0 )
-                    }
+
+                val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
+                val downloadCache: Cache by inject(Cache::class.java, CacheType.DOWNLOAD)
+
+                cache.removeResource(mediaItem.mediaId)
+                downloadCache.removeResource(mediaItem.mediaId)
+                Database.asyncTransaction {
+                    songTable.updateTotalPlayTime( mediaItem.mediaId, 0 )
                 }
             }
         )

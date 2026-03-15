@@ -51,6 +51,7 @@ import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
@@ -66,6 +67,7 @@ import app.kreate.android.utils.shallowCompare
 import app.kreate.constant.PlaylistSongSortBy
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongPlaylistMap
+import app.kreate.di.CacheType
 import app.kreate.util.cleanPrefix
 import app.kreate.util.toDuration
 import co.touchlab.kermit.Logger
@@ -136,6 +138,7 @@ import me.knighthat.component.tab.LikeComponent
 import me.knighthat.component.tab.Locator
 import me.knighthat.component.tab.SongShuffler
 import me.knighthat.utils.Toaster
+import org.koin.java.KoinJavaComponent.inject
 import kotlin.time.Duration
 
 
@@ -210,10 +213,10 @@ fun LocalPlaylistSongs(
     }
     val renumberDialog = Reposition(playlistId)
     val downloadAllDialog = remember {
-        DownloadAllDialog( binder, context, ::getSongs )
+        DownloadAllDialog( context, ::getSongs )
     }
     val deleteDownloadsDialog = remember {
-        DeleteAllDownloadedDialog( binder, context, ::getSongs )
+        DeleteAllDownloadedDialog(::getSongs)
     }
     val editThumbnailLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
@@ -686,7 +689,8 @@ fun LocalPlaylistSongs(
                             )
                         },
                         onDownload = {
-                            binder?.cache?.removeResource(song.asMediaItem.mediaId)
+                            val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
+                            cache.removeResource(song.asMediaItem.mediaId)
                             Database.asyncTransaction {
                                 formatTable.updateContentLengthOf( song.id )
                             }

@@ -13,6 +13,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
@@ -26,6 +27,7 @@ import app.kreate.android.R
 import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import app.kreate.util.cleanPrefix
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
@@ -54,13 +56,19 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.java.KoinJavaComponent.inject
 
 @UnstableApi
 class MediaLibrarySessionCallback(
     val context: Context,
     val database: Database,
     val downloadHelper: MyDownloadHelper
-) : MediaLibrarySession.Callback {
+) : MediaLibrarySession.Callback, KoinComponent {
+
+    private val cache: Cache by inject(CacheType.CACHE)
+
     private val scope = CoroutineScope(Dispatchers.Main) + Job()
     lateinit var binder: PlayerServiceModern.Binder
     var toggleLike: () -> Unit = {}
@@ -329,7 +337,7 @@ class MediaLibrarySessionCallback(
                                                  .map { list ->
                                                      list.filter {
                                                              val contentLength = it.format.contentLength
-                                                             contentLength != null && binder.cache.isCached( it.song.id, 0L, contentLength )
+                                                             contentLength != null && cache.isCached( it.song.id, 0L, contentLength )
                                                          }
                                                          .map( FormatWithSong::song )
                                                          .reversed()
@@ -431,7 +439,7 @@ class MediaLibrarySessionCallback(
                                              .map { list ->
                                                  list.fastFilter {
                                                      val contentLength = it.format.contentLength
-                                                     contentLength != null && binder.cache.isCached( it.song.id, 0L, contentLength )
+                                                     contentLength != null && cache.isCached( it.song.id, 0L, contentLength )
                                                  }
                                                      .reversed()
                                                      .fastMap( FormatWithSong::song )
@@ -545,7 +553,7 @@ class MediaLibrarySessionCallback(
                 .map { list ->
                     list.filter {
                             val contentLength = it.format.contentLength
-                            contentLength != null && binder.cache.isCached( it.song.id, 0L, contentLength )
+                            contentLength != null && cache.isCached( it.song.id, 0L, contentLength )
                         }
                         .size
                 }

@@ -7,9 +7,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.util.fastAny
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import app.kreate.android.R
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import app.kreate.di.clearCachedStreamUrlOf
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
@@ -25,14 +27,16 @@ import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Contract
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.java.KoinJavaComponent.inject
 import java.util.Optional
 
 @UnstableApi
 class ResetSongDialog private constructor(
     activeState: MutableState<Boolean>,
-    private val binder: PlayerServiceModern.Binder?,
     var song: Optional<Song>
-) : CheckboxDialog(activeState), MenuIcon, Descriptive {
+) : CheckboxDialog(activeState), MenuIcon, Descriptive, KoinComponent {
 
     companion object {
         private const val TITLE_CHECKBOX_ID = "title"
@@ -45,7 +49,6 @@ class ResetSongDialog private constructor(
         operator fun invoke( song: Song ): ResetSongDialog =
             ResetSongDialog(
                 remember { mutableStateOf(false) },
-                LocalPlayerServiceBinder.current,
                 Optional.of( song )
             )
     }
@@ -98,6 +101,9 @@ class ResetSongDialog private constructor(
         items.add( Item.SELECT_ALL )
     }
 
+    private val cache: Cache by inject(CacheType.CACHE)
+    private val downloadCache: Cache by inject(CacheType.DOWNLOAD)
+
     override val iconId: Int = R.drawable.refresh_circle
     override val messageId: Int = R.string.info_open_reset_dialog
     override val menuIconTitle: String
@@ -146,8 +152,9 @@ class ResetSongDialog private constructor(
                 if( items.first { it.id == CACHE_CHECKBOX_ID }.selected ) {
                     clearCachedStreamUrlOf( song.id )
 
-                    binder?.cache?.removeResource( song.id )
-                    binder?.downloadCache?.removeResource( song.id )
+                    cache.removeResource( song.id )
+                    // FIXME: This is unsafe, use [DownloadService.sendRemoveDownload] instead
+                    downloadCache.removeResource( song.id )
                     formatTable.deleteBySongId( song.id )
                     formatTable.updateContentLengthOf( song.id )
                 }

@@ -17,15 +17,13 @@ import it.fast4x.rimusic.ui.components.MenuState
 class DeleteHiddenSongsDialog private constructor(
     activeState: MutableState<Boolean>,
     menuState: MenuState,
-    binder: PlayerServiceModern.Binder?
-): DeleteSongDialog(activeState, menuState, binder) {
+): DeleteSongDialog(activeState, menuState) {
 
     companion object {
         @Composable
         operator fun invoke() = DeleteHiddenSongsDialog(
             remember { mutableStateOf(false) },
-            LocalMenuState.current,
-            LocalPlayerServiceBinder.current
+            LocalMenuState.current
         )
     }
 

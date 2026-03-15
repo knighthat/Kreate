@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastFold
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
@@ -71,6 +72,7 @@ import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Playlist
+import app.kreate.di.CacheType
 import app.kreate.util.toDuration
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.Innertube
@@ -119,6 +121,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
+import org.koin.java.KoinJavaComponent.inject
+import kotlin.getValue
 import kotlin.time.Duration
 
 
@@ -227,6 +232,8 @@ fun Podcast(
     val lazyListState = rememberLazyListState()
 
     LayoutWithAdaptiveThumbnail(thumbnailContent = thumbnailContent) {
+        val cache: Cache = koinInject(CacheType.CACHE)
+
         Box(
             modifier = Modifier
                 .background(colorPalette().background0)
@@ -386,7 +393,7 @@ fun Podcast(
                                             downloadState = Download.STATE_DOWNLOADING
                                             if (podcastPage?.listEpisode?.isNotEmpty() == true)
                                                 podcastPage?.listEpisode?.forEach {
-                                                    binder?.cache?.removeResource(it.asMediaItem.mediaId)
+                                                    cache.removeResource(it.asMediaItem.mediaId)
                                                     Database.asyncTransaction {
                                                         formatTable.findBySongId( it.asMediaItem.mediaId )
                                                     }
@@ -414,7 +421,7 @@ fun Podcast(
                                             downloadState = Download.STATE_DOWNLOADING
                                             if (podcastPage?.listEpisode?.isNotEmpty() == true)
                                                 podcastPage?.listEpisode?.forEach {
-                                                    binder?.cache?.removeResource(it.asMediaItem.mediaId)
+                                                    cache.removeResource(it.asMediaItem.mediaId)
                                                     Database.asyncTransaction {
                                                         formatTable.findBySongId( it.asMediaItem.mediaId )
                                                     }
@@ -691,7 +698,7 @@ fun Podcast(
                             binder?.player?.addNext(song.asMediaItem)
                         },
                         onDownload = {
-                            binder?.cache?.removeResource(song.asMediaItem.mediaId)
+                            cache.removeResource(song.asMediaItem.mediaId)
                             Database.asyncTransaction {
                                 formatTable.updateContentLengthOf( song.asMediaItem.mediaId )
                             }

@@ -7,15 +7,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import me.knighthat.component.dialog.ConfirmDialog
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 @UnstableApi
-abstract class AbstractMediaDownloadDialog(
-    private val binder: PlayerServiceModern.Binder
-): ConfirmDialog {
+abstract class AbstractMediaDownloadDialog : ConfirmDialog, KoinComponent {
+
+    private val cache: Cache by inject(CacheType.CACHE)
 
     override var isActive: Boolean by mutableStateOf( false )
 
@@ -31,6 +35,6 @@ abstract class AbstractMediaDownloadDialog(
                           formatTable.deleteBySongId( it )
                       }
                   }
-                  .fastForEach( binder.cache::removeResource )
+                  .fastForEach( cache::removeResource )
     }
 }

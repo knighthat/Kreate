@@ -244,10 +244,10 @@ fun YouTubeAlbum(
 
         val bookmark = remember { Bookmark(browseId) }
         val deleteAllDownloadsDialog = remember {
-            DeleteAllDownloadedDialog( binder, context, ::getSongs )
+            DeleteAllDownloadedDialog(::getSongs)
         }
         val downloadALlDialog = remember {
-            DownloadAllDialog( binder, context, ::getSongs )
+            DownloadAllDialog( context, ::getSongs )
         }
         val shuffle = SongShuffler {
             getMediaItems().map( MediaItem::asSong )
