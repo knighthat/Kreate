@@ -2,6 +2,9 @@ package it.fast4x.rimusic.service.modern
 
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
 import android.os.Bundle
 import androidx.annotation.DrawableRes
@@ -41,6 +44,7 @@ import it.fast4x.innertube.models.bodies.SearchBody
 import it.fast4x.innertube.requests.searchPage
 import it.fast4x.innertube.utils.from
 import it.fast4x.rimusic.Database
+import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.enums.StatisticsType
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.MediaSessionConstants.ID_CACHED
@@ -79,12 +83,10 @@ class MediaLibrarySessionCallback(
     var toggleShuffle: () -> Unit = {}
     var startRadio: () -> Unit = {}
     var callPause: () -> Unit = {}
-    var actionSearch: () -> Unit = {}
     var searchedSongs: List<Song> = emptyList()
 
     fun toggleLike( player: Player ) {
         val mediaItem = player.currentMediaItem ?: return
-        val context: Context by inject()
         val player: StatefulPlayer by inject()
         Database.asyncTransaction {
             songTable.rotateLikeState( mediaItem.mediaId )
@@ -94,6 +96,13 @@ class MediaLibrarySessionCallback(
         }
 
         MyDownloadHelper.autoDownloadWhenLiked( mediaItem )
+    }
+
+    fun onSearch() {
+        val intent = Intent(context.applicationContext, MainActivity::class.java)
+                .setAction( MainActivity.action_search )
+               .setFlags(FLAG_ACTIVITY_NEW_TASK + FLAG_ACTIVITY_CLEAR_TASK)
+        context.startActivity(  intent )
     }
 
     override fun onConnect(
@@ -170,7 +179,7 @@ class MediaLibrarySessionCallback(
             MediaSessionConstants.ACTION_TOGGLE_SHUFFLE -> toggleShuffle()
             MediaSessionConstants.ACTION_TOGGLE_REPEAT_MODE -> toggleRepeat()
             MediaSessionConstants.ACTION_START_RADIO -> startRadio()
-            MediaSessionConstants.ACTION_SEARCH -> actionSearch()
+            MediaSessionConstants.ACTION_SEARCH -> onSearch()
         }
         return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
     }

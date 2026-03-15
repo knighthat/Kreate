@@ -9,8 +9,6 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.graphics.Bitmap
@@ -258,7 +256,6 @@ class PlayerServiceModern:
             toggleShuffle = player::toggleShuffleMode
             startRadio = player::startRadio
             callPause = player::pause
-            actionSearch = binder::actionSearch
         }
 
         // Build the media library session
@@ -706,10 +703,6 @@ class PlayerServiceModern:
         )
     }
 
-    private fun actionSearch() {
-        binder.actionSearch()
-    }
-
     private fun maybeResumePlaybackOnStart() {
         if( Preferences.ENABLE_PERSISTENT_QUEUE.value
             && Preferences.RESUME_PLAYBACK_ON_STARTUP.value
@@ -785,16 +778,16 @@ class PlayerServiceModern:
         @FlowPreview
         override fun onReceive(context: Context, intent: Intent) {
             when ( intent.action ) {
-                Action.pause.value      -> player::pause
-                Action.play.value       -> player::play
-                Action.next.value       -> player::playNext
-                Action.previous.value   -> player::playPrevious
+                Action.pause.value      -> player.pause()
+                Action.play.value       -> player.play()
+                Action.next.value       -> player.playNext()
+                Action.previous.value   -> player.playPrevious()
                 Action.like.value       -> mediaLibrarySessionCallback.toggleLike( player )
-                Action.download.value   -> player::downloadCurrentMediaItem
-                Action.playradio.value  -> player::startRadio
-                Action.shuffle.value    -> player::toggleShuffleMode
-                Action.search.value     -> mediaLibrarySessionCallback::actionSearch
-                Action.repeat.value     -> player::cycleRepeatMode
+                Action.download.value   -> player.downloadCurrentMediaItem()
+                Action.playradio.value  -> player.startRadio()
+                Action.shuffle.value    -> player.toggleShuffleMode()
+                Action.search.value     -> mediaLibrarySessionCallback.onSearch()
+                Action.repeat.value     -> player.cycleRepeatMode()
             }
         }
     }
@@ -822,13 +815,6 @@ class PlayerServiceModern:
         fun restartForegroundOrStop() {
             player.pause()
             stopSelf()
-        }
-
-        fun actionSearch() {
-            startActivity(Intent(applicationContext, MainActivity::class.java)
-                .setAction(MainActivity.action_search)
-                .setFlags(FLAG_ACTIVITY_NEW_TASK + FLAG_ACTIVITY_CLEAR_TASK))
-            println("PlayerServiceModern actionSearch")
         }
     }
 
