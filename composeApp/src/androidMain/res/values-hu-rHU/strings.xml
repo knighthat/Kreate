@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Csúsztasd felfelé az ujjad a Várólista megnyitásához</string>
     <string name="pinfo_show_icons">Információk megjelenítése ikonokkal</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Minimális csendhossz</string>
-    <string name="minimum_silence_length_description">Az a minimális idő, amikor a hangnak némának kell lennie ahhoz, hogy kihagyja</string>
     <string name="minimum_silence_length_warning">A változtatások érvényesítéséhez újra kell indítani a Lejátszót!</string>
     <string name="restart_service">Indítsd újra a szolgáltatást</string>
     <string name="player_pause_listen_history">Hallgatási előzmények szüneteltetése</string>

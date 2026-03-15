@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Stryg op for at åbne kø</string>
     <string name="pinfo_show_icons">Vis info med ikoner</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Minimum stilhed</string>
-    <string name="minimum_silence_length_description">Minimumstid uden lyd, før det springes over</string>
     <string name="minimum_silence_length_warning">Afspilleren skal genstartes for at ændringerne træder i kraft!</string>
     <string name="restart_service">Genstart tjeneste</string>
     <string name="player_pause_listen_history">Sæt lyttehistorik på pause</string>

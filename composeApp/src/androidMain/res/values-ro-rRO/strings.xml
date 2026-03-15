@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Glisează în sus pentru a deschide coada</string>
     <string name="pinfo_show_icons">Afișează informațiile cu iconițe</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Durata minimă de liniște</string>
-    <string name="minimum_silence_length_description">Durata minimă a sunetului silențios care poate fi sărit</string>
     <string name="minimum_silence_length_warning">Playerul trebuie repornit pentru ca modificările să aibă efect!</string>
     <string name="restart_service">Repornește playerul</string>
     <string name="player_pause_listen_history">Întrerupe istoricul ascultărilor</string>

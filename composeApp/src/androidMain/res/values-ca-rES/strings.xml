@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Llisca cap amunt per obrir la cua</string>
     <string name="pinfo_show_icons">Mostra la informació amb icones</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Durada mínima del silenci</string>
-    <string name="minimum_silence_length_description">El temps mínim que l\'àudio ha d\'estar en silenci per saltar-se</string>
     <string name="minimum_silence_length_warning">El reproductor s\'ha de reiniciar perquè els canvis siguin efectius!</string>
     <string name="restart_service">Reinicieu el servei</string>
     <string name="player_pause_listen_history">Posa en pausa l\'historial d\'escolta</string>

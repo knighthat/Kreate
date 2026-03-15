@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Sveip opp for å åpne Kø</string>
     <string name="pinfo_show_icons">Vis informasjon med ikoner</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Minste lengde av stillhet</string>
-    <string name="minimum_silence_length_description">Minste tid lyden må være stille for å hoppe over</string>
     <string name="minimum_silence_length_warning">Spilleren må startes på nytt for at endringene skal tre i kraft!</string>
     <string name="restart_service">Omstart av tjeneste</string>
     <string name="player_pause_listen_history">Pause lyttehistorikk</string>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Fait</string>
     <string name="hidesong">Voulez-vous vraiment masquer ce titre ? Son temps de lecture et son cache seront effacés. Cette action est irréversible.</string>
@@ -526,8 +526,6 @@ Volume BAS : titre précédent</string>
     <string name="swipe_up_to_open_the_queue">Balayer vers le haut pour ouvrir la file d\'attente</string>
     <string name="pinfo_show_icons">Afficher les informations avec les icônes</string>
     <string name="format_ms">%1$d ms</string>
-    <string name="minimum_silence_length">Longueur minimale du silence</string>
-    <string name="minimum_silence_length_description">Le temps minimum pendant lequel l\'audio doit être silencieux pour être ignoré</string>
     <string name="minimum_silence_length_warning">Le lecteur doit être redémarré pour que les modifications soient effectives !</string>
     <string name="restart_service">Redémarrer le service</string>
     <string name="player_pause_listen_history">Suspendre l\'historique d\'écoute</string>

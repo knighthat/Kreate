@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.media3.exoplayer.audio.SilenceSkippingAudioProcessor
 import app.kreate.android.enums.DohServer
 import app.kreate.android.enums.PlatformIndicatorType
 import app.kreate.android.utils.innertube.getSystemCountryCode
@@ -570,9 +571,6 @@ sealed class Preferences<T>(
         }
         val AUDIO_SKIP_SILENCE by lazy {
             Boolean( preferences, Key.AUDIO_SKIP_SILENCE, "skipSilence", false )
-        }
-        val AUDIO_SKIP_SILENCE_LENGTH by lazy {
-            Long( preferences, Key.AUDIO_SKIP_SILENCE_LENGTH, "minimumSilenceDuration", 0L )
         }
         val AUDIO_VOLUME_NORMALIZATION by lazy {
             Boolean( preferences, Key.AUDIO_VOLUME_NORMALIZATION, "volumeNormalization", false )

@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Deslize para cima para abrir a fila</string>
     <string name="pinfo_show_icons">Mostrar informações com ícones</string>
     <string name="format_ms">%1$s Ms</string>
-    <string name="minimum_silence_length">Duração mínima do silêncio</string>
-    <string name="minimum_silence_length_description">O tempo mínimo que a música precisa ser silenciosa para ser pulada</string>
     <string name="minimum_silence_length_warning">O reprodutor precisa ser reiniciado para as mudanças serem efetivas!</string>
     <string name="restart_service">Reiniciar serviço</string>
     <string name="player_pause_listen_history">Pausar histórico de escuta</string>

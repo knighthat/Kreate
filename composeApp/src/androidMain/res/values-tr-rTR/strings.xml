@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Sırayı açmak için yukarı kaydır</string>
     <string name="pinfo_show_icons">Bilgiyi simgelerle göster</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Minimum sessizlik süresi</string>
-    <string name="minimum_silence_length_description">Atlanabilecek minimum sessiz ses süresi</string>
     <string name="minimum_silence_length_warning">Değişikliklerin etkili olması için oynatıcının yeniden başlatılması gerekir!</string>
     <string name="restart_service">Oynatıcıyı yeniden başlat</string>
     <string name="player_pause_listen_history">Dinleme geçmişini duraklat</string>
