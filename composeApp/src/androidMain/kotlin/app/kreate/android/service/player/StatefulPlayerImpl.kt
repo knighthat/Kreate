@@ -2,41 +2,22 @@ package app.kreate.android.service.player
 
 import android.animation.Animator
 import android.animation.ValueAnimator
-import android.content.Context
-import android.content.SharedPreferences
 import androidx.annotation.MainThread
 import androidx.annotation.OptIn
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
-import androidx.media3.common.AudioAttributes
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
-import androidx.media3.common.audio.SonicAudioProcessor
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.datasource.DataSource
-import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.audio.AudioSink
-import androidx.media3.exoplayer.audio.DefaultAudioOffloadSupportProvider
-import androidx.media3.exoplayer.audio.DefaultAudioSink
-import androidx.media3.exoplayer.audio.DefaultAudioSink.DefaultAudioProcessorChain
-import androidx.media3.exoplayer.audio.SilenceSkippingAudioProcessor
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
-import androidx.media3.extractor.DefaultExtractorsFactory
 import app.kreate.android.Preferences
 import app.kreate.android.service.PlayerEventUpdateDiscord
 import co.touchlab.kermit.Logger
-import it.fast4x.rimusic.utils.isAtLeastAndroid10
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import me.knighthat.discord.Discord
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import java.io.IOException
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -48,97 +29,19 @@ import kotlin.math.pow
  * - Observable states (current mediaItem, timeline, window, etc.)
  */
 @OptIn(UnstableApi::class)
-class CustomExoPlayer private constructor(
+class StatefulPlayerImpl(
     private val player: ExoPlayer
-): ExoPlayer by player, Player.Listener, KoinComponent {
-
-    companion object {
-
-        private fun makeBasePlayer(
-            context: Context,
-            preferences: SharedPreferences,
-            dataSourceFactory: DataSource.Factory
-        ): ExoPlayer {
-            val datasourceFactory = DefaultMediaSourceFactory(
-                dataSourceFactory,
-                DefaultExtractorsFactory()
-            ).setLoadErrorHandlingPolicy(
-                object : DefaultLoadErrorHandlingPolicy() {
-                    override fun isEligibleForFallback(exception: IOException) = true
-                }
-            )
-
-            val renderFactory = object : DefaultRenderersFactory(context) {
-                override fun buildAudioSink(
-                    context: Context,
-                    enableFloatOutput: Boolean,
-                    enableAudioTrackPlaybackParams: Boolean
-                ): AudioSink {
-                    val skipSilenceLength = preferences.getLong( Preferences.Key.AUDIO_SKIP_SILENCE_LENGTH, 1_000L )
-                    val minimumSilenceDuration = skipSilenceLength.coerceIn( 1_000L..2_000_000L )
-
-                    return DefaultAudioSink.Builder(context)
-                        .setEnableFloatOutput(enableFloatOutput)
-                        .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
-                        .setAudioOffloadSupportProvider(
-                            DefaultAudioOffloadSupportProvider(context)
-                        )
-                        .setAudioProcessorChain(
-                            DefaultAudioProcessorChain(
-                                arrayOf(),
-                                SilenceSkippingAudioProcessor(
-                                    /* minimumSilenceDurationUs = */ minimumSilenceDuration,
-                                    /* silenceRetentionRatio = */ 0.01f,
-                                    /* maxSilenceToKeepDurationUs = */ minimumSilenceDuration,
-                                    /* minVolumeToKeepPercentageWhenMuting = */ 0,
-                                    /* silenceThresholdLevel = */ 256
-                                ),
-                                SonicAudioProcessor()
-                            )
-                        )
-                        .build()
-                        .apply {
-                            if ( isAtLeastAndroid10 )
-                                setOffloadMode( AudioSink.OFFLOAD_MODE_DISABLED )
-                        }
-                }
-            }
-            val audioAttributes: AudioAttributes = AudioAttributes.Builder()
-                                                                  .setUsage( C.USAGE_MEDIA )
-                                                                  .setContentType( C.AUDIO_CONTENT_TYPE_MUSIC )
-                                                                  .build()
-            val handleAudioFocus = preferences.getBoolean(
-                Preferences.Key.AUDIO_SMART_PAUSE_DURING_CALLS,
-                false
-            )
-
-            return ExoPlayer.Builder(context)
-                            .setMediaSourceFactory( datasourceFactory )
-                            .setRenderersFactory( renderFactory )
-                            .setHandleAudioBecomingNoisy( true )
-                            .setWakeMode( C.WAKE_MODE_NETWORK )
-                            .setAudioAttributes( audioAttributes, handleAudioFocus )
-                            .setUsePlatformDiagnostics( false )
-                            .build()
-        }
-    }
-
-    constructor(
-        dataSourceFactory: DataSource.Factory,
-        preferences: SharedPreferences,
-        context: Context
-    ) : this(makeBasePlayer( context, preferences, dataSourceFactory ))
+): ExoPlayer by player, StatefulPlayer, Player.Listener, KoinComponent {
 
     private val _currentMediaItemState = MutableStateFlow<MediaItem?>(null)
     private val _currentTimelineState = MutableStateFlow(Timeline.EMPTY)
     private val _currentWindowState = MutableStateFlow<Timeline.Window?>(null)
-    private val discord: Discord by inject()
 
     private var volumeAnimator: ValueAnimator? = null
 
-    val currentMediaItemState = _currentMediaItemState.asStateFlow()
-    val currentTimelineState = _currentTimelineState.asStateFlow()
-    val currentWindowState = _currentWindowState.asStateFlow()
+    override val currentMediaItemState = _currentMediaItemState.asStateFlow()
+    override val currentTimelineState = _currentTimelineState.asStateFlow()
+    override val currentWindowState = _currentWindowState.asStateFlow()
 
     init {
         this.addListener( this )

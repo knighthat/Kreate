@@ -4,12 +4,12 @@ package app.kreate.di
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastFilter
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
+import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultDataSource
@@ -19,10 +19,16 @@ import androidx.media3.datasource.cache.CacheDataSink
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR
 import androidx.media3.datasource.okhttp.OkHttpDataSource
+import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.extractor.DefaultExtractorsFactory
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.DownloadHelper
-import app.kreate.android.service.player.CustomExoPlayer
+import app.kreate.android.service.player.StatefulPlayerImpl
+import app.kreate.android.service.player.ErrorHandlingPolicy
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.player.VolumeObserver
 import app.kreate.android.utils.CharUtils
 import app.kreate.android.utils.ConnectivityUtils
@@ -445,12 +451,32 @@ val playerModule = module {
     }
 
     singleOf( ::VolumeObserver )
-    single {
-        val dataSourceFactory: ResolvingDataSource.Factory = get(DatasourceType.PLAYER)
-        val preferences: SharedPreferences = get(PrefType.DEFAULT)
+    single<StatefulPlayer> {
         val context: Context = get()
+        val resolvingFactory: ResolvingDataSource.Factory = get(DatasourceType.PLAYER)
+        val handleAudioFocus by Preferences.AUDIO_SMART_PAUSE_DURING_CALLS
 
-        CustomExoPlayer(dataSourceFactory, preferences, context)
+        val renderersFactory = DefaultRenderersFactory(context)
+        val datasourceFactory = DefaultMediaSourceFactory(
+            resolvingFactory,
+            DefaultExtractorsFactory()
+        )
+        datasourceFactory.setLoadErrorHandlingPolicy( ErrorHandlingPolicy() )
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage( C.USAGE_MEDIA )
+            .setContentType( C.AUDIO_CONTENT_TYPE_MUSIC )
+            .build()
+
+        StatefulPlayerImpl(
+            ExoPlayer.Builder(context)
+                .setMediaSourceFactory( datasourceFactory )
+                .setRenderersFactory( renderersFactory )
+                .setHandleAudioBecomingNoisy( true )
+                .setWakeMode( C.WAKE_MODE_NETWORK )
+                .setAudioAttributes( audioAttributes, handleAudioFocus )
+                .setUsePlatformDiagnostics( false )
+                .build()
+        )
     }
     @SuppressLint("UnsafeOptInUsageError")
     single<DownloadHelper> {
