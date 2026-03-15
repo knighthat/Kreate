@@ -81,19 +81,18 @@ class ExoPlayerListener(
                     Triple(currentTimeline.mediaItems, currentMediaItemIndex, currentPosition)
                 }
             }
+            if( queue.isEmpty() ) return@launch
 
-            queue.fastMapIndexed { i, m ->
+            val queueItems = queue.fastMapIndexed { i, m ->
                 PersistentQueue(
                     songId = m.mediaId,
                     position = if( i == index ) playerPos else null
                 )
-            }.also { list ->
-                if( list.isEmpty() ) return@also
-
-                Database.asyncTransaction {
-                    queueTable.deleteAll()
-                    queueTable.insertIgnore( list )
-                }
+            }
+            Database.asyncTransaction {
+                queueTable.deleteAll()
+                queue.forEach( ::insertIgnore )
+                queueTable.insertIgnore( queueItems )
             }
         }
     }
