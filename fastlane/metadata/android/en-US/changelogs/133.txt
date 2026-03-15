@@ -1,0 +1,2 @@
+Fixes:
+- Crash when adding new song to queue with persistent enabled
