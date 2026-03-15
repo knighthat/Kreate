@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Swipe up to open Queue</string>
     <string name="pinfo_show_icons">Monstrar le information con icones</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Minimum silence length</string>
-    <string name="minimum_silence_length_description">The minimum time the audio has to be silent to get skipped</string>
     <string name="minimum_silence_length_warning">Player has to be restarted for the changes to be effective!</string>
     <string name="restart_service">Reinitiar le servicio</string>
     <string name="player_pause_listen_history">Pausar le chronologia de ascoltamento</string>

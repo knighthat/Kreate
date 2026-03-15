@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">完成</string>
     <string name="hidesong">你真的要隱藏這首歌曲嗎? 播放記錄和暫存將被清除. \n此動作不可逆.</string>
@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Swipe up to open the queue</string>
     <string name="pinfo_show_icons">Show info with icons</string>
     <string name="format_ms">%1$s 毫秒</string>
-    <string name="minimum_silence_length">Minimum silence length</string>
-    <string name="minimum_silence_length_description">The minimum time the audio has to be silent to get skipped</string>
     <string name="minimum_silence_length_warning">需要重新啟動以套用變更！</string>
     <string name="restart_service">重啟服務</string>
     <string name="player_pause_listen_history">暫停收聽記錄</string>

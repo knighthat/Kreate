@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Swipe up to open the queue</string>
     <string name="pinfo_show_icons">以图标显示信息</string>
     <string name="format_ms">%1$s 毫秒</string>
-    <string name="minimum_silence_length">最小静音长度</string>
-    <string name="minimum_silence_length_description">可以被跳过的音频中最小包含的静音时长</string>
     <string name="minimum_silence_length_warning">播放器必须重启才能使更改生效！</string>
     <string name="restart_service">重启服务</string>
     <string name="player_pause_listen_history">暂停播放记录</string>

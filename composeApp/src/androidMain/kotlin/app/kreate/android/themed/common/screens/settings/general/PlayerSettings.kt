@@ -212,31 +212,6 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
             R.string.skip_silent_parts_during_playback
         )
     }
-    animatedEntry(
-        key = "skipSilenceChildren",
-        visible = Preferences.AUDIO_SKIP_SILENCE.value,
-        modifier = Modifier.padding( start = SettingComponents.CHILDREN_PADDING.dp )
-    ) {
-        if( search appearsIn R.string.minimum_silence_length )
-            SettingComponents.SliderEntry(
-                preference = Preferences.AUDIO_SKIP_SILENCE_LENGTH,
-                titleId = R.string.minimum_silence_length,
-                subtitleId = R.string.minimum_silence_length_description,
-                // Allow positive numbers from 0 to 20_000 and empty string
-                constraints = "^(20000|1?\\d{1,4}|[1-9]?\\d{0,3}|0)?$",
-                valueRange = 0f..20_000f,
-                steps = 199,     // 100ms per step
-                onTextDisplay = {
-                    // Float calculation is inaccurate, therefore, when
-                    // converted to Long, some value is imperfect (i.e. 9999)
-                    // This will ceil the value to make it truly 100ms per step
-                    val longValue = (it.toLong() + 99) / 100 * 100
-                    stringResource( R.string.format_ms, longValue )
-                },
-                onValueChangeFinished = { p, v -> p.value = v.toLong() },
-                action = SettingComponents.Action.RESTART_PLAYER_SERVICE
-            )
-    }
     entry( search, R.string.loudness_normalization ) {
         SettingComponents.BooleanEntry(
             Preferences.AUDIO_VOLUME_NORMALIZATION,

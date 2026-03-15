@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Swipe up to open the queue</string>
     <string name="pinfo_show_icons">Pokaż info z ikonami</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Minimalna długość ciszy</string>
-    <string name="minimum_silence_length_description">Minimalny czas, w którym dźwięk musi być wyciszony, aby zostać pominięty</string>
     <string name="minimum_silence_length_warning">Odtwarzać musi zostać zrestartowany, aby zmiany zostały wprowadzone!</string>
     <string name="restart_service">Uruchom ponownie usługę</string>
     <string name="player_pause_listen_history">Wstrzymaj historię odtwarzania</string>

@@ -524,8 +524,6 @@
     <string name="swipe_up_to_open_the_queue">Смахните вверх, чтобы открыть очередь</string>
     <string name="pinfo_show_icons">Показать информацию с иконками</string>
     <string name="format_ms"> %1$s мс</string>
-    <string name="minimum_silence_length">Минимальная продолжительность тишины</string>
-    <string name="minimum_silence_length_description">Минимальное время тишины в треке, после которого он будет переключён</string>
     <string name="minimum_silence_length_warning">Чтобы изменения вступили в силу, необходимо перезапустить плеер!</string>
     <string name="restart_service">Перезапустить плеер</string>
     <string name="player_pause_listen_history">Приостановить историю прослушивания</string>

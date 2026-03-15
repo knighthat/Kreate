@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Готово</string>
     <string name="hidesong">Да ли заиста желите да сакријете ову песму? Његово време репродукције и кеш меморија ће бити обрисани. Ова радња је неповратна.</string>
@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Swipe up to open the queue</string>
     <string name="pinfo_show_icons">Show info with icons</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Minimum silence length</string>
-    <string name="minimum_silence_length_description">The minimum time the audio has to be silent to get skipped</string>
     <string name="minimum_silence_length_warning">Player has to be restarted for the changes to be effective!</string>
     <string name="restart_service">Restart service</string>
     <string name="player_pause_listen_history">Pause listen history</string>

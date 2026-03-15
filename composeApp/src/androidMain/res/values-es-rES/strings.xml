@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Deslizar hacia arriba para abrir la cola</string>
     <string name="pinfo_show_icons">Mostrar información con iconos</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Duración mínima del silencio</string>
-    <string name="minimum_silence_length_description">El tiempo mínimo que el audio debe estar en silencio para ser saltado</string>
     <string name="minimum_silence_length_warning">¡Es necesario reiniciar el reproductor para que los cambios surtan efecto!</string>
     <string name="restart_service">Reiniciar reproductor</string>
     <string name="player_pause_listen_history">Pausar historial de escucha</string>
