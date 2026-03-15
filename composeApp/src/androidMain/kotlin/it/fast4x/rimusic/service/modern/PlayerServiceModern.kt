@@ -55,8 +55,8 @@ import androidx.media3.session.SessionToken
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.DownloadHelper
-import app.kreate.android.service.player.CustomExoPlayer
 import app.kreate.android.service.player.ExoPlayerListener
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.player.VolumeObserver
 import app.kreate.android.utils.centerCropBitmap
 import app.kreate.android.utils.centerCropToMatchScreenSize
@@ -150,7 +150,7 @@ class PlayerServiceModern:
 {
     private val cache: Cache by inject(CacheType.CACHE)
     private val discord: Discord by inject()
-    private val player: CustomExoPlayer by inject()
+    private val player: StatefulPlayer by inject()
     private val downloadHelper: DownloadHelper by inject()
     private val volumeObserver: VolumeObserver by inject()
     private val logger = Logger.withTag( this::class.java.simpleName )
@@ -843,7 +843,7 @@ class PlayerServiceModern:
             get() = bitmapProvider.bitmap
 
 
-        val player: CustomExoPlayer
+        val player: StatefulPlayer
             get() = this@PlayerServiceModern.player
 
         val cache: Cache
