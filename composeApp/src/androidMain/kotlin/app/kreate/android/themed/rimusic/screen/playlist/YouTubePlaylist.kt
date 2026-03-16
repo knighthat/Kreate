@@ -133,7 +133,7 @@ fun YouTubePlaylist(
         val playlistPage by viewModel.playlistPage.collectAsStateWithLifecycle()
         val continuation by viewModel.continuation.collectAsStateWithLifecycle()
         val songs by viewModel.songs.collectAsStateWithLifecycle()
-        val currentMediaItem by binder.player.currentMediaItemState.collectAsStateWithLifecycle()
+        val currentMediaItem by player.currentMediaItemState.collectAsStateWithLifecycle()
 
         val itemSelector = remember {
             ItemSelector(menuState) { addAll( songs ) }
@@ -168,7 +168,7 @@ fun YouTubePlaylist(
         )
         val addToFavorite = LikeComponent( ::getSongs )
         val enqueue = Enqueue {
-            binder.player.enqueue( getMediaItems(), context )
+            player.enqueue( getMediaItems(), context )
 
             // Turn of selector clears the selected list
             itemSelector.isActive = false
@@ -341,7 +341,7 @@ fun YouTubePlaylist(
                         SwipeablePlaylistItem(
                             mediaItem = song.asMediaItem,
                             onPlayNext = {
-                                binder.player.addNext( song.asMediaItem )
+                                player.addNext( song.asMediaItem )
                             },
                             onDownload = {
                                 val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
@@ -358,7 +358,7 @@ fun YouTubePlaylist(
                                     )
                             },
                             onEnqueue = {
-                                binder.player.enqueue(song.asMediaItem)
+                                player.enqueue(song.asMediaItem)
                             }
                         ) {
                             SongItem.Render(
@@ -376,12 +376,12 @@ fun YouTubePlaylist(
 
                                     val selectedSongs = getSongs()
                                     if( song in selectedSongs )
-                                        binder.player.forcePlayAtIndex(
+                                        player.forcePlayAtIndex(
                                             selectedSongs.fastMap( Song::asMediaItem ),
                                             selectedSongs.indexOf( song )
                                         )
                                     else
-                                        binder.player.forcePlayAtIndex(
+                                        player.forcePlayAtIndex(
                                             songs.fastMap( Song::asMediaItem ),
                                             index
                                         )
@@ -403,7 +403,7 @@ fun YouTubePlaylist(
                         iconId = R.drawable.shuffle,
                         onClick = {
                             player.stopRadio()
-                            binder.player.forcePlayFromBeginning( getMediaItems() )
+                            player.forcePlayFromBeginning( getMediaItems() )
                         }
                     )
             }

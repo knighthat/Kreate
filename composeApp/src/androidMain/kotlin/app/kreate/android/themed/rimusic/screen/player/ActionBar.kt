@@ -140,7 +140,7 @@ fun BoxScope.ActionBar(
     val player: StatefulPlayer = koinInject()
     val menuState = LocalMenuState.current
 
-    val mediaItem = binder?.player?.currentMediaItem ?: return
+    val mediaItem = player.currentMediaItem ?: return
 
     val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
     val blackGradient by Preferences.BLACK_GRADIENT
@@ -205,9 +205,9 @@ fun BoxScope.ActionBar(
                         .fillMaxWidth()
                 ) {
                     val coroutine = rememberCoroutineScope()
-                    var currentIndex by remember { mutableIntStateOf( binder.player.currentMediaItemIndex ) }
-                    var nextIndex by remember { mutableIntStateOf( binder.player.nextMediaItemIndex ) }
-                    val mediaItems: List<MediaItem> by binder.player
+                    var currentIndex by remember { mutableIntStateOf( player.currentMediaItemIndex ) }
+                    var nextIndex by remember { mutableIntStateOf( player.nextMediaItemIndex ) }
+                    val mediaItems: List<MediaItem> by player
                                                              .currentTimelineState
                                                              .map { it.mediaItems }
                                                              .collectAsState(
@@ -231,11 +231,11 @@ fun BoxScope.ActionBar(
                         scrollToNext()
                     }
 
-                    binder.player.DisposableListener {
+                    player.DisposableListener {
                         object : Player.Listener {
                             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                                currentIndex = binder.player.currentMediaItemIndex
-                                nextIndex = binder.player.nextMediaItemIndex
+                                currentIndex = player.currentMediaItemIndex
+                                nextIndex = player.nextMediaItemIndex
 
                                 coroutine.launch { scrollToNext() }
                             }
@@ -292,11 +292,11 @@ fun BoxScope.ActionBar(
                             modifier = Modifier
                                 .combinedClickable(
                                     onClick = {
-                                        binder.player.playAtIndex(index)
+                                        player.playAtIndex(index)
                                     },
                                     onLongClick = {
                                         if ( index < mediaItems.size ) {
-                                            binder.player.addNext( mediaItemAtIndex )
+                                            player.addNext( mediaItemAtIndex )
                                             Toaster.s( R.string.addednext )
                                         }
                                     }
@@ -414,7 +414,7 @@ fun BoxScope.ActionBar(
                             color = Color.White,
                             enabled = true,
                             onClick = {
-                                binder.player.removeMediaItem( nextIndex )
+                                player.removeMediaItem( nextIndex )
                             },
                             modifier = Modifier
                                 .weight(.07f)
@@ -553,7 +553,7 @@ fun BoxScope.ActionBar(
                     IconButton(
                         icon = R.drawable.shuffle,
                         color = colorPalette().accent,
-                        onClick = binder.player::shuffleQueue,
+                        onClick = player::shuffleQueue,
                         modifier = Modifier.size( 24.dp )
                     )
 
@@ -630,7 +630,7 @@ fun BoxScope.ActionBar(
                                     Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL).apply {
                                         putExtra(
                                             AudioEffect.EXTRA_AUDIO_SESSION,
-                                            binder.player.audioSessionId
+                                            player.audioSessionId
                                         )
                                         putExtra(
                                             AudioEffect.EXTRA_PACKAGE_NAME,

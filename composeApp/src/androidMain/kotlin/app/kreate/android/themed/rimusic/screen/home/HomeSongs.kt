@@ -239,7 +239,7 @@ fun HomeSongs(
     deleteDownloadsDialog.Render()
     //</editor-fold>
 
-    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+    val currentMediaItem by player.currentMediaItemState.collectAsState()
     val songItemValues = remember( colorPalette, typography ) {
         SongItem.Values.from( colorPalette, typography )
     }
@@ -263,7 +263,7 @@ fun HomeSongs(
 
             SwipeablePlaylistItem(
                 mediaItem = mediaItem,
-                onPlayNext = { binder?.player?.addNext( mediaItem ) },
+                onPlayNext = { player.addNext( mediaItem ) },
                 onDownload = {
                     if( builtInPlaylist != BuiltInPlaylist.OnDevice ) {
                         cache.removeResource(mediaItem.mediaId)
@@ -279,7 +279,7 @@ fun HomeSongs(
                     }
                 },
                 onEnqueue = {
-                    binder?.player?.enqueue(mediaItem)
+                    player.enqueue(mediaItem)
                 }
             ) {
                 SongItem.Render(
@@ -332,12 +332,12 @@ fun HomeSongs(
 
                         val selectedSongs = getSongs()
                         if( song in selectedSongs )
-                            binder.player.forcePlayAtIndex(
+                            player.forcePlayAtIndex(
                                 selectedSongs.fastMap( Song::asMediaItem ),
                                 selectedSongs.indexOf( song )
                             )
                         else
-                            binder.player.forcePlayAtIndex(
+                            player.forcePlayAtIndex(
                                 itemsOnDisplay.fastMap( Song::asMediaItem ),
                                 index
                             )

@@ -26,6 +26,7 @@ import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.data.ExoCacheIndicator
 import app.kreate.android.themed.rimusic.component.ItemSelector
@@ -34,7 +35,6 @@ import app.kreate.android.themed.rimusic.screen.home.onDevice.OnDeviceSong
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BuiltInPlaylist
@@ -70,10 +70,10 @@ import org.koin.compose.koinInject
 @Composable
 fun HomeSongsScreen(
     navController: NavController,
-    cache: Cache = koinInject(CacheType.CACHE)
+    cache: Cache = koinInject(CacheType.CACHE),
+    player: StatefulPlayer = koinInject()
 ) {
     // Essentials
-    val binder = LocalPlayerServiceBinder.current ?: return
     val lazyListState = rememberLazyListState()
     val menuState = LocalMenuState.current
 
@@ -92,13 +92,13 @@ fun HomeSongsScreen(
     val import = ImportSongsFromCSV()
     val shuffle = SongShuffler(::getSongs)
     val playNext = PlayNext {
-        binder?.player?.addNext( getMediaItems(), appContext() )
+        player.addNext( getMediaItems(), appContext() )
 
         // Turn of selector clears the selected list
         itemSelector.isActive = false
     }
     val enqueue = Enqueue {
-        binder?.player?.enqueue( getMediaItems(), appContext() )
+        player.enqueue( getMediaItems(), appContext() )
 
         // Turn of selector clears the selected list
         itemSelector.isActive = false

@@ -95,7 +95,7 @@ object ItemUtils {
                         isPlaying = childItem.key == currentlyPlaying,
                         navController = navController,
                         onClick = {
-                            binder.player.forcePlay( childItem.asMediaItem )
+                            player.forcePlay( childItem.asMediaItem )
                         }
                     )
 
@@ -110,9 +110,9 @@ object ItemUtils {
                             onClick = {
                                 player.stopRadio()
                                 if ( isVideoEnabled() )
-                                    binder.player.playVideo( childItem.asMediaItem )
+                                    player.playVideo( childItem.asMediaItem )
                                 else
-                                    binder.player.forcePlay( childItem.asMediaItem )
+                                    player.forcePlay( childItem.asMediaItem )
                             }
                         )
                     }
@@ -145,7 +145,8 @@ object ItemUtils {
         navController: NavController,
         innertubeItems: List<InnertubeItem>,
         currentlyPlaying: String?,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
+        player: StatefulPlayer = koinInject()
     ) {
         val context = LocalContext.current
         val binder = LocalPlayerServiceBinder.current ?: return
@@ -178,7 +179,7 @@ object ItemUtils {
                         isPlaying = item.id == currentlyPlaying,
                         navController = navController,
                         onClick = {
-                            binder.player.forcePlay( item.toMediaItem )
+                            player.forcePlay( item.toMediaItem )
                         }
                     )
 

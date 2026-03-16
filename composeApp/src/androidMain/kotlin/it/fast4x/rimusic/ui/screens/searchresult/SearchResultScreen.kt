@@ -119,7 +119,7 @@ fun SearchResultScreen(
 
     val emptyItemsText = stringResource(R.string.no_results_found)
 
-    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+    val currentMediaItem by player.currentMediaItemState.collectAsState()
     val songItemValues = remember( colorPalette, typography ) {
         SongItem.Values.from( colorPalette, typography )
     }
@@ -174,7 +174,7 @@ fun SearchResultScreen(
                             SwipeablePlaylistItem(
                                 mediaItem = song.asMediaItem,
                                 onPlayNext = {
-                                    localBinder?.player?.addNext(song.asMediaItem)
+                                    player.addNext(song.asMediaItem)
                                 },
                                 onDownload = {
                                     val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
@@ -189,7 +189,7 @@ fun SearchResultScreen(
                                     )
                                 },
                                 onEnqueue = {
-                                    localBinder?.player?.enqueue(song.asMediaItem)
+                                    player.enqueue(song.asMediaItem)
                                 }
                             ) {
                                 SongItem.Render(
@@ -262,7 +262,7 @@ fun SearchResultScreen(
                                                                         )
                                                                         ?.let { it1 ->
                                                                             withContext(Dispatchers.Main) {
-                                                                                binder?.player?.addNext(
+                                                                                player.addNext(
                                                                                     it1,
                                                                                     context
                                                                                 )
@@ -308,7 +308,7 @@ fun SearchResultScreen(
                                                                         )
                                                                         ?.let { it1 ->
                                                                             withContext(Dispatchers.Main) {
-                                                                                binder?.player?.enqueue(
+                                                                                player.enqueue(
                                                                                     it1,
                                                                                     context
                                                                                 )
@@ -463,13 +463,13 @@ fun SearchResultScreen(
                             SwipeablePlaylistItem(
                                 mediaItem = video.asMediaItem,
                                 onPlayNext = {
-                                    localBinder?.player?.addNext(video.asMediaItem)
+                                    player.addNext(video.asMediaItem)
                                 },
                                 onDownload = {
                                     Toaster.w( R.string.downloading_videos_not_supported )
                                 },
                                 onEnqueue = {
-                                    localBinder?.player?.enqueue(video.asMediaItem)
+                                    player.enqueue(video.asMediaItem)
                                 }
                             ) {
                                 SongItem.Render(
@@ -493,9 +493,9 @@ fun SearchResultScreen(
                                     onClick = {
                                         player.stopRadio()
                                         if (isVideoEnabled)
-                                            localBinder?.player?.playVideo(video.asMediaItem)
+                                            player.playVideo(video.asMediaItem)
                                         else
-                                            localBinder?.player?.forcePlay(video.asMediaItem)
+                                            player.forcePlay(video.asMediaItem)
                                     }
                                 )
                             }

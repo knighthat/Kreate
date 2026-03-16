@@ -246,7 +246,7 @@ fun Podcast(
                         1f
                 )
         ) {
-            val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+            val currentMediaItem by player.currentMediaItemState.collectAsState()
             val songItemValues = remember( colorPalette, typography ) {
                 SongItem.Values.from( colorPalette, typography )
             }
@@ -450,7 +450,7 @@ fun Podcast(
                                     .combinedClickable(
                                         onClick = {
                                             podcastPage?.listEpisode?.map(Innertube.Podcast.EpisodeItem::asMediaItem)?.let { mediaItems ->
-                                                binder?.player?.enqueue(mediaItems, context)
+                                                player.enqueue(mediaItems, context)
                                             }
                                         },
                                         onLongClick = {
@@ -472,7 +472,7 @@ fun Podcast(
                                                 player.stopRadio()
                                                 podcastPage?.listEpisode?.shuffled()?.map(Innertube.Podcast.EpisodeItem::asMediaItem)
                                                     ?.let {
-                                                        binder?.player?.forcePlayFromBeginning(
+                                                        player.forcePlayFromBeginning(
                                                             it
                                                         )
                                                     }
@@ -493,7 +493,7 @@ fun Podcast(
                                     .padding(horizontal = 5.dp)
                                     .combinedClickable(
                                         onClick = {
-                                            val mediaItem = binder?.player?.currentMediaItem ?: podcastPage?.listEpisode?.first()?.asMediaItem
+                                            val mediaItem = player.currentMediaItem ?: podcastPage?.listEpisode?.first()?.asMediaItem
                                             mediaItem?.let { player.startRadio( it ) }
                                         },
                                         onLongClick = {
@@ -695,7 +695,7 @@ fun Podcast(
                     SwipeablePlaylistItem(
                         mediaItem = song.asMediaItem,
                         onPlayNext = {
-                            binder?.player?.addNext(song.asMediaItem)
+                            player.addNext(song.asMediaItem)
                         },
                         onDownload = {
                             cache.removeResource(song.asMediaItem.mediaId)
@@ -711,7 +711,7 @@ fun Podcast(
                                 )
                         },
                         onEnqueue = {
-                            binder?.player?.enqueue(song.asMediaItem)
+                            player.enqueue(song.asMediaItem)
                         }
                     ) {
                         SongItem.Render(
@@ -736,7 +736,7 @@ fun Podcast(
                                 podcastPage?.listEpisode?.map(Innertube.Podcast.EpisodeItem::asMediaItem)
                                     ?.let { mediaItems ->
                                         player.stopRadio()
-                                        binder.player.forcePlayAtIndex(mediaItems, index)
+                                        player.forcePlayAtIndex(mediaItems, index)
                                     }
                             }
                         )
@@ -764,7 +764,7 @@ fun Podcast(
                     podcastPage?.listEpisode?.let { songs ->
                         if (songs.isNotEmpty()) {
                             player.stopRadio()
-                            binder?.player?.forcePlayFromBeginning(
+                            player.forcePlayFromBeginning(
                                 songs.shuffled().map(Innertube.Podcast.EpisodeItem::asMediaItem)
                             )
                         }

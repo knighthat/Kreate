@@ -484,8 +484,8 @@ fun HomeQuickPicks(
                         icon2 = R.drawable.play,
                         onClick2 = {
                             player.stopRadio()
-                            trending?.let { binder?.player?.forcePlay(it.asMediaItem) }
-                            binder?.player?.addMediaItems(relatedInit?.songs?.map { it.asMediaItem }
+                            trending?.let { player.forcePlay(it.asMediaItem) }
+                            player.addMediaItems(relatedInit?.songs?.map { it.asMediaItem }
                                 ?: emptyList())
                         }
 
@@ -500,7 +500,7 @@ fun HomeQuickPicks(
                             .padding(bottom = 8.dp)
                     )
 
-                    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+                    val currentMediaItem by player.currentMediaItemState.collectAsState()
                     val songItemValues = remember( colorPalette, typography ) {
                         SongItem.Values.from( colorPalette, typography )
                     }
@@ -869,7 +869,7 @@ fun HomeQuickPicks(
                                 section.contents
                                     .fastMapNotNull { it as? InnertubeSong }
                                     .also { songs ->
-                                        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+                                        val currentMediaItem by player.currentMediaItemState.collectAsState()
                                         val songItemValues = remember( colorPalette, typography ) {
                                             SongItem.Values.from( colorPalette, typography )
                                         }
@@ -910,8 +910,8 @@ fun HomeQuickPicks(
                                                         onClick = {
                                                             val mediaItem = song.toMediaItem
                                                             player.stopRadio()
-                                                            binder.player.forcePlay(mediaItem)
-                                                            binder.player.addMediaItems(songs.map { it.toMediaItem })
+                                                            player.forcePlay(mediaItem)
+                                                            player.addMediaItems(songs.map { it.toMediaItem })
                                                         }
                                                     )
                                                 }
@@ -999,7 +999,7 @@ fun HomeQuickPicks(
                             modifier = Modifier.padding(horizontal = 16.dp).padding(vertical = 4.dp)
                         )
 
-                        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+                        val currentMediaItem by player.currentMediaItemState.collectAsState()
                         ItemUtils.LazyRowItem(
                             navController = navController,
                             innertubeItems = it.items.fastFilterNotNull(),

@@ -17,16 +17,17 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.rememberEqualizerLauncher
 import me.knighthat.component.dialog.InputDialogConstraints
+import org.koin.compose.koinInject
 
 @ExperimentalMaterial3Api
 @UnstableApi
@@ -347,8 +348,8 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
         }
     }
     entry( search, R.string.equalizer ) {
-        val binder = LocalPlayerServiceBinder.current
-        val launchEqualizer by rememberEqualizerLauncher( { binder?.player?.audioSessionId } )
+        val player: StatefulPlayer = koinInject()
+        val launchEqualizer by rememberEqualizerLauncher( { player.audioSessionId } )
 
         SettingComponents.Text(
             title = stringResource( R.string.equalizer ),

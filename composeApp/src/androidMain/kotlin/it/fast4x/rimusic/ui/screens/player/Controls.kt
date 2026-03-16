@@ -31,6 +31,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
+import app.kreate.android.service.player.StatefulPlayer
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.enums.ButtonState
@@ -48,6 +49,7 @@ import it.fast4x.rimusic.utils.isLandscape
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
+import org.koin.compose.koinInject
 
 
 @ExperimentalTextApi
@@ -70,10 +72,10 @@ fun Controls(
     albumId: String?,
     shouldBePlaying: Boolean,
     positionAndDuration: Pair<Long, Long>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    player: StatefulPlayer = koinInject()
 ) {
-    val binder = LocalPlayerServiceBinder.current
-    binder?.player ?: return
+    val binder = LocalPlayerServiceBinder.current ?: return
 
     val currentSong by remember( mediaItem.mediaId ) {
         Database.songTable
@@ -111,7 +113,7 @@ fun Controls(
                 if (!isShowingLyrics || titleExpanded) {
                     if (playerInfoType == PlayerInfoType.Modern)
                         InfoAlbumAndArtistModern(
-                            binder = binder,
+                            player = player,
                             navController = navController,
                             mediaItem = mediaItem,
                             albumId = albumId,
@@ -121,7 +123,7 @@ fun Controls(
 
                     if (playerInfoType == PlayerInfoType.Essential)
                         InfoAlbumAndArtistEssential(
-                            binder = binder,
+                            player = player,
                             navController = navController,
                             mediaItem = mediaItem,
                             albumId = albumId,
@@ -172,7 +174,7 @@ fun Controls(
 
                 if (playerInfoType == PlayerInfoType.Modern)
                     InfoAlbumAndArtistModern(
-                        binder = binder,
+                        player = player,
                         navController = navController,
                         mediaItem = mediaItem,
                         albumId = albumId,
@@ -182,7 +184,7 @@ fun Controls(
 
                 if (playerInfoType == PlayerInfoType.Essential)
                     InfoAlbumAndArtistEssential(
-                        binder = binder,
+                        player = player,
                         navController = navController,
                         mediaItem = mediaItem,
                         albumId = albumId,
@@ -247,7 +249,7 @@ fun Controls(
 
             if (playerInfoType == PlayerInfoType.Modern)
                 InfoAlbumAndArtistModern(
-                    binder = binder,
+                    player = player,
                     navController = navController,
                     mediaItem = mediaItem,
                     albumId = albumId,
@@ -257,7 +259,7 @@ fun Controls(
 
             if (playerInfoType == PlayerInfoType.Essential)
                 InfoAlbumAndArtistEssential(
-                    binder = binder,
+                    player = player,
                     navController = navController,
                     mediaItem = mediaItem,
                     albumId = albumId,

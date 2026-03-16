@@ -106,35 +106,35 @@ fun MiniPlayer(
 ) {
     val binder = LocalPlayerServiceBinder.current
     val player: StatefulPlayer = koinInject()
-    binder?.player ?: return
+    player ?: return
 
     val context = LocalContext.current
 
     var nullableMediaItem by remember {
         mutableStateOf(
-            binder.player.currentMediaItem,
+            player.currentMediaItem,
             neverEqualPolicy()
         )
     }
-    var shouldBePlaying by remember { mutableStateOf(binder.player.shouldBePlaying) }
+    var shouldBePlaying by remember { mutableStateOf(player.shouldBePlaying) }
     val hapticFeedback = LocalHapticFeedback.current
 
     var playerError by remember {
-        mutableStateOf<PlaybackException?>(binder.player.playerError)
+        mutableStateOf<PlaybackException?>(player.playerError)
     }
 
-    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+    val currentMediaItem by player.currentMediaItemState.collectAsState()
     val mediaItem = currentMediaItem ?: return
 
-    binder.player.DisposableListener {
+    player.DisposableListener {
         object : Player.Listener {
             override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-                shouldBePlaying = if (playerError == null) binder.player.shouldBePlaying else false
+                shouldBePlaying = if (playerError == null) player.shouldBePlaying else false
             }
 
             override fun onPlaybackStateChanged(playbackState: Int) {
-                playerError = binder.player.playerError
-                shouldBePlaying = if (playerError == null) binder.player.shouldBePlaying else false
+                playerError = player.playerError
+                shouldBePlaying = if (playerError == null) player.shouldBePlaying else false
             }
 
             override fun onPlayerError(playbackException: PlaybackException) {
@@ -158,7 +158,7 @@ fun MiniPlayer(
         }
     }
 
-    val positionAndDuration by binder.player.positionAndDurationState()
+    val positionAndDuration by player.positionAndDurationState()
 
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
@@ -166,10 +166,10 @@ fun MiniPlayer(
                 if (miniPlayerType == MiniPlayerType.Essential)
                     toggleLike()
                 else
-                    binder.player.seekToPrevious()
+                    player.seekToPrevious()
             else
                 if (value == SwipeToDismissBoxValue.EndToStart)
-                    binder.player.seekToNext()
+                    player.seekToNext()
 
             hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
 
@@ -265,7 +265,7 @@ fun MiniPlayer(
                             else if (dragAmount > 20) {
                                 if (!disableClosingPlayerSwipingDown) {
                                     player.stopRadio()
-                                    binder.player.clearMediaItems()
+                                    player.clearMediaItems()
                                     hidePlayer()
                                     runCatching {
                                         context.stopService(context.intent<PlayerServiceModern>())
@@ -309,7 +309,7 @@ fun MiniPlayer(
                     modifier = Modifier.clip( thumbnailShape() )
                                        .size( 48.dp )
                 )
-                NowPlayingSongIndicator(mediaItem.mediaId, binder.player)
+                NowPlayingSongIndicator(mediaItem.mediaId, player)
             }
 
             Column(
@@ -365,7 +365,7 @@ fun MiniPlayer(
                     icon = R.drawable.play_skip_back,
                     color = colorPalette().iconButtonPlayer,
                     onClick = {
-                        binder.player.playPrevious()
+                        player.playPrevious()
                         if (effectRotationEnabled) isRotated = !isRotated
                     },
                     modifier = Modifier
@@ -403,7 +403,7 @@ fun MiniPlayer(
                     icon = R.drawable.play_skip_forward,
                     color = colorPalette().iconButtonPlayer,
                     onClick = {
-                        binder.player.playNext()
+                        player.playNext()
                         if (effectRotationEnabled) isRotated = !isRotated
                     },
                     modifier = Modifier

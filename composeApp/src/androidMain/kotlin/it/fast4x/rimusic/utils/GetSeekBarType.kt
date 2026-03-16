@@ -27,8 +27,8 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.screen.player.timeline.DurationIndicator
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.PlayerTimelineType
 import it.fast4x.rimusic.ui.components.ProgressPercentage
@@ -40,6 +40,7 @@ import it.fast4x.rimusic.ui.components.SeekBarThin
 import it.fast4x.rimusic.ui.components.SeekBarWaved
 import it.fast4x.rimusic.ui.styling.collapsedPlayerProgressBar
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 const val DURATION_INDICATOR_HEIGHT = 20
 
@@ -47,10 +48,9 @@ const val DURATION_INDICATOR_HEIGHT = 20
 @Composable
 fun GetSeekBar(
     mediaItem: MediaItem,
-    positionAndDuration: Pair<Long, Long>
+    positionAndDuration: Pair<Long, Long>,
+    player: StatefulPlayer = koinInject()
 ) {
-    val binder = LocalPlayerServiceBinder.current
-    binder?.player ?: return
     val playerTimelineType by Preferences.PLAYER_TIMELINE_TYPE
     var scrubbingPosition by remember( mediaItem.mediaId ) {
         mutableStateOf<Long?>(null)
@@ -111,7 +111,7 @@ fun GetSeekBar(
                     }
                 },
                 onDragEnd = {
-                    scrubbingPosition?.let(binder.player::seekTo)
+                    scrubbingPosition?.let(player::seekTo)
                     scrubbingPosition = null
                 },
                 color = colorPalette().collapsedPlayerProgressBar,
@@ -136,7 +136,7 @@ fun GetSeekBar(
                     }
                 },
                 onDragEnd = {
-                    scrubbingPosition?.let(binder.player::seekTo)
+                    scrubbingPosition?.let(player::seekTo)
                     scrubbingPosition = null
                 },
                 color = colorPalette().collapsedPlayerProgressBar,
@@ -161,7 +161,7 @@ fun GetSeekBar(
                     }
                 },
                 onDragEnd = {
-                    scrubbingPosition?.let(binder.player::seekTo)
+                    scrubbingPosition?.let(player::seekTo)
                     scrubbingPosition = null
                 },
                 color = colorPalette().collapsedPlayerProgressBar,
@@ -203,17 +203,17 @@ fun GetSeekBar(
 
                 },
                 onSeekFinished = {
-                    scrubbingPosition?.let(binder.player::seekTo)
+                    scrubbingPosition?.let(player::seekTo)
                     scrubbingPosition = null
                     /*
                 isSeeking = false
                 animatedPosition.let {
-                    binder.player.seekTo(it.targetValue.toLong())
+                    player.seekTo(it.targetValue.toLong())
                 }
                  */
                 },
                 color = colorPalette().collapsedPlayerProgressBar,
-                isActive = binder.player.isPlaying,
+                isActive = player.isPlaying,
                 backgroundColor = if (transparentbar) Color.Transparent else colorPalette().textSecondary,
                 shape = RoundedCornerShape(8.dp),
                 //modifier = Modifier.pulsatingEffect(currentValue = scrubbingPosition?.toFloat() ?: position.toFloat(), isVisible = true)
@@ -227,7 +227,7 @@ fun GetSeekBar(
                 notPlayedColor = if (transparentbar) Color.Transparent else colorPalette().textSecondary,
                 waveInteraction = {
                     scrubbingPosition = (it.value * duration.toFloat()).toLong()
-                    binder.player.seekTo(scrubbingPosition!!)
+                    player.seekTo(scrubbingPosition!!)
                     scrubbingPosition = null
                 },
                 modifier = Modifier
@@ -252,7 +252,7 @@ fun GetSeekBar(
                     }
                 },
                 onDragEnd = {
-                    scrubbingPosition?.let(binder.player::seekTo)
+                    scrubbingPosition?.let(player::seekTo)
                     scrubbingPosition = null
                 },
                 color = colorPalette().collapsedPlayerProgressBar,
@@ -265,5 +265,5 @@ fun GetSeekBar(
 
     Spacer( modifier = Modifier.height( 8.dp ) )
 
-    DurationIndicator( binder.player, scrubbingPosition, position, duration )
+    DurationIndicator( player, scrubbingPosition, position, duration )
 }

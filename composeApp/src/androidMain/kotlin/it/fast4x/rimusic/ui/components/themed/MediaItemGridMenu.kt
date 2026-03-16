@@ -100,8 +100,8 @@ fun NonQueuedMediaItemGridMenu(
         onStartRadio = {
             player.startRadio( mediaItem )
         },
-        onPlayNext = { binder?.player?.addNext(mediaItem) },
-        onEnqueue = { binder?.player?.enqueue(mediaItem) },
+        onPlayNext = { player.addNext(mediaItem) },
+        onEnqueue = { player.enqueue(mediaItem) },
         onDownload = onDownload,
         onRemoveFromPlaylist = onRemoveFromPlaylist,
         onHideFromDatabase = onHideFromDatabase,
@@ -320,7 +320,7 @@ fun MediaItemGridMenu (
                 )
             ),
             onValueSelected = {
-                binder?.player?.pause()
+                player.pause()
                 showSelectDialogListenOn = false
                 uriHandler.openUri(it)
             }
@@ -343,7 +343,7 @@ fun MediaItemGridMenu (
 
     val sleepTimerMillisLeft by player.sleepTimerRemaining().collectAsState(initial = null)
 
-    val positionAndDuration = binder?.player?.positionAndDurationState()
+    val positionAndDuration = player.positionAndDurationState()
 
     var timeRemaining by remember { mutableLongStateOf(0) }
 
@@ -696,7 +696,7 @@ fun MediaItemGridMenu (
                         .calculateBottomPadding()
                 ),
                 topContent = {
-                    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+                    val currentMediaItem by player.currentMediaItemState.collectAsState()
                     val songItemValues = remember( colorPalette, typography ) {
                         SongItem.Values.from( colorPalette, typography )
                     }

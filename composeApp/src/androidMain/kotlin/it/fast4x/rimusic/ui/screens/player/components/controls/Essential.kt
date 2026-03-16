@@ -90,7 +90,7 @@ import org.koin.compose.koinInject
 @ExperimentalFoundationApi
 @Composable
 fun InfoAlbumAndArtistEssential(
-    binder: PlayerServiceModern.Binder,
+    player: StatefulPlayer,
     navController: NavController,
     mediaItem: MediaItem,
     albumId: String?,
@@ -106,7 +106,7 @@ fun InfoAlbumAndArtistEssential(
     var textoutline by Preferences.TEXT_OUTLINE
     val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
     var likeButtonWidth by remember{ mutableStateOf(0.dp) }
-    val currentMediaItem = binder.player.currentMediaItem
+    val currentMediaItem = player.currentMediaItem
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -381,7 +381,7 @@ fun ControlsEssential(
 
     var queueLoopType by Preferences.QUEUE_LOOP_TYPE
     val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
-    val currentMediaItem = binder.player.currentMediaItem
+    val currentMediaItem = player.currentMediaItem
 
     Box {
         IconButton(
@@ -420,7 +420,7 @@ fun ControlsEssential(
                 indication = ripple(bounded = false),
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = {
-                    binder.player.smartRewind()
+                    player.smartRewind()
 
                     if (effectRotationEnabled) isRotated = !isRotated
                 },
@@ -538,8 +538,8 @@ fun ControlsEssential(
                 indication = ripple(bounded = false),
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = {
-                    //binder.player.forceSeekToNext()
-                    binder.player.playNext()
+                    //player.forceSeekToNext()
+                    player.playNext()
                     if (effectRotationEnabled) isRotated = !isRotated
                 },
                 onLongClick = {}

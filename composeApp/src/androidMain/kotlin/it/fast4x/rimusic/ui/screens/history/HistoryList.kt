@@ -31,6 +31,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Event
@@ -58,6 +59,7 @@ import it.fast4x.rimusic.utils.forcePlay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -69,7 +71,8 @@ import java.util.concurrent.TimeUnit
 @ExperimentalAnimationApi
 @Composable
 fun HistoryList(
-    navController: NavController
+    navController: NavController,
+    player: StatefulPlayer = koinInject()
 ) {
     val context = LocalContext.current
     val binder = LocalPlayerServiceBinder.current ?: return
@@ -142,7 +145,7 @@ fun HistoryList(
             )
     ) {
 
-        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+        val currentMediaItem by player.currentMediaItemState.collectAsState()
         val songItemValues = remember( colorPalette, typography ) {
             SongItem.Values.from( colorPalette, typography )
         }
@@ -203,7 +206,7 @@ fun HistoryList(
                             values = songItemValues,
                             navController = navController,
                             onClick = {
-                                binder.player.forcePlay( event.song.asMediaItem )
+                                player.forcePlay( event.song.asMediaItem )
                             }
                         )
                     }
@@ -236,7 +239,7 @@ fun HistoryList(
                             values = songItemValues,
                             navController = navController,
                             onClick = {
-                                binder.player.forcePlay( mediaItem )
+                                player.forcePlay( mediaItem )
                             },
                             onLongClick = {
                                 menuState.display {

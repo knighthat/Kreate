@@ -289,12 +289,12 @@ class PlayerServiceModern:
 
         player.repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
 
-        binder.player.playbackParameters = PlaybackParameters(
+        player.playbackParameters = PlaybackParameters(
             Preferences.AUDIO_SPEED_VALUE.value,
             Preferences.AUDIO_PITCH.value
         )
-        binder.player.volume = Preferences.AUDIO_VOLUME.value
-        binder.player.setGlobalVolume(binder.player.volume)
+        player.volume = Preferences.AUDIO_VOLUME.value
+        player.setGlobalVolume(player.volume)
 
         mediaLibrarySessionCallback.apply {
             listener = this@PlayerServiceModern.listener
@@ -643,8 +643,8 @@ class PlayerServiceModern:
     @MainThread
     private fun updateBitmap() {
         with(bitmapProvider) {
-            var newUriForLoad = binder.player.currentMediaItem?.mediaMetadata?.artworkUri
-            if(lastUri == binder.player.currentMediaItem?.mediaMetadata?.artworkUri) {
+            var newUriForLoad = player.currentMediaItem?.mediaMetadata?.artworkUri
+            if(lastUri == player.currentMediaItem?.mediaMetadata?.artworkUri) {
                 newUriForLoad = null
             }
 
@@ -658,15 +658,15 @@ class PlayerServiceModern:
     @MainThread
     fun updateWidgets() {
         val status = Triple(
-            binder.player.mediaMetadata.title.toString(),
-            binder.player.mediaMetadata.artist.toString(),
-            binder.player.isPlaying
+            player.mediaMetadata.title.toString(),
+            player.mediaMetadata.artist.toString(),
+            player.isPlaying
         )
 
         val actions = Triple(
             if( status.third ) player::pause else player::play,
-            binder.player::seekToPrevious,
-            binder.player::seekToNext
+            player::seekToPrevious,
+            player::seekToNext
         )
 
         CoroutineScope( Dispatchers.IO ).launch {
@@ -795,8 +795,6 @@ class PlayerServiceModern:
     }
 
     open inner class Binder : AndroidBinder(), KoinComponent {
-        val player: StatefulPlayer
-            get() = this@PlayerServiceModern.player
     }
 
     @JvmInline

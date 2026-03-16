@@ -79,7 +79,7 @@ fun SearchYoutubeEntity (
                 .padding(top = 16.dp)
                 .padding(horizontal = 16.dp)
         ) {
-            val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+            val currentMediaItem by player.currentMediaItemState.collectAsState()
             val songItemValues = remember( appearance ) {
                 SongItem.Values.from( appearance )
             }
@@ -108,13 +108,13 @@ fun SearchYoutubeEntity (
                     SwipeablePlaylistItem(
                         mediaItem = video.asMediaItem,
                         onPlayNext = {
-                            binder?.player?.addNext(video.asMediaItem)
+                            player.addNext(video.asMediaItem)
                         },
                         onDownload = {
                             Toaster.w( R.string.downloading_videos_not_supported )
                         },
                         onEnqueue = {
-                            binder?.player?.enqueue(video.asMediaItem)
+                            player.enqueue(video.asMediaItem)
                         }
                     ) {
                         SongItem.Render(
@@ -126,9 +126,9 @@ fun SearchYoutubeEntity (
                             onClick = {
                                 player.stopRadio()
                                 if ( isVideoEnabled )
-                                    binder?.player?.playVideo( video.asMediaItem )
+                                    player.playVideo( video.asMediaItem )
                                 else
-                                    binder?.player?.forcePlay( video.asMediaItem )
+                                    player.forcePlay( video.asMediaItem )
 
                                 onDismiss()
                             },

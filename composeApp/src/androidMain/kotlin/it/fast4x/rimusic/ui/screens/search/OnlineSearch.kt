@@ -57,6 +57,7 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
@@ -89,6 +90,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @UnstableApi
 @ExperimentalFoundationApi
@@ -169,6 +171,7 @@ fun OnlineSearch(
     val menuState = LocalMenuState.current
     val hapticFeedback = LocalHapticFeedback.current
     val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val context = LocalContext.current
     val (colorPalette, typography) = LocalAppearance.current
 
@@ -184,7 +187,7 @@ fun OnlineSearch(
                     1f
             )
     ) {
-        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+        val currentMediaItem by player.currentMediaItemState.collectAsState()
         val songItemValues = remember( colorPalette, typography ) {
             SongItem.Values.from( colorPalette, typography )
         }
@@ -361,7 +364,7 @@ fun OnlineSearch(
                                 hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                             },
                             onClick = {
-                                binder.player.forcePlay(song.asMediaItem)
+                                player.forcePlay(song.asMediaItem)
                             }
                         )
                     }

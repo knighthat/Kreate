@@ -87,7 +87,7 @@ import org.koin.compose.koinInject
 @ExperimentalFoundationApi
 @Composable
 fun InfoAlbumAndArtistModern(
-    binder: PlayerServiceModern.Binder,
+    player: StatefulPlayer,
     navController: NavController,
     mediaItem: MediaItem,
     albumId: String?,
@@ -101,7 +101,7 @@ fun InfoAlbumAndArtistModern(
     var showSelectDialog by remember { mutableStateOf(false) }
     val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
     val playerInfoShowIcon by Preferences.PLAYER_SONG_INFO_ICON
-    val currentMediaItem = binder.player.currentMediaItem
+    val currentMediaItem = player.currentMediaItem
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -382,7 +382,7 @@ fun ControlsModern(
                   indication = ripple(bounded = true),
                   interactionSource = remember { MutableInteractionSource() },
                   onClick = {
-                      binder.player.smartRewind()
+                      player.smartRewind()
 
                       if (effectRotationEnabled) isRotated = !isRotated
                   },
@@ -550,8 +550,8 @@ fun ControlsModern(
                 indication = ripple(bounded = true),
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = {
-                    //binder.player.forceSeekToNext()
-                    binder.player.playNext()
+                    //player.forceSeekToNext()
+                    player.playNext()
                     if (effectRotationEnabled) isRotated = !isRotated
                 },
                 onLongClick = {}
@@ -605,7 +605,7 @@ fun ControlsModern(
                           interactionSource = null,
                           indication = null,
                           onClick = {
-                              binder.player.smartRewind()
+                              player.smartRewind()
 
                               if (effectRotationEnabled) isRotated = !isRotated
                           },
@@ -679,8 +679,8 @@ fun ControlsModern(
                           interactionSource = null,
                           indication = null,
                           onClick = {
-                              //binder.player.forceSeekToNext()
-                              binder.player.playNext()
+                              //player.forceSeekToNext()
+                              player.playNext()
                               if (effectRotationEnabled) isRotated = !isRotated
                           },
                           onLongClick = {}

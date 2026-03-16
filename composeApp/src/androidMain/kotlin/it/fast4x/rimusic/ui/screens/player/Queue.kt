@@ -278,7 +278,7 @@ fun Queue(
                         SwipeableQueueItem(
                             mediaItem = mediaItem,
                             onPlayNext = {
-                                binder.player.moveMediaItem( index, binder.player.currentMediaItemIndex + 1 )
+                                player.moveMediaItem( index, player.currentMediaItemIndex + 1 )
                             },
                             onDownload = {
                                 val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
@@ -297,7 +297,7 @@ fun Queue(
                                 )
                             },
                             onEnqueue = {
-                                binder.player.enqueue(mediaItem)
+                                player.enqueue(mediaItem)
                             }
                         ) {
                             SongItem.Render(

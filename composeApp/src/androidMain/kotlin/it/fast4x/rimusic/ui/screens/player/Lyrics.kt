@@ -855,8 +855,7 @@ fun Lyrics(
             if (text?.isNotEmpty() == true) {
                 if (isShowingSynchronizedLyrics) {
                     val density = LocalDensity.current
-                    val player = LocalPlayerServiceBinder.current?.player
-                        ?: return@AnimatedVisibility
+                    val player: StatefulPlayer = koinInject()
 
                     val synchronizedLyrics = remember(text) {
                         val sentences = LrcLib.Lyrics(text).sentences
@@ -1259,7 +1258,7 @@ fun Lyrics(
                                                 indication = if (clickLyricsText) ripple(true) else null,
                                                 onClick = {
                                                     if (clickLyricsText)
-                                                        binder?.player?.seekTo(sentence.first)
+                                                        player.seekTo(sentence.first)
                                                     else onDismiss()
                                                 }
                                             )
@@ -1309,7 +1308,7 @@ fun Lyrics(
                                                 indication = if (clickLyricsText) ripple(true) else null,
                                                 onClick = {
                                                     if (clickLyricsText)
-                                                        binder?.player?.seekTo(sentence.first)
+                                                        player.seekTo(sentence.first)
                                                     else onDismiss()
                                                 }
                                             )
@@ -1358,7 +1357,7 @@ fun Lyrics(
                                                 indication = if (clickLyricsText) ripple(true) else null,
                                                 onClick = {
                                                     if (clickLyricsText)
-                                                        binder?.player?.seekTo(sentence.first)
+                                                        player.seekTo(sentence.first)
                                                     else onDismiss()
                                                 }
                                             )
@@ -1395,7 +1394,7 @@ fun Lyrics(
                                          .padding(vertical = 4.dp, horizontal = 32.dp)
                                          .clickable {
                                              if (enableClick)
-                                                 binder?.player?.seekTo(sentence.first)
+                                                 player.seekTo(sentence.first)
                                          }
                                  )*/
 
@@ -1771,7 +1770,7 @@ fun Lyrics(
                                 indication = ripple(bounded = false),
                                 interactionSource = remember { MutableInteractionSource() },
                                 onClick = {
-                                    binder?.player?.smartRewind()
+                                    player.smartRewind()
 
                                     if (effectRotationEnabled) isRotated = !isRotated
                                 }
@@ -1788,7 +1787,7 @@ fun Lyrics(
                             .background(colorPalette().accent, RoundedCornerShape(15.dp))
                         ){}
                         Image(
-                            painter = painterResource(if (binder?.player?.isPlaying == true) R.drawable.pause else R.drawable.play),
+                            painter = painterResource(if (player.isPlaying == true) R.drawable.pause else R.drawable.play),
                             contentDescription = null,
                             colorFilter = ColorFilter.tint(if (colorPaletteName == ColorPaletteName.PureBlack) Color.Black else colorPalette().text),
                             modifier = Modifier
@@ -1796,7 +1795,7 @@ fun Lyrics(
                                     indication = ripple(bounded = false),
                                     interactionSource = remember { MutableInteractionSource() },
                                     onClick = {
-                                        if (binder?.player?.isPlaying == true) {
+                                        if (player.isPlaying == true) {
                                             player.pause()
                                         } else {
                                             player.play()
@@ -1819,7 +1818,7 @@ fun Lyrics(
                                 indication = ripple(bounded = false),
                                 interactionSource = remember { MutableInteractionSource() },
                                 onClick = {
-                                    binder?.player?.playNext()
+                                    player.playNext()
                                     if (effectRotationEnabled) isRotated = !isRotated
                                 }
                             )

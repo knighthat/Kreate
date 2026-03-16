@@ -78,7 +78,7 @@ class SongShuffler private constructor(
             CoroutineScope( Dispatchers.Main ).launch {
                 val player: StatefulPlayer by inject(StatefulPlayer::class.java)
                 player.stopRadio()
-                binder.player.forcePlayFromBeginning( songsToPlay )
+                player.forcePlayFromBeginning( songsToPlay )
             }
         }
     }

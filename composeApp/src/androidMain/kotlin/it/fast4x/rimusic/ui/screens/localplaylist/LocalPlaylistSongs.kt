@@ -252,13 +252,13 @@ fun LocalPlaylistSongs(
     }
 
     val playNext = PlayNext {
-        binder?.player?.addNext( getMediaItems(), appContext() )
+        player.addNext( getMediaItems(), appContext() )
 
         // Turn of selector clears the selected list
         itemSelector.isActive = false
     }
     val enqueue = Enqueue {
-        binder?.player?.enqueue( getMediaItems(), context )
+        player.enqueue( getMediaItems(), context )
 
         // Turn of selector clears the selected list
         itemSelector.isActive = false
@@ -285,7 +285,7 @@ fun LocalPlaylistSongs(
     val listenOnYT = ListenOnYouTube {
         val browseId = playlist?.browseId?.removePrefix( "VL" )
 
-        binder?.player?.pause()
+        player.pause()
         uriHandler.openUri( "https://youtube.com/playlist?list=$browseId" )
     }
     val resetCache = ResetCache( ::getSongs )
@@ -448,7 +448,7 @@ fun LocalPlaylistSongs(
 
     val playlistNotMonthlyType = playlist?.isMonthly == false
 
-    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+    val currentMediaItem by player.currentMediaItemState.collectAsState()
     val songItemValues = remember( colorPalette, typography ) {
         SongItem.Values.from( colorPalette, typography )
     }
@@ -680,7 +680,7 @@ fun LocalPlaylistSongs(
                     SwipeableQueueItem(
                         mediaItem = song.asMediaItem,
                         onPlayNext = {
-                            binder?.player?.addNext(song.asMediaItem)
+                            player.addNext(song.asMediaItem)
                         },
                         onRemoveFromQueue = {
                             Database.asyncTransaction {
@@ -707,7 +707,7 @@ fun LocalPlaylistSongs(
                             }
                         },
                         onEnqueue = {
-                            binder?.player?.enqueue(song.asMediaItem)
+                            player.enqueue(song.asMediaItem)
                         },
                     ) {
                         SongItem.Render(
@@ -755,12 +755,12 @@ fun LocalPlaylistSongs(
 
                                 val selectedSongs = getSongs()
                                 if( song in selectedSongs )
-                                    binder.player.forcePlayAtIndex(
+                                    player.forcePlayAtIndex(
                                         selectedSongs.fastMap( Song::asMediaItem ),
                                         selectedSongs.indexOf( song )
                                     )
                                 else
-                                    binder.player.forcePlayAtIndex(
+                                    player.forcePlayAtIndex(
                                         itemsOnDisplay.fastMap( Song::asMediaItem ),
                                         index
                                     )
@@ -791,7 +791,7 @@ fun LocalPlaylistSongs(
                     getMediaItems().let { songs ->
                         if (songs.isNotEmpty()) {
                             player.stopRadio()
-                            binder?.player
+                            player
                                   ?.forcePlayFromBeginning( songs.shuffled() )
                         }
                     }

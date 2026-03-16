@@ -49,6 +49,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.tab.ItemSize
@@ -62,7 +63,6 @@ import app.kreate.util.MODIFIED_PREFIX
 import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.AlbumsType
 import it.fast4x.rimusic.enums.FilterBy
@@ -102,6 +102,7 @@ import me.knighthat.component.tab.SongShuffler
 import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubeAlbum
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalTextApi
@@ -117,7 +118,7 @@ fun HomeAlbums(
 ) {
     // Essentials
     val menuState = LocalMenuState.current
-    val binder = LocalPlayerServiceBinder.current
+    val player: StatefulPlayer = koinInject()
     val lazyGridState = rememberLazyGridState()
     val (colorPalette, typography) = LocalAppearance.current
     val context = LocalContext.current
@@ -467,14 +468,14 @@ fun HomeAlbums(
                                         },
                                         onPlayNext = {
                                             println("mediaItem ${songs}")
-                                            binder?.player?.addNext(
+                                            player.addNext(
                                                 songs.map(Song::asMediaItem), context
                                             )
 
                                         },
                                         onEnqueue = {
                                             println("mediaItem ${songs}")
-                                            binder?.player?.enqueue(
+                                            player.enqueue(
                                                 songs.map(Song::asMediaItem), context
                                             )
 

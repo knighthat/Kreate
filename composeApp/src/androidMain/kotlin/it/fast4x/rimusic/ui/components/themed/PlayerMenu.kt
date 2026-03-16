@@ -58,7 +58,7 @@ fun PlayerMenu(
 
     //val context = LocalContext.current
 
-    val launchEqualizer by rememberEqualizerLauncher(audioSessionId = { binder.player.audioSessionId })
+    val launchEqualizer by rememberEqualizerLauncher(audioSessionId = { player.audioSessionId })
 
     val activityResultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
@@ -103,7 +103,7 @@ fun PlayerMenu(
                 try {
                     activityResultLauncher.launch(
                         Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL).apply {
-                            putExtra(AudioEffect.EXTRA_AUDIO_SESSION, binder.player.audioSessionId)
+                            putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.audioSessionId)
                             putExtra(AudioEffect.EXTRA_PACKAGE_NAME, context.packageName)
                             putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
                         }

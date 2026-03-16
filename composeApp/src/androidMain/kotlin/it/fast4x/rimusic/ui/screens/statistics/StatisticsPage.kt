@@ -181,7 +181,7 @@ fun StatisticsPage(
                 else Dimensions.contentWidthRightBar
             )
     ) {
-        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+        val currentMediaItem by player.currentMediaItemState.collectAsState()
         val songItemValues = remember( colorPalette, typography ) {
             SongItem.Values.from( colorPalette, typography )
         }
@@ -320,7 +320,7 @@ fun StatisticsPage(
                             },
                             onClick = {
                                 player.stopRadio()
-                                binder.player.forcePlayAtIndex(
+                                player.forcePlayAtIndex(
                                     songs.map(Song::asMediaItem),
                                     index
                                 )

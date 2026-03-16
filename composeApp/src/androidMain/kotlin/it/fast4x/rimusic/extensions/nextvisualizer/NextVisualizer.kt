@@ -40,6 +40,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.drawable.AppIcon
+import app.kreate.android.service.player.StatefulPlayer
 import coil3.request.allowHardware
 import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
@@ -75,10 +76,11 @@ import it.fast4x.rimusic.utils.resize
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.launch
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 
 @OptIn(UnstableApi::class)
 @Composable
-fun NextVisualizer() {
+fun NextVisualizer( player: StatefulPlayer = koinInject() ) {
 
     val context = LocalContext.current
     val visualizerEnabled by Preferences.PLAYER_VISUALIZER
@@ -142,9 +144,8 @@ fun NextVisualizer() {
 
         } else {
 
-            val binder = LocalPlayerServiceBinder.current
             val visualizerView = VisualizerView(context)
-            val helper = VisualizerHelper(binder?.player?.audioSessionId ?: 0)
+            val helper = VisualizerHelper(player.audioSessionId ?: 0)
 
             val visualizersList = getVisualizers()
             var currentVisualizer by Preferences.PLAYER_CURRENT_VISUALIZER
@@ -229,7 +230,7 @@ fun NextVisualizer() {
 
 @OptIn(UnstableApi::class)
 @Composable
-fun getVisualizers(): List<Painter> {
+fun getVisualizers( player: StatefulPlayer = koinInject() ): List<Painter> {
 
     val context = LocalContext.current
     val circleBitmap: Bitmap
@@ -242,7 +243,7 @@ fun getVisualizers(): List<Painter> {
     val binder = LocalPlayerServiceBinder.current
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
-        val thumbnailUrl: String =  binder?.player
+        val thumbnailUrl: String =  player
                                           ?.currentWindow
                                           ?.mediaItem
                                           ?.mediaMetadata
@@ -262,7 +263,7 @@ fun getVisualizers(): List<Painter> {
         )
     }
 
-    binder?.player?.DisposableListener {
+    player.DisposableListener {
         object : Player.Listener {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 coroutineScope.launch {

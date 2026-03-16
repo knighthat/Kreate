@@ -269,8 +269,8 @@ fun NonQueuedMediaItemMenuLibrary(
             onStartRadio = {
                 player.startRadio( mediaItem )
             },
-            onPlayNext = { binder?.player?.addNext(mediaItem) },
-            onEnqueue = { binder?.player?.enqueue(mediaItem) },
+            onPlayNext = { player.addNext(mediaItem) },
+            onEnqueue = { player.enqueue(mediaItem) },
             onDownload = onDownload,
             onRemoveFromPlaylist = onRemoveFromPlaylist,
             onHideFromDatabase = { isHiding = true },
@@ -301,8 +301,8 @@ fun NonQueuedMediaItemMenuLibrary(
             onStartRadio = {
                 player.startRadio( mediaItem )
             },
-            onPlayNext = { binder?.player?.addNext(mediaItem) },
-            onEnqueue = { binder?.player?.enqueue(mediaItem)},
+            onPlayNext = { player.addNext(mediaItem) },
+            onEnqueue = { player.enqueue(mediaItem)},
             onDownload = onDownload,
             onRemoveFromPlaylist = onRemoveFromPlaylist,
             onHideFromDatabase = { isHiding = true },
@@ -360,8 +360,8 @@ fun NonQueuedMediaItemMenu(
             onStartRadio = {
                 player.startRadio( mediaItem )
             },
-            onPlayNext = { binder?.player?.addNext(mediaItem) },
-            onEnqueue = { binder?.player?.enqueue(mediaItem) },
+            onPlayNext = { player.addNext(mediaItem) },
+            onEnqueue = { player.enqueue(mediaItem) },
             onDownload = onDownload,
             onRemoveFromPlaylist = onRemoveFromPlaylist,
             onHideFromDatabase = onHideFromDatabase,
@@ -380,8 +380,8 @@ fun NonQueuedMediaItemMenu(
             onStartRadio = {
                 player.startRadio( mediaItem )
             },
-            onPlayNext = { binder?.player?.addNext(mediaItem) },
-            onEnqueue = { binder?.player?.enqueue(mediaItem) },
+            onPlayNext = { player.addNext(mediaItem) },
+            onEnqueue = { player.enqueue(mediaItem) },
             onDownload = onDownload,
             onRemoveFromPlaylist = onRemoveFromPlaylist,
             onHideFromDatabase = onHideFromDatabase,
@@ -419,9 +419,9 @@ fun QueuedMediaItemMenu(
             onDismiss = onDismiss,
             onDownload = onDownload,
             onRemoveFromQueue = if (indexInQueue != null) ({
-                binder?.player?.removeMediaItem(indexInQueue)
+                player.removeMediaItem(indexInQueue)
             }) else null,
-            onPlayNext = { binder?.player?.addNext(mediaItem) },
+            onPlayNext = { player.addNext(mediaItem) },
             onStartRadio = {
                 player.startRadio( mediaItem )
             },
@@ -452,9 +452,9 @@ fun QueuedMediaItemMenu(
             onDismiss = onDismiss,
             onDownload = onDownload,
             onRemoveFromQueue = if (indexInQueue != null) ({
-                binder?.player?.removeMediaItem(indexInQueue)
+                player.removeMediaItem(indexInQueue)
             }) else null,
-            onPlayNext = { binder?.player?.addNext(mediaItem) },
+            onPlayNext = { player.addNext(mediaItem) },
             onStartRadio = {
                 player.startRadio( mediaItem )
             },
@@ -656,6 +656,7 @@ fun MediaItemMenu(
     val density = LocalDensity.current
 
     val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val (colorPalette, typography) = LocalAppearance.current
@@ -986,7 +987,7 @@ fun MediaItemMenu(
                     modifier = Modifier
                         .padding(end = 12.dp)
                 ) {
-                    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+                    val currentMediaItem by player.currentMediaItemState.collectAsState()
                     val songItemValues = remember( colorPalette, typography ) {
                         SongItem.Values.from( colorPalette, typography )
                     }
@@ -1166,7 +1167,7 @@ fun MediaItemMenu(
 
                     val sleepTimerMillisLeft by player.sleepTimerRemaining().collectAsState(initial = null)
 
-                    val positionAndDuration = binder?.player?.positionAndDurationState()
+                    val positionAndDuration = player.positionAndDurationState()
 
                     var timeRemaining by remember { mutableLongStateOf(0) }
 
@@ -1456,7 +1457,7 @@ fun MediaItemMenu(
                             )
                         ),
                         onValueSelected = {
-                            binder?.player?.pause()
+                            player.pause()
                             showSelectDialogListenOn = false
                             uriHandler.openUri(it)
                         }
@@ -1467,7 +1468,7 @@ fun MediaItemMenu(
                                     text = stringResource(R.string.listen_on_youtube),
                                     onClick = {
                                         onDismiss()
-                                        binder?.player?.pause()
+                                        player.pause()
                                         uriHandler.openUri("https://youtube.com/watch?v=${mediaItem.mediaId}")
                                     }
                                 )
@@ -1478,7 +1479,7 @@ fun MediaItemMenu(
                                     text = stringResource(R.string.listen_on_youtube_music),
                                     onClick = {
                                         onDismiss()
-                                        binder?.player?.pause()
+                                        player.pause()
                                         if (!launchYouTubeMusic(context, "watch?v=${mediaItem.mediaId}"))
                                             context.toast(ytNonInstalled)
                                     }
@@ -1490,7 +1491,7 @@ fun MediaItemMenu(
                                     text = stringResource(R.string.listen_on_piped),
                                     onClick = {
                                         onDismiss()
-                                        binder?.player?.pause()
+                                        player.pause()
                                         uriHandler.openUri("https://piped.kavin.rocks/watch?v=${mediaItem.mediaId}&playerAutoPlay=true&minimizeDescription=true")
                                     }
                                 )
@@ -1499,7 +1500,7 @@ fun MediaItemMenu(
                                     text = stringResource(R.string.listen_on_invidious),
                                     onClick = {
                                         onDismiss()
-                                        binder?.player?.pause()
+                                        player.pause()
                                         uriHandler.openUri("https://yewtu.be/watch?v=${mediaItem.mediaId}&autoplay=1")
                                     }
                                 )

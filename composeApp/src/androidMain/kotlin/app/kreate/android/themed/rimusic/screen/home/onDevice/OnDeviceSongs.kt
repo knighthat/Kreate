@@ -227,7 +227,7 @@ fun OnDeviceSong(
             }
         }
 
-    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+    val currentMediaItem by player.currentMediaItemState.collectAsState()
     val songItemValues = remember( colorPalette, typography ) {
         SongItem.Values.from( colorPalette, typography )
     }
@@ -262,9 +262,9 @@ fun OnDeviceSong(
 
             SwipeablePlaylistItem(
                 mediaItem = mediaItem,
-                onPlayNext = { binder?.player?.addNext( mediaItem ) },
+                onPlayNext = { player.addNext( mediaItem ) },
                 onEnqueue = {
-                    binder?.player?.enqueue(mediaItem)
+                    player.enqueue(mediaItem)
                 }
             ) {
                 SongItem.Render(
@@ -284,12 +284,12 @@ fun OnDeviceSong(
 
                         val selectedSongs = getSongs()
                         if( song in selectedSongs )
-                            binder.player.forcePlayAtIndex(
+                            player.forcePlayAtIndex(
                                 selectedSongs.fastMap( Song::asMediaItem ),
                                 selectedSongs.indexOf( song )
                             )
                         else
-                            binder.player.forcePlayAtIndex(
+                            player.forcePlayAtIndex(
                                 itemsOnDisplay.fastMap( Song::asMediaItem ),
                                 index
                             )

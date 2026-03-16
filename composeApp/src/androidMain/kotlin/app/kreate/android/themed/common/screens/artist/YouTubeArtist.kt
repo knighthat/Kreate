@@ -168,7 +168,7 @@ private fun LazyListScope.renderSections(
                    SwipeablePlaylistItem(
                        mediaItem = song.toMediaItem,
                        onPlayNext = {
-                           binder.player.addNext( song.toMediaItem )
+                           player.addNext( song.toMediaItem )
                        }
                    ) {
                        SongItem.Render(
@@ -182,7 +182,7 @@ private fun LazyListScope.renderSections(
                            showThumbnail = true,
                            onClick = {
                                player.stopRadio()
-                               binder.player.forcePlayAtIndex(
+                               player.forcePlayAtIndex(
                                    songs.map( InnertubeSong::toMediaItem ),
                                    index
                                )
@@ -232,7 +232,7 @@ private fun LazyListScope.renderLibrarySongs(
         SwipeablePlaylistItem(
             mediaItem = song.asMediaItem,
             onPlayNext = {
-                binder.player.addNext( song.asMediaItem )
+                player.addNext( song.asMediaItem )
             }
         ) {
             SongItem.Render(
@@ -246,7 +246,7 @@ private fun LazyListScope.renderLibrarySongs(
                 showThumbnail = true,
                 onClick = {
                     player.stopRadio()
-                    binder.player.forcePlayAtIndex(
+                    player.forcePlayAtIndex(
                         songs.map( Song::asMediaItem ),
                         index
                     )
@@ -275,7 +275,7 @@ fun YouTubeArtist(
     val (tabIndex, onTabChanged) = remember { mutableIntStateOf(
             if( isNetworkConnected( context ) ) 0 else 1
     ) }
-    val currentMedia by binder.player.currentMediaItemState.collectAsStateWithLifecycle()
+    val currentMedia by player.currentMediaItemState.collectAsStateWithLifecycle()
     val artistLibrarySongs by viewModel.artistLibrarySongs.collectAsStateWithLifecycle()
     val songItemValues = remember( colorPalette, typography ) {
         SongItem.Values.from( colorPalette, typography )
@@ -301,12 +301,12 @@ fun YouTubeArtist(
     val radio = Radio(viewModel::getSongs)
     val playNext = PlayNext {
         viewModel.getMediaItems().let {
-            binder.player.addNext( it, appContext() )
+            player.addNext( it, appContext() )
         }
     }
     val enqueue = Enqueue {
         viewModel.getMediaItems().let {
-            binder.player.enqueue( it, appContext() )
+            player.enqueue( it, appContext() )
         }
     }
 
