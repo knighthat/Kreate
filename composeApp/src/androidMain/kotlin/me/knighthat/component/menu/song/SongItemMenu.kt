@@ -35,7 +35,6 @@ import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.database.models.Song
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.ui.components.LocalMenuState
@@ -134,10 +133,10 @@ class SongItemMenu private constructor(
         }
         val startRadio = Radio { listOf(song) }
         val playNext = PlayNext {
-            player.addNext( listOf(song.asMediaItem), appContext() )
+            player.addNext( listOf(song.asMediaItem), context )
         }
         val enqueue = Enqueue {
-            player.enqueue( listOf(song.asMediaItem), appContext() )
+            player.enqueue( listOf(song.asMediaItem), context )
         }
         val addToFavorite = LikeComponent { listOf(song) }
         val addToPlaylist = PlaylistsMenu.init(

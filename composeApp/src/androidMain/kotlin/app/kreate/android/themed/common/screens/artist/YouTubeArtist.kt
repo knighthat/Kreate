@@ -66,7 +66,6 @@ import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
 import app.kreate.android.viewmodel.YoutubeArtistViewModel
 import app.kreate.database.models.Song
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.typography
@@ -289,12 +288,12 @@ fun YouTubeArtist(
     val radio = Radio(viewModel::getSongs)
     val playNext = PlayNext {
         viewModel.getMediaItems().let {
-            player.addNext( it, appContext() )
+            player.addNext( it, context )
         }
     }
     val enqueue = Enqueue {
         viewModel.getMediaItems().let {
-            player.enqueue( it, appContext() )
+            player.enqueue( it, context )
         }
     }
 

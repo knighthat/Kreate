@@ -22,7 +22,6 @@ import app.kreate.android.R
 import app.kreate.database.models.PersistentQueue
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.NotificationButtons
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.service.LoginRequiredException
@@ -42,6 +41,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.time.Duration.Companion.seconds
 
@@ -54,7 +55,9 @@ class ExoPlayerListener(
     private val sendOpenEqualizerIntent: () -> Unit,
     private val sendCloseEqualizerIntent: () -> Unit,
     private val onMediaTransition: (MediaItem?) -> Unit
-): Player.Listener {
+): Player.Listener, KoinComponent {
+
+    private val context: Context by inject()
 
     private var volumeNormalizationJob: Job = Job()
     private var errorTimestamp = 0L
@@ -224,7 +227,7 @@ class ExoPlayerListener(
     override fun onPlayWhenReadyChanged( playWhenReady: Boolean, reason: Int ) = saveQueueToDatabase()
 
     override fun onRepeatModeChanged( repeatMode: Int ) {
-        updateMediaControl( appContext(), this.player )
+        updateMediaControl( context, this.player )
         Preferences.QUEUE_LOOP_TYPE.value = QueueLoopType.from( repeatMode )
     }
 
@@ -242,7 +245,7 @@ class ExoPlayerListener(
     }
 
     override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-        updateMediaControl( appContext(), this.player )
+        updateMediaControl( context, this.player )
         if (shuffleModeEnabled) {
             val shuffledIndices = IntArray(player.mediaItemCount) { it }
             shuffledIndices.shuffle()
@@ -256,11 +259,11 @@ class ExoPlayerListener(
         val rootCause = traverseErrorStack( error )
 
         when( rootCause ) {
-            is PlayableFormatNotFoundException -> appContext().getString( R.string.error_couldn_t_find_a_playable_audio_format )
-            is NoInternetException -> appContext().getString( R.string.no_connection )
-            is MissingDecipherKeyException -> appContext().getString( R.string.error_failed_to_decipher_signature )
+            is PlayableFormatNotFoundException -> context.getString( R.string.error_couldn_t_find_a_playable_audio_format )
+            is NoInternetException -> context.getString( R.string.no_connection )
+            is MissingDecipherKeyException -> context.getString( R.string.error_failed_to_decipher_signature )
 
-            else -> rootCause.message ?: appContext().getString( R.string.error_unknown )
+            else -> rootCause.message ?: context.getString( R.string.error_unknown )
         }.also( ::printErrorMessage )
 
         // TODO: Add additional recovery step if type of error allows it

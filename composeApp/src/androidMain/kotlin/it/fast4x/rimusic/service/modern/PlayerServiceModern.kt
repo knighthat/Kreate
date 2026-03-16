@@ -64,7 +64,6 @@ import io.ktor.client.HttpClient
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MainActivity
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.PresetsReverb
 import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
@@ -106,6 +105,7 @@ import me.knighthat.discord.Discord
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.koin.java.KoinJavaComponent.inject
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -789,13 +789,18 @@ class PlayerServiceModern:
 
     @JvmInline
     value class Action(val value: String) {
+
         val pendingIntent: PendingIntent
-            get() = PendingIntent.getBroadcast(
-                appContext(),
-                100,
-                Intent(value).setPackage(appContext().packageName),
-                PendingIntent.FLAG_UPDATE_CURRENT.or(if (isAtLeastAndroid6) PendingIntent.FLAG_IMMUTABLE else 0)
-            )
+            get() {
+                val context: Context by inject(Context::class.java)
+
+                return PendingIntent.getBroadcast(
+                    context,
+                    100,
+                    Intent(value).setPackage(context.packageName),
+                    PendingIntent.FLAG_UPDATE_CURRENT.or(if (isAtLeastAndroid6) PendingIntent.FLAG_IMMUTABLE else 0)
+                )
+            }
 
         companion object {
 

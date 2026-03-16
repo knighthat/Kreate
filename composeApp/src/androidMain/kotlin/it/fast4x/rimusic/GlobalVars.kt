@@ -1,6 +1,5 @@
 package it.fast4x.rimusic
 
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import app.kreate.android.Preferences
@@ -21,9 +20,6 @@ fun showSearchIconInNav() = Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR.value
 
 @Composable
 fun showStatsIconInNav() = Preferences.SHOW_STATS_IN_NAVIGATION_BAR.value
-
-fun appContext(): Context = Dependencies.application.applicationContext
-fun context(): Context = Dependencies.application
 
 fun ytAccountName() = Preferences.YOUTUBE_ACCOUNT_NAME.value
 fun ytAccountThumbnail() = Preferences.YOUTUBE_ACCOUNT_AVATAR.value

@@ -534,10 +534,13 @@ fun Podcast(
                                                         } else {
                                                             CoroutineScope(Dispatchers.IO).launch {
                                                                 playlistPreview.playlist.browseId?.let { id ->
-                                                                    addToYtPlaylist(playlistPreview.playlist.id,
+                                                                    addToYtPlaylist(
+                                                                        context,
+                                                                        playlistPreview.playlist.id,
                                                                         position,
                                                                         id,
-                                                                        podcastPage?.listEpisode?.map { it.asMediaItem } ?: emptyList())
+                                                                        podcastPage?.listEpisode?.map { it.asMediaItem } ?: emptyList()
+                                                                    )
                                                                 }
                                                             }
                                                         }

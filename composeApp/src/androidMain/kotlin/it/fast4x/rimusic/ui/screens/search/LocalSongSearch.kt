@@ -258,6 +258,7 @@ fun LocalSongSearch(
                             InHistoryMediaItemMenu(
                                 navController = navController,
                                 song = song,
+                                context = context,
                                 onDismiss = menuState::hide
                             )
                         }

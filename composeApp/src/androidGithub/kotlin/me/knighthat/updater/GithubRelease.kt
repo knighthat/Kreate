@@ -1,9 +1,10 @@
 package me.knighthat.updater
 
+import android.content.Context
 import android.text.format.Formatter
-import it.fast4x.rimusic.appContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.koin.java.KoinJavaComponent.inject
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -46,9 +47,9 @@ data class GithubRelease(
         val downloadUrl: String
     ) {
 
-        val readableSize: String
-            // Don't remember with lazy because format mat be changed
-            // when [appContext] is changed.
-            get() = Formatter.formatShortFileSize( appContext(), this.size.toLong() )
+        val readableSize: String by lazy {
+            val context: Context by inject(Context::class.java)
+            Formatter.formatShortFileSize( context, this.size.toLong() )
+        }
     }
 }

@@ -2,6 +2,7 @@ package it.fast4x.rimusic.ui.components.themed
 
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
@@ -74,9 +75,7 @@ import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.cleanPrefix
 import app.kreate.util.readableText
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.context
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.models.Info
@@ -122,11 +121,11 @@ fun InHistoryMediaItemMenu(
     navController: NavController,
     onDismiss: () -> Unit,
     song: Song,
+    context: Context,
     onHideFromDatabase: (() -> Unit)? = {},
     onDeleteFromDatabase: (() -> Unit)? = {},
     modifier: Modifier = Modifier
-) {
-
+) =
     NonQueuedMediaItemMenu(
         navController = navController,
         mediaItem = song.asMediaItem,
@@ -134,7 +133,7 @@ fun InHistoryMediaItemMenu(
         onHideFromDatabase = onHideFromDatabase,
         onDeleteFromDatabase = onDeleteFromDatabase,
         onAddToPreferites = {
-            if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+            if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                 Toaster.noInternet()
             } else if (!isYouTubeSyncEnabled()){
                 Database.asyncTransaction {
@@ -150,7 +149,6 @@ fun InHistoryMediaItemMenu(
         },
         modifier = modifier
     )
-}
 
 @ExperimentalTextApi
 @UnstableApi
@@ -197,7 +195,7 @@ fun InPlaylistMediaItemMenu(
             }
         },
         onAddToPreferites = {
-            if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+            if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                 Toaster.noInternet()
             } else if (!isYouTubeSyncEnabled()){
                 Database.asyncTransaction {
@@ -231,6 +229,7 @@ fun NonQueuedMediaItemMenuLibrary(
     onDownload: (() -> Unit)? = null,
     onMatchingSong: (() -> Unit)? = null
 ) {
+    val context = LocalContext.current
     val player: StatefulPlayer = koinInject()
 
     var isHiding by remember {
@@ -274,7 +273,7 @@ fun NonQueuedMediaItemMenuLibrary(
             onHideFromDatabase = { isHiding = true },
             onRemoveFromQuickPicks = onRemoveFromQuickPicks,
             onAddToPreferites = {
-                if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                     Toaster.noInternet()
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
@@ -306,7 +305,7 @@ fun NonQueuedMediaItemMenuLibrary(
             onHideFromDatabase = { isHiding = true },
             onRemoveFromQuickPicks = onRemoveFromQuickPicks,
             onAddToPreferites = {
-                if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                     Toaster.noInternet()
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
@@ -404,6 +403,7 @@ fun QueuedMediaItemMenu(
     indexInQueue: Int?,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val player: StatefulPlayer = koinInject()
 
     val menuStyle by Preferences.MENU_STYLE
@@ -426,7 +426,7 @@ fun QueuedMediaItemMenu(
                 NavRoutes.localPlaylist.navigateHere( navController, it.toString() )
             },
             onAddToPreferites = {
-                if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                     Toaster.noInternet()
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
@@ -459,7 +459,7 @@ fun QueuedMediaItemMenu(
                 NavRoutes.YT_PLAYLIST.navigateHere( navController, it.toString() )
             },
             onAddToPreferites = {
-                if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                     Toaster.noInternet()
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
@@ -1004,7 +1004,7 @@ fun MediaItemMenu(
                             //color = if (likedAt == null) colorPalette().textDisabled else colorPalette().text,
                             onClick = {
                                 CoroutineScope( Dispatchers.IO ).launch {
-                                    YouTubeSync.toggleSongLike( appContext(), mediaItem )
+                                    YouTubeSync.toggleSongLike( context, mediaItem )
                                 }
                             },
                             modifier = Modifier

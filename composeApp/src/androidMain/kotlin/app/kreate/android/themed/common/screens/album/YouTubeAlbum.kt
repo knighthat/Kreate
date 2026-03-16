@@ -75,7 +75,6 @@ import app.kreate.database.models.SongAlbumMap
 import app.kreate.util.MODIFIED_PREFIX
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
@@ -257,7 +256,7 @@ fun YouTubeAlbum(
         val locator = Locator( lazyListState, ::getSongs )
         val playNext = PlayNext {
             getMediaItems().let {
-                player.addNext( it, appContext() )
+                player.addNext( it, context )
 
                 // Turn of selector clears the selected list
                 itemSelector.isActive = false
@@ -265,7 +264,7 @@ fun YouTubeAlbum(
         }
         val enqueue = Enqueue {
             getMediaItems().let {
-                player.enqueue( it, appContext() )
+                player.enqueue( it, context )
 
                 // Turn of selector clears the selected list
                 itemSelector.isActive = false

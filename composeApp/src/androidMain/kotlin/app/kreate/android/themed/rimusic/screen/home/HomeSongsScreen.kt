@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
@@ -35,7 +36,6 @@ import app.kreate.android.themed.rimusic.screen.home.onDevice.OnDeviceSong
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BuiltInPlaylist
 import it.fast4x.rimusic.enums.NavRoutes
@@ -75,6 +75,7 @@ fun HomeSongsScreen(
 ) {
     // Essentials
     val lazyListState = rememberLazyListState()
+    val context = LocalContext.current
     val menuState = LocalMenuState.current
 
     var builtInPlaylist by Preferences.HOME_SONGS_TYPE
@@ -92,13 +93,13 @@ fun HomeSongsScreen(
     val import = ImportSongsFromCSV()
     val shuffle = SongShuffler(::getSongs)
     val playNext = PlayNext {
-        player.addNext( getMediaItems(), appContext() )
+        player.addNext( getMediaItems(), context )
 
         // Turn of selector clears the selected list
         itemSelector.isActive = false
     }
     val enqueue = Enqueue {
-        player.enqueue( getMediaItems(), appContext() )
+        player.enqueue( getMediaItems(), context )
 
         // Turn of selector clears the selected list
         itemSelector.isActive = false

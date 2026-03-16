@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -51,7 +52,6 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.NavRoutes
@@ -93,6 +93,7 @@ fun InfoAlbumAndArtistModern(
     artistIds: List<Info>?,
     onCollapse: () -> Unit
 ) {
+    val context = LocalContext.current
     val colorPaletteMode by Preferences.THEME_MODE
     val playerControlsType by Preferences.PLAYER_CONTROLS_TYPE
     var effectRotationEnabled by Preferences.ROTATION_EFFECT
@@ -148,7 +149,7 @@ fun InfoAlbumAndArtistModern(
                         }
                     },
                     onLongClick = {
-                        textCopyToClipboard(mediaItem.mediaMetadata.title.toString(), context = appContext())
+                        textCopyToClipboard(mediaItem.mediaMetadata.title.toString(), context)
                     }
                 )
 
@@ -216,7 +217,7 @@ fun InfoAlbumAndArtistModern(
                         icon = getLikeState( mediaItem.mediaId ),
                         onClick = {
                             CoroutineScope( Dispatchers.IO ).launch {
-                                YouTubeSync.toggleSongLike( appContext(), currentMediaItem ?: return@launch )
+                                YouTubeSync.toggleSongLike( context, currentMediaItem ?: return@launch )
                             }
 
                             if (effectRotationEnabled) isRotated = !isRotated
@@ -304,7 +305,7 @@ fun InfoAlbumAndArtistModern(
                     }
                 },
                 onLongClick = {
-                    textCopyToClipboard(mediaItem.mediaMetadata.artist.toString(), context = appContext())
+                    textCopyToClipboard(mediaItem.mediaMetadata.artist.toString(), context)
                 }
             )
 

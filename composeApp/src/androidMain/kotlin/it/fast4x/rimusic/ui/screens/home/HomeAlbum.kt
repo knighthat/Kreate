@@ -495,10 +495,13 @@ fun HomeAlbums(
                                                 }
                                             } else {
                                                 CoroutineScope(Dispatchers.IO).launch {
-                                                    addToYtPlaylist(playlistPreview.playlist.id,
+                                                    addToYtPlaylist(
+                                                        context,
+                                                        playlistPreview.playlist.id,
                                                         position,
                                                         playlistPreview.playlist.browseId ?: "",
-                                                        songs.map{it.asMediaItem})
+                                                        songs.map{it.asMediaItem}
+                                                    )
                                                 }
                                             }
 

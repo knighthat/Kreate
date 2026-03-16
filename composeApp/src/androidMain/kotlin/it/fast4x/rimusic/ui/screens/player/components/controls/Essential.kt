@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -55,7 +56,6 @@ import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
 import app.kreate.util.cleanPrefix
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
@@ -96,6 +96,7 @@ fun InfoAlbumAndArtistEssential(
     artistIds: List<Info>?,
     onCollapse: () -> Unit
 ) {
+    val context = LocalContext.current
     val playerControlsType by Preferences.PLAYER_CONTROLS_TYPE
     val colorPaletteMode by Preferences.THEME_MODE
     var effectRotationEnabled by Preferences.ROTATION_EFFECT
@@ -133,7 +134,7 @@ fun InfoAlbumAndArtistEssential(
                         }
                     },
                     onLongClick = {
-                        textCopyToClipboard(cleanPrefix( mediaItem.mediaMetadata.title.toString() ), context = appContext())
+                        textCopyToClipboard(cleanPrefix( mediaItem.mediaMetadata.title.toString() ), context)
                     }
                 )
 
@@ -232,7 +233,7 @@ fun InfoAlbumAndArtistEssential(
                         icon = getLikeState( mediaItem.mediaId ),
                         onClick = {
                             CoroutineScope( Dispatchers.IO ).launch {
-                                YouTubeSync.toggleSongLike( appContext(), currentMediaItem ?: return@launch )
+                                YouTubeSync.toggleSongLike( context, currentMediaItem ?: return@launch )
                             }
 
                             if (effectRotationEnabled) isRotated = !isRotated
@@ -297,7 +298,7 @@ fun InfoAlbumAndArtistEssential(
                     }
                 },
                 onLongClick = {
-                    textCopyToClipboard(mediaItem.mediaMetadata.artist.toString(), context = appContext())
+                    textCopyToClipboard(mediaItem.mediaMetadata.artist.toString(), context = context)
                 }
             )
 
@@ -360,6 +361,7 @@ fun ControlsEssential(
     player: StatefulPlayer = koinInject(),
     onShowSpeedPlayerDialog: () -> Unit,
 ) {
+    val context = LocalContext.current
     val colorPaletteName by Preferences.COLOR_PALETTE
     val colorPaletteMode by Preferences.THEME_MODE
     var effectRotationEnabled by Preferences.ROTATION_EFFECT
@@ -385,7 +387,7 @@ fun ControlsEssential(
             icon = getLikeState(mediaId),
             onClick = {
                 CoroutineScope( Dispatchers.IO ).launch {
-                    YouTubeSync.toggleSongLike( appContext(), currentMediaItem ?: return@launch )
+                    YouTubeSync.toggleSongLike( context, currentMediaItem ?: return@launch )
                 }
 
                 if (effectRotationEnabled) isRotated = !isRotated

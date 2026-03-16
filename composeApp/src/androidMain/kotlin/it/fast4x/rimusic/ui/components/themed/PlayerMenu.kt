@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.media3.common.MediaItem
@@ -20,7 +21,6 @@ import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.di.CacheType
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.context
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.ui.components.LocalMenuState
@@ -50,6 +50,7 @@ fun PlayerMenu(
     onClosePlayer: () -> Unit,
     onMatchingSong: (() -> Unit)? = null
     ) {
+    val context = LocalContext.current
     val menuState = LocalMenuState.current
     val player: StatefulPlayer = koinInject()
     val menuStyle by Preferences.MENU_STYLE
@@ -128,7 +129,7 @@ fun PlayerMenu(
             onHideFromDatabase = { isHiding = true },
             onDismiss = onDismiss,
             onAddToPreferites = {
-                if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                     Toaster.noInternet()
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
@@ -160,7 +161,7 @@ fun MiniPlayerMenu(
     onDismiss: () -> Unit,
     onClosePlayer: () -> Unit
 ) {
-
+    val context = LocalContext.current
     val menuStyle by Preferences.MENU_STYLE
 
     if (menuStyle == MenuStyle.Grid) {
@@ -171,7 +172,7 @@ fun MiniPlayerMenu(
                 onClosePlayer()
             },
             onAddToPreferites = {
-                if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                     Toaster.noInternet()
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
@@ -195,7 +196,7 @@ fun MiniPlayerMenu(
                 onClosePlayer()
             },
             onAddToPreferites = {
-                if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                     Toaster.noInternet()
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
@@ -276,6 +277,7 @@ fun AddToPlaylistArtistSongs(
     onDismiss: () -> Unit,
     onClosePlayer: () -> Unit,
 ) {
+    val context = LocalContext.current
     var position by remember {
         mutableIntStateOf(0)
     }
@@ -293,7 +295,7 @@ fun AddToPlaylistArtistSongs(
                     mapIgnore( playlistPreview.playlist, *mediaItems.toTypedArray() )
                 else
                     CoroutineScope(Dispatchers.IO).launch {
-                        addToYtPlaylist(playlistPreview.playlist.id, position, playlistPreview.playlist.browseId ?: "", mediaItems)
+                        addToYtPlaylist(context, playlistPreview.playlist.id, position, playlistPreview.playlist.browseId ?: "", mediaItems)
                     }
             }
 

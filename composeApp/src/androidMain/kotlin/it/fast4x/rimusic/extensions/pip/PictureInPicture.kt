@@ -31,7 +31,6 @@ import androidx.core.graphics.toRect
 import app.kreate.android.Preferences
 import app.kreate.android.drawable.AppIcon
 import it.fast4x.compose.persist.findActivityNullable
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.utils.ActionReceiver
 import it.fast4x.rimusic.utils.findActivity
 import it.fast4x.rimusic.utils.isAtLeastAndroid12
@@ -40,10 +39,6 @@ import it.fast4x.rimusic.utils.isAtLeastAndroid8
 
 
 private fun logError(throwable: Throwable) = Log.e("PipHandler", "An error occurred", throwable)
-
-val isPipSupported = if (isAtLeastAndroid8)
-    appContext().packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
-else false
 
 @Suppress("DEPRECATION")
 fun Activity.maybeEnterPip() = when {

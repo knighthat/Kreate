@@ -1,6 +1,7 @@
 package app.kreate.android
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Looper
 import android.util.Log
@@ -12,7 +13,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
-import androidx.media3.exoplayer.audio.SilenceSkippingAudioProcessor
 import app.kreate.android.enums.DohServer
 import app.kreate.android.enums.PlatformIndicatorType
 import app.kreate.android.utils.innertube.getSystemCountryCode
@@ -26,7 +26,6 @@ import app.kreate.constant.SortOrder
 import app.kreate.di.PrefType
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.AlbumSwipeAction
 import it.fast4x.rimusic.enums.AlbumsType
 import it.fast4x.rimusic.enums.AnimatedGradient
@@ -96,13 +95,13 @@ import it.fast4x.rimusic.enums.UiType
 import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.ui.styling.DefaultDarkColorPalette
 import it.fast4x.rimusic.ui.styling.DefaultLightColorPalette
-import it.fast4x.rimusic.utils.getDeviceVolume
 import me.knighthat.innertube.Constants
 import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Blocking
 import org.jetbrains.annotations.NonBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.koin.java.KoinJavaComponent.inject
 import java.net.Proxy
 
 /**
@@ -606,7 +605,7 @@ sealed class Preferences<T>(
             Float( preferences, Key.AUDIO_VOLUME, "playbackVolume", .5F )
         }
         val AUDIO_DEVICE_VOLUME by lazy {
-            Float( preferences, Key.AUDIO_DEVICE_VOLUME, "playbackDeviceVolume", getDeviceVolume( appContext() ) )
+            Float( preferences, Key.AUDIO_DEVICE_VOLUME, "playbackDeviceVolume", .5f )
         }
         val AUDIO_MEDLEY_DURATION by lazy {
             Float( preferences, Key.AUDIO_MEDLEY_DURATION, "playbackDuration", 0F )
@@ -1640,7 +1639,14 @@ sealed class Preferences<T>(
             key: kotlin.String,
             previousKey: kotlin.String,
             @ColorRes defaultValue: kotlin.Int
-        ): this(sharedPreferences, key, previousKey, Color(ContextCompat.getColor( appContext(), defaultValue )))
+        ): this(
+            sharedPreferences,
+            key,
+            previousKey,
+            Color(
+                ContextCompat.getColor( inject<Context>(Context::class.java).value, defaultValue )
+            )
+        )
 
         override val policy = StructuralEqualityPolicy()
 

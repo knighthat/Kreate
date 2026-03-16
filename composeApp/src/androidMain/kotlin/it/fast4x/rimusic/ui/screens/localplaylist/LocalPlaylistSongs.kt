@@ -81,7 +81,6 @@ import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.NextBody
 import it.fast4x.innertube.requests.relatedSongs
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.UiType
@@ -250,7 +249,7 @@ fun LocalPlaylistSongs(
     }
 
     val playNext = PlayNext {
-        player.addNext( getMediaItems(), appContext() )
+        player.addNext( getMediaItems(), context )
 
         // Turn of selector clears the selected list
         itemSelector.isActive = false
