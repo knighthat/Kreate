@@ -141,7 +141,6 @@ import com.mikepenz.hypnoticcanvas.shaders.PurpleLiquid
 import com.mikepenz.hypnoticcanvas.shaders.Shader
 import com.mikepenz.hypnoticcanvas.shaders.Stage
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.AnimatedGradient
 import it.fast4x.rimusic.enums.BackgroundProgress
@@ -218,7 +217,6 @@ fun Player(
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val menuState = LocalMenuState.current
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
     // Settings
     val disablePlayerHorizontalSwipe by Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED
@@ -1801,7 +1799,6 @@ fun Player(
                                                     navController = navController,
                                                     onDismiss = menuState::hide,
                                                     mediaItem = mediaItem,
-                                                    binder = binder,
                                                     onClosePlayer = {
                                                         onDismiss()
                                                     }

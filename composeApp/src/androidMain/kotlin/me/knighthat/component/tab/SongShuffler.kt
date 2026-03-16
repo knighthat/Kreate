@@ -10,8 +10,6 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.database.models.Song
-import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import it.fast4x.rimusic.utils.asMediaItem
@@ -24,16 +22,11 @@ import me.knighthat.utils.Toaster
 import org.koin.java.KoinJavaComponent.inject
 
 @UnstableApi
-class SongShuffler private constructor(
-    private val binder: PlayerServiceModern.Binder?,
+class SongShuffler(
     private val songs: () -> List<Song>
 ): MenuIcon, Descriptive {
 
     companion object {
-        @Composable
-        operator fun invoke( songs: () -> List<Song> ) =
-            SongShuffler( LocalPlayerServiceBinder.current, songs )
-
         @Composable
         operator fun invoke(
             databaseCall: (Int) -> Flow<List<Song>>,
@@ -49,10 +42,7 @@ class SongShuffler private constructor(
         /**
          * Play songs with order shuffled.
          */
-        fun playShuffled(
-            binder: PlayerServiceModern.Binder,
-            songs: List<Song>
-        ) {
+        fun playShuffled( songs: List<Song> ) {
             // Send message saying that there's no song to play
             if( songs.isEmpty() ) {
                 // TODO: add string to strings.xml
@@ -90,9 +80,6 @@ class SongShuffler private constructor(
         get() = stringResource( R.string.shuffle )
 
     override fun onShortClick() {
-        playShuffled(
-            this.binder ?: return,      // Ensure that [binder] isn't null
-            this.songs()
-        )
+        playShuffled( this.songs() )
     }
 }

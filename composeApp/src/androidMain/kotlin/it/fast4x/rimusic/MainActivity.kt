@@ -58,7 +58,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -150,8 +149,6 @@ import it.fast4x.rimusic.utils.textCopyToClipboard
 import it.fast4x.rimusic.utils.thumbnail
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
@@ -172,19 +169,12 @@ MainActivity :
 //,PersistMapOwner
 {
     private val serviceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            if (service is PlayerServiceModern.Binder) {
-                this@MainActivity.binder = service
-            }
-        }
 
-        override fun onServiceDisconnected(name: ComponentName?) {
-            binder = null
-        }
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {}
 
+        override fun onServiceDisconnected(name: ComponentName?) {}
     }
 
-    private var binder by mutableStateOf<PlayerServiceModern.Binder?>(null)
     private var intentUriData by mutableStateOf<Uri?>(null)
 
     private var sensorManager: SensorManager? = null
@@ -710,7 +700,6 @@ MainActivity :
                             LocalAppearance provides appearance,
                             LocalIndication provides ripple(bounded = true),
                             LocalRippleConfiguration provides rippleConfiguration,
-                            LocalPlayerServiceBinder provides binder,
                             LocalPlayerAwareWindowInsets provides playerAwareWindowInsets,
                             LocalLayoutDirection provides LayoutDirection.Ltr,
                             LocalDownloadHelper provides MyDownloadHelper,
@@ -922,7 +911,6 @@ MainActivity :
                             else -> null
                         }?.let { videoId ->
                             Innertube.song(videoId)?.getOrNull()?.let { song ->
-                                val binder = snapshotFlow { binder }.filterNotNull().first()
                                 withContext(Dispatchers.Main) {
                                     if ( !song.explicit && !Preferences.PARENTAL_CONTROL.value )
                                         player.forcePlay(song.asMediaItem)
@@ -1089,8 +1077,6 @@ MainActivity :
 
 
 }
-
-val LocalPlayerServiceBinder = staticCompositionLocalOf<PlayerServiceModern.Binder?> { null }
 
 val LocalPlayerAwareWindowInsets = staticCompositionLocalOf<WindowInsets> { TODO() }
 

@@ -64,7 +64,6 @@ import it.fast4x.rimusic.enums.PlayerBackgroundColors
 import it.fast4x.rimusic.enums.PlayerControlsType
 import it.fast4x.rimusic.enums.PlayerPlayButtonType
 import it.fast4x.rimusic.models.Info
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.IconButton
 import it.fast4x.rimusic.ui.components.themed.SelectorArtistsDialog
@@ -353,11 +352,8 @@ fun InfoAlbumAndArtistEssential(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ControlsEssential(
-    binder: PlayerServiceModern.Binder,
-    position: Long,
     playbackSpeed: Float,
     shouldBePlaying: Boolean,
-    likedAt: Long?,
     mediaId: String,
     playerPlayButtonType: PlayerPlayButtonType,
     isGradientBackgroundEnabled: Boolean,

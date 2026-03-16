@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -23,7 +22,6 @@ import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.innertube.toMediaItem
 import it.fast4x.innertube.Innertube
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.isVideoEnabled
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.ui.styling.LocalAppearance
@@ -59,8 +57,6 @@ object ItemUtils {
         currentlyPlaying: String?,
         modifier: Modifier = Modifier
     ) {
-        val context = LocalContext.current
-        val binder = LocalPlayerServiceBinder.current ?: return
         val player: StatefulPlayer = koinInject()
         val hapticFeedback = LocalHapticFeedback.current
         val appearance = LocalAppearance.current
@@ -88,8 +84,6 @@ object ItemUtils {
                 when ( childItem ) {
                     is Innertube.SongItem -> SongItem.Render(
                         innertubeSong = childItem,
-                        context = context,
-                        binder = binder,
                         hapticFeedback = hapticFeedback,
                         values = songItemValues,
                         isPlaying = childItem.key == currentlyPlaying,
@@ -148,8 +142,6 @@ object ItemUtils {
         modifier: Modifier = Modifier,
         player: StatefulPlayer = koinInject()
     ) {
-        val context = LocalContext.current
-        val binder = LocalPlayerServiceBinder.current ?: return
         val hapticFeedback = LocalHapticFeedback.current
         val appearance = LocalAppearance.current
         val (songIV, albumIV, artistIV, playlistIV) = remember( appearance ) {
@@ -172,8 +164,6 @@ object ItemUtils {
                 when( item ) {
                     is InnertubeSong -> SongItem.Render(
                         innertubeSong = item,
-                        context = context,
-                        binder = binder,
                         hapticFeedback = hapticFeedback,
                         values = songIV,
                         isPlaying = item.id == currentlyPlaying,

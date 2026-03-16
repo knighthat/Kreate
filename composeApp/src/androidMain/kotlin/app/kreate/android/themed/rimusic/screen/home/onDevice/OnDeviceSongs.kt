@@ -54,7 +54,6 @@ import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
@@ -90,7 +89,6 @@ fun OnDeviceSong(
 ) {
     // Essentials
     val context = LocalContext.current
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
@@ -269,8 +267,6 @@ fun OnDeviceSong(
             ) {
                 SongItem.Render(
                     song = song,
-                    context = context,
-                    binder = binder,
                     hapticFeedback = hapticFeedback,
                     isPlaying = song.shallowCompare( currentMediaItem ),
                     values = songItemValues,

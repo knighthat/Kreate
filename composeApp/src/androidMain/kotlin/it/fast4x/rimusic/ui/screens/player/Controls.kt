@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,8 +31,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.service.player.StatefulPlayer
-import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.enums.ButtonState
 import it.fast4x.rimusic.enums.PlayerControlsType
 import it.fast4x.rimusic.enums.PlayerInfoType
@@ -46,9 +43,6 @@ import it.fast4x.rimusic.utils.GetControls
 import it.fast4x.rimusic.utils.GetSeekBar
 import it.fast4x.rimusic.utils.conditional
 import it.fast4x.rimusic.utils.isLandscape
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.onEach
 import org.koin.compose.koinInject
 
 
@@ -75,19 +69,6 @@ fun Controls(
     modifier: Modifier = Modifier,
     player: StatefulPlayer = koinInject()
 ) {
-    val binder = LocalPlayerServiceBinder.current ?: return
-
-    val currentSong by remember( mediaItem.mediaId ) {
-        Database.songTable
-                .findById( mediaItem.mediaId )
-                .onEach {
-                    println("Controls currentSong: ${it?.title}")
-                }
-                .distinctUntilChanged()
-    }.collectAsState( null, Dispatchers.IO )
-
-    val (position, duration) = positionAndDuration
-
     var playerTimelineSize by Preferences.PLAYER_TIMELINE_SIZE
     val playerInfoType by Preferences.PLAYER_INFO_TYPE
     var playerSwapControlsWithTimeline by Preferences.PLAYER_IS_CONTROL_AND_TIMELINE_SWAPPED
@@ -144,10 +125,7 @@ fun Controls(
                 }
                 if (!isShowingLyrics || controlsExpanded) {
                     GetControls(
-                        binder = binder,
-                        position = position,
                         shouldBePlaying = shouldBePlaying,
-                        likedAt = currentSong?.likedAt,
                         mediaId = mediaItem.mediaId,
                         onBlurScaleChange = onBlurScaleChange
                     )
@@ -204,10 +182,7 @@ fun Controls(
                             .weight(0.4f)
                     )
                     GetControls(
-                        binder = binder,
-                        position = position,
                         shouldBePlaying = shouldBePlaying,
-                        likedAt = currentSong?.likedAt,
                         mediaId = mediaItem.mediaId,
                         onBlurScaleChange = onBlurScaleChange
                     )
@@ -217,10 +192,7 @@ fun Controls(
                     )
                 } else {
                     GetControls(
-                        binder = binder,
-                        position = position,
                         shouldBePlaying = shouldBePlaying,
-                        likedAt = currentSong?.likedAt,
                         mediaId = mediaItem.mediaId,
                         onBlurScaleChange = onBlurScaleChange
                     )
@@ -281,10 +253,7 @@ fun Controls(
                         .conditional(expandedlandscape) { height(15.dp) }
                 )
                 GetControls(
-                    binder = binder,
-                    position = position,
                     shouldBePlaying = shouldBePlaying,
-                    likedAt = currentSong?.likedAt,
                     mediaId = mediaItem.mediaId,
                     onBlurScaleChange = onBlurScaleChange
                 )
@@ -296,10 +265,7 @@ fun Controls(
                 )
             } else {
                 GetControls(
-                    binder = binder,
-                    position = position,
                     shouldBePlaying = shouldBePlaying,
-                    likedAt = currentSong?.likedAt,
                     mediaId = mediaItem.mediaId,
                     onBlurScaleChange = onBlurScaleChange
                 )

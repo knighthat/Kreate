@@ -46,7 +46,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -86,7 +85,6 @@ import it.fast4x.innertube.requests.discoverPage
 import it.fast4x.innertube.requests.relatedPage
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -153,9 +151,7 @@ fun HomeQuickPicks(
     onMoodClick: (mood: Innertube.Mood.Item) -> Unit,
     onSettingsClick: () -> Unit
 ) {
-    val context = LocalContext.current
     val hapticFeedback = LocalHapticFeedback.current
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val menuState = LocalMenuState.current
@@ -522,8 +518,6 @@ fun HomeQuickPicks(
                             item {
                                 SongItem.Render(
                                     song = song,
-                                    context = context,
-                                    binder = binder,
                                     hapticFeedback = hapticFeedback,
                                     isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
@@ -549,8 +543,6 @@ fun HomeQuickPicks(
                             ) { song ->
                                 SongItem.Render(
                                     song = song,
-                                    context = context,
-                                    binder = binder,
                                     hapticFeedback = hapticFeedback,
                                     isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
@@ -902,8 +894,6 @@ fun HomeQuickPicks(
                                                     )
                                                     SongItem.Render(
                                                         innertubeSong = song,
-                                                        context = context,
-                                                        binder = binder,
                                                         hapticFeedback = hapticFeedback,
                                                         values = songItemValues,
                                                         isPlaying = song.shallowCompare( currentMediaItem ),

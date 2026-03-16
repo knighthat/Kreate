@@ -46,7 +46,6 @@ import it.fast4x.innertube.requests.albumPage
 import it.fast4x.innertube.requests.searchPage
 import it.fast4x.innertube.utils.from
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.Skeleton
@@ -90,7 +89,6 @@ fun SearchResultScreen(
     onSearchAgain: () -> Unit
 ) {
     val context = LocalContext.current
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val saveableStateHolder = rememberSaveableStateHolder()
@@ -142,8 +140,6 @@ fun SearchResultScreen(
         saveableStateHolder.SaveableStateProvider(currentTabIndex) {
             when ( currentTabIndex ) {
                 0 -> {
-                    val localBinder = LocalPlayerServiceBinder.current
-
                     ItemsPage(
                         tag = "searchResults/$query/songs",
                         itemsPageProvider = { continuation ->
@@ -194,8 +190,6 @@ fun SearchResultScreen(
                             ) {
                                 SongItem.Render(
                                     song = song.asSong,
-                                    context = context,
-                                    binder = binder,
                                     hapticFeedback = hapticFeedback,
                                     isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
@@ -434,7 +428,6 @@ fun SearchResultScreen(
                 }
 
                 3 -> {
-                    val localBinder = LocalPlayerServiceBinder.current
                     val menuState = LocalMenuState.current
                     val thumbnailHeightDp = 72.dp
                     val thumbnailWidthDp = 128.dp

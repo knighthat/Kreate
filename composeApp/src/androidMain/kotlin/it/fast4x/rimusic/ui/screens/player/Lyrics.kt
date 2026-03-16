@@ -103,7 +103,6 @@ import it.fast4x.kugou.KuGou
 import it.fast4x.lrclib.LrcLib
 import it.fast4x.lrclib.models.Track
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
@@ -197,7 +196,6 @@ fun Lyrics(
         val context = LocalContext.current
         val menuState = LocalMenuState.current
         val currentView = LocalView.current
-        val binder = LocalPlayerServiceBinder.current
         val player: StatefulPlayer = koinInject()
 
         var showlyricsthumbnail by Preferences.LYRICS_SHOW_THUMBNAIL

@@ -42,7 +42,6 @@ import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.drawable.AppIcon
 import app.kreate.android.service.player.StatefulPlayer
 import coil3.request.allowHardware
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.extensions.nextvisualizer.painters.Painter
 import it.fast4x.rimusic.extensions.nextvisualizer.painters.fft.FftBar
@@ -240,7 +239,6 @@ fun getVisualizers( player: StatefulPlayer = koinInject() ): List<Painter> {
     var bitmapCover by remember {
         mutableStateOf(AppIcon.Round.bitmap( context ) )
     }
-    val binder = LocalPlayerServiceBinder.current
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         val thumbnailUrl: String =  player

@@ -15,8 +15,6 @@ import app.kreate.di.CacheType
 import app.kreate.di.clearCachedStreamUrlOf
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import kotlinx.coroutines.CoroutineScope
@@ -29,7 +27,6 @@ import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Contract
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.java.KoinJavaComponent.inject
 import java.util.Optional
 
 @UnstableApi

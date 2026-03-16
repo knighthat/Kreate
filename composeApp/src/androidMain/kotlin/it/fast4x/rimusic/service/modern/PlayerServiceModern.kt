@@ -113,7 +113,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
-import android.os.Binder as AndroidBinder
 
 
 val MediaItem.isLocal get() = localConfiguration?.uri?.isLocalFile() ?: false
@@ -141,8 +140,6 @@ class PlayerServiceModern:
         MediaLibrarySessionCallback(this, Database, MyDownloadHelper)
     private lateinit var bitmapProvider: BitmapProvider
     private lateinit var downloadListener: DownloadManager.Listener
-
-    private var binder = Binder()
 
     val currentMediaItem = MutableStateFlow<MediaItem?>(null)
 
@@ -274,8 +271,6 @@ class PlayerServiceModern:
         listener = ExoPlayerListener(
             player,
             mediaSession,
-            binder,
-            isNetworkAvailable,
             waitingForNetwork,
             ::sendOpenEqualizerIntent,
             ::sendCloseEqualizerIntent,
@@ -386,8 +381,6 @@ class PlayerServiceModern:
         } catch( err: Exception ) {
             logger.e( err ) { "failed to update notification" }
         }
-
-    override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
 
     override fun onIsPlayingChanged( isPlaying: Boolean ) {
         wallpaperRevertJob?.cancel()
@@ -792,9 +785,6 @@ class PlayerServiceModern:
                 Action.repeat.value     -> player.cycleRepeatMode()
             }
         }
-    }
-
-    open inner class Binder : AndroidBinder(), KoinComponent {
     }
 
     @JvmInline

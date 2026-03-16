@@ -66,7 +66,6 @@ import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
 import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BackgroundProgress
 import it.fast4x.rimusic.enums.MiniPlayerType
@@ -104,9 +103,7 @@ fun MiniPlayer(
     hidePlayer: () -> Unit,
     navController: NavController? = null,
 ) {
-    val binder = LocalPlayerServiceBinder.current
     val player: StatefulPlayer = koinInject()
-    player ?: return
 
     val context = LocalContext.current
 

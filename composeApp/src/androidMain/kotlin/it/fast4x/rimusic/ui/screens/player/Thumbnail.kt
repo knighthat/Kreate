@@ -34,7 +34,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -47,7 +46,6 @@ import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ThumbnailType
 import it.fast4x.rimusic.service.LoginRequiredException
@@ -88,8 +86,6 @@ fun Thumbnail(
     modifier: Modifier = Modifier
 ) {
     println("Thumbnail call")
-    val context = LocalContext.current
-    val binder = LocalPlayerServiceBinder.current
     val player: StatefulPlayer = koinInject()
 
     println("Thumbnail call after return")

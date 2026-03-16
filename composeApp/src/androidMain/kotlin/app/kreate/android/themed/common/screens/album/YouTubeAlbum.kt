@@ -75,7 +75,6 @@ import app.kreate.database.models.SongAlbumMap
 import app.kreate.util.MODIFIED_PREFIX
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
@@ -214,7 +213,6 @@ fun YouTubeAlbum(
         }
     ) {
         //<editor-fold desc="Essentials">
-        val binder = LocalPlayerServiceBinder.current ?: return@Skeleton
         val player: StatefulPlayer = koinInject()
         val hapticFeedback = LocalHapticFeedback.current
         val (colorPalette, typography) = LocalAppearance.current
@@ -487,8 +485,6 @@ fun YouTubeAlbum(
                             ) {
                                 SongItem.Render(
                                     song = song,
-                                    context = context,
-                                    binder = binder,
                                     hapticFeedback = hapticFeedback,
                                     isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,

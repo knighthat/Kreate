@@ -53,7 +53,6 @@ import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -96,7 +95,6 @@ fun StatisticsPage(
     navController: NavController,
     statisticsType: StatisticsType
 ) {
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
@@ -293,8 +291,6 @@ fun StatisticsPage(
                     ) { index, song ->
                         SongItem.Render(
                             song = song,
-                            context = context,
-                            binder = binder,
                             hapticFeedback = hapticFeedback,
                             values = songItemValues,
                             isPlaying = song.shallowCompare( currentMediaItem ),

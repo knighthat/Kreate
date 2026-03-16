@@ -1,6 +1,5 @@
 package app.kreate.android.themed.common.screens.artist
 
-import android.content.Context
 import android.content.Intent
 import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
@@ -67,11 +66,9 @@ import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
 import app.kreate.android.viewmodel.YoutubeArtistViewModel
 import app.kreate.database.models.Song
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.Skeleton
 import it.fast4x.rimusic.ui.components.SwipeablePlaylistItem
@@ -106,8 +103,6 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(UnstableApi::class)
 private fun LazyListScope.renderSections(
     navController: NavController,
-    context: Context,
-    binder: PlayerServiceModern.Binder,
     hapticFeedback: HapticFeedback,
     currentMedia: MediaItem?,
     songItemValues: SongItem.Values,
@@ -173,8 +168,6 @@ private fun LazyListScope.renderSections(
                    ) {
                        SongItem.Render(
                            song = song.toSong,
-                           context = context,
-                           binder = binder,
                            hapticFeedback = hapticFeedback,
                            isPlaying = song.shallowCompare( currentMedia ),
                            values = songItemValues,
@@ -208,8 +201,6 @@ private fun LazyListScope.renderSections(
 @OptIn(UnstableApi::class)
 private fun LazyListScope.renderLibrarySongs(
     navController: NavController,
-    context: Context,
-    binder: PlayerServiceModern.Binder,
     hapticFeedback: HapticFeedback,
     currentMedia: MediaItem?,
     songItemValues: SongItem.Values,
@@ -237,8 +228,6 @@ private fun LazyListScope.renderLibrarySongs(
         ) {
             SongItem.Render(
                 song = song,
-                context = context,
-                binder = binder,
                 hapticFeedback = hapticFeedback,
                 isPlaying = song.shallowCompare( currentMedia ),
                 values = songItemValues,
@@ -265,7 +254,6 @@ fun YouTubeArtist(
     miniPlayer: @Composable () -> Unit = {}
 ) {
     val context = LocalContext.current
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
@@ -445,8 +433,6 @@ fun YouTubeArtist(
                         } else if( artistPage != null && currentTabIndex == 0 )
                             renderSections(
                                 navController = navController,
-                                context = context,
-                                binder = binder,
                                 hapticFeedback = hapticFeedback,
                                 currentMedia = currentMedia,
                                 songItemValues = songItemValues,
@@ -457,8 +443,6 @@ fun YouTubeArtist(
                         else if( currentTabIndex == 1 )
                             renderLibrarySongs(
                                 navController = navController,
-                                context = context,
-                                binder = binder,
                                 hapticFeedback = hapticFeedback,
                                 currentMedia = currentMedia,
                                 songItemValues = songItemValues,

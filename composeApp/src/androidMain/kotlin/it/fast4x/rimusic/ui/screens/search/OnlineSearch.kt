@@ -42,7 +42,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,7 +52,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
@@ -68,7 +66,6 @@ import it.fast4x.innertube.models.bodies.SearchSuggestionsBody
 import it.fast4x.innertube.requests.searchSuggestionsWithItems
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.typography
@@ -163,16 +160,9 @@ fun OnlineSearch(
 
     val lazyListState = rememberLazyListState()
 
-    //val navigationBarPosition by rememberPreference(navigationBarPositionKey, NavigationBarPosition.Bottom)
-    //val contentWidth = context.preferences.getFloat(contentWidthKey,0.8f)
-    var downloadState by remember {
-        mutableStateOf(Download.STATE_STOPPED)
-    }
     val menuState = LocalMenuState.current
     val hapticFeedback = LocalHapticFeedback.current
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
-    val context = LocalContext.current
     val (colorPalette, typography) = LocalAppearance.current
 
     Box(
@@ -348,8 +338,6 @@ fun OnlineSearch(
                     item{
                         SongItem.Render(
                             innertubeSong = song,
-                            context = context,
-                            binder = binder,
                             hapticFeedback = hapticFeedback,
                             values = songItemValues,
                             isPlaying = song.shallowCompare( currentMediaItem ),

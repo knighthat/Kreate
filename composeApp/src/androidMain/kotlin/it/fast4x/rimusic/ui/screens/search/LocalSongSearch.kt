@@ -45,7 +45,6 @@ import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.typography
@@ -79,7 +78,6 @@ fun LocalSongSearch(
     onAction3: () -> Unit,
     onAction4: () -> Unit,
 ) {
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
     val menuState = LocalMenuState.current
     val (colorPalette, typography) = LocalAppearance.current
@@ -252,8 +250,6 @@ fun LocalSongSearch(
             ) { song ->
                 SongItem.Render(
                     song = song,
-                    context = context,
-                    binder = binder,
                     hapticFeedback = hapticFeedback,
                     values = songItemValues,
                     isPlaying = song.shallowCompare( currentMediaItem ),

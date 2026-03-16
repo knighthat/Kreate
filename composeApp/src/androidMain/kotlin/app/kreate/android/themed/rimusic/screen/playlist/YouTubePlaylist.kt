@@ -62,7 +62,6 @@ import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.YtMusic
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.UiType
 import it.fast4x.rimusic.typography
@@ -118,7 +117,6 @@ fun YouTubePlaylist(
 ) {
     val context = LocalContext.current
     val menuState = LocalMenuState.current
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
@@ -363,8 +361,6 @@ fun YouTubePlaylist(
                         ) {
                             SongItem.Render(
                                 song = song,
-                                context = context,
-                                binder = binder,
                                 hapticFeedback = hapticFeedback,
                                 isPlaying = song.shallowCompare( currentMediaItem ),
                                 values = songItemValues,

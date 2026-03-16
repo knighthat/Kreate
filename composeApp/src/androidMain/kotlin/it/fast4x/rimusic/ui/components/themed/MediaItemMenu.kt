@@ -74,7 +74,6 @@ import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.cleanPrefix
 import app.kreate.util.readableText
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.context
@@ -232,7 +231,6 @@ fun NonQueuedMediaItemMenuLibrary(
     onDownload: (() -> Unit)? = null,
     onMatchingSong: (() -> Unit)? = null
 ) {
-    val binder = LocalPlayerServiceBinder.current
     val player: StatefulPlayer = koinInject()
 
     var isHiding by remember {
@@ -345,7 +343,6 @@ fun NonQueuedMediaItemMenu(
     onAddToPreferites: (() -> Unit)? = null,
     onMatchingSong: (() -> Unit)? = null
 ) {
-    val binder = LocalPlayerServiceBinder.current
     val player: StatefulPlayer = koinInject()
 
     val menuStyle by Preferences.MENU_STYLE
@@ -407,7 +404,6 @@ fun QueuedMediaItemMenu(
     indexInQueue: Int?,
     modifier: Modifier = Modifier
 ) {
-    val binder = LocalPlayerServiceBinder.current
     val player: StatefulPlayer = koinInject()
 
     val menuStyle by Preferences.MENU_STYLE
@@ -655,7 +651,6 @@ fun MediaItemMenu(
 ) {
     val density = LocalDensity.current
 
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
@@ -994,8 +989,6 @@ fun MediaItemMenu(
 
                     SongItem.Render(
                         mediaItem = mediaItem,
-                        context = context,
-                        binder = binder,
                         hapticFeedback = hapticFeedback,
                         isPlaying = mediaItem.shallowCompare( currentMediaItem ),
                         values = songItemValues,
@@ -1159,7 +1152,6 @@ fun MediaItemMenu(
 
                 // TODO: find solution to this shit
                 onShowSleepTimer?.let {
-                    val binder = LocalPlayerServiceBinder.current
                     val player: StatefulPlayer = koinInject()
                     var isShowingSleepTimerDialog by remember {
                         mutableStateOf(false)

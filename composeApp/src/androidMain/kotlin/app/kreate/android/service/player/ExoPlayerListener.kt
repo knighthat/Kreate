@@ -31,7 +31,6 @@ import it.fast4x.rimusic.service.NoInternetException
 import it.fast4x.rimusic.service.PlayableFormatNotFoundException
 import it.fast4x.rimusic.service.UnknownException
 import it.fast4x.rimusic.service.UnplayableException
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.utils.mediaItems
 import it.fast4x.rimusic.utils.playNext
 import kotlinx.coroutines.CoroutineScope
@@ -51,8 +50,6 @@ import kotlin.time.Duration.Companion.seconds
 class ExoPlayerListener(
     private val player: StatefulPlayer,
     private val mediaSession: MediaSession,
-    private val binder: PlayerServiceModern.Binder,
-    private val isNetworkAvailable: MutableStateFlow<Boolean>,
     private val waitingForNetwork: MutableStateFlow<Boolean>,
     private val sendOpenEqualizerIntent: () -> Unit,
     private val sendCloseEqualizerIntent: () -> Unit,

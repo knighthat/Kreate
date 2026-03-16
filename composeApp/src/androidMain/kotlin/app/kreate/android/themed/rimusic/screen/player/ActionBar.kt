@@ -71,7 +71,6 @@ import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
 import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
@@ -136,7 +135,6 @@ fun BoxScope.ActionBar(
 ) {
     // Essentials
     val context = LocalContext.current
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
     val menuState = LocalMenuState.current
 
@@ -518,7 +516,6 @@ fun BoxScope.ActionBar(
                                     navController = navController,
                                     onDismiss = menuState::hide,
                                     mediaItem = mediaItem,
-                                    binder = binder,
                                     onClosePlayer = onDismiss,
                                 )
                             }
@@ -696,7 +693,6 @@ fun BoxScope.ActionBar(
                                     navController = navController,
                                     onDismiss = menuState::hide,
                                     mediaItem = mediaItem,
-                                    binder = binder,
                                     onClosePlayer = onDismiss
                                 )
                             }

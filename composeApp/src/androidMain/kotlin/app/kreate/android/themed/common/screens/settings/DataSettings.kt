@@ -38,7 +38,6 @@ import app.kreate.android.themed.common.component.settings.header
 import app.kreate.di.CacheType
 import coil3.imageLoader
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.ui.styling.Dimensions
@@ -107,7 +106,6 @@ fun cacheSubtitle( context: Context, preference: Preferences.Long, currentValue:
 @Composable
 fun DataSettings( paddingValues: PaddingValues ) {
     val context = LocalContext.current
-    val binder = LocalPlayerServiceBinder.current
     val scrollState = rememberLazyListState()
 
     val search = remember {

@@ -80,7 +80,6 @@ import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBody
 import it.fast4x.innertube.requests.podcastPage
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -140,7 +139,6 @@ fun Podcast(
     maxDepth: Int?,
     player: StatefulPlayer = koinInject()
 ) {
-    val binder = LocalPlayerServiceBinder.current ?: return
     val (colorPalette, typography) = LocalAppearance.current
     val context = LocalContext.current
     val menuState = LocalMenuState.current
@@ -716,8 +714,6 @@ fun Podcast(
                     ) {
                         SongItem.Render(
                             mediaItem = song.asMediaItem,
-                            context = context,
-                            binder = binder,
                             hapticFeedback = hapticFeedback,
                             values = songItemValues,
                             isPlaying = song.shallowCompare( currentMediaItem ),

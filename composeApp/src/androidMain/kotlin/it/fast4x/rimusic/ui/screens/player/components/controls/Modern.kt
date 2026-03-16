@@ -59,7 +59,6 @@ import it.fast4x.rimusic.enums.PlayerBackgroundColors
 import it.fast4x.rimusic.enums.PlayerControlsType
 import it.fast4x.rimusic.enums.PlayerPlayButtonType
 import it.fast4x.rimusic.models.Info
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.CustomElevatedButton
@@ -356,7 +355,6 @@ fun InfoAlbumAndArtistModern(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ControlsModern(
-    binder: PlayerServiceModern.Binder,
     playbackSpeed: Float,
     shouldBePlaying: Boolean,
     playerPlayButtonType: PlayerPlayButtonType,

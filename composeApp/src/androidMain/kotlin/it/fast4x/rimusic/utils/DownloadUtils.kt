@@ -16,7 +16,6 @@ import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalDownloadHelper
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.enums.DownloadedStateMedia
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.isLocal

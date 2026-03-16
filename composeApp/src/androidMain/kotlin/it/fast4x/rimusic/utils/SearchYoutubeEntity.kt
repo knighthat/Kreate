@@ -31,7 +31,6 @@ import it.fast4x.innertube.models.bodies.ContinuationBody
 import it.fast4x.innertube.models.bodies.SearchBody
 import it.fast4x.innertube.requests.searchPage
 import it.fast4x.innertube.utils.from
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.SwipeablePlaylistItem
@@ -53,7 +52,6 @@ fun SearchYoutubeEntity (
     query: String,
     filter: Innertube.SearchFilter = Innertube.SearchFilter.Video
 ) {
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
     val menuState = LocalMenuState.current
     val hapticFeedback = LocalHapticFeedback.current

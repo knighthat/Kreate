@@ -34,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -53,7 +52,6 @@ import app.kreate.database.models.Playlist
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.readableText
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.models.Info
@@ -90,7 +88,6 @@ fun NonQueuedMediaItemGridMenu(
     onRemoveFromQuickPicks: (() -> Unit)? = null,
     onDownload: (() -> Unit)? = null
 ) {
-    val binder = LocalPlayerServiceBinder.current
     val player: StatefulPlayer = koinInject()
 
     BaseMediaItemGridMenu(
@@ -262,12 +259,10 @@ fun MediaItemGridMenu (
     onRemoveFromQuickPicks: (() -> Unit)? = null,
     onGoToPlaylist: ((Long) -> Unit)?
 ) {
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
     val uriHandler = LocalUriHandler.current
-    val context = LocalContext.current
     val hapticFeedback = LocalHapticFeedback.current
-    val (colorPalette, typography) = LocalAppearance.current
+    val (_, typography) = LocalAppearance.current
 
     val isLocal by remember { derivedStateOf { mediaItem.isLocal } }
 
@@ -703,8 +698,6 @@ fun MediaItemGridMenu (
 
                     SongItem.Render(
                         mediaItem = mediaItem,
-                        context = context,
-                        binder = binder,
                         hapticFeedback = hapticFeedback,
                         isPlaying = mediaItem.shallowCompare( currentMediaItem ),
                         values = songItemValues,

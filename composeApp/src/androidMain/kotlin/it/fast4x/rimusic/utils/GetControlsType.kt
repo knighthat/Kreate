@@ -15,7 +15,6 @@ import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import it.fast4x.rimusic.enums.PlayerBackgroundColors
 import it.fast4x.rimusic.enums.PlayerControlsType
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.ui.components.themed.PlaybackParamsDialog
 import it.fast4x.rimusic.ui.screens.player.components.controls.ControlsEssential
 import it.fast4x.rimusic.ui.screens.player.components.controls.ControlsModern
@@ -24,10 +23,7 @@ import kotlin.math.roundToInt
 @OptIn(UnstableApi::class)
 @Composable
 fun GetControls(
-    binder: PlayerServiceModern.Binder,
-    position: Long,
     shouldBePlaying: Boolean,
-    likedAt: Long?,
     mediaId: String,
     onBlurScaleChange: (Float) -> Unit
 ) {
@@ -59,7 +55,6 @@ fun GetControls(
 
 
         MedleyMode(
-            binder = binder,
             seconds = if (playbackDuration < 1f) 0 else playbackDuration.roundToInt()
         )
 
@@ -72,11 +67,8 @@ fun GetControls(
 
         if (playerControlsType == PlayerControlsType.Essential)
             ControlsEssential(
-                binder = binder,
-                position = position,
                 playbackSpeed = playbackSpeed,
                 shouldBePlaying = shouldBePlaying,
-                likedAt = likedAt,
                 mediaId = mediaId,
                 playerPlayButtonType = playerPlayButtonType,
                 isGradientBackgroundEnabled = isGradientBackgroundEnabled,
@@ -85,7 +77,6 @@ fun GetControls(
 
         if (playerControlsType == PlayerControlsType.Modern)
             ControlsModern(
-                binder = binder,
                 playbackSpeed = playbackSpeed,
                 shouldBePlaying = shouldBePlaying,
                 playerPlayButtonType = playerPlayButtonType,

@@ -49,7 +49,6 @@ import app.kreate.di.CacheType
 import app.kreate.util.toDuration
 import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BuiltInPlaylist
 import it.fast4x.rimusic.enums.DurationInMinutes
@@ -97,7 +96,6 @@ fun HomeSongs(
     getSongs: () -> List<Song>,
 ) {
     // Essentials
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
     val cache: Cache = koinInject(CacheType.CACHE)
     val context = LocalContext.current
@@ -284,8 +282,6 @@ fun HomeSongs(
             ) {
                 SongItem.Render(
                     song = song,
-                    context = context,
-                    binder = binder,
                     hapticFeedback = hapticFeedback,
                     isPlaying = song.shallowCompare( currentMediaItem ),
                     values = songItemValues,

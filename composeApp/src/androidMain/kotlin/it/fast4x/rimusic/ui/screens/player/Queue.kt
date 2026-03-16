@@ -68,7 +68,6 @@ import it.fast4x.compose.persist.persistList
 import it.fast4x.compose.reordering.draggedItem
 import it.fast4x.compose.reordering.rememberReorderingState
 import it.fast4x.compose.reordering.reorder
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.enums.QueueType
@@ -118,7 +117,6 @@ fun Queue(
     // Essentials
     val context = LocalContext.current
     val windowInsets = WindowInsets.systemBars
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
@@ -302,8 +300,6 @@ fun Queue(
                         ) {
                             SongItem.Render(
                                 song = song,
-                                context = context,
-                                binder = binder,
                                 hapticFeedback = hapticFeedback,
                                 isPlaying = song.shallowCompare( currentMediaItem ),
                                 values = songItemValues,

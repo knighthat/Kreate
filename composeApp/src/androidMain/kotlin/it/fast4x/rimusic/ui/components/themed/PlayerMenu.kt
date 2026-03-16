@@ -23,7 +23,6 @@ import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.context
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.service.MyDownloadHelper
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.utils.addSongToYtPlaylist
@@ -46,7 +45,6 @@ import org.koin.java.KoinJavaComponent.inject
 @Composable
 fun PlayerMenu(
     navController: NavController,
-    binder: PlayerServiceModern.Binder,
     mediaItem: MediaItem,
     onDismiss: () -> Unit,
     onClosePlayer: () -> Unit,
@@ -158,7 +156,6 @@ fun PlayerMenu(
 @Composable
 fun MiniPlayerMenu(
     navController: NavController,
-    binder: PlayerServiceModern.Binder,
     mediaItem: MediaItem,
     onDismiss: () -> Unit,
     onClosePlayer: () -> Unit
@@ -224,7 +221,6 @@ fun MiniPlayerMenu(
 @Composable
 fun AddToPlaylistPlayerMenu(
     navController: NavController,
-    binder: PlayerServiceModern.Binder,
     mediaItem: MediaItem,
     onDismiss: () -> Unit,
     onClosePlayer: () -> Unit,

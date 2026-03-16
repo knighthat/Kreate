@@ -81,7 +81,6 @@ import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.NextBody
 import it.fast4x.innertube.requests.relatedSongs
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -160,7 +159,6 @@ fun LocalPlaylistSongs(
 ) {
     // Essentials
     val context = LocalContext.current
-    val binder = LocalPlayerServiceBinder.current ?: return
     val player: StatefulPlayer = koinInject()
     val hapticFeedback = LocalHapticFeedback.current
     val (colorPalette, typography) = LocalAppearance.current
@@ -712,8 +710,6 @@ fun LocalPlaylistSongs(
                     ) {
                         SongItem.Render(
                             song = song,
-                            context = context,
-                            binder = binder,
                             hapticFeedback = hapticFeedback,
                             isPlaying = song.shallowCompare( currentMediaItem ),
                             values = songItemValues,

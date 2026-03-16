@@ -40,7 +40,6 @@ import it.fast4x.innertube.YtMusic
 import it.fast4x.innertube.requests.HistoryPage
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.HistoryType
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -75,7 +74,6 @@ fun HistoryList(
     player: StatefulPlayer = koinInject()
 ) {
     val context = LocalContext.current
-    val binder = LocalPlayerServiceBinder.current ?: return
     val hapticFeedback = LocalHapticFeedback.current
     val (colorPalette, typography) = LocalAppearance.current
     val menuState = LocalMenuState.current
@@ -199,8 +197,6 @@ fun HistoryList(
 
                         SongItem.Render(
                             song = event.song,
-                            context = context,
-                            binder = binder,
                             hapticFeedback = hapticFeedback,
                             isPlaying = event.song.shallowCompare( currentMediaItem ),
                             values = songItemValues,
@@ -232,8 +228,6 @@ fun HistoryList(
                     ) { mediaItem ->
                         SongItem.Render(
                             song = mediaItem.asSong,
-                            context = context,
-                            binder = binder,
                             hapticFeedback = hapticFeedback,
                             isPlaying = mediaItem.shallowCompare( currentMediaItem ),
                             values = songItemValues,
