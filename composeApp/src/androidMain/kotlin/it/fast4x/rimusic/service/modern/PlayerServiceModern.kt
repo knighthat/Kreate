@@ -183,6 +183,14 @@ class PlayerServiceModern:
 //            discord.stop()
     }
 
+    override fun onStartCommand( intent: Intent?, flags: Int, startId: Int ): Int {
+        if( intent?.action == ACTION_RESTART ) {
+            player.pause()
+            stopSelf()
+        }
+
+        return super.onStartCommand(intent, flags, startId)
+    }
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     override fun onCreate() {
@@ -789,14 +797,6 @@ class PlayerServiceModern:
     open inner class Binder : AndroidBinder(), KoinComponent {
         val player: StatefulPlayer
             get() = this@PlayerServiceModern.player
-
-        /**
-         * This method should ONLY be called when the application (sc. activity) is in the foreground!
-         */
-        fun restartForegroundOrStop() {
-            player.pause()
-            stopSelf()
-        }
     }
 
     @JvmInline
@@ -841,6 +841,7 @@ class PlayerServiceModern:
         const val ALBUM = "album"
         const val PLAYLIST = "playlist"
         const val SEARCHED = "searched"
+        const val ACTION_RESTART = "restart"
 
         const val CACHE_DIRNAME = "exo_cache"
     }
