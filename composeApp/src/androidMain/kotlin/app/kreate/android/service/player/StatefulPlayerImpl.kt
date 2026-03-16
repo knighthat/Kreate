@@ -13,6 +13,7 @@ import androidx.core.animation.doOnStart
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Player.REPEAT_MODE_ALL
 import androidx.media3.common.Player.REPEAT_MODE_OFF
@@ -37,6 +38,7 @@ import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.mediaItems
+import it.fast4x.rimusic.utils.setGlobalVolume
 import it.fast4x.rimusic.utils.timer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,7 +74,6 @@ class StatefulPlayerImpl(
 ): ExoPlayer by player, StatefulPlayer, Player.Listener, KoinComponent {
 
     companion object {
-        const val NotificationId = 1001
         const val SleepTimerNotificationChannelId = "sleep_timer_channel_id"
     }
 
@@ -93,6 +94,15 @@ class StatefulPlayerImpl(
     init {
         this.addListener( this )
         this.addListener( PlayerEventUpdateDiscord() )
+
+        skipSilenceEnabled = Preferences.AUDIO_SKIP_SILENCE.value
+        repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
+        volume = Preferences.AUDIO_VOLUME.value
+        setGlobalVolume( player.volume )
+        playbackParameters = PlaybackParameters(
+            Preferences.AUDIO_SPEED_VALUE.value,
+            Preferences.AUDIO_PITCH.value
+        )
     }
 
     private fun stopFadingEffect() {

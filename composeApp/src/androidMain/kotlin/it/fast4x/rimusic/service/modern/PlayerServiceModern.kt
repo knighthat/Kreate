@@ -30,7 +30,6 @@ import androidx.media3.common.AuxEffectInfo
 import androidx.media3.common.C
 import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.MediaItem
-import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
@@ -81,7 +80,6 @@ import it.fast4x.rimusic.utils.isAtLeastAndroid7
 import it.fast4x.rimusic.utils.playNext
 import it.fast4x.rimusic.utils.playPrevious
 import it.fast4x.rimusic.utils.preferences
-import it.fast4x.rimusic.utils.setGlobalVolume
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -277,19 +275,9 @@ class PlayerServiceModern:
             ::onMediaItemTransition
         )
 
-        player.skipSilenceEnabled = Preferences.AUDIO_SKIP_SILENCE.value
         player.addListener( listener )
         player.addListener( this )
         player.addAnalyticsListener(PlaybackStatsListener(false, this@PlayerServiceModern))
-
-        player.repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
-
-        player.playbackParameters = PlaybackParameters(
-            Preferences.AUDIO_SPEED_VALUE.value,
-            Preferences.AUDIO_PITCH.value
-        )
-        player.volume = Preferences.AUDIO_VOLUME.value
-        player.setGlobalVolume(player.volume)
 
         mediaLibrarySessionCallback.apply {
             listener = this@PlayerServiceModern.listener
