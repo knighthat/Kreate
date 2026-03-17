@@ -27,7 +27,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.core.content.ContextCompat
 import androidx.media3.common.AuxEffectInfo
-import androidx.media3.common.C
 import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -55,7 +54,6 @@ import app.kreate.android.utils.centerCropToMatchScreenSize
 import app.kreate.android.utils.isLocalFile
 import app.kreate.android.widget.Widget
 import app.kreate.database.models.Event
-import app.kreate.database.models.PersistentQueue
 import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import com.google.common.util.concurrent.MoreExecutors
@@ -71,7 +69,6 @@ import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.utils.AppLifecycleTracker
 import it.fast4x.rimusic.utils.CoilBitmapLoader
-import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.collect
 import it.fast4x.rimusic.utils.getEnum
 import it.fast4x.rimusic.utils.intent
@@ -335,8 +332,6 @@ class PlayerServiceModern:
                 updateWidgets()
             }
         }
-
-        maybeRestorePlayerQueue()
 
         maybeResumePlaybackWhenDeviceConnected()
 
@@ -692,35 +687,6 @@ class PlayerServiceModern:
             && AppLifecycleTracker.isInForeground()
         ) player.play()
     }
-
-    @ExperimentalCoroutinesApi
-    @FlowPreview
-    @UnstableApi
-    private fun maybeRestorePlayerQueue() {
-        if ( !Preferences.ENABLE_PERSISTENT_QUEUE.value ) return
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val queue = Database.queueTable.blockingItems()
-
-            if( queue.isEmpty() ) {
-                logger.i { "Persistent queue empty, not resuming!" }
-                return@launch
-            }
-
-            val startIndex = queue.indexOfFirst { it.position != null }
-            val startPositionMs = queue[startIndex].position ?: C.TIME_UNSET
-            val mediaItems = withContext( Dispatchers.Default ) {
-                queue.map {
-                    it.song.asMediaItem.buildUpon().setTag( PersistentQueue.Tag ).build()
-                }
-            }
-            withContext( Dispatchers.Main ) {
-                player.setMediaItems( mediaItems, startIndex, startPositionMs )
-                player.prepare()
-            }
-        }
-    }
-
 
     private fun revertWallpaperToDefault() {
         val type by Preferences.LIVE_WALLPAPER

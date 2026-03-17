@@ -12,6 +12,7 @@ import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
@@ -27,6 +28,7 @@ import app.kreate.android.R
 import app.kreate.android.service.PlayerEventUpdateDiscord
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
+import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.models.NavigationEndpoint
@@ -103,6 +105,8 @@ class StatefulPlayerImpl(
             Preferences.AUDIO_SPEED_VALUE.value,
             Preferences.AUDIO_PITCH.value
         )
+
+        loadPersistentQueue()
     }
 
     private fun stopFadingEffect() {
@@ -180,6 +184,39 @@ class StatefulPlayerImpl(
             doOnEnd( doOnEnd )
 
             start()
+        }
+    }
+
+    private fun loadPersistentQueue() {
+        if ( Preferences.ENABLE_PERSISTENT_QUEUE.value )
+            logger.d { "Persistent queue enabled! Loading from database..." }
+        else
+            return
+
+        coroutineScope.launch {
+            val queue = Database.queueTable.blockingItems()
+
+            if( queue.isEmpty() ) {
+                logger.i { "Persistent queue empty, not resuming!" }
+                return@launch
+            }
+
+            val startIndex = queue.indexOfFirst { it.position != null }
+            val startPositionMs = queue[startIndex].position ?: C.TIME_UNSET
+            val mediaItems = withContext( Dispatchers.Default ) {
+                queue.map { queueItem ->
+                    queueItem.song
+                             .asMediaItem
+                             .buildUpon()
+                             .setTag( PersistentQueue.Tag )
+                             .build()
+                }
+            }
+            // Involves Player's call, must happen on main thread
+            withContext( Dispatchers.Main ) {
+                setMediaItems( mediaItems, startIndex, startPositionMs )
+                prepare()
+            }
         }
     }
 
