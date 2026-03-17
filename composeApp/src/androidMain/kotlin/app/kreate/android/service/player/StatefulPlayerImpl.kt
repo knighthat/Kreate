@@ -46,6 +46,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -374,12 +375,6 @@ class StatefulPlayerImpl(
 
     override fun getSecondaryRenderer( index: Int ) = player.getSecondaryRenderer( index )
 
-    override fun release() {
-        stopFadingEffect()
-        player.removeListener( this )
-        player.release()
-    }
-
     override fun play() {
         fun action() {
             if( playbackState == Player.STATE_IDLE )
@@ -435,6 +430,28 @@ class StatefulPlayerImpl(
 
     override fun getAudioSessionId(): Int = player.audioSessionId
 
+    override fun stop() {
+        pause()
+
+        stopRadio()
+        stopSleepTimer()
+
+        player.stop()
+    }
+
+    override fun release() {
+        stopFadingEffect()
+
+        coroutineScope.cancel()
+
+        player.removeListener( this )
+        player.release()
+    }
+
+    /*
+            Player listener
+     */
+
     override fun onMediaItemTransition( mediaItem: MediaItem?, reason: Int ) {
         // Don't update [_currentMediaItemState] when on repeat
         if( reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT )
@@ -450,11 +467,4 @@ class StatefulPlayerImpl(
 
     override fun onTimelineChanged( timeline: Timeline, reason: Int ) =
         _currentTimelineState.update { timeline }
-
-    override fun stop() {
-        stopRadio()
-        stopSleepTimer()
-        stopFadingEffect()
-        player.stop()
-    }
 }
