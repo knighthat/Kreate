@@ -122,6 +122,7 @@ import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.drawable.AppIcon
 import app.kreate.android.screens.player.background.BlurredCover
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.screen.player.ActionBar
 import app.kreate.util.readableText
 import app.kreate.util.toDuration
@@ -140,7 +141,6 @@ import com.mikepenz.hypnoticcanvas.shaders.PurpleLiquid
 import com.mikepenz.hypnoticcanvas.shaders.Shader
 import com.mikepenz.hypnoticcanvas.shaders.Stage
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.AnimatedGradient
 import it.fast4x.rimusic.enums.BackgroundProgress
@@ -193,6 +193,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import me.knighthat.component.player.BlurAdjuster
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import kotlin.Float.Companion.POSITIVE_INFINITY
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
@@ -216,7 +217,7 @@ fun Player(
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val menuState = LocalMenuState.current
-    val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     // Settings
     val disablePlayerHorizontalSwipe by Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED
     val showlyricsthumbnail by Preferences.LYRICS_SHOW_THUMBNAIL
@@ -268,10 +269,10 @@ fun Player(
     var expandedplayer by expandPlayerState
 
 
-    if (binder.player.currentTimeline.windowCount == 0) return
+    if (player.currentTimeline.windowCount == 0) return
 
     var shouldBePlaying by remember {
-        mutableStateOf(binder.player.shouldBePlaying)
+        mutableStateOf(player.shouldBePlaying)
     }
 
     val rotateState = rememberSaveable { mutableStateOf( false ) }
@@ -313,10 +314,10 @@ fun Player(
     }
 
     var mediaItems by remember {
-        mutableStateOf(binder.player.currentTimeline.mediaItems)
+        mutableStateOf(player.currentTimeline.mediaItems)
     }
     var playerError by remember {
-        mutableStateOf<PlaybackException?>(binder.player.playerError)
+        mutableStateOf<PlaybackException?>(player.playerError)
     }
 
     fun PagerState.offsetForPage(page: Int) = (currentPage - page) + currentPageOffsetFraction
@@ -353,19 +354,19 @@ fun Player(
         }
     }
 
-    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+    val currentMediaItem by player.currentMediaItemState.collectAsState()
     val mediaItem = currentMediaItem ?: return
 
-    binder.player.DisposableListener {
+    player.DisposableListener {
         object : Player.Listener {
 
             override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-                shouldBePlaying = playerError == null && binder.player.shouldBePlaying
+                shouldBePlaying = playerError == null && player.shouldBePlaying
             }
 
             override fun onPlaybackStateChanged(playbackState: Int) {
-                playerError = binder.player.playerError
-                shouldBePlaying = playerError == null && binder.player.shouldBePlaying
+                playerError = player.playerError
+                shouldBePlaying = playerError == null && player.shouldBePlaying
             }
             override fun onTimelineChanged(timeline: Timeline, reason: Int) {
                 mediaItems = timeline.mediaItems
@@ -385,18 +386,17 @@ fun Player(
         mutableStateOf(false)
     }
 
-    val sleepTimerMillisLeft by (binder.sleepTimerMillisLeft
-        ?: flowOf(null))
-        .collectAsState(initial = null)
+    val sleepTimerMillisLeft by player.sleepTimerRemaining().collectAsState(initial = null)
 
-    val positionAndDuration by binder.player.positionAndDurationState()
+    val positionAndDuration by player.positionAndDurationState()
     var timeRemaining by remember { mutableLongStateOf(0) }
     timeRemaining = positionAndDuration.second - positionAndDuration.first
 
     if (sleepTimerMillisLeft != null)
         if (sleepTimerMillisLeft!! < timeRemaining && !delayedSleepTimer)  {
-            binder.cancelSleepTimer()
-            binder.startSleepTimer(timeRemaining)
+            player.startSleepTimer(
+                timeRemaining.toDuration( DurationUnit.MILLISECONDS )
+            )
             delayedSleepTimer = true
             Toaster.n( R.string.info_sleep_timer_delayed_at_end_of_song )
         }
@@ -451,7 +451,7 @@ fun Player(
                 confirmText = stringResource(R.string.stop),
                 onDismiss = { isShowingSleepTimerDialog = false },
                 onConfirm = {
-                    binder.cancelSleepTimer()
+                    player.stopSleepTimer()
                     delayedSleepTimer = false
                     //onDismiss()
                 }
@@ -550,7 +550,9 @@ fun Player(
                                 + timeRemaining.toDuration( DurationUnit.MILLISECONDS ).readableText()
                                 + " " + stringResource(R.string.end_of_song),
                         onClick = {
-                            binder.startSleepTimer(timeRemaining)
+                            player.startSleepTimer(
+                                timeRemaining.toDuration( DurationUnit.MILLISECONDS )
+                            )
                             isShowingSleepTimerDialog = false
                         }
                     )
@@ -575,7 +577,9 @@ fun Player(
                     IconButton(
                         enabled = amount > 0,
                         onClick = {
-                            binder.startSleepTimer(amount * 5 * 60 * 1000L)
+                            player.startSleepTimer(
+                                (amount * 5 * 60 * 1000L).toDuration( DurationUnit.MILLISECONDS )
+                            )
                             isShowingSleepTimerDialog = false
                         },
                         icon = R.drawable.checkmark,
@@ -626,13 +630,13 @@ fun Player(
                 playerBackgroundColors == PlayerBackgroundColors.AnimatedGradient
 
         println("Player url mediaitem ${mediaItem.mediaMetadata.artworkUri}")
-        println("Player url binder ${binder.player.currentWindow?.mediaItem?.mediaMetadata?.artworkUri}")
+        println("Player url binder ${player.currentWindow?.mediaItem?.mediaMetadata?.artworkUri}")
     LaunchedEffect(mediaItem.mediaId, updateBrush) {
         if (playerBackgroundColors == PlayerBackgroundColors.CoverColorGradient ||
             playerBackgroundColors == PlayerBackgroundColors.CoverColor ||
             playerBackgroundColors == PlayerBackgroundColors.AnimatedGradient || updateBrush
         ) {
-            val thumbnailUrl: String =  binder.player
+            val thumbnailUrl: String =  player
                                               .currentWindow
                                               ?.mediaItem
                                               ?.mediaMetadata
@@ -748,9 +752,9 @@ fun Player(
                         onDragEnd = {
                             if (!disablePlayerHorizontalSwipe && playerType == PlayerType.Essential) {
                                 if (deltaX > 5) {
-                                    binder.player.playPrevious()
+                                    player.playPrevious()
                                 } else if (deltaX < -5) {
-                                    binder.player.playNext()
+                                    player.playNext()
                                 }
 
                             }
@@ -844,7 +848,7 @@ fun Player(
                     }
                     AnimatedGradient.Linear -> {
                         containerModifier = containerModifier.animatedGradient(
-                            binder.player.isPlaying,
+                            player.isPlaying,
                             saturate(dominant).darkenBy(),
                             saturate(vibrant).darkenBy(),
                             saturate(lightVibrant).darkenBy(),
@@ -960,7 +964,7 @@ fun Player(
                 showthumbnail = showthumbnail,
                 onMaximize = {},
                 onDoubleTap = {
-                    val currentMediaItem = binder.player.currentMediaItem
+                    val currentMediaItem = player.currentMediaItem
                     Database.asyncTransaction {
                         if( !isSongLiked )
                             currentMediaItem
@@ -984,9 +988,9 @@ fun Player(
                             onDragEnd = {
                                 if (!disablePlayerHorizontalSwipe && playerType == PlayerType.Essential) {
                                     if (deltaX > 5) {
-                                        binder.player.playPrevious()
+                                        player.playPrevious()
                                     } else if (deltaX < -5) {
-                                        binder.player.playNext()
+                                        player.playNext()
                                     }
 
                                 }
@@ -1045,7 +1049,7 @@ fun Player(
             onDismiss
         )
 
-        val player = binder.player
+        val player = player
 
         if (isLandscape) {
          Box{
@@ -1054,13 +1058,13 @@ fun Player(
                      state = pagerStateFS,
                      snapPositionalThreshold = 0.20f
                  )
-                 pagerStateFS.LaunchedEffectScrollToPage(binder.player.currentMediaItemIndex)
+                 pagerStateFS.LaunchedEffectScrollToPage(player.currentMediaItemIndex)
 
                  LaunchedEffect(pagerStateFS) {
                      var previousPage = pagerStateFS.settledPage
                      snapshotFlow { pagerStateFS.settledPage }.distinctUntilChanged().collect {
                          if (previousPage != it) {
-                             if (it != binder.player.currentMediaItemIndex) binder.player.playAtIndex(it)
+                             if (it != player.currentMediaItemIndex) player.playAtIndex(it)
                          }
                          previousPage = it
                      }
@@ -1109,7 +1113,7 @@ fun Player(
                      }
 
                      BlurredCover(
-                         thumbnailUrl = binder.player.getMediaItemAt(it).mediaMetadata.artworkUri.toString(),
+                         thumbnailUrl = player.getMediaItemAt(it).mediaMetadata.artworkUri.toString(),
                          blurAdjuster = blurAdjuster,
                          showThumbnail = showthumbnail,
                          noBlur = noblur,
@@ -1164,7 +1168,7 @@ fun Player(
              }
 
              BlurredCover(
-                 thumbnailUrl = binder.player.mediaMetadata.artworkUri.toString(),
+                 thumbnailUrl = player.mediaMetadata.artworkUri.toString(),
                  blurAdjuster = blurAdjuster,
                  showThumbnail = showthumbnail,
                  noBlur = noblur,
@@ -1224,9 +1228,9 @@ fun Player(
                                         onDragEnd = {
                                             if (!disablePlayerHorizontalSwipe && playerType == PlayerType.Essential) {
                                                 if (deltaX > 5) {
-                                                    binder.player.playPrevious()
+                                                    player.playPrevious()
                                                 } else if (deltaX < -5) {
-                                                    binder.player.playNext()
+                                                    player.playNext()
                                                 }
 
                                             }
@@ -1272,9 +1276,9 @@ fun Player(
                                             onDragEnd = {
                                                 if (!disablePlayerHorizontalSwipe) {
                                                     if (deltaX > 5) {
-                                                        binder.player.playPrevious()
+                                                        player.playPrevious()
                                                     } else if (deltaX < -5) {
-                                                        binder.player.playNext()
+                                                        player.playNext()
                                                     }
 
                                                 }
@@ -1304,19 +1308,19 @@ fun Player(
                                  val fling = PagerDefaults.flingBehavior(state = pagerState,snapPositionalThreshold = 0.25f)
                                  val pageSpacing = thumbnailSpacingL.toInt()*0.01*(screenWidth) - (2.5*playerThumbnailSizeL.size.dp)
 
-                                 LaunchedEffect(pagerState, binder.player.currentMediaItemIndex) {
+                                 LaunchedEffect(pagerState, player.currentMediaItemIndex) {
                                      if (AppLifecycleTracker.isInBackground() || isShowingLyrics) {
-                                         pagerState.scrollToPage(binder.player.currentMediaItemIndex)
+                                         pagerState.scrollToPage(player.currentMediaItemIndex)
                                      } else {
-                                         pagerState.animateScrollToPage(binder.player.currentMediaItemIndex)
+                                         pagerState.animateScrollToPage(player.currentMediaItemIndex)
                                      }
                                  }
 
                                  LaunchedEffect(pagerState) {
                                      var previousPage = pagerState.settledPage
                                      snapshotFlow { pagerState.settledPage }.distinctUntilChanged().collect {
-                                         if ( previousPage != it && it != binder.player.currentMediaItemIndex )
-                                             binder.player.playAtIndex(it)
+                                         if ( previousPage != it && it != player.currentMediaItemIndex )
+                                             player.playAtIndex(it)
                                          previousPage = it
                                      }
                                  }
@@ -1338,7 +1342,7 @@ fun Player(
                                      ) {
 
                                      val coverPainter = ImageFactory.rememberAsyncImagePainter(
-                                         binder.player.getMediaItemAt( it ).mediaMetadata.artworkUri.toString()
+                                         player.getMediaItemAt( it ).mediaMetadata.artworkUri.toString()
                                      )
 
                                      val coverModifier = Modifier
@@ -1386,7 +1390,7 @@ fun Player(
                                                      isShowingLyrics = !isShowingLyrics
                                                  }
                                                  if (it != pagerState.settledPage) {
-                                                     binder.player.playAtIndex(it)
+                                                     player.playAtIndex(it)
                                                  }
                                              },
                                              onLongClick = {
@@ -1425,15 +1429,15 @@ fun Player(
                                                  contentScale = ContentScale.Fit,
                                                  modifier = coverModifier
                                              )
-                                             if (isDragged && it == binder.player.currentMediaItemIndex) {
+                                             if (isDragged && it == player.currentMediaItemIndex) {
                                                  Box(modifier = Modifier
                                                      .align(Alignment.Center)
                                                      .matchParentSize()
                                                  ) {
                                                      NowPlayingSongIndicator(
-                                                         binder.player.getMediaItemAt(
-                                                             binder.player.currentMediaItemIndex
-                                                         ).mediaId, binder.player,
+                                                         player.getMediaItemAt(
+                                                             player.currentMediaItemIndex
+                                                         ).mediaId, player,
                                                          Dimensions.thumbnails.album
                                                      )
                                                  }
@@ -1454,9 +1458,9 @@ fun Player(
                                                 onDragEnd = {
                                                     if (!disablePlayerHorizontalSwipe && playerType == PlayerType.Essential) {
                                                         if (deltaX > 5) {
-                                                            binder.player.playPrevious()
+                                                            player.playPrevious()
                                                         } else if (deltaX < -5) {
-                                                            binder.player.playNext()
+                                                            player.playNext()
                                                         }
 
                                                     }
@@ -1484,11 +1488,11 @@ fun Player(
                     } else {
                         val index = (
                             if (!showthumbnail) {
-                                if (pagerStateFS.currentPage > binder.player.currentTimeline.windowCount)
+                                if (pagerStateFS.currentPage > player.currentTimeline.windowCount)
                                     0
                                 else
                                     pagerStateFS.currentPage
-                            } else if (pagerState.currentPage > binder.player.currentTimeline.windowCount) {
+                            } else if (pagerState.currentPage > player.currentTimeline.windowCount) {
                                 0
                             } else
                                 pagerState.currentPage
@@ -1520,7 +1524,7 @@ fun Player(
                    val scaleAnimationFloat by animateFloatAsState(
                        if (isDraggedFS) 0.85f else 1f, label = ""
                    )
-                   pagerStateFS.LaunchedEffectScrollToPage(binder.player.currentMediaItemIndex)
+                   pagerStateFS.LaunchedEffectScrollToPage(player.currentMediaItemIndex)
 
                     LaunchedEffect(pagerStateFS) {
                         var previousPage = pagerStateFS.settledPage
@@ -1528,7 +1532,7 @@ fun Player(
                             if (previousPage != it) {
                                 delay(if (swipeAnimationNoThumbnail == SwipeAnimationNoThumbnail.Fade) 0
                                       else 400)
-                                if (it != binder.player.currentMediaItemIndex) binder.player.playAtIndex(it)
+                                if (it != player.currentMediaItemIndex) player.playAtIndex(it)
                             }
                             previousPage = it
                         }
@@ -1593,7 +1597,7 @@ fun Player(
                                 }
                         ) {
                             BlurredCover(
-                                thumbnailUrl = binder.player.getMediaItemAt(it).mediaMetadata.artworkUri.toString(),
+                                thumbnailUrl = player.getMediaItemAt(it).mediaMetadata.artworkUri.toString(),
                                 blurAdjuster = blurAdjuster,
                                 showThumbnail = showthumbnail,
                                 noBlur = noblur,
@@ -1716,7 +1720,7 @@ fun Player(
                 }
 
                BlurredCover(
-                   thumbnailUrl = binder.player.mediaMetadata.artworkUri.toString(),
+                   thumbnailUrl = player.mediaMetadata.artworkUri.toString(),
                    blurAdjuster = blurAdjuster,
                    showThumbnail = showthumbnail,
                    noBlur = noblur,
@@ -1795,7 +1799,6 @@ fun Player(
                                                     navController = navController,
                                                     onDismiss = menuState::hide,
                                                     mediaItem = mediaItem,
-                                                    binder = binder,
                                                     onClosePlayer = {
                                                         onDismiss()
                                                     }
@@ -1844,13 +1847,13 @@ fun Player(
                              if (playerType == PlayerType.Modern) {
                                  val fling = PagerDefaults.flingBehavior(state = pagerState,snapPositionalThreshold = 0.25f)
 
-                                 pagerState.LaunchedEffectScrollToPage(binder.player.currentMediaItemIndex)
+                                 pagerState.LaunchedEffectScrollToPage(player.currentMediaItemIndex)
 
                                  LaunchedEffect(pagerState) {
                                      var previousPage = pagerState.settledPage
                                      snapshotFlow { pagerState.settledPage }.distinctUntilChanged().collect {
-                                         if ( previousPage != it && it != binder.player.currentMediaItemIndex )
-                                             binder.player.playAtIndex(it)
+                                         if ( previousPage != it && it != player.currentMediaItemIndex )
+                                             player.playAtIndex(it)
                                          previousPage = it
                                      }
                                  }
@@ -1887,7 +1890,7 @@ fun Player(
                                  ){
 
                                      val coverPainter = ImageFactory.rememberAsyncImagePainter(
-                                         binder.player.getMediaItemAt(it).mediaMetadata.artworkUri.toString()
+                                         player.getMediaItemAt(it).mediaMetadata.artworkUri.toString()
                                      )
 
                                      val coverModifier = Modifier
@@ -1938,7 +1941,7 @@ fun Player(
                                                      isShowingLyrics = !isShowingLyrics
                                                  }
                                                  if (it != pagerState.settledPage) {
-                                                     binder.player.playAtIndex(it)
+                                                     player.playAtIndex(it)
                                                  }
                                              },
                                              onLongClick = {
@@ -1977,15 +1980,15 @@ fun Player(
                                                  contentScale = ContentScale.Fit,
                                                  modifier = coverModifier
                                              )
-                                             if (isDragged && expandedplayer && it == binder.player.currentMediaItemIndex) {
+                                             if (isDragged && expandedplayer && it == player.currentMediaItemIndex) {
                                                  Box(modifier = Modifier
                                                      .align(Alignment.Center)
                                                      .matchParentSize()
                                                  ) {
                                                      NowPlayingSongIndicator(
-                                                         binder.player.getMediaItemAt(
-                                                             binder.player.currentMediaItemIndex
-                                                         ).mediaId, binder.player,
+                                                         player.getMediaItemAt(
+                                                             player.currentMediaItemIndex
+                                                         ).mediaId, player,
                                                          Dimensions.thumbnails.album
                                                      )
                                                  }
@@ -2010,9 +2013,9 @@ fun Player(
                                     onDragEnd = {
                                         if (!disablePlayerHorizontalSwipe) {
                                             if (deltaX > 5) {
-                                                binder.player.playPrevious()
+                                                player.playPrevious()
                                             } else if (deltaX <-5){
-                                                binder.player.playNext()
+                                                player.playNext()
                                             }
 
                                         }
@@ -2117,11 +2120,11 @@ fun Player(
                     } else if (!(swipeAnimationNoThumbnail == SwipeAnimationNoThumbnail.Scale && isDraggedFS)){
                         val index = (
                                 if (!showthumbnail) {
-                                    if (pagerStateFS.currentPage > binder.player.currentTimeline.windowCount)
+                                    if (pagerStateFS.currentPage > player.currentTimeline.windowCount)
                                         0
                                     else
                                         pagerStateFS.currentPage
-                                } else if (pagerState.currentPage > binder.player.currentTimeline.windowCount) {
+                                } else if (pagerState.currentPage > player.currentTimeline.windowCount) {
                                     0
                                 } else
                                     pagerState.currentPage

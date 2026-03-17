@@ -47,13 +47,13 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
@@ -73,6 +73,7 @@ import me.knighthat.component.FolderItem
 import me.knighthat.utils.PathUtils
 import me.knighthat.utils.Toaster
 import me.knighthat.utils.getLocalSongs
+import org.koin.compose.koinInject
 
 @UnstableApi
 @ExperimentalFoundationApi
@@ -88,7 +89,7 @@ fun OnDeviceSong(
 ) {
     // Essentials
     val context = LocalContext.current
-    val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
     val menuState = LocalMenuState.current
@@ -224,7 +225,7 @@ fun OnDeviceSong(
             }
         }
 
-    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+    val currentMediaItem by player.currentMediaItemState.collectAsState()
     val songItemValues = remember( colorPalette, typography ) {
         SongItem.Values.from( colorPalette, typography )
     }
@@ -259,15 +260,13 @@ fun OnDeviceSong(
 
             SwipeablePlaylistItem(
                 mediaItem = mediaItem,
-                onPlayNext = { binder?.player?.addNext( mediaItem ) },
+                onPlayNext = { player.addNext( mediaItem ) },
                 onEnqueue = {
-                    binder?.player?.enqueue(mediaItem)
+                    player.enqueue(mediaItem)
                 }
             ) {
                 SongItem.Render(
                     song = song,
-                    context = context,
-                    binder = binder,
                     hapticFeedback = hapticFeedback,
                     isPlaying = song.shallowCompare( currentMediaItem ),
                     values = songItemValues,
@@ -277,16 +276,16 @@ fun OnDeviceSong(
                     onClick = {
                         search.hideIfEmpty()
 
-                        binder.stopRadio()
+                        player.stopRadio()
 
                         val selectedSongs = getSongs()
                         if( song in selectedSongs )
-                            binder.player.forcePlayAtIndex(
+                            player.forcePlayAtIndex(
                                 selectedSongs.fastMap( Song::asMediaItem ),
                                 selectedSongs.indexOf( song )
                             )
                         else
-                            binder.player.forcePlayAtIndex(
+                            player.forcePlayAtIndex(
                                 itemsOnDisplay.fastMap( Song::asMediaItem ),
                                 index
                             )

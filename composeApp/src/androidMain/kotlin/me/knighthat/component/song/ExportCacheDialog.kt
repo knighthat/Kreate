@@ -1,5 +1,6 @@
 package me.knighthat.component.song
 
+import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -12,12 +13,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheSpan
 import app.kreate.android.R
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.appContext
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +27,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.component.ExportToFileDialog
 import me.knighthat.utils.Toaster
+import org.koin.java.KoinJavaComponent.inject
 
 class ExportCacheDialog(
     activeState: MutableState<Boolean>,
@@ -38,36 +40,37 @@ class ExportCacheDialog(
         @UnstableApi
         private fun onExport(
             uri: Uri,
-            binder: PlayerServiceModern.Binder ,
             song: Song
         ) = CoroutineScope( Dispatchers.IO ).launch {       // Run in background to prevent UI thread from freezing due to large file.
+            val context: Context by inject(Context::class.java)
+            val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
+            val downloadCache: Cache by inject(Cache::class.java, CacheType.DOWNLOAD)
             val contentLength =  Database.formatTable.findContentLengthOf( song.id ).first()
-
-            val isCached = binder.cache.isCached( song.id, 0, contentLength )
-            val isDownloaded = binder.downloadCache.isCached( song.id, 0, contentLength )
+            val isCached = cache.isCached( song.id, 0, contentLength )
+            val isDownloaded = downloadCache.isCached( song.id, 0, contentLength )
 
             if( !isCached && !isDownloaded ) {
                 Toaster.i( R.string.song_must_be_cached_or_downloaded_to_export )
 
                 try {
                     // Attempt to delete created file
-                    DocumentsContract.deleteDocument( appContext().contentResolver, uri )
+                    DocumentsContract.deleteDocument( context.contentResolver, uri )
                 } catch ( _: Exception ) {}
 
                 return@launch
             }
 
             val dataInBytes =
-                (if( isCached ) binder.cache else binder.downloadCache).getCachedSpans( song.id )
-                                                                       .mapNotNull( CacheSpan::file )
-                                                                       .flatMap { it.readBytes().asList() }
-                                                                       .toByteArray()
+                (if( isCached ) cache else downloadCache).getCachedSpans( song.id )
+                                                         .mapNotNull( CacheSpan::file )
+                                                         .flatMap { it.readBytes().asList() }
+                                                         .toByteArray()
 
-            appContext().contentResolver
-                        .openOutputStream( uri )
-                        ?.use { outStream ->
-                            outStream.write( dataInBytes )
-                        }
+            context.contentResolver
+                   .openOutputStream( uri )
+                   ?.use { outStream ->
+                       outStream.write( dataInBytes )
+                   }
 
             Toaster.done()
         }
@@ -75,7 +78,6 @@ class ExportCacheDialog(
         @UnstableApi
         @Composable
         operator fun invoke(
-            binder: PlayerServiceModern.Binder?,
             getSong: () -> Song
         ): ExportCacheDialog = ExportCacheDialog(
             remember { mutableStateOf(false) },
@@ -87,10 +89,8 @@ class ExportCacheDialog(
             ) { uri ->
                 // [uri] must be non-null (meaning path exists) in or
                 uri ?: return@rememberLauncherForActivityResult
-                // Same thing with binder
-                binder ?: return@rememberLauncherForActivityResult
 
-                onExport( uri, binder, getSong() )
+                onExport( uri, getSong() )
             },
             getSong
         )

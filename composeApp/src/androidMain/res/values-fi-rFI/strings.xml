@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Pyyhkäise ylös avataksesi jonon</string>
     <string name="pinfo_show_icons">Näytä tiedot kuvakkeilla</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Hiljaisuuden vähimmäispituus</string>
-    <string name="minimum_silence_length_description">Vähimmäisaika äänettömyydelle, jonka jälkeen se ohitetaan</string>
     <string name="minimum_silence_length_warning">Soitin on käynnistettävä uudelleen, jotta muutokset toimivat!</string>
     <string name="restart_service">Käynnistä uudelleen</string>
     <string name="player_pause_listen_history">Keskeytä kuunteluhistoria</string>

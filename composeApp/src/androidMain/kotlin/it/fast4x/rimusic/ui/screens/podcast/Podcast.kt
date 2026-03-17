@@ -62,22 +62,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastFold
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Playlist
+import app.kreate.di.CacheType
 import app.kreate.util.toDuration
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBody
 import it.fast4x.innertube.requests.podcastPage
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -119,6 +121,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import kotlin.time.Duration
 
 
@@ -134,8 +137,8 @@ fun Podcast(
     browseId: String,
     params: String?,
     maxDepth: Int?,
+    player: StatefulPlayer = koinInject()
 ) {
-    val binder = LocalPlayerServiceBinder.current ?: return
     val (colorPalette, typography) = LocalAppearance.current
     val context = LocalContext.current
     val menuState = LocalMenuState.current
@@ -227,6 +230,8 @@ fun Podcast(
     val lazyListState = rememberLazyListState()
 
     LayoutWithAdaptiveThumbnail(thumbnailContent = thumbnailContent) {
+        val cache: Cache = koinInject(CacheType.CACHE)
+
         Box(
             modifier = Modifier
                 .background(colorPalette().background0)
@@ -239,7 +244,7 @@ fun Podcast(
                         1f
                 )
         ) {
-            val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+            val currentMediaItem by player.currentMediaItemState.collectAsState()
             val songItemValues = remember( colorPalette, typography ) {
                 SongItem.Values.from( colorPalette, typography )
             }
@@ -386,7 +391,7 @@ fun Podcast(
                                             downloadState = Download.STATE_DOWNLOADING
                                             if (podcastPage?.listEpisode?.isNotEmpty() == true)
                                                 podcastPage?.listEpisode?.forEach {
-                                                    binder?.cache?.removeResource(it.asMediaItem.mediaId)
+                                                    cache.removeResource(it.asMediaItem.mediaId)
                                                     Database.asyncTransaction {
                                                         formatTable.findBySongId( it.asMediaItem.mediaId )
                                                     }
@@ -414,7 +419,7 @@ fun Podcast(
                                             downloadState = Download.STATE_DOWNLOADING
                                             if (podcastPage?.listEpisode?.isNotEmpty() == true)
                                                 podcastPage?.listEpisode?.forEach {
-                                                    binder?.cache?.removeResource(it.asMediaItem.mediaId)
+                                                    cache.removeResource(it.asMediaItem.mediaId)
                                                     Database.asyncTransaction {
                                                         formatTable.findBySongId( it.asMediaItem.mediaId )
                                                     }
@@ -443,7 +448,7 @@ fun Podcast(
                                     .combinedClickable(
                                         onClick = {
                                             podcastPage?.listEpisode?.map(Innertube.Podcast.EpisodeItem::asMediaItem)?.let { mediaItems ->
-                                                binder?.player?.enqueue(mediaItems, context)
+                                                player.enqueue(mediaItems, context)
                                             }
                                         },
                                         onLongClick = {
@@ -462,10 +467,10 @@ fun Podcast(
                                     .combinedClickable(
                                         onClick = {
                                             if (podcastPage?.listEpisode?.isNotEmpty() == true) {
-                                                binder?.stopRadio()
+                                                player.stopRadio()
                                                 podcastPage?.listEpisode?.shuffled()?.map(Innertube.Podcast.EpisodeItem::asMediaItem)
                                                     ?.let {
-                                                        binder?.player?.forcePlayFromBeginning(
+                                                        player.forcePlayFromBeginning(
                                                             it
                                                         )
                                                     }
@@ -486,8 +491,8 @@ fun Podcast(
                                     .padding(horizontal = 5.dp)
                                     .combinedClickable(
                                         onClick = {
-                                            val mediaItem = binder?.player?.currentMediaItem ?: podcastPage?.listEpisode?.first()?.asMediaItem
-                                            mediaItem?.let { binder?.startRadio( it ) }
+                                            val mediaItem = player.currentMediaItem ?: podcastPage?.listEpisode?.first()?.asMediaItem
+                                            mediaItem?.let { player.startRadio( it ) }
                                         },
                                         onLongClick = {
                                             Toaster.i( R.string.info_start_radio )
@@ -529,10 +534,13 @@ fun Podcast(
                                                         } else {
                                                             CoroutineScope(Dispatchers.IO).launch {
                                                                 playlistPreview.playlist.browseId?.let { id ->
-                                                                    addToYtPlaylist(playlistPreview.playlist.id,
+                                                                    addToYtPlaylist(
+                                                                        context,
+                                                                        playlistPreview.playlist.id,
                                                                         position,
                                                                         id,
-                                                                        podcastPage?.listEpisode?.map { it.asMediaItem } ?: emptyList())
+                                                                        podcastPage?.listEpisode?.map { it.asMediaItem } ?: emptyList()
+                                                                    )
                                                                 }
                                                             }
                                                         }
@@ -688,10 +696,10 @@ fun Podcast(
                     SwipeablePlaylistItem(
                         mediaItem = song.asMediaItem,
                         onPlayNext = {
-                            binder?.player?.addNext(song.asMediaItem)
+                            player.addNext(song.asMediaItem)
                         },
                         onDownload = {
-                            binder?.cache?.removeResource(song.asMediaItem.mediaId)
+                            cache.removeResource(song.asMediaItem.mediaId)
                             Database.asyncTransaction {
                                 formatTable.updateContentLengthOf( song.asMediaItem.mediaId )
                             }
@@ -704,13 +712,11 @@ fun Podcast(
                                 )
                         },
                         onEnqueue = {
-                            binder?.player?.enqueue(song.asMediaItem)
+                            player.enqueue(song.asMediaItem)
                         }
                     ) {
                         SongItem.Render(
                             mediaItem = song.asMediaItem,
-                            context = context,
-                            binder = binder,
                             hapticFeedback = hapticFeedback,
                             values = songItemValues,
                             isPlaying = song.shallowCompare( currentMediaItem ),
@@ -728,8 +734,8 @@ fun Podcast(
                                 filter = null
                                 podcastPage?.listEpisode?.map(Innertube.Podcast.EpisodeItem::asMediaItem)
                                     ?.let { mediaItems ->
-                                        binder.stopRadio()
-                                        binder.player.forcePlayAtIndex(mediaItems, index)
+                                        player.stopRadio()
+                                        player.forcePlayAtIndex(mediaItems, index)
                                     }
                             }
                         )
@@ -756,8 +762,8 @@ fun Podcast(
                 onClick = {
                     podcastPage?.listEpisode?.let { songs ->
                         if (songs.isNotEmpty()) {
-                            binder?.stopRadio()
-                            binder?.player?.forcePlayFromBeginning(
+                            player.stopRadio()
+                            player.forcePlayFromBeginning(
                                 songs.shuffled().map(Innertube.Podcast.EpisodeItem::asMediaItem)
                             )
                         }

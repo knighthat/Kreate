@@ -34,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -46,13 +45,13 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Playlist
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.readableText
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.models.Info
@@ -72,8 +71,8 @@ import it.fast4x.rimusic.utils.positionAndDurationState
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -89,17 +88,17 @@ fun NonQueuedMediaItemGridMenu(
     onRemoveFromQuickPicks: (() -> Unit)? = null,
     onDownload: (() -> Unit)? = null
 ) {
-    val binder = LocalPlayerServiceBinder.current
+    val player: StatefulPlayer = koinInject()
 
     BaseMediaItemGridMenu(
         navController = navController,
         mediaItem = mediaItem,
         onDismiss = onDismiss,
         onStartRadio = {
-            binder?.startRadio( mediaItem )
+            player.startRadio( mediaItem )
         },
-        onPlayNext = { binder?.player?.addNext(mediaItem) },
-        onEnqueue = { binder?.player?.enqueue(mediaItem) },
+        onPlayNext = { player.addNext(mediaItem) },
+        onEnqueue = { player.enqueue(mediaItem) },
         onDownload = onDownload,
         onRemoveFromPlaylist = onRemoveFromPlaylist,
         onHideFromDatabase = onHideFromDatabase,
@@ -260,11 +259,10 @@ fun MediaItemGridMenu (
     onRemoveFromQuickPicks: (() -> Unit)? = null,
     onGoToPlaylist: ((Long) -> Unit)?
 ) {
-    val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val uriHandler = LocalUriHandler.current
-    val context = LocalContext.current
     val hapticFeedback = LocalHapticFeedback.current
-    val (colorPalette, typography) = LocalAppearance.current
+    val (_, typography) = LocalAppearance.current
 
     val isLocal by remember { derivedStateOf { mediaItem.isLocal } }
 
@@ -317,7 +315,7 @@ fun MediaItemGridMenu (
                 )
             ),
             onValueSelected = {
-                binder?.player?.pause()
+                player.pause()
                 showSelectDialogListenOn = false
                 uriHandler.openUri(it)
             }
@@ -338,11 +336,9 @@ fun MediaItemGridMenu (
         mutableStateOf(false)
     }
 
-    val sleepTimerMillisLeft by (binder?.sleepTimerMillisLeft
-        ?: flowOf(null))
-        .collectAsState(initial = null)
+    val sleepTimerMillisLeft by player.sleepTimerRemaining().collectAsState(initial = null)
 
-    val positionAndDuration = binder?.player?.positionAndDurationState()
+    val positionAndDuration = player.positionAndDurationState()
 
     var timeRemaining by remember { mutableLongStateOf(0) }
 
@@ -360,7 +356,7 @@ fun MediaItemGridMenu (
                 confirmText = stringResource(R.string.stop),
                 onDismiss = { isShowingSleepTimerDialog = false },
                 onConfirm = {
-                    binder?.cancelSleepTimer()
+                    player.stopSleepTimer()
                     onDismiss()
                 }
             )
@@ -458,7 +454,9 @@ fun MediaItemGridMenu (
                                 + timeRemaining.toDuration( DurationUnit.MILLISECONDS ).readableText()
                                 + " " + stringResource(R.string.end_of_song),
                         onClick = {
-                            binder?.startSleepTimer(timeRemaining)
+                            player.startSleepTimer(
+                                timeRemaining.toDuration( DurationUnit.MILLISECONDS )
+                            )
                             isShowingSleepTimerDialog = false
                         }
                     )
@@ -483,7 +481,9 @@ fun MediaItemGridMenu (
                     IconButton(
                         enabled = amount > 0,
                         onClick = {
-                            binder?.startSleepTimer(amount * 5 * 60 * 1000L)
+                            player.startSleepTimer(
+                                (amount * 5 * 60 * 1000L).toDuration( DurationUnit.MILLISECONDS )
+                            )
                             isShowingSleepTimerDialog = false
                         },
                         icon = R.drawable.checkmark,
@@ -691,15 +691,13 @@ fun MediaItemGridMenu (
                         .calculateBottomPadding()
                 ),
                 topContent = {
-                    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+                    val currentMediaItem by player.currentMediaItemState.collectAsState()
                     val songItemValues = remember( colorPalette, typography ) {
                         SongItem.Values.from( colorPalette, typography )
                     }
 
                     SongItem.Render(
                         mediaItem = mediaItem,
-                        context = context,
-                        binder = binder,
                         hapticFeedback = hapticFeedback,
                         isPlaying = mediaItem.shallowCompare( currentMediaItem ),
                         values = songItemValues,

@@ -1,5 +1,6 @@
 package me.knighthat.component.artist
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -20,7 +21,6 @@ import app.kreate.android.R
 import app.kreate.database.models.Artist
 import it.fast4x.innertube.YtMusic
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
@@ -32,6 +32,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.utils.Toaster
+import org.koin.java.KoinJavaComponent.inject
 
 class FollowButton private constructor(
     private val getArtist: () -> Artist?
@@ -46,7 +47,8 @@ class FollowButton private constructor(
     override val messageId: Int = R.string.follow
 
     override fun onShortClick() {
-        if ( isYouTubeSyncEnabled() && !isNetworkConnected( appContext() ) ){
+        val context: Context by inject(Context::class.java)
+        if ( isYouTubeSyncEnabled() && !isNetworkConnected( context ) ){
             Toaster.noInternet()
         } else {
             val artist = getArtist() ?: return

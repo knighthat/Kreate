@@ -42,7 +42,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,10 +52,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
@@ -67,7 +66,6 @@ import it.fast4x.innertube.models.bodies.SearchSuggestionsBody
 import it.fast4x.innertube.requests.searchSuggestionsWithItems
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.typography
@@ -89,6 +87,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @UnstableApi
 @ExperimentalFoundationApi
@@ -161,15 +160,9 @@ fun OnlineSearch(
 
     val lazyListState = rememberLazyListState()
 
-    //val navigationBarPosition by rememberPreference(navigationBarPositionKey, NavigationBarPosition.Bottom)
-    //val contentWidth = context.preferences.getFloat(contentWidthKey,0.8f)
-    var downloadState by remember {
-        mutableStateOf(Download.STATE_STOPPED)
-    }
     val menuState = LocalMenuState.current
     val hapticFeedback = LocalHapticFeedback.current
-    val binder = LocalPlayerServiceBinder.current ?: return
-    val context = LocalContext.current
+    val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
 
     Box(
@@ -184,7 +177,7 @@ fun OnlineSearch(
                     1f
             )
     ) {
-        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+        val currentMediaItem by player.currentMediaItemState.collectAsState()
         val songItemValues = remember( colorPalette, typography ) {
             SongItem.Values.from( colorPalette, typography )
         }
@@ -345,8 +338,6 @@ fun OnlineSearch(
                     item{
                         SongItem.Render(
                             innertubeSong = song,
-                            context = context,
-                            binder = binder,
                             hapticFeedback = hapticFeedback,
                             values = songItemValues,
                             isPlaying = song.shallowCompare( currentMediaItem ),
@@ -361,7 +352,7 @@ fun OnlineSearch(
                                 hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                             },
                             onClick = {
-                                binder.player.forcePlay(song.asMediaItem)
+                                player.forcePlay(song.asMediaItem)
                             }
                         )
                     }

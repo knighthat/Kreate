@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import it.fast4x.innertube.Innertube
@@ -30,7 +31,6 @@ import it.fast4x.innertube.models.bodies.ContinuationBody
 import it.fast4x.innertube.models.bodies.SearchBody
 import it.fast4x.innertube.requests.searchPage
 import it.fast4x.innertube.utils.from
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.SwipeablePlaylistItem
@@ -39,6 +39,7 @@ import it.fast4x.rimusic.ui.components.themed.Title
 import it.fast4x.rimusic.ui.screens.searchresult.ItemsPage
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 
 @ExperimentalAnimationApi
 @ExperimentalTextApi
@@ -51,7 +52,7 @@ fun SearchYoutubeEntity (
     query: String,
     filter: Innertube.SearchFilter = Innertube.SearchFilter.Video
 ) {
-    val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val menuState = LocalMenuState.current
     val hapticFeedback = LocalHapticFeedback.current
     val appearance = LocalAppearance.current
@@ -76,7 +77,7 @@ fun SearchYoutubeEntity (
                 .padding(top = 16.dp)
                 .padding(horizontal = 16.dp)
         ) {
-            val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+            val currentMediaItem by player.currentMediaItemState.collectAsState()
             val songItemValues = remember( appearance ) {
                 SongItem.Values.from( appearance )
             }
@@ -105,13 +106,13 @@ fun SearchYoutubeEntity (
                     SwipeablePlaylistItem(
                         mediaItem = video.asMediaItem,
                         onPlayNext = {
-                            binder?.player?.addNext(video.asMediaItem)
+                            player.addNext(video.asMediaItem)
                         },
                         onDownload = {
                             Toaster.w( R.string.downloading_videos_not_supported )
                         },
                         onEnqueue = {
-                            binder?.player?.enqueue(video.asMediaItem)
+                            player.enqueue(video.asMediaItem)
                         }
                     ) {
                         SongItem.Render(
@@ -121,11 +122,11 @@ fun SearchYoutubeEntity (
                             values = songItemValues,
                             thumbnailSizeDp = DpSize(thumbnailWidthDp, thumbnailHeightDp),
                             onClick = {
-                                binder?.stopRadio()
+                                player.stopRadio()
                                 if ( isVideoEnabled )
-                                    binder?.player?.playVideo( video.asMediaItem )
+                                    player.playVideo( video.asMediaItem )
                                 else
-                                    binder?.player?.forcePlay( video.asMediaItem )
+                                    player.forcePlay( video.asMediaItem )
 
                                 onDismiss()
                             },

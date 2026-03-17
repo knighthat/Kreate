@@ -2,6 +2,7 @@ package it.fast4x.rimusic.ui.components.themed
 
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
@@ -58,23 +59,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.cleanPrefix
 import app.kreate.util.readableText
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.context
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.models.Info
@@ -102,10 +103,11 @@ import it.fast4x.rimusic.utils.removeYTSongFromPlaylist
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
+import org.koin.java.KoinJavaComponent.inject
 import java.time.LocalTime.now
 import java.time.format.DateTimeFormatter
 import kotlin.time.DurationUnit
@@ -119,11 +121,11 @@ fun InHistoryMediaItemMenu(
     navController: NavController,
     onDismiss: () -> Unit,
     song: Song,
+    context: Context,
     onHideFromDatabase: (() -> Unit)? = {},
     onDeleteFromDatabase: (() -> Unit)? = {},
     modifier: Modifier = Modifier
-) {
-
+) =
     NonQueuedMediaItemMenu(
         navController = navController,
         mediaItem = song.asMediaItem,
@@ -131,7 +133,7 @@ fun InHistoryMediaItemMenu(
         onHideFromDatabase = onHideFromDatabase,
         onDeleteFromDatabase = onDeleteFromDatabase,
         onAddToPreferites = {
-            if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+            if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                 Toaster.noInternet()
             } else if (!isYouTubeSyncEnabled()){
                 Database.asyncTransaction {
@@ -147,7 +149,6 @@ fun InHistoryMediaItemMenu(
         },
         modifier = modifier
     )
-}
 
 @ExperimentalTextApi
 @UnstableApi
@@ -194,7 +195,7 @@ fun InPlaylistMediaItemMenu(
             }
         },
         onAddToPreferites = {
-            if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+            if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                 Toaster.noInternet()
             } else if (!isYouTubeSyncEnabled()){
                 Database.asyncTransaction {
@@ -228,7 +229,8 @@ fun NonQueuedMediaItemMenuLibrary(
     onDownload: (() -> Unit)? = null,
     onMatchingSong: (() -> Unit)? = null
 ) {
-    val binder = LocalPlayerServiceBinder.current
+    val context = LocalContext.current
+    val player: StatefulPlayer = koinInject()
 
     var isHiding by remember {
         mutableStateOf(false)
@@ -240,12 +242,14 @@ fun NonQueuedMediaItemMenuLibrary(
             onDismiss = { isHiding = false },
             onConfirm = {
                 onDismiss()
-                if (binder != null) {
-                    binder.cache.removeResource(mediaItem.mediaId)
-                    binder.downloadCache.removeResource(mediaItem.mediaId)
-                    Database.asyncTransaction {
-                        songTable.updateTotalPlayTime( mediaItem.mediaId, 0 )
-                    }
+
+                val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
+                val downloadCache: Cache by inject(Cache::class.java, CacheType.DOWNLOAD)
+
+                cache.removeResource(mediaItem.mediaId)
+                downloadCache.removeResource(mediaItem.mediaId)
+                Database.asyncTransaction {
+                    songTable.updateTotalPlayTime( mediaItem.mediaId, 0 )
                 }
             }
         )
@@ -260,16 +264,16 @@ fun NonQueuedMediaItemMenuLibrary(
             mediaItem = mediaItem,
             onDismiss = onDismiss,
             onStartRadio = {
-                binder?.startRadio( mediaItem )
+                player.startRadio( mediaItem )
             },
-            onPlayNext = { binder?.player?.addNext(mediaItem) },
-            onEnqueue = { binder?.player?.enqueue(mediaItem) },
+            onPlayNext = { player.addNext(mediaItem) },
+            onEnqueue = { player.enqueue(mediaItem) },
             onDownload = onDownload,
             onRemoveFromPlaylist = onRemoveFromPlaylist,
             onHideFromDatabase = { isHiding = true },
             onRemoveFromQuickPicks = onRemoveFromQuickPicks,
             onAddToPreferites = {
-                if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                     Toaster.noInternet()
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
@@ -292,16 +296,16 @@ fun NonQueuedMediaItemMenuLibrary(
             mediaItem = mediaItem,
             onDismiss = onDismiss,
             onStartRadio = {
-                binder?.startRadio( mediaItem )
+                player.startRadio( mediaItem )
             },
-            onPlayNext = { binder?.player?.addNext(mediaItem) },
-            onEnqueue = { binder?.player?.enqueue(mediaItem)},
+            onPlayNext = { player.addNext(mediaItem) },
+            onEnqueue = { player.enqueue(mediaItem)},
             onDownload = onDownload,
             onRemoveFromPlaylist = onRemoveFromPlaylist,
             onHideFromDatabase = { isHiding = true },
             onRemoveFromQuickPicks = onRemoveFromQuickPicks,
             onAddToPreferites = {
-                if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                     Toaster.noInternet()
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
@@ -338,7 +342,7 @@ fun NonQueuedMediaItemMenu(
     onAddToPreferites: (() -> Unit)? = null,
     onMatchingSong: (() -> Unit)? = null
 ) {
-    val binder = LocalPlayerServiceBinder.current
+    val player: StatefulPlayer = koinInject()
 
     val menuStyle by Preferences.MENU_STYLE
 
@@ -350,10 +354,10 @@ fun NonQueuedMediaItemMenu(
             mediaItem = mediaItem,
             onDismiss = onDismiss,
             onStartRadio = {
-                binder?.startRadio( mediaItem )
+                player.startRadio( mediaItem )
             },
-            onPlayNext = { binder?.player?.addNext(mediaItem) },
-            onEnqueue = { binder?.player?.enqueue(mediaItem) },
+            onPlayNext = { player.addNext(mediaItem) },
+            onEnqueue = { player.enqueue(mediaItem) },
             onDownload = onDownload,
             onRemoveFromPlaylist = onRemoveFromPlaylist,
             onHideFromDatabase = onHideFromDatabase,
@@ -370,10 +374,10 @@ fun NonQueuedMediaItemMenu(
             mediaItem = mediaItem,
             onDismiss = onDismiss,
             onStartRadio = {
-                binder?.startRadio( mediaItem )
+                player.startRadio( mediaItem )
             },
-            onPlayNext = { binder?.player?.addNext(mediaItem) },
-            onEnqueue = { binder?.player?.enqueue(mediaItem) },
+            onPlayNext = { player.addNext(mediaItem) },
+            onEnqueue = { player.enqueue(mediaItem) },
             onDownload = onDownload,
             onRemoveFromPlaylist = onRemoveFromPlaylist,
             onHideFromDatabase = onHideFromDatabase,
@@ -399,7 +403,8 @@ fun QueuedMediaItemMenu(
     indexInQueue: Int?,
     modifier: Modifier = Modifier
 ) {
-    val binder = LocalPlayerServiceBinder.current
+    val context = LocalContext.current
+    val player: StatefulPlayer = koinInject()
 
     val menuStyle by Preferences.MENU_STYLE
 
@@ -410,18 +415,18 @@ fun QueuedMediaItemMenu(
             onDismiss = onDismiss,
             onDownload = onDownload,
             onRemoveFromQueue = if (indexInQueue != null) ({
-                binder?.player?.removeMediaItem(indexInQueue)
+                player.removeMediaItem(indexInQueue)
             }) else null,
-            onPlayNext = { binder?.player?.addNext(mediaItem) },
+            onPlayNext = { player.addNext(mediaItem) },
             onStartRadio = {
-                binder?.startRadio( mediaItem )
+                player.startRadio( mediaItem )
             },
             modifier = modifier,
             onGoToPlaylist = {
                 NavRoutes.localPlaylist.navigateHere( navController, it.toString() )
             },
             onAddToPreferites = {
-                if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                     Toaster.noInternet()
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
@@ -443,18 +448,18 @@ fun QueuedMediaItemMenu(
             onDismiss = onDismiss,
             onDownload = onDownload,
             onRemoveFromQueue = if (indexInQueue != null) ({
-                binder?.player?.removeMediaItem(indexInQueue)
+                player.removeMediaItem(indexInQueue)
             }) else null,
-            onPlayNext = { binder?.player?.addNext(mediaItem) },
+            onPlayNext = { player.addNext(mediaItem) },
             onStartRadio = {
-                binder?.startRadio( mediaItem )
+                player.startRadio( mediaItem )
             },
             modifier = modifier,
             onGoToPlaylist = {
                 NavRoutes.YT_PLAYLIST.navigateHere( navController, it.toString() )
             },
             onAddToPreferites = {
-                if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                     Toaster.noInternet()
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
@@ -646,7 +651,7 @@ fun MediaItemMenu(
 ) {
     val density = LocalDensity.current
 
-    val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val (colorPalette, typography) = LocalAppearance.current
@@ -977,15 +982,13 @@ fun MediaItemMenu(
                     modifier = Modifier
                         .padding(end = 12.dp)
                 ) {
-                    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+                    val currentMediaItem by player.currentMediaItemState.collectAsState()
                     val songItemValues = remember( colorPalette, typography ) {
                         SongItem.Values.from( colorPalette, typography )
                     }
 
                     SongItem.Render(
                         mediaItem = mediaItem,
-                        context = context,
-                        binder = binder,
                         hapticFeedback = hapticFeedback,
                         isPlaying = mediaItem.shallowCompare( currentMediaItem ),
                         values = songItemValues,
@@ -1001,7 +1004,7 @@ fun MediaItemMenu(
                             //color = if (likedAt == null) colorPalette().textDisabled else colorPalette().text,
                             onClick = {
                                 CoroutineScope( Dispatchers.IO ).launch {
-                                    YouTubeSync.toggleSongLike( appContext(), mediaItem )
+                                    YouTubeSync.toggleSongLike( context, mediaItem )
                                 }
                             },
                             modifier = Modifier
@@ -1149,16 +1152,14 @@ fun MediaItemMenu(
 
                 // TODO: find solution to this shit
                 onShowSleepTimer?.let {
-                    val binder = LocalPlayerServiceBinder.current
+                    val player: StatefulPlayer = koinInject()
                     var isShowingSleepTimerDialog by remember {
                         mutableStateOf(false)
                     }
 
-                    val sleepTimerMillisLeft by (binder?.sleepTimerMillisLeft
-                        ?: flowOf(null))
-                        .collectAsState(initial = null)
+                    val sleepTimerMillisLeft by player.sleepTimerRemaining().collectAsState(initial = null)
 
-                    val positionAndDuration = binder?.player?.positionAndDurationState()
+                    val positionAndDuration = player.positionAndDurationState()
 
                     var timeRemaining by remember { mutableLongStateOf(0) }
 
@@ -1176,7 +1177,7 @@ fun MediaItemMenu(
                                 confirmText = stringResource(R.string.stop),
                                 onDismiss = { isShowingSleepTimerDialog = false },
                                 onConfirm = {
-                                    binder?.cancelSleepTimer()
+                                    player.stopSleepTimer()
                                     onDismiss()
                                 }
                             )
@@ -1274,7 +1275,9 @@ fun MediaItemMenu(
                                                 + timeRemaining.toDuration( DurationUnit.MILLISECONDS ).readableText()
                                                 + " " + stringResource(R.string.end_of_song),
                                         onClick = {
-                                            binder?.startSleepTimer(timeRemaining)
+                                            player.startSleepTimer(
+                                                timeRemaining.toDuration( DurationUnit.MILLISECONDS )
+                                            )
                                             isShowingSleepTimerDialog = false
                                         }
                                     )
@@ -1299,7 +1302,9 @@ fun MediaItemMenu(
                                     IconButton(
                                         enabled = amount > 0,
                                         onClick = {
-                                            binder?.startSleepTimer(amount * 5 * 60 * 1000L)
+                                            player.startSleepTimer(
+                                                (amount * 5 * 60 * 1000L).toDuration( DurationUnit.MILLISECONDS )
+                                            )
                                             isShowingSleepTimerDialog = false
                                         },
                                         icon = R.drawable.checkmark,
@@ -1444,7 +1449,7 @@ fun MediaItemMenu(
                             )
                         ),
                         onValueSelected = {
-                            binder?.player?.pause()
+                            player.pause()
                             showSelectDialogListenOn = false
                             uriHandler.openUri(it)
                         }
@@ -1455,7 +1460,7 @@ fun MediaItemMenu(
                                     text = stringResource(R.string.listen_on_youtube),
                                     onClick = {
                                         onDismiss()
-                                        binder?.player?.pause()
+                                        player.pause()
                                         uriHandler.openUri("https://youtube.com/watch?v=${mediaItem.mediaId}")
                                     }
                                 )
@@ -1466,7 +1471,7 @@ fun MediaItemMenu(
                                     text = stringResource(R.string.listen_on_youtube_music),
                                     onClick = {
                                         onDismiss()
-                                        binder?.player?.pause()
+                                        player.pause()
                                         if (!launchYouTubeMusic(context, "watch?v=${mediaItem.mediaId}"))
                                             context.toast(ytNonInstalled)
                                     }
@@ -1478,7 +1483,7 @@ fun MediaItemMenu(
                                     text = stringResource(R.string.listen_on_piped),
                                     onClick = {
                                         onDismiss()
-                                        binder?.player?.pause()
+                                        player.pause()
                                         uriHandler.openUri("https://piped.kavin.rocks/watch?v=${mediaItem.mediaId}&playerAutoPlay=true&minimizeDescription=true")
                                     }
                                 )
@@ -1487,7 +1492,7 @@ fun MediaItemMenu(
                                     text = stringResource(R.string.listen_on_invidious),
                                     onClick = {
                                         onDismiss()
-                                        binder?.player?.pause()
+                                        player.pause()
                                         uriHandler.openUri("https://yewtu.be/watch?v=${mediaItem.mediaId}&autoplay=1")
                                     }
                                 )

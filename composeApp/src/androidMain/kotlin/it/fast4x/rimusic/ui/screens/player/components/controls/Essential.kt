@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -52,9 +53,9 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
 import app.kreate.util.cleanPrefix
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
@@ -63,7 +64,6 @@ import it.fast4x.rimusic.enums.PlayerBackgroundColors
 import it.fast4x.rimusic.enums.PlayerControlsType
 import it.fast4x.rimusic.enums.PlayerPlayButtonType
 import it.fast4x.rimusic.models.Info
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.IconButton
 import it.fast4x.rimusic.ui.components.themed.SelectorArtistsDialog
@@ -82,19 +82,21 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
+import org.koin.compose.koinInject
 
 
 @UnstableApi
 @ExperimentalFoundationApi
 @Composable
 fun InfoAlbumAndArtistEssential(
-    binder: PlayerServiceModern.Binder,
+    player: StatefulPlayer,
     navController: NavController,
     mediaItem: MediaItem,
     albumId: String?,
     artistIds: List<Info>?,
     onCollapse: () -> Unit
 ) {
+    val context = LocalContext.current
     val playerControlsType by Preferences.PLAYER_CONTROLS_TYPE
     val colorPaletteMode by Preferences.THEME_MODE
     var effectRotationEnabled by Preferences.ROTATION_EFFECT
@@ -104,7 +106,7 @@ fun InfoAlbumAndArtistEssential(
     var textoutline by Preferences.TEXT_OUTLINE
     val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
     var likeButtonWidth by remember{ mutableStateOf(0.dp) }
-    val currentMediaItem = binder.player.currentMediaItem
+    val currentMediaItem = player.currentMediaItem
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -132,7 +134,7 @@ fun InfoAlbumAndArtistEssential(
                         }
                     },
                     onLongClick = {
-                        textCopyToClipboard(cleanPrefix( mediaItem.mediaMetadata.title.toString() ), context = appContext())
+                        textCopyToClipboard(cleanPrefix( mediaItem.mediaMetadata.title.toString() ), context)
                     }
                 )
 
@@ -231,7 +233,7 @@ fun InfoAlbumAndArtistEssential(
                         icon = getLikeState( mediaItem.mediaId ),
                         onClick = {
                             CoroutineScope( Dispatchers.IO ).launch {
-                                YouTubeSync.toggleSongLike( appContext(), currentMediaItem ?: return@launch )
+                                YouTubeSync.toggleSongLike( context, currentMediaItem ?: return@launch )
                             }
 
                             if (effectRotationEnabled) isRotated = !isRotated
@@ -296,7 +298,7 @@ fun InfoAlbumAndArtistEssential(
                     }
                 },
                 onLongClick = {
-                    textCopyToClipboard(mediaItem.mediaMetadata.artist.toString(), context = appContext())
+                    textCopyToClipboard(mediaItem.mediaMetadata.artist.toString(), context = context)
                 }
             )
 
@@ -351,16 +353,15 @@ fun InfoAlbumAndArtistEssential(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ControlsEssential(
-    binder: PlayerServiceModern.Binder,
-    position: Long,
     playbackSpeed: Float,
     shouldBePlaying: Boolean,
-    likedAt: Long?,
     mediaId: String,
     playerPlayButtonType: PlayerPlayButtonType,
     isGradientBackgroundEnabled: Boolean,
+    player: StatefulPlayer = koinInject(),
     onShowSpeedPlayerDialog: () -> Unit,
 ) {
+    val context = LocalContext.current
     val colorPaletteName by Preferences.COLOR_PALETTE
     val colorPaletteMode by Preferences.THEME_MODE
     var effectRotationEnabled by Preferences.ROTATION_EFFECT
@@ -378,7 +379,7 @@ fun ControlsEssential(
 
     var queueLoopType by Preferences.QUEUE_LOOP_TYPE
     val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
-    val currentMediaItem = binder.player.currentMediaItem
+    val currentMediaItem = player.currentMediaItem
 
     Box {
         IconButton(
@@ -386,7 +387,7 @@ fun ControlsEssential(
             icon = getLikeState(mediaId),
             onClick = {
                 CoroutineScope( Dispatchers.IO ).launch {
-                    YouTubeSync.toggleSongLike( appContext(), currentMediaItem ?: return@launch )
+                    YouTubeSync.toggleSongLike( context, currentMediaItem ?: return@launch )
                 }
 
                 if (effectRotationEnabled) isRotated = !isRotated
@@ -417,7 +418,7 @@ fun ControlsEssential(
                 indication = ripple(bounded = false),
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = {
-                    binder.player.smartRewind()
+                    player.smartRewind()
 
                     if (effectRotationEnabled) isRotated = !isRotated
                 },
@@ -438,9 +439,9 @@ fun ControlsEssential(
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = {
                     if (shouldBePlaying) {
-                        binder.gracefulPause()
+                        player.pause()
                     } else {
-                        binder.gracefulPlay()
+                        player.play()
                     }
                     if (effectRotationEnabled) isRotated = !isRotated
                 },
@@ -535,8 +536,8 @@ fun ControlsEssential(
                 indication = ripple(bounded = false),
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = {
-                    //binder.player.forceSeekToNext()
-                    binder.player.playNext()
+                    //player.forceSeekToNext()
+                    player.playNext()
                     if (effectRotationEnabled) isRotated = !isRotated
                 },
                 onLongClick = {}

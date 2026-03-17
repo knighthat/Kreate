@@ -42,8 +42,6 @@ import it.fast4x.innertube.utils.getProxy
 import it.fast4x.kugou.KuGou
 import it.fast4x.lrclib.LrcLib
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.appContext
-import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -519,13 +517,13 @@ suspend fun downloadSyncedLyrics( song: Song ) {
         }
 }
 
-suspend fun addToYtPlaylist(localPlaylistId: Long, position: Int, ytplaylistId: String, mediaItems: List<MediaItem>){
+suspend fun addToYtPlaylist(context: Context, localPlaylistId: Long, position: Int, ytplaylistId: String, mediaItems: List<MediaItem>){
     val mediaItemsChunks = mediaItems.chunked(50)
     mediaItemsChunks.forEachIndexed { index, items ->
         if (mediaItems.size <= 50) {}
         else if (index == 0) {
             Toaster.i(
-                "${mediaItems.size} "+appContext().resources.getString(R.string.songs_adding_in_yt)
+                "${mediaItems.size} " + context.resources.getString(R.string.songs_adding_in_yt)
             )
         } else {
             delay(2000)
@@ -550,7 +548,7 @@ suspend fun addToYtPlaylist(localPlaylistId: Long, position: Int, ytplaylistId: 
                         addToPlaylist(ytplaylistId, item.mediaId).onFailure {
                             println("YtMusic addToPlaylist (list insert backup) error: ${it.stackTraceToString()}")
                                 Toaster.e(
-                                    appContext().resources.getString(R.string.songs_add_yt_failed)+"${item.mediaMetadata.title} - ${item.mediaMetadata.artist}"
+                                    context.resources.getString(R.string.songs_add_yt_failed)+"${item.mediaMetadata.title} - ${item.mediaMetadata.artist}"
                                 )
                         }.onSuccess {
                             Database.playlistTable
@@ -567,7 +565,7 @@ suspend fun addToYtPlaylist(localPlaylistId: Long, position: Int, ytplaylistId: 
     }
 
     Toaster.n(
-        "${mediaItems.size} "+ appContext().resources.getString(R.string.songs_added_in_yt)
+        "${mediaItems.size} " + context.resources.getString(R.string.songs_added_in_yt)
     )
 }
 
@@ -615,29 +613,3 @@ suspend fun addToYtLikedSong(mediaItem: MediaItem) {
     } else
         Toaster.e( messageId)
 }
-
-@OptIn(UnstableApi::class)
-suspend fun addToYtLikedSongs(mediaItems: List<MediaItem>){
-    if( !isYouTubeSyncEnabled() ) return
-
-    mediaItems.forEachIndexed { index, item ->
-        delay(1000)
-
-        likeVideoOrSong( item.mediaId )
-            .onSuccess {
-                Database.asyncTransaction {
-                    insertIgnore( item )
-                    songTable.likeState( item.mediaId, true )
-                    MyDownloadHelper.autoDownloadWhenLiked(item)
-
-                    Toaster.s(
-                        "${index + 1}/${mediaItems.size} " + appContext().resources.getString(R.string.songs_liked_yt)
-                    )
-                }
-            }
-            .onFailure {
-                Toaster.e( "${index + 1}/${mediaItems.size} " + appContext().resources.getString(R.string.songs_liked_yt_failed) )
-            }
-    }
-}
-

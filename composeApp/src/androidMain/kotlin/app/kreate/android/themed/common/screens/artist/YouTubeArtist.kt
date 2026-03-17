@@ -1,6 +1,5 @@
 package app.kreate.android.themed.common.screens.artist
 
-import android.content.Context
 import android.content.Intent
 import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
@@ -54,6 +53,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
@@ -66,11 +66,8 @@ import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
 import app.kreate.android.viewmodel.YoutubeArtistViewModel
 import app.kreate.database.models.Song
-import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.Skeleton
 import it.fast4x.rimusic.ui.components.SwipeablePlaylistItem
@@ -98,19 +95,19 @@ import me.knighthat.innertube.Constants
 import me.knighthat.innertube.model.InnertubeAlbum
 import me.knighthat.innertube.model.InnertubeArtist
 import me.knighthat.innertube.model.InnertubeSong
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 
 @OptIn(UnstableApi::class)
 private fun LazyListScope.renderSections(
     navController: NavController,
-    context: Context,
-    binder: PlayerServiceModern.Binder,
     hapticFeedback: HapticFeedback,
     currentMedia: MediaItem?,
     songItemValues: SongItem.Values,
     artistPage: InnertubeArtist,
-    sectionTextModifier: Modifier
+    sectionTextModifier: Modifier,
+    player: StatefulPlayer
 ) = artistPage.sections.forEach { section ->
     // Don't show section if the title or contents is null or blank
     if( section.title.isNullOrBlank() || section.contents.isEmpty() ) return@forEach
@@ -165,21 +162,19 @@ private fun LazyListScope.renderSections(
                    SwipeablePlaylistItem(
                        mediaItem = song.toMediaItem,
                        onPlayNext = {
-                           binder.player.addNext( song.toMediaItem )
+                           player.addNext( song.toMediaItem )
                        }
                    ) {
                        SongItem.Render(
                            song = song.toSong,
-                           context = context,
-                           binder = binder,
                            hapticFeedback = hapticFeedback,
                            isPlaying = song.shallowCompare( currentMedia ),
                            values = songItemValues,
                            navController = navController,
                            showThumbnail = true,
                            onClick = {
-                               binder.stopRadio()
-                               binder.player.forcePlayAtIndex(
+                               player.stopRadio()
+                               player.forcePlayAtIndex(
                                    songs.map( InnertubeSong::toMediaItem ),
                                    index
                                )
@@ -205,13 +200,12 @@ private fun LazyListScope.renderSections(
 @OptIn(UnstableApi::class)
 private fun LazyListScope.renderLibrarySongs(
     navController: NavController,
-    context: Context,
-    binder: PlayerServiceModern.Binder,
     hapticFeedback: HapticFeedback,
     currentMedia: MediaItem?,
     songItemValues: SongItem.Values,
     sectionTextModifier: Modifier,
-    songs: List<Song>
+    songs: List<Song>,
+    player: StatefulPlayer
 ) {
     item( "songs" ) {
         Text(
@@ -228,21 +222,19 @@ private fun LazyListScope.renderLibrarySongs(
         SwipeablePlaylistItem(
             mediaItem = song.asMediaItem,
             onPlayNext = {
-                binder.player.addNext( song.asMediaItem )
+                player.addNext( song.asMediaItem )
             }
         ) {
             SongItem.Render(
                 song = song,
-                context = context,
-                binder = binder,
                 hapticFeedback = hapticFeedback,
                 isPlaying = song.shallowCompare( currentMedia ),
                 values = songItemValues,
                 navController = navController,
                 showThumbnail = true,
                 onClick = {
-                    binder.stopRadio()
-                    binder.player.forcePlayAtIndex(
+                    player.stopRadio()
+                    player.forcePlayAtIndex(
                         songs.map( Song::asMediaItem ),
                         index
                     )
@@ -261,7 +253,7 @@ fun YouTubeArtist(
     miniPlayer: @Composable () -> Unit = {}
 ) {
     val context = LocalContext.current
-    val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
     val saveableStateHolder = rememberSaveableStateHolder()
@@ -270,7 +262,7 @@ fun YouTubeArtist(
     val (tabIndex, onTabChanged) = remember { mutableIntStateOf(
             if( isNetworkConnected( context ) ) 0 else 1
     ) }
-    val currentMedia by binder.player.currentMediaItemState.collectAsStateWithLifecycle()
+    val currentMedia by player.currentMediaItemState.collectAsStateWithLifecycle()
     val artistLibrarySongs by viewModel.artistLibrarySongs.collectAsStateWithLifecycle()
     val songItemValues = remember( colorPalette, typography ) {
         SongItem.Values.from( colorPalette, typography )
@@ -288,20 +280,20 @@ fun YouTubeArtist(
     val followButton = FollowButton { dbArtist }
     val shuffler = SongShuffler( viewModel::getSongs )
     val downloadAllDialog = remember {
-        DownloadAllDialog( binder, context, viewModel::getSongs )
+        DownloadAllDialog( context, viewModel::getSongs )
     }
     val deleteAllDownloadsDialog = remember {
-        DeleteAllDownloadedDialog( binder, context, viewModel::getSongs )
+        DeleteAllDownloadedDialog(viewModel::getSongs)
     }
     val radio = Radio(viewModel::getSongs)
     val playNext = PlayNext {
         viewModel.getMediaItems().let {
-            binder.player.addNext( it, appContext() )
+            player.addNext( it, context )
         }
     }
     val enqueue = Enqueue {
         viewModel.getMediaItems().let {
-            binder.player.enqueue( it, appContext() )
+            player.enqueue( it, context )
         }
     }
 
@@ -440,24 +432,22 @@ fun YouTubeArtist(
                         } else if( artistPage != null && currentTabIndex == 0 )
                             renderSections(
                                 navController = navController,
-                                context = context,
-                                binder = binder,
                                 hapticFeedback = hapticFeedback,
                                 currentMedia = currentMedia,
                                 songItemValues = songItemValues,
                                 artistPage = artistPage!!,
-                                sectionTextModifier = viewModel.sectionTextModifier
+                                sectionTextModifier = viewModel.sectionTextModifier,
+                                player = player
                             )
                         else if( currentTabIndex == 1 )
                             renderLibrarySongs(
                                 navController = navController,
-                                context = context,
-                                binder = binder,
                                 hapticFeedback = hapticFeedback,
                                 currentMedia = currentMedia,
                                 songItemValues = songItemValues,
                                 sectionTextModifier = viewModel.sectionTextModifier,
-                                songs = artistLibrarySongs
+                                songs = artistLibrarySongs,
+                                player = player
                             )
 
                         artistPage?.description?.also( this::renderDescription )

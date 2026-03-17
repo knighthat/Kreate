@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Swipe up to open the queue</string>
     <string name="pinfo_show_icons">Показувати інформацію за допомогою значків</string>
     <string name="format_ms">%1$s мс</string>
-    <string name="minimum_silence_length">Мінімальна тривалість тиші</string>
-    <string name="minimum_silence_length_description">Мінімальний час тиші в треку, після якого він буде переключений</string>
     <string name="minimum_silence_length_warning">Щоб зміни набули чинності, необхідно перезапустити програвач!</string>
     <string name="restart_service">Перезапустити плеєр</string>
     <string name="player_pause_listen_history">Призупинити історію прослуховування</string>

@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -49,8 +50,8 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.NavRoutes
@@ -58,7 +59,6 @@ import it.fast4x.rimusic.enums.PlayerBackgroundColors
 import it.fast4x.rimusic.enums.PlayerControlsType
 import it.fast4x.rimusic.enums.PlayerPlayButtonType
 import it.fast4x.rimusic.models.Info
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.CustomElevatedButton
@@ -79,19 +79,21 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
+import org.koin.compose.koinInject
 
 
 @UnstableApi
 @ExperimentalFoundationApi
 @Composable
 fun InfoAlbumAndArtistModern(
-    binder: PlayerServiceModern.Binder,
+    player: StatefulPlayer,
     navController: NavController,
     mediaItem: MediaItem,
     albumId: String?,
     artistIds: List<Info>?,
     onCollapse: () -> Unit
 ) {
+    val context = LocalContext.current
     val colorPaletteMode by Preferences.THEME_MODE
     val playerControlsType by Preferences.PLAYER_CONTROLS_TYPE
     var effectRotationEnabled by Preferences.ROTATION_EFFECT
@@ -99,7 +101,7 @@ fun InfoAlbumAndArtistModern(
     var showSelectDialog by remember { mutableStateOf(false) }
     val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
     val playerInfoShowIcon by Preferences.PLAYER_SONG_INFO_ICON
-    val currentMediaItem = binder.player.currentMediaItem
+    val currentMediaItem = player.currentMediaItem
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -147,7 +149,7 @@ fun InfoAlbumAndArtistModern(
                         }
                     },
                     onLongClick = {
-                        textCopyToClipboard(mediaItem.mediaMetadata.title.toString(), context = appContext())
+                        textCopyToClipboard(mediaItem.mediaMetadata.title.toString(), context)
                     }
                 )
 
@@ -215,7 +217,7 @@ fun InfoAlbumAndArtistModern(
                         icon = getLikeState( mediaItem.mediaId ),
                         onClick = {
                             CoroutineScope( Dispatchers.IO ).launch {
-                                YouTubeSync.toggleSongLike( appContext(), currentMediaItem ?: return@launch )
+                                YouTubeSync.toggleSongLike( context, currentMediaItem ?: return@launch )
                             }
 
                             if (effectRotationEnabled) isRotated = !isRotated
@@ -303,7 +305,7 @@ fun InfoAlbumAndArtistModern(
                     }
                 },
                 onLongClick = {
-                    textCopyToClipboard(mediaItem.mediaMetadata.artist.toString(), context = appContext())
+                    textCopyToClipboard(mediaItem.mediaMetadata.artist.toString(), context)
                 }
             )
 
@@ -354,10 +356,10 @@ fun InfoAlbumAndArtistModern(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ControlsModern(
-    binder: PlayerServiceModern.Binder,
     playbackSpeed: Float,
     shouldBePlaying: Boolean,
     playerPlayButtonType: PlayerPlayButtonType,
+    player: StatefulPlayer = koinInject(),
     onShowSpeedPlayerDialog: () -> Unit
 ) {
     var effectRotationEnabled by Preferences.ROTATION_EFFECT
@@ -379,7 +381,7 @@ fun ControlsModern(
                   indication = ripple(bounded = true),
                   interactionSource = remember { MutableInteractionSource() },
                   onClick = {
-                      binder.player.smartRewind()
+                      player.smartRewind()
 
                       if (effectRotationEnabled) isRotated = !isRotated
                   },
@@ -408,9 +410,9 @@ fun ControlsModern(
                      interactionSource = remember { MutableInteractionSource() },
                      onClick = {
                          if (shouldBePlaying) {
-                             binder.gracefulPause()
+                             player.pause()
                          } else {
-                             binder.gracefulPlay()
+                             player.play()
                          }
                          if (effectRotationEnabled) isRotated = !isRotated
                      },
@@ -471,9 +473,9 @@ fun ControlsModern(
                       interactionSource = remember { MutableInteractionSource() },
                       onClick = {
                           if (shouldBePlaying) {
-                              binder.gracefulPause()
+                              player.pause()
                           } else {
-                              binder.gracefulPlay()
+                              player.play()
                           }
                           if (effectRotationEnabled) isRotated = !isRotated
                       },
@@ -547,8 +549,8 @@ fun ControlsModern(
                 indication = ripple(bounded = true),
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = {
-                    //binder.player.forceSeekToNext()
-                    binder.player.playNext()
+                    //player.forceSeekToNext()
+                    player.playNext()
                     if (effectRotationEnabled) isRotated = !isRotated
                 },
                 onLongClick = {}
@@ -602,7 +604,7 @@ fun ControlsModern(
                           interactionSource = null,
                           indication = null,
                           onClick = {
-                              binder.player.smartRewind()
+                              player.smartRewind()
 
                               if (effectRotationEnabled) isRotated = !isRotated
                           },
@@ -638,9 +640,9 @@ fun ControlsModern(
                           indication = null,
                           onClick = {
                               if (shouldBePlaying) {
-                                  binder.gracefulPause()
+                                  player.pause()
                               } else {
-                                  binder.gracefulPlay()
+                                  player.play()
                               }
                               if (effectRotationEnabled) isRotated = !isRotated
                           },
@@ -676,8 +678,8 @@ fun ControlsModern(
                           interactionSource = null,
                           indication = null,
                           onClick = {
-                              //binder.player.forceSeekToNext()
-                              binder.player.playNext()
+                              //player.forceSeekToNext()
+                              player.playNext()
                               if (effectRotationEnabled) isRotated = !isRotated
                           },
                           onLongClick = {}

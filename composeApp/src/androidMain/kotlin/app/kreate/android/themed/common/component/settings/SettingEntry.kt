@@ -1,5 +1,6 @@
 package app.kreate.android.themed.common.component.settings
 
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -7,7 +8,7 @@ import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import it.fast4x.rimusic.appContext
+import org.koin.java.KoinJavaComponent.inject
 
 fun LazyListScope.entry(
     search: SettingEntrySearch,
@@ -30,8 +31,10 @@ fun LazyListScope.entry(
     additionalCheck: Boolean = true,
     contentType: Any? = null,
     content: @Composable LazyItemScope.() -> Unit
-) =
-    entry( search, appContext().getString( titleId ), key, additionalCheck, contentType, content )
+) {
+    val context: Context by inject(Context::class.java)
+    entry( search, context.getString( titleId ), key, additionalCheck, contentType, content )
+}
 
 fun LazyListScope.animatedEntry(
     key: Any?,

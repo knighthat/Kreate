@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">스와이프하여 대기열 열기</string>
     <string name="pinfo_show_icons">아이콘과 정보 표시</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">최소 무음 길이</string>
-    <string name="minimum_silence_length_description">곡을 무음으로 인식하고 넘길 최소 시간</string>
     <string name="minimum_silence_length_warning">효과를 적용하기 위해선 변경 후 플레이어를 재시작해야 합니다!</string>
     <string name="restart_service">서비스 재시작</string>
     <string name="player_pause_listen_history">청취 기록 일시중지</string>

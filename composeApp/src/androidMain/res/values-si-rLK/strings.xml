@@ -524,8 +524,6 @@ CC-BY-SA 3.0</string>
     <string name="swipe_up_to_open_the_queue">Swipe up to open the queue</string>
     <string name="pinfo_show_icons">Show info with icons</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Minimum silence length</string>
-    <string name="minimum_silence_length_description">The minimum time the audio has to be silent to get skipped</string>
     <string name="minimum_silence_length_warning">Player has to be restarted for the changes to be effective!</string>
     <string name="restart_service">Restart service</string>
     <string name="player_pause_listen_history">Pause listen history</string>

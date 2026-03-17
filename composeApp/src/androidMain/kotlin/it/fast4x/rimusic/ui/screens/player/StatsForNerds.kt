@@ -39,8 +39,8 @@ import androidx.media3.datasource.cache.CacheSpan
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.database.models.Format
+import app.kreate.di.CacheType
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.PlayerBackgroundColors
 import it.fast4x.rimusic.enums.PlayerType
@@ -53,6 +53,7 @@ import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.medium
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
+import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
 @SuppressLint("LongLogTag")
@@ -62,14 +63,11 @@ fun StatsForNerds(
     mediaId: String,
     isDisplayed: Boolean,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    cache: Cache = koinInject(CacheType.CACHE),
+    downloadCache: Cache = koinInject(CacheType.DOWNLOAD)
 ) {
     val context = LocalContext.current
-    val binder = LocalPlayerServiceBinder.current ?: return
-
-//    val audioQualityFormat by rememberPreference(audioQualityFormatKey, AudioQualityFormat.High)
-//
-//    val connectivityManager = getSystemService(context, ConnectivityManager::class.java) as ConnectivityManager
 
     AnimatedVisibility(
         visible = isDisplayed,
@@ -77,11 +75,11 @@ fun StatsForNerds(
         exit = fadeOut(),
     ) {
         var cachedBytes by remember(mediaId) {
-            mutableStateOf(binder.cache.getCachedBytes(mediaId, 0, -1))
+            mutableStateOf(cache.getCachedBytes(mediaId, 0, -1))
         }
 
         var downloadCachedBytes by remember(mediaId) {
-            mutableStateOf(binder.downloadCache.getCachedBytes(mediaId, 0, -1))
+            mutableStateOf(downloadCache.getCachedBytes(mediaId, 0, -1))
         }
 
         val format by remember {
@@ -118,10 +116,10 @@ fun StatsForNerds(
                     Unit
             }
 
-            binder.cache.addListener(mediaId, listener)
+            cache.addListener(mediaId, listener)
 
             onDispose {
-                binder.cache.removeListener(mediaId, listener)
+                cache.removeListener(mediaId, listener)
             }
         }
 

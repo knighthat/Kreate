@@ -46,7 +46,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -58,10 +57,12 @@ import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFilterNotNull
 import androidx.compose.ui.util.fastMapNotNull
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
@@ -84,7 +85,6 @@ import it.fast4x.innertube.requests.discoverPage
 import it.fast4x.innertube.requests.relatedPage
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -131,6 +131,7 @@ import me.knighthat.innertube.model.InnertubePlaylist
 import me.knighthat.innertube.model.InnertubeRankedArtist
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
@@ -150,9 +151,8 @@ fun HomeQuickPicks(
     onMoodClick: (mood: Innertube.Mood.Item) -> Unit,
     onSettingsClick: () -> Unit
 ) {
-    val context = LocalContext.current
     val hapticFeedback = LocalHapticFeedback.current
-    val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val menuState = LocalMenuState.current
     val windowInsets = LocalPlayerAwareWindowInsets.current
@@ -307,17 +307,19 @@ fun HomeQuickPicks(
 
     val showSearchTab by Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR
 
+    val cache: Cache = koinInject()
     var cachedSongs by remember { mutableStateOf( emptyList<String>() ) }
-    LaunchedEffect( binder.cache ) {
+    // FIXME: This practically run once on start
+    LaunchedEffect( cache ) {
         val keys = try {
-            binder.cache.keys
+            cache.keys
         } catch ( _: IllegalStateException ) {
             // Sometimes this block runs before SimpleCache
             // finishes it's init, it'll throw IllegalStateException
             // if the process is running. To avoid, small delay is added
             delay( 1.seconds )
 
-            binder.cache.keys
+            cache.keys
         }.toMutableSet()
 
         MyDownloadHelper.instance
@@ -477,9 +479,9 @@ fun HomeQuickPicks(
                         },
                         icon2 = R.drawable.play,
                         onClick2 = {
-                            binder?.stopRadio()
-                            trending?.let { binder?.player?.forcePlay(it.asMediaItem) }
-                            binder?.player?.addMediaItems(relatedInit?.songs?.map { it.asMediaItem }
+                            player.stopRadio()
+                            trending?.let { player.forcePlay(it.asMediaItem) }
+                            player.addMediaItems(relatedInit?.songs?.map { it.asMediaItem }
                                 ?: emptyList())
                         }
 
@@ -494,7 +496,7 @@ fun HomeQuickPicks(
                             .padding(bottom = 8.dp)
                     )
 
-                    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+                    val currentMediaItem by player.currentMediaItemState.collectAsState()
                     val songItemValues = remember( colorPalette, typography ) {
                         SongItem.Values.from( colorPalette, typography )
                     }
@@ -516,15 +518,13 @@ fun HomeQuickPicks(
                             item {
                                 SongItem.Render(
                                     song = song,
-                                    context = context,
-                                    binder = binder,
                                     hapticFeedback = hapticFeedback,
                                     isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
                                     modifier = Modifier.width( itemInHorizontalGridWidth ),
                                     navController = navController
                                 ) {
-                                    binder.startRadio( song, true )
+                                    player.startRadio( song, true )
                                 }
                             }
                         }
@@ -543,15 +543,13 @@ fun HomeQuickPicks(
                             ) { song ->
                                 SongItem.Render(
                                     song = song,
-                                    context = context,
-                                    binder = binder,
                                     hapticFeedback = hapticFeedback,
                                     isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
                                     modifier = Modifier.width( itemInHorizontalGridWidth ),
                                     navController = navController
                                 ) {
-                                    binder.startRadio( song, true )
+                                    player.startRadio( song, true )
                                 }
                             }
                         }
@@ -863,7 +861,7 @@ fun HomeQuickPicks(
                                 section.contents
                                     .fastMapNotNull { it as? InnertubeSong }
                                     .also { songs ->
-                                        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+                                        val currentMediaItem by player.currentMediaItemState.collectAsState()
                                         val songItemValues = remember( colorPalette, typography ) {
                                             SongItem.Values.from( colorPalette, typography )
                                         }
@@ -896,16 +894,14 @@ fun HomeQuickPicks(
                                                     )
                                                     SongItem.Render(
                                                         innertubeSong = song,
-                                                        context = context,
-                                                        binder = binder,
                                                         hapticFeedback = hapticFeedback,
                                                         values = songItemValues,
                                                         isPlaying = song.shallowCompare( currentMediaItem ),
                                                         onClick = {
                                                             val mediaItem = song.toMediaItem
-                                                            binder.stopRadio()
-                                                            binder.player.forcePlay(mediaItem)
-                                                            binder.player.addMediaItems(songs.map { it.toMediaItem })
+                                                            player.stopRadio()
+                                                            player.forcePlay(mediaItem)
+                                                            player.addMediaItems(songs.map { it.toMediaItem })
                                                         }
                                                     )
                                                 }
@@ -993,7 +989,7 @@ fun HomeQuickPicks(
                             modifier = Modifier.padding(horizontal = 16.dp).padding(vertical = 4.dp)
                         )
 
-                        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+                        val currentMediaItem by player.currentMediaItemState.collectAsState()
                         ItemUtils.LazyRowItem(
                             navController = navController,
                             innertubeItems = it.items.fastFilterNotNull(),

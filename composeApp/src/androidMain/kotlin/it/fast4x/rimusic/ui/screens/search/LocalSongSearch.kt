@@ -39,12 +39,12 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.typography
@@ -60,6 +60,7 @@ import it.fast4x.rimusic.utils.medium
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import org.koin.compose.koinInject
 
 @ExperimentalTextApi
 @SuppressLint("SuspiciousIndentation")
@@ -77,7 +78,7 @@ fun LocalSongSearch(
     onAction3: () -> Unit,
     onAction4: () -> Unit,
 ) {
-    val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val menuState = LocalMenuState.current
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
@@ -118,7 +119,7 @@ fun LocalSongSearch(
                     1f
             )
     ) {
-        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+        val currentMediaItem by player.currentMediaItemState.collectAsState()
         val songItemValues = remember( colorPalette, typography ) {
             SongItem.Values.from( colorPalette, typography )
         }
@@ -249,8 +250,6 @@ fun LocalSongSearch(
             ) { song ->
                 SongItem.Render(
                     song = song,
-                    context = context,
-                    binder = binder,
                     hapticFeedback = hapticFeedback,
                     values = songItemValues,
                     isPlaying = song.shallowCompare( currentMediaItem ),
@@ -259,12 +258,13 @@ fun LocalSongSearch(
                             InHistoryMediaItemMenu(
                                 navController = navController,
                                 song = song,
+                                context = context,
                                 onDismiss = menuState::hide
                             )
                         }
                     },
                     onClick = {
-                        binder.startRadio( song )
+                        player.startRadio( song )
                     }
                 )
             }

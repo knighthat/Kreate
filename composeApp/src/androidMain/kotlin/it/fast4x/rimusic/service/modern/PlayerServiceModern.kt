@@ -9,8 +9,6 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.graphics.Bitmap
@@ -27,17 +25,11 @@ import android.os.Looper
 import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.util.fastMap
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.media3.common.AuxEffectInfo
 import androidx.media3.common.C
 import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.MediaItem
-import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
@@ -55,27 +47,22 @@ import androidx.media3.session.SessionToken
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.DownloadHelper
-import app.kreate.android.service.player.CustomExoPlayer
 import app.kreate.android.service.player.ExoPlayerListener
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.player.VolumeObserver
 import app.kreate.android.utils.centerCropBitmap
 import app.kreate.android.utils.centerCropToMatchScreenSize
-import app.kreate.android.utils.innertube.CURRENT_LOCALE
-import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.isLocalFile
 import app.kreate.android.widget.Widget
 import app.kreate.database.models.Event
 import app.kreate.database.models.PersistentQueue
-import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import com.google.common.util.concurrent.MoreExecutors
 import io.ktor.client.HttpClient
 import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MainActivity
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.PresetsReverb
 import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
@@ -84,23 +71,15 @@ import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.utils.AppLifecycleTracker
 import it.fast4x.rimusic.utils.CoilBitmapLoader
-import it.fast4x.rimusic.utils.TimerJob
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.collect
-import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.getEnum
 import it.fast4x.rimusic.utils.intent
 import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isAtLeastAndroid7
-import it.fast4x.rimusic.utils.manageDownload
-import it.fast4x.rimusic.utils.mediaItems
 import it.fast4x.rimusic.utils.playNext
 import it.fast4x.rimusic.utils.playPrevious
 import it.fast4x.rimusic.utils.preferences
-import it.fast4x.rimusic.utils.setGlobalVolume
-import it.fast4x.rimusic.utils.timer
-import it.fast4x.rimusic.utils.toggleRepeatMode
-import it.fast4x.rimusic.utils.toggleShuffleMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -110,7 +89,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -122,20 +100,17 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import me.knighthat.discord.Discord
-import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.koin.java.KoinJavaComponent.inject
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
-import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.seconds
-import android.os.Binder as AndroidBinder
-import me.knighthat.innertube.Innertube as NewInnertube
 
 
 val MediaItem.isLocal get() = localConfiguration?.uri?.isLocalFile() ?: false
@@ -150,7 +125,7 @@ class PlayerServiceModern:
 {
     private val cache: Cache by inject(CacheType.CACHE)
     private val discord: Discord by inject()
-    private val player: CustomExoPlayer by inject()
+    private val player: StatefulPlayer by inject()
     private val downloadHelper: DownloadHelper by inject()
     private val volumeObserver: VolumeObserver by inject()
     private val logger = Logger.withTag( this::class.java.simpleName )
@@ -163,11 +138,6 @@ class PlayerServiceModern:
         MediaLibrarySessionCallback(this, Database, MyDownloadHelper)
     private lateinit var bitmapProvider: BitmapProvider
     private lateinit var downloadListener: DownloadManager.Listener
-
-    private var binder = Binder()
-
-    lateinit var sleepTimer: SleepTimer
-    private var timerJob: TimerJob? = null
 
     val currentMediaItem = MutableStateFlow<MediaItem?>(null)
 
@@ -208,6 +178,14 @@ class PlayerServiceModern:
 //            discord.stop()
     }
 
+    override fun onStartCommand( intent: Intent?, flags: Int, startId: Int ): Int {
+        if( intent?.action == ACTION_RESTART ) {
+            player.pause()
+            stopSelf()
+        }
+
+        return super.onStartCommand(intent, flags, startId)
+    }
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     override fun onCreate() {
@@ -231,7 +209,7 @@ class PlayerServiceModern:
                 if (isAvailable && waitingForNetwork.value) {
                     waitingForNetwork.value = false
                     withContext( Dispatchers.Main ) {
-                        binder.gracefulPlay()
+                        player.play()
                     }
                 }
             }
@@ -255,8 +233,6 @@ class PlayerServiceModern:
         val preferences = preferences
         MyDownloadHelper.instance = this.downloadHelper
 
-        sleepTimer = SleepTimer(coroutineScope, player).also( player::addListener )
-
         PlaybackStatsListener(false, this@PlayerServiceModern)
             .also( player::addAnalyticsListener )
 
@@ -274,19 +250,6 @@ class PlayerServiceModern:
                         .build()
                 }
             }
-
-        mediaLibrarySessionCallback.apply {
-            binder = this@PlayerServiceModern.binder
-            toggleLike = binder::toggleLike
-            toggleDownload = binder::toggleDownload
-            toggleRepeat = binder::toggleRepeat
-            toggleShuffle = binder::toggleShuffle
-            startRadio = {
-                player.currentMediaItem?.let( binder::startRadio )
-            }
-            callPause = binder::gracefulPause
-            actionSearch = binder::actionSearch
-        }
 
         // Build the media library session
         mediaSession =
@@ -306,27 +269,19 @@ class PlayerServiceModern:
         listener = ExoPlayerListener(
             player,
             mediaSession,
-            binder,
-            isNetworkAvailable,
             waitingForNetwork,
             ::sendOpenEqualizerIntent,
             ::sendCloseEqualizerIntent,
             ::onMediaItemTransition
         )
 
-        player.skipSilenceEnabled = Preferences.AUDIO_SKIP_SILENCE.value
         player.addListener( listener )
         player.addListener( this )
         player.addAnalyticsListener(PlaybackStatsListener(false, this@PlayerServiceModern))
 
-        player.repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
-
-        binder.player.playbackParameters = PlaybackParameters(
-            Preferences.AUDIO_SPEED_VALUE.value,
-            Preferences.AUDIO_PITCH.value
-        )
-        binder.player.volume = Preferences.AUDIO_VOLUME.value
-        binder.player.setGlobalVolume(binder.player.volume)
+        mediaLibrarySessionCallback.apply {
+            listener = this@PlayerServiceModern.listener
+        }
 
         // Keep a connected controller so that notification works
         val sessionToken = SessionToken(this, ComponentName(this, PlayerServiceModern::class.java))
@@ -414,8 +369,6 @@ class PlayerServiceModern:
         } catch( err: Exception ) {
             logger.e( err ) { "failed to update notification" }
         }
-
-    override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
 
     override fun onIsPlayingChanged( isPlaying: Boolean ) {
         wallpaperRevertJob?.cancel()
@@ -512,9 +465,6 @@ class PlayerServiceModern:
             MyDownloadHelper.instance.downloadManager.removeListener(downloadListener)
 
             listener.loudnessEnhancer?.release()
-
-            timerJob?.cancel()
-            timerJob = null
 
             notificationManager?.cancel(NotificationId)
             notificationManager?.cancelAll()
@@ -674,8 +624,8 @@ class PlayerServiceModern:
     @MainThread
     private fun updateBitmap() {
         with(bitmapProvider) {
-            var newUriForLoad = binder.player.currentMediaItem?.mediaMetadata?.artworkUri
-            if(lastUri == binder.player.currentMediaItem?.mediaMetadata?.artworkUri) {
+            var newUriForLoad = player.currentMediaItem?.mediaMetadata?.artworkUri
+            if(lastUri == player.currentMediaItem?.mediaMetadata?.artworkUri) {
                 newUriForLoad = null
             }
 
@@ -689,15 +639,15 @@ class PlayerServiceModern:
     @MainThread
     fun updateWidgets() {
         val status = Triple(
-            binder.player.mediaMetadata.title.toString(),
-            binder.player.mediaMetadata.artist.toString(),
-            binder.player.isPlaying
+            player.mediaMetadata.title.toString(),
+            player.mediaMetadata.artist.toString(),
+            player.isPlaying
         )
 
         val actions = Triple(
-            if( status.third ) binder::gracefulPause else binder::gracefulPlay,
-            binder.player::seekToPrevious,
-            binder.player::seekToNext
+            if( status.third ) player::pause else player::play,
+            player::seekToPrevious,
+            player::seekToNext
         )
 
         CoroutineScope( Dispatchers.IO ).launch {
@@ -736,15 +686,11 @@ class PlayerServiceModern:
         )
     }
 
-    private fun actionSearch() {
-        binder.actionSearch()
-    }
-
     private fun maybeResumePlaybackOnStart() {
         if( Preferences.ENABLE_PERSISTENT_QUEUE.value
             && Preferences.RESUME_PLAYBACK_ON_STARTUP.value
             && AppLifecycleTracker.isInForeground()
-        ) binder.gracefulPlay()
+        ) player.play()
     }
 
     @ExperimentalCoroutinesApi
@@ -810,241 +756,39 @@ class PlayerServiceModern:
         listener.updateMediaControl( this@PlayerServiceModern, player )
     }
 
-    inner class NotificationActionReceiver(private val player: Player) : BroadcastReceiver() {
+    inner class NotificationActionReceiver(private val player: StatefulPlayer) : BroadcastReceiver() {
         @ExperimentalCoroutinesApi
         @FlowPreview
         override fun onReceive(context: Context, intent: Intent) {
             when ( intent.action ) {
-                Action.pause.value      -> binder::gracefulPause
-                Action.play.value       -> binder::gracefulPlay
-                Action.next.value       -> player::playNext
-                Action.previous.value   -> player::playPrevious
-                Action.like.value       -> mediaLibrarySessionCallback::toggleLike
-                Action.download.value   -> mediaLibrarySessionCallback::toggleDownload
-                Action.playradio.value  -> mediaLibrarySessionCallback.startRadio
-                Action.shuffle.value    -> mediaLibrarySessionCallback::toggleShuffle
-                Action.search.value     -> mediaLibrarySessionCallback::actionSearch
-                Action.repeat.value     -> mediaLibrarySessionCallback::toggleRepeat
+                Action.pause.value      -> player.pause()
+                Action.play.value       -> player.play()
+                Action.next.value       -> player.playNext()
+                Action.previous.value   -> player.playPrevious()
+                Action.like.value       -> mediaLibrarySessionCallback.toggleLike( player )
+                Action.download.value   -> player.downloadCurrentMediaItem()
+                Action.playradio.value  -> player.startRadio()
+                Action.shuffle.value    -> player.toggleShuffleMode()
+                Action.search.value     -> mediaLibrarySessionCallback.onSearch()
+                Action.repeat.value     -> player.cycleRepeatMode()
             }
-        }
-    }
-
-    open inner class Binder : AndroidBinder(), KoinComponent {
-        val service: PlayerServiceModern
-            get() = this@PlayerServiceModern
-
-        /*
-        fun setBitmapListener(listener: ((Bitmap?) -> Unit)?) {
-            bitmapProvider.listener = listener
-        }
-
-        */
-        val bitmap: Bitmap
-            get() = bitmapProvider.bitmap
-
-
-        val player: CustomExoPlayer
-            get() = this@PlayerServiceModern.player
-
-        val cache: Cache
-            get() = this@PlayerServiceModern.cache
-
-        val downloadCache: Cache by inject(CacheType.DOWNLOAD)
-
-        val sleepTimerMillisLeft: StateFlow<Long?>?
-            get() = timerJob?.millisLeft
-
-        fun startSleepTimer(delayMillis: Long) {
-            timerJob?.cancel()
-
-
-
-            timerJob = coroutineScope.timer(delayMillis) {
-                val notification = NotificationCompat
-                    .Builder(this@PlayerServiceModern, SleepTimerNotificationChannelId)
-                    .setContentTitle(getString(R.string.sleep_timer_ended))
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setAutoCancel(true)
-                    .setOnlyAlertOnce(true)
-                    .setShowWhen(true)
-                    .setSmallIcon(R.drawable.app_icon_monochrome)
-                    .build()
-
-                notificationManager?.notify(SleepTimerNotificationId, notification)
-
-                stopSelf()
-                exitProcess(0)
-            }
-        }
-
-        fun cancelSleepTimer() {
-            timerJob?.cancel()
-            timerJob = null
-        }
-
-        private var radioJob: Job? = null
-
-        var isLoadingRadio by mutableStateOf(false)
-            private set
-
-        /**
-         * Contains 2 major steps:
-         * 1. Fetch YouTube Music for **playlistId** of this song
-         * 2. Use said **playlistId** to get more songs
-         *
-         * **_playlistId_** isn't the playlist this song belongs to,
-         * but rather the "mood", "style", or "vibe" matches this song.
-         */
-        fun startRadio(
-            mediaItem: MediaItem,
-            append: Boolean = false,
-            endpoint: NavigationEndpoint.Endpoint.Watch? = null
-        ) {
-            this.stopRadio()
-
-            // Play song immediately while other songs are being loaded
-            if( player.currentMediaItem?.mediaId != mediaItem.mediaId )
-                player.forcePlay( mediaItem )
-
-            // Prevent UI from freezing up while data is being fetched
-            radioJob = coroutineScope.launch {
-                isLoadingRadio = true
-
-                NewInnertube.radio(
-                    mediaItem.mediaId,
-                    CURRENT_LOCALE,
-                    endpoint?.playlistId ?: "RDAMVM${mediaItem.mediaId}",
-                    endpoint?.params
-                ).onSuccess { relatedSongs ->
-                    CoroutineScope(Dispatchers.IO ).launch {
-                        relatedSongs.fastForEach {
-                            Database.upsert( it )
-                        }
-                    }
-
-                    // Any call to [player] must happen on Main thread
-                    val currentQueue = withContext( Dispatchers.Main ) {
-                        player.mediaItems.fastMap( MediaItem::mediaId )
-                    }
-
-                    // Songs with the same id as provided [Song] should be removed.
-                    // The song usually lives at the the first index, but this
-                    // way is safer to implement, as it can live through changes in position.
-                    relatedSongs.dropWhile { it.id == mediaItem.mediaId || it.id in currentQueue }
-                                .fastMap( InnertubeSong::toMediaItem )
-                                .also {
-                                    // Any call to [player] must happen on Main thread
-                                    withContext( Dispatchers.Main ) {
-                                        /*
-                                            There are 2 possible outcomes when append is not enabled.
-                                            User starts radio on currently playing song,
-                                            or on a completely different song.
-
-                                            When radio is activated on the same song, remain position
-                                            of currently playing song, delete next songs, and append
-                                            it with new songs.
-
-                                            When new song is used for radio, replace entire queue with new songs.
-                                          */
-                                        val curIndex = player.currentMediaItemIndex
-                                        val endIndex = player.mediaItemCount
-                                        if( !append && player.mediaItemCount > 1 ) {
-                                            player.moveMediaItem( curIndex, 0 )
-                                            player.removeMediaItems( curIndex + 1, endIndex )
-                                        }
-
-                                        player.addMediaItems(it)
-                                    }
-                                }
-                }.onFailure { err ->
-                    logger.e( "", err )
-                    Toaster.e( R.string.error_song_radio_failed )
-                }
-
-                isLoadingRadio = false
-            }
-        }
-
-        fun startRadio(
-            song: Song,
-            append: Boolean = false,
-            endpoint: NavigationEndpoint.Endpoint.Watch? = null
-        ) = startRadio( song.asMediaItem, append, endpoint )
-
-        fun stopRadio() {
-            isLoadingRadio = false
-            radioJob?.cancel()
-        }
-
-        /**
-         * Pause with fade out effect
-         */
-        @MainThread
-        fun gracefulPause() = player.pause()
-
-        /**
-         * Start playing with fade in effect
-         */
-        @MainThread
-        fun gracefulPlay() = player.play()
-
-        /**
-         * This method should ONLY be called when the application (sc. activity) is in the foreground!
-         */
-        fun restartForegroundOrStop() {
-            player.pause()
-            stopSelf()
-        }
-
-        fun toggleLike() {
-            val mediaItem = player.currentMediaItem ?: return
-
-            Database.asyncTransaction {
-                songTable.rotateLikeState( mediaItem.mediaId )
-                         .also {
-                             listener.updateMediaControl( this@PlayerServiceModern, player )
-                         }
-            }
-
-            MyDownloadHelper.autoDownloadWhenLiked( mediaItem )
-        }
-
-        fun toggleDownload() {
-            println("PlayerServiceModern toggleDownload currentMediaItem ${currentMediaItem.value} currentSongIsDownloaded ${currentSongStateDownload.value}")
-            manageDownload(
-                context = this@PlayerServiceModern,
-                mediaItem = binder.player.currentMediaItem ?: return,
-                downloadState = currentSongStateDownload.value == Download.STATE_COMPLETED
-            )
-        }
-
-        fun toggleRepeat() {
-            player.toggleRepeatMode()
-            listener.updateMediaControl( this@PlayerServiceModern, player )
-        }
-
-        fun toggleShuffle() {
-            player.toggleShuffleMode()
-            listener.updateMediaControl( this@PlayerServiceModern, player )
-        }
-
-        fun actionSearch() {
-            startActivity(Intent(applicationContext, MainActivity::class.java)
-                .setAction(MainActivity.action_search)
-                .setFlags(FLAG_ACTIVITY_NEW_TASK + FLAG_ACTIVITY_CLEAR_TASK))
-            println("PlayerServiceModern actionSearch")
         }
     }
 
     @JvmInline
     value class Action(val value: String) {
+
         val pendingIntent: PendingIntent
-            get() = PendingIntent.getBroadcast(
-                appContext(),
-                100,
-                Intent(value).setPackage(appContext().packageName),
-                PendingIntent.FLAG_UPDATE_CURRENT.or(if (isAtLeastAndroid6) PendingIntent.FLAG_IMMUTABLE else 0)
-            )
+            get() {
+                val context: Context by inject(Context::class.java)
+
+                return PendingIntent.getBroadcast(
+                    context,
+                    100,
+                    Intent(value).setPackage(context.packageName),
+                    PendingIntent.FLAG_UPDATE_CURRENT.or(if (isAtLeastAndroid6) PendingIntent.FLAG_IMMUTABLE else 0)
+                )
+            }
 
         companion object {
 
@@ -1078,6 +822,7 @@ class PlayerServiceModern:
         const val ALBUM = "album"
         const val PLAYLIST = "playlist"
         const val SEARCHED = "searched"
+        const val ACTION_RESTART = "restart"
 
         const val CACHE_DIRNAME = "exo_cache"
     }

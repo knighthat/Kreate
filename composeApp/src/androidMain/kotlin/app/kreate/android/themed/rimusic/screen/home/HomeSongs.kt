@@ -29,9 +29,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
 import app.kreate.android.themed.rimusic.component.ItemSelector
@@ -43,10 +45,10 @@ import app.kreate.android.utils.shallowCompare
 import app.kreate.constant.SongSortBy
 import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import app.kreate.util.toDuration
 import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BuiltInPlaylist
 import it.fast4x.rimusic.enums.DurationInMinutes
@@ -78,6 +80,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import me.knighthat.component.tab.ExportSongsToCSVDialog
 import me.knighthat.component.tab.HiddenSongs
+import org.koin.compose.koinInject
 
 @UnstableApi
 @ExperimentalFoundationApi
@@ -93,7 +96,8 @@ fun HomeSongs(
     getSongs: () -> List<Song>,
 ) {
     // Essentials
-    val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
+    val cache: Cache = koinInject(CacheType.CACHE)
     val context = LocalContext.current
     val menuState = LocalMenuState.current
     val hapticFeedback = LocalHapticFeedback.current
@@ -118,10 +122,10 @@ fun HomeSongs(
         songs = getSongs
     )
     val downloadAllDialog = remember {
-        DownloadAllDialog( binder, context, getSongs )
+        DownloadAllDialog( context, getSongs )
     }
     val deleteDownloadsDialog = remember {
-        DeleteAllDownloadedDialog( binder, context, getSongs )
+        DeleteAllDownloadedDialog(getSongs)
     }
 
     /**
@@ -172,7 +176,7 @@ fun HomeSongs(
                                                .map { list ->
                                                    list.fastFilter {
                                                        val contentLength = it.format.contentLength ?: return@fastFilter false
-                                                       binder?.cache?.isCached( it.song.id, 0, contentLength ) == true
+                                                       cache.isCached( it.song.id, 0, contentLength )
                                                    }.map( FormatWithSong::song )
                                                }
 
@@ -233,7 +237,7 @@ fun HomeSongs(
     deleteDownloadsDialog.Render()
     //</editor-fold>
 
-    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+    val currentMediaItem by player.currentMediaItemState.collectAsState()
     val songItemValues = remember( colorPalette, typography ) {
         SongItem.Values.from( colorPalette, typography )
     }
@@ -257,10 +261,10 @@ fun HomeSongs(
 
             SwipeablePlaylistItem(
                 mediaItem = mediaItem,
-                onPlayNext = { binder?.player?.addNext( mediaItem ) },
+                onPlayNext = { player.addNext( mediaItem ) },
                 onDownload = {
                     if( builtInPlaylist != BuiltInPlaylist.OnDevice ) {
-                        binder?.cache?.removeResource(mediaItem.mediaId)
+                        cache.removeResource(mediaItem.mediaId)
                         Database.asyncTransaction {
                             formatTable.updateContentLengthOf( mediaItem.mediaId )
                         }
@@ -273,13 +277,11 @@ fun HomeSongs(
                     }
                 },
                 onEnqueue = {
-                    binder?.player?.enqueue(mediaItem)
+                    player.enqueue(mediaItem)
                 }
             ) {
                 SongItem.Render(
                     song = song,
-                    context = context,
-                    binder = binder,
                     hapticFeedback = hapticFeedback,
                     isPlaying = song.shallowCompare( currentMediaItem ),
                     values = songItemValues,
@@ -322,16 +324,16 @@ fun HomeSongs(
                     onClick = {
                         search.hideIfEmpty()
 
-                        binder.stopRadio()
+                        player.stopRadio()
 
                         val selectedSongs = getSongs()
                         if( song in selectedSongs )
-                            binder.player.forcePlayAtIndex(
+                            player.forcePlayAtIndex(
                                 selectedSongs.fastMap( Song::asMediaItem ),
                                 selectedSongs.indexOf( song )
                             )
                         else
-                            binder.player.forcePlayAtIndex(
+                            player.forcePlayAtIndex(
                                 itemsOnDisplay.fastMap( Song::asMediaItem ),
                                 index
                             )

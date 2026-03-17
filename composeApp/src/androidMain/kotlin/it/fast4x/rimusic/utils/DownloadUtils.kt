@@ -9,23 +9,28 @@ import androidx.compose.runtime.remember
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import app.kreate.android.R
+import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalDownloadHelper
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.enums.DownloadedStateMedia
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.isLocal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 
 
 @UnstableApi
 @Composable
-fun downloadedStateMedia( mediaId: String ): DownloadedStateMedia {
+fun downloadedStateMedia(
+    mediaId: String,
+    cache: Cache = koinInject(CacheType.CACHE)
+): DownloadedStateMedia {
     val isDownloaded by remember {
         MyDownloadHelper.getDownload( mediaId )
                         .map { it?.state == Download.STATE_COMPLETED }
@@ -35,9 +40,8 @@ fun downloadedStateMedia( mediaId: String ): DownloadedStateMedia {
     if( isDownloaded )
         return DownloadedStateMedia.DOWNLOADED
 
-    val cache = LocalPlayerServiceBinder.current?.cache
     try {
-        cache!!.cacheSpace
+        cache.cacheSpace
     } catch ( e: Exception ) {
         when( e ) {
             // When cache is uninitialized

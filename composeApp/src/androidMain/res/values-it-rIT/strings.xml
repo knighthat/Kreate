@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Scorri verso l\'alto per aprire la coda</string>
     <string name="pinfo_show_icons">Mostra informazioni con le icone</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Lunghezza minima del silenzio</string>
-    <string name="minimum_silence_length_description">Il tempo minimo che il brano deve essere silenzioso per essere saltato</string>
     <string name="minimum_silence_length_warning">Il player deve essere riavviato affinché le modifiche siano applicate!</string>
     <string name="restart_service">Riavvia servizio</string>
     <string name="player_pause_listen_history">Sospendi la cronologia degli ascolti</string>

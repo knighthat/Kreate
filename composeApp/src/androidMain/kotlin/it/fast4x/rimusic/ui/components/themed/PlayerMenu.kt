@@ -9,18 +9,20 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.di.CacheType
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.context
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.service.MyDownloadHelper
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.utils.addSongToYtPlaylist
@@ -34,6 +36,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
+import org.koin.java.KoinJavaComponent.inject
 
 @ExperimentalTextApi
 @ExperimentalAnimationApi
@@ -41,18 +45,19 @@ import me.knighthat.utils.Toaster
 @Composable
 fun PlayerMenu(
     navController: NavController,
-    binder: PlayerServiceModern.Binder,
     mediaItem: MediaItem,
     onDismiss: () -> Unit,
     onClosePlayer: () -> Unit,
     onMatchingSong: (() -> Unit)? = null
     ) {
+    val context = LocalContext.current
     val menuState = LocalMenuState.current
+    val player: StatefulPlayer = koinInject()
     val menuStyle by Preferences.MENU_STYLE
 
     //val context = LocalContext.current
 
-    val launchEqualizer by rememberEqualizerLauncher(audioSessionId = { binder.player.audioSessionId })
+    val launchEqualizer by rememberEqualizerLauncher(audioSessionId = { player.audioSessionId })
 
     val activityResultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
@@ -67,8 +72,12 @@ fun PlayerMenu(
             onDismiss = { isHiding = false },
             onConfirm = {
                 onDismiss()
-                binder.cache.removeResource(mediaItem.mediaId)
-                binder.downloadCache.removeResource(mediaItem.mediaId)
+
+                val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
+                val downloadCache: Cache by inject(Cache::class.java, CacheType.DOWNLOAD)
+
+                cache.removeResource(mediaItem.mediaId)
+                downloadCache.removeResource(mediaItem.mediaId)
                 Database.asyncTransaction {
                     songTable.updateTotalPlayTime( mediaItem.mediaId, 0 )
                 }
@@ -83,7 +92,7 @@ fun PlayerMenu(
             mediaItem = mediaItem,
             onDismiss = onDismiss,
             onStartRadio = {
-                binder.startRadio( mediaItem )
+                player.startRadio( mediaItem )
 
                 menuState.hide()
             },
@@ -93,7 +102,7 @@ fun PlayerMenu(
                 try {
                     activityResultLauncher.launch(
                         Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL).apply {
-                            putExtra(AudioEffect.EXTRA_AUDIO_SESSION, binder.player.audioSessionId)
+                            putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.audioSessionId)
                             putExtra(AudioEffect.EXTRA_PACKAGE_NAME, context.packageName)
                             putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
                         }
@@ -111,7 +120,7 @@ fun PlayerMenu(
             navController = navController,
             mediaItem = mediaItem,
             onStartRadio = {
-                binder.startRadio( mediaItem )
+                player.startRadio( mediaItem )
 
                 menuState.hide()
             },
@@ -120,7 +129,7 @@ fun PlayerMenu(
             onHideFromDatabase = { isHiding = true },
             onDismiss = onDismiss,
             onAddToPreferites = {
-                if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                     Toaster.noInternet()
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
@@ -148,12 +157,11 @@ fun PlayerMenu(
 @Composable
 fun MiniPlayerMenu(
     navController: NavController,
-    binder: PlayerServiceModern.Binder,
     mediaItem: MediaItem,
     onDismiss: () -> Unit,
     onClosePlayer: () -> Unit
 ) {
-
+    val context = LocalContext.current
     val menuStyle by Preferences.MENU_STYLE
 
     if (menuStyle == MenuStyle.Grid) {
@@ -164,7 +172,7 @@ fun MiniPlayerMenu(
                 onClosePlayer()
             },
             onAddToPreferites = {
-                if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                     Toaster.noInternet()
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
@@ -188,7 +196,7 @@ fun MiniPlayerMenu(
                 onClosePlayer()
             },
             onAddToPreferites = {
-                if (!isNetworkConnected(context()) && isYouTubeSyncEnabled()){
+                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
                     Toaster.noInternet()
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
@@ -214,7 +222,6 @@ fun MiniPlayerMenu(
 @Composable
 fun AddToPlaylistPlayerMenu(
     navController: NavController,
-    binder: PlayerServiceModern.Binder,
     mediaItem: MediaItem,
     onDismiss: () -> Unit,
     onClosePlayer: () -> Unit,
@@ -270,6 +277,7 @@ fun AddToPlaylistArtistSongs(
     onDismiss: () -> Unit,
     onClosePlayer: () -> Unit,
 ) {
+    val context = LocalContext.current
     var position by remember {
         mutableIntStateOf(0)
     }
@@ -287,7 +295,7 @@ fun AddToPlaylistArtistSongs(
                     mapIgnore( playlistPreview.playlist, *mediaItems.toTypedArray() )
                 else
                     CoroutineScope(Dispatchers.IO).launch {
-                        addToYtPlaylist(playlistPreview.playlist.id, position, playlistPreview.playlist.browseId ?: "", mediaItems)
+                        addToYtPlaylist(context, playlistPreview.playlist.id, position, playlistPreview.playlist.browseId ?: "", mediaItems)
                     }
             }
 

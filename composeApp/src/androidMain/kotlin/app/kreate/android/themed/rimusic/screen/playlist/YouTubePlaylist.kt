@@ -42,10 +42,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.LoadMoreContentType
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
@@ -56,10 +58,10 @@ import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
 import app.kreate.android.viewmodel.YouTubePlaylistViewModel
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.YtMusic
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.UiType
 import it.fast4x.rimusic.typography
@@ -100,7 +102,9 @@ import me.knighthat.component.tab.SongShuffler
 import me.knighthat.component.ui.screens.DynamicOrientationLayout
 import me.knighthat.innertube.Constants
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.java.KoinJavaComponent.inject
 
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
@@ -113,7 +117,7 @@ fun YouTubePlaylist(
 ) {
     val context = LocalContext.current
     val menuState = LocalMenuState.current
-    val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
 
@@ -127,7 +131,7 @@ fun YouTubePlaylist(
         val playlistPage by viewModel.playlistPage.collectAsStateWithLifecycle()
         val continuation by viewModel.continuation.collectAsStateWithLifecycle()
         val songs by viewModel.songs.collectAsStateWithLifecycle()
-        val currentMediaItem by binder.player.currentMediaItemState.collectAsStateWithLifecycle()
+        val currentMediaItem by player.currentMediaItemState.collectAsStateWithLifecycle()
 
         val itemSelector = remember {
             ItemSelector(menuState) { addAll( songs ) }
@@ -143,10 +147,10 @@ fun YouTubePlaylist(
             songs = ::getSongs
         )
         val downloadAllDialog = remember {
-            DownloadAllDialog( binder, context, ::getSongs )
+            DownloadAllDialog( context, ::getSongs )
         }
         val deleteDownloadsDialog = remember {
-            DeleteAllDownloadedDialog( binder, context, ::getSongs )
+            DeleteAllDownloadedDialog(::getSongs)
         }
         val addToPlaylist = PlaylistsMenu.init(
             navController = navController,
@@ -162,7 +166,7 @@ fun YouTubePlaylist(
         )
         val addToFavorite = LikeComponent( ::getSongs )
         val enqueue = Enqueue {
-            binder.player.enqueue( getMediaItems(), context )
+            player.enqueue( getMediaItems(), context )
 
             // Turn of selector clears the selected list
             itemSelector.isActive = false
@@ -335,10 +339,11 @@ fun YouTubePlaylist(
                         SwipeablePlaylistItem(
                             mediaItem = song.asMediaItem,
                             onPlayNext = {
-                                binder.player.addNext( song.asMediaItem )
+                                player.addNext( song.asMediaItem )
                             },
                             onDownload = {
-                                binder.cache.removeResource( song.id )
+                                val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
+                                cache.removeResource( song.id )
                                 Database.asyncTransaction {
                                     formatTable.updateContentLengthOf( song.id )
                                 }
@@ -351,13 +356,11 @@ fun YouTubePlaylist(
                                     )
                             },
                             onEnqueue = {
-                                binder.player.enqueue(song.asMediaItem)
+                                player.enqueue(song.asMediaItem)
                             }
                         ) {
                             SongItem.Render(
                                 song = song,
-                                context = context,
-                                binder = binder,
                                 hapticFeedback = hapticFeedback,
                                 isPlaying = song.shallowCompare( currentMediaItem ),
                                 values = songItemValues,
@@ -365,16 +368,16 @@ fun YouTubePlaylist(
                                 navController = navController,
                                 modifier = Modifier.animateItem(),
                                 onClick = {
-                                    binder.stopRadio()
+                                    player.stopRadio()
 
                                     val selectedSongs = getSongs()
                                     if( song in selectedSongs )
-                                        binder.player.forcePlayAtIndex(
+                                        player.forcePlayAtIndex(
                                             selectedSongs.fastMap( Song::asMediaItem ),
                                             selectedSongs.indexOf( song )
                                         )
                                     else
-                                        binder.player.forcePlayAtIndex(
+                                        player.forcePlayAtIndex(
                                             songs.fastMap( Song::asMediaItem ),
                                             index
                                         )
@@ -395,8 +398,8 @@ fun YouTubePlaylist(
                         lazyListState = viewModel.listState,
                         iconId = R.drawable.shuffle,
                         onClick = {
-                            binder.stopRadio()
-                            binder.player.forcePlayFromBeginning( getMediaItems() )
+                            player.stopRadio()
+                            player.forcePlayFromBeginning( getMediaItems() )
                         }
                     )
             }

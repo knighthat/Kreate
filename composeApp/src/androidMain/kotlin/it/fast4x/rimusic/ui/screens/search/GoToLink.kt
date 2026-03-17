@@ -23,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -34,12 +33,12 @@ import androidx.core.net.toUri
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBody
 import it.fast4x.innertube.requests.playlistPage
 import it.fast4x.innertube.requests.song
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -53,11 +52,10 @@ import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
+import org.koin.compose.koinInject
 
 @ExperimentalTextApi
 @SuppressLint("SuspiciousIndentation")
@@ -75,7 +73,7 @@ fun GoToLink(
     onAction3: () -> Unit,
     onAction4: () -> Unit,
 ) {
-    val binder = LocalPlayerServiceBinder.current
+    val player: StatefulPlayer = koinInject()
     val coroutineScope = CoroutineScope(Dispatchers.IO) + Job()
 
     val lazyListState = rememberLazyListState()
@@ -223,9 +221,8 @@ fun GoToLink(
                                     else -> null
                                 }?.let { videoId ->
                                     Innertube.song(videoId)?.getOrNull()?.let { song ->
-                                        val binder = snapshotFlow { binder }.filterNotNull().first()
                                         withContext(Dispatchers.Main) {
-                                            binder.player.forcePlay(song.asMediaItem)
+                                            player.forcePlay(song.asMediaItem)
                                         }
                                     }
                                 }

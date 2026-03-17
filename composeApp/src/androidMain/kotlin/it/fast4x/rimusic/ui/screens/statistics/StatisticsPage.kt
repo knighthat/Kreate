@@ -44,6 +44,7 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
@@ -52,7 +53,6 @@ import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -78,6 +78,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import org.koin.compose.koinInject
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -94,7 +95,7 @@ fun StatisticsPage(
     navController: NavController,
     statisticsType: StatisticsType
 ) {
-    val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
     val menuState = LocalMenuState.current
@@ -178,7 +179,7 @@ fun StatisticsPage(
                 else Dimensions.contentWidthRightBar
             )
     ) {
-        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+        val currentMediaItem by player.currentMediaItemState.collectAsState()
         val songItemValues = remember( colorPalette, typography ) {
             SongItem.Values.from( colorPalette, typography )
         }
@@ -290,8 +291,6 @@ fun StatisticsPage(
                     ) { index, song ->
                         SongItem.Render(
                             song = song,
-                            context = context,
-                            binder = binder,
                             hapticFeedback = hapticFeedback,
                             values = songItemValues,
                             isPlaying = song.shallowCompare( currentMediaItem ),
@@ -316,8 +315,8 @@ fun StatisticsPage(
                                 }
                             },
                             onClick = {
-                                binder.stopRadio()
-                                binder.player.forcePlayAtIndex(
+                                player.stopRadio()
+                                player.forcePlayAtIndex(
                                     songs.map(Song::asMediaItem),
                                     index
                                 )

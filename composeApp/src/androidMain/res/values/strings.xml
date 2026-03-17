@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Swipe up to open queue</string>
     <string name="pinfo_show_icons">Show info with icons</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Min silence duration</string>
-    <string name="minimum_silence_length_description">Minimum duration of silent audio that can be skipped</string>
     <string name="minimum_silence_length_warning">Player has to be restarted for effective changes!</string>
     <string name="restart_service">Restart player</string>
     <string name="player_pause_listen_history">Pause listen history</string>
@@ -884,4 +882,5 @@
     <string name="success_doh_verified">DoH verified successfully</string>
     <string name="success_discord_log_out">Successfully logged out</string>
     <string name="error_discord_log_out">Log out failed</string>
+    <string name="info_song_already_downlaoded">Song already downloaded</string>
 </resources>

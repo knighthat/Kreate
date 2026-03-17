@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Zum Öffnen der Warteschlange nach oben wischen</string>
     <string name="pinfo_show_icons">Zeige Information mit Symbolen</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Mindestdauer der Stille</string>
-    <string name="minimum_silence_length_description">Mindestdauer der Stille, die erforderlich ist, um diese zu überspringen</string>
     <string name="minimum_silence_length_warning">Damit die Änderungen wirksam werden, ist ein Neustart des Players erforderlich!</string>
     <string name="restart_service">Player neu starten</string>
     <string name="player_pause_listen_history">Pausieren des Hörverlaufs</string>

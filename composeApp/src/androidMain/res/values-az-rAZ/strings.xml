@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Növbəni açmaq üçün yuxarı sürüşdür</string>
     <string name="pinfo_show_icons">Məlumatı işarələrlə göstər</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Ən az səssizlik intervalı</string>
-    <string name="minimum_silence_length_description">Səsin ötürülməsi üçün səssiz olmalı ən az vaxt</string>
     <string name="minimum_silence_length_warning">Dəyişikliklərin təsirli olması üçün oynadıcı təkrar başladılmalıdır!</string>
     <string name="restart_service">Xidməti təkrar başlat</string>
     <string name="player_pause_listen_history">Dinləmə tarixçəsinə fasilə ver</string>

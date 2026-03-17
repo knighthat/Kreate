@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Swipe up to open the queue</string>
     <string name="pinfo_show_icons">アイコン付きの情報を表示</string>
     <string name="format_ms">%1$s ミリ秒</string>
-    <string name="minimum_silence_length">無音時間の最小の長さ</string>
-    <string name="minimum_silence_length_description">音声をスキップするための最小限の無音時間</string>
     <string name="minimum_silence_length_warning">変更を有効にするには、プレイヤーを再起動してください！</string>
     <string name="restart_service">サービスを再起動</string>
     <string name="player_pause_listen_history">再生履歴を一時停止</string>

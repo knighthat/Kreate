@@ -1,5 +1,6 @@
 package me.knighthat.component.song
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import app.kreate.android.R
@@ -7,7 +8,6 @@ import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.database.models.Song
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
@@ -17,19 +17,23 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.innertube.Innertube
 import me.knighthat.utils.Toaster
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.Optional
 
 class GoToArtist(
     private val navController: NavController,
     private val song: Song,
-): MenuIcon, Descriptive {
+): MenuIcon, Descriptive, KoinComponent {
+
+    private val context: Context by inject()
 
     override val iconId: Int = R.drawable.people
     // TODO: Add string "About this artist"
     override val messageId: Int = R.string.artists
     override val menuIconTitle: String
         @Composable
-        get() = appContext().getString( R.string.about ) + " ${song.cleanArtistsText()}"
+        get() = context.getString( R.string.about ) + " ${song.cleanArtistsText()}"
 
     private var channelId: Optional<String> = Optional.empty()
 

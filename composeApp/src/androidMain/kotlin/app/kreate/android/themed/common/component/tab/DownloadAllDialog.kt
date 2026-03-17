@@ -34,10 +34,9 @@ import me.knighthat.utils.Toaster
 
 @UnstableApi
 class DownloadAllDialog(
-    binder: PlayerServiceModern.Binder,
     private val context: Context,
     private val getSongs: () -> List<Song>
-) : AbstractMediaDownloadDialog(binder), MenuIcon, Descriptive {
+) : AbstractMediaDownloadDialog(), MenuIcon, Descriptive {
 
     override val messageId: Int = R.string.info_download_all_songs
     override val iconId: Int = R.drawable.downloaded

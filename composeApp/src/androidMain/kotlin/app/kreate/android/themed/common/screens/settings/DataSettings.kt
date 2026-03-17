@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
@@ -34,9 +35,9 @@ import app.kreate.android.themed.common.component.settings.data.ExoCacheIndicato
 import app.kreate.android.themed.common.component.settings.data.ImageCacheIndicator
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
+import app.kreate.di.CacheType
 import coil3.imageLoader
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.ui.styling.Dimensions
@@ -49,6 +50,7 @@ import me.knighthat.component.export.ExportSettingsDialog
 import me.knighthat.component.import.ImportDatabase
 import me.knighthat.component.import.ImportSettings
 import me.knighthat.utils.Toaster
+import org.koin.java.KoinJavaComponent.inject
 import kotlin.math.roundToInt
 
 @Composable
@@ -104,7 +106,6 @@ fun cacheSubtitle( context: Context, preference: Preferences.Long, currentValue:
 @Composable
 fun DataSettings( paddingValues: PaddingValues ) {
     val context = LocalContext.current
-    val binder = LocalPlayerServiceBinder.current
     val scrollState = rememberLazyListState()
 
     val search = remember {
@@ -176,69 +177,67 @@ fun DataSettings( paddingValues: PaddingValues ) {
                 }
             }
             entry( search, R.string.song_cache_max_size ) {
-                binder?.cache?.let { cache ->
-                    val indicator = remember( cache ) {
-                        ExoCacheIndicator(Preferences.EXO_CACHE_SIZE, cache)
-                    }
-                    // indicator's progress is observable, and is actually gets updated when
-                    // cache is cleared. So this is used to re-compose subtitle when action is performed.
-                    val subtitle by remember( indicator.progress ) {
-                        cacheSubtitle( context, Preferences.EXO_CACHE_SIZE, cache::getCacheSpace )
-                    }
-                    val maxCacheSize by Preferences.EXO_CACHE_SIZE
+                val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
+                val indicator = remember( cache ) {
+                    ExoCacheIndicator(Preferences.EXO_CACHE_SIZE, cache)
+                }
+                // indicator's progress is observable, and is actually gets updated when
+                // cache is cleared. So this is used to re-compose subtitle when action is performed.
+                val subtitle by remember( indicator.progress ) {
+                    cacheSubtitle( context, Preferences.EXO_CACHE_SIZE, cache::getCacheSpace )
+                }
+                val maxCacheSize by Preferences.EXO_CACHE_SIZE
 
-                    SettingComponents.StorageSizeEntry(
-                        context = context,
-                        preference = Preferences.EXO_CACHE_SIZE,
-                        title = stringResource( R.string.song_cache_max_size ),
-                        subtitle = subtitle,
-                        currentValue = cache.cacheSpace,
-                        action = SettingComponents.Action.RESTART_PLAYER_SERVICE
-                    ) {
-                        if( maxCacheSize > 0 )
-                            indicator.ToolBarButton()
-                    }
-
+                SettingComponents.StorageSizeEntry(
+                    context = context,
+                    preference = Preferences.EXO_CACHE_SIZE,
+                    title = stringResource( R.string.song_cache_max_size ),
+                    subtitle = subtitle,
+                    currentValue = cache.cacheSpace,
+                    action = SettingComponents.Action.RESTART_PLAYER_SERVICE
+                ) {
                     if( maxCacheSize > 0 )
-                        indicator.ProgressBar( progressBarModifier )
+                        indicator.ToolBarButton()
+                }
 
-                    LaunchedEffect( maxCacheSize ) {
-                        if( 0L == maxCacheSize )
-                            indicator.onConfirm()
-                    }
+                if( maxCacheSize > 0 )
+                    indicator.ProgressBar( progressBarModifier )
+
+                LaunchedEffect( maxCacheSize ) {
+                    if( 0L == maxCacheSize )
+                        indicator.onConfirm()
                 }
             }
             entry( search, R.string.song_download_max_size ) {
-                binder?.downloadCache?.let { cache ->
-                    val indicator = remember( cache ) {
-                        ExoCacheIndicator(Preferences.EXO_DOWNLOAD_SIZE, cache)
-                    }
-                    // indicator's progress is observable, and is actually gets updated when
-                    // cache is cleared. So this is used to re-compose subtitle when action is performed.
-                    val subtitle by remember( indicator.progress ) {
-                        cacheSubtitle( context, Preferences.EXO_DOWNLOAD_SIZE, cache::getCacheSpace )
-                    }
-                    val maxCacheSize by Preferences.EXO_DOWNLOAD_SIZE
+                val cache: Cache by inject(Cache::class.java, CacheType.DOWNLOAD)
+                val indicator = remember( cache ) {
+                    ExoCacheIndicator(Preferences.EXO_DOWNLOAD_SIZE, cache)
+                }
+                // indicator's progress is observable, and is actually gets updated when
+                // cache is cleared. So this is used to re-compose subtitle when action is performed.
+                val subtitle by remember( indicator.progress ) {
+                    cacheSubtitle( context, Preferences.EXO_DOWNLOAD_SIZE, cache::getCacheSpace )
+                }
+                val maxCacheSize by Preferences.EXO_DOWNLOAD_SIZE
 
-                    SettingComponents.StorageSizeEntry(
-                        context = context,
-                        preference = Preferences.EXO_DOWNLOAD_SIZE,
-                        title = stringResource( R.string.song_download_max_size ),
-                        subtitle = subtitle,
-                        currentValue = cache.cacheSpace,
-                        action = SettingComponents.Action.RESTART_APP
-                    ) {
-                        if( maxCacheSize > 0 )
-                            indicator.ToolBarButton()
-                    }
-
+                SettingComponents.StorageSizeEntry(
+                    context = context,
+                    preference = Preferences.EXO_DOWNLOAD_SIZE,
+                    title = stringResource( R.string.song_download_max_size ),
+                    subtitle = subtitle,
+                    currentValue = cache.cacheSpace,
+                    action = SettingComponents.Action.RESTART_APP
+                ) {
                     if( maxCacheSize > 0 )
-                        indicator.ProgressBar( progressBarModifier )
+                        indicator.ToolBarButton()
+                }
 
-                    LaunchedEffect( maxCacheSize ) {
-                        if( 0L == maxCacheSize )
-                            indicator.onConfirm()
-                    }
+                if( maxCacheSize > 0 )
+                    indicator.ProgressBar( progressBarModifier )
+
+                LaunchedEffect( maxCacheSize ) {
+                    if( 0L == maxCacheSize )
+                        indicator.onConfirm()
                 }
             }
             entry( search, R.string.set_cache_location ) {
