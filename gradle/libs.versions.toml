@@ -7,7 +7,7 @@ compileSdk = "36"
 minSdk = "23"
 
 agp = "8.13.2"
-kotlin = "2.3.10"
+kotlin = "2.3.20"
 kotlin-ksp = "2.3.6"
 coil3 = "3.4.0"
 room = "2.8.4"
