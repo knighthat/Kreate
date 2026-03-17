@@ -17,7 +17,6 @@ import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.media.audiofx.AudioEffect
-import android.media.audiofx.BassBoost
 import android.media.audiofx.PresetReverb
 import android.os.Build
 import android.os.Handler
@@ -335,8 +334,6 @@ class PlayerServiceModern:
 
         maybeResumePlaybackWhenDeviceConnected()
 
-        maybeBassBoost()
-
         maybeReverb()
 
         /* Queue is saved in events without scheduling it (remove this in future)*/
@@ -488,35 +485,7 @@ class PlayerServiceModern:
             Preferences.Key.QUEUE_LOOP_TYPE ->
                 player.repeatMode = sharedPreferences.getEnum( key, Preferences.QUEUE_LOOP_TYPE.defaultValue ).type
 
-            Preferences.Key.AUDIO_BASS_BOOST_LEVEL,
-            Preferences.Key.AUDIO_BASS_BOOSTED -> maybeBassBoost()
-
             Preferences.Key.AUDIO_REVERB_PRESET -> maybeReverb()
-        }
-    }
-
-    private var bassBoost: BassBoost? = null
-
-    private fun maybeBassBoost() {
-        if ( !Preferences.AUDIO_BASS_BOOSTED.value ) {
-            runCatching {
-                bassBoost?.enabled = false
-                bassBoost?.release()
-            }
-            bassBoost = null
-            return
-        }
-
-        runCatching {
-            if (bassBoost == null) bassBoost = BassBoost(0, player.audioSessionId)
-            val bassboostLevel =
-                (Preferences.AUDIO_BASS_BOOST_LEVEL.value * 1000f).toInt().toShort()
-            println("PlayerServiceModern maybeBassBoost bassboostLevel $bassboostLevel")
-            bassBoost?.enabled = false
-            bassBoost?.setStrength(bassboostLevel)
-            bassBoost?.enabled = true
-        }.onFailure {
-            Toaster.e( "Can't enable bass boost" )
         }
     }
 

@@ -884,4 +884,5 @@
     <string name="error_discord_log_out">Log out failed</string>
     <string name="info_song_already_downloaded">Song already downloaded</string>
     <string name="error_loudness_normalization_failed">Loudness normalization failed</string>
+    <string name="error_bass_boost_failed">Bass boost failed</string>
 </resources>
