@@ -101,7 +101,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
     private var timerJob: TimerJob? = null
     private var loudnessNormalizationJob: Job? = null
     private lateinit var loudnessEnhancer: LoudnessEnhancer
-    
+
     override val currentMediaItemState = _currentMediaItemState.asStateFlow()
     override val currentTimelineState = _currentTimelineState.asStateFlow()
     override val currentWindowState = _currentWindowState.asStateFlow()
@@ -544,6 +544,8 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
             }
 
             Preferences.Key.AUDIO_VOLUME_NORMALIZATION_TARGET -> normalizeLoudness()
+
+            Preferences.Key.AUDIO_SKIP_SILENCE ->  skipSilenceEnabled = pref.getBoolean( key, false )
         }
     }
 }

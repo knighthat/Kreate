@@ -1834,7 +1834,6 @@ sealed class Preferences<T>(
         const val AUDIO_QUALITY = "AudioQuality"
         const val AUDIO_REVERB_PRESET = "AudioReverbPreset"
         const val AUDIO_SKIP_SILENCE = "AudioSkipSilence"
-        const val AUDIO_SKIP_SILENCE_LENGTH = "AudioSkipSilenceLength"
         const val AUDIO_VOLUME_NORMALIZATION = "AudioVolumeNormalization"
         const val AUDIO_VOLUME_NORMALIZATION_TARGET = "AudioVolumeNormalizationTarget"
         const val AUDIO_SHAKE_TO_SKIP = "AudioShakeToSkip"
