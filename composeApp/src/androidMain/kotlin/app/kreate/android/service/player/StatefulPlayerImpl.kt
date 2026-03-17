@@ -4,8 +4,11 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.app.NotificationManager
 import android.content.Context
+import android.content.SharedPreferences
+import android.media.audiofx.LoudnessEnhancer
 import androidx.annotation.MainThread
 import androidx.annotation.OptIn
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import androidx.core.animation.doOnEnd
@@ -30,6 +33,7 @@ import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
+import app.kreate.di.PrefType
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
@@ -50,7 +54,9 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -72,9 +78,13 @@ import kotlin.time.Duration
  * - Observable states (current mediaItem, timeline, window, etc.)
  */
 @OptIn(UnstableApi::class)
-class StatefulPlayerImpl(
-    private val player: ExoPlayer
-): ExoPlayer by player, StatefulPlayer, Player.Listener, KoinComponent {
+class StatefulPlayerImpl(private val player: ExoPlayer) :
+    ExoPlayer by player,
+    StatefulPlayer,
+    Player.Listener,
+    KoinComponent,
+    SharedPreferences.OnSharedPreferenceChangeListener
+{
 
     companion object {
         const val SleepTimerNotificationChannelId = "sleep_timer_channel_id"
@@ -89,7 +99,9 @@ class StatefulPlayerImpl(
     private var volumeAnimator: ValueAnimator? = null
     private var radioJob: Job? = null
     private var timerJob: TimerJob? = null
-
+    private var loudnessNormalizationJob: Job? = null
+    private lateinit var loudnessEnhancer: LoudnessEnhancer
+    
     override val currentMediaItemState = _currentMediaItemState.asStateFlow()
     override val currentTimelineState = _currentTimelineState.asStateFlow()
     override val currentWindowState = _currentWindowState.asStateFlow()
@@ -97,6 +109,9 @@ class StatefulPlayerImpl(
     init {
         this.addListener( this )
         this.addListener( PlayerEventUpdateDiscord() )
+
+        val preferences: SharedPreferences by inject(PrefType.DEFAULT)
+        preferences.registerOnSharedPreferenceChangeListener( this )
 
         skipSilenceEnabled = Preferences.AUDIO_SKIP_SILENCE.value
         repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
@@ -436,6 +451,9 @@ class StatefulPlayerImpl(
         stopRadio()
         stopSleepTimer()
 
+        loudnessNormalizationJob?.cancel()
+        loudnessNormalizationJob = null
+
         player.stop()
     }
 
@@ -445,26 +463,87 @@ class StatefulPlayerImpl(
         coroutineScope.cancel()
 
         player.removeListener( this )
+        loudnessEnhancer.release()      // Must release after listener is removed to prevent race condition
         player.release()
+
+        val preferences: SharedPreferences by inject(PrefType.DEFAULT)
+        preferences.registerOnSharedPreferenceChangeListener( this )
     }
 
     /*
             Player listener
      */
 
-    override fun onMediaItemTransition( mediaItem: MediaItem?, reason: Int ) {
-        // Don't update [_currentMediaItemState] when on repeat
-        if( reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT )
+    private fun normalizeLoudness() {
+        if( !::loudnessEnhancer.isInitialized || !loudnessEnhancer.enabled )
             return
+        else
+            logger.v { "Normalizing loudness..." }
 
-        _currentMediaItemState.update { mediaItem }
-        _currentWindowState.update {
-            mediaItem?.let {
-                _currentTimelineState.value.getWindow( currentMediaItemIndex, Timeline.Window() )
+        try {
+            loudnessNormalizationJob?.cancel()
+
+            // Interaction with [Player] must happen on Main thread
+            val mediaId = currentMediaItem?.mediaId ?: return
+            loudnessNormalizationJob = coroutineScope.launch {
+                // This holds the job as long as loudnessDb is unavailable
+                val mediaLoudness: Float = Database.formatTable
+                                                   .findBySongId( mediaId )
+                                                   .mapNotNull { it?.loudnessDb }
+                                                   .first()
+                val targetLoudness by Preferences.AUDIO_VOLUME_NORMALIZATION_TARGET
+                val targetGain = (targetLoudness - mediaLoudness) * 100f
+                loudnessEnhancer.setTargetGain( targetGain.toInt() )
+
+                logger.d { "Media loudness: %.2f, target loudness: %.2f, gain: %.2f".format(mediaLoudness, targetLoudness, targetGain) }
+            }
+        } catch( err: Exception ) {
+            logger.e( err ) { "normalizeLoudness failed!" }
+            Toaster.e( R.string.error_loudness_normalization_failed )
+        }
+    }
+
+    override fun onMediaItemTransition( mediaItem: MediaItem?, reason: Int ) {
+        normalizeLoudness()
+
+        // Don't update [_currentMediaItemState] when on repeat
+        if( reason != Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT ) {
+            _currentMediaItemState.update { mediaItem }
+            _currentWindowState.update {
+                mediaItem?.let {
+                    _currentTimelineState.value.getWindow( currentMediaItemIndex, Timeline.Window() )
+                }
             }
         }
     }
 
     override fun onTimelineChanged( timeline: Timeline, reason: Int ) =
         _currentTimelineState.update { timeline }
+
+    override fun onAudioSessionIdChanged( audioSessionId: Int ) {
+        logger.v { "Audio session id changed!" }
+
+        if( ::loudnessEnhancer.isInitialized )
+            loudnessEnhancer.release()
+
+        loudnessEnhancer = LoudnessEnhancer(audioSessionId)
+        loudnessEnhancer.enabled = Preferences.AUDIO_VOLUME_NORMALIZATION.value
+
+        normalizeLoudness()
+    }
+
+    /*
+            SharedPreferences listener
+     */
+
+    override fun onSharedPreferenceChanged( pref: SharedPreferences, key: String? ) {
+        when( key ) {
+            Preferences.Key.AUDIO_VOLUME_NORMALIZATION -> {
+                loudnessEnhancer.enabled = pref.getBoolean(key, false)
+                normalizeLoudness()
+            }
+
+            Preferences.Key.AUDIO_VOLUME_NORMALIZATION_TARGET -> normalizeLoudness()
+        }
+    }
 }

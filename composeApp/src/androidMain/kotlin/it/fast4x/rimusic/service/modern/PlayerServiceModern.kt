@@ -479,8 +479,6 @@ class PlayerServiceModern:
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         when (key) {
-            Preferences.Key.AUDIO_VOLUME_NORMALIZATION,
-            Preferences.Key.AUDIO_VOLUME_NORMALIZATION_TARGET -> listener.maybeNormalizeVolume()
 
             Preferences.Key.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE -> maybeResumePlaybackWhenDeviceConnected()
 
@@ -506,7 +504,6 @@ class PlayerServiceModern:
                 bassBoost?.release()
             }
             bassBoost = null
-            listener.maybeNormalizeVolume()
             return
         }
 

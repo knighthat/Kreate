@@ -5,7 +5,6 @@ import android.media.audiofx.LoudnessEnhancer
 import android.widget.Toast
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapIndexed
@@ -20,7 +19,6 @@ import androidx.media3.session.MediaSession
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.database.models.PersistentQueue
-import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.NotificationButtons
 import it.fast4x.rimusic.enums.QueueLoopType
@@ -36,8 +34,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
@@ -128,55 +124,6 @@ class ExoPlayerListener(
         }
     }
 
-    @MainThread
-    fun maybeNormalizeVolume() {
-        if ( !Preferences.AUDIO_VOLUME_NORMALIZATION.value ) {
-            loudnessEnhancer?.enabled = false
-            loudnessEnhancer?.release()
-            loudnessEnhancer = null
-            volumeNormalizationJob.cancel()
-            return
-        }
-
-        runCatching {
-            if (loudnessEnhancer == null) {
-                loudnessEnhancer = LoudnessEnhancer(player.audioSessionId)
-            }
-        }.onFailure {
-            Logger.e( it, "PlayerListener" ) { "maybeNormalizeVolume load loudnessEnhancer" }
-            return
-        }
-
-        player.currentMediaItem
-            ?.mediaId
-            ?.also { songId ->
-                volumeNormalizationJob.cancel()
-                volumeNormalizationJob = CoroutineScope(Dispatchers.IO ).launch {
-                    fun Float?.toMb() = ((this ?: 0f) * 100).toInt()
-
-                    Database.formatTable
-                        .findBySongId( songId )
-                        .cancellable()
-                        .collectLatest { format ->
-                            val loudnessMb = format?.loudnessDb.toMb().let {
-                                if (it !in -2000..2000) {
-                                    Toaster.w( "Extreme loudness detected" )
-
-                                    0
-                                } else
-                                    it
-                            }
-
-                            runCatching {
-                                val baseGain by Preferences.AUDIO_VOLUME_NORMALIZATION_TARGET
-                                loudnessEnhancer?.setTargetGain( baseGain.toMb() - loudnessMb )
-                                loudnessEnhancer?.enabled = true
-                            }
-                        }
-                }
-            }
-    }
-
     private fun loadFromRadio( reason: Int ) {
         // Don't fetch more item if:
         // - Feature is disabled
@@ -234,7 +181,6 @@ class ExoPlayerListener(
     override fun onMediaItemTransition( mediaItem: MediaItem?, reason: Int ) {
         if ( player.playerError != null ) player.prepare()
 
-        maybeNormalizeVolume()
         loadFromRadio(reason)
         onMediaTransition( mediaItem )
     }
