@@ -340,7 +340,7 @@ class StatefulPlayerImpl(
             val context: Context by inject(Context::class.java)
             manageDownload( context, mediaItem, false )
         } else
-            Toaster.i( R.string.info_song_already_downlaoded )
+            Toaster.i( R.string.info_song_already_downloaded )
     }
 
     override fun startSleepTimer( duration: Duration ) {

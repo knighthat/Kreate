@@ -882,5 +882,5 @@
     <string name="success_doh_verified">DoH verified successfully</string>
     <string name="success_discord_log_out">Successfully logged out</string>
     <string name="error_discord_log_out">Log out failed</string>
-    <string name="info_song_already_downlaoded">Song already downloaded</string>
+    <string name="info_song_already_downloaded">Song already downloaded</string>
 </resources>
