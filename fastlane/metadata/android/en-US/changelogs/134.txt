@@ -1,0 +1,2 @@
+Fixes:
+- Crash after update and after database import
