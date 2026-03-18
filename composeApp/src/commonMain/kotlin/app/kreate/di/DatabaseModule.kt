@@ -13,6 +13,7 @@ import app.kreate.database.migration.From26To27Migration
 import app.kreate.database.migration.From27To28Migration
 import app.kreate.database.migration.From28To29Migration
 import app.kreate.database.migration.From29To30Migration
+import app.kreate.database.migration.From30To31Migration
 import app.kreate.database.migration.From34To35Migration
 import app.kreate.database.migration.From35To36Migration
 import app.kreate.database.migration.From8To9Migration
@@ -40,6 +41,7 @@ val databaseModule = module {
                 From27To28Migration(),
                 From28To29Migration(),
                 From29To30Migration(),
+                From30To31Migration(),
                 From34To35Migration(),
                 From35To36Migration()
             )
