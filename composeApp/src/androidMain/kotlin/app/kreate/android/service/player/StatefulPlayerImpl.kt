@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.media.audiofx.BassBoost
 import android.media.audiofx.LoudnessEnhancer
+import android.media.audiofx.PresetReverb
 import androidx.annotation.MainThread
 import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
@@ -16,6 +17,7 @@ import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
+import androidx.media3.common.AuxEffectInfo
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
@@ -103,10 +105,12 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
     private var timerJob: TimerJob? = null
     private var loudnessNormalizationJob: Job? = null
     private var bassBoostJob: Job? = null
+    private var reverbJob: Job? = null
     //</editor-fold>
     //<editor-fold desc="AudioFX">
     private lateinit var loudnessEnhancer: LoudnessEnhancer
     private lateinit var bassBoost: BassBoost
+    private lateinit var reverb: PresetReverb
     //</editor-fold>
 
     override val currentMediaItemState = _currentMediaItemState.asStateFlow()
@@ -462,6 +466,8 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
         loudnessNormalizationJob = null
         bassBoostJob?.cancel()
         bassBoostJob = null
+        reverbJob?.cancel()
+        reverbJob = null
 
         player.stop()
     }
@@ -472,8 +478,12 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
         coroutineScope.cancel()
 
         player.removeListener( this )
+
         loudnessEnhancer.release()      // Must release after listener is removed to prevent race condition
         bassBoost.release()
+        reverb.release()
+        clearAuxEffectInfo()
+
         player.release()
 
         val preferences: SharedPreferences by inject(PrefType.DEFAULT)
@@ -535,6 +545,27 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
         }
     }
 
+    private fun updateReverb() {
+        if( !::reverb.isInitialized || !reverb.enabled )
+            return
+        else
+            logger.v { "Updating reverb..." }
+
+        try {
+            reverbJob?.cancel()
+
+            reverbJob = coroutineScope.launch {
+                val preset by Preferences.AUDIO_REVERB_PRESET
+                reverb.preset = preset.toShort()
+
+                logger.d { "Reverb set to $preset" }
+            }
+        } catch( err: Exception ) {
+            logger.e( err ) { "updateReverb failed!" }
+            Toaster.e( R.string.error_reverb_failed )
+        }
+    }
+
     override fun onMediaItemTransition( mediaItem: MediaItem?, reason: Int ) {
         normalizeLoudness()
 
@@ -581,6 +612,22 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
             logger.e( err ) { "BassBoost init failed!" }
         }
         //</editor-fold>
+        //<editor-fold desc="Reverb preset">
+        try {
+            if( ::reverb.isInitialized )
+                reverb.release()
+
+            reverb = PresetReverb(1, audioSessionId)
+            reverb.enabled = true       // Value is set by presets
+
+            val auxEffect = AuxEffectInfo(reverb.id, 1f)
+            setAuxEffectInfo( auxEffect )
+
+            updateReverb()
+        } catch( err: Exception ) {
+            logger.e( err ) { "Reverb init failed!" }
+        }
+        //</editor-fold>
     }
 
     /*
@@ -604,6 +651,8 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
                 boostLowFrequencies()
             }
             Preferences.Key.AUDIO_BASS_BOOST_LEVEL -> boostLowFrequencies()
+
+            Preferences.Key.AUDIO_REVERB_PRESET -> updateReverb()
         }
     }
 }

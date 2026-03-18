@@ -17,7 +17,6 @@ import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.media.audiofx.AudioEffect
-import android.media.audiofx.PresetReverb
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -25,7 +24,6 @@ import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.core.content.ContextCompat
-import androidx.media3.common.AuxEffectInfo
 import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -60,7 +58,6 @@ import io.ktor.client.HttpClient
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MainActivity
-import it.fast4x.rimusic.enums.PresetsReverb
 import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
 import it.fast4x.rimusic.service.BitmapProvider
@@ -334,8 +331,6 @@ class PlayerServiceModern:
 
         maybeResumePlaybackWhenDeviceConnected()
 
-        maybeReverb()
-
         /* Queue is saved in events without scheduling it (remove this in future)*/
         // Load persistent queue when start activity and save periodically in background
         if ( Preferences.ENABLE_PERSISTENT_QUEUE.value ) {
@@ -484,33 +479,6 @@ class PlayerServiceModern:
 
             Preferences.Key.QUEUE_LOOP_TYPE ->
                 player.repeatMode = sharedPreferences.getEnum( key, Preferences.QUEUE_LOOP_TYPE.defaultValue ).type
-
-            Preferences.Key.AUDIO_REVERB_PRESET -> maybeReverb()
-        }
-    }
-
-    private var reverbPreset: PresetReverb? = null
-
-    private fun maybeReverb() {
-        val presetType by Preferences.AUDIO_REVERB_PRESET
-        println("PlayerServiceModern maybeReverb presetType $presetType")
-        if (presetType == PresetsReverb.NONE) {
-            runCatching {
-                reverbPreset?.enabled = false
-                player.clearAuxEffectInfo()
-                reverbPreset?.release()
-            }
-                reverbPreset = null
-            return
-        }
-
-        runCatching {
-            if (reverbPreset == null) reverbPreset = PresetReverb(1, player.audioSessionId)
-
-            reverbPreset?.enabled = false
-            reverbPreset?.preset = presetType.preset
-            reverbPreset?.enabled = true
-            reverbPreset?.id?.let { player.setAuxEffectInfo(AuxEffectInfo(it, 1f)) }
         }
     }
 

@@ -885,4 +885,12 @@
     <string name="info_song_already_downloaded">Song already downloaded</string>
     <string name="error_loudness_normalization_failed">Loudness normalization failed</string>
     <string name="error_bass_boost_failed">Bass boost failed</string>
+    <string name="error_reverb_failed">Failed to apply reverb</string>
+    <string name="reverb_preset_none">None</string>
+    <string name="reverb_preset_small_room">Small room</string>
+    <string name="reverb_preset_medium_room">Medium room</string>
+    <string name="reverb_preset_large_room">Large room</string>
+    <string name="reverb_preset_medium_hall">Medium hall</string>
+    <string name="reverb_preset_large_hall">Large hall</string>
+    <string name="reverb_preset_plate">Plate</string>
 </resources>

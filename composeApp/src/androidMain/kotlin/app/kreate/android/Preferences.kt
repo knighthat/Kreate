@@ -77,7 +77,6 @@ import it.fast4x.rimusic.enums.PlayerTimelineType
 import it.fast4x.rimusic.enums.PlayerType
 import it.fast4x.rimusic.enums.PlaylistSwipeAction
 import it.fast4x.rimusic.enums.PlaylistsType
-import it.fast4x.rimusic.enums.PresetsReverb
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.enums.QueueSwipeAction
 import it.fast4x.rimusic.enums.QueueType
@@ -566,7 +565,7 @@ sealed class Preferences<T>(
             Enum( preferences, Key.AUDIO_QUALITY, "audioQualityFormat", AudioQualityFormat.Auto )
         }
         val AUDIO_REVERB_PRESET by lazy {
-            Enum( preferences, Key.AUDIO_REVERB_PRESET, "audioReverbPreset", PresetsReverb.NONE )
+            Int(preferences, Key.AUDIO_REVERB_PRESET, "audioReverbPreset", 0)
         }
         val AUDIO_SKIP_SILENCE by lazy {
             Boolean( preferences, Key.AUDIO_SKIP_SILENCE, "skipSilence", false )
@@ -1832,7 +1831,7 @@ sealed class Preferences<T>(
         const val HOME_LIBRARY_TYPE = "HomePlaylistType"
         const val AUDIO_FADE_DURATION = "AudioFadeDuration"
         const val AUDIO_QUALITY = "AudioQuality"
-        const val AUDIO_REVERB_PRESET = "AudioReverbPreset"
+        const val AUDIO_REVERB_PRESET = "AudioReverbPresetValue"
         const val AUDIO_SKIP_SILENCE = "AudioSkipSilence"
         const val AUDIO_VOLUME_NORMALIZATION = "AudioVolumeNormalization"
         const val AUDIO_VOLUME_NORMALIZATION_TARGET = "AudioVolumeNormalizationTarget"

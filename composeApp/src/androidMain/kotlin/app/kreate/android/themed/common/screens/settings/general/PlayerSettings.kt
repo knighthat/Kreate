@@ -263,11 +263,24 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
             )
     }
     entry( search, R.string.settings_audio_reverb ) {
-        SettingComponents.EnumEntry(
-            Preferences.AUDIO_REVERB_PRESET,
-            titleId = R.string.settings_audio_reverb,
-            subtitleId = R.string.settings_audio_reverb_info_apply_a_depth_effect_to_the_audio,
-            action = SettingComponents.Action.RESTART_PLAYER_SERVICE
+        SettingComponents.ListEntry(
+            preference = Preferences.AUDIO_REVERB_PRESET,
+            title = stringResource( R.string.settings_audio_reverb ),
+            subtitle = stringResource( R.string.settings_audio_reverb_info_apply_a_depth_effect_to_the_audio ),
+            getName = {
+                when( it ) {
+                    0 -> stringResource( R.string.reverb_preset_none )
+                    1 -> stringResource( R.string.reverb_preset_small_room )
+                    2 -> stringResource( R.string.reverb_preset_medium_room )
+                    3 -> stringResource( R.string.reverb_preset_large_room )
+                    4 -> stringResource( R.string.reverb_preset_medium_hall )
+                    5 -> stringResource( R.string.reverb_preset_large_hall )
+                    6 -> stringResource( R.string.reverb_preset_plate )
+                    // Code should never reach this, if it does, something else is wrong
+                    else -> throw IllegalStateException("Unknown reverb preset $it")
+                }
+            },
+            getList = { (0..6).toList().toTypedArray() }
         )
     }
     entry( search, R.string.settings_audio_focus ) {
