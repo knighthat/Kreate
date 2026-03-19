@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">হয়েছে</string>
     <string name="hidesong">আপনি কি সত্যি গানটা লুকাতে চান? এর প্লেব্যাক টাইম আর ক্যাশে মুছে যাবে। \n এটা পুনরুদ্ধার করা যাবে না আর।</string>
@@ -882,4 +882,15 @@
     <string name="success_doh_verified">DoH verified successfully</string>
     <string name="success_discord_log_out">Successfully logged out</string>
     <string name="error_discord_log_out">Log out failed</string>
+    <string name="info_song_already_downloaded">Song already downloaded</string>
+    <string name="error_loudness_normalization_failed">Loudness normalization failed</string>
+    <string name="error_bass_boost_failed">Bass boost failed</string>
+    <string name="error_reverb_failed">Failed to apply reverb</string>
+    <string name="reverb_preset_none">None</string>
+    <string name="reverb_preset_small_room">Small room</string>
+    <string name="reverb_preset_medium_room">Medium room</string>
+    <string name="reverb_preset_large_room">Large room</string>
+    <string name="reverb_preset_medium_hall">Medium hall</string>
+    <string name="reverb_preset_large_hall">Large hall</string>
+    <string name="reverb_preset_plate">Plate</string>
 </resources>
