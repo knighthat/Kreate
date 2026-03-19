@@ -114,7 +114,7 @@ class PlayerServiceModern:
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var mediaSession: MediaLibrarySession
     private var mediaLibrarySessionCallback: MediaLibrarySessionCallback =
-        MediaLibrarySessionCallback(this, Database, MyDownloadHelper)
+        MediaLibrarySessionCallback(this)
     private lateinit var bitmapProvider: BitmapProvider
     private lateinit var downloadListener: DownloadManager.Listener
     private lateinit var audioHandler: AudioHandler
