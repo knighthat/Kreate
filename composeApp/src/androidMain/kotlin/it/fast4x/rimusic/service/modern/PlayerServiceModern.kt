@@ -13,9 +13,6 @@ import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.media.AudioDeviceCallback
-import android.media.AudioDeviceInfo
-import android.media.AudioManager
 import android.media.audiofx.AudioEffect
 import android.os.Build
 import android.os.Handler
@@ -43,6 +40,7 @@ import androidx.media3.session.SessionToken
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.DownloadHelper
+import app.kreate.android.service.playback.AudioHandler
 import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.player.VolumeObserver
@@ -131,6 +129,7 @@ class PlayerServiceModern:
         MediaLibrarySessionCallback(this, Database, MyDownloadHelper)
     private lateinit var bitmapProvider: BitmapProvider
     private lateinit var downloadListener: DownloadManager.Listener
+    private lateinit var audioHandler: AudioHandler
 
     val currentMediaItem = MutableStateFlow<MediaItem?>(null)
 
@@ -186,6 +185,7 @@ class PlayerServiceModern:
 
         super.onCreate()
 
+        audioHandler = AudioHandler(this, handler, player)
         volumeObserver.register()
 
         // Enable Android Auto if disabled, REQUIRE ENABLING DEV MODE IN ANDROID AUTO
@@ -223,13 +223,13 @@ class PlayerServiceModern:
             logger.e( it ) { "Failed init bitmap provider" }
         }
 
-        val preferences = preferences
         MyDownloadHelper.instance = this.downloadHelper
 
         PlaybackStatsListener(false, this@PlayerServiceModern)
             .also( player::addAnalyticsListener )
 
         preferences.registerOnSharedPreferenceChangeListener(this)
+        preferences.registerOnSharedPreferenceChangeListener(audioHandler)
 
         // Force player to add all commands available, prior to android 13
         val forwardingPlayer =
@@ -328,8 +328,6 @@ class PlayerServiceModern:
                 updateWidgets()
             }
         }
-
-        maybeResumePlaybackWhenDeviceConnected()
 
         /* Queue is saved in events without scheduling it (remove this in future)*/
         // Load persistent queue when start activity and save periodically in background
@@ -445,7 +443,7 @@ class PlayerServiceModern:
                 logger.e( e ) { "onDestroy unregisterReceiver notificationActionReceiver failed!" }
             }
 
-
+            audioHandler.unregister()
             mediaSession.release()
             cache.release()
             //downloadCache.release()
@@ -471,54 +469,11 @@ class PlayerServiceModern:
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         when (key) {
-
-            Preferences.Key.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE -> maybeResumePlaybackWhenDeviceConnected()
-
             Preferences.Key.AUDIO_SKIP_SILENCE ->
                 player.skipSilenceEnabled = sharedPreferences.getBoolean( key, Preferences.AUDIO_SKIP_SILENCE.defaultValue )
 
             Preferences.Key.QUEUE_LOOP_TYPE ->
                 player.repeatMode = sharedPreferences.getEnum( key, Preferences.QUEUE_LOOP_TYPE.defaultValue ).type
-        }
-    }
-
-    private var audioManager: AudioManager? = null
-    private var audioDeviceCallback: AudioDeviceCallback? = null
-
-    private fun maybeResumePlaybackWhenDeviceConnected() {
-        if ( !isAtLeastAndroid6 ) return
-
-        if ( Preferences.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE.value ) {
-            if (audioManager == null)
-                audioManager = getSystemService( AUDIO_SERVICE ) as? AudioManager
-
-
-            audioDeviceCallback = object : AudioDeviceCallback() {
-                private fun canPlayMusic(audioDeviceInfo: AudioDeviceInfo): Boolean {
-                    if ( !audioDeviceInfo.isSink ) return false
-
-                    return when( audioDeviceInfo.type ) {
-                        AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
-                        AudioDeviceInfo.TYPE_WIRED_HEADSET,
-                        AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
-                        AudioDeviceInfo.TYPE_USB_HEADSET        -> true
-                        else                                    -> false
-                    }
-                }
-
-                override fun onAudioDevicesAdded(addedDevices: Array<AudioDeviceInfo>) {
-                    if( player.isPlaying ) return
-
-                    if( addedDevices.any( ::canPlayMusic ) )
-                        player.play()
-                }
-            }
-
-            audioManager?.registerAudioDeviceCallback( audioDeviceCallback, handler )
-
-        } else {
-            audioManager?.unregisterAudioDeviceCallback( audioDeviceCallback )
-            audioDeviceCallback = null
         }
     }
 
