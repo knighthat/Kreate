@@ -859,7 +859,7 @@
     <string name="error_failed_to_load_image">Bild konnte nicht geladen werden</string>
     <string name="error_invalid_path">Ungültiger Pfad</string>
     <string name="description_validate_url">URL validieren</string>
-    <string name="disabled">deaktiviert</string>
+    <string name="word_disabled">deaktiviert</string>
     <string name="settings_live_wallpaper_reset_warning"> BEACHTE: Dies stellt den Standardhintergrund des Herstellers ein. Leider ist es schwierig, zu deinem vorherigen Hintergrundbild zurückzukehren</string>
     <string name="ok">ok</string>
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>

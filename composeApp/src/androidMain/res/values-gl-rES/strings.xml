@@ -859,7 +859,7 @@
     <string name="error_failed_to_load_image">Fallou a carga da imaxe</string>
     <string name="error_invalid_path">Ruta inválida</string>
     <string name="description_validate_url">Validar url</string>
-    <string name="disabled">desactivado</string>
+    <string name="word_disabled">desactivado</string>
     <string name="settings_live_wallpaper_reset_warning"> AVISO: isto volverá ao fondo de pantalla predeterminado do fabricante. Desafortunadamente, é difícil volver ao fondo de pantalla anterior</string>
     <string name="ok">aceptar</string>
     <string name="setting_entry_thumbnail_size">Tamaño da miniatura</string>

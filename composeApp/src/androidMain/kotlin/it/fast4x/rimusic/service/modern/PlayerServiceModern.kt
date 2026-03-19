@@ -11,11 +11,9 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.media.audiofx.AudioEffect
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.MainThread
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.MediaItem
@@ -38,10 +36,9 @@ import app.kreate.android.R
 import app.kreate.android.service.DownloadHelper
 import app.kreate.android.service.playback.AudioHandler
 import app.kreate.android.service.player.ExoPlayerListener
+import app.kreate.android.service.player.LiveWallpaperEngine
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.player.VolumeObserver
-import app.kreate.android.utils.centerCropBitmap
-import app.kreate.android.utils.centerCropToMatchScreenSize
 import app.kreate.android.utils.isLocalFile
 import app.kreate.android.widget.Widget
 import app.kreate.database.models.Event
@@ -52,7 +49,6 @@ import io.ktor.client.HttpClient
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MainActivity
-import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
 import it.fast4x.rimusic.service.BitmapProvider
 import it.fast4x.rimusic.service.MyDownloadHelper
@@ -62,7 +58,10 @@ import it.fast4x.rimusic.utils.CoilBitmapLoader
 import it.fast4x.rimusic.utils.collect
 import it.fast4x.rimusic.utils.getEnum
 import it.fast4x.rimusic.utils.intent
+import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isAtLeastAndroid7
+import it.fast4x.rimusic.utils.playNext
+import it.fast4x.rimusic.utils.playPrevious
 import it.fast4x.rimusic.utils.preferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -70,7 +69,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.debounce
@@ -84,12 +82,10 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import me.knighthat.discord.Discord
-import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
@@ -137,10 +133,28 @@ class PlayerServiceModern:
     private val waitingForNetwork = MutableStateFlow(false)
 
     private var notificationManager: NotificationManager? = null
+    private var liveWallpaperEngine: LiveWallpaperEngine? = null
 
-    private var wallpaperRevertJob: Job? = null
-    private var wallpaper_cleared: Boolean = false
+    private fun registerLiveWallpaperEngine() {
+        // Always remove previous instance first (if applicable)
+        liveWallpaperEngine?.release()
+        liveWallpaperEngine?.also( player::removeListener )
 
+        liveWallpaperEngine = LiveWallpaperEngine(this)
+        liveWallpaperEngine?.also( player::addListener )
+
+        logger.d { "LiveWallpaper registered" }
+    }
+
+    private suspend fun unregisterLiveWallpaperEngine() {
+        liveWallpaperEngine?.restore()
+        liveWallpaperEngine?.release()
+        withContext( Dispatchers.Main ) {
+            liveWallpaperEngine?.also( player::removeListener )
+        }
+
+        logger.d { "LiveWallpaper unregistered" }
+    }
 
     private fun onMediaItemTransition( mediaItem: MediaItem? ) {
         listener.updateMediaControl( this, player )
@@ -313,6 +327,8 @@ class PlayerServiceModern:
             val token by Preferences.DISCORD_ACCESS_TOKEN
             discord.login( token )
         }
+        if( Preferences.LIVE_WALLPAPER.value > 0 )
+            registerLiveWallpaperEngine()
     }
 
     override fun onUpdateNotification( session: MediaSession, startInForegroundRequired: Boolean ) =
@@ -321,23 +337,6 @@ class PlayerServiceModern:
         } catch( err: Exception ) {
             logger.e( err ) { "failed to update notification" }
         }
-
-    override fun onIsPlayingChanged( isPlaying: Boolean ) {
-        wallpaperRevertJob?.cancel()
-
-
-        if (!isPlaying && Preferences.LIVE_WALLPAPER_RESET_DURATION.value != -1L) { // -1 means it should be disabled
-            wallpaperRevertJob = coroutineScope.launch {
-                delay(Preferences.LIVE_WALLPAPER_RESET_DURATION.value)
-                revertWallpaperToDefault()
-            }
-        } else {
-            if (wallpaper_cleared) {
-                wallpaper_cleared = false
-                updateWallpaper(bitmapProvider.bitmap)
-            }
-        }
-    }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession =
         mediaSession
@@ -396,6 +395,9 @@ class PlayerServiceModern:
         runCatching {
             listener.saveQueueToDatabase()
             volumeObserver.unregister()
+            runBlocking( Dispatchers.Default ) {
+                unregisterLiveWallpaperEngine()
+            }
 
             stopService(intent<MyDownloadService>())
             stopService(intent<PlayerServiceModern>())
@@ -435,34 +437,19 @@ class PlayerServiceModern:
 
             Preferences.Key.QUEUE_LOOP_TYPE ->
                 player.repeatMode = sharedPreferences.getEnum( key, Preferences.QUEUE_LOOP_TYPE.defaultValue ).type
-        }
-    }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun getFlag(type: WallpaperType): Int{
-            return when (type) {
-                WallpaperType.BOTH -> FLAG_LOCK or FLAG_SYSTEM
-                WallpaperType.LOCKSCREEN -> FLAG_LOCK
-                WallpaperType.HOME -> FLAG_SYSTEM
-                // This is intended, [WallpaperType.DISABLED] must not present at this point
-                WallpaperType.DISABLED -> throw UnsupportedOperationException("WallpaperType.DISABLED is used")
+            Preferences.Key.LIVE_WALLPAPER -> {
+                val currentValue by Preferences.LIVE_WALLPAPER
+                val newValue = preferences.getInt(key, 0)
+
+                // Topology: only make change if it goes from on to off or vice versa
+                if( newValue == 0 && currentValue != 0 )
+                    coroutineScope.launch( Dispatchers.Default ) {
+                        unregisterLiveWallpaperEngine()
+                    }
+                else if ( newValue > 0 && currentValue == 0 )
+                    registerLiveWallpaperEngine()
             }
-    }
-
-    private fun updateWallpaper( bitmap: Bitmap ) {
-        val type by Preferences.LIVE_WALLPAPER
-        if( type == WallpaperType.DISABLED ) return
-
-        coroutineScope.launch( Dispatchers.Default ) {
-            val mgr = WallpaperManager.getInstance( this@PlayerServiceModern )
-            val cropRect = with( bitmap ) { centerCropToMatchScreenSize( width, height ) }
-
-            if( isAtLeastAndroid7 ) {
-                val flag = getFlag(type)
-
-                mgr.setBitmap( bitmap, cropRect, true, flag )
-            } else if( type != WallpaperType.LOCKSCREEN )
-                mgr.setBitmap( centerCropBitmap( bitmap, cropRect ) )
         }
     }
 
@@ -476,7 +463,6 @@ class PlayerServiceModern:
 
             load(newUriForLoad) {
                 updateWidgets()
-                updateWallpaper( it )
             }
         }
     }
@@ -536,24 +522,6 @@ class PlayerServiceModern:
             && Preferences.RESUME_PLAYBACK_ON_STARTUP.value
             && AppLifecycleTracker.isInForeground()
         ) player.play()
-    }
-
-    private fun revertWallpaperToDefault() {
-        val type by Preferences.LIVE_WALLPAPER
-        if (type == WallpaperType.DISABLED) return
-        coroutineScope.launch(Dispatchers.IO) {
-            val mgr = WallpaperManager.getInstance(this@PlayerServiceModern)
-            try {
-                if (isAtLeastAndroid7) {
-                    mgr.clear(getFlag(type))
-                } else {
-                    mgr.clear()
-                }
-                wallpaper_cleared = true
-            } catch (e: IOException) {
-                Toaster.e("Failed to revert wallpaper")
-            }
-        }
     }
 
     fun updateDownloadedState() {

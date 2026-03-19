@@ -91,7 +91,6 @@ import it.fast4x.rimusic.enums.ThumbnailRoundness
 import it.fast4x.rimusic.enums.ThumbnailType
 import it.fast4x.rimusic.enums.TransitionEffect
 import it.fast4x.rimusic.enums.UiType
-import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.ui.styling.DefaultDarkColorPalette
 import it.fast4x.rimusic.ui.styling.DefaultLightColorPalette
 import me.knighthat.innertube.Constants
@@ -884,7 +883,7 @@ sealed class Preferences<T>(
             Enum( preferences, Key.LIKE_ICON, "iconLikeType", IconLikeType.Essential )
         }
         val LIVE_WALLPAPER by lazy {
-            Enum(preferences, Key.LIVE_WALLPAPER, "", WallpaperType.DISABLED)
+            Int(preferences, Key.LIVE_WALLPAPER, "", 0)
         }
         val LIVE_WALLPAPER_RESET_DURATION by lazy {
             Long(preferences, Key.LIVE_WALLPAPER_RESET_DURATION, "", -1L)
@@ -1930,7 +1929,7 @@ sealed class Preferences<T>(
         const val CAROUSEL_SIZE = "CarouselSize"
         const val THUMBNAIL_TYPE = "ThumbnailType"
         const val LIKE_ICON = "LikeIcon"
-        const val LIVE_WALLPAPER = "LiveWallpaper"
+        const val LIVE_WALLPAPER = "LiveWallpaperValue"
         const val LIVE_WALLPAPER_RESET_DURATION = "LiveWallpaperResetDuration"
         const val ANIMATED_GRADIENT = "AnimatedGradient"
         const val NOW_PLAYING_INDICATOR = "NowPlayingIndicator"
