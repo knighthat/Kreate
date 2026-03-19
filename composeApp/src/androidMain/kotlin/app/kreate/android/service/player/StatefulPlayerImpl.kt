@@ -40,11 +40,13 @@ import app.kreate.di.PrefType
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
+import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.PlayerServiceModern.Companion.SleepTimerNotificationId
 import it.fast4x.rimusic.utils.TimerJob
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
+import it.fast4x.rimusic.utils.getEnum
 import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.mediaItems
 import it.fast4x.rimusic.utils.setGlobalVolume
@@ -653,6 +655,9 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
             Preferences.Key.AUDIO_BASS_BOOST_LEVEL -> boostLowFrequencies()
 
             Preferences.Key.AUDIO_REVERB_PRESET -> updateReverb()
+
+            Preferences.Key.QUEUE_LOOP_TYPE ->
+                repeatMode = pref.getEnum( key, QueueLoopType.Default ).type
         }
     }
 }

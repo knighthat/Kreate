@@ -52,7 +52,6 @@ import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.utils.AppLifecycleTracker
 import it.fast4x.rimusic.utils.CoilBitmapLoader
 import it.fast4x.rimusic.utils.collect
-import it.fast4x.rimusic.utils.getEnum
 import it.fast4x.rimusic.utils.intent
 import it.fast4x.rimusic.utils.preferences
 import kotlinx.coroutines.CoroutineScope
@@ -419,12 +418,6 @@ class PlayerServiceModern:
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         when (key) {
-            Preferences.Key.AUDIO_SKIP_SILENCE ->
-                player.skipSilenceEnabled = sharedPreferences.getBoolean( key, Preferences.AUDIO_SKIP_SILENCE.defaultValue )
-
-            Preferences.Key.QUEUE_LOOP_TYPE ->
-                player.repeatMode = sharedPreferences.getEnum( key, Preferences.QUEUE_LOOP_TYPE.defaultValue ).type
-
             Preferences.Key.LIVE_WALLPAPER -> {
                 val currentValue by Preferences.LIVE_WALLPAPER
                 val newValue = preferences.getInt(key, 0)
