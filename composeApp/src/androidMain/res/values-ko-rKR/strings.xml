@@ -859,7 +859,7 @@
     <string name="error_failed_to_load_image">이미지를 불러오지 못했습니다</string>
     <string name="error_invalid_path">잘못된 경로</string>
     <string name="description_validate_url">URL 유효성 검사</string>
-    <string name="disabled">비활성화</string>
+    <string name="word_disabled">비활성화</string>
     <string name="settings_live_wallpaper_reset_warning"> 경고: 이렇게 하면 제조사의 기본 배경화면으로 돌아갑니다. 안타깝게도 기존 배경화면으로 되돌리기는 어렵습니다</string>
     <string name="ok">확인</string>
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>

@@ -859,7 +859,7 @@
     <string name="error_failed_to_load_image">Falha ao carregar a imagem</string>
     <string name="error_invalid_path">Caminho inválido</string>
     <string name="description_validate_url">Validar link</string>
-    <string name="disabled">desativado</string>
+    <string name="word_disabled">desativado</string>
     <string name="settings_live_wallpaper_reset_warning"> AVISO: isto irá voltar para o papel de parede padrão do fabricante. Infelizmente, é difícil reverter para seu papel de parede anterior</string>
     <string name="ok">ok</string>
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
