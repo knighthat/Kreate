@@ -1,10 +1,6 @@
 package it.fast4x.rimusic.service.modern
 
-import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.WallpaperManager
-import android.app.WallpaperManager.FLAG_LOCK
-import android.app.WallpaperManager.FLAG_SYSTEM
 import android.content.ComponentName
 import android.content.Intent
 import android.content.SharedPreferences
@@ -58,10 +54,6 @@ import it.fast4x.rimusic.utils.CoilBitmapLoader
 import it.fast4x.rimusic.utils.collect
 import it.fast4x.rimusic.utils.getEnum
 import it.fast4x.rimusic.utils.intent
-import it.fast4x.rimusic.utils.isAtLeastAndroid6
-import it.fast4x.rimusic.utils.isAtLeastAndroid7
-import it.fast4x.rimusic.utils.playNext
-import it.fast4x.rimusic.utils.playPrevious
 import it.fast4x.rimusic.utils.preferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -132,7 +124,6 @@ class PlayerServiceModern:
     private val isNetworkAvailable = MutableStateFlow(true)
     private val waitingForNetwork = MutableStateFlow(false)
 
-    private var notificationManager: NotificationManager? = null
     private var liveWallpaperEngine: LiveWallpaperEngine? = null
 
     private fun registerLiveWallpaperEngine() {
@@ -414,10 +405,6 @@ class PlayerServiceModern:
 
             listener.loudnessEnhancer?.release()
 
-            notificationManager?.cancel(NotificationId)
-            notificationManager?.cancelAll()
-            notificationManager = null
-
             coroutineScope.cancel()
 
             runBlocking { discord.logout() }
@@ -541,9 +528,6 @@ class PlayerServiceModern:
     }
 
     companion object {
-        const val NotificationId = 1001
-        const val NotificationChannelId = "default_channel_id"
-
         const val SleepTimerNotificationId = 1002
         const val SleepTimerNotificationChannelId = "sleep_timer_channel_id"
 
