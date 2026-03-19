@@ -248,3 +248,5 @@ jobs:
 
           token: ${{ secrets.RELEASE_TOKEN }}
           generate_release_notes: true
+          target_commitish: ${{ github.sha }}
+          previous_tag: v${{ needs.versioning.outputs.upstream }}
