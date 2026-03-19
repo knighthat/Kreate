@@ -5,11 +5,8 @@ import android.app.PendingIntent
 import android.app.WallpaperManager
 import android.app.WallpaperManager.FLAG_LOCK
 import android.app.WallpaperManager.FLAG_SYSTEM
-import android.content.BroadcastReceiver
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -20,7 +17,6 @@ import android.os.Looper
 import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
-import androidx.core.content.ContextCompat
 import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -66,10 +62,7 @@ import it.fast4x.rimusic.utils.CoilBitmapLoader
 import it.fast4x.rimusic.utils.collect
 import it.fast4x.rimusic.utils.getEnum
 import it.fast4x.rimusic.utils.intent
-import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isAtLeastAndroid7
-import it.fast4x.rimusic.utils.playNext
-import it.fast4x.rimusic.utils.playPrevious
 import it.fast4x.rimusic.utils.preferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -94,7 +87,6 @@ import me.knighthat.discord.Discord
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.java.KoinJavaComponent.inject
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -145,8 +137,6 @@ class PlayerServiceModern:
     private val waitingForNetwork = MutableStateFlow(false)
 
     private var notificationManager: NotificationManager? = null
-
-    private lateinit var notificationActionReceiver: NotificationActionReceiver
 
     private var wallpaperRevertJob: Job? = null
     private var wallpaper_cleared: Boolean = false
@@ -295,29 +285,6 @@ class PlayerServiceModern:
         }
         MyDownloadHelper.instance.downloadManager.addListener(downloadListener)
 
-        notificationActionReceiver = NotificationActionReceiver(player)
-
-
-        val filter = IntentFilter().apply {
-            addAction(Action.play.value)
-            addAction(Action.pause.value)
-            addAction(Action.next.value)
-            addAction(Action.previous.value)
-            addAction(Action.like.value)
-            addAction(Action.download.value)
-            addAction(Action.playradio.value)
-            addAction(Action.shuffle.value)
-            addAction(Action.repeat.value)
-            addAction(Action.search.value)
-        }
-
-        ContextCompat.registerReceiver(
-            this,
-            notificationActionReceiver,
-            filter,
-            ContextCompat.RECEIVER_NOT_EXPORTED
-        )
-
         // Ensure that song is updated
         currentSong.debounce(1000).collect(coroutineScope) { song ->
             println("PlayerServiceModern onCreate currentSong $song")
@@ -436,12 +403,6 @@ class PlayerServiceModern:
             player.removeListener( listener )
             player.stop()
             player.release()
-
-            try{
-                unregisterReceiver(notificationActionReceiver)
-            } catch (e: Exception){
-                logger.e( e ) { "onDestroy unregisterReceiver notificationActionReceiver failed!" }
-            }
 
             audioHandler.unregister()
             mediaSession.release()
@@ -609,56 +570,6 @@ class PlayerServiceModern:
         */
         println("PlayerServiceModern updateDownloadedState downloads count ${downloads.size} currentSongIsDownloaded ${currentSong.value?.id}")
         listener.updateMediaControl( this@PlayerServiceModern, player )
-    }
-
-    inner class NotificationActionReceiver(private val player: StatefulPlayer) : BroadcastReceiver() {
-        @ExperimentalCoroutinesApi
-        @FlowPreview
-        override fun onReceive(context: Context, intent: Intent) {
-            when ( intent.action ) {
-                Action.pause.value      -> player.pause()
-                Action.play.value       -> player.play()
-                Action.next.value       -> player.playNext()
-                Action.previous.value   -> player.playPrevious()
-                Action.like.value       -> mediaLibrarySessionCallback.toggleLike( player )
-                Action.download.value   -> player.downloadCurrentMediaItem()
-                Action.playradio.value  -> player.startRadio()
-                Action.shuffle.value    -> player.toggleShuffleMode()
-                Action.search.value     -> mediaLibrarySessionCallback.onSearch()
-                Action.repeat.value     -> player.cycleRepeatMode()
-            }
-        }
-    }
-
-    @JvmInline
-    value class Action(val value: String) {
-
-        val pendingIntent: PendingIntent
-            get() {
-                val context: Context by inject(Context::class.java)
-
-                return PendingIntent.getBroadcast(
-                    context,
-                    100,
-                    Intent(value).setPackage(context.packageName),
-                    PendingIntent.FLAG_UPDATE_CURRENT.or(if (isAtLeastAndroid6) PendingIntent.FLAG_IMMUTABLE else 0)
-                )
-            }
-
-        companion object {
-
-            val pause = Action("it.fast4x.rimusic.pause")
-            val play = Action("it.fast4x.rimusic.play")
-            val next = Action("it.fast4x.rimusic.next")
-            val previous = Action("it.fast4x.rimusic.previous")
-            val like = Action("it.fast4x.rimusic.like")
-            val download = Action("it.fast4x.rimusic.download")
-            val playradio = Action("it.fast4x.rimusic.playradio")
-            val shuffle = Action("it.fast4x.rimusic.shuffle")
-            val search = Action("it.fast4x.rimusic.search")
-            val repeat = Action("it.fast4x.rimusic.repeat")
-
-        }
     }
 
     companion object {
