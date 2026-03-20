@@ -1,8 +1,11 @@
 package app.kreate.android.widget
 
 import android.content.Context
-import android.graphics.BitmapFactory
+import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -12,7 +15,6 @@ import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
-import androidx.glance.LocalContext
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
@@ -28,23 +30,36 @@ import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.text.Text
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
 import app.kreate.android.drawable.AppIcon
-import app.kreate.util.cleanPrefix
+import app.kreate.di.THUMBNAIL_SIZE
+import app.kreate.util.thumbnail
+import co.touchlab.kermit.Logger
+import coil3.asImage
+import coil3.imageLoader
+import coil3.request.ErrorResult
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
+import coil3.request.placeholder
+import coil3.toBitmap
 import it.fast4x.rimusic.MainActivity
-import java.io.File
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import me.knighthat.utils.Toaster
+
 
 sealed class Widget: GlanceAppWidget() {
 
     val songTitleKey = stringPreferencesKey("songTitleKey")
     val songArtistKey = stringPreferencesKey("songArtistKey")
     val isPlayingKey = booleanPreferencesKey("isPlayingKey")
-    var bitmapPath = stringPreferencesKey("thumbnailPathKey")
 
     private var onPlayPauseAction: () -> Unit = {}
     private var onPreviousAction: () -> Unit = {}
     private var onNextAction: () -> Unit = {}
+    private var bitmap: Bitmap? by mutableStateOf(null)
 
     @Composable
     protected abstract fun Content( context: Context )
@@ -52,8 +67,7 @@ sealed class Widget: GlanceAppWidget() {
     @Composable
     @GlanceComposable
     protected fun Thumbnail( modifier: GlanceModifier ) {
-        val bitmap = currentState( bitmapPath )?.let( BitmapFactory::decodeFile )
-            ?: AppIcon.bitmap( LocalContext.current )
+        val bitmap = bitmap ?: return
         Image(
             provider = ImageProvider( bitmap ),
             contentDescription = "cover",
@@ -92,26 +106,53 @@ sealed class Widget: GlanceAppWidget() {
     suspend fun update(
         context: Context,
         actions: Triple<() -> Unit, () -> Unit, () -> Unit>,
-        status: Triple<String, String, Boolean>,
-        bitmapFile: File
+        isPlaying: Boolean,
+        metadata: MediaMetadata
     ) {
-        val glanceId =
-            GlanceAppWidgetManager(context).getGlanceIds(this::class.java).firstOrNull() ?: return
+        try {
+            val appContext = context.applicationContext
+            //<editor-fold desc="Load image">
+            val artworkUri = metadata.artworkUri?.toString()
+            val request = ImageRequest.Builder(appContext)
+                .data( artworkUri.thumbnail(THUMBNAIL_SIZE) )
+                .diskCacheKey( artworkUri )
+                .placeholder( R.drawable.loader )
+                .fallback {
+                    AppIcon.bitmap(appContext).asImage()
+                }
+                .error {
+                    AppIcon.bitmap(appContext).asImage()
+                }
+                .build()
+            val result = withContext( Dispatchers.IO ) {
+                appContext.imageLoader.execute( request )
+            }
+            if( result is ErrorResult )
+                throw result.throwable
+            else
+                bitmap = (result as SuccessResult).image.toBitmap()
+            //</editor-fold>
+            val glanceId = GlanceAppWidgetManager(appContext)
+                .getGlanceIds(this::class.java)
+                .firstOrNull() ?: return
 
-        updateAppWidgetState(context, glanceId) {
-            it[songTitleKey] = cleanPrefix( status.first )
-            it[songArtistKey] = cleanPrefix( status.second )
-            it[isPlayingKey] = status.third
+            updateAppWidgetState(appContext, glanceId) {
+                it[songTitleKey] = metadata.title.toString()
+                it[songArtistKey] = metadata.artist.toString()
+                it[isPlayingKey] = isPlaying
+            }
 
-            if( it[bitmapPath].isNullOrEmpty() )
-                it[bitmapPath] = bitmapFile.absolutePath
+            onPlayPauseAction = actions.first
+            onPreviousAction = actions.second
+            onNextAction = actions.third
+
+            update(appContext, glanceId)
+
+            Logger.d( tag = this::class.java.simpleName ) { "Widget updated" }
+        } catch( err: Exception ) {
+            Logger.e( "", err, this::class.java.simpleName )
+            Toaster.e( R.string.error_failed_to_update_widget )
         }
-
-        onPlayPauseAction = actions.first
-        onPreviousAction = actions.second
-        onNextAction = actions.third
-
-        update(context, glanceId)
     }
 
     override suspend fun provideGlance( context: Context, id: GlanceId ) {

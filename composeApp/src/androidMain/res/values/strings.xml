@@ -907,4 +907,5 @@
     <string name="setting_entry_restore_wallpaper">Restore wallpaper to</string>
     <string name="setting_description_choose_image">Click to choose image</string>
     <string name="setting_description_remove_image">Click to remove image</string>
+    <string name="error_failed_to_update_widget">Failed to update widget</string>
 </resources>
