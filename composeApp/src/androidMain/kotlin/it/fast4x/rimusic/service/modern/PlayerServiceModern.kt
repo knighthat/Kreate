@@ -8,7 +8,6 @@ import android.media.audiofx.AudioEffect
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.runtime.getValue
-import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
@@ -210,33 +209,20 @@ class PlayerServiceModern:
         preferences.registerOnSharedPreferenceChangeListener(this)
         preferences.registerOnSharedPreferenceChangeListener(audioHandler)
 
-        // Force player to add all commands available, prior to android 13
-        val forwardingPlayer =
-            object : ForwardingPlayer(player) {
-                override fun getAvailableCommands(): Player.Commands {
-                    return super.getAvailableCommands()
-                        .buildUpon()
-                        .addAllCommands()
-                        //.remove(COMMAND_SEEK_TO_PREVIOUS)
-                        //.remove(COMMAND_SEEK_TO_NEXT)
-                        .build()
-                }
-            }
-
         // Build the media library session
-        mediaSession =
-            MediaLibrarySession.Builder(this, forwardingPlayer, mediaLibrarySessionCallback)
-                .setSessionActivity(
-                    PendingIntent.getActivity(
-                        this,
-                        0,
-                        Intent(this, MainActivity::class.java)
-                            .putExtra("expandPlayerBottomSheet", true),
-                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                    )
+        mediaSession = MediaLibrarySession
+            .Builder(this, player.toForwardingPlayer(), mediaLibrarySessionCallback)
+            .setSessionActivity(
+                PendingIntent.getActivity(
+                    this,
+                    0,
+                    Intent(this, MainActivity::class.java)
+                        .putExtra("expandPlayerBottomSheet", true),
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                 )
-                .setBitmapLoader( CoilBitmapLoader(coroutineScope) )
-                .build()
+            )
+            .setBitmapLoader( CoilBitmapLoader(coroutineScope) )
+            .build()
 
         listener = ExoPlayerListener(
             player,

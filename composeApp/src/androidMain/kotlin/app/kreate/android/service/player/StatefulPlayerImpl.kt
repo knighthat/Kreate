@@ -20,6 +20,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.media3.common.AuxEffectInfo
 import androidx.media3.common.C
+import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
@@ -399,6 +400,8 @@ class StatefulPlayerImpl(
 
     override fun sleepTimerRemaining(): Flow<Long?> = timerJob?.millisLeft ?: flowOf( null )
 
+    override fun toForwardingPlayer(): ForwardingPlayer = ForwardingPlayerImpl()
+
     /*
             ExoPlayer
      */
@@ -671,5 +674,11 @@ class StatefulPlayerImpl(
             Preferences.Key.QUEUE_LOOP_TYPE ->
                 repeatMode = pref.getEnum( key, QueueLoopType.Default ).type
         }
+    }
+
+    private inner class ForwardingPlayerImpl : ForwardingPlayer(this@StatefulPlayerImpl) {
+
+        override fun getAvailableCommands(): Player.Commands =
+            super.availableCommands.buildUpon().addAllCommands().build()
     }
 }
