@@ -83,8 +83,10 @@ import kotlin.time.Duration
  * - Observable states (current mediaItem, timeline, window, etc.)
  */
 @OptIn(UnstableApi::class)
-class StatefulPlayerImpl(private val player: ExoPlayer) :
-    ExoPlayer by player,
+class StatefulPlayerImpl(
+    private val context: Context,
+    private val player: ExoPlayer
+) : ExoPlayer by player,
     StatefulPlayer,
     Player.Listener,
     KoinComponent,
@@ -365,7 +367,6 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
         if( !isDownloaded ) {
             logger.v { "Downloading current media item ($mediaId)" }
 
-            val context: Context by inject(Context::class.java)
             manageDownload( context, mediaItem, false )
         } else
             Toaster.i( R.string.info_song_already_downloaded )

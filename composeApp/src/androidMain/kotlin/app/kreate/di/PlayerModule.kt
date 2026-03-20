@@ -26,9 +26,9 @@ import androidx.media3.extractor.DefaultExtractorsFactory
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.DownloadHelper
-import app.kreate.android.service.player.StatefulPlayerImpl
 import app.kreate.android.service.player.ErrorHandlingPolicy
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.android.service.player.StatefulPlayerImpl
 import app.kreate.android.service.player.VolumeObserver
 import app.kreate.android.utils.CharUtils
 import app.kreate.android.utils.ConnectivityUtils
@@ -468,6 +468,7 @@ val playerModule = module {
             .build()
 
         StatefulPlayerImpl(
+            context,
             ExoPlayer.Builder(context)
                 .setMediaSourceFactory( datasourceFactory )
                 .setRenderersFactory( renderersFactory )
