@@ -163,9 +163,15 @@ class PlayerServiceModern:
     }
 
     override fun onStartCommand( intent: Intent?, flags: Int, startId: Int ): Int {
-        if( intent?.action == ACTION_RESTART ) {
-            player.pause()
-            stopSelf()
+        when( intent?.action ) {
+            ACTION_RESTART -> {
+                player.pause()
+                stopSelf()
+            }
+            PLAYER_ACTION_PLAY -> player.play()
+            PLAYER_ACTION_PAUSE -> player.pause()
+            PLAYER_ACTION_NEXT -> player.seekToNext()
+            PLAYER_ACTION_PREVIOUS -> player.seekToPrevious()
         }
 
         return super.onStartCommand(intent, flags, startId)
@@ -520,7 +526,11 @@ class PlayerServiceModern:
         const val PLAYLIST = "playlist"
         const val SEARCHED = "searched"
         const val ACTION_RESTART = "restart"
-
-        const val CACHE_DIRNAME = "exo_cache"
+        //<editor-fold desc="Player actions">
+        const val PLAYER_ACTION_PLAY = "PLAYER_PLAY"
+        const val PLAYER_ACTION_PAUSE = "PLAYER_PAUSE"
+        const val PLAYER_ACTION_NEXT = "PLAYER_NEXT"
+        const val PLAYER_ACTION_PREVIOUS = "PLAYER_PREVIOUS"
+        //</editor-fold>
     }
 }

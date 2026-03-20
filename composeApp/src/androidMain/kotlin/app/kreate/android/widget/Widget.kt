@@ -1,6 +1,7 @@
 package app.kreate.android.widget
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,6 +20,7 @@ import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.glance.appwidget.action.actionStartService
 import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.background
@@ -45,6 +47,7 @@ import coil3.request.SuccessResult
 import coil3.request.placeholder
 import coil3.toBitmap
 import it.fast4x.rimusic.MainActivity
+import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
@@ -77,13 +80,19 @@ sealed class Widget: GlanceAppWidget() {
 
     @Composable
     @GlanceComposable
-    protected fun Controller() {
+    protected fun Controller( context: Context ) {
         val isPlaying = currentState( isPlayingKey ) ?: false
 
         Image(
             provider = ImageProvider( R.drawable.play_skip_back ),
             contentDescription = "back",
-            modifier = GlanceModifier.clickable( onPreviousAction )
+            modifier = GlanceModifier.clickable(
+                actionStartService(
+                    Intent(context, PlayerServiceModern::class.java).apply {
+                        action = PlayerServiceModern.PLAYER_ACTION_PREVIOUS
+                    }
+                )
+            )
         )
 
         Image(
@@ -91,14 +100,25 @@ sealed class Widget: GlanceAppWidget() {
                 if ( isPlaying ) R.drawable.pause else R.drawable.play
             ),
             contentDescription = "play/pause",
-            modifier = GlanceModifier.padding(horizontal = 20.dp)
-                                     .clickable( onPlayPauseAction )
+            modifier = GlanceModifier.padding(horizontal = 20.dp).clickable(
+                actionStartService(
+                    Intent(context, PlayerServiceModern::class.java).apply {
+                        action = if( isPlaying ) PlayerServiceModern.PLAYER_ACTION_PAUSE else PlayerServiceModern.PLAYER_ACTION_PLAY
+                    }
+                )
+            )
         )
 
         Image(
             provider = ImageProvider( R.drawable.play_skip_forward ),
             contentDescription = "next",
-            modifier = GlanceModifier.clickable( onNextAction )
+            modifier = GlanceModifier.clickable(
+                actionStartService(
+                    Intent(context, PlayerServiceModern::class.java).apply {
+                        action = PlayerServiceModern.PLAYER_ACTION_NEXT
+                    }
+                )
+            )
         )
     }
 
@@ -187,7 +207,7 @@ sealed class Widget: GlanceAppWidget() {
                         modifier = GlanceModifier.padding( vertical = 12.dp ),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalAlignment = Alignment.CenterHorizontally
-                    ) { Controller() }
+                    ) { Controller( context ) }
                 }
             }
         }
@@ -213,7 +233,7 @@ sealed class Widget: GlanceAppWidget() {
                                              .padding( vertical = 12.dp ),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalAlignment = Alignment.CenterHorizontally,
-                ) { Controller() }
+                ) { Controller( context ) }
 
                 Thumbnail( GlanceModifier.padding( horizontal = 5.dp) )
             }
