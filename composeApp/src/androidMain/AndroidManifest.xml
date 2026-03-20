@@ -167,6 +167,8 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <!-- Don't forget to update const in GlanceAppWidgetReceiver too -->
+                <action android:name="app.kreate.android.widget.UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -176,6 +178,8 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <!-- Don't forget to update const in GlanceAppWidgetReceiver too -->
+                <action android:name="app.kreate.android.widget.UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"

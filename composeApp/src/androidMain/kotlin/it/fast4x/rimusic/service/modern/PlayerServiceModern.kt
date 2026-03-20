@@ -35,7 +35,6 @@ import app.kreate.android.service.player.LiveWallpaperEngine
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.player.VolumeObserver
 import app.kreate.android.utils.isLocalFile
-import app.kreate.android.widget.Widget
 import app.kreate.database.models.Event
 import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
@@ -150,7 +149,6 @@ class PlayerServiceModern:
         if( mediaItem != null ) {
             updateBitmap()
             updateDownloadedState()
-            updateWidgets()
 
             if( !Preferences.isLoggedInToDiscord() )
                 return
@@ -298,10 +296,6 @@ class PlayerServiceModern:
             println("PlayerServiceModern onCreate currentSong $song")
             updateDownloadedState()
             println("PlayerServiceModern onCreate currentSongIsDownloaded ${currentSongStateDownload.value}")
-
-            withContext(Dispatchers.Main) {
-                updateWidgets()
-            }
         }
 
         /* Queue is saved in events without scheduling it (remove this in future)*/
@@ -445,25 +439,7 @@ class PlayerServiceModern:
                 newUriForLoad = null
             }
 
-            load(newUriForLoad) {
-                updateWidgets()
-            }
-        }
-    }
-
-    @MainThread
-    fun updateWidgets() {
-        val isPlaying = player.isPlaying
-        val metadata = player.currentMediaItem?.mediaMetadata ?: return
-        val actions = Triple(
-            if( isPlaying ) player::pause else player::play,
-            player::seekToPrevious,
-            player::seekToNext
-        )
-
-        coroutineScope.launch( Dispatchers.Default ) {
-            Widget.Vertical.update( this@PlayerServiceModern, actions, isPlaying, metadata )
-            Widget.Horizontal.update( this@PlayerServiceModern, actions, isPlaying, metadata )
+            load(newUriForLoad) {}
         }
     }
 

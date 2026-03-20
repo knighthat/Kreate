@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.media.audiofx.BassBoost
 import android.media.audiofx.LoudnessEnhancer
@@ -34,6 +35,7 @@ import app.kreate.android.R
 import app.kreate.android.service.PlayerEventUpdateDiscord
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
+import app.kreate.android.widget.WidgetReceiver
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
 import app.kreate.di.PrefType
@@ -70,7 +72,6 @@ import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.java.KoinJavaComponent.inject
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -581,6 +582,16 @@ class StatefulPlayerImpl(
                 }
             }
         }
+    }
+
+    override fun onIsPlayingChanged( isPlaying: Boolean ) {
+        val metadataBundle = currentMediaItem?.mediaMetadata?.toBundle()
+         val intent = Intent(WidgetReceiver.ACTION_UPDATE).apply {
+            putExtra(WidgetReceiver.KEY_IS_PLAYING, isPlaying)
+            putExtra(WidgetReceiver.KEY_METADATA, metadataBundle)
+            `package` = context.packageName
+        }
+        context.sendBroadcast( intent )
     }
 
     override fun onTimelineChanged( timeline: Timeline, reason: Int ) =

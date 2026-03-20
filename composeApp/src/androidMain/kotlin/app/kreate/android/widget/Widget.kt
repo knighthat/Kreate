@@ -51,6 +51,7 @@ import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
+import org.jetbrains.annotations.Contract
 
 
 sealed class Widget: GlanceAppWidget() {
@@ -59,9 +60,6 @@ sealed class Widget: GlanceAppWidget() {
     val songArtistKey = stringPreferencesKey("songArtistKey")
     val isPlayingKey = booleanPreferencesKey("isPlayingKey")
 
-    private var onPlayPauseAction: () -> Unit = {}
-    private var onPreviousAction: () -> Unit = {}
-    private var onNextAction: () -> Unit = {}
     private var bitmap: Bitmap? by mutableStateOf(null)
 
     @Composable
@@ -122,57 +120,56 @@ sealed class Widget: GlanceAppWidget() {
         )
     }
 
+    @Contract("_,null->null")
+    private suspend fun getThumbnail( context: Context, artworkUri: String? ): Bitmap? {
+        if( artworkUri == null ) return null
+
+        val request = ImageRequest.Builder(context)
+            .data( artworkUri.thumbnail(THUMBNAIL_SIZE) )
+            .diskCacheKey( artworkUri )
+            .placeholder( R.drawable.loader )
+            .fallback {
+                AppIcon.bitmap(context).asImage()
+            }
+            .error {
+                AppIcon.bitmap(context).asImage()
+            }
+            .build()
+        val result = withContext( Dispatchers.IO ) {
+            context.imageLoader.execute( request )
+        }
+
+        return if( result is ErrorResult ) {
+            Logger.e( "", result.throwable, this::class.java.simpleName )
+            Toaster.e( R.string.error_failed_to_update_widget )
+            null
+        } else
+            (result as SuccessResult).image.toBitmap()
+    }
+
     @UnstableApi
     suspend fun update(
         context: Context,
-        actions: Triple<() -> Unit, () -> Unit, () -> Unit>,
-        isPlaying: Boolean,
-        metadata: MediaMetadata
+        isPlaying: Boolean?,
+        metadata: MediaMetadata?
     ) {
-        try {
-            val appContext = context.applicationContext
-            //<editor-fold desc="Load image">
-            val artworkUri = metadata.artworkUri?.toString()
-            val request = ImageRequest.Builder(appContext)
-                .data( artworkUri.thumbnail(THUMBNAIL_SIZE) )
-                .diskCacheKey( artworkUri )
-                .placeholder( R.drawable.loader )
-                .fallback {
-                    AppIcon.bitmap(appContext).asImage()
-                }
-                .error {
-                    AppIcon.bitmap(appContext).asImage()
-                }
-                .build()
-            val result = withContext( Dispatchers.IO ) {
-                appContext.imageLoader.execute( request )
-            }
-            if( result is ErrorResult )
-                throw result.throwable
-            else
-                bitmap = (result as SuccessResult).image.toBitmap()
-            //</editor-fold>
-            val glanceId = GlanceAppWidgetManager(appContext)
-                .getGlanceIds(this::class.java)
-                .firstOrNull() ?: return
+        val appContext = context.applicationContext
+        val artworkUri = metadata?.artworkUri?.toString()
+        bitmap = getThumbnail( context, artworkUri )
+        val glanceId = GlanceAppWidgetManager(appContext)
+            .getGlanceIds(this::class.java)
+            .firstOrNull() ?: return
 
-            updateAppWidgetState(appContext, glanceId) {
-                it[songTitleKey] = metadata.title.toString()
-                it[songArtistKey] = metadata.artist.toString()
+        updateAppWidgetState(appContext, glanceId) {
+            it[songTitleKey] = metadata?.title.toString()
+            it[songArtistKey] = metadata?.artist.toString()
+            if( isPlaying != null )
                 it[isPlayingKey] = isPlaying
-            }
-
-            onPlayPauseAction = actions.first
-            onPreviousAction = actions.second
-            onNextAction = actions.third
-
-            update(appContext, glanceId)
-
-            Logger.d( tag = this::class.java.simpleName ) { "Widget updated" }
-        } catch( err: Exception ) {
-            Logger.e( "", err, this::class.java.simpleName )
-            Toaster.e( R.string.error_failed_to_update_widget )
         }
+
+        update(appContext, glanceId)
+
+        Logger.d( tag = this::class.java.simpleName ) { "Widget updated" }
     }
 
     override suspend fun provideGlance( context: Context, id: GlanceId ) {
