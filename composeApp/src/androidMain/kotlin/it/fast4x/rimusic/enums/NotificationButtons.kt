@@ -6,7 +6,7 @@ import androidx.annotation.StringRes
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.SessionCommand
 import app.kreate.android.R
-import it.fast4x.rimusic.service.modern.MediaLibrarySessionCallback
+import app.kreate.android.service.playback.MediaLibrarySessionCallback
 import me.knighthat.enums.TextView
 
 enum class NotificationButtons(

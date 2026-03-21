@@ -84,6 +84,7 @@ import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.playback.PlaybackService
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.updater.UpdatePlugins
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
@@ -114,7 +115,6 @@ import it.fast4x.rimusic.enums.ThumbnailRoundness
 import it.fast4x.rimusic.extensions.pip.PipEventContainer
 import it.fast4x.rimusic.extensions.pip.PipModuleContainer
 import it.fast4x.rimusic.service.MyDownloadHelper
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.ui.components.CustomModalBottomSheet
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.themed.CrossfadeContainer
@@ -193,7 +193,7 @@ MainActivity :
         super.onStart()
 
         runCatching {
-            bindService(intent<PlayerServiceModern>(), serviceConnection, Context.BIND_AUTO_CREATE)
+            bindService(intent<PlaybackService>(), serviceConnection, Context.BIND_AUTO_CREATE)
         }.onFailure {
             logger.e( it ) { "Failed to bind PlayerServiceModern" }
         }
@@ -1006,7 +1006,7 @@ MainActivity :
             // Unbind service (making sure there's no connection with the service)
             unbindService( serviceConnection )
             // Stop service (release resources)
-            val intent = Intent(this, PlayerServiceModern::class.java)
+            val intent = Intent(this, PlaybackService::class.java)
             stopService( intent )
 
             logger.d { "Successfully stop player and unbind PlayerServiceModern service" }

@@ -62,6 +62,7 @@ import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.playback.PlaybackService
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
 import app.kreate.util.cleanPrefix
@@ -69,7 +70,6 @@ import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BackgroundProgress
 import it.fast4x.rimusic.enums.MiniPlayerType
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.NowPlayingSongIndicator
@@ -265,7 +265,7 @@ fun MiniPlayer(
                                     player.clearMediaItems()
                                     hidePlayer()
                                     runCatching {
-                                        context.stopService(context.intent<PlayerServiceModern>())
+                                        context.stopService(context.intent<PlaybackService>())
                                     }
                                     hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                                 } else

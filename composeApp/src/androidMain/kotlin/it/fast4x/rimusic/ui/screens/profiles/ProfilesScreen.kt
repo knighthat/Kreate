@@ -33,9 +33,9 @@ import androidx.core.net.toUri
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.playback.PlaybackService
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.service.MyDownloadService
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.Skeleton
 import it.fast4x.rimusic.ui.components.themed.ConfirmationDialog
@@ -235,7 +235,7 @@ private fun changeProfile(profile: String) {
 
     val context: Context by inject(Context::class.java)
 
-    context.stopService( context.intent<PlayerServiceModern>() )
+    context.stopService( context.intent<PlaybackService>() )
     context.stopService( context.intent<MyDownloadService>() )
 
     // Close other activities

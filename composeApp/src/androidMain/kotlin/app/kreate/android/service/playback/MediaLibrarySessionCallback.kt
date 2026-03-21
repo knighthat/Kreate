@@ -1,4 +1,4 @@
-package it.fast4x.rimusic.service.modern
+package app.kreate.android.service.playback
 
 import android.content.ContentResolver
 import android.content.Context
@@ -58,6 +58,7 @@ import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+
 
 @UnstableApi
 class MediaLibrarySessionCallback(
@@ -145,7 +146,7 @@ class MediaLibrarySessionCallback(
                     .setFlags( FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK )
                 context.startActivity(  intent )
             } else {
-                val intent = Intent(context, PlayerServiceModern::class.java)
+                val intent = Intent(context, PlaybackService::class.java)
                     .setAction( customCommand.customAction )
                 context.startService( intent )
             }
@@ -565,11 +566,11 @@ class MediaLibrarySessionCallback(
     object Command {
 
         val search = SessionCommand("SEARCH", Bundle.EMPTY)
-        val download = SessionCommand(PlayerServiceModern.ACTION_DOWNLOAD, Bundle.EMPTY)
-        val like = SessionCommand(PlayerServiceModern.ACTION_LIKE, Bundle.EMPTY)
-        val cycleRepeat = SessionCommand(PlayerServiceModern.PLAYER_ACTION_CYCLE_REPEAT, Bundle.EMPTY)
-        val toggleShuffle = SessionCommand(PlayerServiceModern.PLAYER_ACTION_TOGGLE_SHUFFLE, Bundle.EMPTY)
-        val toggleRadio = SessionCommand(PlayerServiceModern.PLAYER_ACTION_TOGGLE_RADIO, Bundle.EMPTY)
+        val download = SessionCommand(PlaybackService.ACTION_DOWNLOAD, Bundle.EMPTY)
+        val like = SessionCommand(PlaybackService.ACTION_LIKE, Bundle.EMPTY)
+        val cycleRepeat = SessionCommand(PlaybackService.PLAYER_ACTION_CYCLE_REPEAT, Bundle.EMPTY)
+        val toggleShuffle = SessionCommand(PlaybackService.PLAYER_ACTION_TOGGLE_SHUFFLE, Bundle.EMPTY)
+        val toggleRadio = SessionCommand(PlaybackService.PLAYER_ACTION_TOGGLE_RADIO, Bundle.EMPTY)
     }
 
     object Id {

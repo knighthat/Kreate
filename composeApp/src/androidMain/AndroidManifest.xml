@@ -188,7 +188,7 @@
 
         <!-- NEW PLAYER SERVICE -->
         <service
-            android:name="it.fast4x.rimusic.service.modern.PlayerServiceModern"
+            android:name=".service.playback.PlaybackService"
             android:exported="true"
             android:foregroundServiceType="mediaPlayback"
             tools:ignore="ExportedService">

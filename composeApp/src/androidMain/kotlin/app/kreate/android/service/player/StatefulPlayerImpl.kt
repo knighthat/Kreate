@@ -40,6 +40,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.PlayerEventUpdateDiscord
 import app.kreate.android.service.playback.PlaybackListener
+import app.kreate.android.service.playback.PlaybackService
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.isLocal
@@ -57,8 +58,6 @@ import it.fast4x.rimusic.service.NoInternetException
 import it.fast4x.rimusic.service.PlayableFormatNotFoundException
 import it.fast4x.rimusic.service.UnknownException
 import it.fast4x.rimusic.service.UnplayableException
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
-import it.fast4x.rimusic.service.modern.PlayerServiceModern.Companion.SleepTimerNotificationId
 import it.fast4x.rimusic.utils.AppLifecycleTracker
 import it.fast4x.rimusic.utils.TimerJob
 import it.fast4x.rimusic.utils.asMediaItem
@@ -117,7 +116,8 @@ class StatefulPlayerImpl(
         // TODO: Make this a setting entry
         private const val SAVE_INTERVAL = 30_000L
 
-        const val SleepTimerNotificationChannelId = "sleep_timer_channel_id"
+        private const val SLEEP_TIMER_NOTIFICATION_ID = 1002
+        private const val SLEEP_TIMER_NOTIFICATION_CHANNEL = "sleep_timer_channel_id"
     }
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -454,7 +454,7 @@ class StatefulPlayerImpl(
             pause()
 
             val notification = NotificationCompat
-                .Builder(context, SleepTimerNotificationChannelId)
+                .Builder(context, SLEEP_TIMER_NOTIFICATION_CHANNEL)
                 .setContentTitle(title)
                 .setAutoCancel( true )
                 .setOnlyAlertOnce( true )
@@ -462,7 +462,7 @@ class StatefulPlayerImpl(
                 .setSmallIcon( R.drawable.time )
                 .build()
             val manager = context.getSystemService<NotificationManager>()
-            manager?.notify( SleepTimerNotificationId, notification )
+            manager?.notify( SLEEP_TIMER_NOTIFICATION_ID, notification )
         }
     }
 
@@ -645,8 +645,8 @@ class StatefulPlayerImpl(
     }
 
     private fun updateMediaControl() {
-        val intent = Intent(context, PlayerServiceModern::class.java)
-            .setAction( PlayerServiceModern.ACTION_UPDATE_MEDIA_CONTROL )
+        val intent = Intent(context, PlaybackService::class.java)
+            .setAction( PlaybackService.ACTION_UPDATE_MEDIA_CONTROL )
         context.startService( intent )
     }
 

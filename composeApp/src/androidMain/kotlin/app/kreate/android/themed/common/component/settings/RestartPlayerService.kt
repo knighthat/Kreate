@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
+import app.kreate.android.service.playback.PlaybackService
 import org.koin.compose.koinInject
 
 object RestartPlayerService {
@@ -48,8 +48,8 @@ object RestartPlayerService {
                 contentDescription = stringResource( R.string.info_restart_player_service ),
                 tint = colorResource( R.color.important ),
                 modifier = Modifier.size( 24.dp ).clickable {
-                    val intent = Intent(context, PlayerServiceModern::class.java)
-                        .setAction( PlayerServiceModern.ACTION_RESTART )
+                    val intent = Intent(context, PlaybackService::class.java)
+                        .setAction( PlaybackService.ACTION_RESTART )
                     context.startService( intent )
                     active = false
                 }

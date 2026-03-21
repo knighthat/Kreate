@@ -36,6 +36,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
 import app.kreate.android.drawable.AppIcon
+import app.kreate.android.service.playback.PlaybackService
 import app.kreate.di.THUMBNAIL_SIZE
 import app.kreate.util.thumbnail
 import co.touchlab.kermit.Logger
@@ -47,7 +48,6 @@ import coil3.request.SuccessResult
 import coil3.request.placeholder
 import coil3.toBitmap
 import it.fast4x.rimusic.MainActivity
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
@@ -86,8 +86,8 @@ sealed class Widget: GlanceAppWidget() {
             contentDescription = "back",
             modifier = GlanceModifier.clickable(
                 actionStartService(
-                    Intent(context, PlayerServiceModern::class.java).apply {
-                        action = PlayerServiceModern.PLAYER_ACTION_PREVIOUS
+                    Intent(context, PlaybackService::class.java).apply {
+                        action = PlaybackService.PLAYER_ACTION_PREVIOUS
                     }
                 )
             )
@@ -100,8 +100,8 @@ sealed class Widget: GlanceAppWidget() {
             contentDescription = "play/pause",
             modifier = GlanceModifier.padding(horizontal = 20.dp).clickable(
                 actionStartService(
-                    Intent(context, PlayerServiceModern::class.java).apply {
-                        action = if( isPlaying ) PlayerServiceModern.PLAYER_ACTION_PAUSE else PlayerServiceModern.PLAYER_ACTION_PLAY
+                    Intent(context, PlaybackService::class.java).apply {
+                        action = if( isPlaying ) PlaybackService.PLAYER_ACTION_PAUSE else PlaybackService.PLAYER_ACTION_PLAY
                     }
                 )
             )
@@ -112,8 +112,8 @@ sealed class Widget: GlanceAppWidget() {
             contentDescription = "next",
             modifier = GlanceModifier.clickable(
                 actionStartService(
-                    Intent(context, PlayerServiceModern::class.java).apply {
-                        action = PlayerServiceModern.PLAYER_ACTION_NEXT
+                    Intent(context, PlaybackService::class.java).apply {
+                        action = PlaybackService.PLAYER_ACTION_NEXT
                     }
                 )
             )

@@ -11,7 +11,6 @@ import androidx.media3.datasource.cache.Cache
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import me.knighthat.component.dialog.ConfirmDialog
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
