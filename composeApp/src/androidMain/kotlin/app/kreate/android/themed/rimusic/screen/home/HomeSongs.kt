@@ -12,7 +12,6 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +32,8 @@ import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
+import app.kreate.android.service.download.CacheState
+import app.kreate.android.service.download.DownloadHelper
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
@@ -41,7 +42,6 @@ import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.song.PeriodSelector
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.themed.rimusic.component.tab.Sort
-import app.kreate.android.utils.isLocal
 import app.kreate.android.utils.shallowCompare
 import app.kreate.constant.SongSortBy
 import app.kreate.database.ext.FormatWithSong
@@ -53,7 +53,6 @@ import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BuiltInPlaylist
 import it.fast4x.rimusic.enums.DurationInMinutes
-import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
@@ -69,8 +68,6 @@ import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.forcePlayAtIndex
-import it.fast4x.rimusic.utils.isDownloadedSong
-import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -98,6 +95,8 @@ fun HomeSongs(
     // Essentials
     val player: StatefulPlayer = koinInject()
     val cache: Cache = koinInject(CacheType.CACHE)
+    val cacheState: CacheState = koinInject()
+    val downloadHelper: DownloadHelper = koinInject()
     val context = LocalContext.current
     val menuState = LocalMenuState.current
     val hapticFeedback = LocalHapticFeedback.current
@@ -158,12 +157,10 @@ fun HomeSongs(
             BuiltInPlaylist.Downloaded -> {
                 // [MyDownloadHelper] provide a list of downloaded songs, which is faster to retrieve
                 // than using `Cache.isCached()` call
-                val downloaded: List<String> = MyDownloadHelper.instance
-                                                               .downloads
-                                                               .value
-                                                               .values
-                                                               .filter { it.state == Download.STATE_COMPLETED }
-                                                               .fastMap { it.request.id }
+                val downloaded: Set<String> = cacheState.downloaded
+                                                        .value
+                                                        .filterValues { it == Download.STATE_COMPLETED }
+                                                        .keys
                 Database.songTable
                         .sortAll( songSort.sortBy, songSort.sortOrder )
                         .map { list ->
@@ -256,25 +253,11 @@ fun HomeSongs(
         ) { index, song ->
             val mediaItem = song.asMediaItem
 
-            val isLocal by remember { derivedStateOf { mediaItem.isLocal } }
-            val isDownloaded = isLocal || isDownloadedSong( mediaItem.mediaId )
-
             SwipeablePlaylistItem(
                 mediaItem = mediaItem,
                 onPlayNext = { player.addNext( mediaItem ) },
                 onDownload = {
-                    if( builtInPlaylist != BuiltInPlaylist.OnDevice ) {
-                        cache.removeResource(mediaItem.mediaId)
-                        Database.asyncTransaction {
-                            formatTable.updateContentLengthOf( mediaItem.mediaId )
-                        }
-                        if ( !isLocal )
-                            manageDownload(
-                                context = context,
-                                mediaItem = mediaItem,
-                                downloadState = isDownloaded
-                            )
-                    }
+                    downloadHelper.downloadSong( song )
                 },
                 onEnqueue = {
                     player.enqueue(mediaItem)

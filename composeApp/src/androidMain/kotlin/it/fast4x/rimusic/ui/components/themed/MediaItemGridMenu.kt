@@ -40,11 +40,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.R
+import app.kreate.android.service.download.CacheState
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.isLocal
@@ -58,15 +59,11 @@ import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.models.Info
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
-import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.addSongToYtPlaylist
 import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.enqueue
-import it.fast4x.rimusic.utils.getDownloadState
-import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.positionAndDurationState
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
@@ -266,18 +263,9 @@ fun MediaItemGridMenu (
 
     val isLocal by remember { derivedStateOf { mediaItem.isLocal } }
 
-    var updateData by remember {
-        mutableStateOf(false)
-    }
-
-    var downloadState by remember {
-        mutableStateOf(Download.STATE_STOPPED)
-    }
-
-    downloadState = getDownloadState(mediaItem.mediaId)
-    val isDownloaded = if (!isLocal) isDownloadedSong(mediaItem.mediaId) else true
-    val thumbnailSizeDp = Dimensions.thumbnails.song + 20.dp
-    val thumbnailSizePx = thumbnailSizeDp.px
+    val cacheState: CacheState = koinInject()
+    val isDownloaded by cacheState.isDownloadedState( mediaItem.mediaId )
+        .collectAsStateWithLifecycle( false )
 
     val album by remember {
         Database.albumTable

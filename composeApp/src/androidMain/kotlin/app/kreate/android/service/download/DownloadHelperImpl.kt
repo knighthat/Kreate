@@ -11,15 +11,20 @@ import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheWriter
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
+import app.kreate.android.Preferences
 import app.kreate.android.utils.isLocal
 import app.kreate.database.models.Song
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
+import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
+import it.fast4x.rimusic.utils.addToYtLikedSong
+import it.fast4x.rimusic.utils.isNetworkConnected
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 
 
@@ -145,6 +150,26 @@ class DownloadHelperImpl(
             val request = toDownloadRequest( mediaItem )
             download( request )
         }
+    }
+
+    override fun likeAndDownload( mediaItem: MediaItem ) {
+        Database.asyncTransaction {
+            insertIgnore( mediaItem )
+            songTable.likeState( mediaItem.mediaId, true )
+        }
+
+        if( !isNetworkConnected(context) ) {
+            Toaster.noInternet()
+            return
+        }
+
+        if( Preferences.AUTO_DOWNLOAD_ON_LIKE.value )
+            downloadMediaItem( mediaItem )
+
+        if( isYouTubeSyncEnabled() )
+            CoroutineScope(Dispatchers.IO).launch {
+                addToYtLikedSong( mediaItem )
+            }
     }
 
     override fun downloadMediaItems( mediaItems: List<MediaItem> ) {

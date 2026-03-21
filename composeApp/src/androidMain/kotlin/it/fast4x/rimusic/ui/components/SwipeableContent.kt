@@ -13,9 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -28,23 +26,15 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.offline.Download
-import androidx.media3.exoplayer.offline.DownloadService
 import app.kreate.android.Preferences
-import app.kreate.android.utils.isLocal
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.AlbumSwipeAction
-import it.fast4x.rimusic.enums.DownloadedStateMedia
 import it.fast4x.rimusic.enums.PlaylistSwipeAction
 import it.fast4x.rimusic.enums.QueueSwipeAction
-import it.fast4x.rimusic.service.MyDownloadService
-import it.fast4x.rimusic.utils.downloadedStateMedia
-import it.fast4x.rimusic.utils.getDownloadState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
 
@@ -130,42 +120,6 @@ fun SwipeableQueueItem(
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-
-    val downloadState = getDownloadState(mediaItem.mediaId)
-    var downloadedStateMedia by remember { mutableStateOf(DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED) }
-    downloadedStateMedia = if (!mediaItem.isLocal) downloadedStateMedia(mediaItem.mediaId)
-    else DownloadedStateMedia.DOWNLOADED
-
-    val onDownloadButtonClick: () -> Unit = {
-        if (
-            (
-                    (downloadState == Download.STATE_DOWNLOADING
-                    || downloadState == Download.STATE_QUEUED
-                    || downloadState == Download.STATE_RESTARTING
-                    )  && downloadedStateMedia == DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED
-            ) ||
-            (
-                    downloadedStateMedia == DownloadedStateMedia.DOWNLOADED
-                   || downloadedStateMedia == DownloadedStateMedia.CACHED_AND_DOWNLOADED
-            )
-        ) {
-            DownloadService.sendRemoveDownload(
-                context,
-                MyDownloadService::class.java,
-                mediaItem.mediaId,
-                false
-            )
-        } else {
-            onDownload()
-        }
-    }
-
-    val songLikeState by remember {
-        Database.songTable
-                .likeState( mediaItem.mediaId )
-                .distinctUntilChanged()
-    }.collectAsState( null, Dispatchers.IO )
-
     val onFavourite: () -> Unit = {
         CoroutineScope( Dispatchers.IO ).launch {
             YouTubeSync.toggleSongLike( context, mediaItem )
@@ -178,7 +132,7 @@ fun SwipeableQueueItem(
     fun getActionCallback(actionName: QueueSwipeAction): () -> Unit {
         return when (actionName) {
             QueueSwipeAction.PlayNext -> onPlayNext
-            QueueSwipeAction.Download -> onDownloadButtonClick
+            QueueSwipeAction.Download -> onDownload
             QueueSwipeAction.Favourite -> onFavourite
             QueueSwipeAction.RemoveFromQueue -> onRemoveFromQueue
             QueueSwipeAction.Enqueue -> onEnqueue
@@ -186,21 +140,13 @@ fun SwipeableQueueItem(
         }
     }
     val swipeLeftCallback = getActionCallback(queueSwipeLeftAction)
-    val swipeRighCallback = getActionCallback(queueSwipeRightAction)
+    val swipeRightCallback = getActionCallback(queueSwipeRightAction)
 
     SwipeableContent(
-        swipeToLeftIcon = queueSwipeLeftAction.getStateIcon(
-            songLikeState,
-            downloadState,
-            downloadedStateMedia
-        ),
-        swipeToRightIcon = queueSwipeRightAction.getStateIcon(
-            songLikeState,
-            downloadState,
-            downloadedStateMedia
-        ),
+        swipeToLeftIcon = queueSwipeLeftAction.androidIconId,
+        swipeToRightIcon = queueSwipeRightAction.androidIconId,
         onSwipeToLeft = swipeLeftCallback,
-        onSwipeToRight = swipeRighCallback,
+        onSwipeToRight = swipeRightCallback,
         modifier = modifier
     ) {
         content()
@@ -218,17 +164,6 @@ fun SwipeablePlaylistItem(
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-    val downloadState = getDownloadState(mediaItem.mediaId)
-    var downloadedStateMedia by remember { mutableStateOf(DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED) }
-    downloadedStateMedia = if (!mediaItem.isLocal) downloadedStateMedia(mediaItem.mediaId)
-    else DownloadedStateMedia.DOWNLOADED
-
-    val songLikeState by remember {
-        Database.songTable
-            .likeState( mediaItem.mediaId )
-            .distinctUntilChanged()
-    }.collectAsState( null, Dispatchers.IO )
-
     val onFavourite: () -> Unit = {
         CoroutineScope( Dispatchers.IO ).launch {
             YouTubeSync.toggleSongLike( context, mediaItem )
@@ -248,21 +183,13 @@ fun SwipeablePlaylistItem(
         }
     }
     val swipeLeftCallback = getActionCallback(playlistSwipeLeftAction)
-    val swipeRighCallback = getActionCallback(playlistSwipeRightAction)
+    val swipeRightCallback = getActionCallback(playlistSwipeRightAction)
 
     SwipeableContent(
-        swipeToLeftIcon =  playlistSwipeLeftAction.getStateIcon(
-            songLikeState,
-            downloadState,
-            downloadedStateMedia
-        ),
-        swipeToRightIcon =  playlistSwipeRightAction.getStateIcon(
-            songLikeState,
-            downloadState,
-            downloadedStateMedia
-        ),
+        swipeToLeftIcon =  playlistSwipeLeftAction.androidIconId,
+        swipeToRightIcon =  playlistSwipeRightAction.androidIconId,
         onSwipeToLeft = swipeLeftCallback,
-        onSwipeToRight = swipeRighCallback
+        onSwipeToRight = swipeRightCallback
     ) {
         content()
     }

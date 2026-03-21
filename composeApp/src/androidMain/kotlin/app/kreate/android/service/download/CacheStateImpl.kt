@@ -42,6 +42,9 @@ class CacheStateImpl(
     override fun isDownloaded( songId: String ) =
         downloaded.value.any { it.key == songId && it.value == Download.STATE_COMPLETED }
 
+    override fun isDownloadedState(songId: String): Flow<Boolean> =
+        downloaded.map { it[songId] == Download.STATE_COMPLETED }
+
     @kotlin.OptIn(ExperimentalCoroutinesApi::class)
     override fun stateOf( songId: String ): Flow<CacheState.State> =
         downloaded.flatMapLatest {

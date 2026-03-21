@@ -29,6 +29,13 @@ interface CacheState {
     fun isDownloaded( songId: String ): Boolean
 
     /**
+     * Only observes download cache. Only returns
+     * `true` if state is [androidx.media3.exoplayer.offline.Download.STATE_COMPLETED],
+     * otherwise `false`
+     */
+    fun isDownloadedState( songId: String ): Flow<Boolean>
+
+    /**
      * Deeper inspection to cache state of the song.
      * Whether it's cached (both partially and fully),
      * downloaded fully, or not cached at all.

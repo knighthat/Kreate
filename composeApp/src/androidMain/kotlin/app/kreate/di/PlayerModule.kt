@@ -2,7 +2,6 @@
 
 package app.kreate.di
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import androidx.compose.runtime.getValue
@@ -25,7 +24,8 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.extractor.DefaultExtractorsFactory
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.service.DownloadHelper
+import app.kreate.android.service.download.DownloadHelper
+import app.kreate.android.service.download.DownloadHelperImpl
 import app.kreate.android.service.player.ErrorHandlingPolicy
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.player.StatefulPlayerImpl
@@ -61,7 +61,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.json.Json
-import me.knighthat.impl.DownloadHelperImpl
 import me.knighthat.innertube.Endpoints
 import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.UserAgents
@@ -479,19 +478,12 @@ val playerModule = module {
                 .build()
         )
     }
-    @SuppressLint("UnsafeOptInUsageError")
     single<DownloadHelper> {
-        val dataSourceFactory: ResolvingDataSource.Factory = get(DatasourceType.DOWNLOADER)
-        val downloadCache: Cache = get(CacheType.DOWNLOAD)
-
-        DownloadHelperImpl(dataSourceFactory, get(), downloadCache)
-    }
-    single<app.kreate.android.service.download.DownloadHelper> {
         val context: Context = get()
         val cache: Cache = get(CacheType.CACHE)
         val downloadCache: Cache = get(CacheType.DOWNLOAD)
 
-        app.kreate.android.service.download.DownloadHelperImpl(context, cache, downloadCache)
+        DownloadHelperImpl(context, cache, downloadCache)
     }
 }
 

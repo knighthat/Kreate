@@ -62,6 +62,7 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.download.CacheState
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
@@ -90,7 +91,6 @@ import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.PlayEventsType
 import it.fast4x.rimusic.enums.UiType
-import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
@@ -153,6 +153,7 @@ fun HomeQuickPicks(
 ) {
     val hapticFeedback = LocalHapticFeedback.current
     val player: StatefulPlayer = koinInject()
+    val cacheState: CacheState = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val menuState = LocalMenuState.current
     val windowInsets = LocalPlayerAwareWindowInsets.current
@@ -322,14 +323,11 @@ fun HomeQuickPicks(
             cache.keys
         }.toMutableSet()
 
-        MyDownloadHelper.instance
-                        .downloads
-                        .value
-                        .filter {
-                            it.value.state == Download.STATE_COMPLETED
-                        }
-                        .keys
-                        .also { keys.addAll(it) }
+        cacheState.downloaded
+                  .value
+                  .filterValues { it == Download.STATE_COMPLETED }
+                  .keys
+                  .also( keys::addAll )
 
         cachedSongs = keys.toList()
     }

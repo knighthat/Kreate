@@ -27,6 +27,9 @@ import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.download.CacheState
+import app.kreate.constant.SongSortBy
+import app.kreate.constant.SortOrder
 import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
@@ -44,14 +47,12 @@ import it.fast4x.innertube.utils.from
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.enums.StatisticsType
-import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.plus
@@ -66,6 +67,7 @@ class MediaLibrarySessionCallback(
 ) : MediaLibrarySession.Callback, KoinComponent {
 
     private val cache: Cache by inject(CacheType.CACHE)
+    private val cacheState: CacheState by inject()
 
     private val scope = CoroutineScope(Dispatchers.Main) + Job()
     var searchedSongs: List<Song> = emptyList()
@@ -256,7 +258,7 @@ class MediaLibrarySessionCallback(
                 Tree.PLAYLISTS -> {
                     val likedSongCount = Database.songTable.allFavorites().first().size
                     val cachedSongCount = getCountCachedSongs().first()
-                    val downloadedSongCount = getCountDownloadedSongs().first()
+                    val downloadedSongCount = getCountDownloadedSongs()
                     val onDeviceSongCount = Database.songTable.allOnDevice().first().size
                     val playlists = Database.playlistTable.sortPreviewsBySongCount().first()
                     listOf(
@@ -351,14 +353,12 @@ class MediaLibrarySessionCallback(
                                         )
                             Id.ON_DEVICE -> Database.songTable.allOnDevice()
                             Id.DOWNLOADED -> {
-                                val downloads = MyDownloadHelper.instance.downloads.value
+                                val downloads = cacheState.downloaded.value.filterValues { it == Download.STATE_COMPLETED }.keys
+                                // TODO: Make a SQL statement that only queries for songs with ids in [downloads]
                                 Database.songTable
-                                        .all( excludeHidden = true )
-                                        .flowOn( Dispatchers.IO )
+                                        .sortAll(SongSortBy.TITLE, SortOrder.ASCENDING)
                                         .map { list ->
-                                            list.filter {
-                                                    downloads[it.id]?.state == Download.STATE_COMPLETED
-                                                }
+                                            list.filter { it.id in downloads }
                                         }
                             }
 
@@ -453,14 +453,12 @@ class MediaLibrarySessionCallback(
                                            )
                         Id.ON_DEVICE -> Database.songTable.allOnDevice()
                         Id.DOWNLOADED -> {
-                            val downloads = MyDownloadHelper.instance.downloads.value
+                            val downloads = cacheState.downloaded.value.filterValues { it == Download.STATE_COMPLETED }.keys
+                            // TODO: Make a SQL statement that only queries for songs with ids in [downloads]
                             Database.songTable
-                                    .all( excludeHidden = false )
-                                    .map { songs ->
-                                        songs.fastFilter {
-                                                 downloads[it.id]?.state == Download.STATE_COMPLETED
-                                             }
-                                             .sortedByDescending { downloads[it.id]?.updateTimeMs ?: 0L }
+                                    .sortAll(SongSortBy.TITLE, SortOrder.ASCENDING)
+                                    .map { list ->
+                                        list.filter { it.id in downloads }
                                     }
                         }
 
@@ -557,11 +555,8 @@ class MediaLibrarySessionCallback(
                         .size
                 }
 
-    private fun getCountDownloadedSongs() = MyDownloadHelper.instance.downloads.map {
-        it.filter {
-            it.value.state == Download.STATE_COMPLETED
-        }.size
-    }
+    private fun getCountDownloadedSongs() =
+        cacheState.downloaded.value.values.count { it == Download.STATE_COMPLETED }
 
     object Command {
 

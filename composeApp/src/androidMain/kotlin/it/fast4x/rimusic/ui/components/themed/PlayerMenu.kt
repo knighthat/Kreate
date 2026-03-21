@@ -18,24 +18,21 @@ import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.download.DownloadHelper
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.di.CacheType
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.MenuStyle
-import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.utils.addSongToYtPlaylist
-import it.fast4x.rimusic.utils.addToYtLikedSong
 import it.fast4x.rimusic.utils.addToYtPlaylist
 import it.fast4x.rimusic.utils.asSong
-import it.fast4x.rimusic.utils.isNetworkConnected
 import it.fast4x.rimusic.utils.rememberEqualizerLauncher
 import it.fast4x.rimusic.utils.removeYTSongFromPlaylist
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
 
@@ -50,9 +47,9 @@ fun PlayerMenu(
     onClosePlayer: () -> Unit,
     onMatchingSong: (() -> Unit)? = null
     ) {
-    val context = LocalContext.current
     val menuState = LocalMenuState.current
     val player: StatefulPlayer = koinInject()
+    val downloadHelper: DownloadHelper = koinInject()
     val menuStyle by Preferences.MENU_STYLE
 
     //val context = LocalContext.current
@@ -129,19 +126,7 @@ fun PlayerMenu(
             onHideFromDatabase = { isHiding = true },
             onDismiss = onDismiss,
             onAddToPreferites = {
-                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
-                    Toaster.noInternet()
-                } else if (!isYouTubeSyncEnabled()){
-                    Database.asyncTransaction {
-                        songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
-                    }
-                }
-                else {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addToYtLikedSong(mediaItem)
-                    }
-                }
+                downloadHelper.likeAndDownload( mediaItem )
             },
             onClosePlayer = onClosePlayer,
             onMatchingSong = onMatchingSong
@@ -161,7 +146,7 @@ fun MiniPlayerMenu(
     onDismiss: () -> Unit,
     onClosePlayer: () -> Unit
 ) {
-    val context = LocalContext.current
+    val downloadHelper: DownloadHelper = koinInject()
     val menuStyle by Preferences.MENU_STYLE
 
     if (menuStyle == MenuStyle.Grid) {
@@ -172,19 +157,7 @@ fun MiniPlayerMenu(
                 onClosePlayer()
             },
             onAddToPreferites = {
-                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
-                    Toaster.noInternet()
-                } else if (!isYouTubeSyncEnabled()){
-                    Database.asyncTransaction {
-                        songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
-                    }
-                }
-                else {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addToYtLikedSong(mediaItem)
-                    }
-                }
+                downloadHelper.likeAndDownload( mediaItem )
             },
             onDismiss = onDismiss
         )
@@ -196,19 +169,7 @@ fun MiniPlayerMenu(
                 onClosePlayer()
             },
             onAddToPreferites = {
-                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
-                    Toaster.noInternet()
-                } else if (!isYouTubeSyncEnabled()){
-                    Database.asyncTransaction {
-                        songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
-                    }
-                }
-                else {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addToYtLikedSong(mediaItem)
-                    }
-                }
+                downloadHelper.likeAndDownload( mediaItem )
             },
             onDismiss = onDismiss
         )

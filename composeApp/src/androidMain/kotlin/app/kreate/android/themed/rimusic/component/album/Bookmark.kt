@@ -8,19 +8,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.util.fastMap
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.download.DownloadHelper
 import app.kreate.database.models.Song
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.DualIcon
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
-import it.fast4x.rimusic.utils.asMediaItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -28,6 +25,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import org.koin.java.KoinJavaComponent.inject
 
 class Bookmark(
     private val albumId: String,
@@ -47,13 +45,13 @@ class Bookmark(
 
     @OptIn(UnstableApi::class)
     private fun downloadOnBookmark() = CoroutineScope( Dispatchers.IO ).launch {
-        Database.songAlbumMapTable
-                .allSongsOf( albumId )
-                .first()
-                .fastMap( Song::asMediaItem )
-                .fastForEach {
-                    MyDownloadHelper.autoDownload( it )
-                }
+        if( !Preferences.AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED.value ) return@launch
+
+        val songs: List<Song> = Database.songAlbumMapTable
+                                        .allSongsOf( albumId )
+                                        .first { it.isNotEmpty() }
+        val downloadHelper: DownloadHelper by inject(DownloadHelper::class.java)
+        downloadHelper.downloadSongs( songs )
     }
 
     override fun onShortClick() = Database.asyncTransaction {

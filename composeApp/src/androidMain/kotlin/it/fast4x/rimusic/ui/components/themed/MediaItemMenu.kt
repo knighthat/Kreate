@@ -57,13 +57,15 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
-import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.download.CacheState
+import app.kreate.android.service.download.DownloadHelper
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.isLocal
@@ -80,7 +82,6 @@ import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.models.Info
-import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.ui.styling.Dimensions
@@ -89,13 +90,10 @@ import it.fast4x.rimusic.ui.styling.favoritesIcon
 import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.addSongToYtPlaylist
-import it.fast4x.rimusic.utils.addToYtLikedSong
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.enqueue
-import it.fast4x.rimusic.utils.getDownloadState
 import it.fast4x.rimusic.utils.getLikeState
-import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isNetworkConnected
 import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.positionAndDurationState
@@ -124,7 +122,8 @@ fun InHistoryMediaItemMenu(
     context: Context,
     onHideFromDatabase: (() -> Unit)? = {},
     onDeleteFromDatabase: (() -> Unit)? = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    downloadHelper: DownloadHelper = koinInject()
 ) =
     NonQueuedMediaItemMenu(
         navController = navController,
@@ -133,19 +132,7 @@ fun InHistoryMediaItemMenu(
         onHideFromDatabase = onHideFromDatabase,
         onDeleteFromDatabase = onDeleteFromDatabase,
         onAddToPreferites = {
-            if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
-                Toaster.noInternet()
-            } else if (!isYouTubeSyncEnabled()){
-                Database.asyncTransaction {
-                    songTable.likeState( song.id, true )
-                    MyDownloadHelper.autoDownloadWhenLiked(song.asMediaItem)
-                }
-            }
-            else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    addToYtLikedSong(song.asMediaItem)
-                }
-            }
+            downloadHelper.likeAndDownload( song.asMediaItem )
         },
         modifier = modifier
     )
@@ -165,6 +152,7 @@ fun InPlaylistMediaItemMenu(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val downloadHelper: DownloadHelper = koinInject()
 
     NonQueuedMediaItemMenu(
         navController = navController,
@@ -195,19 +183,7 @@ fun InPlaylistMediaItemMenu(
             }
         },
         onAddToPreferites = {
-            if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
-                Toaster.noInternet()
-            } else if (!isYouTubeSyncEnabled()){
-                Database.asyncTransaction {
-                    songTable.likeState( song.id, true )
-                    MyDownloadHelper.autoDownloadWhenLiked(song.asMediaItem)
-                }
-            }
-            else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    addToYtLikedSong(song.asMediaItem)
-                }
-            }
+            downloadHelper.likeAndDownload( song.asMediaItem )
         },
         onMatchingSong = { if (onMatchingSong != null) {onMatchingSong()}
             onDismiss() },
@@ -224,6 +200,7 @@ fun NonQueuedMediaItemMenuLibrary(
     onDismiss: () -> Unit,
     mediaItem: MediaItem,
     modifier: Modifier = Modifier,
+    downloadHelper: DownloadHelper = koinInject(),
     onRemoveFromPlaylist: (() -> Unit)? = null,
     onRemoveFromQuickPicks: (() -> Unit)? = null,
     onDownload: (() -> Unit)? = null,
@@ -273,19 +250,7 @@ fun NonQueuedMediaItemMenuLibrary(
             onHideFromDatabase = { isHiding = true },
             onRemoveFromQuickPicks = onRemoveFromQuickPicks,
             onAddToPreferites = {
-                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
-                    Toaster.noInternet()
-                } else if (!isYouTubeSyncEnabled()){
-                    Database.asyncTransaction {
-                        songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
-                    }
-                }
-                else {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addToYtLikedSong(mediaItem)
-                    }
-                }
+                downloadHelper.likeAndDownload( mediaItem )
             },
             modifier = modifier
         )
@@ -305,19 +270,7 @@ fun NonQueuedMediaItemMenuLibrary(
             onHideFromDatabase = { isHiding = true },
             onRemoveFromQuickPicks = onRemoveFromQuickPicks,
             onAddToPreferites = {
-                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
-                    Toaster.noInternet()
-                } else if (!isYouTubeSyncEnabled()){
-                    Database.asyncTransaction {
-                        songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
-                    }
-                }
-                else {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addToYtLikedSong(mediaItem)
-                    }
-                }
+                downloadHelper.likeAndDownload( mediaItem )
             },
             onMatchingSong = onMatchingSong,
             modifier = modifier
@@ -401,9 +354,9 @@ fun QueuedMediaItemMenu(
     onMatchingSong: (() -> Unit)? = null,
     mediaItem: MediaItem,
     indexInQueue: Int?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    downloadHelper: DownloadHelper = koinInject()
 ) {
-    val context = LocalContext.current
     val player: StatefulPlayer = koinInject()
 
     val menuStyle by Preferences.MENU_STYLE
@@ -426,19 +379,7 @@ fun QueuedMediaItemMenu(
                 NavRoutes.localPlaylist.navigateHere( navController, it.toString() )
             },
             onAddToPreferites = {
-                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
-                    Toaster.noInternet()
-                } else if (!isYouTubeSyncEnabled()){
-                    Database.asyncTransaction {
-                        songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
-                    }
-                }
-                else {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addToYtLikedSong(mediaItem)
-                    }
-                }
+                downloadHelper.likeAndDownload( mediaItem )
             }
         )
     } else {
@@ -459,19 +400,7 @@ fun QueuedMediaItemMenu(
                 NavRoutes.YT_PLAYLIST.navigateHere( navController, it.toString() )
             },
             onAddToPreferites = {
-                if (!isNetworkConnected(context) && isYouTubeSyncEnabled()){
-                    Toaster.noInternet()
-                } else if (!isYouTubeSyncEnabled()){
-                    Database.asyncTransaction {
-                        songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
-                    }
-                }
-                else {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addToYtLikedSong(mediaItem)
-                    }
-                }
+                downloadHelper.likeAndDownload( mediaItem )
             },
             onMatchingSong = onMatchingSong
         )
@@ -671,12 +600,9 @@ fun MediaItemMenu(
         mutableStateOf(0.dp)
     }
 
-    var downloadState by remember {
-        mutableStateOf(Download.STATE_STOPPED)
-    }
-
-    downloadState = getDownloadState(mediaItem.mediaId)
-    val isDownloaded = if (!isLocal) isDownloadedSong(mediaItem.mediaId) else true
+    val cacheState: CacheState = koinInject()
+    val isDownloaded by cacheState.isDownloadedState( mediaItem.mediaId )
+        .collectAsStateWithLifecycle( false )
 
     val album by remember {
         Database.albumTable

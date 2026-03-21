@@ -15,6 +15,11 @@ interface DownloadHelper {
     fun downloadMediaItem( mediaItem: MediaItem )
 
     /**
+     * Like song then download (if enabled)
+     */
+    fun likeAndDownload( mediaItem: MediaItem )
+
+    /**
      * Attempt to queue [mediaItems] for download. Number
      * of parallel downloads is defined in [android.app.DownloadManager],
      * which is controlled by [app.kreate.android.Preferences.DOWNLOAD_MAX_PARALLEL].

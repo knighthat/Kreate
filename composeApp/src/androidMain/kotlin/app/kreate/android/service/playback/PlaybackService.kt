@@ -9,8 +9,6 @@ import android.os.Looper
 import androidx.compose.runtime.getValue
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
-import androidx.media3.exoplayer.offline.Download
-import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.session.CommandButton
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.MediaController
@@ -19,7 +17,8 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.service.DownloadHelper
+import app.kreate.android.service.download.CacheState
+import app.kreate.android.service.download.DownloadHelper
 import app.kreate.android.service.player.LiveWallpaperEngine
 import app.kreate.android.service.player.PlaybackController
 import app.kreate.android.service.player.StatefulPlayer
@@ -32,11 +31,7 @@ import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.enums.NotificationButtons
-import it.fast4x.rimusic.service.MyDownloadHelper
-import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.utils.CoilBitmapLoader
-import it.fast4x.rimusic.utils.intent
-import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.preferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,13 +59,11 @@ class PlaybackService:
     private val cache: Cache by inject(CacheType.CACHE)
     private val discord: Discord by inject()
     private val player: StatefulPlayer by inject()
-    private val downloadHelper: DownloadHelper by inject()
     private val volumeObserver: VolumeObserver by inject()
     private val logger = Logger.withTag( this::class.java.simpleName )
     private val coroutineScope = CoroutineScope(Dispatchers.IO) + Job()
     private val handler = Handler(Looper.getMainLooper())
-    private val downloadListener = DownloadStateListener()
-    
+
     private lateinit var mediaSession: MediaLibrarySession
     private lateinit var audioHandler: AudioHandler
 
@@ -109,20 +102,25 @@ class PlaybackService:
 
     private fun downloadCurrentMediaItem() {
         val mediaItem = player.currentMediaItem ?: return
-        val mediaId = mediaItem.mediaId
-        val isDownloaded = MyDownloadHelper.instance.downloads.value[mediaId]?.state == Download.STATE_COMPLETED
-        if( !isDownloaded ) {
-            logger.v { "Downloading current media item ($mediaId)" }
 
-            manageDownload( this, mediaItem, false )
-        } else
+        val cacheState: CacheState by inject()
+        if( cacheState.isDownloaded(mediaItem.mediaId) ) {
             Toaster.i( R.string.info_song_already_downloaded )
+            return
+        }
+
+        val helper: DownloadHelper by inject()
+        helper.downloadMediaItem( mediaItem )
     }
 
     /**
      * (Re)render media control in notification area.
      */
-    private fun updateMediaControl() {
+    private fun updateMediaControl( songId: String? = null ) {
+        // If request is for a specific song but current song is not it, then skip
+        if( !songId.isNullOrBlank() && player.currentMediaItem?.mediaId != songId )
+            return
+
         coroutineScope.launch( Dispatchers.Default ) {
             val mutButtons = mutableListOf<CommandButton>()
 
@@ -153,16 +151,14 @@ class PlaybackService:
                 stopSelf()
             }
             ACTION_LIKE -> {
-                val mediaItem = player.currentMediaItem
-                Database.asyncTransaction {
-                    mediaItem ?: return@asyncTransaction
-
-                    songTable.toggleLike( mediaItem.mediaId )
-                    MyDownloadHelper.autoDownloadWhenLiked( mediaItem )
-                }
+                val downloadHelper: DownloadHelper by inject()
+                player.currentMediaItem?.also( downloadHelper::likeAndDownload )
             }
             ACTION_DOWNLOAD -> downloadCurrentMediaItem()
-            ACTION_UPDATE_MEDIA_CONTROL -> updateMediaControl()
+            ACTION_UPDATE_MEDIA_CONTROL -> {
+                val songId = intent.extras?.getString( KEY_CURRENT_SONG_ID )
+                updateMediaControl( songId )
+            }
 
             PLAYER_ACTION_PLAY -> player.play()
             PLAYER_ACTION_PAUSE -> player.pause()
@@ -189,8 +185,6 @@ class PlaybackService:
             .apply { setSmallIcon( R.drawable.app_icon_monochrome ) }
             .also( ::setMediaNotificationProvider )
 
-        MyDownloadHelper.instance = this.downloadHelper
-
         preferences.registerOnSharedPreferenceChangeListener(this)
         preferences.registerOnSharedPreferenceChangeListener(audioHandler)
 
@@ -198,8 +192,6 @@ class PlaybackService:
         val sessionToken = SessionToken(this, ComponentName(this, PlaybackService::class.java))
         val controllerFuture = MediaController.Builder(this, sessionToken).buildAsync()
         controllerFuture.addListener({ controllerFuture.get() }, MoreExecutors.directExecutor())
-
-        MyDownloadHelper.instance.downloadManager.addListener(downloadListener)
 
         //<editor-fold desc="Preferences">
         if( Preferences.isLoggedInToDiscord() ) {
@@ -242,10 +234,6 @@ class PlaybackService:
             runBlocking( Dispatchers.Default ) {
                 unregisterLiveWallpaperEngine()
             }
-            MyDownloadHelper.instance.downloadManager.removeListener( downloadListener )
-
-            stopService(intent<MyDownloadService>())
-            stopService(intent<PlaybackService>())
 
             player.stop()
             player.release()
@@ -253,8 +241,6 @@ class PlaybackService:
             audioHandler.unregister()
             mediaSession.release()
             cache.release()
-            //downloadCache.release()
-            MyDownloadHelper.instance.downloadManager.removeListener(downloadListener)
 
             coroutineScope.cancel()
 
@@ -300,23 +286,6 @@ class PlaybackService:
         const val PLAYER_ACTION_TOGGLE_SHUFFLE = "PLAYER_TOGGLE_SHUFFLE"
         const val PLAYER_ACTION_TOGGLE_RADIO = "PLAYER_TOGGLE_RADIO"
         //</editor-fold>
-    }
-
-    private inner class DownloadStateListener : DownloadManager.Listener {
-
-        override fun onDownloadChanged(
-            downloadManager: DownloadManager,
-            download: Download,
-            finalException: Exception?
-        ) {
-            val reqId = download.request.id
-            val currId = player.currentMediaItem?.mediaId
-
-            if( currId == reqId )
-                updateMediaControl()
-        }
-
-        override fun onDownloadRemoved( downloadManager: DownloadManager, download: Download ) =
-            onDownloadChanged( downloadManager, download, null )
+        const val KEY_CURRENT_SONG_ID = "CURRENT_SONG_ID"
     }
 }

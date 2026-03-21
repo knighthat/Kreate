@@ -24,10 +24,10 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.download.DownloadHelper
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
@@ -36,7 +36,6 @@ import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Album
 import app.kreate.database.models.SongAlbumMap
-import app.kreate.di.CacheType
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBody
@@ -61,8 +60,6 @@ import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.forcePlay
-import it.fast4x.rimusic.utils.isDownloadedSong
-import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.playVideo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,7 +69,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
-import org.koin.java.KoinJavaComponent.inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalTextApi
@@ -90,6 +86,7 @@ fun SearchResultScreen(
 ) {
     val context = LocalContext.current
     val player: StatefulPlayer = koinInject()
+    val downloadHelper: DownloadHelper = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val saveableStateHolder = rememberSaveableStateHolder()
     val (tabIndex, onTabIndexChanges) = Preferences.SEARCH_RESULTS_TAB_INDEX
@@ -164,25 +161,13 @@ fun SearchResultScreen(
                             if (parentalControlEnabled && song.explicit)
                                 return@ItemsPage
 
-                            val isDownloaded =
-                                isDownloadedSong(song.asMediaItem.mediaId)
-
                             SwipeablePlaylistItem(
                                 mediaItem = song.asMediaItem,
                                 onPlayNext = {
                                     player.addNext(song.asMediaItem)
                                 },
                                 onDownload = {
-                                    val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
-                                    cache.removeResource(song.asMediaItem.mediaId)
-                                    Database.asyncTransaction {
-                                        formatTable.updateContentLengthOf( song.key )
-                                    }
-                                    manageDownload(
-                                        context = context,
-                                        mediaItem = song.asMediaItem,
-                                        downloadState = isDownloaded
-                                    )
+                                    downloadHelper.downloadMediaItem( song.asMediaItem )
                                 },
                                 onEnqueue = {
                                     player.enqueue(song.asMediaItem)
