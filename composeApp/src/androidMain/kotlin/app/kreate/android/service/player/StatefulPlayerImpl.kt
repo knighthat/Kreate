@@ -9,6 +9,7 @@ import android.content.SharedPreferences
 import android.media.audiofx.BassBoost
 import android.media.audiofx.LoudnessEnhancer
 import android.media.audiofx.PresetReverb
+import android.widget.Toast
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.OptIn
@@ -24,6 +25,7 @@ import androidx.media3.common.AuxEffectInfo
 import androidx.media3.common.C
 import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Player.REPEAT_MODE_ALL
@@ -45,6 +47,12 @@ import co.touchlab.kermit.Logger
 import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.QueueLoopType
+import it.fast4x.rimusic.service.LoginRequiredException
+import it.fast4x.rimusic.service.MissingDecipherKeyException
+import it.fast4x.rimusic.service.NoInternetException
+import it.fast4x.rimusic.service.PlayableFormatNotFoundException
+import it.fast4x.rimusic.service.UnknownException
+import it.fast4x.rimusic.service.UnplayableException
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.service.modern.PlayerServiceModern.Companion.SleepTimerNotificationId
 import it.fast4x.rimusic.service.modern.isLocal
@@ -53,6 +61,7 @@ import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.getEnum
 import it.fast4x.rimusic.utils.mediaItems
+import it.fast4x.rimusic.utils.playNext
 import it.fast4x.rimusic.utils.setGlobalVolume
 import it.fast4x.rimusic.utils.timer
 import kotlinx.coroutines.CoroutineScope
@@ -81,6 +90,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 
 /**
@@ -127,6 +137,8 @@ class StatefulPlayerImpl(
     private lateinit var bassBoost: BassBoost
     private lateinit var reverb: PresetReverb
     //</editor-fold>
+    private var errorTimestamp = 0L
+    private var lastErrorMessage = ""
 
     override val currentMediaItemState = _currentMediaItemState.asStateFlow()
     override val currentTimelineState = _currentTimelineState.asStateFlow()
@@ -628,6 +640,34 @@ class StatefulPlayerImpl(
         context.startService( intent )
     }
 
+    private fun traverseErrorStack( t: Throwable ): Throwable =
+        when( t ) {
+            is PlayableFormatNotFoundException,
+            is UnplayableException,
+            is LoginRequiredException,
+            is NoInternetException,
+            is UnknownException,
+            is MissingDecipherKeyException -> t
+
+            else -> t.cause?.let( ::traverseErrorStack ) ?: t
+        }
+
+    private fun printErrorMessage( errMsg: String )  {
+        // If the same error is set within 10s, it'll be ignored.
+        val timeWindow = errorTimestamp + 10.seconds.inWholeMilliseconds
+
+        if( errMsg == lastErrorMessage
+            && System.currentTimeMillis() <= timeWindow
+        ) return
+
+        lastErrorMessage = errMsg
+        // When field is successfully set, update timestamp.
+        errorTimestamp = System.currentTimeMillis()
+        // Finally, print the error if not blank
+        if( errMsg.isNotBlank() )
+            Toaster.e( errMsg, Toast.LENGTH_LONG )
+    }
+
     override fun onMediaItemTransition( mediaItem: MediaItem?, reason: Int ) {
         normalizeLoudness()
         savePersistentQueue()
@@ -750,6 +790,23 @@ class StatefulPlayerImpl(
         Preferences.QUEUE_LOOP_TYPE.value = QueueLoopType.from( repeatMode )
 
         updateMediaControl()
+    }
+
+    override fun onPlayerError( error: PlaybackException ) {
+        val rootCause = traverseErrorStack( error )
+
+        when( rootCause ) {
+            is PlayableFormatNotFoundException -> context.getString( R.string.error_couldn_t_find_a_playable_audio_format )
+            is NoInternetException -> context.getString( R.string.no_connection )
+            is MissingDecipherKeyException -> context.getString( R.string.error_failed_to_decipher_signature )
+
+            else -> rootCause.message ?: context.getString( R.string.error_unknown )
+        }.also( ::printErrorMessage )
+
+        // TODO: Add additional recovery step if type of error allows it
+
+        if ( Preferences.PLAYBACK_SKIP_ON_ERROR.value && hasNextMediaItem() )
+            playNext()
     }
 
     /*
