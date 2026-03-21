@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="locale_system">System language</string>
-    <string name="sort_random">Random</string>
+    <string name="locale_system">Системный язык</string>
+    <string name="sort_random">Случайно</string>
     <string name="sort_album_title">Альбом</string>
     <string name="sort_album_year">По году</string>
     <string name="sort_date_added">По дате добавления</string>
@@ -14,6 +14,6 @@
     <string name="sort_date_liked">По дате добавления в Избранное</string>
     <string name="sort_relative_listening_time">Relative listening time</string>
     <string name="sort_position">По номеру</string>
-    <string name="sort_song_duration">Duration</string>
-    <string name="sort_album_and_artist">Album title and artist name</string>
+    <string name="sort_song_duration">По длительность</string>
+    <string name="sort_album_and_artist">По альбому и артисту</string>
 </resources>
