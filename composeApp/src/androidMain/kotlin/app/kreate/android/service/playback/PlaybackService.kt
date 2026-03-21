@@ -42,11 +42,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import me.knighthat.discord.Discord
@@ -67,10 +66,10 @@ class PlaybackService:
     private val downloadHelper: DownloadHelper by inject()
     private val volumeObserver: VolumeObserver by inject()
     private val logger = Logger.withTag( this::class.java.simpleName )
-    private val coroutineScope = CoroutineScope(Dispatchers.IO) + Job()
+    private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val handler = Handler(Looper.getMainLooper())
     private val downloadListener = DownloadStateListener()
-    
+
     private lateinit var mediaSession: MediaLibrarySession
     private lateinit var audioHandler: AudioHandler
 
