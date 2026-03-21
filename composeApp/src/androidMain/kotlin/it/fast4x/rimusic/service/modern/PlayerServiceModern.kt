@@ -298,12 +298,6 @@ class PlayerServiceModern:
         val PlayerErrorsToReload = arrayOf(416, 4003)
         val PlayerErrorsToSkip = arrayOf(2000)
 
-        const val ROOT = "root"
-        const val SONG = "song"
-        const val ARTIST = "artist"
-        const val ALBUM = "album"
-        const val PLAYLIST = "playlist"
-        const val SEARCHED = "searched"
         const val ACTION_RESTART = "restart"
         const val ACTION_DOWNLOAD = "DOWNLOAD"
         const val ACTION_LIKE = "LIKE"
