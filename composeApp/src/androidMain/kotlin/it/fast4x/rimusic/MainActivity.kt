@@ -80,6 +80,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.compose.rememberNavController
 import androidx.palette.graphics.Palette
+import androidx.work.WorkManager
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
@@ -189,6 +190,8 @@ MainActivity :
     private val pipState: MutableState<Boolean> = mutableStateOf(false)
     private val logger = Logger.withTag( this::class.java.simpleName )
 
+    private lateinit var workManager: WorkManager
+
     override fun onStart() {
         super.onStart()
 
@@ -244,6 +247,8 @@ MainActivity :
                     SensorManager.SENSOR_DELAY_NORMAL
                 )
         }
+
+        this.workManager = WorkManager.getInstance( applicationContext )
     }
 
 

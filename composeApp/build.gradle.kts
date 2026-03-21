@@ -142,6 +142,7 @@ kotlin {
             implementation( libs.okhttp3.dns.over.https )
 
             implementation( libs.math3 )
+            implementation( libs.androidx.worker.runtime )
 
             implementation( libs.material.icons.kmp )
 

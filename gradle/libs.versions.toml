@@ -49,6 +49,7 @@ kotlinx-serialization = "1.10.0"
 koin = "4.1.1"
 kermit = "2.1.0"
 javax = "1"
+worker = "2.11.1"
 
 
 [libraries]
@@ -77,6 +78,7 @@ androidx-glance-widgets = { group = "androidx.glance", name = "glance-appwidget"
 androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
 androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycle" }
+androidx-worker-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "worker" }
 
 # Ktor
 ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
