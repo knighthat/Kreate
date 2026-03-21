@@ -486,6 +486,13 @@ val playerModule = module {
 
         DownloadHelperImpl(dataSourceFactory, get(), downloadCache)
     }
+    single<app.kreate.android.service.download.DownloadHelper> {
+        val context: Context = get()
+        val cache: Cache = get(CacheType.CACHE)
+        val downloadCache: Cache = get(CacheType.DOWNLOAD)
+
+        app.kreate.android.service.download.DownloadHelperImpl(context, cache, downloadCache)
+    }
 }
 
 enum class DatasourceType : Qualifier {
