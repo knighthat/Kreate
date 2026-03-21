@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.hardware.Sensor
@@ -15,7 +14,6 @@ import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
 import android.view.WindowManager
 import android.widget.Toast
 import android.window.OnBackInvokedDispatcher
@@ -71,6 +69,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -78,6 +77,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
 import androidx.navigation.compose.rememberNavController
 import androidx.palette.graphics.Palette
 import app.kreate.android.BuildConfig
@@ -93,6 +94,8 @@ import co.touchlab.kermit.Logger
 import coil3.imageLoader
 import coil3.request.allowHardware
 import coil3.toBitmap
+import com.google.common.util.concurrent.ListenableFuture
+import com.google.common.util.concurrent.MoreExecutors
 import com.kieronquinn.monetcompat.core.MonetActivityAccessException
 import com.kieronquinn.monetcompat.core.MonetCompat
 import com.kieronquinn.monetcompat.interfaces.MonetColorsChangedListener
@@ -135,7 +138,6 @@ import it.fast4x.rimusic.utils.LocalMonetCompat
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.getEnum
-import it.fast4x.rimusic.utils.intent
 import it.fast4x.rimusic.utils.invokeOnReady
 import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isAtLeastAndroid8
@@ -168,13 +170,6 @@ MainActivity :
     MonetColorsChangedListener
 //,PersistMapOwner
 {
-    private val serviceConnection = object : ServiceConnection {
-
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {}
-
-        override fun onServiceDisconnected(name: ComponentName?) {}
-    }
-
     private var intentUriData by mutableStateOf<Uri?>(null)
 
     private var sensorManager: SensorManager? = null
@@ -189,14 +184,23 @@ MainActivity :
     private val pipState: MutableState<Boolean> = mutableStateOf(false)
     private val logger = Logger.withTag( this::class.java.simpleName )
 
+    private lateinit var playbackController: ListenableFuture<MediaController>
+
     override fun onStart() {
         super.onStart()
 
-        runCatching {
-            bindService(intent<PlaybackService>(), serviceConnection, Context.BIND_AUTO_CREATE)
-        }.onFailure {
-            logger.e( it ) { "Failed to bind PlayerServiceModern" }
-        }
+        // Always get new controller on start
+        val component = ComponentName(this, PlaybackService::class.java)
+        val sessionToken = SessionToken(this, component)
+        playbackController = MediaController.Builder(this, sessionToken).buildAsync()
+        playbackController.addListener( playbackController::get, MoreExecutors.directExecutor())
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        if( ::playbackController.isInitialized )
+            playbackController.also( MediaController::releaseFuture )
     }
 
     @ExperimentalTextApi
@@ -204,6 +208,9 @@ MainActivity :
     @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val playbackIntent = Intent(this, PlaybackService::class.java)
+        ContextCompat.startForegroundService(this, playbackIntent)
 
         UpdatePlugins.execute( this )
 
@@ -1003,8 +1010,6 @@ MainActivity :
                 //  there's some MediaItems left in the queue .
                 clearMediaItems()
             }
-            // Unbind service (making sure there's no connection with the service)
-            unbindService( serviceConnection )
             // Stop service (release resources)
             val intent = Intent(this, PlaybackService::class.java)
             stopService( intent )

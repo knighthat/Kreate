@@ -1,7 +1,6 @@
 package app.kreate.android.service.playback
 
 import android.app.PendingIntent
-import android.content.ComponentName
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Handler
@@ -13,10 +12,8 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.session.CommandButton
 import androidx.media3.session.DefaultMediaNotificationProvider
-import androidx.media3.session.MediaController
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
-import androidx.media3.session.SessionToken
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.DownloadHelper
@@ -26,7 +23,6 @@ import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.player.VolumeObserver
 import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
-import com.google.common.util.concurrent.MoreExecutors
 import io.ktor.client.HttpClient
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
@@ -192,11 +188,6 @@ class PlaybackService:
 
         preferences.registerOnSharedPreferenceChangeListener(this)
         preferences.registerOnSharedPreferenceChangeListener(audioHandler)
-
-        // Keep a connected controller so that notification works
-        val sessionToken = SessionToken(this, ComponentName(this, PlaybackService::class.java))
-        val controllerFuture = MediaController.Builder(this, sessionToken).buildAsync()
-        controllerFuture.addListener({ controllerFuture.get() }, MoreExecutors.directExecutor())
 
         MyDownloadHelper.instance.downloadManager.addListener(downloadListener)
 
