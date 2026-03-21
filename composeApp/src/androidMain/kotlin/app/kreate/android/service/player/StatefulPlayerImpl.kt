@@ -398,8 +398,6 @@ class StatefulPlayerImpl(
             if( playbackState == Player.STATE_IDLE )
                 prepare()
             player.play()
-
-            onIsPlayingChanged( true )
         }
 
         val duration = Preferences.AUDIO_FADE_DURATION.value.asMillis
