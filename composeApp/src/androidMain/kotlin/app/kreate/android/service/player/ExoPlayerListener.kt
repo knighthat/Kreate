@@ -3,18 +3,13 @@ package app.kreate.android.service.player
 import android.content.Context
 import android.media.audiofx.LoudnessEnhancer
 import android.widget.Toast
-import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
-import androidx.compose.ui.util.fastMapIndexed
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.database.models.PersistentQueue
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.service.LoginRequiredException
 import it.fast4x.rimusic.service.MissingDecipherKeyException
@@ -22,14 +17,9 @@ import it.fast4x.rimusic.service.NoInternetException
 import it.fast4x.rimusic.service.PlayableFormatNotFoundException
 import it.fast4x.rimusic.service.UnknownException
 import it.fast4x.rimusic.service.UnplayableException
-import it.fast4x.rimusic.utils.mediaItems
 import it.fast4x.rimusic.utils.playNext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -53,36 +43,6 @@ class ExoPlayerListener(
 
     var loudnessEnhancer: LoudnessEnhancer? = null
         private set
-
-    /**
-     * Requires [Preferences.ENABLE_PERSISTENT_QUEUE] to be **enabled** to work.
-     */
-    @AnyThread
-    fun saveQueueToDatabase() {
-        if( !Preferences.ENABLE_PERSISTENT_QUEUE.value ) return
-
-        CoroutineScope( Dispatchers.Default ).launch {
-            val (queue, index, playerPos) = withContext(Dispatchers.Main ) {
-                // Any call related to [Player] must happen on main thread
-                with( player ) {
-                    Triple(currentTimeline.mediaItems, currentMediaItemIndex, currentPosition)
-                }
-            }
-            if( queue.isEmpty() ) return@launch
-
-            val queueItems = queue.fastMapIndexed { i, m ->
-                PersistentQueue(
-                    songId = m.mediaId,
-                    position = if( i == index ) playerPos else null
-                )
-            }
-            Database.asyncTransaction {
-                queueTable.deleteAll()
-                queue.forEach( ::insertIgnore )
-                queueTable.insertIgnore( queueItems )
-            }
-        }
-    }
 
     @MainThread
     private fun traverseErrorStack( t: Throwable ): Throwable =
@@ -114,15 +74,8 @@ class ExoPlayerListener(
             Toaster.e( errMsg, Toast.LENGTH_LONG )
     }
 
-    override fun onPlayWhenReadyChanged( playWhenReady: Boolean, reason: Int ) = saveQueueToDatabase()
-
     override fun onRepeatModeChanged( repeatMode: Int ) {
         Preferences.QUEUE_LOOP_TYPE.value = QueueLoopType.from( repeatMode )
-    }
-
-    override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-        if ( reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED )
-            saveQueueToDatabase()
     }
 
     override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {

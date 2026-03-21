@@ -16,6 +16,7 @@ interface StatefulPlayer : ExoPlayer {
     val currentMediaItemState: StateFlow<MediaItem?>
     val currentTimelineState: StateFlow<Timeline>
     val currentWindowState: StateFlow<Timeline.Window?>
+    val isPlayingState: StateFlow<Boolean>
 
     fun isLoadingRadio(): Boolean
 

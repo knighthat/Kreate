@@ -69,8 +69,6 @@ import me.knighthat.discord.Discord
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
 
 
@@ -288,16 +286,8 @@ class PlayerServiceModern:
         //<editor-fold desc="Preferences">
         /* Queue is saved in events without scheduling it (remove this in future)*/
         // Load persistent queue when start activity and save periodically in background
-        if ( Preferences.ENABLE_PERSISTENT_QUEUE.value ) {
+        if ( Preferences.ENABLE_PERSISTENT_QUEUE.value )
             maybeResumePlaybackOnStart()
-
-            val scheduler = Executors.newScheduledThreadPool(1)
-            scheduler.scheduleWithFixedDelay({
-                println("PlayerServiceModern onCreate savePersistentQueue")
-                listener.saveQueueToDatabase()
-            }, 0, 30, TimeUnit.SECONDS)
-
-        }
         if( Preferences.isLoggedInToDiscord() ) {
             val token by Preferences.DISCORD_ACCESS_TOKEN
             discord.login( token )
@@ -372,7 +362,6 @@ class PlayerServiceModern:
     @UnstableApi
     override fun onDestroy() {
         runCatching {
-            listener.saveQueueToDatabase()
             volumeObserver.unregister()
             runBlocking( Dispatchers.Default ) {
                 unregisterLiveWallpaperEngine()

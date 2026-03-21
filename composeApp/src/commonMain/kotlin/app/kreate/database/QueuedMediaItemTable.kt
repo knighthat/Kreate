@@ -21,6 +21,9 @@ interface QueuedMediaItemTable: DatabaseTable<PersistentQueue> {
     """)
     fun blockingItems( limit: Int = Int.MAX_VALUE ): List<PersistentQueue.Item>
 
+    @Query("UPDATE persistent_queue SET position = :newPosition WHERE song_id = :songId")
+    fun updatePosition( songId: String, newPosition: Long? ): Int
+
     @Query("DELETE FROM persistent_queue")
     fun deleteAll(): Int
 }

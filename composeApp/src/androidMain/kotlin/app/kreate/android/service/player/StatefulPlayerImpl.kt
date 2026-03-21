@@ -9,11 +9,13 @@ import android.content.SharedPreferences
 import android.media.audiofx.BassBoost
 import android.media.audiofx.LoudnessEnhancer
 import android.media.audiofx.PresetReverb
+import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.annotation.OptIn
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
+import androidx.compose.ui.util.fastMapIndexed
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
 import androidx.core.app.NotificationCompat
@@ -58,9 +60,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.mapNotNull
@@ -95,6 +100,9 @@ class StatefulPlayerImpl(
 {
 
     companion object {
+        // TODO: Make this a setting entry
+        private const val SAVE_INTERVAL = 30_000L
+
         const val SleepTimerNotificationChannelId = "sleep_timer_channel_id"
     }
 
@@ -103,6 +111,8 @@ class StatefulPlayerImpl(
     private val _currentMediaItemState = MutableStateFlow<MediaItem?>(null)
     private val _currentTimelineState = MutableStateFlow(Timeline.EMPTY)
     private val _currentWindowState = MutableStateFlow<Timeline.Window?>(null)
+    private val _isPlayingState = MutableStateFlow(false)
+    private val _isPersistentQueueEnabled = MutableStateFlow(false)
 
     //<editor-fold desc="Jobs">
     private var volumeAnimator: ValueAnimator? = null
@@ -121,6 +131,7 @@ class StatefulPlayerImpl(
     override val currentMediaItemState = _currentMediaItemState.asStateFlow()
     override val currentTimelineState = _currentTimelineState.asStateFlow()
     override val currentWindowState = _currentWindowState.asStateFlow()
+    override val isPlayingState = _isPlayingState.asStateFlow()
 
     init {
         this.addListener( this )
@@ -128,6 +139,7 @@ class StatefulPlayerImpl(
 
         val preferences: SharedPreferences by inject(PrefType.DEFAULT)
         preferences.registerOnSharedPreferenceChangeListener( this )
+        _isPersistentQueueEnabled.value = preferences.getBoolean(Preferences.Key.ENABLE_PERSISTENT_QUEUE, false)
 
         skipSilenceEnabled = Preferences.AUDIO_SKIP_SILENCE.value
         repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
@@ -139,6 +151,7 @@ class StatefulPlayerImpl(
         )
 
         loadPersistentQueue()
+        schedulePersistentQueueSave()
     }
 
     private fun stopFadingEffect() {
@@ -248,6 +261,55 @@ class StatefulPlayerImpl(
             withContext( Dispatchers.Main ) {
                 setMediaItems( mediaItems, startIndex, startPositionMs )
                 prepare()
+            }
+        }
+    }
+
+    @AnyThread
+    private fun savePersistentQueue(queue: List<MediaItem>, index: Int, position: Long?) {
+        if( queue.isEmpty() || !Preferences.ENABLE_PERSISTENT_QUEUE.value )
+            return
+
+        val items = queue.fastMapIndexed { i, item ->
+            PersistentQueue(item.mediaId, if( index == i ) position else null)
+        }
+        Database.asyncTransaction {
+            queueTable.deleteAll()
+            queue.forEach( ::insertIgnore )
+            queueTable.insertIgnore( items )
+
+            logger.d { "Queue saved!" }
+        }
+    }
+
+    @MainThread
+    private fun savePersistentQueue() {
+        val queue = mediaItems.toList()
+        val index = currentMediaItemIndex
+        val position = currentPosition
+
+        coroutineScope.launch( Dispatchers.Default ) {
+            savePersistentQueue( queue, index, position )
+        }
+    }
+
+    private fun schedulePersistentQueueSave() {
+        coroutineScope.launch(Dispatchers.IO) {
+            combine(_isPlayingState, _isPersistentQueueEnabled) { a, b -> a && b }
+            .collectLatest {
+                if( !it ) {
+                    logger.v { "Schedule for saving persistent queue has stopped!" }
+                    return@collectLatest
+                }
+
+                while( true ) {
+                    val (queue, index, position) = withContext(Dispatchers.Main) {
+                        Triple(mediaItems.toList(), currentMediaItemIndex, currentPosition)
+                    }
+                    savePersistentQueue( queue, index, position )
+
+                    delay( SAVE_INTERVAL )
+                }
             }
         }
     }
@@ -453,6 +515,8 @@ class StatefulPlayerImpl(
         stopRadio()
         stopSleepTimer()
 
+        savePersistentQueue()
+
         loudnessNormalizationJob?.cancel()
         loudnessNormalizationJob = null
         bassBoostJob?.cancel()
@@ -565,6 +629,7 @@ class StatefulPlayerImpl(
 
     override fun onMediaItemTransition( mediaItem: MediaItem?, reason: Int ) {
         normalizeLoudness()
+        savePersistentQueue()
 
         // Don't update [_currentMediaItemState] when on repeat
         if( reason != Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT ) {
@@ -599,6 +664,21 @@ class StatefulPlayerImpl(
     }
 
     override fun onIsPlayingChanged( isPlaying: Boolean ) {
+        _isPlayingState.update { isPlaying }
+
+        //<editor-fold desc="Save position to persistent queue (on pause & is enabled)">
+        if( !isPlaying && Preferences.ENABLE_PERSISTENT_QUEUE.value ) {
+            val songId = currentMediaItem?.mediaId
+            val position = currentPosition
+            Database.asyncTransaction {
+                songId ?: return@asyncTransaction
+                queueTable.updatePosition(songId, position)
+
+                logger.d { "Updated $songId's position to $position in persistent queue" }
+            }
+        }
+        //</editor-fold>
+        //<editor-fold desc="Update widgets">
         val metadataBundle = currentMediaItem?.mediaMetadata?.toBundle()
          val intent = Intent(WidgetReceiver.ACTION_UPDATE).apply {
             putExtra(WidgetReceiver.KEY_IS_PLAYING, isPlaying)
@@ -606,6 +686,7 @@ class StatefulPlayerImpl(
             `package` = context.packageName
         }
         context.sendBroadcast( intent )
+        //</editor-fold>
     }
 
     override fun onTimelineChanged( timeline: Timeline, reason: Int ) =
@@ -695,6 +776,14 @@ class StatefulPlayerImpl(
 
             Preferences.Key.MEDIA_NOTIFICATION_FIRST_ICON,
             Preferences.Key.MEDIA_NOTIFICATION_SECOND_ICON -> updateMediaControl()
+
+            Preferences.Key.ENABLE_PERSISTENT_QUEUE -> {
+                val isEnabled = pref.getBoolean(key, false)
+
+                _isPersistentQueueEnabled.update { isEnabled }
+                if( !isEnabled )
+                    Database.asyncTransaction { queueTable.deleteAll() }
+            }
         }
     }
 
