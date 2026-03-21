@@ -8,12 +8,8 @@ import android.os.Handler
 import android.os.Looper
 import androidx.compose.runtime.getValue
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
-import androidx.media3.exoplayer.analytics.AnalyticsListener
-import androidx.media3.exoplayer.analytics.PlaybackStats
-import androidx.media3.exoplayer.analytics.PlaybackStatsListener
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.session.CommandButton
@@ -31,7 +27,6 @@ import app.kreate.android.service.player.PlaybackController
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.player.VolumeObserver
 import app.kreate.android.utils.isLocalFile
-import app.kreate.database.models.Event
 import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import com.google.common.util.concurrent.MoreExecutors
@@ -42,7 +37,6 @@ import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.enums.NotificationButtons
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.MyDownloadService
-import it.fast4x.rimusic.utils.AppLifecycleTracker
 import it.fast4x.rimusic.utils.CoilBitmapLoader
 import it.fast4x.rimusic.utils.intent
 import it.fast4x.rimusic.utils.manageDownload
@@ -54,17 +48,14 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import me.knighthat.discord.Discord
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import kotlin.time.Duration.Companion.seconds
 
 
 val MediaItem.isLocal get() = localConfiguration?.uri?.isLocalFile() ?: false
@@ -73,7 +64,6 @@ val MediaItem.isLocal get() = localConfiguration?.uri?.isLocalFile() ?: false
 @androidx.annotation.OptIn(UnstableApi::class)
 class PlayerServiceModern:
     MediaLibraryService(),
-    PlaybackStatsListener.Callback,
     SharedPreferences.OnSharedPreferenceChangeListener,
     KoinComponent
 {
@@ -209,9 +199,6 @@ class PlayerServiceModern:
 
         MyDownloadHelper.instance = this.downloadHelper
 
-        PlaybackStatsListener(false, this@PlayerServiceModern)
-            .also( player::addAnalyticsListener )
-
         preferences.registerOnSharedPreferenceChangeListener(this)
         preferences.registerOnSharedPreferenceChangeListener(audioHandler)
 
@@ -230,8 +217,6 @@ class PlayerServiceModern:
             .setBitmapLoader( CoilBitmapLoader(coroutineScope) )
             .build()
 
-        player.addAnalyticsListener(PlaybackStatsListener(false, this@PlayerServiceModern))
-
         // Keep a connected controller so that notification works
         val sessionToken = SessionToken(this, ComponentName(this, PlayerServiceModern::class.java))
         val controllerFuture = MediaController.Builder(this, sessionToken).buildAsync()
@@ -240,10 +225,6 @@ class PlayerServiceModern:
         MyDownloadHelper.instance.downloadManager.addListener(downloadListener)
 
         //<editor-fold desc="Preferences">
-        /* Queue is saved in events without scheduling it (remove this in future)*/
-        // Load persistent queue when start activity and save periodically in background
-        if ( Preferences.ENABLE_PERSISTENT_QUEUE.value )
-            maybeResumePlaybackOnStart()
         if( Preferences.isLoggedInToDiscord() ) {
             val token by Preferences.DISCORD_ACCESS_TOKEN
             discord.login( token )
@@ -256,64 +237,8 @@ class PlayerServiceModern:
         //</editor-fold>
     }
 
-    override fun onUpdateNotification( session: MediaSession, startInForegroundRequired: Boolean ) =
-        try {
-            super.onUpdateNotification(session, startInForegroundRequired)
-        } catch( err: Exception ) {
-            logger.e( err ) { "failed to update notification" }
-        }
-
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession =
         mediaSession
-
-    override fun onPlaybackStatsReady(
-        eventTime: AnalyticsListener.EventTime,
-        playbackStats: PlaybackStats
-    ) {
-        // if pause listen history is enabled, don't register statistic event
-        if ( Preferences.PAUSE_HISTORY.value ) return
-
-        val mediaItem =
-            eventTime.timeline.getWindow(eventTime.windowIndex, Timeline.Window()).mediaItem
-
-        val totalPlayTimeMs = playbackStats.totalPlayTimeMs
-
-        if ( totalPlayTimeMs > 5000 )
-            Database.asyncTransaction {
-                songTable.updateTotalPlayTime( mediaItem.mediaId, totalPlayTimeMs, true )
-            }
-
-
-        if ( totalPlayTimeMs <= Preferences.QUICK_PICKS_MIN_DURATION.value.asMillis )
-            return
-
-        /*
-            There's a really small chance that at this point, the song
-            is yet to exist in the database, thus, `FOREIGN KEY constraint failed` is thrown.
-
-            To avoid this, a compact suspendable task is added,
-            its job is to wait (maximum 5s) for song to be added,
-            if it isn't by then, cancel the run
-         */
-        CoroutineScope(Dispatchers.IO).launch {
-            withTimeoutOrNull( 5.seconds ) {
-                Database.songTable
-                        .findById( mediaItem.mediaId )
-                        .filterNotNull()
-                        .first()
-            } ?: return@launch
-
-            Database.asyncTransaction {
-                eventTable.insertIgnore(
-                    Event(
-                        songId = mediaItem.mediaId,
-                        timestamp = System.currentTimeMillis(),
-                        playTime = totalPlayTimeMs
-                    )
-                )
-            }
-        }
-    }
 
     @UnstableApi
     override fun onDestroy() {
@@ -347,7 +272,6 @@ class PlayerServiceModern:
         super.onDestroy()
     }
 
-
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         when (key) {
             Preferences.Key.LIVE_WALLPAPER -> {
@@ -365,13 +289,6 @@ class PlayerServiceModern:
 
             Preferences.Key.PLAYER_ACTION_START_RADIO -> updateMediaControl()
         }
-    }
-
-    private fun maybeResumePlaybackOnStart() {
-        if( Preferences.ENABLE_PERSISTENT_QUEUE.value
-            && Preferences.RESUME_PLAYBACK_ON_STARTUP.value
-            && AppLifecycleTracker.isInForeground()
-        ) player.play()
     }
 
     companion object {

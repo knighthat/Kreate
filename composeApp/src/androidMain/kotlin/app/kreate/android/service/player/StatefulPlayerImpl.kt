@@ -35,9 +35,11 @@ import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.analytics.PlaybackStatsListener
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.PlayerEventUpdateDiscord
+import app.kreate.android.service.playback.PlaybackListener
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.widget.WidgetReceiver
@@ -57,6 +59,7 @@ import it.fast4x.rimusic.service.UnplayableException
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.service.modern.PlayerServiceModern.Companion.SleepTimerNotificationId
 import it.fast4x.rimusic.service.modern.isLocal
+import it.fast4x.rimusic.utils.AppLifecycleTracker
 import it.fast4x.rimusic.utils.TimerJob
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
@@ -149,6 +152,9 @@ class StatefulPlayerImpl(
     init {
         this.addListener( this )
         this.addListener( PlayerEventUpdateDiscord() )
+        this.addAnalyticsListener(
+            PlaybackStatsListener(false, PlaybackListener(coroutineScope))
+        )
 
         val preferences: SharedPreferences by inject(PrefType.DEFAULT)
         preferences.registerOnSharedPreferenceChangeListener( this )
@@ -166,6 +172,11 @@ class StatefulPlayerImpl(
 
         loadPersistentQueue()
         schedulePersistentQueueSave()
+
+        if( Preferences.ENABLE_PERSISTENT_QUEUE.value
+            && Preferences.RESUME_PLAYBACK_ON_STARTUP.value
+            && AppLifecycleTracker.isInForeground()
+        ) play()
     }
 
     private fun stopFadingEffect() {
