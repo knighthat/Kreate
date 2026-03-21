@@ -81,6 +81,7 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import androidx.navigation.compose.rememberNavController
 import androidx.palette.graphics.Palette
+import androidx.work.WorkManager
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
@@ -186,6 +187,8 @@ MainActivity :
 
     private lateinit var playbackController: ListenableFuture<MediaController>
 
+    private lateinit var workManager: WorkManager
+
     override fun onStart() {
         super.onStart()
 
@@ -251,6 +254,8 @@ MainActivity :
                     SensorManager.SENSOR_DELAY_NORMAL
                 )
         }
+
+        this.workManager = WorkManager.getInstance( applicationContext )
     }
 
 
