@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.media.audiofx.AudioEffect
 import android.media.audiofx.BassBoost
 import android.media.audiofx.LoudnessEnhancer
 import android.media.audiofx.PresetReverb
@@ -808,6 +809,30 @@ class StatefulPlayerImpl(
         if ( Preferences.PLAYBACK_SKIP_ON_ERROR.value && hasNextMediaItem() )
             playNext()
     }
+
+    override fun onEvents( player: Player, events: Player.Events ) {
+        if (
+            events.containsAny(
+                Player.EVENT_PLAYBACK_STATE_CHANGED,
+                Player.EVENT_PLAY_WHEN_READY_CHANGED
+            )
+        ) {
+            val isBufferingOrReady = player.playbackState == Player.STATE_BUFFERING
+                    || player.playbackState == Player.STATE_READY
+            val intent = Intent(
+                if( isBufferingOrReady && player.playWhenReady )
+                    AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION
+                else
+                    AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION
+            )
+                .putExtra( AudioEffect.EXTRA_AUDIO_SESSION, player.audioSessionId )
+                .putExtra( AudioEffect.EXTRA_PACKAGE_NAME, context.packageName )
+                .putExtra( AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC )
+
+            context.sendBroadcast( intent )
+        }
+    }
+
 
     /*
             SharedPreferences listener

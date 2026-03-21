@@ -4,12 +4,10 @@ import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Intent
 import android.content.SharedPreferences
-import android.media.audiofx.AudioEffect
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.runtime.getValue
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
@@ -28,7 +26,6 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.DownloadHelper
 import app.kreate.android.service.playback.AudioHandler
-import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.LiveWallpaperEngine
 import app.kreate.android.service.player.PlaybackController
 import app.kreate.android.service.player.StatefulPlayer
@@ -43,7 +40,6 @@ import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.enums.NotificationButtons
-import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.utils.AppLifecycleTracker
@@ -57,7 +53,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -80,7 +75,6 @@ class PlayerServiceModern:
     MediaLibraryService(),
     PlaybackStatsListener.Callback,
     SharedPreferences.OnSharedPreferenceChangeListener,
-    Player.Listener,
     KoinComponent
 {
     private val cache: Cache by inject(CacheType.CACHE)
@@ -90,7 +84,6 @@ class PlayerServiceModern:
     private val volumeObserver: VolumeObserver by inject()
     private val logger = Logger.withTag( this::class.java.simpleName )
 
-    private lateinit var listener: ExoPlayerListener
     private val coroutineScope = CoroutineScope(Dispatchers.IO) + Job()
     private val handler = Handler(Looper.getMainLooper())
     private val downloadListener = DownloadStateListener()
@@ -98,10 +91,6 @@ class PlayerServiceModern:
     private var mediaLibrarySessionCallback: MediaLibrarySessionCallback =
         MediaLibrarySessionCallback(this)
     private lateinit var audioHandler: AudioHandler
-
-    lateinit var connectivityObserver: AndroidConnectivityObserverLegacy
-    private val isNetworkAvailable = MutableStateFlow(true)
-    private val waitingForNetwork = MutableStateFlow(false)
 
     private var liveWallpaperEngine: LiveWallpaperEngine? = null
 
@@ -214,26 +203,6 @@ class PlayerServiceModern:
         audioHandler = AudioHandler(this, handler, player)
         volumeObserver.register()
 
-        // Enable Android Auto if disabled, REQUIRE ENABLING DEV MODE IN ANDROID AUTO
-        try {
-            connectivityObserver.unregister()
-        } catch (e: Exception) {
-            // isn't registered
-        }
-        connectivityObserver = AndroidConnectivityObserverLegacy(this@PlayerServiceModern)
-        coroutineScope.launch {
-            connectivityObserver.networkStatus.collect { isAvailable ->
-                isNetworkAvailable.value = isAvailable
-                logger.d { "PlayerServiceModern network status: $isAvailable" }
-                if (isAvailable && waitingForNetwork.value) {
-                    waitingForNetwork.value = false
-                    withContext( Dispatchers.Main ) {
-                        player.play()
-                    }
-                }
-            }
-        }
-
         DefaultMediaNotificationProvider(this)
             .apply { setSmallIcon( R.drawable.app_icon_monochrome ) }
             .also( ::setMediaNotificationProvider )
@@ -261,20 +230,7 @@ class PlayerServiceModern:
             .setBitmapLoader( CoilBitmapLoader(coroutineScope) )
             .build()
 
-        listener = ExoPlayerListener(
-            player,
-            waitingForNetwork,
-            ::sendOpenEqualizerIntent,
-            ::sendCloseEqualizerIntent
-        )
-
-        player.addListener( listener )
-        player.addListener( this )
         player.addAnalyticsListener(PlaybackStatsListener(false, this@PlayerServiceModern))
-
-        mediaLibrarySessionCallback.apply {
-            listener = this@PlayerServiceModern.listener
-        }
 
         // Keep a connected controller so that notification works
         val sessionToken = SessionToken(this, ComponentName(this, PlayerServiceModern::class.java))
@@ -371,7 +327,6 @@ class PlayerServiceModern:
             stopService(intent<MyDownloadService>())
             stopService(intent<PlayerServiceModern>())
 
-            player.removeListener( listener )
             player.stop()
             player.release()
 
@@ -380,8 +335,6 @@ class PlayerServiceModern:
             cache.release()
             //downloadCache.release()
             MyDownloadHelper.instance.downloadManager.removeListener(downloadListener)
-
-            listener.loudnessEnhancer?.release()
 
             coroutineScope.cancel()
 
@@ -412,28 +365,6 @@ class PlayerServiceModern:
 
             Preferences.Key.PLAYER_ACTION_START_RADIO -> updateMediaControl()
         }
-    }
-
-    @UnstableApi
-    private fun sendOpenEqualizerIntent() {
-        sendBroadcast(
-            Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION).apply {
-                putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.audioSessionId)
-                putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
-                putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
-            }
-        )
-    }
-
-
-    @UnstableApi
-    private fun sendCloseEqualizerIntent() {
-        sendBroadcast(
-            Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION).apply {
-                putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.audioSessionId)
-                putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName)
-            }
-        )
     }
 
     private fun maybeResumePlaybackOnStart() {

@@ -27,7 +27,6 @@ import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
@@ -73,7 +72,6 @@ class MediaLibrarySessionCallback(
     private val cache: Cache by inject(CacheType.CACHE)
 
     private val scope = CoroutineScope(Dispatchers.Main) + Job()
-    lateinit var listener: ExoPlayerListener
     var searchedSongs: List<Song> = emptyList()
 
     override fun onConnect(
