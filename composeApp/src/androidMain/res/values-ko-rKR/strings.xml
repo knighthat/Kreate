@@ -859,7 +859,7 @@
     <string name="error_failed_to_load_image">이미지를 불러오지 못했습니다</string>
     <string name="error_invalid_path">잘못된 경로</string>
     <string name="description_validate_url">URL 유효성 검사</string>
-    <string name="disabled">비활성화</string>
+    <string name="word_disabled">비활성화</string>
     <string name="settings_live_wallpaper_reset_warning"> 경고: 이렇게 하면 제조사의 기본 배경화면으로 돌아갑니다. 안타깝게도 기존 배경화면으로 되돌리기는 어렵습니다</string>
     <string name="ok">확인</string>
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
@@ -893,4 +893,19 @@
     <string name="reverb_preset_medium_hall">Medium hall</string>
     <string name="reverb_preset_large_hall">Large hall</string>
     <string name="reverb_preset_plate">Plate</string>
+    <string name="error_failed_to_set_wallpaper">Failed to set wallpaper</string>
+    <string name="word_disable">Disable</string>
+    <string name="live_wallpaper_home_screen">Home screen</string>
+    <string name="live_wallpaper_lock_screen">Lock screen</string>
+    <string name="live_wallpaper_both">Both</string>
+    <string name="warning_failed_to_restore_original_wallpaper">Failed to restore wallpaper, fallback to manufacturer wallpaper</string>
+    <string name="warning_failed_to_restore_original_home_screen_wallpaper">Failed to restore home screen wallpaper, fallback to manufacturer wallpaper</string>
+    <string name="warning_failed_to_restore_original_lock_screen_wallpaper">Failed to restore lock screen wallpaper, fallback to manufacturer wallpaper</string>
+    <string name="word_instantly">Instantly</string>
+    <string name="setting_entry_restore_home_screen_wallpaper">Restore home screen wallpaper to</string>
+    <string name="setting_entry_restore_lock_screen_wallpaper">Restore lock screen wallpaper to</string>
+    <string name="setting_entry_restore_wallpaper">Restore wallpaper to</string>
+    <string name="setting_description_choose_image">Click to choose image</string>
+    <string name="setting_description_remove_image">Click to remove image</string>
+    <string name="error_failed_to_update_widget">Failed to update widget</string>
 </resources>

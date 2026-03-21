@@ -860,7 +860,7 @@ CC-BY-SA 3.0</string>
     <string name="error_failed_to_load_image">Failed to load image</string>
     <string name="error_invalid_path">Invalid path</string>
     <string name="description_validate_url">Validate url</string>
-    <string name="disabled">disabled</string>
+    <string name="word_disabled">disabled</string>
     <string name="settings_live_wallpaper_reset_warning"> WARNING: this will switch back to your manufacturer’s default wallpaper. Unfortunately it is difficult to revert to your previous wallpaper</string>
     <string name="ok">ok</string>
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
@@ -894,4 +894,19 @@ CC-BY-SA 3.0</string>
     <string name="reverb_preset_medium_hall">Medium hall</string>
     <string name="reverb_preset_large_hall">Large hall</string>
     <string name="reverb_preset_plate">Plate</string>
+    <string name="error_failed_to_set_wallpaper">Failed to set wallpaper</string>
+    <string name="word_disable">Disable</string>
+    <string name="live_wallpaper_home_screen">Home screen</string>
+    <string name="live_wallpaper_lock_screen">Lock screen</string>
+    <string name="live_wallpaper_both">Both</string>
+    <string name="warning_failed_to_restore_original_wallpaper">Failed to restore wallpaper, fallback to manufacturer wallpaper</string>
+    <string name="warning_failed_to_restore_original_home_screen_wallpaper">Failed to restore home screen wallpaper, fallback to manufacturer wallpaper</string>
+    <string name="warning_failed_to_restore_original_lock_screen_wallpaper">Failed to restore lock screen wallpaper, fallback to manufacturer wallpaper</string>
+    <string name="word_instantly">Instantly</string>
+    <string name="setting_entry_restore_home_screen_wallpaper">Restore home screen wallpaper to</string>
+    <string name="setting_entry_restore_lock_screen_wallpaper">Restore lock screen wallpaper to</string>
+    <string name="setting_entry_restore_wallpaper">Restore wallpaper to</string>
+    <string name="setting_description_choose_image">Click to choose image</string>
+    <string name="setting_description_remove_image">Click to remove image</string>
+    <string name="error_failed_to_update_widget">Failed to update widget</string>
 </resources>
