@@ -7,10 +7,8 @@ import androidx.annotation.MainThread
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.service.LoginRequiredException
 import it.fast4x.rimusic.service.MissingDecipherKeyException
 import it.fast4x.rimusic.service.NoInternetException
@@ -72,20 +70,6 @@ class ExoPlayerListener(
         // Finally, print the error if not blank
         if( errMsg.isNotBlank() )
             Toaster.e( errMsg, Toast.LENGTH_LONG )
-    }
-
-    override fun onRepeatModeChanged( repeatMode: Int ) {
-        Preferences.QUEUE_LOOP_TYPE.value = QueueLoopType.from( repeatMode )
-    }
-
-    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-        if (shuffleModeEnabled) {
-            val shuffledIndices = IntArray(player.mediaItemCount) { it }
-            shuffledIndices.shuffle()
-            shuffledIndices[shuffledIndices.indexOf(player.currentMediaItemIndex)] = shuffledIndices[0]
-            shuffledIndices[0] = player.currentMediaItemIndex
-            player.setShuffleOrder(DefaultShuffleOrder(shuffledIndices, System.currentTimeMillis()))
-        }
     }
 
     override fun onPlayerError( error: PlaybackException ) {
