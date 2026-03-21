@@ -60,11 +60,6 @@ interface StatefulPlayer : ExoPlayer {
     fun toggleShuffleMode()
 
     /**
-     * Queue download for this media.
-     */
-    fun downloadCurrentMediaItem()
-
-    /**
      * Starts a countdown internally.
      *
      * When it reaches **0**, player will stop playing music

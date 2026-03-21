@@ -30,7 +30,6 @@ import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.offline.Download
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.PlayerEventUpdateDiscord
@@ -44,13 +43,12 @@ import co.touchlab.kermit.Logger
 import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.QueueLoopType
-import it.fast4x.rimusic.service.MyDownloadHelper
+import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.service.modern.PlayerServiceModern.Companion.SleepTimerNotificationId
 import it.fast4x.rimusic.utils.TimerJob
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.getEnum
-import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.mediaItems
 import it.fast4x.rimusic.utils.setGlobalVolume
 import it.fast4x.rimusic.utils.timer
@@ -361,19 +359,6 @@ class StatefulPlayerImpl(
             repeatMode = REPEAT_MODE_OFF
     }
 
-    override fun downloadCurrentMediaItem() {
-
-        val mediaItem = currentMediaItem ?: return
-        val mediaId = mediaItem.mediaId
-        val isDownloaded = MyDownloadHelper.instance.downloads.value[mediaId]?.state == Download.STATE_COMPLETED
-        if( !isDownloaded ) {
-            logger.v { "Downloading current media item ($mediaId)" }
-
-            manageDownload( context, mediaItem, false )
-        } else
-            Toaster.i( R.string.info_song_already_downloaded )
-    }
-
     override fun startSleepTimer( duration: Duration ) {
         val context: Context by inject()
         val title = context.getString( R.string.sleep_timer_ended )
@@ -573,6 +558,12 @@ class StatefulPlayerImpl(
         }
     }
 
+    private fun updateMediaControl() {
+        val intent = Intent(context, PlayerServiceModern::class.java)
+            .setAction( PlayerServiceModern.ACTION_UPDATE_MEDIA_CONTROL )
+        context.startService( intent )
+    }
+
     override fun onMediaItemTransition( mediaItem: MediaItem?, reason: Int ) {
         normalizeLoudness()
 
@@ -585,6 +576,8 @@ class StatefulPlayerImpl(
                 }
             }
         }
+
+        updateMediaControl()
     }
 
     override fun onIsPlayingChanged( isPlaying: Boolean ) {
@@ -647,6 +640,14 @@ class StatefulPlayerImpl(
         //</editor-fold>
     }
 
+    override fun onShuffleModeEnabledChanged( shuffleModeEnabled: Boolean ) {
+        updateMediaControl()
+    }
+
+    override fun onRepeatModeChanged( repeatMode: Int ) {
+        updateMediaControl()
+    }
+
     /*
             SharedPreferences listener
      */
@@ -673,6 +674,9 @@ class StatefulPlayerImpl(
 
             Preferences.Key.QUEUE_LOOP_TYPE ->
                 repeatMode = pref.getEnum( key, QueueLoopType.Default ).type
+
+            Preferences.Key.MEDIA_NOTIFICATION_FIRST_ICON,
+            Preferences.Key.MEDIA_NOTIFICATION_SECOND_ICON -> updateMediaControl()
         }
     }
 

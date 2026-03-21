@@ -5,8 +5,6 @@ import android.media.audiofx.LoudnessEnhancer
 import android.widget.Toast
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
-import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapIndexed
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -14,13 +12,10 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
-import androidx.media3.session.CommandButton
-import androidx.media3.session.MediaSession
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.database.models.PersistentQueue
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.enums.NotificationButtons
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.service.LoginRequiredException
 import it.fast4x.rimusic.service.MissingDecipherKeyException
@@ -46,11 +41,9 @@ import kotlin.time.Duration.Companion.seconds
 @UnstableApi
 class ExoPlayerListener(
     private val player: StatefulPlayer,
-    private val mediaSession: MediaSession,
     private val waitingForNetwork: MutableStateFlow<Boolean>,
     private val sendOpenEqualizerIntent: () -> Unit,
     private val sendCloseEqualizerIntent: () -> Unit,
-    private val onMediaTransition: (MediaItem?) -> Unit
 ): Player.Listener, KoinComponent {
 
     private val context: Context by inject()
@@ -88,38 +81,6 @@ class ExoPlayerListener(
                 queueTable.deleteAll()
                 queue.forEach( ::insertIgnore )
                 queueTable.insertIgnore( queueItems )
-            }
-        }
-    }
-
-    /**
-     * (Re)render media control in notification area.
-     */
-    @AnyThread
-    fun updateMediaControl( context: Context, player: Player ) {
-        CoroutineScope(Dispatchers.Default ).launch {
-            var firstButton: CommandButton? = null
-            var secondButton: CommandButton? = null
-            val buttons = mutableListOf<CommandButton>()
-
-            NotificationButtons.entries
-                .fastMap { it to PlaybackController.makeButton( context, player, it ) }
-                .fastForEach { (nBtn, cmdBtn) ->
-                    when (nBtn) {
-                        Preferences.MEDIA_NOTIFICATION_FIRST_ICON.value -> firstButton = cmdBtn
-                        Preferences.MEDIA_NOTIFICATION_SECOND_ICON.value -> secondButton = cmdBtn
-                        else -> buttons.add( cmdBtn )
-                    }
-                }
-
-            val layoutButton = buildList {
-                firstButton?.also( ::add )
-                secondButton?.also( ::add )
-                addAll( buttons )
-            }
-
-            withContext( Dispatchers.Main ) {
-                mediaSession.setMediaButtonPreferences( layoutButton )
             }
         }
     }
@@ -174,7 +135,6 @@ class ExoPlayerListener(
     override fun onPlayWhenReadyChanged( playWhenReady: Boolean, reason: Int ) = saveQueueToDatabase()
 
     override fun onRepeatModeChanged( repeatMode: Int ) {
-        updateMediaControl( context, this.player )
         Preferences.QUEUE_LOOP_TYPE.value = QueueLoopType.from( repeatMode )
     }
 
@@ -182,7 +142,6 @@ class ExoPlayerListener(
         if ( player.playerError != null ) player.prepare()
 
         loadFromRadio(reason)
-        onMediaTransition( mediaItem )
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
@@ -191,7 +150,6 @@ class ExoPlayerListener(
     }
 
     override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-        updateMediaControl( context, this.player )
         if (shuffleModeEnabled) {
             val shuffledIndices = IntArray(player.mediaItemCount) { it }
             shuffledIndices.shuffle()

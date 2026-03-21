@@ -1,15 +1,12 @@
 package it.fast4x.rimusic.enums
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.OptIn
 import androidx.annotation.StringRes
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.SessionCommand
 import app.kreate.android.R
-import it.fast4x.rimusic.service.modern.MediaSessionConstants.CommandSearch
-import it.fast4x.rimusic.service.modern.MediaSessionConstants.CommandStartRadio
-import it.fast4x.rimusic.service.modern.MediaSessionConstants.CommandToggleDownload
-import it.fast4x.rimusic.service.modern.MediaSessionConstants.CommandToggleLike
-import it.fast4x.rimusic.service.modern.MediaSessionConstants.CommandToggleRepeatMode
-import it.fast4x.rimusic.service.modern.MediaSessionConstants.CommandToggleShuffle
+import it.fast4x.rimusic.service.modern.MediaLibrarySessionCallback
 import me.knighthat.enums.TextView
 
 enum class NotificationButtons(
@@ -30,12 +27,13 @@ enum class NotificationButtons(
     Search( android.R.string.search_go, R.drawable.search );
 
     val sessionCommand: SessionCommand
-    get() = when (this) {
-        Download -> CommandToggleDownload
-        Favorites -> CommandToggleLike
-        Repeat -> CommandToggleRepeatMode
-        Shuffle -> CommandToggleShuffle
-        Radio -> CommandStartRadio
-        Search -> CommandSearch
-    }
+        @OptIn(UnstableApi::class)
+        get() = when (this) {
+            Download    -> MediaLibrarySessionCallback.Command.download
+            Favorites   -> MediaLibrarySessionCallback.Command.like
+            Repeat      -> MediaLibrarySessionCallback.Command.cycleRepeat
+            Shuffle     -> MediaLibrarySessionCallback.Command.toggleShuffle
+            Radio       -> MediaLibrarySessionCallback.Command.toggleRadio
+            Search      -> MediaLibrarySessionCallback.Command.search
+        }
 }
