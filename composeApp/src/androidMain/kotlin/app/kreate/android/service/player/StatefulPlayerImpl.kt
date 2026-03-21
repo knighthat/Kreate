@@ -158,7 +158,7 @@ class StatefulPlayerImpl(
         repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
         shuffleModeEnabled = Preferences.PLAYER_ACTION_SHUFFLE.value
         volume = Preferences.AUDIO_VOLUME.value
-        setGlobalVolume( player.volume )
+        setGlobalVolume( volume )
         playbackParameters = PlaybackParameters(
             Preferences.AUDIO_SPEED_VALUE.value,
             Preferences.AUDIO_PITCH.value
@@ -233,7 +233,7 @@ class StatefulPlayerImpl(
                 val floor = min(start, end)
                 val ceil = max(start, end)
 
-                player.volume = getVolumeForProgress(
+                volume = getVolumeForProgress(
                     linearProgress = animator.animatedValue as Float,
                     startVolume = start,
                     targetVolume = end
@@ -344,8 +344,8 @@ class StatefulPlayerImpl(
         this.stopRadio()
 
         // Play song immediately while other songs are being loaded
-        if( player.currentMediaItem?.mediaId != mediaItem.mediaId )
-            player.forcePlay( mediaItem )
+        if( currentMediaItem?.mediaId != mediaItem.mediaId )
+            forcePlay( mediaItem )
 
         // Prevent UI from freezing up while data is being fetched
         radioJob = coroutineScope.launch {
@@ -365,7 +365,7 @@ class StatefulPlayerImpl(
 
                 // Any call to [player] must happen on Main thread
                 val currentQueue = withContext( Dispatchers.Main ) {
-                    player.mediaItems.fastMap( MediaItem::mediaId )
+                    mediaItems.fastMap( MediaItem::mediaId )
                 }
 
                 // Songs with the same id as provided [Song] should be removed.
@@ -387,14 +387,14 @@ class StatefulPlayerImpl(
 
                                         When new song is used for radio, replace entire queue with new songs.
                                       */
-                                    val curIndex = player.currentMediaItemIndex
-                                    val endIndex = player.mediaItemCount
-                                    if( !append && player.mediaItemCount > 1 ) {
-                                        player.moveMediaItem( curIndex, 0 )
-                                        player.removeMediaItems( curIndex + 1, endIndex )
+                                    val curIndex = currentMediaItemIndex
+                                    val endIndex = mediaItemCount
+                                    if( !append && mediaItemCount > 1 ) {
+                                        moveMediaItem( curIndex, 0 )
+                                        removeMediaItems( curIndex + 1, endIndex )
                                     }
 
-                                    player.addMediaItems(it)
+                                    addMediaItems(it)
                                 }
                             }
             }.onFailure { err ->
@@ -467,8 +467,6 @@ class StatefulPlayerImpl(
     /*
             ExoPlayer
      */
-
-    override fun getSecondaryRenderer( index: Int ) = player.getSecondaryRenderer( index )
 
     override fun play() {
         fun action() {
@@ -695,7 +693,7 @@ class StatefulPlayerImpl(
             && reason != Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
             && currentMediaItem?.isLocal == false
         ) {
-            val positionToLast = player.mediaItemCount - player.currentMediaItemIndex
+            val positionToLast = mediaItemCount - currentMediaItemIndex
             // Make sure only add when about 10 songs to the last song in queue
             // TODO: Add slider in settings to let user change number of songs
             if( positionToLast <= 10 && !isLoadingRadio() )
