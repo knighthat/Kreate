@@ -78,8 +78,6 @@ class PlayerServiceModern:
     private val handler = Handler(Looper.getMainLooper())
     private val downloadListener = DownloadStateListener()
     private lateinit var mediaSession: MediaLibrarySession
-    private var mediaLibrarySessionCallback: MediaLibrarySessionCallback =
-        MediaLibrarySessionCallback(this)
     private lateinit var audioHandler: AudioHandler
 
     private var liveWallpaperEngine: LiveWallpaperEngine? = null
@@ -202,21 +200,6 @@ class PlayerServiceModern:
         preferences.registerOnSharedPreferenceChangeListener(this)
         preferences.registerOnSharedPreferenceChangeListener(audioHandler)
 
-        // Build the media library session
-        mediaSession = MediaLibrarySession
-            .Builder(this, player.toForwardingPlayer(), mediaLibrarySessionCallback)
-            .setSessionActivity(
-                PendingIntent.getActivity(
-                    this,
-                    0,
-                    Intent(this, MainActivity::class.java)
-                        .putExtra("expandPlayerBottomSheet", true),
-                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                )
-            )
-            .setBitmapLoader( CoilBitmapLoader(coroutineScope) )
-            .build()
-
         // Keep a connected controller so that notification works
         val sessionToken = SessionToken(this, ComponentName(this, PlayerServiceModern::class.java))
         val controllerFuture = MediaController.Builder(this, sessionToken).buildAsync()
@@ -237,8 +220,26 @@ class PlayerServiceModern:
         //</editor-fold>
     }
 
-    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession =
-        mediaSession
+    override fun onGetSession( controllerInfo: MediaSession.ControllerInfo ): MediaLibrarySession {
+        // TODO: Make separate sessions for AA, WearOS?, MediaControl
+        if( !::mediaSession.isInitialized ) {
+            val forwardingPlayer = player.toForwardingPlayer()
+            val sessionCallback = MediaLibrarySessionCallback(this)
+            val intent = Intent(this, MainActivity::class.java)
+                .putExtra("expandPlayerBottomSheet", true)
+            val flags = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+
+            mediaSession = MediaLibrarySession
+                .Builder(this, forwardingPlayer, sessionCallback)
+                .setSessionActivity(
+                    PendingIntent.getActivity(this, 0, intent, flags)
+                )
+                .setBitmapLoader( CoilBitmapLoader(coroutineScope) )
+                .build()
+        }
+
+        return mediaSession
+    }
 
     @UnstableApi
     override fun onDestroy() {
