@@ -44,6 +44,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.android.utils.isLocal
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
@@ -56,7 +57,6 @@ import it.fast4x.rimusic.service.TimeoutException
 import it.fast4x.rimusic.service.UnknownException
 import it.fast4x.rimusic.service.UnplayableException
 import it.fast4x.rimusic.service.VideoIdMismatchException
-import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.ui.components.themed.RotateThumbnailCoverAnimation
 import it.fast4x.rimusic.ui.styling.Dimensions

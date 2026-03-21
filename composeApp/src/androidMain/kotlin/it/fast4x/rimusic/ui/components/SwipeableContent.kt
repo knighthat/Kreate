@@ -31,6 +31,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadService
 import app.kreate.android.Preferences
+import app.kreate.android.utils.isLocal
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
@@ -39,7 +40,6 @@ import it.fast4x.rimusic.enums.DownloadedStateMedia
 import it.fast4x.rimusic.enums.PlaylistSwipeAction
 import it.fast4x.rimusic.enums.QueueSwipeAction
 import it.fast4x.rimusic.service.MyDownloadService
-import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.utils.downloadedStateMedia
 import it.fast4x.rimusic.utils.getDownloadState
 import kotlinx.coroutines.CoroutineScope

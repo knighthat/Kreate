@@ -7,7 +7,6 @@ import android.content.SharedPreferences
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.runtime.getValue
-import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
@@ -26,7 +25,6 @@ import app.kreate.android.service.player.LiveWallpaperEngine
 import app.kreate.android.service.player.PlaybackController
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.player.VolumeObserver
-import app.kreate.android.utils.isLocalFile
 import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import com.google.common.util.concurrent.MoreExecutors
@@ -56,9 +54,6 @@ import me.knighthat.discord.Discord
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-
-
-val MediaItem.isLocal get() = localConfiguration?.uri?.isLocalFile() ?: false
 
 
 @androidx.annotation.OptIn(UnstableApi::class)

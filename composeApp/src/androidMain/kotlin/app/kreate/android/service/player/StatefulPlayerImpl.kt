@@ -42,6 +42,7 @@ import app.kreate.android.service.PlayerEventUpdateDiscord
 import app.kreate.android.service.playback.PlaybackListener
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
+import app.kreate.android.utils.isLocal
 import app.kreate.android.widget.WidgetReceiver
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
@@ -58,7 +59,6 @@ import it.fast4x.rimusic.service.UnknownException
 import it.fast4x.rimusic.service.UnplayableException
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.service.modern.PlayerServiceModern.Companion.SleepTimerNotificationId
-import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.utils.AppLifecycleTracker
 import it.fast4x.rimusic.utils.TimerJob
 import it.fast4x.rimusic.utils.asMediaItem
