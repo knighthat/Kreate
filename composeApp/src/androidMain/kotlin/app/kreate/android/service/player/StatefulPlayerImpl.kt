@@ -45,6 +45,7 @@ import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.service.modern.PlayerServiceModern.Companion.SleepTimerNotificationId
+import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.utils.TimerJob
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
@@ -573,6 +574,25 @@ class StatefulPlayerImpl(
                     _currentTimelineState.value.getWindow( currentMediaItemIndex, Timeline.Window() )
                 }
             }
+        }
+
+        /*
+            Don't fetch more item if:
+            - Feature is disabled
+            - When song is repeated
+            - Start new queue
+            - Is a local song
+         */
+        if( Preferences.PLAYER_ACTION_START_RADIO.value
+            && reason != Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT
+            && reason != Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
+            && currentMediaItem?.isLocal == false
+        ) {
+            val positionToLast = player.mediaItemCount - player.currentMediaItemIndex
+            // Make sure only add when about 10 songs to the last song in queue
+            // TODO: Add slider in settings to let user change number of songs
+            if( positionToLast <= 10 && !isLoadingRadio() )
+                startRadio()
         }
 
         updateMediaControl()

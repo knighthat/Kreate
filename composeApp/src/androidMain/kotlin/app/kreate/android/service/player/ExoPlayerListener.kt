@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
 import androidx.compose.ui.util.fastMapIndexed
-import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
@@ -85,23 +84,6 @@ class ExoPlayerListener(
         }
     }
 
-    private fun loadFromRadio( reason: Int ) {
-        // Don't fetch more item if:
-        // - Feature is disabled
-        // - When song is repeated
-        // - Start new queue
-        if( !Preferences.QUEUE_AUTO_APPEND.value
-            || reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT
-            || reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
-        ) return
-
-        val positionToLast = player.mediaItemCount - player.currentMediaItemIndex
-        // Make sure only add when about 10 songs to the last song in queue
-        // TODO: Add slider in settings to let user change number of songs
-        if( positionToLast <= 10 && !player.isLoadingRadio() )
-            player.startRadio()
-    }
-
     @MainThread
     private fun traverseErrorStack( t: Throwable ): Throwable =
         when( t ) {
@@ -136,12 +118,6 @@ class ExoPlayerListener(
 
     override fun onRepeatModeChanged( repeatMode: Int ) {
         Preferences.QUEUE_LOOP_TYPE.value = QueueLoopType.from( repeatMode )
-    }
-
-    override fun onMediaItemTransition( mediaItem: MediaItem?, reason: Int ) {
-        if ( player.playerError != null ) player.prepare()
-
-        loadFromRadio(reason)
     }
 
     override fun onTimelineChanged(timeline: Timeline, reason: Int) {
