@@ -10,6 +10,8 @@ import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import app.kreate.android.Preferences
+import app.kreate.android.service.download.CacheState
+import app.kreate.android.service.download.CacheStateImpl
 import it.fast4x.rimusic.enums.ExoPlayerCacheLocation
 import org.koin.core.qualifier.Qualifier
 import org.koin.core.qualifier.QualifierValue
@@ -62,6 +64,15 @@ val cacheModule = module {
     single( CacheType.DOWNLOAD ) {
         val context: Context = get()
         initCache( context, Preferences.EXO_DOWNLOAD_SIZE, DOWNLOAD_CACHE_DIRNAME )
+    }
+
+    single<CacheState> {
+        @OptIn(UnstableApi::class)
+        val cache: Cache = get(CacheType.CACHE)
+        @OptIn(UnstableApi::class)
+        val downloadCache: Cache = get(CacheType.DOWNLOAD)
+
+        CacheStateImpl(cache, downloadCache)
     }
 }
 

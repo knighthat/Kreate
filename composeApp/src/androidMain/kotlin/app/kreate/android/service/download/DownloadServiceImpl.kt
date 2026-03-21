@@ -58,6 +58,9 @@ class DownloadServiceImpl :
         return DownloadManager(this, databaseProvider, cache, upstreamFactory, executor)
             .also {
                 it.addListener( this@DownloadServiceImpl )
+                val cacheState: CacheState by inject()
+                it.addListener( cacheState as CacheStateImpl )
+
                 it.maxParallelDownloads = Preferences.DOWNLOAD_MAX_PARALLEL.value
                 it.minRetryCount = 2
             }
