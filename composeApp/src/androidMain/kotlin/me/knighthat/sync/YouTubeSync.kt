@@ -5,15 +5,15 @@ import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
+import app.kreate.android.service.download.DownloadHelper
 import it.fast4x.innertube.YtMusic.likeVideoOrSong
 import it.fast4x.innertube.YtMusic.removelikeVideoOrSong
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.utils.isNetworkConnected
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import me.knighthat.utils.Toaster
+import org.koin.java.KoinJavaComponent.inject
 
 /**
  * Handles YouTube syncing
@@ -39,16 +39,9 @@ object YouTubeSync {
             "Cannot run YouTubeSync.toggleSongLike on main thread"
         }
 
-        // TODO: Encapsulate this block in a transaction
-        // Always ensure song in database before proceed
-        Database.insertIgnore( mediaItem )
-        Database.songTable.toggleLike( mediaItem.mediaId )
-
-        val likeState = runBlocking {
-            Database.songTable.likeState( mediaItem.mediaId ).first()
-        }
-        MyDownloadHelper.downloadOnLike( mediaItem, likeState )
-
+        val downloadHelper: DownloadHelper by inject(DownloadHelper::class.java)
+        downloadHelper.likeAndDownload( mediaItem )
+        val likeState = Database.songTable.likeState( mediaItem.mediaId ).first()
 
         // Stop here if it's not enabled
         if( !isYouTubeSyncEnabled() ) {

@@ -81,16 +81,13 @@ import it.fast4x.rimusic.enums.SongsNumber
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.themed.AddToPlaylistPlayerMenu
-import it.fast4x.rimusic.ui.components.themed.DownloadStateIconButton
+import it.fast4x.rimusic.ui.components.themed.CacheIcon
 import it.fast4x.rimusic.ui.components.themed.IconButton
 import it.fast4x.rimusic.ui.components.themed.PlayerMenu
 import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.conditional
-import it.fast4x.rimusic.utils.getDownloadState
-import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isLandscape
-import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.mediaItems
 import it.fast4x.rimusic.utils.playAtIndex
 import it.fast4x.rimusic.utils.semiBold
@@ -462,30 +459,8 @@ fun BoxScope.ActionBar(
                 }
 
                 val showButtonPlayerDownload by Preferences.PLAYER_ACTION_DOWNLOAD
-                if (showButtonPlayerDownload) {
-                    val isDownloaded = isDownloadedSong( mediaItem.mediaId )
-
-                    DownloadStateIconButton(
-                        icon = if (isDownloaded) R.drawable.downloaded else R.drawable.download,
-                        color = if (isDownloaded) colorPalette().accent else Color.Gray,
-                        downloadState = getDownloadState(mediaItem.mediaId),
-                        onClick = {
-                            manageDownload(
-                                context = context,
-                                mediaItem = mediaItem,
-                                downloadState = isDownloaded
-                            )
-                        },
-                        onCancelButtonClicked = {
-                            manageDownload(
-                                context = context,
-                                mediaItem = mediaItem,
-                                downloadState = true
-                            )
-                        },
-                        modifier = Modifier.size( 24.dp )
-                    )
-                }
+                if (showButtonPlayerDownload)
+                    CacheIcon(mediaItem, Modifier.size( 24.dp ))
 
                 val showButtonPlayerAddToPlaylist by Preferences.PLAYER_ACTION_ADD_TO_PLAYLIST
                 if (showButtonPlayerAddToPlaylist) {

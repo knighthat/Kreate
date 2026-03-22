@@ -18,6 +18,7 @@ import androidx.media3.exoplayer.scheduler.PlatformScheduler
 import androidx.media3.exoplayer.scheduler.Scheduler
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.playback.PlaybackService
 import app.kreate.di.CacheType
 import app.kreate.di.DatasourceType
 import co.touchlab.kermit.Logger
@@ -59,6 +60,9 @@ class DownloadServiceImpl :
         return DownloadManager(this, databaseProvider, cache, upstreamFactory, executor)
             .also {
                 it.addListener( this@DownloadServiceImpl )
+                val cacheState: CacheState by inject()
+                it.addListener( cacheState as CacheStateImpl )
+
                 it.maxParallelDownloads = Preferences.DOWNLOAD_MAX_PARALLEL.value
                 it.minRetryCount = 2
             }
@@ -140,13 +144,19 @@ class DownloadServiceImpl :
         download: Download,
         finalException: Exception?
     ) {
-        logger.v { "Download changed. Terminal state: ${download.isTerminalState}, bytes downloaded: ${download.bytesDownloaded}" }
+        logger.v { "Download changed. State: ${download.state}, bytes downloaded: ${download.bytesDownloaded}" }
 
         val downloadId = download.request.id
         finalException?.also {
             logger.e( it ) { "Download %s failed at %.2f%%".format(downloadId, download.percentDownloaded) }
         }
 
+        //<editor-fold desc="Send request to update media control">
+        val intent = Intent(this, PlaybackService::class.java)
+            .setAction( PlaybackService.ACTION_UPDATE_MEDIA_CONTROL )
+            .putExtra( PlaybackService.KEY_CURRENT_SONG_ID, downloadId )
+        startService( intent )
+        //</editor-fold>
         //<editor-fold desc="Finish notification">
         val filename = String(download.request.data)
         buildNotification(
@@ -188,6 +198,17 @@ class DownloadServiceImpl :
             )
             NotificationUtil.setNotification(this, DOWNLOADS_STATUS_NOTIFICATION_ID, summaryNotification)
         }
+        //</editor-fold>
+    }
+
+    override fun onDownloadRemoved( downloadManager: DownloadManager, download: Download ) {
+        logger.v { "Download removed. State: ${download.state}, bytes downloaded: ${download.bytesDownloaded}" }
+
+        //<editor-fold desc="Send request to update media control">
+        val intent = Intent(this, PlaybackService::class.java)
+            .setAction( PlaybackService.ACTION_UPDATE_MEDIA_CONTROL )
+            .putExtra( PlaybackService.KEY_CURRENT_SONG_ID, download.request.id )
+        startService( intent )
         //</editor-fold>
     }
 }

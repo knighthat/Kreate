@@ -34,7 +34,6 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -50,10 +49,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.media3.common.MediaItem
-import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.download.DownloadHelper
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Search
@@ -61,7 +60,6 @@ import app.kreate.android.themed.rimusic.component.playlist.PositionLock
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
-import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persist
 import it.fast4x.compose.persist.persistList
@@ -85,10 +83,8 @@ import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.enqueue
-import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.isNowPlaying
-import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.mediaItems
 import it.fast4x.rimusic.utils.shouldBePlaying
 import me.knighthat.component.tab.ExportSongsToCSVDialog
@@ -100,7 +96,6 @@ import me.knighthat.component.ui.screens.player.Repeat
 import me.knighthat.component.ui.screens.player.ShuffleQueue
 import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
-import org.koin.java.KoinJavaComponent.inject
 
 
 @ExperimentalTextApi
@@ -118,6 +113,7 @@ fun Queue(
     val context = LocalContext.current
     val windowInsets = WindowInsets.systemBars
     val player: StatefulPlayer = koinInject()
+    val downloadHelper: DownloadHelper = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
     val menuState = LocalMenuState.current
@@ -239,9 +235,6 @@ fun Queue(
                     key = { index, song -> "%s-%d".format( System.identityHashCode( song ), index ) }
                 ) { index, song ->
 
-                    val isLocal by remember { derivedStateOf { song.isLocal } }
-                    val isDownloaded = isLocal || isDownloadedSong(song.id)
-
                     Box(
                         modifier = Modifier.fillMaxWidth()
                                            .draggedItem(
@@ -279,14 +272,7 @@ fun Queue(
                                 player.moveMediaItem( index, player.currentMediaItemIndex + 1 )
                             },
                             onDownload = {
-                                val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
-                                cache.removeResource(song.id)
-                                if (!isLocal)
-                                    manageDownload(
-                                        context = context,
-                                        mediaItem = mediaItem,
-                                        downloadState = isDownloaded
-                                    )
+                                downloadHelper.downloadSong( song )
                             },
                             onRemoveFromQueue = {
                                 player.removeMediaItem( index )

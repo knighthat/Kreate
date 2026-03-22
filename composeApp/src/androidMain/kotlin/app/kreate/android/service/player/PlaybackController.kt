@@ -8,12 +8,13 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.session.CommandButton
 import app.kreate.android.R
+import app.kreate.android.service.download.CacheState
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.NotificationButtons
-import it.fast4x.rimusic.service.MyDownloadHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import org.koin.java.KoinJavaComponent.inject
 
 object PlaybackController {
 
@@ -29,7 +30,8 @@ object PlaybackController {
 
     @OptIn(UnstableApi::class)
     private fun getDownloadIconId( songId: String ): Int {
-        val state = MyDownloadHelper.instance.downloads.value[songId]?.state ?: Download.STATE_STOPPED
+        val cacheState: CacheState by inject(CacheState::class.java)
+        val state = cacheState.downloaded.value[songId] ?: Download.STATE_STOPPED
         return when( state ) {
             Download.STATE_COMPLETED    -> R.drawable.downloaded
             Download.STATE_DOWNLOADING,

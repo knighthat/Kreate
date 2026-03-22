@@ -40,24 +40,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastJoinToString
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.datasource.cache.Cache
-import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.download.CacheState
+import app.kreate.android.service.download.DownloadHelper
 import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.innertube.toSong
 import app.kreate.android.utils.scrollingText
 import app.kreate.database.models.Song
-import app.kreate.di.CacheType
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.enums.DownloadedStateMedia
-import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.ui.components.MusicAnimation
 import it.fast4x.rimusic.ui.styling.Appearance
@@ -70,8 +68,6 @@ import it.fast4x.rimusic.ui.styling.onOverlay
 import it.fast4x.rimusic.ui.styling.overlay
 import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.conditional
-import it.fast4x.rimusic.utils.downloadedStateMedia
-import it.fast4x.rimusic.utils.getDownloadState
 import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shimmerEffect
@@ -79,7 +75,7 @@ import kotlinx.coroutines.Dispatchers
 import me.knighthat.component.menu.song.SongItemMenu
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
-import org.koin.java.KoinJavaComponent.inject
+import org.koin.compose.koinInject
 
 object SongItem: Visual() {
 
@@ -178,42 +174,32 @@ object SongItem: Visual() {
      */
     @UnstableApi
     @Composable
-    private fun <T> CacheAndDownloadIcon(
-        songId: String,
-        song: T,
+    private fun CacheAndDownloadIcon(
+        song: Song,
         values: Values,
-        handler: (T, Boolean) -> Unit,
         modifier: Modifier = Modifier,
-        onClick: () -> Unit = {}
+        cacheState: CacheState = koinInject(),
+        dlHelper: DownloadHelper = koinInject()
     ) {
-        val cacheState = downloadedStateMedia( songId )
-        val downloadState = getDownloadState( songId )
-
-        val iconId = when( downloadState ) {
-            Download.STATE_DOWNLOADING  -> R.drawable.download_progress
-            Download.STATE_REMOVING     -> R.drawable.download
-            else                        -> cacheState.androidIconId
-        }
-        val color = when( cacheState ) {
-            DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED   -> values.uncachedColor
-            DownloadedStateMedia.CACHED                     -> values.cachedColor
-            else                                            -> values.downloadedColor
+        val state by cacheState.stateOf( song.id ).collectAsStateWithLifecycle(CacheState.State.Unknown)
+        val color = remember( state ) {
+            when(val capturedState = state) {
+                is CacheState.State.Cached -> if( capturedState.isFullyCached ) values.cachedColor else values.uncachedColor
+                is CacheState.State.Unknown -> values.uncachedColor
+                else -> values.cachedColor
+            }
         }
 
         Icon(
-            painter = painterResource( iconId ),
+            painter = state.icon,
             contentDescription = stringResource( R.string.download ),
             tint = color,
-            modifier = modifier.size( DOWNLOAD_ICON_SIZE.dp )
-                               .clickable {
-                                   onClick()
-
-                                   Database.asyncTransaction {
-                                       formatTable.deleteBySongId( songId )
-                                   }
-
-                                   handler( song, true )
-                               }
+            modifier = modifier.size( DOWNLOAD_ICON_SIZE.dp ).clickable {
+                when( state ) {
+                    is CacheState.State.Downloaded -> dlHelper.removeSong( song )
+                    else                           -> dlHelper.downloadSong( song )
+                }
+            }
         )
     }
 
@@ -463,10 +449,7 @@ object SongItem: Visual() {
                 )
 
                 if( !song.isLocal )
-                    CacheAndDownloadIcon( song.id, song, values, MyDownloadHelper::handleDownload , modifier ) {
-                        val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
-                        cache.removeResource( song.id )
-                    }
+                    CacheAndDownloadIcon( song, values, modifier )
             },
             trailingContent = {
                 itemSelector?.CheckBox( song )

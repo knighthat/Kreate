@@ -81,6 +81,10 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import androidx.navigation.compose.rememberNavController
 import androidx.palette.graphics.Palette
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
@@ -90,6 +94,7 @@ import app.kreate.android.service.playback.PlaybackService
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.updater.UpdatePlugins
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
+import app.kreate.android.worker.SyncDownloadWorker
 import app.kreate.database.models.PersistentQueue
 import co.touchlab.kermit.Logger
 import coil3.imageLoader
@@ -118,7 +123,6 @@ import it.fast4x.rimusic.enums.PlayerBackgroundColors
 import it.fast4x.rimusic.enums.ThumbnailRoundness
 import it.fast4x.rimusic.extensions.pip.PipEventContainer
 import it.fast4x.rimusic.extensions.pip.PipModuleContainer
-import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.ui.components.CustomModalBottomSheet
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.themed.CrossfadeContainer
@@ -159,6 +163,7 @@ import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
 import java.util.Locale
 import java.util.Objects
+import java.util.concurrent.TimeUnit
 import kotlin.math.sqrt
 import kotlin.system.exitProcess
 
@@ -714,7 +719,6 @@ MainActivity :
                             LocalRippleConfiguration provides rippleConfiguration,
                             LocalPlayerAwareWindowInsets provides playerAwareWindowInsets,
                             LocalLayoutDirection provides LayoutDirection.Ltr,
-                            LocalDownloadHelper provides MyDownloadHelper,
                             LocalPlayerSheetState provides playerState,
                             LocalMonetCompat provides monet,
                         ) {
@@ -985,6 +989,22 @@ MainActivity :
         }.onFailure {
             logger.e( it ) { "onResume failed" }
         }
+
+        //<editor-fold desc="Start sync downloads worker periodically">
+        workManager.enqueueUniquePeriodicWork(
+           SyncDownloadWorker::class.java.name,
+           ExistingPeriodicWorkPolicy.KEEP,
+            PeriodicWorkRequestBuilder<SyncDownloadWorker>(
+                30, TimeUnit.MINUTES,
+                5, TimeUnit.MINUTES
+            ).build()
+        )
+        workManager.enqueueUniqueWork(
+            SyncDownloadWorker::class.java.simpleName,
+            ExistingWorkPolicy.KEEP,
+            OneTimeWorkRequestBuilder<SyncDownloadWorker>().build()
+        )
+        //</editor-fold>
     }
 
     override fun onPause() {
@@ -994,6 +1014,15 @@ MainActivity :
         }.onFailure {
             logger.e( it ) { "onPause failed" }
         }
+
+        //<editor-fold desc="Cancel workers">
+        // Database won't be updated in background to save resources
+        // Once app becomes foreground, new worker will be reinstated
+        workManager.cancelUniqueWork(SyncDownloadWorker::class.java.name)
+        // Make sure the worker run until completion if user opens the app
+        // then closes it immediately
+        workManager.cancelUniqueWork(SyncDownloadWorker::class.java.simpleName)
+        //</editor-fold>
     }
 
     @UnstableApi
@@ -1089,8 +1118,6 @@ MainActivity :
 }
 
 val LocalPlayerAwareWindowInsets = staticCompositionLocalOf<WindowInsets> { TODO() }
-
-val LocalDownloadHelper = staticCompositionLocalOf<MyDownloadHelper> { error("No Downloader provided") }
 
 @OptIn(ExperimentalMaterial3Api::class)
 val LocalPlayerSheetState =

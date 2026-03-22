@@ -71,6 +71,17 @@ interface FormatTable: DatabaseTable<Format> {
     fun findBySongId( songId: String ): Flow<Format?>
 
     /**
+     * @return all [Format] where [Format.songId] is included
+     * in [songIds]
+     */
+    @Query("""
+        SELECT DISTINCT *
+        FROM formats
+        WHERE song_id IN (:songIds)
+    """)
+    fun findBySongIds( songIds: List<String> ): Flow<List<Format>>
+
+    /**
      * @return stored [Format.contentLength] of song with id [songId], `0` otherwise
      */
     @Query("""

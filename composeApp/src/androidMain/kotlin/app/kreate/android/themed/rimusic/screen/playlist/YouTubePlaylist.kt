@@ -21,7 +21,6 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,11 +41,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.download.DownloadHelper
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.LoadMoreContentType
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
@@ -58,7 +57,6 @@ import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
 import app.kreate.android.viewmodel.YouTubePlaylistViewModel
 import app.kreate.database.models.Song
-import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.YtMusic
 import it.fast4x.rimusic.Database
@@ -85,10 +83,8 @@ import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.fadingEdge
 import it.fast4x.rimusic.utils.forcePlayAtIndex
 import it.fast4x.rimusic.utils.forcePlayFromBeginning
-import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.isNetworkAvailable
-import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
@@ -104,7 +100,6 @@ import me.knighthat.innertube.Constants
 import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.java.KoinJavaComponent.inject
 
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
@@ -118,6 +113,7 @@ fun YouTubePlaylist(
     val context = LocalContext.current
     val menuState = LocalMenuState.current
     val player: StatefulPlayer = koinInject()
+    val downloadHelper: DownloadHelper = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
 
@@ -333,27 +329,13 @@ fun YouTubePlaylist(
                         // will get updated accordingly
                         key = { i, s -> "${System.identityHashCode(s)} - $i" }
                     ) { index, song ->
-                        val isLocal by remember { derivedStateOf { song.isLocal } }
-                        val isDownloaded = !isLocal && isDownloadedSong( song.id )
-
                         SwipeablePlaylistItem(
                             mediaItem = song.asMediaItem,
                             onPlayNext = {
                                 player.addNext( song.asMediaItem )
                             },
                             onDownload = {
-                                val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
-                                cache.removeResource( song.id )
-                                Database.asyncTransaction {
-                                    formatTable.updateContentLengthOf( song.id )
-                                }
-
-                                if (!isLocal)
-                                    manageDownload(
-                                        context = context,
-                                        mediaItem = song.asMediaItem,
-                                        downloadState = isDownloaded
-                                    )
+                                downloadHelper.downloadSong( song )
                             },
                             onEnqueue = {
                                 player.enqueue(song.asMediaItem)
