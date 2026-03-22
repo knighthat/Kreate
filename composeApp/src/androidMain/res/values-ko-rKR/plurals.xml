@@ -12,4 +12,7 @@
     <plurals name="song">
         <item quantity="other">%d개 곡</item>
     </plurals>
+    <plurals name="download">
+        <item quantity="other">%d downloads</item>
+    </plurals>
 </resources>
