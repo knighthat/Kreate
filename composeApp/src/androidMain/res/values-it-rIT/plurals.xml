@@ -16,4 +16,8 @@
         <item quantity="one">%d brano</item>
         <item quantity="other">%d brani</item>
     </plurals>
+    <plurals name="download">
+        <item quantity="one">%d download</item>
+        <item quantity="other">%d downloads</item>
+    </plurals>
 </resources>
