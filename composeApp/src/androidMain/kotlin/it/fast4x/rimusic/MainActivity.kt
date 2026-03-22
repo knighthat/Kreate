@@ -86,6 +86,7 @@ import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.updater.UpdatePlugins
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.database.models.PersistentQueue
+import app.kreate.di.PrefType
 import co.touchlab.kermit.Logger
 import coil3.imageLoader
 import coil3.request.allowHardware
@@ -138,7 +139,6 @@ import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isAtLeastAndroid8
 import it.fast4x.rimusic.utils.isVideo
 import it.fast4x.rimusic.utils.loadAppLog
-import it.fast4x.rimusic.utils.preferences
 import it.fast4x.rimusic.utils.resize
 import it.fast4x.rimusic.utils.setDefaultPalette
 import it.fast4x.rimusic.utils.textCopyToClipboard
@@ -288,6 +288,7 @@ MainActivity :
             window.addFlags( WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON )
 
         setContent {
+            val preferences: SharedPreferences = koinInject(PrefType.DEFAULT)
             val colorPaletteMode by Preferences.THEME_MODE
             val isPicthBlack = colorPaletteMode == ColorPaletteMode.PitchBlack
 
@@ -571,7 +572,8 @@ MainActivity :
                     }
 
                     onDispose {
-                        unregisterOnSharedPreferenceChangeListener(listener)
+                        unregisterOnSharedPreferenceChangeListener( listener )
+                        unregisterOnSharedPreferenceChangeListener( this@MainActivity )
                     }
                 }
             }
