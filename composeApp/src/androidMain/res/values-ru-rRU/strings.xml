@@ -910,4 +910,10 @@
     <string name="setting_description_choose_image">Click to choose image</string>
     <string name="setting_description_remove_image">Click to remove image</string>
     <string name="error_failed_to_update_widget">Failed to update widget</string>
+    <string name="notification_category_download">Download notification</string>
+    <string name="notification_description_download">Give you updates on currently downloading and downloaded songs</string>
+    <string name="notification_message_download_in_progress">%s in progress</string>
+    <string name="notification_group_download_results">Download results</string>
+    <string name="notification_message_download_completed">%s successfully downloaded</string>
+    <string name="notification_message_download_failed">%s failed to download</string>
 </resources>
