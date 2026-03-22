@@ -546,13 +546,19 @@ fun BoxScope.ActionBar(
                 }
 
                 val showButtonPlayerShuffle by Preferences.PLAYER_ACTION_SHUFFLE
-                if (showButtonPlayerShuffle)
+                if (showButtonPlayerShuffle) {
+                    val isEnabled by Preferences.PLAYER_SHUFFLE
+
                     IconButton(
                         icon = R.drawable.shuffle,
-                        color = colorPalette().accent,
-                        onClick = player::shuffleQueue,
-                        modifier = Modifier.size( 24.dp )
+                        color = if( isEnabled ) colorPalette().accent else Color.Gray,
+                        onClick = {},
+                        modifier = Modifier.size( 24.dp ).combinedClickable(
+                            onClick = player::toggleShuffleMode,
+                            onLongClick = player::shuffleQueue
+                        )
                     )
+                }
 
                 val showButtonPlayerLyrics by Preferences.PLAYER_ACTION_SHOW_LYRICS
                 if (showButtonPlayerLyrics)

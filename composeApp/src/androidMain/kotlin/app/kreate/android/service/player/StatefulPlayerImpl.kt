@@ -162,7 +162,7 @@ class StatefulPlayerImpl(
 
         skipSilenceEnabled = Preferences.AUDIO_SKIP_SILENCE.value
         repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
-        shuffleModeEnabled = Preferences.PLAYER_ACTION_SHUFFLE.value
+        shuffleModeEnabled = Preferences.PLAYER_SHUFFLE.value
         volume = Preferences.AUDIO_VOLUME.value
         setGlobalVolume( volume )
         playbackParameters = PlaybackParameters(
@@ -791,7 +791,7 @@ class StatefulPlayerImpl(
     }
 
     override fun onShuffleModeEnabledChanged( shuffleModeEnabled: Boolean ) {
-        Preferences.PLAYER_ACTION_SHUFFLE.value = shuffleModeEnabled
+        Preferences.PLAYER_SHUFFLE.value = shuffleModeEnabled
 
         updateMediaControl()
     }
