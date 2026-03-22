@@ -5,7 +5,6 @@ import android.content.Intent
 import android.media.audiofx.AudioEffect
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.DrawableRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,6 +34,10 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -56,7 +59,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Density
@@ -89,7 +91,6 @@ import it.fast4x.rimusic.ui.components.themed.PlayerMenu
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.addNext
-import it.fast4x.rimusic.utils.conditional
 import it.fast4x.rimusic.utils.getDownloadState
 import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isLandscape
@@ -104,13 +105,26 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import me.knighthat.component.player.PlaybackSpeed
 import me.knighthat.kreate.composeapp.generated.resources.Res
+import me.knighthat.kreate.composeapp.generated.resources.add_in_playlist
+import me.knighthat.kreate.composeapp.generated.resources.chevron_up
 import me.knighthat.kreate.composeapp.generated.resources.download
 import me.knighthat.kreate.composeapp.generated.resources.download_progress
 import me.knighthat.kreate.composeapp.generated.resources.downloaded
+import me.knighthat.kreate.composeapp.generated.resources.ellipsis_vertical
+import me.knighthat.kreate.composeapp.generated.resources.equalizer
+import me.knighthat.kreate.composeapp.generated.resources.maximize
+import me.knighthat.kreate.composeapp.generated.resources.radio
+import me.knighthat.kreate.composeapp.generated.resources.shuffle
+import me.knighthat.kreate.composeapp.generated.resources.sleep
+import me.knighthat.kreate.composeapp.generated.resources.song_lyrics
+import me.knighthat.kreate.composeapp.generated.resources.sound_effect
+import me.knighthat.kreate.composeapp.generated.resources.star_brilliant
+import me.knighthat.kreate.composeapp.generated.resources.trash
+import me.knighthat.kreate.composeapp.generated.resources.video
 import me.knighthat.utils.Toaster
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
-import org.jetbrains.compose.resources.painterResource as kmpPainterResource
 
 
 private const val BUTTON_SIZE = 24
@@ -131,37 +145,6 @@ private class PagerViewPort(
 
 @Composable
 fun ActionButton(
-    @DrawableRes iconId: Int,
-    contentDescription: String?,
-    tint: Color,
-    modifier: Modifier = Modifier,
-    onLongClick: () -> Unit = {},
-    onClick: () -> Unit
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    IconButton(
-        onClick = {},
-        interactionSource = interactionSource,
-        modifier = modifier
-    ) {
-        Icon(
-            painter = painterResource( iconId ),
-            contentDescription = contentDescription,
-            tint = tint,
-            modifier = Modifier.size( BUTTON_SIZE.dp ).combinedClickable(
-                // Use the same [interactionSource] for ripple effect
-                interactionSource = interactionSource,
-                // No ripple on inner icon, just outer one
-                indication = null,
-                onLongClick = onLongClick,
-                onClick = onClick
-            )
-        )
-    }
-}
-
-@Composable
-fun ActionButton(
     resource: DrawableResource,
     contentDescription: String?,
     tint: Color,
@@ -176,7 +159,7 @@ fun ActionButton(
         modifier = modifier
     ) {
         Icon(
-            painter = kmpPainterResource( resource ),
+            painter = painterResource( resource ),
             contentDescription = contentDescription,
             tint = tint,
             modifier = Modifier.size( BUTTON_SIZE.dp ).combinedClickable(
@@ -268,8 +251,8 @@ fun BoxScope.ActionBar(
         ) {
             if ( showNextSongsInPlayer && (showLyricsThumbnail || !isShowingLyrics || miniQueueExpanded) ) {
                 Row(
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier
                         .background(
                             colorPalette.background2.copy(
@@ -317,37 +300,30 @@ fun BoxScope.ActionBar(
                         }
                     }
 
-                    Row(
-                        modifier = Modifier
-                            .padding(vertical = 7.5.dp)
-                            .weight(0.07f)
-                            .conditional( pagerStateQueue.currentPage == currentIndex ) {
-                                padding(
-                                    horizontal = 3.dp
-                                )
-                            }
-                    ) {
-                        val coroutine = rememberCoroutineScope()
+                    //<editor-fold desc="Relative position indicator">
+                    val icon = if( pagerStateQueue.currentPage > currentIndex )
+                        Icons.AutoMirrored.Default.KeyboardArrowLeft
+                    else if( pagerStateQueue.currentPage == currentIndex )
+                        Icons.Default.PlayArrow
+                    else
+                        Icons.AutoMirrored.Default.KeyboardArrowRight
 
+                    IconButton(
+                        onClick = {
+                            coroutine.launch {
+                                pagerStateQueue.animateScrollToPage( currentIndex )
+                            }
+                        },
+                        modifier = Modifier.size( BUTTON_SIZE.dp )
+                    ) {
                         Icon(
-                            painter = painterResource(
-                                id = if ( pagerStateQueue.currentPage > currentIndex ) R.drawable.chevron_forward
-                                else if ( pagerStateQueue.currentPage == currentIndex ) R.drawable.play
-                                else R.drawable.chevron_back
-                            ),
-                            contentDescription = null,
-                            modifier = Modifier.size( 25.dp )
-                                               .clickable(
-                                                   interactionSource = remember { MutableInteractionSource() },
-                                                   indication = null,
-                                               ) {
-                                                   coroutine.launch {
-                                                       pagerStateQueue.animateScrollToPage( currentIndex )
-                                                   }
-                                               },
-                            tint = colorPalette.accent
+                            imageVector = icon,
+                            tint = colorPalette.accent,
+                            // TODO: localize
+                            contentDescription = "Go to currently playing song"
                         )
                     }
+                    //</editor-fold>
 
                     val showSongsState = Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE
                     val viewPort = remember {
@@ -485,7 +461,7 @@ fun BoxScope.ActionBar(
 
                     if ( showSongsState.value == SongsNumber.`1` )
                         ActionButton(
-                            iconId = R.drawable.trash,
+                            resource = Res.drawable.trash,
                             tint = Color.White,
                             // TODO: localize
                             contentDescription = "Delete from queue",
@@ -509,7 +485,7 @@ fun BoxScope.ActionBar(
                 val showButtonPlayerVideo by Preferences.PLAYER_ACTION_TOGGLE_VIDEO
                 if (showButtonPlayerVideo)
                     ActionButton(
-                        iconId = R.drawable.video,
+                        resource = Res.drawable.video,
                         tint = colorPalette.accent,
                         // TODO: localize
                         contentDescription = "Toggle video mode"
@@ -524,7 +500,7 @@ fun BoxScope.ActionBar(
                     val tint = if ( discoverIsEnabled ) colorPalette.text else colorPalette.textDisabled
 
                     ActionButton(
-                        iconId = R.drawable.star_brilliant,
+                        resource = Res.drawable.star_brilliant,
                         tint = tint,
                         // TODO: localize
                         contentDescription = "Discovery",
@@ -593,7 +569,7 @@ fun BoxScope.ActionBar(
                         Modifier
 
                     ActionButton(
-                        iconId = R.drawable.add_in_playlist,
+                        resource = Res.drawable.add_in_playlist,
                         tint = iconColor,
                         // TODO: localize
                         contentDescription = "Add to playlist",
@@ -616,7 +592,7 @@ fun BoxScope.ActionBar(
                     val effectRotationEnabled by Preferences.ROTATION_EFFECT
 
                     ActionButton(
-                        iconId = queueLoopType.androidIconId,
+                        resource = queueLoopType.iconId,
                         tint = colorPalette.accent,
                         // TODO: localize
                         contentDescription = "Repeat mode"
@@ -633,7 +609,7 @@ fun BoxScope.ActionBar(
                     val tint = if( isEnabled ) colorPalette.accent else Color.Gray
 
                     ActionButton(
-                        iconId = R.drawable.shuffle,
+                        resource = Res.drawable.shuffle,
                         tint = tint,
                         // TODO: localize
                         contentDescription = "Shuffle",
@@ -646,7 +622,7 @@ fun BoxScope.ActionBar(
                 if (showButtonPlayerLyrics) {
                     val tint = if ( isShowingLyrics ) colorPalette.accent else Color.Gray
                     ActionButton(
-                        iconId = R.drawable.song_lyrics,
+                        resource = Res.drawable.song_lyrics,
                         tint = tint,
                         // TODO: localize
                         contentDescription = "Show/hide lyrics"
@@ -666,7 +642,7 @@ fun BoxScope.ActionBar(
 
                     if (expandedPlayerToggle && !showLyricsThumbnail)
                         ActionButton(
-                            iconId = R.drawable.maximize,
+                            resource = Res.drawable.maximize,
                             tint = tint,
                             // TODO: localize
                             contentDescription = "Show/hide thumbnail"
@@ -679,7 +655,7 @@ fun BoxScope.ActionBar(
                 if (visualizerEnabled) {
                     val tint = if ( isShowingVisualizer ) colorPalette.text else colorPalette.textDisabled
                     ActionButton(
-                        iconId = R.drawable.sound_effect,
+                        resource = Res.drawable.sound_effect,
                         tint = tint,
                         // TODO: localize
                         contentDescription = "Show/Hide visualizer"
@@ -696,7 +672,7 @@ fun BoxScope.ActionBar(
                     val tint = if (sleepTimerMillisLeft != null) colorPalette.accent else Color.Gray
 
                     ActionButton(
-                        iconId = R.drawable.sleep,
+                        resource = Res.drawable.sleep,
                         tint = tint,
                         // TODO: localize
                         contentDescription = "Show/Hide sleep timer"
@@ -711,7 +687,7 @@ fun BoxScope.ActionBar(
                         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
 
                     ActionButton(
-                        iconId = R.drawable.equalizer,
+                        resource = Res.drawable.equalizer,
                         tint = colorPalette.accent,
                         // TODO: localize
                         contentDescription = "Equalizer"
@@ -742,7 +718,7 @@ fun BoxScope.ActionBar(
                 val showButtonPlayerStartRadio by Preferences.PLAYER_ACTION_START_RADIO
                 if (showButtonPlayerStartRadio)
                     ActionButton(
-                        iconId = R.drawable.radio,
+                        resource = Res.drawable.radio,
                         tint = colorPalette.accent,
                         // TODO: localize
                         contentDescription = "Radio"
@@ -761,7 +737,7 @@ fun BoxScope.ActionBar(
                 val showButtonPlayerArrow by Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW
                 if (showButtonPlayerArrow)
                     ActionButton(
-                        iconId = R.drawable.chevron_up,
+                        resource = Res.drawable.chevron_up,
                         tint = colorPalette.accent,
                         // TODO: localize
                         contentDescription = "Open queue"
@@ -774,7 +750,7 @@ fun BoxScope.ActionBar(
                     val isInLandscape = isLandscape
 
                     ActionButton(
-                        iconId = R.drawable.ellipsis_vertical,
+                        resource = Res.drawable.ellipsis_vertical,
                         tint = colorPalette.accent,
                         // TODO: localize
                         contentDescription = "Open menu",
