@@ -16,7 +16,6 @@ import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheDataSink
 import androidx.media3.datasource.cache.CacheDataSource
-import androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
@@ -55,6 +54,7 @@ import it.fast4x.rimusic.utils.isNetworkAvailable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -78,10 +78,12 @@ import org.schabi.newpipe.extractor.services.youtube.YoutubeJavaScriptPlayerMana
 import org.schabi.newpipe.extractor.services.youtube.YoutubeStreamHelper
 import java.net.UnknownHostException
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.math.min
 import kotlin.time.Duration.Companion.seconds
 
 
 private const val CHUNK_LENGTH = 512 * 1024L     // 512KB
+private const val MAX_CHUNK_LENGTH = 5L * 1024 * 1024       // 5MB
 private const val ONE_HOUR = 3_600_000L
 private const val METHOD_ANDROID = 1
 private const val METHOD_IOS = 2
@@ -357,7 +359,21 @@ private fun getPlayableUrl( songId: String ): StreamCache = runBlocking( Dispatc
 }
 //</editor-fold>
 //<editor-fold desc="Resolvers">
-private fun resolver( queryInChunks: Boolean, vararg cashes: Cache ) =
+private fun isCached( songId: String, position: Long, length: Long, cache: Cache, downloadCache: Cache ): Boolean {
+    var isCached = false
+
+    if( downloadCache.isCached(songId, position, length) ) {
+        logger.v { "$songId is already downloaded!" }
+        isCached = true
+    } else if( cache.isCached(songId, position, length) ) {
+        logger.v { "$songId is cached!" }
+        isCached = true
+    }
+
+    return isCached
+}
+
+private fun playerResolver( cache: Cache, downloadCache: Cache ) =
     ResolvingDataSource.Resolver { dataSpec ->
         if( dataSpec.uri.isLocalFile() ) {
             logger.d { "playing local song: ${dataSpec.uri}" }
@@ -367,24 +383,73 @@ private fun resolver( queryInChunks: Boolean, vararg cashes: Cache ) =
         val songId = dataSpec.uri.toString()
         upsertSongInfo( context, songId )
 
-        // Delay this block until called. Song can be local too
         val position = dataSpec.position
-        val length = dataSpec.length.takeIf { it > C.LENGTH_UNSET } ?: CHUNK_LENGTH
-        val isCached = cashes.any {
-            it.isCached( songId, position, length )
+        val contentLength = runBlocking( Dispatchers.IO ) {
+            Database.formatTable.findBySongId( songId ).firstOrNull()?.contentLength
         }
-        if( isCached ) {
-            logger.v { "Chunk $position - ${position + length} of $songId is cached" }
-            // No need to fetch online for already cached data
-            dataSpec
-        } else {
-            val cache = getPlayableUrl( songId )
-            val deobUrl = YoutubeJavaScriptPlayerManager.getUrlWithThrottlingParameterDeobfuscated( songId, cache.playableUrl )
-            val uri = "$deobUrl&cpn=${cache.cpn}".toUri()
-            val length = CHUNK_LENGTH.takeIf { queryInChunks } ?: cache.contentLength
+        if( contentLength != null ) {
+            val length = (contentLength - position).coerceAtLeast( C.LENGTH_UNSET.toLong() )
+            val isCached = isCached( songId, position, length, cache, downloadCache )
 
-            dataSpec.withUri( uri ).subrange( dataSpec.uriPositionOffset, length )
+            if( isCached )
+                /**
+                 * Because [DefaultDataSource] sits in front of the rest so
+                 * passing [songId] will make it go look for local files first.
+                 * By modifying uri, it'll trick the system to go pass local file
+                 * and use [androidx.media3.datasource.DataSpec.key] to find
+                 * cached data.
+                 */
+                return@Resolver dataSpec.buildUpon()
+                                            .setUri( "cache://$songId".toUri() )
+                                            .setLength( length )
+                                            .build()
         }
+
+        val cache = getPlayableUrl( songId )
+        val deobUrl = YoutubeJavaScriptPlayerManager.getUrlWithThrottlingParameterDeobfuscated( songId, cache.playableUrl )
+        val uri = "$deobUrl&cpn=${cache.cpn}".toUri()
+        var length = CHUNK_LENGTH
+
+        if( position > 0 ) {
+            val remaining = cache.contentLength - position
+            length = min(MAX_CHUNK_LENGTH, remaining)
+        }
+
+        // First fetch only request small portion to
+        // reduce load time, subsequent requests are larger
+        dataSpec.buildUpon()
+                .setUri( uri )
+                .setLength( length )
+                .build()
+    }
+
+private fun downloadResolver( cache: Cache, downloadCache: Cache ) =
+    ResolvingDataSource.Resolver { dataSpec ->
+        if( dataSpec.uri.isLocalFile() )
+            throw IllegalStateException("Cannot download local file!")
+
+        val songId = dataSpec.uri.toString()
+        upsertSongInfo( context, songId )
+
+        val contentLength = runBlocking( Dispatchers.IO ) {
+            Database.formatTable.findBySongId( songId ).firstOrNull()?.contentLength
+        }
+        if( contentLength != null ) {
+            val position = dataSpec.position
+            val length = (contentLength - position).coerceAtLeast( C.LENGTH_UNSET.toLong() )
+            val isCached = isCached(songId, position, length, cache, downloadCache)
+
+            if( isCached )
+                return@Resolver dataSpec.subrange( dataSpec.uriPositionOffset, length )
+        }
+
+        val cache = getPlayableUrl( songId )
+        val deobUrl = YoutubeJavaScriptPlayerManager.getUrlWithThrottlingParameterDeobfuscated( songId, cache.playableUrl )
+        val uri = "$deobUrl&cpn=${cache.cpn}".toUri()
+        dataSpec.buildUpon()
+                .setUri( uri )
+                .setLength( cache.contentLength )
+                .build()
     }
 //</editor-fold>
 
@@ -404,48 +469,50 @@ fun clearCachedStreamUrlOf( songId: String ): Boolean =
     cachedStreamUrl.remove( songId ) != null
 
 val playerModule = module {
-    // [DefaultDataSource.Factory] with [context] is required to read
-    // data from local files.
-    // Normal HTTP requests are handled by [OkHttpDataSource.Factory]
     single {
-        val engine: OkHttpClient = get()
-        DefaultDataSource.Factory(
-            get(),
-            OkHttpDataSource.Factory( engine )
-                .setUserAgent( UserAgents.CHROME_WINDOWS )
-        )
+        OkHttpDataSource.Factory( get<OkHttpClient>() )
+                        .setUserAgent( UserAgents.CHROME_WINDOWS )
     }
     single( DatasourceType.PLAYER ) {
+        val okHttpDataSource: OkHttpDataSource.Factory = get()
         val cache: Cache = get(CacheType.CACHE)
         val downloadCache: Cache = get(CacheType.DOWNLOAD)
-        val defaultDatasource: DefaultDataSource.Factory = get()
+
+        val cacheDataSource = dataSourceFactoryFrom( cache )
+            .setUpstreamDataSourceFactory( okHttpDataSource )
+            .setCacheWriteDataSinkFactory(
+                CacheDataSink.Factory()
+                             .setCache( cache )
+                             .setFragmentSize( CHUNK_LENGTH )
+            )
+        val downloadDataSource = dataSourceFactoryFrom( downloadCache )
+            .setUpstreamDataSourceFactory( cacheDataSource )
+            // Only allow download to read from download cache
+            .setCacheWriteDataSinkFactory( null )
 
         ResolvingDataSource.Factory(
-            dataSourceFactoryFrom( downloadCache )
-                .setCacheWriteDataSinkFactory( null )
-                .setFlags( FLAG_IGNORE_CACHE_ON_ERROR )
-                .setUpstreamDataSourceFactory(
-                    dataSourceFactoryFrom( cache )
-                        .setUpstreamDataSourceFactory( defaultDatasource )
-                        .setCacheWriteDataSinkFactory(
-                            CacheDataSink.Factory()
-                                .setCache( cache )
-                                .setFragmentSize( CHUNK_LENGTH )
-                        )
-                        .setFlags( FLAG_IGNORE_CACHE_ON_ERROR )
-                ),
-            resolver( true, cache, downloadCache )
+            DefaultDataSource.Factory(
+                get(),
+                downloadDataSource
+            ),
+            playerResolver( cache, downloadCache )
         )
     }
     single( DatasourceType.DOWNLOADER ) {
+        val okHttpDataSource: OkHttpDataSource.Factory = get()
+        val cache: Cache = get(CacheType.CACHE)
         val downloadCache: Cache = get(CacheType.DOWNLOAD)
-        val defaultDatasource: DefaultDataSource.Factory = get()
+
+        val cacheDataSource = dataSourceFactoryFrom( cache )
+            .setUpstreamDataSourceFactory( okHttpDataSource )
+            // Only allow download to read from cache
+            .setCacheWriteDataSinkFactory( null )
+        val downloadDataSource = dataSourceFactoryFrom( downloadCache )
+            .setUpstreamDataSourceFactory( cacheDataSource )
 
         ResolvingDataSource.Factory(
-            dataSourceFactoryFrom( downloadCache )
-                .setUpstreamDataSourceFactory( defaultDatasource )
-                .setCacheWriteDataSinkFactory( null ),
-            resolver( false, downloadCache )
+            downloadDataSource,
+            downloadResolver( cache, downloadCache )
         )
     }
 
