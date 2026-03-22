@@ -11,9 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,87 +20,53 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PageSize
-import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.media3.common.C
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
-import app.kreate.android.utils.scrollingText
 import app.kreate.di.CacheType
-import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
 import it.fast4x.rimusic.enums.PlayerBackgroundColors
 import it.fast4x.rimusic.enums.PlayerType
 import it.fast4x.rimusic.enums.QueueLoopType
-import it.fast4x.rimusic.enums.SongsNumber
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.themed.AddToPlaylistPlayerMenu
 import it.fast4x.rimusic.ui.components.themed.PlayerMenu
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.utils.DisposableListener
-import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.getDownloadState
 import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.manageDownload
-import it.fast4x.rimusic.utils.mediaItems
-import it.fast4x.rimusic.utils.playAtIndex
-import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shuffleQueue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.launch
 import me.knighthat.component.player.PlaybackSpeed
 import me.knighthat.kreate.composeapp.generated.resources.Res
 import me.knighthat.kreate.composeapp.generated.resources.add_in_playlist
@@ -119,7 +83,6 @@ import me.knighthat.kreate.composeapp.generated.resources.sleep
 import me.knighthat.kreate.composeapp.generated.resources.song_lyrics
 import me.knighthat.kreate.composeapp.generated.resources.sound_effect
 import me.knighthat.kreate.composeapp.generated.resources.star_brilliant
-import me.knighthat.kreate.composeapp.generated.resources.trash
 import me.knighthat.kreate.composeapp.generated.resources.video
 import me.knighthat.utils.Toaster
 import org.jetbrains.compose.resources.DrawableResource
@@ -127,24 +90,10 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 
 
-private const val BUTTON_SIZE = 24
-
-private class PagerViewPort(
-    private val showSongsState: MutableState<SongsNumber>,
-    private val pagerState: PagerState,
-): PageSize {
-
-    override fun Density.calculateMainAxisPageSize( availableSpace: Int, pageSpacing: Int ): Int {
-        val canShow = minOf( showSongsState.value.toInt() , pagerState.pageCount )
-        return if( canShow > 1 )
-            (availableSpace - 2 * pageSpacing) / canShow
-        else
-            availableSpace
-    }
-}
+const val ACTION_BUTTON_SIZE = 24
 
 @Composable
-fun ActionButton(
+private fun ActionButton(
     resource: DrawableResource,
     contentDescription: String?,
     tint: Color,
@@ -162,7 +111,7 @@ fun ActionButton(
             painter = painterResource( resource ),
             contentDescription = contentDescription,
             tint = tint,
-            modifier = Modifier.size( BUTTON_SIZE.dp ).combinedClickable(
+            modifier = Modifier.size( ACTION_BUTTON_SIZE.dp ).combinedClickable(
                 // Use the same [interactionSource] for ripple effect
                 interactionSource = interactionSource,
                 // No ripple on inner icon, just outer one
@@ -195,7 +144,7 @@ fun BoxScope.ActionBar(
     val context = LocalContext.current
     val player: StatefulPlayer = koinInject()
     val menuState = LocalMenuState.current
-    val (colorPalette, typography) = LocalAppearance.current
+    val (colorPalette, _) = LocalAppearance.current
 
     val mediaItem = player.currentMediaItem ?: return
 
@@ -250,228 +199,7 @@ fun BoxScope.ActionBar(
             modifier = Modifier.fillMaxSize()
         ) {
             if ( showNextSongsInPlayer && (showLyricsThumbnail || !isShowingLyrics || miniQueueExpanded) ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier
-                        .background(
-                            colorPalette.background2.copy(
-                                alpha = if (transparentBackgroundActionBarPlayer) 0.0f else 0.3f
-                            )
-                        )
-                        .padding(horizontal = 12.dp)
-                        .fillMaxWidth()
-                ) {
-                    val coroutine = rememberCoroutineScope()
-                    var currentIndex by remember { mutableIntStateOf( player.currentMediaItemIndex ) }
-                    var nextIndex by remember { mutableIntStateOf( player.nextMediaItemIndex ) }
-                    val mediaItems: List<MediaItem> by player
-                                                             .currentTimelineState
-                                                             .map { it.mediaItems }
-                                                             .collectAsState(
-                                                                 initial = emptyList(),
-                                                                 context = Dispatchers.Main
-                                                             )
-                    val pagerStateQueue = rememberPagerState { mediaItems.size }
-
-                    suspend fun scrollToNext() {
-                        val page = nextIndex.coerceIn( 0, pagerStateQueue.pageCount )
-                        if(
-                            C.INDEX_UNSET == nextIndex
-                            || (page > pagerStateQueue.currentPage && !pagerStateQueue.canScrollForward)
-                            || (page < pagerStateQueue.currentPage && !pagerStateQueue.canScrollBackward)
-                        )
-                            return
-                        else
-                            pagerStateQueue.animateScrollToPage( page )
-                    }
-                    LaunchedEffect( mediaItems.size ) {
-                        scrollToNext()
-                    }
-
-                    player.DisposableListener {
-                        object : Player.Listener {
-                            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                                currentIndex = player.currentMediaItemIndex
-                                nextIndex = player.nextMediaItemIndex
-
-                                coroutine.launch { scrollToNext() }
-                            }
-                        }
-                    }
-
-                    //<editor-fold desc="Relative position indicator">
-                    val icon = if( pagerStateQueue.currentPage > currentIndex )
-                        Icons.AutoMirrored.Default.KeyboardArrowLeft
-                    else if( pagerStateQueue.currentPage == currentIndex )
-                        Icons.Default.PlayArrow
-                    else
-                        Icons.AutoMirrored.Default.KeyboardArrowRight
-
-                    IconButton(
-                        onClick = {
-                            coroutine.launch {
-                                pagerStateQueue.animateScrollToPage( currentIndex )
-                            }
-                        },
-                        modifier = Modifier.size( BUTTON_SIZE.dp )
-                    ) {
-                        Icon(
-                            imageVector = icon,
-                            tint = colorPalette.accent,
-                            // TODO: localize
-                            contentDescription = "Go to currently playing song"
-                        )
-                    }
-                    //</editor-fold>
-
-                    val showSongsState = Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE
-                    val viewPort = remember {
-                        PagerViewPort( showSongsState, pagerStateQueue )
-                    }
-
-                    HorizontalPager(
-                        state = pagerStateQueue,
-                        pageSize = viewPort,
-                        pageSpacing = 10.dp,
-                        modifier = Modifier.weight(1f)
-                    ) { index ->
-                        val mediaItemAtIndex by remember { derivedStateOf { mediaItems[index] } }
-
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier
-                                .combinedClickable(
-                                    onClick = {
-                                        player.playAtIndex(index)
-                                    },
-                                    onLongClick = {
-                                        if ( index < mediaItems.size ) {
-                                            player.addNext( mediaItemAtIndex )
-                                            Toaster.s( R.string.addednext )
-                                        }
-                                    }
-                                )
-                        ) {
-                            val showAlbumCover by Preferences.PLAYER_SHOW_NEXT_IN_QUEUE_THUMBNAIL
-                            if ( showAlbumCover )
-                                Box( Modifier.align(Alignment.CenterVertically) ) {
-                                    ImageFactory.AsyncImage(
-                                        thumbnailUrl = mediaItemAtIndex.mediaMetadata
-                                                                       .artworkUri
-                                                                       .toString(),
-                                        contentDescription = "song_pos_$index",
-                                        modifier = Modifier
-                                            .padding(end = 5.dp)
-                                            .clip(RoundedCornerShape(5.dp))
-                                            .size(30.dp)
-                                    )
-                                }
-
-                            Column(
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
-                                    .height(40.dp)
-                                    .fillMaxWidth()
-                            ) {
-                                val colorPaletteMode by Preferences.THEME_MODE
-                                val textOutline by Preferences.TEXT_OUTLINE
-
-                                //<editor-fold defaultstate="collapsed" desc="Title">
-                                Box {
-                                    val titleText by remember {
-                                        derivedStateOf {
-                                            cleanPrefix( mediaItemAtIndex.mediaMetadata.title.toString() )
-                                        }
-                                    }
-
-                                    BasicText(
-                                        text = titleText,
-                                        style = TextStyle(
-                                            color = colorPalette.text,
-                                            fontSize = typography.xxxs.semiBold.fontSize,
-                                        ),
-                                        maxLines = 1,
-                                        modifier = Modifier.scrollingText()
-                                    )
-                                    BasicText(
-                                        text = titleText,
-                                        style = TextStyle(
-                                            drawStyle = Stroke(
-                                                width = 0.25f,
-                                                join = StrokeJoin.Round
-                                            ),
-                                            color = if (!textOutline) Color.Transparent
-                                            else if (colorPaletteMode == ColorPaletteMode.Light || (colorPaletteMode == ColorPaletteMode.System && (!isSystemInDarkTheme()))) Color.White.copy(
-                                                0.65f
-                                            )
-                                            else Color.Black,
-                                            fontSize = typography.xxxs.semiBold.fontSize,
-                                        ),
-                                        maxLines = 1,
-                                        modifier = Modifier.scrollingText()
-                                    )
-                                }
-                                //</editor-fold>
-                                //<editor-fold defaultstate="collapsed" desc="Artists">
-                                Box {
-                                    val artistsText by remember {
-                                        derivedStateOf {
-                                            cleanPrefix( mediaItemAtIndex.mediaMetadata.artist.toString() )
-                                        }
-                                    }
-
-                                    BasicText(
-                                        text = artistsText,
-                                        style = TextStyle(
-                                            color = colorPalette.text,
-                                            fontSize = typography.xxxs.semiBold.fontSize,
-                                        ),
-                                        maxLines = 1,
-                                        modifier = Modifier.scrollingText()
-                                    )
-                                    BasicText(
-                                        text = artistsText,
-                                        style = TextStyle(
-                                            drawStyle = Stroke(
-                                                width = 0.25f,
-                                                join = StrokeJoin.Round
-                                            ),
-                                            color =
-                                                if ( !textOutline )
-                                                    Color.Transparent
-                                                else if (
-                                                    colorPaletteMode == ColorPaletteMode.Light
-                                                    || (colorPaletteMode == ColorPaletteMode.System && !isSystemInDarkTheme())
-                                                )
-                                                    Color.White.copy( 0.65f )
-                                                else
-                                                    Color.Black,
-                                            fontSize = typography.xxxs.semiBold.fontSize,
-                                        ),
-                                        maxLines = 1,
-                                        modifier = Modifier.scrollingText()
-                                    )
-                                }
-                                //</editor-fold>
-                            }
-                        }
-                    }
-
-                    if ( showSongsState.value == SongsNumber.`1` )
-                        ActionButton(
-                            resource = Res.drawable.trash,
-                            tint = Color.White,
-                            // TODO: localize
-                            contentDescription = "Delete from queue",
-                            modifier = Modifier.weight( .07f )
-                                               .size( 40.dp )
-                                               .padding( vertical = 7.5.dp )
-                        ) {
-                            player.removeMediaItem( nextIndex )
-                        }
-                }
+                NextSongsInQueue()
             }
 
             val actionsSpaceEvenly by Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY
