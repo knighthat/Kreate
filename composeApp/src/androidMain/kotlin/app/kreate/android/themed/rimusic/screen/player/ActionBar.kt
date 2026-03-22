@@ -5,6 +5,7 @@ import android.content.Intent
 import android.media.audiofx.AudioEffect
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,6 +36,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -59,31 +61,32 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
+import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
+import app.kreate.di.CacheType
 import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
 import it.fast4x.rimusic.enums.PlayerBackgroundColors
 import it.fast4x.rimusic.enums.PlayerType
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.enums.SongsNumber
-import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.themed.AddToPlaylistPlayerMenu
-import it.fast4x.rimusic.ui.components.themed.DownloadStateIconButton
-import it.fast4x.rimusic.ui.components.themed.IconButton
 import it.fast4x.rimusic.ui.components.themed.PlayerMenu
+import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.conditional
@@ -97,10 +100,20 @@ import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shuffleQueue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import me.knighthat.component.player.PlaybackSpeed
+import me.knighthat.kreate.composeapp.generated.resources.Res
+import me.knighthat.kreate.composeapp.generated.resources.download
+import me.knighthat.kreate.composeapp.generated.resources.download_progress
+import me.knighthat.kreate.composeapp.generated.resources.downloaded
 import me.knighthat.utils.Toaster
+import org.jetbrains.compose.resources.DrawableResource
 import org.koin.compose.koinInject
+import org.jetbrains.compose.resources.painterResource as kmpPainterResource
+
+
+private const val BUTTON_SIZE = 24
 
 private class PagerViewPort(
     private val showSongsState: MutableState<SongsNumber>,
@@ -113,6 +126,68 @@ private class PagerViewPort(
             (availableSpace - 2 * pageSpacing) / canShow
         else
             availableSpace
+    }
+}
+
+@Composable
+fun ActionButton(
+    @DrawableRes iconId: Int,
+    contentDescription: String?,
+    tint: Color,
+    modifier: Modifier = Modifier,
+    onLongClick: () -> Unit = {},
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    IconButton(
+        onClick = {},
+        interactionSource = interactionSource,
+        modifier = modifier
+    ) {
+        Icon(
+            painter = painterResource( iconId ),
+            contentDescription = contentDescription,
+            tint = tint,
+            modifier = Modifier.size( BUTTON_SIZE.dp ).combinedClickable(
+                // Use the same [interactionSource] for ripple effect
+                interactionSource = interactionSource,
+                // No ripple on inner icon, just outer one
+                indication = null,
+                onLongClick = onLongClick,
+                onClick = onClick
+            )
+        )
+    }
+}
+
+@Composable
+fun ActionButton(
+    resource: DrawableResource,
+    contentDescription: String?,
+    tint: Color,
+    modifier: Modifier = Modifier,
+    onLongClick: () -> Unit = {},
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    IconButton(
+        onClick = {},
+        interactionSource = interactionSource,
+        modifier = modifier
+    ) {
+        Icon(
+            painter = kmpPainterResource( resource ),
+            contentDescription = contentDescription,
+            tint = tint,
+            modifier = Modifier.size( BUTTON_SIZE.dp ).combinedClickable(
+                // Use the same [interactionSource] for ripple effect
+                interactionSource = interactionSource,
+                // No ripple on inner icon, just outer one
+                indication = null,
+                onLongClick = onLongClick,
+                onClick = onClick
+            )
+        )
     }
 }
 
@@ -137,6 +212,7 @@ fun BoxScope.ActionBar(
     val context = LocalContext.current
     val player: StatefulPlayer = koinInject()
     val menuState = LocalMenuState.current
+    val (colorPalette, typography) = LocalAppearance.current
 
     val mediaItem = player.currentMediaItem ?: return
 
@@ -154,6 +230,7 @@ fun BoxScope.ActionBar(
     var isShowingLyrics by showLyricsState
 
     Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier.padding( if( isLandscape ) WindowInsets.navigationBars.asPaddingValues() else PaddingValues() )
                            .align(if (isLandscape) Alignment.BottomEnd else Alignment.BottomCenter)
                            .requiredHeight(if (showNextSongsInPlayer && (showLyricsThumbnail || (!isShowingLyrics || miniQueueExpanded))) 90.dp else 50.dp)
@@ -162,7 +239,7 @@ fun BoxScope.ActionBar(
                                showQueue = true
                            }
                            .background(
-                               colorPalette().background2.copy(
+                               colorPalette.background2.copy(
                                    alpha =
                                        if (transparentBackgroundActionBarPlayer
                                            || (playerBackgroundColors == PlayerBackgroundColors.CoverColorGradient
@@ -195,7 +272,7 @@ fun BoxScope.ActionBar(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .background(
-                            colorPalette().background2.copy(
+                            colorPalette.background2.copy(
                                 alpha = if (transparentBackgroundActionBarPlayer) 0.0f else 0.3f
                             )
                         )
@@ -268,7 +345,7 @@ fun BoxScope.ActionBar(
                                                        pagerStateQueue.animateScrollToPage( currentIndex )
                                                    }
                                                },
-                            tint = colorPalette().accent
+                            tint = colorPalette.accent
                         )
                     }
 
@@ -336,8 +413,8 @@ fun BoxScope.ActionBar(
                                     BasicText(
                                         text = titleText,
                                         style = TextStyle(
-                                            color = colorPalette().text,
-                                            fontSize = typography().xxxs.semiBold.fontSize,
+                                            color = colorPalette.text,
+                                            fontSize = typography.xxxs.semiBold.fontSize,
                                         ),
                                         maxLines = 1,
                                         modifier = Modifier.scrollingText()
@@ -354,7 +431,7 @@ fun BoxScope.ActionBar(
                                                 0.65f
                                             )
                                             else Color.Black,
-                                            fontSize = typography().xxxs.semiBold.fontSize,
+                                            fontSize = typography.xxxs.semiBold.fontSize,
                                         ),
                                         maxLines = 1,
                                         modifier = Modifier.scrollingText()
@@ -372,8 +449,8 @@ fun BoxScope.ActionBar(
                                     BasicText(
                                         text = artistsText,
                                         style = TextStyle(
-                                            color = colorPalette().text,
-                                            fontSize = typography().xxxs.semiBold.fontSize,
+                                            color = colorPalette.text,
+                                            fontSize = typography.xxxs.semiBold.fontSize,
                                         ),
                                         maxLines = 1,
                                         modifier = Modifier.scrollingText()
@@ -395,7 +472,7 @@ fun BoxScope.ActionBar(
                                                     Color.White.copy( 0.65f )
                                                 else
                                                     Color.Black,
-                                            fontSize = typography().xxxs.semiBold.fontSize,
+                                            fontSize = typography.xxxs.semiBold.fontSize,
                                         ),
                                         maxLines = 1,
                                         modifier = Modifier.scrollingText()
@@ -407,18 +484,17 @@ fun BoxScope.ActionBar(
                     }
 
                     if ( showSongsState.value == SongsNumber.`1` )
-                        IconButton(
-                            icon = R.drawable.trash,
-                            color = Color.White,
-                            enabled = true,
-                            onClick = {
-                                player.removeMediaItem( nextIndex )
-                            },
-                            modifier = Modifier
-                                .weight(.07f)
-                                .size(40.dp)
-                                .padding(vertical = 7.5.dp)
-                        )
+                        ActionButton(
+                            iconId = R.drawable.trash,
+                            tint = Color.White,
+                            // TODO: localize
+                            contentDescription = "Delete from queue",
+                            modifier = Modifier.weight( .07f )
+                                               .size( 40.dp )
+                                               .padding( vertical = 7.5.dp )
+                        ) {
+                            player.removeMediaItem( nextIndex )
+                        }
                 }
             }
 
@@ -432,58 +508,68 @@ fun BoxScope.ActionBar(
             ) {
                 val showButtonPlayerVideo by Preferences.PLAYER_ACTION_TOGGLE_VIDEO
                 if (showButtonPlayerVideo)
-                    IconButton(
-                        icon = R.drawable.video,
-                        color = colorPalette().accent,
-                        onClick = {
-                            player.pause()
-                            showSearchEntityState.value = true
-                        },
-                        modifier = Modifier.size( 24.dp )
-                    )
+                    ActionButton(
+                        iconId = R.drawable.video,
+                        tint = colorPalette.accent,
+                        // TODO: localize
+                        contentDescription = "Toggle video mode"
+                    ) {
+                        player.pause()
+                        showSearchEntityState.value = true
+                    }
 
                 val showButtonPlayerDiscover by Preferences.PLAYER_ACTION_DISCOVER
                 if (showButtonPlayerDiscover) {
                     var discoverIsEnabled by discoverState
+                    val tint = if ( discoverIsEnabled ) colorPalette.text else colorPalette.textDisabled
 
-                    IconButton(
-                        icon = R.drawable.star_brilliant,
-                        color = if (discoverIsEnabled) colorPalette().text else colorPalette().textDisabled,
-                        onClick = {},
-                        modifier = Modifier
-                            .size(24.dp)
-                            .combinedClickable(
-                                onClick = { discoverIsEnabled = !discoverIsEnabled },
-                                onLongClick = {
-                                    Toaster.i(R.string.discoverinfo)
-                                }
-                            )
+                    ActionButton(
+                        iconId = R.drawable.star_brilliant,
+                        tint = tint,
+                        // TODO: localize
+                        contentDescription = "Discovery",
+                        onLongClick = {
+                            Toaster.i(R.string.discoverinfo)
+                        },
+                        onClick = {
+                            discoverIsEnabled = !discoverIsEnabled
+                        }
                     )
                 }
 
                 val showButtonPlayerDownload by Preferences.PLAYER_ACTION_DOWNLOAD
                 if (showButtonPlayerDownload) {
+                    val cache: Cache = koinInject(CacheType.CACHE)
+                    val isCached by remember {
+                        Database.formatTable
+                                .findBySongId( mediaItem.mediaId )
+                                .mapNotNull { it?.contentLength }
+                                .map {
+                                    cache.isCached(mediaItem.mediaId, 0, it)
+                                }
+                    }.collectAsStateWithLifecycle(false)
                     val isDownloaded = isDownloadedSong( mediaItem.mediaId )
+                    val icon = if( isDownloaded )
+                        when( getDownloadState(mediaItem.mediaId) ) {
+                            Download.STATE_DOWNLOADING -> Res.drawable.download_progress
+                            Download.STATE_COMPLETED -> Res.drawable.downloaded
+                            else -> Res.drawable.download
+                        }
+                    else
+                        Res.drawable.download
+                    val tint = if( isCached || isDownloaded ) colorPalette.accent else Color.Gray
 
-                    DownloadStateIconButton(
-                        icon = if (isDownloaded) R.drawable.downloaded else R.drawable.download,
-                        color = if (isDownloaded) colorPalette().accent else Color.Gray,
-                        downloadState = getDownloadState(mediaItem.mediaId),
+                    ActionButton(
+                        resource = icon,
+                        tint = tint,
+                        // TODO: localize
+                        contentDescription = "Download media",
+                        onLongClick = {
+                            manageDownload(context, mediaItem, true)
+                        },
                         onClick = {
-                            manageDownload(
-                                context = context,
-                                mediaItem = mediaItem,
-                                downloadState = isDownloaded
-                            )
-                        },
-                        onCancelButtonClicked = {
-                            manageDownload(
-                                context = context,
-                                mediaItem = mediaItem,
-                                downloadState = true
-                            )
-                        },
-                        modifier = Modifier.size( 24.dp )
+                            manageDownload(context, mediaItem, false)
+                        }
                     )
                 }
 
@@ -491,41 +577,37 @@ fun BoxScope.ActionBar(
                 if (showButtonPlayerAddToPlaylist) {
                     val showPlaylistIndicator by Preferences.SHOW_PLAYLIST_INDICATOR
                     val colorPaletteName by Preferences.COLOR_PALETTE
-                    val color = colorPalette()
                     val isSongMappedToPlaylist by remember( mediaItem.mediaId ) {
                         Database.songPlaylistMapTable.isMapped( mediaItem.mediaId )
                     }.collectAsState( false, Dispatchers.IO )
-                    val iconColor by remember {
-                        derivedStateOf {
-                            if ( isSongMappedToPlaylist && showPlaylistIndicator )
-                                if ( colorPaletteName == ColorPaletteName.PureBlack )
-                                    Color.Black
-                                else
-                                    color.text
-                            else
-                                color.accent
+                    val iconColor = if ( isSongMappedToPlaylist && showPlaylistIndicator ) {
+                        if ( colorPaletteName == ColorPaletteName.PureBlack )
+                            Color.Black
+                        else
+                            colorPalette.text
+                    } else
+                        colorPalette.accent
+                    val modifier = if( isSongMappedToPlaylist && showPlaylistIndicator )
+                        Modifier.background( colorPalette.accent, CircleShape )
+                    else
+                        Modifier
+
+                    ActionButton(
+                        iconId = R.drawable.add_in_playlist,
+                        tint = iconColor,
+                        // TODO: localize
+                        contentDescription = "Add to playlist",
+                        modifier = modifier
+                    ) {
+                        menuState.display {
+                            AddToPlaylistPlayerMenu(
+                                navController = navController,
+                                onDismiss = menuState::hide,
+                                mediaItem = mediaItem,
+                                onClosePlayer = onDismiss,
+                            )
                         }
                     }
-
-                    IconButton(
-                        icon = R.drawable.add_in_playlist,
-                        color = iconColor,
-                        onClick = {
-                            menuState.display {
-                                AddToPlaylistPlayerMenu(
-                                    navController = navController,
-                                    onDismiss = menuState::hide,
-                                    mediaItem = mediaItem,
-                                    onClosePlayer = onDismiss,
-                                )
-                            }
-                        },
-                        modifier = Modifier
-                            .size(24.dp)
-                            .conditional(isSongMappedToPlaylist && showPlaylistIndicator) {
-                                background(color.accent, CircleShape).padding(all = 5.dp)
-                            }
-                    )
                 }
 
                 val showButtonPlayerLoop by Preferences.PLAYER_ACTION_LOOP
@@ -533,90 +615,94 @@ fun BoxScope.ActionBar(
                     var queueLoopType by queueLoopState
                     val effectRotationEnabled by Preferences.ROTATION_EFFECT
 
-                    IconButton(
-                        icon = queueLoopType.androidIconId,
-                        color = colorPalette().accent,
-                        onClick = {
-                            queueLoopType = queueLoopType.next()
-                            if (effectRotationEnabled)
-                                rotateState.value = !rotateState.value
-                        },
-                        modifier = Modifier.size( 24.dp )
-                    )
+                    ActionButton(
+                        iconId = queueLoopType.androidIconId,
+                        tint = colorPalette.accent,
+                        // TODO: localize
+                        contentDescription = "Repeat mode"
+                    ) {
+                        queueLoopType = queueLoopType.next()
+                        if (effectRotationEnabled)
+                            rotateState.value = !rotateState.value
+                    }
                 }
 
                 val showButtonPlayerShuffle by Preferences.PLAYER_ACTION_SHUFFLE
                 if (showButtonPlayerShuffle) {
                     val isEnabled by Preferences.PLAYER_SHUFFLE
+                    val tint = if( isEnabled ) colorPalette.accent else Color.Gray
 
-                    IconButton(
-                        icon = R.drawable.shuffle,
-                        color = if( isEnabled ) colorPalette().accent else Color.Gray,
-                        onClick = {},
-                        modifier = Modifier.size( 24.dp ).combinedClickable(
-                            onClick = player::toggleShuffleMode,
-                            onLongClick = player::shuffleQueue
-                        )
+                    ActionButton(
+                        iconId = R.drawable.shuffle,
+                        tint = tint,
+                        // TODO: localize
+                        contentDescription = "Shuffle",
+                        onLongClick = player::shuffleQueue,
+                        onClick = player::toggleShuffleMode
                     )
                 }
 
                 val showButtonPlayerLyrics by Preferences.PLAYER_ACTION_SHOW_LYRICS
-                if (showButtonPlayerLyrics)
-                    IconButton(
-                        icon = R.drawable.song_lyrics,
-                        color = if ( isShowingLyrics ) colorPalette().accent else Color.Gray,
-                        enabled = true,
-                        onClick = {
-                            if( isShowingVisualizer )
-                                isShowingVisualizer = !isShowingVisualizer
-                            isShowingLyrics = !isShowingLyrics
-                        },
-                        modifier = Modifier.size( 24.dp )
-                    )
+                if (showButtonPlayerLyrics) {
+                    val tint = if ( isShowingLyrics ) colorPalette.accent else Color.Gray
+                    ActionButton(
+                        iconId = R.drawable.song_lyrics,
+                        tint = tint,
+                        // TODO: localize
+                        contentDescription = "Show/hide lyrics"
+                    ) {
+                        if( isShowingVisualizer )
+                            isShowingVisualizer = !isShowingVisualizer
+                        isShowingLyrics = !isShowingLyrics
+                    }
+                }
 
                 val playerType by Preferences.PLAYER_TYPE
                 val showThumbnail by Preferences.PLAYER_SHOW_THUMBNAIL
                 if (!isLandscape || ((playerType == PlayerType.Essential) && !showThumbnail)) {
                     val expandedPlayerToggle by Preferences.PLAYER_ACTION_TOGGLE_EXPAND
                     var expandedPlayer by expandPlayerState
+                    val tint = if ( expandedPlayer ) colorPalette.accent else Color.Gray
 
                     if (expandedPlayerToggle && !showLyricsThumbnail)
-                        IconButton(
-                            icon = R.drawable.maximize,
-                            color = if ( expandedPlayer ) colorPalette().accent else Color.Gray,
-                            onClick = {
-                                expandedPlayer = !expandedPlayer
-                            },
-                            modifier = Modifier.size( 20.dp )
-                        )
+                        ActionButton(
+                            iconId = R.drawable.maximize,
+                            tint = tint,
+                            // TODO: localize
+                            contentDescription = "Show/hide thumbnail"
+                        ) {
+                            expandedPlayer = !expandedPlayer
+                        }
                 }
 
                 val visualizerEnabled by Preferences.PLAYER_VISUALIZER
-                if (visualizerEnabled)
-                    IconButton(
-                        icon = R.drawable.sound_effect,
-                        color = if ( isShowingVisualizer ) colorPalette().text else colorPalette().textDisabled,
-                        onClick = {
-                            if (isShowingLyrics)
-                                isShowingLyrics = !isShowingLyrics
-                            isShowingVisualizer = !isShowingVisualizer
-                        },
-                        modifier = Modifier.size( 24.dp )
-                    )
-
+                if (visualizerEnabled) {
+                    val tint = if ( isShowingVisualizer ) colorPalette.text else colorPalette.textDisabled
+                    ActionButton(
+                        iconId = R.drawable.sound_effect,
+                        tint = tint,
+                        // TODO: localize
+                        contentDescription = "Show/Hide visualizer"
+                    ) {
+                        if (isShowingLyrics)
+                            isShowingLyrics = !isShowingLyrics
+                        isShowingVisualizer = !isShowingVisualizer
+                    }
+                }
 
                 val showButtonPlayerSleepTimer by Preferences.PLAYER_ACTION_SLEEP_TIMER
                 if (showButtonPlayerSleepTimer) {
                     val sleepTimerMillisLeft: Long? by player.sleepTimerRemaining().collectAsState( null )
+                    val tint = if (sleepTimerMillisLeft != null) colorPalette.accent else Color.Gray
 
-                    IconButton(
-                        icon = R.drawable.sleep,
-                        color = if (sleepTimerMillisLeft != null) colorPalette().accent else Color.Gray,
-                        onClick = {
-                            showSleepTimerState.value = true
-                        },
-                        modifier = Modifier.size( 24.dp )
-                    )
+                    ActionButton(
+                        iconId = R.drawable.sleep,
+                        tint = tint,
+                        // TODO: localize
+                        contentDescription = "Show/Hide sleep timer"
+                    ) {
+                        showSleepTimerState.value = true
+                    }
                 }
 
                 val showButtonPlayerSystemEqualizer by Preferences.PLAYER_ACTION_OPEN_EQUALIZER
@@ -624,45 +710,45 @@ fun BoxScope.ActionBar(
                     val activityResultLauncher =
                         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
 
-                    IconButton(
-                        icon = R.drawable.equalizer,
-                        color = colorPalette().accent,
-                        onClick = {
-                            try {
-                                activityResultLauncher.launch(
-                                    Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL).apply {
-                                        putExtra(
-                                            AudioEffect.EXTRA_AUDIO_SESSION,
-                                            player.audioSessionId
-                                        )
-                                        putExtra(
-                                            AudioEffect.EXTRA_PACKAGE_NAME,
-                                            context.packageName
-                                        )
-                                        putExtra(
-                                            AudioEffect.EXTRA_CONTENT_TYPE,
-                                            AudioEffect.CONTENT_TYPE_MUSIC
-                                        )
-                                    }
-                                )
-                            } catch (e: ActivityNotFoundException) {
-                                Toaster.e( R.string.info_not_find_application_audio )
-                            }
-                        },
-                        modifier = Modifier.size( 20.dp )
-                    )
+                    ActionButton(
+                        iconId = R.drawable.equalizer,
+                        tint = colorPalette.accent,
+                        // TODO: localize
+                        contentDescription = "Equalizer"
+                    ) {
+                        try {
+                            activityResultLauncher.launch(
+                                Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL).apply {
+                                    putExtra(
+                                        AudioEffect.EXTRA_AUDIO_SESSION,
+                                        player.audioSessionId
+                                    )
+                                    putExtra(
+                                        AudioEffect.EXTRA_PACKAGE_NAME,
+                                        context.packageName
+                                    )
+                                    putExtra(
+                                        AudioEffect.EXTRA_CONTENT_TYPE,
+                                        AudioEffect.CONTENT_TYPE_MUSIC
+                                    )
+                                }
+                            )
+                        } catch (e: ActivityNotFoundException) {
+                            Toaster.e( R.string.info_not_find_application_audio )
+                        }
+                    }
                 }
 
                 val showButtonPlayerStartRadio by Preferences.PLAYER_ACTION_START_RADIO
                 if (showButtonPlayerStartRadio)
-                    IconButton(
-                        icon = R.drawable.radio,
-                        color = colorPalette().accent,
-                        onClick = {
-                            player.startRadio( mediaItem )
-                        },
-                        modifier = Modifier.size( 24.dp )
-                    )
+                    ActionButton(
+                        iconId = R.drawable.radio,
+                        tint = colorPalette.accent,
+                        // TODO: localize
+                        contentDescription = "Radio"
+                    ) {
+                        player.startRadio( mediaItem )
+                    }
 
                 val showPlaybackSpeedButton by Preferences.AUDIO_SPEED
                 if( showPlaybackSpeedButton ) {
@@ -674,41 +760,37 @@ fun BoxScope.ActionBar(
 
                 val showButtonPlayerArrow by Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW
                 if (showButtonPlayerArrow)
-                    IconButton(
-                        icon = R.drawable.chevron_up,
-                        color = colorPalette().accent,
-                        enabled = true,
-                        onClick = {
-                            showQueue = true
-                        },
-                        modifier = Modifier
-                            //.padding(end = 12.dp)
-                            .size(24.dp),
-                    )
+                    ActionButton(
+                        iconId = R.drawable.chevron_up,
+                        tint = colorPalette.accent,
+                        // TODO: localize
+                        contentDescription = "Open queue"
+                    ) {
+                        showQueue = true
+                    }
 
                 val showButtonPlayerMenu by Preferences.PLAYER_ACTION_SHOW_MENU
                 if( showButtonPlayerMenu || isLandscape ) {
                     val isInLandscape = isLandscape
 
-                    IconButton(
-                        icon = R.drawable.ellipsis_vertical,
-                        color = colorPalette().accent,
-                        onClick = {
-                            menuState.display {
-                                PlayerMenu(
-                                    navController = navController,
-                                    onDismiss = menuState::hide,
-                                    mediaItem = mediaItem,
-                                    onClosePlayer = onDismiss
-                                )
-                            }
-                        },
-                        modifier = Modifier
-                            .size(24.dp)
-                            .graphicsLayer {
-                                rotationZ = if (isInLandscape) 90f else 0f
-                            }
-                    )
+                    ActionButton(
+                        iconId = R.drawable.ellipsis_vertical,
+                        tint = colorPalette.accent,
+                        // TODO: localize
+                        contentDescription = "Open menu",
+                        modifier = Modifier.graphicsLayer {
+                            rotationZ = if (isInLandscape) 90f else 0f
+                        }
+                    ) {
+                        menuState.display {
+                            PlayerMenu(
+                                navController = navController,
+                                onDismiss = menuState::hide,
+                                mediaItem = mediaItem,
+                                onClosePlayer = onDismiss
+                            )
+                        }
+                    }
                 }
             }
         }
