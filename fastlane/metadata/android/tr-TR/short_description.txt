@@ -1,1 +1,1 @@
-Android için çok dilli, performans odaklı bir YouTube Music ön yüzü.
+Performansı ön planda tutan, Android için çok dilli bir YouTube Music arayüzü.
