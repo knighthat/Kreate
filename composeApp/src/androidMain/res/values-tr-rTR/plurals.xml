@@ -5,8 +5,8 @@
         <item quantity="other">%d saniye</item>
     </plurals>
     <plurals name="query">
-        <item quantity="one">%d sorgusu</item>
-        <item quantity="other">%d sorgusu</item>
+        <item quantity="one">%d sorgu</item>
+        <item quantity="other">%d sorgu</item>
     </plurals>
     <plurals name="file">
         <item quantity="one">%d dosya</item>
@@ -17,7 +17,7 @@
         <item quantity="other">%d şarkı</item>
     </plurals>
     <plurals name="download">
-        <item quantity="one">%d download</item>
-        <item quantity="other">%d downloads</item>
+        <item quantity="one">%d indirme</item>
+        <item quantity="other">%d indirme</item>
     </plurals>
 </resources>
