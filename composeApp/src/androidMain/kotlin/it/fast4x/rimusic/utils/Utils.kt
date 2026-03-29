@@ -18,6 +18,7 @@ import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.ThumbRating
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
 import app.kreate.database.models.Album
@@ -70,10 +71,14 @@ val Innertube.Podcast.EpisodeItem.asMediaItem: MediaItem
         .setMediaMetadata(
             MediaMetadata.Builder()
                 .setTitle(title)
+                .setDisplayTitle( title )
                 .setArtist(author.toString())
                 .setAlbumTitle(title)
                 .setArtworkUri(thumbnail.firstOrNull()?.url?.toUri())
                 .setDurationMs( durationString.toDuration().inWholeMilliseconds )
+                .setMediaType( MediaMetadata.MEDIA_TYPE_PODCAST_EPISODE )
+                .setIsBrowsable( false )
+                .setIsPlayable( true )
                 .setExtras(
                     bundleOf(
                         //"albumId" to album?.endpoint?.browseId,
@@ -96,10 +101,14 @@ val Innertube.SongItem.asMediaItem: MediaItem
         .setMediaMetadata(
             MediaMetadata.Builder()
                 .setTitle(info?.name)
+                .setDisplayTitle( info?.name )
                 .setArtist(authors?.filter {it.name?.matches(Regex("\\s*([,&])\\s*")) == false }?.joinToString(", ") { it.name ?: "" })
                 .setAlbumTitle(album?.name)
                 .setArtworkUri(thumbnail?.url?.toUri())
                 .setDurationMs( durationText.toDuration().inWholeMilliseconds )
+                .setMediaType( MediaMetadata.MEDIA_TYPE_MUSIC )
+                .setIsBrowsable( false )
+                .setIsPlayable( true )
                 .setExtras(
                     bundleOf(
                         "albumId" to album?.endpoint?.browseId,
@@ -136,9 +145,13 @@ val Innertube.VideoItem.asMediaItem: MediaItem
         .setMediaMetadata(
             MediaMetadata.Builder()
                 .setTitle(info?.name)
+                .setDisplayTitle( info?.name )
                 .setArtist(authors?.joinToString(", ") { it.name ?: "" })
                 .setArtworkUri(thumbnail?.url?.toUri())
                 .setDurationMs( durationText.toDuration().inWholeMilliseconds )
+                .setMediaType( MediaMetadata.MEDIA_TYPE_MUSIC )
+                .setIsBrowsable( false )
+                .setIsPlayable( true )
                 .setExtras(
                     bundleOf(
                         "durationText" to durationText,
@@ -162,10 +175,15 @@ val Song.asMediaItem: MediaItem
     get() = MediaItem.Builder()
         .setMediaMetadata(
             MediaMetadata.Builder()
-                .setTitle(title)
-                .setArtist(artistsText)
-                .setArtworkUri(cleanThumbnailUrl()?.toUri())
+                .setTitle( title )
+                .setDisplayTitle( cleanTitle() )
+                .setArtist( artistsText )
+                .setArtworkUri( cleanThumbnailUrl()?.toUri() )
                 .setDurationMs( durationText.toDuration().inWholeMilliseconds )
+                .setMediaType( MediaMetadata.MEDIA_TYPE_MUSIC )
+                .setUserRating( ThumbRating(likedAt != null && likedAt > 0) )
+                .setIsBrowsable( false )
+                .setIsPlayable( true )
                 .setExtras(
                     bundleOf(
                         "durationText" to durationText,
@@ -184,7 +202,10 @@ val Song.asMediaItem: MediaItem
             else
                 id.toUri()
         )
-        .setCustomCacheKey(id)
+        .setCustomCacheKey(
+            // `null` cache key (may) prevent media3 from caching the local song
+            id.takeIf { !isLocal }
+        )
         .build()
 
 val Innertube.ArtistItem.asArtist: Artist
