@@ -25,7 +25,6 @@ import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Lyrics
 import app.kreate.database.models.Song
-import app.kreate.util.cleanPrefix
 import app.kreate.util.toDuration
 import com.zionhuang.innertube.pages.LibraryPage
 import io.ktor.client.HttpClient
@@ -177,7 +176,7 @@ val Song.asMediaItem: MediaItem
             MediaMetadata.Builder()
                 .setTitle( title )
                 .setDisplayTitle( cleanTitle() )
-                .setArtist( artistsText )
+                .setArtist( cleanArtistsText() )
                 .setArtworkUri( cleanThumbnailUrl()?.toUri() )
                 .setDurationMs( durationText.toDuration().inWholeMilliseconds )
                 .setMediaType( MediaMetadata.MEDIA_TYPE_MUSIC )
@@ -224,25 +223,6 @@ val MediaItem.asSong: Song
         durationText = mediaMetadata.extras?.getString("durationText"),
         thumbnailUrl = mediaMetadata.artworkUri.toString()
     )
-
-val MediaItem.cleaned: MediaItem
-    get() {
-        // Add more if needed
-        val cleanTitle = cleanPrefix( mediaMetadata.title.toString() )
-        val cleanArtistName = cleanPrefix( mediaMetadata.artist.toString() )
-
-        if( cleanTitle == mediaMetadata.title && cleanArtistName == mediaMetadata.artist )
-            // Return as-is if no property is modified
-            // Reduce conversion time significantly when
-            // some (if not most) of media items are not modified.
-            return this
-
-        val newMetadata: MediaMetadata = mediaMetadata.buildUpon()
-                                                      .setTitle( cleanTitle )
-                                                      .setArtist( cleanArtistName )
-                                                      .build()
-        return buildUpon().setMediaMetadata( newMetadata ).build()
-    }
 
 val MediaItem.isVideo: Boolean
     get() = mediaMetadata.extras?.getBoolean("isVideo") == true
