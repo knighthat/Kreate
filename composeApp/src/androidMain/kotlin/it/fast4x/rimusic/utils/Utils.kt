@@ -26,6 +26,7 @@ import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Lyrics
 import app.kreate.database.models.Song
+import app.kreate.di.THUMBNAIL_SIZE
 import app.kreate.util.toDuration
 import com.zionhuang.innertube.pages.LibraryPage
 import io.ktor.client.HttpClient
@@ -173,7 +174,9 @@ val Song.asMediaItem: MediaItem
                 .setTitle( title )
                 .setDisplayTitle( cleanTitle() )
                 .setArtist( cleanArtistsText() )
-                .setArtworkUri( cleanThumbnailUrl()?.toUri() )
+                .setArtworkUri(
+                    cleanThumbnailUrl()?.thumbnail( THUMBNAIL_SIZE )?.toUri()
+                )
                 .setDurationMs( durationText.toDuration().inWholeMilliseconds )
                 .setMediaType( MediaMetadata.MEDIA_TYPE_MUSIC )
                 .setUserRating( ThumbRating(likedAt != null && likedAt > 0) )
