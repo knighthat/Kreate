@@ -16,7 +16,6 @@ import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
-import app.kreate.util.toDuration
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.enums.DurationInMinutes
 import kotlinx.coroutines.CoroutineScope
@@ -283,11 +282,7 @@ fun Player.excludeMediaItems(mediaItems: List<MediaItem>, context: Context): Lis
 
         if (excludeSongWithDurationLimit != DurationInMinutes.Disabled) {
             filteredMediaItems = mediaItems.filter {
-                it.mediaMetadata
-                    .extras
-                    ?.getString("durationText")
-                    .toDuration()
-                    .inWholeMilliseconds < excludeSongWithDurationLimit.asMillis
+                (it.mediaMetadata.durationMs ?: Long.MAX_VALUE) < excludeSongWithDurationLimit.asMillis
             }
 
             val excludedSongs = mediaItems.size - filteredMediaItems.size
@@ -304,11 +299,8 @@ fun Player.excludeMediaItem(mediaItem: MediaItem): Boolean {
     runCatching {
         val excludeSongWithDurationLimit by Preferences.LIMIT_SONGS_WITH_DURATION
         if (excludeSongWithDurationLimit != DurationInMinutes.Disabled) {
-            val excludedSong = mediaItem.mediaMetadata
-                .extras
-                ?.getString("durationText")
-                .toDuration()
-                .inWholeMilliseconds <= excludeSongWithDurationLimit.asMillis
+            val excludedSong =
+                (mediaItem.mediaMetadata.durationMs ?: Long.MAX_VALUE) <= excludeSongWithDurationLimit.asMillis
 
             if (excludedSong)
                 Toaster.n( R.string.message_excluded_s_songs, arrayOf( 1 ) )

@@ -42,7 +42,6 @@ val InnertubeSong.toMediaItem: MediaItem
                                       .setExtras(
                                           bundleOf(
                                               "albumId" to album?.navigationEndpoint?.browseEndpoint?.browseId,
-                                              "durationText" to durationText,
                                               EXPLICIT_BUNDLE_TAG to isExplicit,
                                               "artistNames" to artists.fastMap { it.text },
                                               "artistIds" to artists.fastMapNotNull { it.navigationEndpoint?.browseEndpoint?.browseId }

@@ -9,6 +9,7 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.text.format.DateUtils
 import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -80,10 +81,7 @@ val Innertube.Podcast.EpisodeItem.asMediaItem: MediaItem
                 .setIsPlayable( true )
                 .setExtras(
                     bundleOf(
-                        //"albumId" to album?.endpoint?.browseId,
-                        "durationText" to durationString,
                         "artistNames" to author,
-                        //"artistIds" to authors?.mapNotNull { it.endpoint?.browseId },
                     )
                 )
 
@@ -111,7 +109,6 @@ val Innertube.SongItem.asMediaItem: MediaItem
                 .setExtras(
                     bundleOf(
                         "albumId" to album?.endpoint?.browseId,
-                        "durationText" to durationText,
                         "artistNames" to authors?.filter { it.endpoint != null }
                             ?.mapNotNull { it.name },
                         "artistIds" to authors?.mapNotNull { it.endpoint?.browseId },
@@ -153,7 +150,6 @@ val Innertube.VideoItem.asMediaItem: MediaItem
                 .setIsPlayable( true )
                 .setExtras(
                     bundleOf(
-                        "durationText" to durationText,
                         "artistNames" to authors?.filter { it.endpoint != null }
                             ?.mapNotNull { it.name },
                         "artistIds" to authors?.mapNotNull { it.endpoint?.browseId },
@@ -185,7 +181,6 @@ val Song.asMediaItem: MediaItem
                 .setIsPlayable( true )
                 .setExtras(
                     bundleOf(
-                        "durationText" to durationText,
                         EXPLICIT_BUNDLE_TAG to isExplicit
                     )
                 )
@@ -220,7 +215,7 @@ val MediaItem.asSong: Song
         id = mediaId,
         title = mediaMetadata.title.toString(),
         artistsText = mediaMetadata.artist.toString(),
-        durationText = mediaMetadata.extras?.getString("durationText"),
+        durationText = mediaMetadata.durationMs?.let { DateUtils.formatElapsedTime(it / 1000) },
         thumbnailUrl = mediaMetadata.artworkUri.toString()
     )
 
