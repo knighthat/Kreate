@@ -125,7 +125,6 @@ import app.kreate.android.screens.player.background.BlurredCover
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.screen.player.ActionBar
 import app.kreate.util.readableText
-import app.kreate.util.toDuration
 import coil3.request.allowHardware
 import com.mikepenz.hypnoticcanvas.shaderBackground
 import com.mikepenz.hypnoticcanvas.shaders.BlackCherryCosmos
@@ -197,7 +196,6 @@ import org.koin.compose.koinInject
 import kotlin.Float.Companion.POSITIVE_INFINITY
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
-import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -669,9 +667,9 @@ fun Player(
     var sizeShader by remember { mutableStateOf(Size.Zero) }
 
     val totalDuration by remember {derivedStateOf {
-        mediaItems.fastFold( Duration.ZERO ) { acc, mediaItem ->
-            acc + mediaItem.mediaMetadata.extras?.getString("durationText").toDuration()
-        }
+        mediaItems.fastFold( 0L ) { acc, mediaItem ->
+            acc + (mediaItem.mediaMetadata.durationMs ?: 0L)
+        }.toDuration( DurationUnit.MILLISECONDS )
     }}
     var isShowingStatsForNerds by rememberSaveable {
         mutableStateOf(false)

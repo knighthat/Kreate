@@ -9,6 +9,7 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.text.format.DateUtils
 import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -18,13 +19,14 @@ import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.ThumbRating
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Lyrics
 import app.kreate.database.models.Song
-import app.kreate.util.cleanPrefix
+import app.kreate.di.THUMBNAIL_SIZE
 import app.kreate.util.toDuration
 import com.zionhuang.innertube.pages.LibraryPage
 import io.ktor.client.HttpClient
@@ -68,16 +70,17 @@ val Innertube.Podcast.EpisodeItem.asMediaItem: MediaItem
         .setMediaMetadata(
             MediaMetadata.Builder()
                 .setTitle(title)
+                .setDisplayTitle( title )
                 .setArtist(author.toString())
                 .setAlbumTitle(title)
                 .setArtworkUri(thumbnail.firstOrNull()?.url?.toUri())
                 .setDurationMs( durationString.toDuration().inWholeMilliseconds )
+                .setMediaType( MediaMetadata.MEDIA_TYPE_PODCAST_EPISODE )
+                .setIsBrowsable( false )
+                .setIsPlayable( true )
                 .setExtras(
                     bundleOf(
-                        //"albumId" to album?.endpoint?.browseId,
-                        "durationText" to durationString,
                         "artistNames" to author,
-                        //"artistIds" to authors?.mapNotNull { it.endpoint?.browseId },
                     )
                 )
 
@@ -94,14 +97,17 @@ val Innertube.SongItem.asMediaItem: MediaItem
         .setMediaMetadata(
             MediaMetadata.Builder()
                 .setTitle(info?.name)
+                .setDisplayTitle( info?.name )
                 .setArtist(authors?.filter {it.name?.matches(Regex("\\s*([,&])\\s*")) == false }?.joinToString(", ") { it.name ?: "" })
                 .setAlbumTitle(album?.name)
                 .setArtworkUri(thumbnail?.url?.toUri())
                 .setDurationMs( durationText.toDuration().inWholeMilliseconds )
+                .setMediaType( MediaMetadata.MEDIA_TYPE_MUSIC )
+                .setIsBrowsable( false )
+                .setIsPlayable( true )
                 .setExtras(
                     bundleOf(
                         "albumId" to album?.endpoint?.browseId,
-                        "durationText" to durationText,
                         "artistNames" to authors?.filter { it.endpoint != null }
                             ?.mapNotNull { it.name },
                         "artistIds" to authors?.mapNotNull { it.endpoint?.browseId },
@@ -134,12 +140,15 @@ val Innertube.VideoItem.asMediaItem: MediaItem
         .setMediaMetadata(
             MediaMetadata.Builder()
                 .setTitle(info?.name)
+                .setDisplayTitle( info?.name )
                 .setArtist(authors?.joinToString(", ") { it.name ?: "" })
                 .setArtworkUri(thumbnail?.url?.toUri())
                 .setDurationMs( durationText.toDuration().inWholeMilliseconds )
+                .setMediaType( MediaMetadata.MEDIA_TYPE_MUSIC )
+                .setIsBrowsable( false )
+                .setIsPlayable( true )
                 .setExtras(
                     bundleOf(
-                        "durationText" to durationText,
                         "artistNames" to authors?.filter { it.endpoint != null }
                             ?.mapNotNull { it.name },
                         "artistIds" to authors?.mapNotNull { it.endpoint?.browseId },
@@ -160,13 +169,19 @@ val Song.asMediaItem: MediaItem
     get() = MediaItem.Builder()
         .setMediaMetadata(
             MediaMetadata.Builder()
-                .setTitle(title)
-                .setArtist(artistsText)
-                .setArtworkUri(cleanThumbnailUrl()?.toUri())
+                .setTitle( title )
+                .setDisplayTitle( cleanTitle() )
+                .setArtist( cleanArtistsText() )
+                .setArtworkUri(
+                    cleanThumbnailUrl()?.thumbnail( THUMBNAIL_SIZE )?.toUri()
+                )
                 .setDurationMs( durationText.toDuration().inWholeMilliseconds )
+                .setMediaType( MediaMetadata.MEDIA_TYPE_MUSIC )
+                .setUserRating( ThumbRating(likedAt != null && likedAt > 0) )
+                .setIsBrowsable( false )
+                .setIsPlayable( true )
                 .setExtras(
                     bundleOf(
-                        "durationText" to durationText,
                         EXPLICIT_BUNDLE_TAG to isExplicit
                     )
                 )
@@ -182,7 +197,10 @@ val Song.asMediaItem: MediaItem
             else
                 id.toUri()
         )
-        .setCustomCacheKey(id)
+        .setCustomCacheKey(
+            // `null` cache key (may) prevent media3 from caching the local song
+            id.takeIf { !isLocal }
+        )
         .build()
 
 val Innertube.ArtistItem.asArtist: Artist
@@ -198,28 +216,9 @@ val MediaItem.asSong: Song
         id = mediaId,
         title = mediaMetadata.title.toString(),
         artistsText = mediaMetadata.artist.toString(),
-        durationText = mediaMetadata.extras?.getString("durationText"),
+        durationText = mediaMetadata.durationMs?.let { DateUtils.formatElapsedTime(it / 1000) },
         thumbnailUrl = mediaMetadata.artworkUri.toString()
     )
-
-val MediaItem.cleaned: MediaItem
-    get() {
-        // Add more if needed
-        val cleanTitle = cleanPrefix( mediaMetadata.title.toString() )
-        val cleanArtistName = cleanPrefix( mediaMetadata.artist.toString() )
-
-        if( cleanTitle == mediaMetadata.title && cleanArtistName == mediaMetadata.artist )
-            // Return as-is if no property is modified
-            // Reduce conversion time significantly when
-            // some (if not most) of media items are not modified.
-            return this
-
-        val newMetadata: MediaMetadata = mediaMetadata.buildUpon()
-                                                      .setTitle( cleanTitle )
-                                                      .setArtist( cleanArtistName )
-                                                      .build()
-        return buildUpon().setMediaMetadata( newMetadata ).build()
-    }
 
 val MediaItem.isVideo: Boolean
     get() = mediaMetadata.extras?.getBoolean("isVideo") == true
