@@ -73,6 +73,7 @@ import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persist
 import it.fast4x.compose.persist.persistList
@@ -135,6 +136,7 @@ import org.koin.compose.koinInject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
+
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
@@ -307,7 +309,7 @@ fun HomeQuickPicks(
 
     val showSearchTab by Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR
 
-    val cache: Cache = koinInject()
+    val cache: Cache = koinInject(CacheType.CACHE)
     var cachedSongs by remember { mutableStateOf( emptyList<String>() ) }
     // FIXME: This practically run once on start
     LaunchedEffect( cache ) {
