@@ -4,11 +4,11 @@
     <string name="sort_random">Aleatorio</string>
     <string name="sort_album_title">Álbum</string>
     <string name="sort_album_year">Año del álbum</string>
-    <string name="sort_date_added">Fecha añadida</string>
+    <string name="sort_date_added">Fecha en que se agregó</string>
     <string name="sort_artist">Artista</string>
     <string name="sort_songs_count">Número de canciones</string>
     <string name="sort_total_duration">Duración</string>
-    <string name="sort_listening_time">Tiempo de reproducción</string>
+    <string name="sort_listening_time">Tiempo de escucha</string>
     <string name="sort_title">Título</string>
     <string name="sort_date_played">Fecha de reproducción</string>
     <string name="sort_date_liked">Fecha del me gusta</string>
