@@ -1,5 +1,5 @@
 <p>
-  Bifurcación de <a href="https://github.com/fast4x/RiMusic">RiMusic</a>, El rendimiento es nuestra mayor prioridad.
+  Bifurcación de <a href="https://github.com/fast4x/RiMusic">RiMusic</a>, el rendimiento es nuestra mayor prioridad.
 </p>
 
 <b>Características:</b>
@@ -9,7 +9,7 @@
   <li>Guarda en caché o descarga canciones para reproducirlas sin conexión</li>
   <li>Reproducción en segundo plano</li>
   <li>Estadísticas e informes (almacenados y procesados ​​localmente)</li>
-  <li>Varios visualizadores de audio (algunos requieren permiso de micrófono, pero están desactivados de forma predeterminada)</li>
+  <li>Varios visualizadores de audio (algunos requieren permiso de micrófono, pero están desactivados por defecto)</li>
   <li>Temporizador de apagado</li>
   <li>Control de audio: velocidad de reproducción, tono, normalización, omitir silencio</li>
   <li>Compatibilidad con Android Auto, Android TV y vídeos de YouTube</li>
