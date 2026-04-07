@@ -308,7 +308,7 @@
     <string name="show_next_songs_in_player">Mostrar mini cola en el reproductor</string>
     <string name="show_remaining_song_time">Mostrar tiempo restante de la canción</string>
     <string name="click_lyrics_text">Saltar a la letra presionando la línea</string>
-    <string name="folder_that_will_show_when_you_open_on_device_page">Carpeta que se mostrará al abrir la página en el dispositivo.</string>
+    <string name="folder_that_will_show_when_you_open_on_device_page">Carpeta que se mostrará para las canciones del dispositivo.</string>
     <string name="direction_top">Arriba</string>
     <string name="pick_from">Elegir desde</string>
     <string name="download_cover">Descargar portada</string>
@@ -412,7 +412,7 @@
     <string name="position_bottom">Abajo</string>
     <string name="added_to_favorites">Añadido a favoritos</string>
     <string name="action_bar_transparent_background">Fondo transparente</string>
-    <string name="pinfo_type">Tipo de información</string>
+    <string name="pinfo_type">Estilo de cabecera</string>
     <string name="pinfo_album_and_artist_name">Nombre del álbum y del artista</string>
     <string name="show_player_top_actions_bar">Mostrar barra superior de acciones</string>
     <string name="icon_like_button">Botón me gusta</string>
@@ -456,7 +456,7 @@
     <string name="fluidrainbow">Arcoiris fluido</string>
     <string name="blackgradient">Degradado negro en la parte inferior</string>
     <string name="glow">Brillo</string>
-    <string name="bottomgradient">Mostrar degradado</string>
+    <string name="bottomgradient">Mostrar degradado de la barra de acciones</string>
     <string name="textoutline">Habilitar esquema de texto</string>
     <string name="set_cache_location">Ubicación de caché</string>
     <string name="info_private_cache_location_can_t_cleaned">La ubicación de caché privada no puede ser limpiada por el sistema</string>
@@ -477,7 +477,7 @@
     <string name="showtwosongs">Mostrar las siguientes dos canciones en cola</string>
     <string name="showalbumcover">Mostrar portada del álbum</string>
     <string name="do_not_translate">No traducir</string>
-    <string name="info_sleep_timer_delayed_at_end_of_song">Temporizador de sueño retrasado al finalizar la canción</string>
+    <string name="info_sleep_timer_delayed_at_end_of_song">Temporizador de sueño programado al final de esta canción</string>
     <string name="lyricsbackground">Fondo de la letra</string>
     <string name="info_debug_mode_enabled">Modo depuración habilitado</string>
     <string name="info_debug_mode_is_enabled">El modo depuración está habilitado, recuerda deshabilitarlo en los ajustes</string>
@@ -511,7 +511,7 @@
     <string name="carousel">Vista de carrusel</string>
     <string name="carouselsize">Tamaño de miniatura en modo expandido</string>
     <string name="addednext">Añadido al siguiente</string>
-    <string name="effect_fade_audio">Atenuar audio</string>
+    <string name="effect_fade_audio">Efecto de fundido de audio</string>
     <string name="effect_fade_audio_description">Atenua el volumen al pausar o iniciar canción</string>
     <string name="autosync">Sincronización automática de listas de reproducción</string>
     <string name="songs_number_to_show">Número de canciones a mostrar</string>
@@ -690,7 +690,7 @@
     <string name="settings_audio_focus_info">Permite pausar y reanudar la reproducción automáticamente después de una llamada, por ejemplo</string>
     <string name="songs_liked_yt">Canción/canciones que tienen me gusta en YouTube</string>
     <string name="song_unliked_yt">La canción tiene un no me gusta en YouTube</string>
-    <string name="add_rimusic_to_ytm_favorites">Me gusta Kreate, me gustan canciones en YouTube</string>
+    <string name="add_rimusic_to_ytm_favorites">Dar Me gusta en YouTube a las canciones favoritas en Kreate</string>
     <string name="songs_liked_yt_failed">Error al dar un me gusta a la canción en YouTube</string>
     <string name="songs_unliked_yt_failed">Error al dar un no me gusta a la canción en YouTube</string>
     <string name="adding_yt_to_pl_failed">Se ha producido un error en las siguientes 50 canciones. Añadiendo canciones a la lista de reproducción una a una</string>
@@ -830,7 +830,7 @@
     <string name="word_description">Descripción</string>
     <string name="word_information">Información</string>
     <string name="description_view_song_info">Ver detalles de la canción</string>
-    <string name="error_access_cache_failed">Error en recuperar datos del caché</string>
+    <string name="error_access_cache_failed">Error al recuperar datos del caché</string>
     <string name="error_failed_to_decipher_signature">Error al descifrar firma</string>
     <string name="error_failed_to_update_discord_activity">Error al actualizar la actividad de Discord</string>
     <string name="error_failed_to_load_playlist">Error al cargar la lista de reproducción</string>
@@ -859,7 +859,7 @@
     <string name="error_failed_to_load_image">Error al cargar la imagen</string>
     <string name="error_invalid_path">Ruta no válida</string>
     <string name="description_validate_url">Validar URL</string>
-    <string name="word_disabled">deshabilitado</string>
+    <string name="word_disabled">Deshabilitado</string>
     <string name="settings_live_wallpaper_reset_warning"> ADVERTENCIA: esto cambiará al fondo de pantalla predeterminado del fabricante. Desafortunadamente, es difícil volver al fondo de pantalla anterior</string>
     <string name="ok">aceptar</string>
     <string name="setting_entry_thumbnail_size">Tamaño de miniatura</string>
