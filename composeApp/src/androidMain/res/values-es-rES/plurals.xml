@@ -17,7 +17,7 @@
         <item quantity="other">%d canciones</item>
     </plurals>
     <plurals name="download">
-        <item quantity="one">%d download</item>
-        <item quantity="other">%d downloads</item>
+        <item quantity="one">%d descarga</item>
+        <item quantity="other">%d descargas</item>
     </plurals>
 </resources>
