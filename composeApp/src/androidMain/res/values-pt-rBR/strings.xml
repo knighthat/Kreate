@@ -862,8 +862,8 @@
     <string name="word_disabled">desativado</string>
     <string name="settings_live_wallpaper_reset_warning"> AVISO: isto irá voltar para o papel de parede padrão do fabricante. Infelizmente, é difícil reverter para seu papel de parede anterior</string>
     <string name="ok">ok</string>
-    <string name="setting_entry_thumbnail_size">Thumbnail size</string>
-    <string name="warning_end_of_list">End of list</string>
+    <string name="setting_entry_thumbnail_size">Tamanho da miniatura</string>
+    <string name="warning_end_of_list">Fim da lista</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
     <string name="doh_none">None</string>
     <string name="doh_cloudflare">Cloudflare</string>
@@ -878,11 +878,11 @@
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>
     <string name="error_failed_to_verify_doh">Failed to verify DoH</string>
-    <string name="setting_entry_test_doh">Test DoH</string>
-    <string name="success_doh_verified">DoH verified successfully</string>
-    <string name="success_discord_log_out">Successfully logged out</string>
-    <string name="error_discord_log_out">Log out failed</string>
-    <string name="info_song_already_downloaded">Song already downloaded</string>
+    <string name="setting_entry_test_doh">Testar DoH</string>
+    <string name="success_doh_verified">DoH verificado com sucesso</string>
+    <string name="success_discord_log_out">Deslogado com sucesso</string>
+    <string name="error_discord_log_out">Falha ao deslogar</string>
+    <string name="info_song_already_downloaded">Música já está baixada</string>
     <string name="error_loudness_normalization_failed">Loudness normalization failed</string>
     <string name="error_bass_boost_failed">Bass boost failed</string>
     <string name="error_reverb_failed">Failed to apply reverb</string>
@@ -893,7 +893,7 @@
     <string name="reverb_preset_medium_hall">Medium hall</string>
     <string name="reverb_preset_large_hall">Large hall</string>
     <string name="reverb_preset_plate">Plate</string>
-    <string name="error_failed_to_set_wallpaper">Failed to set wallpaper</string>
+    <string name="error_failed_to_set_wallpaper">Falha ao definir o papel de parede</string>
     <string name="word_disable">Disable</string>
     <string name="live_wallpaper_home_screen">Home screen</string>
     <string name="live_wallpaper_lock_screen">Lock screen</string>
