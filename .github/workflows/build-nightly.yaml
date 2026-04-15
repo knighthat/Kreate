@@ -295,7 +295,7 @@ jobs:
       - name: Upload built APK to release
         # Skip this step when running with nektos/act
         if: ${{ !env.ACT }}
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: 'Kreate-nightly.apk'
           # Name: v20250303 | Nightly build
