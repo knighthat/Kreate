@@ -761,8 +761,8 @@ class PlayerServiceModern:
                 return@launch
             }
 
-            val startIndex = queue.indexOfFirst { it.position != null }
-            val startPositionMs = queue[startIndex].position ?: C.TIME_UNSET
+            val startIndex = queue.indexOfFirst { it.position != null }.takeIf { it != -1 } ?: C.INDEX_UNSET
+            val startPositionMs = queue.getOrNull(startIndex)?.position ?: C.TIME_UNSET
             val mediaItems = withContext( Dispatchers.Default ) {
                 queue.map {
                     it.song.asMediaItem.buildUpon().setTag( PersistentQueue.Tag ).build()
