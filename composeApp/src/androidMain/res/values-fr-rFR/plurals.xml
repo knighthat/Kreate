@@ -16,8 +16,4 @@
         <item quantity="one">%d titre</item>
         <item quantity="other">%d titres</item>
     </plurals>
-    <plurals name="download">
-        <item quantity="one">%d téléchargement</item>
-        <item quantity="other">%d téléchargements</item>
-    </plurals>
 </resources>
