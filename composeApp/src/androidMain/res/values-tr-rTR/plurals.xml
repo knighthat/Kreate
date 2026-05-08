@@ -16,8 +16,4 @@
         <item quantity="one">%d şarkı</item>
         <item quantity="other">%d şarkı</item>
     </plurals>
-    <plurals name="download">
-        <item quantity="one">%d indirme</item>
-        <item quantity="other">%d indirme</item>
-    </plurals>
 </resources>
