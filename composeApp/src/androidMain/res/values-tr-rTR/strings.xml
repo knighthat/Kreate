@@ -908,10 +908,4 @@
     <string name="setting_description_choose_image">Resim seçmek için tıklayın</string>
     <string name="setting_description_remove_image">Resmi kaldırmak için tıklayın</string>
     <string name="error_failed_to_update_widget">Araç takımı (widget) güncellenemedi</string>
-    <string name="notification_category_download">İndirme bildirimi</string>
-    <string name="notification_description_download">Şu anda indirilen ve indirilen şarkılar hakkında güncellemeler verir</string>
-    <string name="notification_message_download_in_progress">%s devam ediyor</string>
-    <string name="notification_group_download_results">İndirme sonuçları</string>
-    <string name="notification_message_download_completed">%s başarıyla indirildi</string>
-    <string name="notification_message_download_failed">%s indirilemedi</string>
 </resources>

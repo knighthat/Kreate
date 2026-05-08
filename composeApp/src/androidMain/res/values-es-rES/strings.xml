@@ -908,10 +908,4 @@
     <string name="setting_description_choose_image">Pulsar para escoger imagen</string>
     <string name="setting_description_remove_image">Pulsar para eliminar imagen</string>
     <string name="error_failed_to_update_widget">Fallo en actualizar widget</string>
-    <string name="notification_category_download">Notificación de descarga</string>
-    <string name="notification_description_download">Te actualiza sobre canciones en descarga y descargadas</string>
-    <string name="notification_message_download_in_progress">%s en progreso</string>
-    <string name="notification_group_download_results">Resultados de la descarga</string>
-    <string name="notification_message_download_completed">%s descargado exitosamente</string>
-    <string name="notification_message_download_failed">%s fallo al descargar</string>
 </resources>

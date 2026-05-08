@@ -911,10 +911,4 @@ Volume BAS : titre précédent</string>
     <string name="setting_description_choose_image">Cliquez pour choisir une image</string>
     <string name="setting_description_remove_image">Cliquez ici pour supprimer l\'image</string>
     <string name="error_failed_to_update_widget">Échec de la mise à jour du widget</string>
-    <string name="notification_category_download">Notification de téléchargement</string>
-    <string name="notification_description_download">Information sur les titres en cours de téléchargement et ceux déjà téléchargés</string>
-    <string name="notification_message_download_in_progress">%s en cours</string>
-    <string name="notification_group_download_results">Résultats du téléchargement</string>
-    <string name="notification_message_download_completed">%s a été téléchargé avec succès</string>
-    <string name="notification_message_download_failed">%s n\'a pas pu être téléchargé</string>
 </resources>
