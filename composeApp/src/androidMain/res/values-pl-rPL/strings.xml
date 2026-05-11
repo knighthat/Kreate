@@ -28,7 +28,7 @@
     <string name="shuffle">Losowo</string>
     <string name="from_wikipedia_cca">Z Wikipedii pod licencją Creative Commons Attribution CC-BY-SA 3.0</string>
     <string name="library">Biblioteka</string>
-    <string name="delete_playlist">Na pewno chcesz usunąć tą playlistę?</string>
+    <string name="delete_playlist">Na pewno chcesz usunąć tę playlistę?</string>
     <string name="sync">Zsynchronizuj</string>
     <string name="rename">Zmień nazwę</string>
     <string name="delete">Usuń</string>
@@ -732,7 +732,7 @@
     <string name="log_in_to_ytm">Zaloguj się na swoje konto YTM, aby uzyskać więcej treści</string>
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
-    <string name="setting_entry_smart_rewind">Smart rewind</string>
+    <string name="setting_entry_smart_rewind">Inteligentne przewijanie</string>
     <string name="setting_description_smart_rewind">Previous button will act like rewind button after %s</string>
     <string name="setting_entry_show_chip">Show \"%s\" chip</string>
     <string name="show_quotes">Show \"%s\"</string>
