@@ -12,7 +12,7 @@
     <string name="sort_title">По названию</string>
     <string name="sort_date_played">По дате воспроизведения</string>
     <string name="sort_date_liked">По дате добавления в Избранное</string>
-    <string name="sort_relative_listening_time">Relative listening time</string>
+    <string name="sort_relative_listening_time">Относительное время прослушивания</string>
     <string name="sort_position">По номеру</string>
     <string name="sort_song_duration">По длительность</string>
     <string name="sort_album_and_artist">По альбому и артисту</string>
