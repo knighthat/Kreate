@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="second">
-        <item quantity="one">%d second</item>
-        <item quantity="few">%d second</item>
-        <item quantity="many">%d second</item>
-        <item quantity="other">%d second</item>
+        <item quantity="one">%d секунда</item>
+        <item quantity="few">%d секунд</item>
+        <item quantity="many">%d секунд</item>
+        <item quantity="other">%d секунд(а)</item>
     </plurals>
     <plurals name="query">
-        <item quantity="one">%d query</item>
-        <item quantity="few">%d query</item>
-        <item quantity="many">%d query</item>
-        <item quantity="other">%d query</item>
+        <item quantity="one">%d запрос</item>
+        <item quantity="few">%d запросов</item>
+        <item quantity="many">%d запросов</item>
+        <item quantity="other">%d запрос(ов)</item>
     </plurals>
     <plurals name="file">
-        <item quantity="one">%d file</item>
+        <item quantity="one">%d файл</item>
         <item quantity="few">%d file</item>
         <item quantity="many">%d file</item>
-        <item quantity="other">%d file</item>
+        <item quantity="other">%d файл(ов)</item>
     </plurals>
     <plurals name="song">
-        <item quantity="one">%d song</item>
-        <item quantity="few">%d song</item>
-        <item quantity="many">%d song</item>
-        <item quantity="other">%d song</item>
+        <item quantity="one">%d песня</item>
+        <item quantity="few">%d песен</item>
+        <item quantity="many">%d песен</item>
+        <item quantity="other">%d песня</item>
     </plurals>
 </resources>
