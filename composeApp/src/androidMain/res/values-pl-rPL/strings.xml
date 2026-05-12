@@ -93,9 +93,9 @@
     <string name="unsynchronized_lyrics">niezsynchronizowany tekst</string>
     <string name="synchronized_lyrics">zsynchronizowany tekst</string>
     <string name="provided_by">Dostarczono przez</string>
-    <string name="delete_playback_events">Usuń %1$s akcje odtarzania</string>
+    <string name="delete_playback_events">Usuń %1$s akcji odtwarzania </string>
     <string name="existing_data_will_be_overwritten">Istniejące dane zostaną nadpisane. %1$s zostanie automatycznie zamknięte po przywróceniu bazy danych.</string>
-    <string name="used">"w użyciu"</string>
+    <string name="used">" w użyciu"</string>
     <string name="close_background_player">Zamknij odtwarzacz w tle</string>
     <string name="when_app_swipe_out_from_task_manager">Kiedy aplikacja zostanie zamknięta menadżerem zadań</string>
     <string name="opening_url">ładuje się...</string>
@@ -107,7 +107,7 @@
     <string name="error_the_returned_video_id_doesn_t_match_the_requested_one">Zwrócone id filmu jest różne niż żądane id</string>
     <string name="error_an_unknown_playback_error_has_occurred">Wystąpił nieznany błąd odtwarzania</string>
     <string name="tips">Sugestie</string>
-    <string name="is_min_list_time_for_tips_or_quick_pics">Jest to minimalny czas trwania utworu, aby mógł on zostać pokazany jako sugestia</string>
+    <string name="is_min_list_time_for_tips_or_quick_pics">Minimalny czas trwania utworu, aby mógł on zostać pokazany jako sugestia</string>
     <string name="min_listening_time">Minimalny czas trwania</string>
     <string name="player_thumbnail_size">Rozmiar miniatury</string>
     <string name="restarting_rimusic_is_required">Wymagany jest restart</string>
@@ -172,7 +172,7 @@
     <string name="user_interface">Interfejs</string>
     <string name="ui_tab">Interfejs</string>
     <string name="biggest">Największy</string>
-    <string name="set_custom_cache">Ustaw własną pamięć podreczną</string>
+    <string name="set_custom_cache">Ustaw własną pamięć podręczną</string>
     <string name="enter_value_in_mb">Wprowadź wartość w MB</string>
     <string name="value_cannot_be_empty">Wartość nie może być pusta</string>
     <string name="value_must_be_greater_than">"Wartość musi być większa niż "</string>
@@ -191,7 +191,7 @@
     <string name="audio_quality_format_medium">Średnia</string>
     <string name="audio_quality_format_low">Niska</string>
     <string name="audio_quality_format_unknown">Nieznana</string>
-    <string name="do_you_really_want_to_delete_download">Chcesz usunąć pobraną piosenkę?</string>
+    <string name="do_you_really_want_to_delete_download">Chcesz usunąć pobrany utwór?</string>
     <string name="disable_scrolling_text">Wyłącz przewijanie tekstu</string>
     <string name="scrolling_text_is_used_for_long_texts">Przewijanie tekstu jest używane do długich tekstów</string>
     <string name="audio_quality_format">Format jakości audio</string>
@@ -214,7 +214,7 @@
     <string name="title">Tytuł</string>
     <string name="authors">Autorzy</string>
     <string name="cover">Okładka</string>
-    <string name="paste_or_type_a_valid_url">Wklej albo wpisz poprawny adres url</string>
+    <string name="paste_or_type_a_valid_url">Wklej albo wpisz poprawny adres URL</string>
     <string name="you_can_put_a_complete_link">Możesz umieścić link do playlisty, albumu, kanału lub piosenki z YouTube lub YouTube Music</string>
     <string name="go_to_link">Idź do linku</string>
     <string name="action_bar_show_download_button">Pokaż przycisk Pobierania</string>
@@ -607,7 +607,7 @@
     <string name="show_cover_thumbnail_animation">Show cover thumbnail animation</string>
     <string name="cover_thumbnail_animation_type">Cover animation type</string>
     <string name="jump_previous_blank">Leave it Blank or 0 for Previous Button to Always Play the Previous Song</string>
-    <string name="delete_hidden_songs">Do you really want to delete all hidden songs from database? This action is irreversible.</string>
+    <string name="delete_hidden_songs">Usunąć wszystkie ukryte utwory z bazy? Tego działania nie da się cofnąć.</string>
     <string name="delete_hidden_songs_message">Usuń ukryte utwory</string>
     <string name="cover_type_vinyl">Winyl</string>
     <string name="cover_type_cd">CD</string>
@@ -687,7 +687,7 @@
     <string name="settings_audio_reverb">Audio reverb</string>
     <string name="settings_audio_reverb_info_apply_a_depth_effect_to_the_audio">Apply a depth effect to the audio</string>
     <string name="settings_audio_focus">Audio focus</string>
-    <string name="settings_audio_focus_info">Allows automatic pause and resume playback after a call for example</string>
+    <string name="settings_audio_focus_info">Wstrzymuje odtwarzanie, gdy pojawi się dźwięk z innego źródła, np na czas połączenia telefonicznego</string>
     <string name="songs_liked_yt">Song(s) are Liked in YouTube</string>
     <string name="song_unliked_yt">Song is Unliked in YouTube</string>
     <string name="add_rimusic_to_ytm_favorites">Like RiMusic Liked songs in Youtube</string>
