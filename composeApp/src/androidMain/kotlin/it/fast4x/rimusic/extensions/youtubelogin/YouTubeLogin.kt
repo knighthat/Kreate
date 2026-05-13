@@ -43,8 +43,8 @@ fun YouTubeLogin( onDone: () -> Unit ) {
             WebView(context).apply {
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished( view: WebView, url: String? ) {
-                        loadUrl("javascript:Android.onRetrieveVisitorData(window.yt.config_.VISITOR_DATA)")
-                        loadUrl("javascript:Android.onRetrieveDataSyncId(window.yt.config_.DATASYNC_ID)")
+                        view.evaluateJavascript("Android.onRetrieveVisitorData(window.yt.config_.VISITOR_DATA)", null)
+                        view.evaluateJavascript("Android.onRetrieveDataSyncId(window.yt.config_.DATASYNC_ID)", null)
 
                         if ( url?.startsWith("https://music.youtube.com") == true ) {
                             Preferences.YOUTUBE_COOKIES.value = CookieManager.getInstance().getCookie( url )
