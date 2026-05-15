@@ -29,13 +29,12 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.ChangeSongThumbnail
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.database.models.Song
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.ui.components.LocalMenuState
@@ -70,6 +69,7 @@ import me.knighthat.component.tab.DeleteSongDialog
 import me.knighthat.component.tab.LikeComponent
 import me.knighthat.component.tab.Radio
 import me.knighthat.sync.YouTubeSync
+import org.koin.compose.koinInject
 import java.util.Optional
 
 @UnstableApi
@@ -114,7 +114,7 @@ class SongItemMenu private constructor(
     @Composable
     override fun MenuComponent() {
         val context = LocalContext.current
-        val binder = LocalPlayerServiceBinder.current ?: return
+        val player: StatefulPlayer = koinInject()
         val (colorPalette, typography) = LocalAppearance.current
 
         /*
@@ -133,10 +133,10 @@ class SongItemMenu private constructor(
         }
         val startRadio = Radio { listOf(song) }
         val playNext = PlayNext {
-            binder?.player?.addNext( listOf(song.asMediaItem), appContext() )
+            player.addNext( listOf(song.asMediaItem), context )
         }
         val enqueue = Enqueue {
-            binder?.player?.enqueue( listOf(song.asMediaItem), appContext() )
+            player.enqueue( listOf(song.asMediaItem), context )
         }
         val addToFavorite = LikeComponent { listOf(song) }
         val addToPlaylist = PlaylistsMenu.init(
@@ -160,7 +160,7 @@ class SongItemMenu private constructor(
             GoToAlbum( navController, song )
         }
         val resetDialog = ResetSongDialog( song )
-        val exportCacheDialog = ExportCacheDialog( binder ) { song }
+        val exportCacheDialog = ExportCacheDialog { song }
         val info = remember { Information(navController, song.id) }
 
         buttons = mutableListOf<Button>().apply {

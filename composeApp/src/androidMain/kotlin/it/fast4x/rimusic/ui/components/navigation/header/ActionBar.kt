@@ -1,5 +1,6 @@
 package it.fast4x.rimusic.ui.components.navigation.header
 
+import android.content.pm.PackageManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.height
@@ -13,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
@@ -20,11 +22,11 @@ import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
-import it.fast4x.rimusic.extensions.pip.isPipSupported
 import it.fast4x.rimusic.extensions.pip.rememberPipHandler
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.ui.components.themed.DropdownMenu
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeLoggedIn
+import it.fast4x.rimusic.utils.isAtLeastAndroid8
 import it.fast4x.rimusic.ytAccountThumbnail
 
 @Composable
@@ -63,6 +65,11 @@ private fun HamburgerMenu(
         ) { onItemClick( NavRoutes.PROFILES ) }
     )
     // Picture in picture button
+    val context = LocalContext.current
+    val isPipSupported = if( isAtLeastAndroid8 )
+        context.packageManager.hasSystemFeature( PackageManager.FEATURE_PICTURE_IN_PICTURE )
+    else
+        false
     if (isPipSupported && enablePictureInPicture)
         menu.add(
             DropdownMenu.Item(

@@ -24,9 +24,11 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
@@ -34,6 +36,7 @@ import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Album
 import app.kreate.database.models.SongAlbumMap
+import app.kreate.di.CacheType
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBody
@@ -43,7 +46,6 @@ import it.fast4x.innertube.requests.albumPage
 import it.fast4x.innertube.requests.searchPage
 import it.fast4x.innertube.utils.from
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.Skeleton
@@ -69,6 +71,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
+import org.koin.java.KoinJavaComponent.inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalTextApi
@@ -85,7 +89,7 @@ fun SearchResultScreen(
     onSearchAgain: () -> Unit
 ) {
     val context = LocalContext.current
-    val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val saveableStateHolder = rememberSaveableStateHolder()
     val (tabIndex, onTabIndexChanges) = Preferences.SEARCH_RESULTS_TAB_INDEX
@@ -113,7 +117,7 @@ fun SearchResultScreen(
 
     val emptyItemsText = stringResource(R.string.no_results_found)
 
-    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+    val currentMediaItem by player.currentMediaItemState.collectAsState()
     val songItemValues = remember( colorPalette, typography ) {
         SongItem.Values.from( colorPalette, typography )
     }
@@ -136,8 +140,6 @@ fun SearchResultScreen(
         saveableStateHolder.SaveableStateProvider(currentTabIndex) {
             when ( currentTabIndex ) {
                 0 -> {
-                    val localBinder = LocalPlayerServiceBinder.current
-
                     ItemsPage(
                         tag = "searchResults/$query/songs",
                         itemsPageProvider = { continuation ->
@@ -168,10 +170,11 @@ fun SearchResultScreen(
                             SwipeablePlaylistItem(
                                 mediaItem = song.asMediaItem,
                                 onPlayNext = {
-                                    localBinder?.player?.addNext(song.asMediaItem)
+                                    player.addNext(song.asMediaItem)
                                 },
                                 onDownload = {
-                                    localBinder?.cache?.removeResource(song.asMediaItem.mediaId)
+                                    val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
+                                    cache.removeResource(song.asMediaItem.mediaId)
                                     Database.asyncTransaction {
                                         formatTable.updateContentLengthOf( song.key )
                                     }
@@ -182,19 +185,17 @@ fun SearchResultScreen(
                                     )
                                 },
                                 onEnqueue = {
-                                    localBinder?.player?.enqueue(song.asMediaItem)
+                                    player.enqueue(song.asMediaItem)
                                 }
                             ) {
                                 SongItem.Render(
                                     song = song.asSong,
-                                    context = context,
-                                    binder = binder,
                                     hapticFeedback = hapticFeedback,
                                     isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
                                     navController = navController,
                                     onClick = {
-                                        binder?.startRadio( song.asMediaItem, false, song.info?.endpoint )
+                                        player.startRadio( song.asMediaItem, false, song.info?.endpoint )
                                     }
                                 )
                             }
@@ -255,7 +256,7 @@ fun SearchResultScreen(
                                                                         )
                                                                         ?.let { it1 ->
                                                                             withContext(Dispatchers.Main) {
-                                                                                binder?.player?.addNext(
+                                                                                player.addNext(
                                                                                     it1,
                                                                                     context
                                                                                 )
@@ -301,7 +302,7 @@ fun SearchResultScreen(
                                                                         )
                                                                         ?.let { it1 ->
                                                                             withContext(Dispatchers.Main) {
-                                                                                binder?.player?.enqueue(
+                                                                                player.enqueue(
                                                                                     it1,
                                                                                     context
                                                                                 )
@@ -427,7 +428,6 @@ fun SearchResultScreen(
                 }
 
                 3 -> {
-                    val localBinder = LocalPlayerServiceBinder.current
                     val menuState = LocalMenuState.current
                     val thumbnailHeightDp = 72.dp
                     val thumbnailWidthDp = 128.dp
@@ -456,13 +456,13 @@ fun SearchResultScreen(
                             SwipeablePlaylistItem(
                                 mediaItem = video.asMediaItem,
                                 onPlayNext = {
-                                    localBinder?.player?.addNext(video.asMediaItem)
+                                    player.addNext(video.asMediaItem)
                                 },
                                 onDownload = {
                                     Toaster.w( R.string.downloading_videos_not_supported )
                                 },
                                 onEnqueue = {
-                                    localBinder?.player?.enqueue(video.asMediaItem)
+                                    player.enqueue(video.asMediaItem)
                                 }
                             ) {
                                 SongItem.Render(
@@ -484,11 +484,11 @@ fun SearchResultScreen(
                                         )
                                     },
                                     onClick = {
-                                        localBinder?.stopRadio()
+                                        player.stopRadio()
                                         if (isVideoEnabled)
-                                            localBinder?.player?.playVideo(video.asMediaItem)
+                                            player.playVideo(video.asMediaItem)
                                         else
-                                            localBinder?.player?.forcePlay(video.asMediaItem)
+                                            player.forcePlay(video.asMediaItem)
                                     }
                                 )
                             }

@@ -11,12 +11,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
+import app.kreate.android.service.player.StatefulPlayer
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.compose.koinInject
 import java.math.RoundingMode
 import kotlin.time.Duration.Companion.seconds
 
@@ -89,18 +91,20 @@ fun setDeviceVolume(context: Context, volume: Float) {
 
 @Composable
 @OptIn(UnstableApi::class)
-fun MedleyMode(binder: PlayerServiceModern.Binder?, seconds: Int) {
+fun MedleyMode(
+    seconds: Int,
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    player: StatefulPlayer = koinInject()
+) {
     if (seconds == 0) return
-    if (binder != null) {
-        val coroutineScope = rememberCoroutineScope()
-        LaunchedEffect(Unit) {
-            coroutineScope.launch {
-                while (isActive) {
-                    delay(1.seconds * seconds)
-                    withContext(Dispatchers.Main) {
-                        if (binder.player.isPlaying)
-                            binder.player.playNext()
-                    }
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            while (isActive) {
+                delay(1.seconds * seconds)
+                withContext(Dispatchers.Main) {
+                    if (player.isPlaying)
+                        player.playNext()
                 }
             }
         }

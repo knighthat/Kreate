@@ -5,7 +5,6 @@ import android.media.audiofx.LoudnessEnhancer
 import android.widget.Toast
 import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapIndexed
@@ -14,16 +13,13 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
 import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.database.models.PersistentQueue
-import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.NotificationButtons
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.service.LoginRequiredException
@@ -32,33 +28,32 @@ import it.fast4x.rimusic.service.NoInternetException
 import it.fast4x.rimusic.service.PlayableFormatNotFoundException
 import it.fast4x.rimusic.service.UnknownException
 import it.fast4x.rimusic.service.UnplayableException
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.utils.mediaItems
 import it.fast4x.rimusic.utils.playNext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalAtomicApi::class)
 @UnstableApi
 class ExoPlayerListener(
-    private val player: ExoPlayer,
+    private val player: StatefulPlayer,
     private val mediaSession: MediaSession,
-    private val binder: PlayerServiceModern.Binder,
-    private val isNetworkAvailable: MutableStateFlow<Boolean>,
     private val waitingForNetwork: MutableStateFlow<Boolean>,
     private val sendOpenEqualizerIntent: () -> Unit,
     private val sendCloseEqualizerIntent: () -> Unit,
     private val onMediaTransition: (MediaItem?) -> Unit
-): Player.Listener {
+): Player.Listener, KoinComponent {
+
+    private val context: Context by inject()
 
     private var volumeNormalizationJob: Job = Job()
     private var errorTimestamp = 0L
@@ -129,55 +124,6 @@ class ExoPlayerListener(
         }
     }
 
-    @MainThread
-    fun maybeNormalizeVolume() {
-        if ( !Preferences.AUDIO_VOLUME_NORMALIZATION.value ) {
-            loudnessEnhancer?.enabled = false
-            loudnessEnhancer?.release()
-            loudnessEnhancer = null
-            volumeNormalizationJob.cancel()
-            return
-        }
-
-        runCatching {
-            if (loudnessEnhancer == null) {
-                loudnessEnhancer = LoudnessEnhancer(player.audioSessionId)
-            }
-        }.onFailure {
-            Logger.e( it, "PlayerListener" ) { "maybeNormalizeVolume load loudnessEnhancer" }
-            return
-        }
-
-        player.currentMediaItem
-            ?.mediaId
-            ?.also { songId ->
-                volumeNormalizationJob.cancel()
-                volumeNormalizationJob = CoroutineScope(Dispatchers.IO ).launch {
-                    fun Float?.toMb() = ((this ?: 0f) * 100).toInt()
-
-                    Database.formatTable
-                        .findBySongId( songId )
-                        .cancellable()
-                        .collectLatest { format ->
-                            val loudnessMb = format?.loudnessDb.toMb().let {
-                                if (it !in -2000..2000) {
-                                    Toaster.w( "Extreme loudness detected" )
-
-                                    0
-                                } else
-                                    it
-                            }
-
-                            runCatching {
-                                val baseGain by Preferences.AUDIO_VOLUME_NORMALIZATION_TARGET
-                                loudnessEnhancer?.setTargetGain( baseGain.toMb() - loudnessMb )
-                                loudnessEnhancer?.enabled = true
-                            }
-                        }
-                }
-            }
-    }
-
     private fun loadFromRadio( reason: Int ) {
         // Don't fetch more item if:
         // - Feature is disabled
@@ -191,10 +137,8 @@ class ExoPlayerListener(
         val positionToLast = player.mediaItemCount - player.currentMediaItemIndex
         // Make sure only add when about 10 songs to the last song in queue
         // TODO: Add slider in settings to let user change number of songs
-        if( positionToLast <= 10 && !binder.isLoadingRadio )
-            player.currentMediaItem?.let {
-                binder.startRadio( it, true )
-            }
+        if( positionToLast <= 10 && !player.isLoadingRadio() )
+            player.startRadio()
     }
 
     @MainThread
@@ -230,14 +174,13 @@ class ExoPlayerListener(
     override fun onPlayWhenReadyChanged( playWhenReady: Boolean, reason: Int ) = saveQueueToDatabase()
 
     override fun onRepeatModeChanged( repeatMode: Int ) {
-        updateMediaControl( appContext(), this.player )
+        updateMediaControl( context, this.player )
         Preferences.QUEUE_LOOP_TYPE.value = QueueLoopType.from( repeatMode )
     }
 
     override fun onMediaItemTransition( mediaItem: MediaItem?, reason: Int ) {
         if ( player.playerError != null ) player.prepare()
 
-        maybeNormalizeVolume()
         loadFromRadio(reason)
         onMediaTransition( mediaItem )
     }
@@ -248,7 +191,7 @@ class ExoPlayerListener(
     }
 
     override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-        updateMediaControl( appContext(), this.player )
+        updateMediaControl( context, this.player )
         if (shuffleModeEnabled) {
             val shuffledIndices = IntArray(player.mediaItemCount) { it }
             shuffledIndices.shuffle()
@@ -262,11 +205,11 @@ class ExoPlayerListener(
         val rootCause = traverseErrorStack( error )
 
         when( rootCause ) {
-            is PlayableFormatNotFoundException -> appContext().getString( R.string.error_couldn_t_find_a_playable_audio_format )
-            is NoInternetException -> appContext().getString( R.string.no_connection )
-            is MissingDecipherKeyException -> appContext().getString( R.string.error_failed_to_decipher_signature )
+            is PlayableFormatNotFoundException -> context.getString( R.string.error_couldn_t_find_a_playable_audio_format )
+            is NoInternetException -> context.getString( R.string.no_connection )
+            is MissingDecipherKeyException -> context.getString( R.string.error_failed_to_decipher_signature )
 
-            else -> rootCause.message ?: appContext().getString( R.string.error_unknown )
+            else -> rootCause.message ?: context.getString( R.string.error_unknown )
         }.also( ::printErrorMessage )
 
         // TODO: Add additional recovery step if type of error allows it

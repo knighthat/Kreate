@@ -10,19 +10,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.innertube.toMediaItem
 import it.fast4x.innertube.Innertube
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.isVideoEnabled
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.ui.styling.LocalAppearance
@@ -35,6 +34,7 @@ import me.knighthat.innertube.model.InnertubeArtist
 import me.knighthat.innertube.model.InnertubeItem
 import me.knighthat.innertube.model.InnertubePlaylist
 import me.knighthat.innertube.model.InnertubeSong
+import org.koin.compose.koinInject
 
 
 object ItemUtils {
@@ -57,8 +57,7 @@ object ItemUtils {
         currentlyPlaying: String?,
         modifier: Modifier = Modifier
     ) {
-        val context = LocalContext.current
-        val binder = LocalPlayerServiceBinder.current ?: return
+        val player: StatefulPlayer = koinInject()
         val hapticFeedback = LocalHapticFeedback.current
         val appearance = LocalAppearance.current
         val songItemValues = remember( appearance ) {
@@ -85,14 +84,12 @@ object ItemUtils {
                 when ( childItem ) {
                     is Innertube.SongItem -> SongItem.Render(
                         innertubeSong = childItem,
-                        context = context,
-                        binder = binder,
                         hapticFeedback = hapticFeedback,
                         values = songItemValues,
                         isPlaying = childItem.key == currentlyPlaying,
                         navController = navController,
                         onClick = {
-                            binder.player.forcePlay( childItem.asMediaItem )
+                            player.forcePlay( childItem.asMediaItem )
                         }
                     )
 
@@ -105,11 +102,11 @@ object ItemUtils {
                             values = songItemValues,
                             thumbnailSizeDp = SongItem.thumbnailSize(),
                             onClick = {
-                                binder.stopRadio()
+                                player.stopRadio()
                                 if ( isVideoEnabled() )
-                                    binder.player.playVideo( childItem.asMediaItem )
+                                    player.playVideo( childItem.asMediaItem )
                                 else
-                                    binder.player.forcePlay( childItem.asMediaItem )
+                                    player.forcePlay( childItem.asMediaItem )
                             }
                         )
                     }
@@ -142,10 +139,9 @@ object ItemUtils {
         navController: NavController,
         innertubeItems: List<InnertubeItem>,
         currentlyPlaying: String?,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
+        player: StatefulPlayer = koinInject()
     ) {
-        val context = LocalContext.current
-        val binder = LocalPlayerServiceBinder.current ?: return
         val hapticFeedback = LocalHapticFeedback.current
         val appearance = LocalAppearance.current
         val (songIV, albumIV, artistIV, playlistIV) = remember( appearance ) {
@@ -168,14 +164,12 @@ object ItemUtils {
                 when( item ) {
                     is InnertubeSong -> SongItem.Render(
                         innertubeSong = item,
-                        context = context,
-                        binder = binder,
                         hapticFeedback = hapticFeedback,
                         values = songIV,
                         isPlaying = item.id == currentlyPlaying,
                         navController = navController,
                         onClick = {
-                            binder.player.forcePlay( item.toMediaItem )
+                            player.forcePlay( item.toMediaItem )
                         }
                     )
 

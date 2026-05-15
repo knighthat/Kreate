@@ -98,6 +98,7 @@ import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Playlist
@@ -109,7 +110,6 @@ import it.fast4x.innertube.models.bodies.SearchBody
 import it.fast4x.innertube.requests.searchPage
 import it.fast4x.innertube.utils.from
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ValidationType
@@ -141,6 +141,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import org.koin.compose.koinInject
 
 @Composable
 fun textFieldColors( colorPalette: ColorPalette, errorText: String ) =
@@ -2170,11 +2171,11 @@ fun PlaybackParamsDialog(
     durationValue: (Float) -> Unit,
     scaleValue: (Float) -> Unit,
 ) {
-    val binder = LocalPlayerServiceBinder.current
+    val player: StatefulPlayer = koinInject()
     val context = LocalContext.current
     val defaultSpeed = 1f
     val defaultPitch = 1f
-    //val defaultVolume = 0.5f //binder?.player?.volume ?: 1f
+    //val defaultVolume = 0.5f //player.volume ?: 1f
     //val defaultDeviceVolume = getDeviceVolume(context)
     val defaultDuration = 0f
     val defaultStrength = 25f
@@ -2391,7 +2392,7 @@ fun PlaybackParamsDialog(
                 IconButton(
                     onClick = {
                         playbackSpeed = defaultSpeed
-                        binder?.player?.playbackParameters =
+                        player.playbackParameters =
                             PlaybackParameters(playbackSpeed, playbackPitch)
                     },
                     icon = R.drawable.slow_motion,
@@ -2404,7 +2405,7 @@ fun PlaybackParamsDialog(
                     state = playbackSpeed,
                     onSlide = {
                         playbackSpeed = it
-                        binder?.player?.playbackParameters =
+                        player.playbackParameters =
                             PlaybackParameters(playbackSpeed, playbackPitch)
                     },
                     onSlideComplete = {},
@@ -2421,7 +2422,7 @@ fun PlaybackParamsDialog(
                     value = playbackSpeed,
                     onValueChange = {
                         playbackSpeed = it
-                        binder?.player?.playbackParameters =
+                        player.playbackParameters =
                             PlaybackParameters(playbackSpeed, playbackPitch)
                     },
                     valueRange = 0.1f..5f,
@@ -2491,7 +2492,7 @@ fun PlaybackParamsDialog(
                 IconButton(
                     onClick = {
                         playbackPitch = defaultPitch
-                        binder?.player?.playbackParameters =
+                        player.playbackParameters =
                             PlaybackParameters(playbackSpeed, playbackPitch)
                     },
                     icon = R.drawable.equalizer,
@@ -2504,7 +2505,7 @@ fun PlaybackParamsDialog(
                     state = playbackPitch,
                     onSlide = {
                         playbackPitch = it
-                        binder?.player?.playbackParameters =
+                        player.playbackParameters =
                             PlaybackParameters(playbackSpeed, playbackPitch)
                     },
                     onSlideComplete = {},
@@ -2521,7 +2522,7 @@ fun PlaybackParamsDialog(
                     value = playbackPitch,
                     onValueChange = {
                         playbackPitch = it
-                        binder?.player?.playbackParameters =
+                        player.playbackParameters =
                             PlaybackParameters(playbackSpeed, playbackPitch)
                     },
                     valueRange = 0.1f..5f,
@@ -2591,8 +2592,8 @@ fun PlaybackParamsDialog(
                 IconButton(
                     onClick = {
                         playbackVolume = 0.5f
-                        binder?.player?.volume = playbackVolume
-                        binder?.player?.setGlobalVolume(playbackVolume)
+                        player.volume = playbackVolume
+                        player.setGlobalVolume(playbackVolume)
                     },
                     icon = R.drawable.volume_up,
                     color = colorPalette().favoritesIcon,
@@ -2604,8 +2605,8 @@ fun PlaybackParamsDialog(
                     state = playbackVolume,
                     onSlide = {
                         playbackVolume = it
-                        binder?.player?.volume = playbackVolume
-                        binder?.player?.setGlobalVolume(playbackVolume)
+                        player.volume = playbackVolume
+                        player.setGlobalVolume(playbackVolume)
                     },
                     onSlideComplete = {},
                     toDisplay = { "%.1f".format(playbackVolume) },
@@ -2621,7 +2622,7 @@ fun PlaybackParamsDialog(
                     value = playbackVolume,
                     onValueChange = {
                         playbackVolume = it
-                        binder?.player?.volume = playbackVolume
+                        player.volume = playbackVolume
                     },
                     valueRange = 0.0f..1.0f,
                     gap = 1,

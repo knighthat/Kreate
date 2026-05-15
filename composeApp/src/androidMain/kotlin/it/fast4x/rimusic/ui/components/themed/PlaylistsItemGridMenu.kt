@@ -47,7 +47,6 @@ import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.typography
@@ -98,12 +97,6 @@ fun PlaylistsItemGridMenu(
     var isViewingPlaylists by remember {
         mutableStateOf(false)
     }
-
-    var height by remember {
-        mutableStateOf(0.dp)
-    }
-
-    val binder = LocalPlayerServiceBinder.current
 
     AnimatedContent(
         targetState = isViewingPlaylists,

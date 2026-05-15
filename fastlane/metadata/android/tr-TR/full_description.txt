@@ -1,19 +1,19 @@
 <p>
-  <a href="https://github.com/fast4x/RiMusic">RiMusic</a> uygulamasının bir çatalıdır (fork), performans en büyük önceliğimizdir.
+  <a href="https://github.com/fast4x/RiMusic">RiMusic</a> projesinden çatallanmış (fork) olup, en büyük önceliğimiz performanstır.
 </p>
 
 <b>Özellikler:</b>
 <ul>
-  <li>Birden fazla dil desteği</li>
+  <li>Çoklu dil desteği</li>
   <li>Kullanıcı dostu tasarımlar</li>
-  <li>Çevrimdışı dinlemek için şarkıları önbelleğe alma veya indirme</li>
+  <li>Çevrimdışı oynatma için şarkıları önbelleğe alma veya indirme</li>
   <li>Arka planda oynatma</li>
-  <li>İstatistikler ve raporlar (yerel olarak saklanır ve işlenir)</li>
-  <li>Çeşitli ses görselleştiricileri (bazıları mikrofon izni gerektirir, ancak varsayılan olarak kapalıdır)</li>
+  <li>İstatistikler ve raporlar (yerel olarak depolanır ve işlenir)</li>
+  <li>Çeşitli ses görselleştiricileri (bazıları mikrofon izni gerektirir, ancak varsayılan olarak devre dışıdır)</li>
   <li>Uyku zamanlayıcısı</li>
-  <li>Ses kontrolü: oynatma hızı, perde, normalizasyon, sessizliği atlama</li>
+  <li>Ses kontrolü: Çalma hızı, ses perdesi (pitch), normalleştirme, sessizliği atlama</li>
   <li>Android Auto, Android TV ve YouTube video desteği</li>
   <li>Önbelleğe alınmış/indirilmiş şarkıları dışa aktarma</li>
-  <li>İnternete bağlı değilken bile müzik çalma</li>
+  <li>İnternete bağlı değilken bile müzik çalabilme</li>
   <li>Ve çok daha fazlası...</li>
 </ul>

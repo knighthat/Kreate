@@ -1,6 +1,7 @@
 package me.knighthat.component.dialog
 
 import android.app.Activity
+import android.content.Context
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,13 +18,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.kreate.android.BuildConfig
 import app.kreate.android.R
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.utils.intent
 import it.fast4x.rimusic.utils.medium
+import org.koin.java.KoinJavaComponent.inject
 import kotlin.system.exitProcess
 
 object RestartAppDialog: ConfirmDialog {
@@ -37,11 +38,13 @@ object RestartAppDialog: ConfirmDialog {
     override fun hideDialog() = onConfirm()
 
     override fun onConfirm() {
-        appContext().stopService( appContext().intent<PlayerServiceModern>() )
-        appContext().stopService( appContext().intent<MyDownloadService>() )
+        val context: Context by inject(Context::class.java)
+
+        context.stopService( context.intent<PlayerServiceModern>() )
+        context.stopService( context.intent<MyDownloadService>() )
 
         // Close other activities
-        (appContext() as? Activity)?.finishAffinity()
+        (context as? Activity)?.finishAffinity()
 
         // Close app with exit 0 notify that no problem occurred
         exitProcess( 0 )

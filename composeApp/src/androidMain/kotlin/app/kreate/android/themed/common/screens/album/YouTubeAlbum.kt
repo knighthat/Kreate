@@ -57,6 +57,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
 import app.kreate.android.themed.rimusic.component.ItemSelector
@@ -74,8 +75,6 @@ import app.kreate.database.models.SongAlbumMap
 import app.kreate.util.MODIFIED_PREFIX
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
@@ -115,6 +114,7 @@ import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.innertube.model.Section
 import me.knighthat.utils.PropUtils
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 
 private fun updateAlbumInDatabase(dbAlbum: Album?, innertubeAlbum: InnertubeAlbum ) = Database.asyncTransaction {
     val onlineAlbum = Album(
@@ -212,7 +212,7 @@ fun YouTubeAlbum(
         }
     ) {
         //<editor-fold desc="Essentials">
-        val binder = LocalPlayerServiceBinder.current ?: return@Skeleton
+        val player: StatefulPlayer = koinInject()
         val hapticFeedback = LocalHapticFeedback.current
         val (colorPalette, typography) = LocalAppearance.current
         val context = LocalContext.current
@@ -244,10 +244,10 @@ fun YouTubeAlbum(
 
         val bookmark = remember { Bookmark(browseId) }
         val deleteAllDownloadsDialog = remember {
-            DeleteAllDownloadedDialog( binder, context, ::getSongs )
+            DeleteAllDownloadedDialog(::getSongs)
         }
         val downloadALlDialog = remember {
-            DownloadAllDialog( binder, context, ::getSongs )
+            DownloadAllDialog( context, ::getSongs )
         }
         val shuffle = SongShuffler {
             getMediaItems().map( MediaItem::asSong )
@@ -256,7 +256,7 @@ fun YouTubeAlbum(
         val locator = Locator( lazyListState, ::getSongs )
         val playNext = PlayNext {
             getMediaItems().let {
-                binder.player.addNext( it, appContext() )
+                player.addNext( it, context )
 
                 // Turn of selector clears the selected list
                 itemSelector.isActive = false
@@ -264,7 +264,7 @@ fun YouTubeAlbum(
         }
         val enqueue = Enqueue {
             getMediaItems().let {
-                binder.player.enqueue( it, appContext() )
+                player.enqueue( it, context )
 
                 // Turn of selector clears the selected list
                 itemSelector.isActive = false
@@ -330,7 +330,7 @@ fun YouTubeAlbum(
         }
         LaunchedEffect( Unit ) { onRefresh() }
 
-        val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+        val currentMediaItem by player.currentMediaItemState.collectAsState()
         val songItemValues = remember( colorPalette, typography ) {
             SongItem.Values.from( colorPalette, typography )
         }
@@ -479,13 +479,11 @@ fun YouTubeAlbum(
                             SwipeablePlaylistItem(
                                 mediaItem = song.asMediaItem,
                                 onPlayNext = {
-                                    binder.player.addNext(song.asMediaItem)
+                                    player.addNext(song.asMediaItem)
                                 }
                             ) {
                                 SongItem.Render(
                                     song = song,
-                                    context = context,
-                                    binder = binder,
                                     hapticFeedback = hapticFeedback,
                                     isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
@@ -508,16 +506,16 @@ fun YouTubeAlbum(
                                         )
                                     },
                                     onClick = {
-                                        binder.stopRadio()
+                                        player.stopRadio()
 
                                         val selectedSongs = getSongs()
                                         if( song in selectedSongs )
-                                            binder.player.forcePlayAtIndex(
+                                            player.forcePlayAtIndex(
                                                 selectedSongs.fastMap( Song::asMediaItem ),
                                                 selectedSongs.indexOf( song )
                                             )
                                         else
-                                            binder.player.forcePlayAtIndex(
+                                            player.forcePlayAtIndex(
                                                 items.fastMap( Song::asMediaItem ),
                                                 index
                                             )

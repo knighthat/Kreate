@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">കഴിഞ്ഞു</string>
     <string name="hidesong">Do you really want to hide this song? Its playback time and cache will be wiped. This action is irreversible.</string>
@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Swipe up to open the queue</string>
     <string name="pinfo_show_icons">Show info with icons</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Minimum silence length</string>
-    <string name="minimum_silence_length_description">The minimum time the audio has to be silent to get skipped</string>
     <string name="minimum_silence_length_warning">Player has to be restarted for the changes to be effective!</string>
     <string name="restart_service">Restart service</string>
     <string name="player_pause_listen_history">Pause listen history</string>
@@ -884,4 +882,30 @@
     <string name="success_doh_verified">DoH verified successfully</string>
     <string name="success_discord_log_out">Successfully logged out</string>
     <string name="error_discord_log_out">Log out failed</string>
+    <string name="info_song_already_downloaded">Song already downloaded</string>
+    <string name="error_loudness_normalization_failed">Loudness normalization failed</string>
+    <string name="error_bass_boost_failed">Bass boost failed</string>
+    <string name="error_reverb_failed">Failed to apply reverb</string>
+    <string name="reverb_preset_none">None</string>
+    <string name="reverb_preset_small_room">Small room</string>
+    <string name="reverb_preset_medium_room">Medium room</string>
+    <string name="reverb_preset_large_room">Large room</string>
+    <string name="reverb_preset_medium_hall">Medium hall</string>
+    <string name="reverb_preset_large_hall">Large hall</string>
+    <string name="reverb_preset_plate">Plate</string>
+    <string name="error_failed_to_set_wallpaper">Failed to set wallpaper</string>
+    <string name="word_disable">Disable</string>
+    <string name="live_wallpaper_home_screen">Home screen</string>
+    <string name="live_wallpaper_lock_screen">Lock screen</string>
+    <string name="live_wallpaper_both">Both</string>
+    <string name="warning_failed_to_restore_original_wallpaper">Failed to restore wallpaper, fallback to manufacturer wallpaper</string>
+    <string name="warning_failed_to_restore_original_home_screen_wallpaper">Failed to restore home screen wallpaper, fallback to manufacturer wallpaper</string>
+    <string name="warning_failed_to_restore_original_lock_screen_wallpaper">Failed to restore lock screen wallpaper, fallback to manufacturer wallpaper</string>
+    <string name="word_instantly">Instantly</string>
+    <string name="setting_entry_restore_home_screen_wallpaper">Restore home screen wallpaper to</string>
+    <string name="setting_entry_restore_lock_screen_wallpaper">Restore lock screen wallpaper to</string>
+    <string name="setting_entry_restore_wallpaper">Restore wallpaper to</string>
+    <string name="setting_description_choose_image">Click to choose image</string>
+    <string name="setting_description_remove_image">Click to remove image</string>
+    <string name="error_failed_to_update_widget">Failed to update widget</string>
 </resources>

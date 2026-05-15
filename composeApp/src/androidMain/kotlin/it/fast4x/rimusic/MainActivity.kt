@@ -58,7 +58,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -85,6 +84,7 @@ import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.updater.UpdatePlugins
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.database.models.PersistentQueue
@@ -149,11 +149,11 @@ import it.fast4x.rimusic.utils.textCopyToClipboard
 import it.fast4x.rimusic.utils.thumbnail
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
+import org.koin.java.KoinJavaComponent.inject
 import java.util.Locale
 import java.util.Objects
 import kotlin.math.sqrt
@@ -169,19 +169,12 @@ MainActivity :
 //,PersistMapOwner
 {
     private val serviceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            if (service is PlayerServiceModern.Binder) {
-                this@MainActivity.binder = service
-            }
-        }
 
-        override fun onServiceDisconnected(name: ComponentName?) {
-            binder = null
-        }
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {}
 
+        override fun onServiceDisconnected(name: ComponentName?) {}
     }
 
-    private var binder by mutableStateOf<PlayerServiceModern.Binder?>(null)
     private var intentUriData by mutableStateOf<Uri?>(null)
 
     private var sensorManager: SensorManager? = null
@@ -453,7 +446,8 @@ MainActivity :
             }
 
 
-            DisposableEffect(binder, !lightTheme) {
+            val player: StatefulPlayer = koinInject()
+            DisposableEffect(player, !lightTheme) {
                 val listener =
                     SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
                         when (key) {
@@ -498,7 +492,7 @@ MainActivity :
 
                                 if (colorPaletteName == ColorPaletteName.Dynamic) {
                                     val artworkUri =
-                                        (binder?.player?.currentMediaItem?.mediaMetadata?.artworkUri.thumbnail(1200)
+                                        (player.currentMediaItem?.mediaMetadata?.artworkUri.thumbnail(1200)
                                             ?: "").toString()
                                     artworkUri.let {
                                         if (it.isNotEmpty())
@@ -596,7 +590,7 @@ MainActivity :
                     val colorPaletteName by Preferences.COLOR_PALETTE
                     if (colorPaletteName == ColorPaletteName.Dynamic) {
                         setDynamicPalette(
-                            (binder?.player?.currentMediaItem?.mediaMetadata?.artworkUri.thumbnail(1200)
+                            (player.currentMediaItem?.mediaMetadata?.artworkUri.thumbnail(1200)
                                 ?: "").toString()
                         )
                     }
@@ -684,7 +678,7 @@ MainActivity :
                                 PipModule.Cover -> {
                                     PipModuleContainer {
                                         ImageFactory.AsyncImage(
-                                            thumbnailUrl = binder?.player
+                                            thumbnailUrl = player
                                                                  ?.currentMediaItem
                                                                  ?.mediaMetadata
                                                                  ?.artworkUri
@@ -706,7 +700,6 @@ MainActivity :
                             LocalAppearance provides appearance,
                             LocalIndication provides ripple(bounded = true),
                             LocalRippleConfiguration provides rippleConfiguration,
-                            LocalPlayerServiceBinder provides binder,
                             LocalPlayerAwareWindowInsets provides playerAwareWindowInsets,
                             LocalLayoutDirection provides LayoutDirection.Ltr,
                             LocalDownloadHelper provides MyDownloadHelper,
@@ -755,11 +748,11 @@ MainActivity :
 
                             val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
 
-                            val isVideo = binder?.player?.currentMediaItem?.isVideo ?: false
+                            val isVideo = player.currentMediaItem?.isVideo ?: false
                             val isVideoEnabled by Preferences.PLAYER_ACTION_TOGGLE_VIDEO
 
                             val youtubePlayer: @Composable () -> Unit = {
-                                binder?.player?.currentMediaItem?.mediaId?.let {
+                                player.currentMediaItem?.mediaId?.let {
                                     YoutubePlayer(
                                         ytVideoId = it,
                                         lifecycleOwner = LocalLifecycleOwner.current,
@@ -843,8 +836,8 @@ MainActivity :
                         }
 
                 }
-                DisposableEffect(binder?.player) {
-                    val player = binder?.player ?: return@DisposableEffect onDispose { }
+                DisposableEffect(player) {
+                    val player = player ?: return@DisposableEffect onDispose { }
 
                     if (player.currentMediaItem == null) {
                         if (playerState.isVisible) {
@@ -918,10 +911,9 @@ MainActivity :
                             else -> null
                         }?.let { videoId ->
                             Innertube.song(videoId)?.getOrNull()?.let { song ->
-                                val binder = snapshotFlow { binder }.filterNotNull().first()
                                 withContext(Dispatchers.Main) {
                                     if ( !song.explicit && !Preferences.PARENTAL_CONTROL.value )
-                                        binder?.player?.forcePlay(song.asMediaItem)
+                                        player.forcePlay(song.asMediaItem)
                                     else
                                         Toaster.w( "Parental control is enabled" )
                                 }
@@ -960,7 +952,7 @@ MainActivity :
                 if (shakeCounter >= 1) {
                     //Toast.makeText(applicationContext, "Shaked $shakeCounter times", Toast.LENGTH_SHORT).show()
                     shakeCounter = 0
-                    binder?.player?.playNext()
+                    inject<StatefulPlayer>(StatefulPlayer::class.java).value.playNext()
                 }
 
             }
@@ -1004,7 +996,8 @@ MainActivity :
         try {
             //<editor-fold desc="Stop player">
             // Stop music
-            binder?.player?.run {
+            val player by inject<StatefulPlayer>(StatefulPlayer::class.java)
+            player.run {
                 stop()
                 // FIXME: Android will try to recreate service if
                 //  there's some MediaItems left in the queue .
@@ -1084,8 +1077,6 @@ MainActivity :
 
 
 }
-
-val LocalPlayerServiceBinder = staticCompositionLocalOf<PlayerServiceModern.Binder?> { null }
 
 val LocalPlayerAwareWindowInsets = staticCompositionLocalOf<WindowInsets> { TODO() }
 

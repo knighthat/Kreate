@@ -1,5 +1,6 @@
 package me.knighthat.component.tab
 
+import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -12,12 +13,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.core.net.toFile
 import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import app.kreate.database.models.Song
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +25,7 @@ import kotlinx.coroutines.launch
 import me.knighthat.component.ExportToFileDialog
 import me.knighthat.utils.TimeDateUtils
 import me.knighthat.utils.csv.SongCSV
+import org.koin.java.KoinJavaComponent.inject
 import java.io.OutputStream
 
 /**
@@ -86,7 +86,8 @@ class ExportSongsToCSVDialog private constructor(
                 // Run in background to prevent UI thread
                 // from freezing due to large file.
                 CoroutineScope( Dispatchers.IO ).launch {
-                    val contentResolver = appContext().contentResolver
+                    val context: Context by inject(Context::class.java)
+                    val contentResolver = context.contentResolver
                     val name = playlistName.ifBlank {
                         contentResolver.query(
                             uri,

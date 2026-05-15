@@ -12,7 +12,6 @@ import coil3.imageLoader
 import coil3.request.Disposable
 import coil3.request.allowHardware
 import coil3.toBitmap
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.utils.thumbnail
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -51,7 +50,7 @@ class BitmapProvider(
     }
 
     fun setDefaultBitmap(): Boolean {
-        val isSystemInDarkMode = appContext().resources.configuration.uiMode and
+        val isSystemInDarkMode = context.resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
         if (::defaultBitmap.isInitialized && isSystemInDarkMode == lastIsSystemInDarkMode) return false

@@ -6,11 +6,12 @@ import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import androidx.media3.exoplayer.ExoPlayer
 import app.kreate.android.Preferences
 
 class VolumeObserver(
     private val context: Context,
-    private val player: CustomExoPlayer
+    private val player: StatefulPlayer
 ): ContentObserver(Handler(Looper.getMainLooper()))  {
 
     private val audioManager =

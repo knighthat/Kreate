@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Swipe up to open the queue</string>
     <string name="pinfo_show_icons">Visa info med ikoner</string>
     <string name="format_ms">%1$s ms</string>
-    <string name="minimum_silence_length">Minimum silence length</string>
-    <string name="minimum_silence_length_description">Minsta tid ljudet måste vara tyst för att hoppas över</string>
     <string name="minimum_silence_length_warning">Spelaren måste startas om för att ändringarna ska aktiveras!</string>
     <string name="restart_service">Starta om tjänst</string>
     <string name="player_pause_listen_history">Pausa lyssningshistorik</string>

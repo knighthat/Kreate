@@ -1,6 +1,7 @@
 package app.kreate.android
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Looper
 import android.util.Log
@@ -25,7 +26,6 @@ import app.kreate.constant.SortOrder
 import app.kreate.di.PrefType
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.enums.AlbumSwipeAction
 import it.fast4x.rimusic.enums.AlbumsType
 import it.fast4x.rimusic.enums.AnimatedGradient
@@ -77,7 +77,6 @@ import it.fast4x.rimusic.enums.PlayerTimelineType
 import it.fast4x.rimusic.enums.PlayerType
 import it.fast4x.rimusic.enums.PlaylistSwipeAction
 import it.fast4x.rimusic.enums.PlaylistsType
-import it.fast4x.rimusic.enums.PresetsReverb
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.enums.QueueSwipeAction
 import it.fast4x.rimusic.enums.QueueType
@@ -95,13 +94,13 @@ import it.fast4x.rimusic.enums.UiType
 import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.ui.styling.DefaultDarkColorPalette
 import it.fast4x.rimusic.ui.styling.DefaultLightColorPalette
-import it.fast4x.rimusic.utils.getDeviceVolume
 import me.knighthat.innertube.Constants
 import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Blocking
 import org.jetbrains.annotations.NonBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.koin.java.KoinJavaComponent.inject
 import java.net.Proxy
 
 /**
@@ -566,13 +565,10 @@ sealed class Preferences<T>(
             Enum( preferences, Key.AUDIO_QUALITY, "audioQualityFormat", AudioQualityFormat.Auto )
         }
         val AUDIO_REVERB_PRESET by lazy {
-            Enum( preferences, Key.AUDIO_REVERB_PRESET, "audioReverbPreset", PresetsReverb.NONE )
+            Int(preferences, Key.AUDIO_REVERB_PRESET, "audioReverbPreset", 0)
         }
         val AUDIO_SKIP_SILENCE by lazy {
             Boolean( preferences, Key.AUDIO_SKIP_SILENCE, "skipSilence", false )
-        }
-        val AUDIO_SKIP_SILENCE_LENGTH by lazy {
-            Long( preferences, Key.AUDIO_SKIP_SILENCE_LENGTH, "minimumSilenceDuration", 0L )
         }
         val AUDIO_VOLUME_NORMALIZATION by lazy {
             Boolean( preferences, Key.AUDIO_VOLUME_NORMALIZATION, "volumeNormalization", false )
@@ -608,7 +604,7 @@ sealed class Preferences<T>(
             Float( preferences, Key.AUDIO_VOLUME, "playbackVolume", .5F )
         }
         val AUDIO_DEVICE_VOLUME by lazy {
-            Float( preferences, Key.AUDIO_DEVICE_VOLUME, "playbackDeviceVolume", getDeviceVolume( appContext() ) )
+            Float( preferences, Key.AUDIO_DEVICE_VOLUME, "playbackDeviceVolume", .5f )
         }
         val AUDIO_MEDLEY_DURATION by lazy {
             Float( preferences, Key.AUDIO_MEDLEY_DURATION, "playbackDuration", 0F )
@@ -1642,7 +1638,14 @@ sealed class Preferences<T>(
             key: kotlin.String,
             previousKey: kotlin.String,
             @ColorRes defaultValue: kotlin.Int
-        ): this(sharedPreferences, key, previousKey, Color(ContextCompat.getColor( appContext(), defaultValue )))
+        ): this(
+            sharedPreferences,
+            key,
+            previousKey,
+            Color(
+                ContextCompat.getColor( inject<Context>(Context::class.java).value, defaultValue )
+            )
+        )
 
         override val policy = StructuralEqualityPolicy()
 
@@ -1828,9 +1831,8 @@ sealed class Preferences<T>(
         const val HOME_LIBRARY_TYPE = "HomePlaylistType"
         const val AUDIO_FADE_DURATION = "AudioFadeDuration"
         const val AUDIO_QUALITY = "AudioQuality"
-        const val AUDIO_REVERB_PRESET = "AudioReverbPreset"
+        const val AUDIO_REVERB_PRESET = "AudioReverbPresetValue"
         const val AUDIO_SKIP_SILENCE = "AudioSkipSilence"
-        const val AUDIO_SKIP_SILENCE_LENGTH = "AudioSkipSilenceLength"
         const val AUDIO_VOLUME_NORMALIZATION = "AudioVolumeNormalization"
         const val AUDIO_VOLUME_NORMALIZATION_TARGET = "AudioVolumeNormalizationTarget"
         const val AUDIO_SHAKE_TO_SKIP = "AudioShakeToSkip"

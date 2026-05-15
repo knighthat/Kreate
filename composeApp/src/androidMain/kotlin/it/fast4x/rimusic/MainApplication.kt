@@ -48,9 +48,6 @@ class MainApplication : Application(), SingletonImageLoader.Factory {
 
         setupLogging( koinLogger )
 
-        //DatabaseInitializer()
-        Dependencies.init(this)
-
         Innertube.setProvider( InnertubeProvider() )
 
         // Register network callback
@@ -99,14 +96,5 @@ class MainApplication : Application(), SingletonImageLoader.Factory {
                               )
                           }
                           .build()
-    }
-}
-
-object Dependencies {
-    lateinit var application: MainApplication
-        private set
-
-    internal fun init(application: MainApplication) {
-        this.application = application
     }
 }

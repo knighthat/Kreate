@@ -17,16 +17,17 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.rememberEqualizerLauncher
 import me.knighthat.component.dialog.InputDialogConstraints
+import org.koin.compose.koinInject
 
 @ExperimentalMaterial3Api
 @UnstableApi
@@ -212,31 +213,6 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
             R.string.skip_silent_parts_during_playback
         )
     }
-    animatedEntry(
-        key = "skipSilenceChildren",
-        visible = Preferences.AUDIO_SKIP_SILENCE.value,
-        modifier = Modifier.padding( start = SettingComponents.CHILDREN_PADDING.dp )
-    ) {
-        if( search appearsIn R.string.minimum_silence_length )
-            SettingComponents.SliderEntry(
-                preference = Preferences.AUDIO_SKIP_SILENCE_LENGTH,
-                titleId = R.string.minimum_silence_length,
-                subtitleId = R.string.minimum_silence_length_description,
-                // Allow positive numbers from 0 to 20_000 and empty string
-                constraints = "^(20000|1?\\d{1,4}|[1-9]?\\d{0,3}|0)?$",
-                valueRange = 0f..20_000f,
-                steps = 199,     // 100ms per step
-                onTextDisplay = {
-                    // Float calculation is inaccurate, therefore, when
-                    // converted to Long, some value is imperfect (i.e. 9999)
-                    // This will ceil the value to make it truly 100ms per step
-                    val longValue = (it.toLong() + 99) / 100 * 100
-                    stringResource( R.string.format_ms, longValue )
-                },
-                onValueChangeFinished = { p, v -> p.value = v.toLong() },
-                action = SettingComponents.Action.RESTART_PLAYER_SERVICE
-            )
-    }
     entry( search, R.string.loudness_normalization ) {
         SettingComponents.BooleanEntry(
             Preferences.AUDIO_VOLUME_NORMALIZATION,
@@ -287,11 +263,24 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
             )
     }
     entry( search, R.string.settings_audio_reverb ) {
-        SettingComponents.EnumEntry(
-            Preferences.AUDIO_REVERB_PRESET,
-            titleId = R.string.settings_audio_reverb,
-            subtitleId = R.string.settings_audio_reverb_info_apply_a_depth_effect_to_the_audio,
-            action = SettingComponents.Action.RESTART_PLAYER_SERVICE
+        SettingComponents.ListEntry(
+            preference = Preferences.AUDIO_REVERB_PRESET,
+            title = stringResource( R.string.settings_audio_reverb ),
+            subtitle = stringResource( R.string.settings_audio_reverb_info_apply_a_depth_effect_to_the_audio ),
+            getName = {
+                when( it ) {
+                    0 -> stringResource( R.string.reverb_preset_none )
+                    1 -> stringResource( R.string.reverb_preset_small_room )
+                    2 -> stringResource( R.string.reverb_preset_medium_room )
+                    3 -> stringResource( R.string.reverb_preset_large_room )
+                    4 -> stringResource( R.string.reverb_preset_medium_hall )
+                    5 -> stringResource( R.string.reverb_preset_large_hall )
+                    6 -> stringResource( R.string.reverb_preset_plate )
+                    // Code should never reach this, if it does, something else is wrong
+                    else -> throw IllegalStateException("Unknown reverb preset $it")
+                }
+            },
+            getList = { (0..6).toList().toTypedArray() }
         )
     }
     entry( search, R.string.settings_audio_focus ) {
@@ -372,8 +361,8 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
         }
     }
     entry( search, R.string.equalizer ) {
-        val binder = LocalPlayerServiceBinder.current
-        val launchEqualizer by rememberEqualizerLauncher( { binder?.player?.audioSessionId } )
+        val player: StatefulPlayer = koinInject()
+        val launchEqualizer by rememberEqualizerLauncher( { player.audioSessionId } )
 
         SettingComponents.Text(
             title = stringResource( R.string.equalizer ),

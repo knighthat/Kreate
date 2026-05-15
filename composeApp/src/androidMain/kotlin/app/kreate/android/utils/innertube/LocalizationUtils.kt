@@ -1,11 +1,12 @@
 package app.kreate.android.utils.innertube
 
+import android.content.Context
 import android.telephony.TelephonyManager
 import androidx.core.content.getSystemService
 import app.kreate.android.Preferences
 import app.kreate.constant.Language
-import it.fast4x.rimusic.appContext
 import me.knighthat.innertube.request.Localization
+import org.koin.java.KoinJavaComponent.inject
 import java.util.Locale
 
 
@@ -35,12 +36,13 @@ val GEO_LOCATION: String
     }
 
 fun getSystemCountryCode(): String {
+    val context: Context by inject(Context::class.java)
     var countryCode = Locale.getDefault().country
     if( countryCode !in Locale.getISOCountries() )
-        countryCode = appContext().getSystemService<TelephonyManager>()
-                                  ?.networkCountryIso
-                                  ?.uppercase()
-                                  .orEmpty()
+        countryCode = context.getSystemService<TelephonyManager>()
+                             ?.networkCountryIso
+                             ?.uppercase()
+                             .orEmpty()
 
     return countryCode.ifBlank { "US" }
 }

@@ -26,7 +26,8 @@ class CoilBitmapLoader(
 
     private val context: Context by inject()
 
-    override fun supportsMimeType(mimeType: String): Boolean = mimeType.startsWith("image/")
+    // Coil3 supports most formats from YT
+    override fun supportsMimeType(mimeType: String): Boolean = true
 
     override fun decodeBitmap(data: ByteArray): ListenableFuture<Bitmap> =
         scope.future(Dispatchers.IO) {

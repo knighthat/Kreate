@@ -10,23 +10,18 @@ import androidx.compose.runtime.remember
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import kotlinx.coroutines.flow.first
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 
 @OptIn(UnstableApi::class)
 @Composable
-fun ApplyDiscoverToQueue() {
+fun ApplyDiscoverToQueue( player: StatefulPlayer = koinInject() ) {
     /*   DISCOVER  */
     val discoverIsEnabled by Preferences.ENABLE_DISCOVER
     if (!discoverIsEnabled) return
-
-    val binder = LocalPlayerServiceBinder.current
-
-    binder?.player ?: return
-
-    val player = binder.player
 
     var listMediaItemsIndex = remember {
         mutableListOf<Int>()
@@ -53,7 +48,7 @@ fun ApplyDiscoverToQueue() {
                 val mediacount = listMediaItemsIndex.size - 1
                 listMediaItemsIndex.sort()
                 for (i in mediacount.downTo(0)) {
-                    binder.player.removeMediaItem(listMediaItemsIndex[i])
+                    player.removeMediaItem(listMediaItemsIndex[i])
                 }
                 Toaster.s(
                     R.string.discover_has_been_applied_to_queue,

@@ -62,10 +62,10 @@ import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
 import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BackgroundProgress
 import it.fast4x.rimusic.enums.MiniPlayerType
@@ -90,6 +90,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import kotlin.math.absoluteValue
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -102,36 +103,35 @@ fun MiniPlayer(
     hidePlayer: () -> Unit,
     navController: NavController? = null,
 ) {
-    val binder = LocalPlayerServiceBinder.current
-    binder?.player ?: return
+    val player: StatefulPlayer = koinInject()
 
     val context = LocalContext.current
 
     var nullableMediaItem by remember {
         mutableStateOf(
-            binder.player.currentMediaItem,
+            player.currentMediaItem,
             neverEqualPolicy()
         )
     }
-    var shouldBePlaying by remember { mutableStateOf(binder.player.shouldBePlaying) }
+    var shouldBePlaying by remember { mutableStateOf(player.shouldBePlaying) }
     val hapticFeedback = LocalHapticFeedback.current
 
     var playerError by remember {
-        mutableStateOf<PlaybackException?>(binder.player.playerError)
+        mutableStateOf<PlaybackException?>(player.playerError)
     }
 
-    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+    val currentMediaItem by player.currentMediaItemState.collectAsState()
     val mediaItem = currentMediaItem ?: return
 
-    binder.player.DisposableListener {
+    player.DisposableListener {
         object : Player.Listener {
             override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-                shouldBePlaying = if (playerError == null) binder.player.shouldBePlaying else false
+                shouldBePlaying = if (playerError == null) player.shouldBePlaying else false
             }
 
             override fun onPlaybackStateChanged(playbackState: Int) {
-                playerError = binder.player.playerError
-                shouldBePlaying = if (playerError == null) binder.player.shouldBePlaying else false
+                playerError = player.playerError
+                shouldBePlaying = if (playerError == null) player.shouldBePlaying else false
             }
 
             override fun onPlayerError(playbackException: PlaybackException) {
@@ -155,7 +155,7 @@ fun MiniPlayer(
         }
     }
 
-    val positionAndDuration by binder.player.positionAndDurationState()
+    val positionAndDuration by player.positionAndDurationState()
 
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
@@ -163,10 +163,10 @@ fun MiniPlayer(
                 if (miniPlayerType == MiniPlayerType.Essential)
                     toggleLike()
                 else
-                    binder.player.seekToPrevious()
+                    player.seekToPrevious()
             else
                 if (value == SwipeToDismissBoxValue.EndToStart)
-                    binder.player.seekToNext()
+                    player.seekToNext()
 
             hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
 
@@ -261,8 +261,8 @@ fun MiniPlayer(
                             if (dragAmount < 0) showPlayer()
                             else if (dragAmount > 20) {
                                 if (!disableClosingPlayerSwipingDown) {
-                                    binder.stopRadio()
-                                    binder.player.clearMediaItems()
+                                    player.stopRadio()
+                                    player.clearMediaItems()
                                     hidePlayer()
                                     runCatching {
                                         context.stopService(context.intent<PlayerServiceModern>())
@@ -306,7 +306,7 @@ fun MiniPlayer(
                     modifier = Modifier.clip( thumbnailShape() )
                                        .size( 48.dp )
                 )
-                NowPlayingSongIndicator(mediaItem.mediaId, binder.player)
+                NowPlayingSongIndicator(mediaItem.mediaId, player)
             }
 
             Column(
@@ -362,7 +362,7 @@ fun MiniPlayer(
                     icon = R.drawable.play_skip_back,
                     color = colorPalette().iconButtonPlayer,
                     onClick = {
-                        binder.player.playPrevious()
+                        player.playPrevious()
                         if (effectRotationEnabled) isRotated = !isRotated
                     },
                     modifier = Modifier
@@ -376,9 +376,9 @@ fun MiniPlayer(
                         .clip(RoundedCornerShape(playPauseRoundness))
                         .clickable {
                             if (shouldBePlaying) {
-                                binder.gracefulPause()
+                                player.pause()
                             } else {
-                                binder.gracefulPlay()
+                                player.play()
                             }
                             if (effectRotationEnabled) isRotated = !isRotated
                         }
@@ -400,7 +400,7 @@ fun MiniPlayer(
                     icon = R.drawable.play_skip_forward,
                     color = colorPalette().iconButtonPlayer,
                     onClick = {
-                        binder.player.playNext()
+                        player.playNext()
                         if (effectRotationEnabled) isRotated = !isRotated
                     },
                     modifier = Modifier

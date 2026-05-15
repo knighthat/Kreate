@@ -8,8 +8,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.MenuState
 
@@ -17,15 +15,13 @@ import it.fast4x.rimusic.ui.components.MenuState
 class DeleteHiddenSongsDialog private constructor(
     activeState: MutableState<Boolean>,
     menuState: MenuState,
-    binder: PlayerServiceModern.Binder?
-): DeleteSongDialog(activeState, menuState, binder) {
+): DeleteSongDialog(activeState, menuState) {
 
     companion object {
         @Composable
         operator fun invoke() = DeleteHiddenSongsDialog(
             remember { mutableStateOf(false) },
-            LocalMenuState.current,
-            LocalPlayerServiceBinder.current
+            LocalMenuState.current
         )
     }
 

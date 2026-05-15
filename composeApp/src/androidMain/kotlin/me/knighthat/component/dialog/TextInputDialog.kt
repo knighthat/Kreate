@@ -1,5 +1,6 @@
 package me.knighthat.component.dialog
 
+import android.content.Context
 import androidx.annotation.CallSuper
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandIn
@@ -21,18 +22,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import app.kreate.android.R
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.utils.conditional
 import org.intellij.lang.annotations.MagicConstant
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 abstract class TextInputDialog(
     @MagicConstant(valuesFromClass = InputDialogConstraints::class)
     constraint: String
-): InputDialog {
+): InputDialog, KoinComponent {
 
     private val constraintRegex: Regex = Regex( constraint )
+    private val context: Context by inject()
 
     /**
      * Whether the [value] is allow to be empty
@@ -47,7 +50,7 @@ abstract class TextInputDialog(
     override fun onValueChanged(newValue: String): Boolean {
         val result = newValue.matches( constraintRegex )
         if( !result )
-            errorMessage = appContext().resources.getString( R.string.invalid_input )
+            errorMessage = context.resources.getString( R.string.invalid_input )
         else
             errorMessage = ""
 
@@ -57,7 +60,7 @@ abstract class TextInputDialog(
     @CallSuper
     override fun onSet( newValue: String ) {
         if( !allowEmpty && newValue.isEmpty() )
-            errorMessage = appContext().resources.getString( R.string.value_cannot_be_empty )
+            errorMessage = context.resources.getString( R.string.value_cannot_be_empty )
     }
 
     @Composable

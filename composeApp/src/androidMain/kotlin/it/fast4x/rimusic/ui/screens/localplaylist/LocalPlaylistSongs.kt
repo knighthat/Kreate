@@ -51,9 +51,11 @@ import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
 import app.kreate.android.themed.rimusic.component.ItemSelector
@@ -66,6 +68,7 @@ import app.kreate.android.utils.shallowCompare
 import app.kreate.constant.PlaylistSongSortBy
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongPlaylistMap
+import app.kreate.di.CacheType
 import app.kreate.util.cleanPrefix
 import app.kreate.util.toDuration
 import co.touchlab.kermit.Logger
@@ -78,8 +81,6 @@ import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.NextBody
 import it.fast4x.innertube.requests.relatedSongs
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.UiType
@@ -136,6 +137,8 @@ import me.knighthat.component.tab.LikeComponent
 import me.knighthat.component.tab.Locator
 import me.knighthat.component.tab.SongShuffler
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
+import org.koin.java.KoinJavaComponent.inject
 import kotlin.time.Duration
 
 
@@ -155,7 +158,7 @@ fun LocalPlaylistSongs(
 ) {
     // Essentials
     val context = LocalContext.current
-    val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val hapticFeedback = LocalHapticFeedback.current
     val (colorPalette, typography) = LocalAppearance.current
     val lazyListState = rememberLazyListState()
@@ -210,10 +213,10 @@ fun LocalPlaylistSongs(
     }
     val renumberDialog = Reposition(playlistId)
     val downloadAllDialog = remember {
-        DownloadAllDialog( binder, context, ::getSongs )
+        DownloadAllDialog( context, ::getSongs )
     }
     val deleteDownloadsDialog = remember {
-        DeleteAllDownloadedDialog( binder, context, ::getSongs )
+        DeleteAllDownloadedDialog(::getSongs)
     }
     val editThumbnailLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
@@ -246,13 +249,13 @@ fun LocalPlaylistSongs(
     }
 
     val playNext = PlayNext {
-        binder?.player?.addNext( getMediaItems(), appContext() )
+        player.addNext( getMediaItems(), context )
 
         // Turn of selector clears the selected list
         itemSelector.isActive = false
     }
     val enqueue = Enqueue {
-        binder?.player?.enqueue( getMediaItems(), context )
+        player.enqueue( getMediaItems(), context )
 
         // Turn of selector clears the selected list
         itemSelector.isActive = false
@@ -279,7 +282,7 @@ fun LocalPlaylistSongs(
     val listenOnYT = ListenOnYouTube {
         val browseId = playlist?.browseId?.removePrefix( "VL" )
 
-        binder?.player?.pause()
+        player.pause()
         uriHandler.openUri( "https://youtube.com/playlist?list=$browseId" )
     }
     val resetCache = ResetCache( ::getSongs )
@@ -442,7 +445,7 @@ fun LocalPlaylistSongs(
 
     val playlistNotMonthlyType = playlist?.isMonthly == false
 
-    val currentMediaItem by binder.player.currentMediaItemState.collectAsState()
+    val currentMediaItem by player.currentMediaItemState.collectAsState()
     val songItemValues = remember( colorPalette, typography ) {
         SongItem.Values.from( colorPalette, typography )
     }
@@ -674,7 +677,7 @@ fun LocalPlaylistSongs(
                     SwipeableQueueItem(
                         mediaItem = song.asMediaItem,
                         onPlayNext = {
-                            binder?.player?.addNext(song.asMediaItem)
+                            player.addNext(song.asMediaItem)
                         },
                         onRemoveFromQueue = {
                             Database.asyncTransaction {
@@ -686,7 +689,8 @@ fun LocalPlaylistSongs(
                             )
                         },
                         onDownload = {
-                            binder?.cache?.removeResource(song.asMediaItem.mediaId)
+                            val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
+                            cache.removeResource(song.asMediaItem.mediaId)
                             Database.asyncTransaction {
                                 formatTable.updateContentLengthOf( song.id )
                             }
@@ -700,13 +704,11 @@ fun LocalPlaylistSongs(
                             }
                         },
                         onEnqueue = {
-                            binder?.player?.enqueue(song.asMediaItem)
+                            player.enqueue(song.asMediaItem)
                         },
                     ) {
                         SongItem.Render(
                             song = song,
-                            context = context,
-                            binder = binder,
                             hapticFeedback = hapticFeedback,
                             isPlaying = song.shallowCompare( currentMediaItem ),
                             values = songItemValues,
@@ -744,16 +746,16 @@ fun LocalPlaylistSongs(
                                 }
                             },
                             onClick = {
-                                binder.stopRadio()
+                                player.stopRadio()
 
                                 val selectedSongs = getSongs()
                                 if( song in selectedSongs )
-                                    binder.player.forcePlayAtIndex(
+                                    player.forcePlayAtIndex(
                                         selectedSongs.fastMap( Song::asMediaItem ),
                                         selectedSongs.indexOf( song )
                                     )
                                 else
-                                    binder.player.forcePlayAtIndex(
+                                    player.forcePlayAtIndex(
                                         itemsOnDisplay.fastMap( Song::asMediaItem ),
                                         index
                                     )
@@ -783,8 +785,8 @@ fun LocalPlaylistSongs(
                 onClick = {
                     getMediaItems().let { songs ->
                         if (songs.isNotEmpty()) {
-                            binder?.stopRadio()
-                            binder?.player
+                            player.stopRadio()
+                            player
                                   ?.forcePlayFromBeginning( songs.shuffled() )
                         }
                     }

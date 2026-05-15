@@ -1,5 +1,6 @@
 package me.knighthat.utils
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -11,11 +12,12 @@ import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import app.kreate.android.R
 import es.dmoral.toasty.Toasty
-import it.fast4x.rimusic.appContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.intellij.lang.annotations.MagicConstant
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 /**
  * This singleton handles displaying **toast** to users.
@@ -30,7 +32,9 @@ import org.intellij.lang.annotations.MagicConstant
  * Future plans:
  * - Handles console outputs for debugging
  */
-object Toaster {
+object Toaster : KoinComponent{
+
+    private val context: Context by inject()
 
     enum class Type(
         @field:ColorInt val background: Int,
@@ -66,7 +70,7 @@ object Toaster {
         val icon: Drawable by lazy {
             when( this ) {
                 NORMAL -> ColorDrawable(Color.TRANSPARENT)
-                else -> AppCompatResources.getDrawable( appContext(), iconId )!!
+                else -> AppCompatResources.getDrawable( context, iconId )!!
             }
         }
     }
@@ -82,7 +86,7 @@ object Toaster {
     ) {
         CoroutineScope( Dispatchers.Main ).launch {
             Toasty.custom(
-                appContext(), message, icon, background, foreground, duration, icon != Type.NORMAL.icon, true
+                context, message, icon, background, foreground, duration, icon != Type.NORMAL.icon, true
             ).show()
         }
     }
@@ -102,7 +106,7 @@ object Toaster {
         @MagicConstant(valuesFromClass = Toast::class) duration: Int = Toast.LENGTH_SHORT,
         icon: Drawable = type.icon,
         vararg formatArgs: Any?
-    ) = this.toast( appContext().getString( messageId, *formatArgs ), type, duration, icon )
+    ) = this.toast( context.getString( messageId, *formatArgs ), type, duration, icon )
 
     @MainThread
     fun toast(
@@ -111,10 +115,10 @@ object Toaster {
         type: Type = Type.NORMAL,
         @MagicConstant(valuesFromClass = Toast::class) duration: Int = Toast.LENGTH_SHORT
     ) = this.toast(
-        message = appContext().getString( messageId ),
+        message = context.getString( messageId ),
         type = type,
         duration = duration,
-        icon = AppCompatResources.getDrawable( appContext(), iconId )!!
+        icon = AppCompatResources.getDrawable( context, iconId )!!
     )
 
     fun n( message: String, @MagicConstant(valuesFromClass = Toast::class) duration: Int = Toast.LENGTH_SHORT ) =

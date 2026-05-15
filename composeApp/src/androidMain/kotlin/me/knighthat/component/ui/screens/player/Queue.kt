@@ -15,6 +15,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import co.touchlab.kermit.Logger
 import it.fast4x.compose.reordering.ReorderingState
 import it.fast4x.rimusic.enums.QueueLoopType
@@ -82,7 +83,7 @@ class Repeat private constructor(
 @SuppressLint("ComposableNaming")
 @Composable
 fun ShuffleQueue(
-    player: ExoPlayer,
+    player: StatefulPlayer,
     reorderingState: ReorderingState
 ): MenuIcon = object: MenuIcon, Descriptive {
     override val iconId: Int = R.drawable.shuffle

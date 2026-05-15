@@ -20,14 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import co.touchlab.kermit.Logger
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.service.FakeException
 import it.fast4x.rimusic.service.LoginRequiredException
 import it.fast4x.rimusic.service.NoInternetException
@@ -45,16 +44,16 @@ import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.currentWindow
 import it.fast4x.rimusic.utils.medium
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 import java.net.UnknownHostException
 import java.nio.channels.UnresolvedAddressException
 
 @OptIn(UnstableApi::class)
 @Composable
-fun PlayerError(error: PlaybackException) {
-    val context = LocalContext.current
-    val binder = LocalPlayerServiceBinder.current
-    //val player = binder?.player ?: return
-
+fun PlayerError(
+    error: PlaybackException,
+    player: StatefulPlayer = koinInject()
+) {
     val localMusicFileNotFoundError = stringResource(R.string.error_local_music_not_found)
     val networkerror = stringResource(R.string.error_a_network_error_has_occurred)
     val notfindplayableaudioformaterror =
@@ -83,7 +82,7 @@ fun PlayerError(error: PlaybackException) {
     if (errorCounter < 2) {
         Logger.e( error.cause?.cause, "PlaybackErrorHandler" ) { "Playback error" }
         Toaster.w(
-            if (binder?.player?.currentWindow?.mediaItem?.isLocal == true)
+            if (player.currentWindow?.mediaItem?.isLocal == true)
                 localMusicFileNotFoundError
             else when (error.cause?.cause) {
                 is UnresolvedAddressException, is UnknownHostException -> networkerror

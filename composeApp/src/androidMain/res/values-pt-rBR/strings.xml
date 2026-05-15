@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done">Terminar</string>
     <string name="hidesong">Você realmente quer esconder essa música? O tempo de reprodução e a memória transitória serão apagados. Esta ação é irreversível.</string>
@@ -523,8 +523,6 @@
     <string name="swipe_up_to_open_the_queue">Deslize para cima para abrir a fila</string>
     <string name="pinfo_show_icons">Mostrar informações com ícones</string>
     <string name="format_ms">%1$s Ms</string>
-    <string name="minimum_silence_length">Duração mínima do silêncio</string>
-    <string name="minimum_silence_length_description">O tempo mínimo que a música precisa ser silenciosa para ser pulada</string>
     <string name="minimum_silence_length_warning">O reprodutor precisa ser reiniciado para as mudanças serem efetivas!</string>
     <string name="restart_service">Reiniciar serviço</string>
     <string name="player_pause_listen_history">Pausar histórico de escuta</string>
@@ -864,8 +862,8 @@
     <string name="word_disabled">desativado</string>
     <string name="settings_live_wallpaper_reset_warning"> AVISO: isto irá voltar para o papel de parede padrão do fabricante. Infelizmente, é difícil reverter para seu papel de parede anterior</string>
     <string name="ok">ok</string>
-    <string name="setting_entry_thumbnail_size">Thumbnail size</string>
-    <string name="warning_end_of_list">End of list</string>
+    <string name="setting_entry_thumbnail_size">Tamanho da miniatura</string>
+    <string name="warning_end_of_list">Fim da lista</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
     <string name="doh_none">None</string>
     <string name="doh_cloudflare">Cloudflare</string>
@@ -880,8 +878,34 @@
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>
     <string name="error_failed_to_verify_doh">Failed to verify DoH</string>
-    <string name="setting_entry_test_doh">Test DoH</string>
-    <string name="success_doh_verified">DoH verified successfully</string>
-    <string name="success_discord_log_out">Successfully logged out</string>
-    <string name="error_discord_log_out">Log out failed</string>
+    <string name="setting_entry_test_doh">Testar DoH</string>
+    <string name="success_doh_verified">DoH verificado com sucesso</string>
+    <string name="success_discord_log_out">Deslogado com sucesso</string>
+    <string name="error_discord_log_out">Falha ao deslogar</string>
+    <string name="info_song_already_downloaded">Música já está baixada</string>
+    <string name="error_loudness_normalization_failed">Loudness normalization failed</string>
+    <string name="error_bass_boost_failed">Bass boost failed</string>
+    <string name="error_reverb_failed">Failed to apply reverb</string>
+    <string name="reverb_preset_none">None</string>
+    <string name="reverb_preset_small_room">Small room</string>
+    <string name="reverb_preset_medium_room">Medium room</string>
+    <string name="reverb_preset_large_room">Large room</string>
+    <string name="reverb_preset_medium_hall">Medium hall</string>
+    <string name="reverb_preset_large_hall">Large hall</string>
+    <string name="reverb_preset_plate">Plate</string>
+    <string name="error_failed_to_set_wallpaper">Falha ao definir o papel de parede</string>
+    <string name="word_disable">Disable</string>
+    <string name="live_wallpaper_home_screen">Home screen</string>
+    <string name="live_wallpaper_lock_screen">Lock screen</string>
+    <string name="live_wallpaper_both">Both</string>
+    <string name="warning_failed_to_restore_original_wallpaper">Failed to restore wallpaper, fallback to manufacturer wallpaper</string>
+    <string name="warning_failed_to_restore_original_home_screen_wallpaper">Failed to restore home screen wallpaper, fallback to manufacturer wallpaper</string>
+    <string name="warning_failed_to_restore_original_lock_screen_wallpaper">Failed to restore lock screen wallpaper, fallback to manufacturer wallpaper</string>
+    <string name="word_instantly">Instantly</string>
+    <string name="setting_entry_restore_home_screen_wallpaper">Restore home screen wallpaper to</string>
+    <string name="setting_entry_restore_lock_screen_wallpaper">Restore lock screen wallpaper to</string>
+    <string name="setting_entry_restore_wallpaper">Restore wallpaper to</string>
+    <string name="setting_description_choose_image">Click to choose image</string>
+    <string name="setting_description_remove_image">Click to remove image</string>
+    <string name="error_failed_to_update_widget">Failed to update widget</string>
 </resources>

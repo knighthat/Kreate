@@ -22,6 +22,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.Headers.Companion.toHeaders
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.koin.java.KoinJavaComponent.inject
 import java.time.Instant
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -318,8 +319,9 @@ class PoTokenWebView private constructor(
             return@runCatching response.body!!.string()
         }
 
-        suspend fun newPoTokenGenerator(context: Context): PoTokenWebView {
+        suspend fun newPoTokenGenerator(): PoTokenWebView {
             return suspendCancellableCoroutine { continuation ->
+                val context: Context by inject(Context::class.java)
                 Handler(Looper.getMainLooper()).post {
                     val poTokenWebView = PoTokenWebView(context, continuation)
                     poTokenWebView.loadHtmlAndObtainBotguard(context)

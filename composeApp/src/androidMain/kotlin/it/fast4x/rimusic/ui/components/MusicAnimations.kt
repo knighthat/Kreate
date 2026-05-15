@@ -24,10 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
-import it.fast4x.rimusic.LocalPlayerServiceBinder
+import app.kreate.android.service.player.StatefulPlayer
 import it.fast4x.rimusic.enums.MusicAnimationType
 import it.fast4x.rimusic.utils.DisposableListener
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -36,13 +37,11 @@ fun MusicAnimation(
     modifier: Modifier = Modifier,
     barWidth: Dp = 6.dp,
     cornerRadius: Dp = 8.dp,
-    show: Boolean = true
+    show: Boolean = true,
+    player: StatefulPlayer = koinInject()
 ) {
-    //if (!show) return
-
-    val binder = LocalPlayerServiceBinder.current
-    var isPlayRunning by remember { mutableStateOf(binder?.player?.isPlaying) }
-    binder?.player?.DisposableListener {
+    var isPlayRunning by remember { mutableStateOf(player.isPlaying) }
+    player.DisposableListener {
         object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 isPlayRunning = isPlaying

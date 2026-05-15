@@ -29,7 +29,6 @@ import app.kreate.android.utils.isLocalFile
 import co.touchlab.kermit.Logger
 import coil3.imageLoader
 import coil3.request.SuccessResult
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
@@ -136,7 +135,7 @@ abstract class ChangeThumbnail(
     @SuppressLint("MissingSuperCall")       // Handled differently
     override fun onSet(newValue: String ) {
         if( uri.toString().isBlank() && newValue.isBlank() ) {
-            errorMessage = appContext().resources.getString( R.string.value_cannot_be_empty )
+            errorMessage = context.resources.getString( R.string.value_cannot_be_empty )
             return
         }
 

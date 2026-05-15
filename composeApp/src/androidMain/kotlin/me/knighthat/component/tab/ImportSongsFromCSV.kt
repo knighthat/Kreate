@@ -1,5 +1,6 @@
 package me.knighthat.component.tab
 
+import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -17,7 +18,6 @@ import app.kreate.util.readableText
 import app.kreate.util.toDuration
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import it.fast4x.rimusic.Database
-import it.fast4x.rimusic.appContext
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import me.knighthat.component.ImportFromFile
 import me.knighthat.utils.Toaster
 import me.knighthat.utils.csv.SongCSV
+import org.koin.java.KoinJavaComponent.inject
 import java.io.InputStream
 
 /**
@@ -115,22 +116,23 @@ class ImportSongsFromCSV(
                 // Run in background to prevent UI thread
                 // from freezing due to large file.
                 CoroutineScope( Dispatchers.IO ).launch {
+                    val context: Context by inject(Context::class.java)
                     // Songs with no playlist
                     val straySongs = mutableListOf<Song>()
                     val combos = mutableMapOf<Playlist, List<Song>>()
 
                     try {
-                        appContext().contentResolver
-                                    .openInputStream( uri )
-                                    ?.use( ::parseFromCsvFile )       // Use [use] because it closes stream on exit
-                                    ?.let( ::processSongs )
-                                    ?.forEach { (playlist, songs) ->
-                                        if( playlist.first.isNotBlank() ) {
-                                            val realPlaylist = Playlist(name = playlist.first, browseId = playlist.second)
-                                            combos[realPlaylist] = songs
-                                        } else
-                                            straySongs.addAll( songs )
-                                    }
+                        context.contentResolver
+                               .openInputStream( uri )
+                               ?.use( ::parseFromCsvFile )       // Use [use] because it closes stream on exit
+                               ?.let( ::processSongs )
+                               ?.forEach { (playlist, songs) ->
+                                   if( playlist.first.isNotBlank() ) {
+                                       val realPlaylist = Playlist(name = playlist.first, browseId = playlist.second)
+                                       combos[realPlaylist] = songs
+                                   } else
+                                       straySongs.addAll( songs )
+                               }
 
                         Database.asyncTransaction {
                             songTable.upsert( straySongs )

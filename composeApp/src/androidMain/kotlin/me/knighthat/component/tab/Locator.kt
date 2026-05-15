@@ -12,20 +12,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.database.models.Song
 import co.touchlab.kermit.Logger
-import it.fast4x.rimusic.LocalPlayerServiceBinder
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.DynamicColor
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import kotlinx.coroutines.runBlocking
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
 
 @UnstableApi
 class Locator private constructor(
     firstColorState: MutableState<Boolean>,
-    private val binder: PlayerServiceModern.Binder?,
+    private val player: StatefulPlayer,
     private val scrollableState: ScrollableState,
     private val offset: Int,
     private val getSongs: () -> List<Song>
@@ -36,16 +36,16 @@ class Locator private constructor(
         operator fun invoke(
             scrollableState: ScrollableState,
             getSongs: () -> List<Song>,
-            offset: Int = 0
+            offset: Int = 0,
+            player: StatefulPlayer = koinInject()
         ): Locator {
-            val binder = LocalPlayerServiceBinder.current
-            val mediaItem = binder?.player?.currentMediaItem
+            val mediaItem = player.currentMediaItem
 
             return Locator(
                 firstColorState = remember( mediaItem ) {
                     mutableStateOf(mediaItem != null)
                 },
-                binder = binder,
+                player = player,
                 scrollableState = scrollableState,
                 offset = offset,
                 getSongs = getSongs
@@ -54,7 +54,7 @@ class Locator private constructor(
     }
 
     val position: Int
-        get() = getSongs().map( Song::id ).indexOf( binder?.player?.currentMediaItem?.mediaId ) + offset
+        get() = getSongs().map( Song::id ).indexOf( player.currentMediaItem?.mediaId ) + offset
 
     override val iconId: Int = R.drawable.locate
     override val messageId: Int = R.string.info_find_the_song_that_is_playing
@@ -66,7 +66,7 @@ class Locator private constructor(
 
     override fun onShortClick() {
         if( isFirstColor ) {
-            val mediaItem = binder?.player?.currentMediaItem
+            val mediaItem = player.currentMediaItem
             // Capture songs here to prevent unwanted outcome
             // when a list is captured multiple times
             val songs = getSongs()

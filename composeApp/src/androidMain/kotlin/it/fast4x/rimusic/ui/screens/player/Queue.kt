@@ -50,22 +50,24 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.media3.common.MediaItem
+import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.playlist.PositionLock
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persist
 import it.fast4x.compose.persist.persistList
 import it.fast4x.compose.reordering.draggedItem
 import it.fast4x.compose.reordering.rememberReorderingState
 import it.fast4x.compose.reordering.reorder
-import it.fast4x.rimusic.LocalPlayerServiceBinder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.enums.QueueType
@@ -97,6 +99,8 @@ import me.knighthat.component.ui.screens.player.QueueArrow
 import me.knighthat.component.ui.screens.player.Repeat
 import me.knighthat.component.ui.screens.player.ShuffleQueue
 import me.knighthat.utils.Toaster
+import org.koin.compose.koinInject
+import org.koin.java.KoinJavaComponent.inject
 
 
 @ExperimentalTextApi
@@ -113,10 +117,9 @@ fun Queue(
     // Essentials
     val context = LocalContext.current
     val windowInsets = WindowInsets.systemBars
-    val binder = LocalPlayerServiceBinder.current ?: return
+    val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
-    val player = binder.player
     val menuState = LocalMenuState.current
 
     val rippleIndication = ripple(bounded = false)
@@ -273,10 +276,11 @@ fun Queue(
                         SwipeableQueueItem(
                             mediaItem = mediaItem,
                             onPlayNext = {
-                                binder.player.moveMediaItem( index, binder.player.currentMediaItemIndex + 1 )
+                                player.moveMediaItem( index, player.currentMediaItemIndex + 1 )
                             },
                             onDownload = {
-                                binder.cache.removeResource(song.id)
+                                val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
+                                cache.removeResource(song.id)
                                 if (!isLocal)
                                     manageDownload(
                                         context = context,
@@ -291,13 +295,11 @@ fun Queue(
                                 )
                             },
                             onEnqueue = {
-                                binder.player.enqueue(mediaItem)
+                                player.enqueue(mediaItem)
                             }
                         ) {
                             SongItem.Render(
                                 song = song,
-                                context = context,
-                                binder = binder,
                                 hapticFeedback = hapticFeedback,
                                 isPlaying = song.shallowCompare( currentMediaItem ),
                                 values = songItemValues,
@@ -332,7 +334,7 @@ fun Queue(
                     }
                 }
 
-                if( binder.isLoadingRadio )
+                if( player.isLoadingRadio() )
                     items( 3 ) {
                         SongItem.Placeholder()
                     }

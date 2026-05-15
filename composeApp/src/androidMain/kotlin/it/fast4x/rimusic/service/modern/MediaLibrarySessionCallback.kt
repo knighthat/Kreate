@@ -2,6 +2,9 @@ package it.fast4x.rimusic.service.modern
 
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
 import android.os.Bundle
 import androidx.annotation.DrawableRes
@@ -12,7 +15,9 @@ import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
@@ -23,9 +28,12 @@ import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.player.ExoPlayerListener
+import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import app.kreate.util.cleanPrefix
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
@@ -36,6 +44,7 @@ import it.fast4x.innertube.models.bodies.SearchBody
 import it.fast4x.innertube.requests.searchPage
 import it.fast4x.innertube.utils.from
 import it.fast4x.rimusic.Database
+import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.enums.StatisticsType
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.MediaSessionConstants.ID_CACHED
@@ -54,23 +63,41 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 @UnstableApi
 class MediaLibrarySessionCallback(
     val context: Context,
     val database: Database,
     val downloadHelper: MyDownloadHelper
-) : MediaLibrarySession.Callback {
+) : MediaLibrarySession.Callback, KoinComponent {
+
+    private val cache: Cache by inject(CacheType.CACHE)
+
     private val scope = CoroutineScope(Dispatchers.Main) + Job()
-    lateinit var binder: PlayerServiceModern.Binder
-    var toggleLike: () -> Unit = {}
-    var toggleDownload: () -> Unit = {}
-    var toggleRepeat: () -> Unit = {}
-    var toggleShuffle: () -> Unit = {}
-    var startRadio: () -> Unit = {}
-    var callPause: () -> Unit = {}
-    var actionSearch: () -> Unit = {}
+    lateinit var listener: ExoPlayerListener
     var searchedSongs: List<Song> = emptyList()
+
+    fun toggleLike( player: Player ) {
+        val mediaItem = player.currentMediaItem ?: return
+        val player: StatefulPlayer by inject()
+        Database.asyncTransaction {
+            songTable.rotateLikeState( mediaItem.mediaId )
+                     .also {
+                         listener.updateMediaControl( context, player )
+                     }
+        }
+
+        MyDownloadHelper.autoDownloadWhenLiked( mediaItem )
+    }
+
+    fun onSearch() {
+        val intent = Intent(context.applicationContext, MainActivity::class.java)
+                .setAction( MainActivity.action_search )
+               .setFlags(FLAG_ACTIVITY_NEW_TASK + FLAG_ACTIVITY_CLEAR_TASK)
+        context.startActivity(  intent )
+    }
 
     override fun onConnect(
         session: MediaSession,
@@ -140,13 +167,14 @@ class MediaLibrarySessionCallback(
         customCommand: SessionCommand,
         args: Bundle,
     ): ListenableFuture<SessionResult> {
+        val player = session.player as StatefulPlayer
         when (customCommand.customAction) {
-            MediaSessionConstants.ACTION_TOGGLE_LIKE -> toggleLike()
-            MediaSessionConstants.ACTION_TOGGLE_DOWNLOAD -> toggleDownload()
-            MediaSessionConstants.ACTION_TOGGLE_SHUFFLE -> toggleShuffle()
-            MediaSessionConstants.ACTION_TOGGLE_REPEAT_MODE -> toggleRepeat()
-            MediaSessionConstants.ACTION_START_RADIO -> startRadio()
-            MediaSessionConstants.ACTION_SEARCH -> actionSearch()
+            MediaSessionConstants.ACTION_TOGGLE_LIKE -> toggleLike( player )
+            MediaSessionConstants.ACTION_TOGGLE_DOWNLOAD -> player.downloadCurrentMediaItem()
+            MediaSessionConstants.ACTION_TOGGLE_SHUFFLE -> player.toggleShuffleMode()
+            MediaSessionConstants.ACTION_TOGGLE_REPEAT_MODE -> player.cycleRepeatMode()
+            MediaSessionConstants.ACTION_START_RADIO -> player.startRadio()
+            MediaSessionConstants.ACTION_SEARCH -> onSearch()
         }
         return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
     }
@@ -329,7 +357,7 @@ class MediaLibrarySessionCallback(
                                                  .map { list ->
                                                      list.filter {
                                                              val contentLength = it.format.contentLength
-                                                             contentLength != null && binder.cache.isCached( it.song.id, 0L, contentLength )
+                                                             contentLength != null && cache.isCached( it.song.id, 0L, contentLength )
                                                          }
                                                          .map( FormatWithSong::song )
                                                          .reversed()
@@ -431,7 +459,7 @@ class MediaLibrarySessionCallback(
                                              .map { list ->
                                                  list.fastFilter {
                                                      val contentLength = it.format.contentLength
-                                                     contentLength != null && binder.cache.isCached( it.song.id, 0L, contentLength )
+                                                     contentLength != null && cache.isCached( it.song.id, 0L, contentLength )
                                                  }
                                                      .reversed()
                                                      .fastMap( FormatWithSong::song )
@@ -545,7 +573,7 @@ class MediaLibrarySessionCallback(
                 .map { list ->
                     list.filter {
                             val contentLength = it.format.contentLength
-                            contentLength != null && binder.cache.isCached( it.song.id, 0L, contentLength )
+                            contentLength != null && cache.isCached( it.song.id, 0L, contentLength )
                         }
                         .size
                 }
