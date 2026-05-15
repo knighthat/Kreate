@@ -1,0 +1,2 @@
+Fixes:
+- Playlist can't be pinned
