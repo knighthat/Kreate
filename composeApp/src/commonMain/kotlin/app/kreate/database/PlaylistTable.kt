@@ -184,7 +184,7 @@ interface PlaylistTable: DatabaseTable<Playlist> {
         UPDATE playlists
         SET is_pinned = 
             CASE
-                WHEN 1 THEN 0
+                WHEN is_pinned = 1 THEN 0
                 ELSE 1
             END
         WHERE id = :playlistId
