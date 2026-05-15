@@ -124,7 +124,7 @@ fun AppearanceSettings(paddingValues: PaddingValues) {
                         pref.value = value.toLong() },
                     onTextDisplay = {
                         when (it) {
-                            -1f -> stringResource(R.string.disabled)
+                            -1f -> stringResource(R.string.word_disabled)
                             else -> (it / 1000).toString()
                         }
                     }
