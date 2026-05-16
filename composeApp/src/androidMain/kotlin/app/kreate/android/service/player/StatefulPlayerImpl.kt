@@ -228,7 +228,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
                 return@launch
             }
 
-            val startIndex = queue.indexOfFirst { it.position != null }
+            val startIndex = queue.indexOfFirst { it.position != null }.coerceAtLeast( 0 )
             val startPositionMs = queue[startIndex].position ?: C.TIME_UNSET
             val mediaItems = withContext( Dispatchers.Default ) {
                 queue.map { queueItem ->

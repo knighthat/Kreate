@@ -512,7 +512,7 @@ class MediaLibrarySessionCallback(
 
         scope.future {
             val queue = database.queueTable.blockingItems()
-            val startIndex = queue.indexOfFirst { it.position != null }
+            val startIndex = queue.indexOfFirst { it.position != null }.coerceAtLeast( 0 )
             val startPositionMs = queue[startIndex].position ?: C.TIME_UNSET
             val mediaItems = queue.map { it.song.asMediaItem.buildUpon().setTag( PersistentQueue.Tag ).build() }
             val resumptionPlaylist = MediaSession.MediaItemsWithStartPosition( mediaItems, startIndex, startPositionMs )
