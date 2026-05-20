@@ -5,12 +5,12 @@
     <string name="sort_album_title">Album</string>
     <string name="sort_album_year">Năm album</string>
     <string name="sort_date_added">Ngày thêm vào</string>
-    <string name="sort_artist">Nghệ sĩ</string>
+    <string name="sort_artist">Tên nhạc sĩ</string>
     <string name="sort_songs_count">Số lượng bài hát</string>
     <string name="sort_total_duration">Thời lượng</string>
     <string name="sort_listening_time">Thời gian nghe</string>
     <string name="sort_title">Tiêu đề</string>
-    <string name="sort_date_played">Ngày phát</string>
+    <string name="sort_date_played">Lần nghe gần nhất</string>
     <string name="sort_date_liked">Ngày yêu thích</string>
     <string name="sort_relative_listening_time">Số lần nghe</string>
     <string name="sort_position">Vị trí</string>
