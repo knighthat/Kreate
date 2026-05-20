@@ -1,1 +1,1 @@
-Trình nghe nhạc YouTube Music, ưu tiên hiệu năng.
+A multilingual YouTube Music frontend for Android, prioritize performance.
