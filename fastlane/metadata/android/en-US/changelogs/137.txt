@@ -1,0 +1,3 @@
+Fixes:
+- 2.1.5: Playlist can't be pinned
+- Quick picks crash
