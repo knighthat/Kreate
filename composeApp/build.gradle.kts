@@ -411,7 +411,6 @@ dependencies {
     add( "kspJvm", libs.room.compiler )
 
     coreLibraryDesugaring(libs.desugaring.nio)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }
 
 // Use `gradlew dependencies` to get report in composeApp/build/reports/dependency-license
