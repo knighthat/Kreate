@@ -153,7 +153,7 @@ toasty = { group = "com.github.GrenderG", name = "Toasty", version.ref = "toasty
 androidyoutubeplayer = { group = "com.pierfrancescosoffritti.androidyoutubeplayer", name = "core", version.ref = "androidyoutubeplayer" }
 vlcj = {  group = "uk.co.caprica", name = "vlcj", version.ref = "vlcj" }
 desugaring-nio = { group = "com.android.tools", name = "desugar_jdk_libs_nio", version.ref = "desugaring" }
-desugar-jdk-libs = { module = "com.android.tools.build:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
+desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
 # This lib isn't used by the project, but it provides @Inject for discord module.
 # Doing this is easier than removing unsused files every update with the upstream
 javax = { module = "javax.inject:javax.inject", version.ref = "javax" }
