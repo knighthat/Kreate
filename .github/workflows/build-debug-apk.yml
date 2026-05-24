@@ -7,7 +7,7 @@ name: Build Debug APK
     workflow_dispatch:
 
   concurrency:
-    group: 'debug-apk'
+    group: debug-apk
     cancel-in-progress: true
 
   jobs:
@@ -39,7 +39,7 @@ name: Build Debug APK
         - name: Make gradlew executable
           run: chmod +x ./gradlew
 
-        - name: Build debug APK (universal, github flavour)
+        - name: Build debug APK
           run: ./gradlew assembleGithubUniversalProdDebug
 
         - name: Upload APK
