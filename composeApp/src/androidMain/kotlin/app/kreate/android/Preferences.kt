@@ -10,6 +10,7 @@ import androidx.annotation.MainThread
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SnapshotMutationPolicy
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
@@ -1119,7 +1120,16 @@ sealed class Preferences<T>(
 
     override var value: T
         @MainThread
-        get() = delegate.value
+        get() = try {
+            // Try standard reading first
+            delegate.value
+        } catch( e: IllegalStateException ) {
+            Logger.w( e, LOGGING_TAG ) { "Key: $key" }
+
+            // Fallback: Take a fresh snapshot of the current global state
+            // and read from that instead.
+            Snapshot.takeSnapshot().enter( delegate::value )
+        }
         @MainThread
         set(value) {
             if( Looper.myLooper() != Looper.getMainLooper() ) {
