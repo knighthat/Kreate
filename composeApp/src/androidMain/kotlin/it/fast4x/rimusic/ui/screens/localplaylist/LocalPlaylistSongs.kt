@@ -32,7 +32,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -50,6 +49,7 @@ import androidx.compose.ui.util.fastFold
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
@@ -61,10 +61,10 @@ import app.kreate.android.themed.common.component.tab.DownloadAllDialog
 import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
-import app.kreate.android.themed.rimusic.component.playlist.PlaylistSongsSort
 import app.kreate.android.themed.rimusic.component.playlist.PositionLock
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
+import app.kreate.android.viewmodel.LocalPlaylistViewModel
 import app.kreate.constant.PlaylistSongSortBy
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongPlaylistMap
@@ -77,9 +77,6 @@ import it.fast4x.compose.persist.persistList
 import it.fast4x.compose.reordering.draggedItem
 import it.fast4x.compose.reordering.rememberReorderingState
 import it.fast4x.compose.reordering.reorder
-import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.models.bodies.NextBody
-import it.fast4x.innertube.requests.relatedSongs
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -125,9 +122,6 @@ import it.fast4x.rimusic.utils.saveImageToInternalStorage
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOn
 import me.knighthat.component.ResetCache
 import me.knighthat.component.playlist.PinPlaylist
 import me.knighthat.component.playlist.RenamePlaylistDialog
@@ -138,6 +132,8 @@ import me.knighthat.component.tab.Locator
 import me.knighthat.component.tab.SongShuffler
 import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import org.koin.java.KoinJavaComponent.inject
 import kotlin.time.Duration
 
@@ -177,13 +173,8 @@ fun LocalPlaylistSongs(
                 .findById( playlistId )
     }.collectAsState( null, Dispatchers.IO )
 
-    val sort = remember { PlaylistSongsSort(menuState) }
-    val items by remember( sort.sortBy, sort.sortOrder ) {
-        Database.songPlaylistMapTable
-                .sortSongs( playlistId, sort.sortBy, sort.sortOrder )
-                .flowOn( Dispatchers.IO )
-                .distinctUntilChanged()
-    }.collectAsState( emptyList(), Dispatchers.IO )
+    val viewModel: LocalPlaylistViewModel = koinViewModel { parametersOf(menuState) }
+    val items by viewModel.items.collectAsStateWithLifecycle()
     var itemsOnDisplay by persistList<Song>("localPlaylist/$playlistId/songs/on_display")
 
     val itemSelector = remember {
@@ -232,7 +223,7 @@ fun LocalPlaylistSongs(
         }
     }
     val pin = PinPlaylist( playlist )
-    val positionLock = remember( sort.sortOrder ) { PositionLock(sort.sortOrder) }
+    val positionLock = remember( viewModel.sort.sortOrder ) { PositionLock(viewModel.sort.sortOrder) }
     LaunchedEffect( itemSelector.isActive ) {
         // Setting this field to true means disable it
         if( itemSelector.isActive )
@@ -310,61 +301,12 @@ fun LocalPlaylistSongs(
     val locator = Locator( lazyListState, ::getSongs, 3 )
 
     //<editor-fold defaultstate="collapsed" desc="Smart recommendation">
-    val recommendationsNumber by Preferences.MAX_NUMBER_OF_SMART_RECOMMENDATIONS
-    var relatedSongs by rememberSaveable {
-        // SongEntity before Int in case random position is equal
-        mutableStateOf( emptyMap<Song, Int>() )
-    }
+    val relatedSongs by viewModel.relatedSongs.collectAsStateWithLifecycle()
 
     LaunchedEffect( isRecommendationEnabled ) {
-        if( !isRecommendationEnabled ) {
-            relatedSongs = emptyMap()
-            return@LaunchedEffect
-        }
-
-        /*
-            This process will be run before [items]
-               most of the time.
-            When it does, an exception will
-               be thrown because [items] is not ready yet.
-            To make sure that it is ready to use, a
-               delay is set to suspend the thread.
-        */
-        while( items.isEmpty() )
-            delay( 100L )
-
-        val requestBody = NextBody( videoId =  items.random().id )
-        Innertube.relatedSongs( requestBody )
-                 ?.getOrNull()      // If result is null, all subsequence calls are cancelled
-                 ?.songs
-                 ?.filterNot { songItem ->
-                     // Fetched Song may not have properties like [likedAt]
-                     // so the result of [List.any] may be false.
-                     // Comparing their IDs is the most effective way
-                     items.map( Song::id )
-                          .any{ songItem.info?.endpoint?.videoId == it }
-                 }
-                 ?.take( recommendationsNumber.toInt() )
-                 ?.associate { songItem ->
-                     with( songItem ) {
-                         Song(
-                             // Song's ID & title must not be "null". If they are,
-                             // Something is wrong with Innertube.
-                             id = info!!.endpoint!!.videoId!!,
-                             title = info!!.name!!,
-                             artistsText = authors?.joinToString { author -> author.name ?: "" },
-                             durationText = durationText,
-                             thumbnailUrl = thumbnail?.url,
-                             isExplicit = explicit
-                         ) to (0..items.size).random()      // Map this song with a random position from [items]
-                     }
-                 }
-                 ?.let {
-                     relatedSongs = it
-
-                     // Enable position lock
-                     positionLock.isFirstIcon = true
-                 }
+        if( isRecommendationEnabled )
+            // Lock position if this feature is enabled
+            positionLock.isFirstIcon =  isRecommendationEnabled
     }
     //</editor-fold>
     LaunchedEffect( items, relatedSongs, search.input, parentalControlEnabled ) {
@@ -580,7 +522,7 @@ fun LocalPlaylistSongs(
                     mutableListOf<Button>().apply {
                         if (playlistNotMonthlyType)
                             this.add( pin )
-                        if ( sort.sortBy == PlaylistSongSortBy.POSITION )
+                        if ( viewModel.sort.sortBy == PlaylistSongSortBy.POSITION )
                             this.add( positionLock )
 
                         this.add( downloadAllDialog )
@@ -619,7 +561,7 @@ fun LocalPlaylistSongs(
                         .fillMaxWidth()
                 ) {
 
-                    sort.ToolBarButton()
+                    viewModel.sort.ToolBarButton()
 
                     Row(
                         horizontalArrangement = Arrangement.End,
@@ -722,7 +664,7 @@ fun LocalPlaylistSongs(
                                     Box( Modifier.width( 24.dp ) )
                             },
                             thumbnailOverlay = {
-                                if ( sort.sortBy == PlaylistSongSortBy.TOTAL_PLAY_TIME ) {
+                                if ( viewModel.sort.sortBy == PlaylistSongSortBy.TOTAL_PLAY_TIME ) {
                                     BasicText(
                                         text = song.formattedTotalPlayTime,
                                         style = typography().xxs.semiBold.center.color(
