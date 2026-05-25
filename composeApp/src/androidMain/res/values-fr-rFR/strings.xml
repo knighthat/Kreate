@@ -203,7 +203,7 @@
     <string name="statistics_max_number_of_items">Nombre maximum d\'éléments</string>
     <string name="do_you_really_want_to_download_all">Voulez-vous vraiment tout télécharger ?</string>
     <string name="import_playlist">Importer une playlist</string>
-    <string name="proxy">PROXY</string>
+    <string name="proxy">Proxy</string>
     <string name="enable_proxy">Activer le Proxy</string>
     <string name="proxy_mode">Mode du proxy</string>
     <string name="proxy_host">Hôte du proxy</string>
@@ -895,7 +895,7 @@ Volume BAS : titre précédent</string>
     <string name="reverb_preset_large_room">Grande pièce</string>
     <string name="reverb_preset_medium_hall">Salle moyenne</string>
     <string name="reverb_preset_large_hall">Grande salle</string>
-    <string name="reverb_preset_plate">Plate</string>
+    <string name="reverb_preset_plate">Plat</string>
     <string name="error_failed_to_set_wallpaper">Échec de la configuration du fond d\'écran</string>
     <string name="word_disable">Désactiver</string>
     <string name="live_wallpaper_home_screen">Écran d\'accueil</string>
