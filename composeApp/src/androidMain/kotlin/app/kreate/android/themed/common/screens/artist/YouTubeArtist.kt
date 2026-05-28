@@ -51,9 +51,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import app.kreate.android.LocalBottomMenu
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
@@ -107,7 +110,8 @@ private fun LazyListScope.renderSections(
     songItemValues: SongItem.Values,
     artistPage: InnertubeArtist,
     sectionTextModifier: Modifier,
-    player: StatefulPlayer
+    player: StatefulPlayer,
+    menu: BottomMenu
 ) = artistPage.sections.forEach { section ->
     // Don't show section if the title or contents is null or blank
     if( section.title.isNullOrBlank() || section.contents.isEmpty() ) return@forEach
@@ -159,10 +163,12 @@ private fun LazyListScope.renderSections(
                    items = songs,
                    key = { i, s -> "${System.identityHashCode( s )} - $i" }
                ) { index, song ->
+                   val mediaItem = song.toMediaItem
+
                    SwipeablePlaylistItem(
-                       mediaItem = song.toMediaItem,
+                       mediaItem = mediaItem,
                        onPlayNext = {
-                           player.addNext( song.toMediaItem )
+                           player.addNext( mediaItem )
                        }
                    ) {
                        SongItem.Render(
@@ -178,6 +184,10 @@ private fun LazyListScope.renderSections(
                                    songs.map( InnertubeSong::toMediaItem ),
                                    index
                                )
+                           },
+                           onLongClick = {
+                               val page = MenuPage.Song(mediaItem)
+                               menu.show( page, true )
                            }
                        )
                    }
@@ -205,7 +215,8 @@ private fun LazyListScope.renderLibrarySongs(
     songItemValues: SongItem.Values,
     sectionTextModifier: Modifier,
     songs: List<Song>,
-    player: StatefulPlayer
+    player: StatefulPlayer,
+    menu: BottomMenu
 ) {
     item( "songs" ) {
         Text(
@@ -219,10 +230,12 @@ private fun LazyListScope.renderLibrarySongs(
         items = songs,
         key = { i, s -> "${System.identityHashCode( s )} - $i" }
     ) { index, song ->
+        val mediaItem = song.asMediaItem
+
         SwipeablePlaylistItem(
-            mediaItem = song.asMediaItem,
+            mediaItem = mediaItem,
             onPlayNext = {
-                player.addNext( song.asMediaItem )
+                player.addNext( mediaItem )
             }
         ) {
             SongItem.Render(
@@ -238,6 +251,10 @@ private fun LazyListScope.renderLibrarySongs(
                         songs.map( Song::asMediaItem ),
                         index
                     )
+                },
+                onLongClick = {
+                    val page = MenuPage.Song(mediaItem)
+                    menu.show( page, true )
                 }
             )
         }
@@ -250,6 +267,7 @@ fun YouTubeArtist(
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: YoutubeArtistViewModel = koinViewModel(),
+    menu: BottomMenu = LocalBottomMenu.current,
     miniPlayer: @Composable () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -437,7 +455,8 @@ fun YouTubeArtist(
                                 songItemValues = songItemValues,
                                 artistPage = artistPage!!,
                                 sectionTextModifier = viewModel.sectionTextModifier,
-                                player = player
+                                player = player,
+                                menu = menu
                             )
                         else if( currentTabIndex == 1 )
                             renderLibrarySongs(
@@ -447,7 +466,8 @@ fun YouTubeArtist(
                                 songItemValues = songItemValues,
                                 sectionTextModifier = viewModel.sectionTextModifier,
                                 songs = artistLibrarySongs,
-                                player = player
+                                player = player,
+                                menu = menu
                             )
 
                         artistPage?.description?.also( this::renderDescription )

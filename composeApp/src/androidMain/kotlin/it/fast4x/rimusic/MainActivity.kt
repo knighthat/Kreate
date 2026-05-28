@@ -81,11 +81,13 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.compose.rememberNavController
 import androidx.palette.graphics.Palette
 import app.kreate.android.BuildConfig
+import app.kreate.android.LocalBottomMenu
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.updater.UpdatePlugins
+import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.database.models.PersistentQueue
 import co.touchlab.kermit.Logger
@@ -694,7 +696,9 @@ MainActivity :
 
                         }
 
-                    } else
+                    } else {
+                        val bottomMenu = remember { BottomMenu() }
+
                         // FIXME: Why is this block getting called twice on start?
                         CompositionLocalProvider(
                             LocalAppearance provides appearance,
@@ -705,6 +709,7 @@ MainActivity :
                             LocalDownloadHelper provides MyDownloadHelper,
                             LocalPlayerSheetState provides playerState,
                             LocalMonetCompat provides monet,
+                            LocalBottomMenu provides bottomMenu,
                         ) {
                             // This block gets called twice on startup, first run resets
                             // [intent.action] to empty string, second run sets
@@ -833,8 +838,10 @@ MainActivity :
                                 menuState.content()
                             }
 
+                            if( bottomMenu.isVisible )
+                                bottomMenu.BottomSheet( navController )
                         }
-
+                    }
                 }
                 DisposableEffect(player) {
                     val player = player ?: return@DisposableEffect onDispose { }

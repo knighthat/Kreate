@@ -26,8 +26,10 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
+import app.kreate.android.LocalBottomMenu
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
@@ -91,6 +93,7 @@ fun SearchResultScreen(
     val context = LocalContext.current
     val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
+    val menu = LocalBottomMenu.current
     val saveableStateHolder = rememberSaveableStateHolder()
     val (tabIndex, onTabIndexChanges) = Preferences.SEARCH_RESULTS_TAB_INDEX
 
@@ -164,28 +167,29 @@ fun SearchResultScreen(
                             if (parentalControlEnabled && song.explicit)
                                 return@ItemsPage
 
+                            val mediaItem = song.asMediaItem
                             val isDownloaded =
-                                isDownloadedSong(song.asMediaItem.mediaId)
+                                isDownloadedSong(mediaItem.mediaId)
 
                             SwipeablePlaylistItem(
-                                mediaItem = song.asMediaItem,
+                                mediaItem = mediaItem,
                                 onPlayNext = {
-                                    player.addNext(song.asMediaItem)
+                                    player.addNext(mediaItem)
                                 },
                                 onDownload = {
                                     val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
-                                    cache.removeResource(song.asMediaItem.mediaId)
+                                    cache.removeResource(song.key)
                                     Database.asyncTransaction {
                                         formatTable.updateContentLengthOf( song.key )
                                     }
                                     manageDownload(
                                         context = context,
-                                        mediaItem = song.asMediaItem,
+                                        mediaItem = mediaItem,
                                         downloadState = isDownloaded
                                     )
                                 },
                                 onEnqueue = {
-                                    player.enqueue(song.asMediaItem)
+                                    player.enqueue(mediaItem)
                                 }
                             ) {
                                 SongItem.Render(
@@ -195,7 +199,11 @@ fun SearchResultScreen(
                                     values = songItemValues,
                                     navController = navController,
                                     onClick = {
-                                        player.startRadio( song.asMediaItem, false, song.info?.endpoint )
+                                        player.startRadio( mediaItem, false, song.info?.endpoint )
+                                    },
+                                    onLongClick = {
+                                        val page = MenuPage.Song(mediaItem)
+                                        menu.show( page, true )
                                     }
                                 )
                             }

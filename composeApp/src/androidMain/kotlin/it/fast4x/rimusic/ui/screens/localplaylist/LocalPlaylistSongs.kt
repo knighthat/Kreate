@@ -53,9 +53,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
+import app.kreate.android.LocalBottomMenu
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
 import app.kreate.android.themed.rimusic.component.ItemSelector
@@ -81,7 +84,6 @@ import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.UiType
-import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
@@ -151,6 +153,7 @@ fun LocalPlaylistSongs(
     navController: NavController,
     playlistId: Long,
     onDelete: () -> Unit,
+    menu: BottomMenu = LocalBottomMenu.current
 ) {
     // Essentials
     val context = LocalContext.current
@@ -579,6 +582,7 @@ fun LocalPlaylistSongs(
                 key = { _, song -> song.id },
                 contentType = { _, song -> song },
             ) { index, song ->
+                val mediaItem = song.asMediaItem
 
                 Box(
                     modifier = Modifier
@@ -589,7 +593,7 @@ fun LocalPlaylistSongs(
                         )
                         .zIndex(2f)
                 ) {
-                    val isLocal by remember { derivedStateOf { song.asMediaItem.isLocal } }
+                    val isLocal by remember { derivedStateOf { song.isLocal } }
 
                     // Drag anchor
                     if ( !positionLock.isLocked() ) {
@@ -617,9 +621,9 @@ fun LocalPlaylistSongs(
                     }
 
                     SwipeableQueueItem(
-                        mediaItem = song.asMediaItem,
+                        mediaItem = mediaItem,
                         onPlayNext = {
-                            player.addNext(song.asMediaItem)
+                            player.addNext(mediaItem)
                         },
                         onRemoveFromQueue = {
                             Database.asyncTransaction {
@@ -627,12 +631,16 @@ fun LocalPlaylistSongs(
                             }
 
                             Toaster.s(
-                                "${context.resources.getString( R.string.deleted )} \"${song.asMediaItem.mediaMetadata.title}\" - \"${song.asMediaItem.mediaMetadata.artist}\""
+                                context.getString(
+                                    R.string.success_removed_song_from_playlist,
+                                    "${song.cleanArtistsText()} - ${song.cleanTitle()}",
+                                    playlist!!.name
+                                )
                             )
                         },
                         onDownload = {
                             val cache: Cache by inject(Cache::class.java, CacheType.CACHE)
-                            cache.removeResource(song.asMediaItem.mediaId)
+                            cache.removeResource(song.id)
                             Database.asyncTransaction {
                                 formatTable.updateContentLengthOf( song.id )
                             }
@@ -640,13 +648,13 @@ fun LocalPlaylistSongs(
                             if (!isLocal) {
                                 manageDownload(
                                     context = context,
-                                    mediaItem = song.asMediaItem,
+                                    mediaItem = mediaItem,
                                     downloadState = song.isLocal
                                 )
                             }
                         },
                         onEnqueue = {
-                            player.enqueue(song.asMediaItem)
+                            player.enqueue(mediaItem)
                         },
                     ) {
                         SongItem.Render(
@@ -672,18 +680,19 @@ fun LocalPlaylistSongs(
                                         ),
                                         maxLines = 2,
                                         overflow = TextOverflow.Ellipsis,
-                                        modifier = Modifier.fillMaxWidth()
-                                                           .background(
-                                                               brush = Brush.verticalGradient(
-                                                                   colors = listOf(
-                                                                       Color.Transparent,
-                                                                       colorPalette().overlay
-                                                                   )
-                                                               ),
-                                                               shape = thumbnailShape()
-                                                           )
-                                                           .padding( horizontal = 8.dp, vertical = 4.dp )
-                                                           .align( Alignment.BottomCenter )
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(
+                                                brush = Brush.verticalGradient(
+                                                    colors = listOf(
+                                                        Color.Transparent,
+                                                        colorPalette().overlay
+                                                    )
+                                                ),
+                                                shape = thumbnailShape()
+                                            )
+                                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                                            .align(Alignment.BottomCenter)
                                     )
                                 }
                             },
@@ -708,6 +717,14 @@ fun LocalPlaylistSongs(
                                  */
 
                                 search.hideIfEmpty()
+                            },
+                            onLongClick = {
+                                val page =
+                                    if( isLocal )
+                                        MenuPage.LocalPlaylistLocalSong(playlist!!, mediaItem)
+                                    else
+                                        MenuPage.LocalPlaylistSong(playlist!!, mediaItem)
+                                menu.show( page, true )
                             }
                         )
                     }

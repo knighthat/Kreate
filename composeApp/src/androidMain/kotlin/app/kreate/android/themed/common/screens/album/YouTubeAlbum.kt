@@ -55,8 +55,10 @@ import androidx.compose.ui.util.fastMapNotNull
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import app.kreate.android.LocalBottomMenu
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
@@ -218,6 +220,7 @@ fun YouTubeAlbum(
         val context = LocalContext.current
         val menuState = LocalMenuState.current
         val lazyListState = rememberLazyListState()
+        val menu = LocalBottomMenu.current
         //</editor-fold>
 
         var albumPage: InnertubeAlbum? by remember { mutableStateOf( null ) }
@@ -476,10 +479,12 @@ fun YouTubeAlbum(
                             items = items,
                             key = { i, s -> "${System.identityHashCode( s )} - $i"}
                         ) { index, song ->
+                            val mediaItem = song.asMediaItem
+
                             SwipeablePlaylistItem(
-                                mediaItem = song.asMediaItem,
+                                mediaItem = mediaItem,
                                 onPlayNext = {
-                                    player.addNext(song.asMediaItem)
+                                    player.addNext( mediaItem )
                                 }
                             ) {
                                 SongItem.Render(
@@ -524,6 +529,10 @@ fun YouTubeAlbum(
                                             Due to the small size of checkboxes,
                                             we shouldn't disable [itemSelector]
                                          */
+                                    },
+                                    onLongClick = {
+                                        val page = MenuPage.Song(mediaItem)
+                                        menu.show( page, true )
                                     }
                                 )
                             }

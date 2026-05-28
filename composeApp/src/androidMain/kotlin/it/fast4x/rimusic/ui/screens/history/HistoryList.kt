@@ -29,9 +29,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastDistinctBy
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import app.kreate.android.LocalBottomMenu
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Event
@@ -71,7 +74,8 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun HistoryList(
     navController: NavController,
-    player: StatefulPlayer = koinInject()
+    player: StatefulPlayer = koinInject(),
+    menu: BottomMenu = LocalBottomMenu.current
 ) {
     val context = LocalContext.current
     val hapticFeedback = LocalHapticFeedback.current
@@ -203,6 +207,10 @@ fun HistoryList(
                             navController = navController,
                             onClick = {
                                 player.forcePlay( event.song.asMediaItem )
+                            },
+                            onLongClick = {
+                                val page = MenuPage.Song(event.song.asMediaItem)
+                                menu.show( page, true )
                             }
                         )
                     }

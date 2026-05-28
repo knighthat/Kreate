@@ -129,6 +129,19 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
     fun isMapped( songId: String ): Flow<Boolean>
 
     /**
+     * @return whether [songId] is mapped to [playlistId]
+     */
+    @Query("""
+        SELECT EXISTS(
+            SELECT 1 
+            FROM song_playlist_map 
+            WHERE song_id = :songId
+                AND playlist_id = :playlistId
+        );
+    """)
+    fun isMapped( songId: String, playlistId: Long ): Flow<Boolean>
+
+    /**
      * @return list of [Playlist.id] that [songId] is mapped to
      */
     @Query("""

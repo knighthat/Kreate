@@ -15,7 +15,10 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import app.kreate.android.LocalBottomMenu
+import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
@@ -55,7 +58,8 @@ object ItemUtils {
         navController: NavController,
         innertubeItems: List<Innertube.Item>,
         currentlyPlaying: String?,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
+        menu: BottomMenu = LocalBottomMenu.current
     ) {
         val player: StatefulPlayer = koinInject()
         val hapticFeedback = LocalHapticFeedback.current
@@ -81,6 +85,7 @@ object ItemUtils {
                 items = innertubeItems,
                 key = Innertube.Item::key
             ) { childItem ->
+
                 when ( childItem ) {
                     is Innertube.SongItem -> SongItem.Render(
                         innertubeSong = childItem,
@@ -90,6 +95,10 @@ object ItemUtils {
                         navController = navController,
                         onClick = {
                             player.forcePlay( childItem.asMediaItem )
+                        },
+                        onLongClick = {
+                            val page = MenuPage.Song(childItem.asMediaItem)
+                            menu.show( page, true )
                         }
                     )
 
@@ -107,6 +116,10 @@ object ItemUtils {
                                     player.playVideo( childItem.asMediaItem )
                                 else
                                     player.forcePlay( childItem.asMediaItem )
+                            },
+                            onLongClick = {
+                                val page = MenuPage.Song(childItem.asMediaItem)
+                                menu.show( page, true )
                             }
                         )
                     }
@@ -140,7 +153,8 @@ object ItemUtils {
         innertubeItems: List<InnertubeItem>,
         currentlyPlaying: String?,
         modifier: Modifier = Modifier,
-        player: StatefulPlayer = koinInject()
+        player: StatefulPlayer = koinInject(),
+        menu: BottomMenu = LocalBottomMenu.current
     ) {
         val hapticFeedback = LocalHapticFeedback.current
         val appearance = LocalAppearance.current
@@ -170,6 +184,10 @@ object ItemUtils {
                         navController = navController,
                         onClick = {
                             player.forcePlay( item.toMediaItem )
+                        },
+                        onLongClick = {
+                            val page = MenuPage.Song(item.toMediaItem)
+                            menu.show( page, true )
                         }
                     )
 

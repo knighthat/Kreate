@@ -60,8 +60,10 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
+import app.kreate.android.LocalBottomMenu
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
@@ -157,6 +159,7 @@ fun HomeQuickPicks(
     val (colorPalette, typography) = LocalAppearance.current
     val menuState = LocalMenuState.current
     val windowInsets = LocalPlayerAwareWindowInsets.current
+    val bottomMenu = LocalBottomMenu.current
     var playEventType by Preferences.QUICK_PICKS_TYPE
 
     var trending by persist<Song?>("home/trending")
@@ -523,7 +526,11 @@ fun HomeQuickPicks(
                                     isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
                                     modifier = Modifier.width( itemInHorizontalGridWidth ),
-                                    navController = navController
+                                    navController = navController,
+                                    onLongClick = {
+                                        val page = MenuPage.Song(song.asMediaItem)
+                                        bottomMenu.show( page, true )
+                                    }
                                 ) {
                                     player.startRadio( song, true )
                                 }
@@ -548,7 +555,11 @@ fun HomeQuickPicks(
                                     isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
                                     modifier = Modifier.width( itemInHorizontalGridWidth ),
-                                    navController = navController
+                                    navController = navController,
+                                    onLongClick = {
+                                        val page = MenuPage.Song(song.asMediaItem)
+                                        bottomMenu.show( page, true )
+                                    }
                                 ) {
                                     player.startRadio( song, true )
                                 }
@@ -903,6 +914,10 @@ fun HomeQuickPicks(
                                                             player.stopRadio()
                                                             player.forcePlay(mediaItem)
                                                             player.addMediaItems(songs.map { it.toMediaItem })
+                                                        },
+                                                        onLongClick = {
+                                                            val page = MenuPage.Song(song.toMediaItem)
+                                                            bottomMenu.show( page, true )
                                                         }
                                                     )
                                                 }

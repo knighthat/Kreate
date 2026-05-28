@@ -52,8 +52,10 @@ import androidx.compose.ui.zIndex
 import androidx.media3.common.MediaItem
 import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
+import app.kreate.android.LocalBottomMenu
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Search
@@ -71,6 +73,7 @@ import it.fast4x.compose.reordering.reorder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.enums.QueueType
+import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.SwipeableQueueItem
@@ -121,6 +124,7 @@ fun Queue(
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
     val menuState = LocalMenuState.current
+    val menu = LocalBottomMenu.current
 
     val rippleIndication = ripple(bounded = false)
 
@@ -328,6 +332,10 @@ fun Queue(
                                      */
 
                                     search.hideIfEmpty()
+                                },
+                                onLongClick = {
+                                    val page = if( mediaItem.isLocal ) MenuPage.LocalSong(mediaItem) else MenuPage.Song(mediaItem)
+                                    menu.show( page, true )
                                 }
                             )
                         }

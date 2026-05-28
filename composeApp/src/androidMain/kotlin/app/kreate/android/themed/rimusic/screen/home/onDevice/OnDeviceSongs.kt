@@ -45,9 +45,12 @@ import androidx.compose.ui.util.fastMap
 import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import app.kreate.android.LocalBottomMenu
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.song.SongItem
@@ -86,6 +89,7 @@ fun OnDeviceSong(
     buttons: MutableList<Button>,
     itemsOnDisplay: MutableList<Song>,
     getSongs: () -> List<Song>,
+    menu: BottomMenu = LocalBottomMenu.current
 ) {
     // Essentials
     val context = LocalContext.current
@@ -289,6 +293,10 @@ fun OnDeviceSong(
                                 itemsOnDisplay.fastMap( Song::asMediaItem ),
                                 index
                             )
+                    },
+                    onLongClick = {
+                        val page = MenuPage.LocalSong(mediaItem)
+                        menu.show( page, true )
                     }
                 )
             }
