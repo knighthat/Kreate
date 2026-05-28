@@ -24,7 +24,6 @@ import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.core.content.ContextCompat
-import androidx.media3.common.ForwardingPlayer
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
@@ -231,22 +230,9 @@ class PlayerServiceModern:
 
         preferences.registerOnSharedPreferenceChangeListener(this)
 
-        // Force player to add all commands available, prior to android 13
-        val forwardingPlayer =
-            object : ForwardingPlayer(player) {
-                override fun getAvailableCommands(): Player.Commands {
-                    return super.getAvailableCommands()
-                        .buildUpon()
-                        .addAllCommands()
-                        //.remove(COMMAND_SEEK_TO_PREVIOUS)
-                        //.remove(COMMAND_SEEK_TO_NEXT)
-                        .build()
-                }
-            }
-
         // Build the media library session
         mediaSession =
-            MediaLibrarySession.Builder(this, forwardingPlayer, mediaLibrarySessionCallback)
+            MediaLibrarySession.Builder(this, player, mediaLibrarySessionCallback)
                 .setSessionActivity(
                     PendingIntent.getActivity(
                         this,
