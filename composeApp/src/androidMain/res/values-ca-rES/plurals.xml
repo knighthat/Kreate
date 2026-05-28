@@ -9,11 +9,11 @@
         <item quantity="other">%d query</item>
     </plurals>
     <plurals name="file">
-        <item quantity="one">%d file</item>
-        <item quantity="other">%d file</item>
+        <item quantity="one">%d Fitxer</item>
+        <item quantity="other">%d Fitxers</item>
     </plurals>
     <plurals name="song">
-        <item quantity="one">%d song</item>
-        <item quantity="other">%d song</item>
+        <item quantity="one">%d Cançó</item>
+        <item quantity="other">%d Cançó</item>
     </plurals>
 </resources>
