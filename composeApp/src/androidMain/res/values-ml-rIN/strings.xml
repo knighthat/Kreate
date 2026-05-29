@@ -28,7 +28,7 @@
     <string name="shuffle">ഷഫിൾ</string>
     <string name="from_wikipedia_cca">വിക്കിപീഡിയയിൽ നിന്ന് ക്രിയേറ്റീവ് കോമൺസ് ആട്രിബ്യൂഷൻ CC-BY-SA 3.0 പ്രകാരം</string>
     <string name="library">ലൈബ്രറി</string>
-    <string name="delete_playlist">ഈ പ്ലെയ്ലിസ്റ്റ് മായ്ക്കണോ?</string>
+    <string name="dialog_title_delete_playlist">ഈ പ്ലെയ്ലിസ്റ്റ് മായ്ക്കണോ?</string>
     <string name="sync">സിങ്ക് ചെയ്യുക</string>
     <string name="rename">പേര് മാറ്റുക</string>
     <string name="delete">മായ്ക്കുക</string>

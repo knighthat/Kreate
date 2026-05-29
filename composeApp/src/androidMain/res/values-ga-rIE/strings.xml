@@ -28,7 +28,7 @@
     <string name="shuffle">Suaith</string>
     <string name="from_wikipedia_cca">As Vicipéid faoi Admhála Creative Commons CC-BY-SA 3.0</string>
     <string name="library">Leabharlann</string>
-    <string name="delete_playlist">An bhfuil tú cinnte an seinnliosta seo a scriosadh?</string>
+    <string name="dialog_title_delete_playlist">An bhfuil tú cinnte an seinnliosta seo a scriosadh?</string>
     <string name="sync">Sioncronaigh</string>
     <string name="rename">Athainmnigh</string>
     <string name="delete">Scrios</string>

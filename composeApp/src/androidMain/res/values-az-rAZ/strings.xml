@@ -28,7 +28,7 @@
     <string name="shuffle">Qarışdır</string>
     <string name="from_wikipedia_cca">Wikipedia-dan Creative Commons Attribution CC-BY-SA 3.0 altında</string>
     <string name="library">Kitabxana</string>
-    <string name="delete_playlist">Bu pleylisti həqiqətən silmək istəyirsiniz?</string>
+    <string name="dialog_title_delete_playlist">Bu pleylisti həqiqətən silmək istəyirsiniz?</string>
     <string name="sync">Sinxronizasiya</string>
     <string name="rename">Adı dəyişdir</string>
     <string name="delete">Sil</string>

@@ -28,7 +28,7 @@
     <string name="shuffle">ترتيب عشوائي</string>
     <string name="from_wikipedia_cca">من ويكيبيديا تحت عنوان المشاع الإبداعي إسناد CC-BY-SA 3.0</string>
     <string name="library">المكتبة</string>
-    <string name="delete_playlist">هل تريد حقاً حذف قائمة التشغيل هذه؟</string>
+    <string name="dialog_title_delete_playlist">هل تريد حقاً حذف قائمة التشغيل هذه؟</string>
     <string name="sync">مزامنة</string>
     <string name="rename">إعادة تسمية</string>
     <string name="delete">حذف</string>

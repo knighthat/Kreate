@@ -28,7 +28,7 @@
     <string name="shuffle">随机播放</string>
     <string name="from_wikipedia_cca">来自于维基百科， 基于Creative Commons Attribution CC-BY-SA 3.0许可</string>
     <string name="library">库</string>
-    <string name="delete_playlist">你真的想要删除这个播放列表吗？</string>
+    <string name="dialog_title_delete_playlist">你真的想要删除这个播放列表吗？</string>
     <string name="sync">同步</string>
     <string name="rename">重命名</string>
     <string name="delete">删除</string>

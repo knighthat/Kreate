@@ -28,7 +28,7 @@
     <string name="shuffle">ערבוב</string>
     <string name="from_wikipedia_cca">מוויקיפדיה תחת Creative Commons Attribution CC-BY-SA 3.0</string>
     <string name="library">ספריה</string>
-    <string name="delete_playlist">האם אתה באמת רוצה למחוק את הפלייליסט הזה?</string>
+    <string name="dialog_title_delete_playlist">האם אתה באמת רוצה למחוק את הפלייליסט הזה?</string>
     <string name="sync">סינכרון</string>
     <string name="rename">שנה שם</string>
     <string name="delete">למחוק</string>

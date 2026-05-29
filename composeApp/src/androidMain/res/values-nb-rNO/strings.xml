@@ -28,7 +28,7 @@
     <string name="shuffle">Tilfeldig rekkefølge</string>
     <string name="from_wikipedia_cca">Fra Wikipedia under Creative Commons Attribution CC-BY-SA 3.0</string>
     <string name="library">Bibliotek</string>
-    <string name="delete_playlist">Ønsker du virkelig å slette denne spillelisten?</string>
+    <string name="dialog_title_delete_playlist">Ønsker du virkelig å slette denne spillelisten?</string>
     <string name="sync">Synkroniser</string>
     <string name="rename">Gi nytt navn</string>
     <string name="delete">Slett</string>

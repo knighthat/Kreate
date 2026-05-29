@@ -28,7 +28,7 @@
     <string name="shuffle">ଶଫଲ୍</string>
     <string name="from_wikipedia_cca">ଉଇକିପିଡ଼ିଆ: Creative Commons Attribution CC-BY-SA 3.0</string>
     <string name="library">ଲାଇବ୍ରେରୀ</string>
-    <string name="delete_playlist">ଆପଣ ପ୍ରକୃତରେ ଏହି ପ୍ଲେଲିଷ୍ଟକୁ ଅପସାରଣ କରିବାକୁ ଚାହୁଁଛନ୍ତି କି?</string>
+    <string name="dialog_title_delete_playlist">ଆପଣ ପ୍ରକୃତରେ ଏହି ପ୍ଲେଲିଷ୍ଟକୁ ଅପସାରଣ କରିବାକୁ ଚାହୁଁଛନ୍ତି କି?</string>
     <string name="sync">ସମକାଳିତ କରନ୍ତୁ</string>
     <string name="rename">ପୁନଃନାମକରଣ କରନ୍ତୁ</string>
     <string name="delete">ଅପସାରଣ କରନ୍ତୁ</string>

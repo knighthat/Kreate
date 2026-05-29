@@ -28,7 +28,7 @@
     <string name="shuffle">Miksi</string>
     <string name="from_wikipedia_cca">El Vikipedio sub Krea Komunaĵo Atribuite CC-BY-SA 3.0</string>
     <string name="library">Biblioteko</string>
-    <string name="delete_playlist">Ĉu vi vere volas forigi ĉi tiun ludliston?</string>
+    <string name="dialog_title_delete_playlist">Ĉu vi vere volas forigi ĉi tiun ludliston?</string>
     <string name="sync">Sinkronigi</string>
     <string name="rename">Renomi</string>
     <string name="delete">Forviŝi</string>

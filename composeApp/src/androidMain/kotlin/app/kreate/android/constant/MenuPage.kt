@@ -8,11 +8,16 @@ import androidx.media3.common.MediaItem
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.common.component.menu.AddSongToPlaylistButton
+import app.kreate.android.themed.common.component.menu.DeletePlaylistButton
 import app.kreate.android.themed.common.component.menu.DeleteSongButton
 import app.kreate.android.themed.common.component.menu.ExportCacheButton
 import app.kreate.android.themed.common.component.menu.GoToAlbumButton
 import app.kreate.android.themed.common.component.menu.GoToArtistButton
 import app.kreate.android.themed.common.component.menu.MenuButton
+import app.kreate.android.themed.common.component.menu.PinPlaylistButton
+import app.kreate.android.themed.common.component.menu.PlaylistEnqueueButton
+import app.kreate.android.themed.common.component.menu.PlaylistPlayNextButton
+import app.kreate.android.themed.common.component.menu.PlaylistShuffleButton
 import app.kreate.android.themed.common.component.menu.RemoveSongFromPlaylist
 import app.kreate.android.themed.common.component.menu.ResetSongButton
 import app.kreate.android.themed.common.component.menu.SongEditThumbnailButton
@@ -23,6 +28,7 @@ import app.kreate.android.themed.common.component.menu.SongRenameAuthorButton
 import app.kreate.android.themed.common.component.menu.SongRenameButton
 import app.kreate.android.themed.common.component.menu.ViewSongDetailsButton
 import app.kreate.database.models.Playlist
+import app.kreate.database.models.PlaylistPreview
 import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.NavRoutes
@@ -139,6 +145,15 @@ sealed interface MenuPage {
         val destination: NavRoutes,
         val path: String
     ) : MenuPage
+
+    data class LocalPlaylist(val playlist: PlaylistPreview) : MenuPage {
+
+        override suspend fun getButtons(): List<MenuButton<PlaylistPreview>> =
+            listOf(
+                PinPlaylistButton(playlist), PlaylistPlayNextButton(), PlaylistEnqueueButton(),
+                PlaylistShuffleButton(), DeletePlaylistButton()
+            )
+    }
 
     sealed interface SongMenu {
 

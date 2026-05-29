@@ -29,7 +29,7 @@
     <string name="shuffle">Перемешать</string>
     <string name="from_wikipedia_cca">Из Википедии, лицензия Creative Commons Attribution CC-BY-SA 3,0</string>
     <string name="library">Библиотека</string>
-    <string name="delete_playlist">Вы действительно хотите удалить этот плейлист?</string>
+    <string name="dialog_title_delete_playlist">Вы действительно хотите удалить этот плейлист?</string>
     <string name="sync">Синхронизация</string>
     <string name="rename">Переименовать</string>
     <string name="delete">Удалить</string>

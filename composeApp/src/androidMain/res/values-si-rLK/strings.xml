@@ -29,7 +29,7 @@
     <string name="from_wikipedia_cca">Wikipedia යටතේ Creative Commons Attribution වෙතින්
 CC-BY-SA 3.0</string>
     <string name="library">ලයිබ්‍රරිය</string>
-    <string name="delete_playlist">ඔබට ඇත්තටම මෙම playlist එක මැකීමට අවශ්‍යද?</string>
+    <string name="dialog_title_delete_playlist">ඔබට ඇත්තටම මෙම playlist එක මැකීමට අවශ්‍යද?</string>
     <string name="sync">සමමුහුර්ත</string>
     <string name="rename">නැවත නම් කරන්න</string>
     <string name="delete">මකන්න</string>

@@ -28,7 +28,7 @@
     <string name="shuffle">এলোমেলো বাজান</string>
     <string name="from_wikipedia_cca">উইকিপিডিয়া থেকে ক্রিয়েটিভ কমনস এর অধীন এট্রিবিউশন সিসি-বিওয়াই-এসএ ৩.০</string>
     <string name="library">লাইব্রেরী</string>
-    <string name="delete_playlist">আপনি কি সত্যিই এই প্লে-লিস্ট মুছে ফেলতে চান?</string>
+    <string name="dialog_title_delete_playlist">আপনি কি সত্যিই এই প্লে-লিস্ট মুছে ফেলতে চান?</string>
     <string name="sync">সিঙ্ক</string>
     <string name="rename">নতুন নাম দিন</string>
     <string name="delete">মুছুন</string>

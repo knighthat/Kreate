@@ -28,7 +28,7 @@
     <string name="shuffle">Sekoita</string>
     <string name="from_wikipedia_cca">Wikipediasta Creative Commons Attribution CC-BY-SA 3.0 kohdasta</string>
     <string name="library">Kirjasto</string>
-    <string name="delete_playlist">Haluatko varmasti poistaa tämän soittolistan?</string>
+    <string name="dialog_title_delete_playlist">Haluatko varmasti poistaa tämän soittolistan?</string>
     <string name="sync">Synkronoi</string>
     <string name="rename">Nimeä uudelleen</string>
     <string name="delete">Poista</string>

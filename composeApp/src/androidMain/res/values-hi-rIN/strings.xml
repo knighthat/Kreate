@@ -28,7 +28,7 @@
     <string name="shuffle">शफल करें</string>
     <string name="from_wikipedia_cca">विकिपीडिया से</string>
     <string name="library">संग्रह</string>
-    <string name="delete_playlist">क्या आप वाकई इस प्रविष्टि को हटाना चाहते हैं?</string>
+    <string name="dialog_title_delete_playlist">क्या आप वाकई इस प्रविष्टि को हटाना चाहते हैं?</string>
     <string name="sync">सिंक</string>
     <string name="rename">नाम बदलें</string>
     <string name="delete">हटाएं</string>

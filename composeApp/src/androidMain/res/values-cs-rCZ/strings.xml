@@ -28,7 +28,7 @@
     <string name="shuffle">Náhodně</string>
     <string name="from_wikipedia_cca">Z Wikipedie pod Creative Commons Attribution CC-BY-SA 3.0</string>
     <string name="library">Knihovna</string>
-    <string name="delete_playlist">Opravdu chcete tento playlist smazat?</string>
+    <string name="dialog_title_delete_playlist">Opravdu chcete tento playlist smazat?</string>
     <string name="sync">Synchronizovat</string>
     <string name="rename">Přejmenovat</string>
     <string name="delete">Smazat</string>

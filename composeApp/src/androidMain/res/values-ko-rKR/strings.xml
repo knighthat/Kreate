@@ -28,7 +28,7 @@
     <string name="shuffle">셔플</string>
     <string name="from_wikipedia_cca">CCA CC-BY-SA 3.0에 따라 위키피디아에서 가져옴</string>
     <string name="library">라이브러리</string>
-    <string name="delete_playlist">정말로 이 재생목록을 삭제하실건가요?</string>
+    <string name="dialog_title_delete_playlist">정말로 이 재생목록을 삭제하실건가요?</string>
     <string name="sync">동기화</string>
     <string name="rename">이름 바꾸기</string>
     <string name="delete">삭제</string>

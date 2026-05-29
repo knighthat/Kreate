@@ -28,7 +28,7 @@
     <string name="shuffle">Amestecă</string>
     <string name="from_wikipedia_cca">De pe Wikipedia sub licența Creative Commons Attribution CC-BY-SA 3.0</string>
     <string name="library">Bibliotecă</string>
-    <string name="delete_playlist">Chiar vrei să ștergi acest playlist?</string>
+    <string name="dialog_title_delete_playlist">Chiar vrei să ștergi acest playlist?</string>
     <string name="sync">Sincronizează</string>
     <string name="rename">Redenumește</string>
     <string name="delete">Șterge</string>

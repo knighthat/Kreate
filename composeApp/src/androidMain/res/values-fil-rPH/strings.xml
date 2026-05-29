@@ -28,7 +28,7 @@
     <string name="shuffle">Shuffle</string>
     <string name="from_wikipedia_cca">Mula sa Wikipedia sa ilalim ng Creative Commons Attribution CC-BY-SA 3.0</string>
     <string name="library">Libraryo</string>
-    <string name="delete_playlist">Gusto mo ba talagang burahin ang playlist na ito?</string>
+    <string name="dialog_title_delete_playlist">Gusto mo ba talagang burahin ang playlist na ito?</string>
     <string name="sync">I-Sync</string>
     <string name="rename">Baguhin ang Pangalan</string>
     <string name="delete">Burahin</string>

@@ -28,7 +28,7 @@
     <string name="shuffle">Перемішати</string>
     <string name="from_wikipedia_cca">З Вікіпедії за ліцензією Creative Commons Attribution CC-BY-SA 3.0</string>
     <string name="library">Бібліотека</string>
-    <string name="delete_playlist">Ви дійсно хочете видалити цей плейлист?</string>
+    <string name="dialog_title_delete_playlist">Ви дійсно хочете видалити цей плейлист?</string>
     <string name="sync">Синхронізувати</string>
     <string name="rename">Перейменувати</string>
     <string name="delete">Видалити</string>

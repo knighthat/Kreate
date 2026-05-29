@@ -28,7 +28,7 @@
     <string name="shuffle">Losowo</string>
     <string name="from_wikipedia_cca">Z Wikipedii pod licencją Creative Commons Attribution CC-BY-SA 3.0</string>
     <string name="library">Biblioteka</string>
-    <string name="delete_playlist">Na pewno chcesz usunąć tę playlistę?</string>
+    <string name="dialog_title_delete_playlist">Na pewno chcesz usunąć tę playlistę?</string>
     <string name="sync">Zsynchronizuj</string>
     <string name="rename">Zmień nazwę</string>
     <string name="delete">Usuń</string>

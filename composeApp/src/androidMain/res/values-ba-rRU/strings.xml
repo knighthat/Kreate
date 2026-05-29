@@ -28,7 +28,7 @@
     <string name="shuffle">Буталарға</string>
     <string name="from_wikipedia_cca">Википедиянан Creative Commons Attribution CC-BY-SA 3.0 аҫтында</string>
     <string name="library">Китапхана</string>
-    <string name="delete_playlist">Һеҙ ысынлап та был плейлистты юйырға теләйһегеҙме?</string>
+    <string name="dialog_title_delete_playlist">Һеҙ ысынлап та был плейлистты юйырға теләйһегеҙме?</string>
     <string name="sync">Синхронлаштырыу</string>
     <string name="rename">Исемен үҙгәртергә</string>
     <string name="delete">Юйырға</string>

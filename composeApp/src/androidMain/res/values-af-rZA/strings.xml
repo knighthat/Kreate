@@ -28,7 +28,7 @@
     <string name="shuffle">Shuffle</string>
     <string name="from_wikipedia_cca">Van Wikipedia onder Creative Commons Attribution CC-BY-SA 3.0</string>
     <string name="library">Biblioteek</string>
-    <string name="delete_playlist">Wil jy regtig hierdie speellys verwyder?</string>
+    <string name="dialog_title_delete_playlist">Wil jy regtig hierdie speellys verwyder?</string>
     <string name="sync">Sinchroniseer</string>
     <string name="rename">Hernoem</string>
     <string name="delete">Skrap</string>

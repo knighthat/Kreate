@@ -28,7 +28,7 @@
     <string name="shuffle">Nasumično</string>
     <string name="from_wikipedia_cca">Sa Vikipedije pod Creative Commons Attribution CC-BI-SA 3.0</string>
     <string name="library">Biblioteka</string>
-    <string name="delete_playlist">Da li zaista želite da obrišete ovu plejlistu?</string>
+    <string name="dialog_title_delete_playlist">Da li zaista želite da obrišete ovu plejlistu?</string>
     <string name="sync">Sinhronizuj</string>
     <string name="rename">Preimenuj</string>
     <string name="delete">Obriši</string>

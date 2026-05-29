@@ -16,6 +16,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -69,8 +70,10 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.themed.common.component.menu.MenuButton
+import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.scrollingText
+import app.kreate.database.models.PlaylistPreview
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
@@ -81,6 +84,7 @@ import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import me.knighthat.component.dialog.InputDialog
@@ -100,10 +104,12 @@ class BottomMenu {
     var isVisible by mutableStateOf( false )
         private set
 
+    @Suppress("UNCHECKED_CAST")
     private fun onButtonClick( button: MenuButton<*>, screen: MenuPage ) {
-        if( screen is MenuPage.SongMenu ) {
-            (button as MenuButton<MediaItem>).onClick( this@BottomMenu, screen.song )
-        }
+        if( screen is MenuPage.SongMenu )
+            (button as MenuButton<MediaItem>).onClick( this, screen.song )
+        else if( screen is MenuPage.LocalPlaylist )
+            (button as MenuButton<PlaylistPreview>).onClick( this, screen.playlist )
     }
 
     /**
@@ -131,6 +137,7 @@ class BottomMenu {
     }
 
     @androidx.annotation.OptIn(UnstableApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Composable
     fun BottomSheet(
         navController: NavController,
@@ -219,6 +226,46 @@ class BottomMenu {
                                             )
                                     }
                                 }
+                            )
+                        }
+                    else if( currentScreen is MenuPage.LocalPlaylist )
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = Color.Transparent,
+                        ) {
+                            ListItem(
+                                leadingContent = {
+                                    PlaylistItem.Thumbnail(
+                                        playlist = currentScreen.playlist.playlist,
+                                        // Not typo, forces this placeholder to match size with SongItem
+                                        sizeDp = SongItem.thumbnailSize()
+                                    )
+                                },
+                                headlineContent = {
+                                    Text(
+                                        text = currentScreen.playlist.playlist.name
+                                    )
+                                },
+                                supportingContent = {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            painter = painterResource( R.drawable.musical_notes ),
+                                            // Not clickable
+                                            contentDescription = null
+                                        )
+
+                                        Text(
+                                            text = currentScreen.playlist.songCount.toString()
+                                        )
+                                    }
+                                },
+                                colors = ListItemDefaults.colors(
+                                    containerColor = Color.Transparent,
+                                    headlineColor = colorPalette.text,
+                                    supportingColor = colorPalette.textSecondary,
+                                )
                             )
                         }
 

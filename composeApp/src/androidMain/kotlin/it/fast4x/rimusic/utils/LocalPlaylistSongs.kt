@@ -21,7 +21,7 @@ fun DeletePlaylist(
 
     override val dialogTitle: String
         @Composable
-        get() = stringResource( R.string.delete_playlist )
+        get() = stringResource( R.string.dialog_title_delete_playlist )
 
     override fun onConfirm() = onEvent()
 }

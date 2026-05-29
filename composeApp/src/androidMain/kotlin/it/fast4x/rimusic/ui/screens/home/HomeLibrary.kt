@@ -37,8 +37,10 @@ import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMapNotNull
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import app.kreate.android.LocalBottomMenu
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.constant.MenuPage
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.tab.ItemSize
@@ -98,6 +100,7 @@ fun HomeLibrary(
     val lazyGridState = rememberLazyGridState()
     val menuState = LocalMenuState.current
     val appearance = LocalAppearance.current
+    val menu = LocalBottomMenu.current
 
     // Non-vital
     var playlistType by Preferences.HOME_LIBRARY_TYPE
@@ -301,7 +304,11 @@ fun HomeLibrary(
                             songCount = preview.songCount,
                             navController = navController,
                             sizeDp = sizeDp,
-                            onClick = search::hideIfEmpty
+                            onClick = search::hideIfEmpty,
+                            onLongClick = {
+                                val page = MenuPage.LocalPlaylist(preview)
+                                menu.show( page, true )
+                            }
                         )
                     }
                 }
