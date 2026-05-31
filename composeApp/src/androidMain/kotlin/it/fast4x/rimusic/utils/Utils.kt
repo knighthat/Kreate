@@ -44,6 +44,7 @@ import it.fast4x.innertube.utils.getProxy
 import it.fast4x.kugou.KuGou
 import it.fast4x.lrclib.LrcLib
 import it.fast4x.rimusic.Database
+import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -217,7 +218,8 @@ val MediaItem.asSong: Song
         title = mediaMetadata.title.toString(),
         artistsText = mediaMetadata.artist.toString(),
         durationText = mediaMetadata.durationMs?.let { DateUtils.formatElapsedTime(it / 1000) },
-        thumbnailUrl = mediaMetadata.artworkUri.toString()
+        thumbnailUrl = mediaMetadata.artworkUri.toString(),
+        isLocal = isLocal
     )
 
 val MediaItem.isVideo: Boolean
