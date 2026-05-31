@@ -7,3 +7,7 @@
 [submodule "modules/kizzy"]
 	path = modules/kizzy
 	url = https://github.com/knighthat/Kizzy
+[submodule "modules/metrolist"]
+	path = modules/metrolist
+	url = https://github.com/knighthat/Metrolist-innertube.git
+	branch = kreate-old

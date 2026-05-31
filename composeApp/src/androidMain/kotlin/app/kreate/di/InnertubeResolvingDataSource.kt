@@ -18,6 +18,8 @@ import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.database.models.Format
 import co.touchlab.kermit.Logger
 import com.grack.nanojson.JsonWriter
+import com.metrolist.innertube.YouTube
+import com.metrolist.music.utils.YTPlayerUtils
 import io.ktor.client.HttpClient
 import io.ktor.client.request.head
 import io.ktor.http.URLBuilder
@@ -47,10 +49,6 @@ import me.knighthat.innertube.response.PlayerResponse
 import me.knighthat.utils.Toaster
 import org.koin.core.scope.Scope
 import org.koin.java.KoinJavaComponent.get
-import org.schabi.newpipe.extractor.localization.ContentCountry
-import org.schabi.newpipe.extractor.localization.Localization
-import org.schabi.newpipe.extractor.services.youtube.YoutubeJavaScriptPlayerManager
-import org.schabi.newpipe.extractor.services.youtube.YoutubeStreamHelper
 import java.net.UnknownHostException
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.atomics.AtomicReference
@@ -66,7 +64,7 @@ private const val METHOD_IOS = 2
  * This is created to reduce load to Room
  */
 private val justInserted = AtomicReference("")
-private val cachedStreamUrl = ConcurrentHashMap<String, StreamCache>()
+private val cachedStreamUrl = ConcurrentHashMap<String, YTPlayerUtils.PlaybackData>()
 private val logger = Logger.withTag("dataspec")
 private val jsonParser =
     Json {
@@ -183,7 +181,6 @@ private fun extractFormat(
 
     return when( audioQualityFormat ) {
         AudioQualityFormat.High -> sortedAudioFormats.last()
-        AudioQualityFormat.Medium -> sortedAudioFormats[sortedAudioFormats.size / 2]
         AudioQualityFormat.Low -> sortedAudioFormats.first()
         AudioQualityFormat.Auto ->
             if ( connectionMetered && Preferences.IS_CONNECTION_METERED.value )
@@ -210,7 +207,6 @@ private fun extractStreamUrl( videoId: String, format: PlayerResponse.StreamingD
                 URLBuilder(signatureUrl)
             )
         }
-        url.parameters[sp] = YoutubeJavaScriptPlayerManager.deobfuscateSignature( videoId, s )
         url.toString()
     } ?: format.url!!
 //</editor-fold>
@@ -242,13 +238,7 @@ private suspend fun makeStreamCache(
     val cpn = CharUtils.randomString( 12 )
     try {
         //<editor-fold desc="Getting response">
-        val (gl, hl) = with( CURRENT_LOCALE ) {
-            ContentCountry(regionCode) to Localization(languageCode)
-        }
-        val jsonResponse = if( method == METHOD_ANDROID )
-            YoutubeStreamHelper.getAndroidReelPlayerResponse( gl, hl, songId, cpn )
-        else
-            YoutubeStreamHelper.getIosPlayerResponse( gl, hl, songId, cpn, null )
+        val jsonResponse = Any()
         val serializerClass = Class.forName("me.knighthat.internal.response.PlayerResponseImpl$\$serializer")
         val serializerInstance = serializerClass.getDeclaredField("INSTANCE").get(null) as KSerializer<*>
         val response = jsonParser.decodeFromString(
@@ -304,14 +294,15 @@ private suspend fun makeStreamCache(
     }
 }
 
-private fun getPlayableUrl( songId: String ): StreamCache = runBlocking( Dispatchers.IO ) {
+private fun getPlayableUrl( songId: String ): YTPlayerUtils.PlaybackData = runBlocking( Dispatchers.IO ) {
     logger.v { "Processing $songId" }
 
-    val cache: StreamCache
+    val cache: YTPlayerUtils.PlaybackData
     if( cachedStreamUrl.contains(songId) ) {
         cache = cachedStreamUrl[songId]!!
         // Handle expired url with 30secs offset
-        if( cache.expiredTimeMillis - 30.seconds.inWholeMilliseconds <= System.currentTimeMillis() ) {
+        val remainingSeconds = cache.streamExpiresInSeconds.seconds - 30.seconds
+        if( remainingSeconds.inWholeMilliseconds <= System.currentTimeMillis() ) {
             logger.d { "Cached stream url of $songId expired" }
 
             cachedStreamUrl.remove( songId )
@@ -319,11 +310,25 @@ private fun getPlayableUrl( songId: String ): StreamCache = runBlocking( Dispatc
         } else
             logger.d { "Stream url of $songId is cached" }
     } else {
-        val connManager = get<Context>(Context::class.java).getSystemService<ConnectivityManager>()
-        val isConnectionMetered = connManager?.isActiveNetworkMetered ?: false
+        if( YouTube.visitorData == null )
+            YouTube.visitorData()
+                   .onFailure { err ->
+                       logger.e( "", err )
+                   }
+                   .onSuccess {
+                       YouTube.visitorData = it
+                       logger.d { "Fetched visitorData: $it" }
+                   }
+
+        val connManager = get<Context>(Context::class.java).getSystemService<ConnectivityManager>()!!
         val audioQuality by Preferences.AUDIO_QUALITY
 
-        cache = makeStreamCache( songId, isConnectionMetered, audioQuality )
+        cache = YTPlayerUtils.playerResponseForPlayback(
+            videoId = songId,
+            playlistId = null,
+            audioQuality = audioQuality,
+            connectivityManager = connManager
+        ).getOrThrow()
         cachedStreamUrl[songId] = cache
     }
 
@@ -340,10 +345,9 @@ fun Scope.resolveInnertubeMedia( dataSpec: DataSpec ): DataSpec {
     upsertSongInfo( get(), songId )
 
     val cache = getPlayableUrl( songId )
-    val deobUrl = YoutubeJavaScriptPlayerManager.getUrlWithThrottlingParameterDeobfuscated( songId, cache.playableUrl )
-    val length = cache.contentLength ?: C.LENGTH_UNSET.toLong()
+    val length = cache.format.contentLength ?: C.LENGTH_UNSET.toLong()
     return dataSpec.buildUpon()
-                   .setUri( "$deobUrl&cpn=${cache.cpn}" )
+                   .setUri(cache.streamUrl)
                    .setLength( length )
                    .build()
 }
