@@ -29,7 +29,7 @@
     <string name="shuffle">Перемешать</string>
     <string name="from_wikipedia_cca">Из Википедии, лицензия Creative Commons Attribution CC-BY-SA 3,0</string>
     <string name="library">Библиотека</string>
-    <string name="delete_playlist">Вы действительно хотите удалить этот плейлист?</string>
+    <string name="dialog_title_delete_playlist">Вы действительно хотите удалить этот плейлист?</string>
     <string name="sync">Синхронизация</string>
     <string name="rename">Переименовать</string>
     <string name="delete">Удалить</string>
@@ -910,4 +910,12 @@
     <string name="setting_description_choose_image">Нажмите, чтобы выбрать изображение</string>
     <string name="setting_description_remove_image">Нажмите, чтобы удалить изображение</string>
     <string name="error_failed_to_update_widget">Не удалось обновить виджет</string>
+    <string name="error_failed_to_export_song">Failed to export song</string>
+    <string name="go_to_artist">Go to artist</string>
+    <string name="info_song_already_in_playlist">%1$s already in playlist %2$s</string>
+    <string name="success_added_song_to_playlist">Added %1$s to playlist %2$s</string>
+    <string name="success_removed_song_from_playlist">Removed %1$s from %2$s</string>
+    <string name="word_pin">Pin</string>
+    <string name="word_unpin">Unpin\n</string>
+    <string name="success_playlist_deleted">Deleted %s</string>
 </resources>
