@@ -8,8 +8,7 @@ import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.database.StandaloneDatabaseProvider
-import androidx.media3.datasource.DataSource
-import androidx.media3.datasource.cache.Cache
+import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper
@@ -19,6 +18,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.DownloadHelper
 import app.kreate.database.models.Song
+import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
 import coil3.request.allowHardware
 import coil3.request.bitmapConfig
@@ -46,14 +46,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import java.util.concurrent.Executors
 
 
 @OptIn(UnstableApi::class)
 class DownloadHelperImpl(
-    dataSourceFactory: DataSource.Factory,
     private val context: Context,
-    private val downloadCache: Cache
 ): DownloadHelper, KoinComponent {
 
     companion object {
@@ -88,8 +87,8 @@ class DownloadHelperImpl(
         val manager = DownloadManager(
             context,
             StandaloneDatabaseProvider(context),
-            downloadCache,
-            dataSourceFactory,
+            get(CacheType.DOWNLOAD),
+            get<ResolvingDataSource.Factory>(),
             executor
         )
 
