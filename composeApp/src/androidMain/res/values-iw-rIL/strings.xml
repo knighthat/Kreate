@@ -483,7 +483,7 @@
     <string name="info_debug_mode_is_enabled">Debug mode is enabled, remember to disable it in settings</string>
     <string name="tapqueue">הקש כדי לפתוח את התור</string>
     <string name="header_view_top_of">View top %s of …</string>
-    <string name="podcast_episodes">Episodes</string>
+    <string name="podcast_episodes">פרקים</string>
     <string name="podcasts">פודקאסטים</string>
     <string name="playlistindicator">Playlist Indicator</string>
     <string name="playlistindicatorinfo">Indicates if the song is already added to a Playlist</string>
@@ -585,8 +585,8 @@
     <string name="showsecondline">Show Translation in the Second Line</string>
     <string name="resume_playback_on_start">Resume Playback On Start</string>
     <string name="resume_automatically_when_app_opens">Resume Playback automatically when the app is opened</string>
-    <string name="notificationPlayerFirstIcon">First button</string>
-    <string name="notificationPlayerSecondIcon">Second button</string>
+    <string name="notificationPlayerFirstIcon">כפתור ראשון</string>
+    <string name="notificationPlayerSecondIcon">כפתור שני</string>
     <string name="notification_player">NOTIFICATION PLAYER</string>
     <string name="repeat">Repeat</string>
     <string name="original_lyrics">Original Lyrics</string>
@@ -600,7 +600,7 @@
     <string name="good_morning">Good Morning</string>
     <string name="good_afternoon">Good Afternoon</string>
     <string name="good_evening">Good Evening</string>
-    <string name="good_night">Good Night</string>
+    <string name="good_night">לילה טוב</string>
     <string name="colored_bar">Colored bar</string>
     <string name="about_developers_designers">Developers / Designers</string>
     <string name="set_custom_value">Custom value</string>
@@ -696,7 +696,7 @@
     <string name="adding_yt_to_pl_failed">Error occurred for the next 50 songs. Adding songs to the playlist one by one</string>
     <string name="songs_add_yt_success">Added the song in the YouTube Playlist</string>
     <string name="songs_add_yt_failed">Failed to add the song in the YouTube Playlist</string>
-    <string name="are_you_sure">Are you sure?</string>
+    <string name="are_you_sure">האם אתה בטוח?</string>
     <string name="title_reset_cache">אפס מטמון</string>
     <string name="playing_song_not_found_on_current_list">Could not find playing song on current list</string>
     <string name="no_songs_playing">No song is playing at the moment</string>
@@ -767,7 +767,7 @@
     <string name="setting_description_show_no_update_available_yes">Notify update status on startup</string>
     <string name="setting_description_show_no_update_available_no">Will not annoy you with this message on startup</string>
     <string name="error_no_build_matches_this_version">Could not find any build matches this version</string>
-    <string name="dialog_title_are_you_sure">Are you sure?</string>
+    <string name="dialog_title_are_you_sure">האם אתה בטוח?</string>
     <string name="dialog_text_this_action_is_irreversible">This action is irreversible</string>
     <string name="dialog_text_download_all_warning">You might get blocked for downloading multiple songs at once, making them unplayable in offline mode.</string>
     <string name="error_invalid_proxy">Invalid proxy</string>
@@ -795,7 +795,7 @@
     <string name="word_license">License</string>
     <string name="word_licenses">Licenses</string>
     <string name="view_license">View license</string>
-    <string name="word_version">Version</string>
+    <string name="word_version">גרסה</string>
     <string name="dialog_title_crash_report">Crash report</string>
     <string name="error_failed_to_read_crashlog">Failed to read crash log</string>
     <string name="dialog_button_open_report_ticket">Open report ticket</string>
@@ -827,7 +827,7 @@
     <string name="setting_description_song_empty_duration_placeholder">Display \"--:--\" when duration is unknown</string>
     <string name="shape_rectangle">Rectangle</string>
     <string name="shape_circle">Circle</string>
-    <string name="word_description">Description</string>
+    <string name="word_description">תיאור</string>
     <string name="word_information">Information</string>
     <string name="description_view_song_info">View song\'s details</string>
     <string name="error_access_cache_failed">Failed to retrieve data from cache storage</string>
@@ -887,8 +887,8 @@
     <string name="error_bass_boost_failed">Bass boost failed</string>
     <string name="error_reverb_failed">Failed to apply reverb</string>
     <string name="reverb_preset_none">None</string>
-    <string name="reverb_preset_small_room">Small room</string>
-    <string name="reverb_preset_medium_room">Medium room</string>
+    <string name="reverb_preset_small_room">חדר קטן</string>
+    <string name="reverb_preset_medium_room">חדר בינוני</string>
     <string name="reverb_preset_large_room">Large room</string>
     <string name="reverb_preset_medium_hall">Medium hall</string>
     <string name="reverb_preset_large_hall">Large hall</string>
@@ -908,4 +908,12 @@
     <string name="setting_description_choose_image">Click to choose image</string>
     <string name="setting_description_remove_image">Click to remove image</string>
     <string name="error_failed_to_update_widget">Failed to update widget</string>
+    <string name="error_failed_to_export_song">Failed to export song</string>
+    <string name="go_to_artist">Go to artist</string>
+    <string name="info_song_already_in_playlist">%1$s already in playlist %2$s</string>
+    <string name="success_added_song_to_playlist">Added %1$s to playlist %2$s</string>
+    <string name="success_removed_song_from_playlist">Removed %1$s from %2$s</string>
+    <string name="word_pin">Pin</string>
+    <string name="word_unpin">Unpin\n</string>
+    <string name="success_playlist_deleted">Deleted %s</string>
 </resources>

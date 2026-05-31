@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="second">
-        <item quantity="one">%d second</item>
-        <item quantity="other">%d second</item>
+        <item quantity="one">%d Segon</item>
+        <item quantity="other">%d Segons</item>
     </plurals>
     <plurals name="query">
-        <item quantity="one">%d query</item>
-        <item quantity="other">%d query</item>
+        <item quantity="one">%d Cerca</item>
+        <item quantity="other">%d Cerques</item>
     </plurals>
     <plurals name="file">
-        <item quantity="one">%d file</item>
-        <item quantity="other">%d file</item>
+        <item quantity="one">%d Fitxer</item>
+        <item quantity="other">%d Fitxers</item>
     </plurals>
     <plurals name="song">
-        <item quantity="one">%d song</item>
-        <item quantity="other">%d song</item>
+        <item quantity="one">%d Cançó</item>
+        <item quantity="other">%d Cançó</item>
     </plurals>
 </resources>
