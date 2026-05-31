@@ -1,0 +1,13 @@
+New:
+- Menu for songs and playlists
+
+Fixes:
+- Local songs written into cache storage
+- Random crashes on startup
+- Crash when interact with media control
+- YouTube block (reduce chance of getting blocked)
+- Low quality thumbnail in Android Auto
+- Download button shows in queue for local songs
+
+Changes:
+- Media control logo
