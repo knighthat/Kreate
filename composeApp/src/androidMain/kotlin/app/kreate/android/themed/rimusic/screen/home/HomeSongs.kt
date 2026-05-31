@@ -290,7 +290,6 @@ fun HomeSongs(
                     isPlaying = song.shallowCompare( currentMediaItem ),
                     values = songItemValues,
                     itemSelector = itemSelector,
-                    navController = navController,
                     modifier = Modifier.animateItem(),
                     thumbnailOverlay = {
                         if ( songSort.sortBy == SongSortBy.TOTAL_PLAY_TIME || builtInPlaylist == BuiltInPlaylist.Top ) {

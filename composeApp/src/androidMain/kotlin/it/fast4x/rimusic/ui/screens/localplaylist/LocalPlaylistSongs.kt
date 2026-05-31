@@ -664,7 +664,6 @@ fun LocalPlaylistSongs(
                             values = songItemValues,
                             isInPlaylistScreen = true,
                             itemSelector = itemSelector,
-                            navController = navController,
                             isRecommended = song in relatedSongs,
                             trailingContent = {
                                 if( !positionLock.isLocked() )

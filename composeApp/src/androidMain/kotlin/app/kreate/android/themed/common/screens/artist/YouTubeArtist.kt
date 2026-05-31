@@ -176,7 +176,6 @@ private fun LazyListScope.renderSections(
                            hapticFeedback = hapticFeedback,
                            isPlaying = song.shallowCompare( currentMedia ),
                            values = songItemValues,
-                           navController = navController,
                            showThumbnail = true,
                            onClick = {
                                player.stopRadio()
@@ -243,7 +242,6 @@ private fun LazyListScope.renderLibrarySongs(
                 hapticFeedback = hapticFeedback,
                 isPlaying = song.shallowCompare( currentMedia ),
                 values = songItemValues,
-                navController = navController,
                 showThumbnail = true,
                 onClick = {
                     player.stopRadio()

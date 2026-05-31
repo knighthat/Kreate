@@ -204,7 +204,6 @@ fun HistoryList(
                             hapticFeedback = hapticFeedback,
                             isPlaying = event.song.shallowCompare( currentMediaItem ),
                             values = songItemValues,
-                            navController = navController,
                             onClick = {
                                 player.forcePlay( event.song.asMediaItem )
                             },
@@ -239,7 +238,6 @@ fun HistoryList(
                             hapticFeedback = hapticFeedback,
                             isPlaying = mediaItem.shallowCompare( currentMediaItem ),
                             values = songItemValues,
-                            navController = navController,
                             onClick = {
                                 player.forcePlay( mediaItem )
                             },
