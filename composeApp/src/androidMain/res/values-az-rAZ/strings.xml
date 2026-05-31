@@ -28,7 +28,7 @@
     <string name="shuffle">Qarışdır</string>
     <string name="from_wikipedia_cca">Wikipedia-dan Creative Commons Attribution CC-BY-SA 3.0 altında</string>
     <string name="library">Kitabxana</string>
-    <string name="delete_playlist">Bu pleylisti həqiqətən silmək istəyirsiniz?</string>
+    <string name="dialog_title_delete_playlist">Bu pleylisti həqiqətən silmək istəyirsiniz?</string>
     <string name="sync">Sinxronizasiya</string>
     <string name="rename">Adı dəyişdir</string>
     <string name="delete">Sil</string>
@@ -908,4 +908,12 @@
     <string name="setting_description_choose_image">Click to choose image</string>
     <string name="setting_description_remove_image">Click to remove image</string>
     <string name="error_failed_to_update_widget">Failed to update widget</string>
+    <string name="error_failed_to_export_song">Failed to export song</string>
+    <string name="go_to_artist">Go to artist</string>
+    <string name="info_song_already_in_playlist">%1$s already in playlist %2$s</string>
+    <string name="success_added_song_to_playlist">Added %1$s to playlist %2$s</string>
+    <string name="success_removed_song_from_playlist">Removed %1$s from %2$s</string>
+    <string name="word_pin">Pin</string>
+    <string name="word_unpin">Unpin\n</string>
+    <string name="success_playlist_deleted">Deleted %s</string>
 </resources>
