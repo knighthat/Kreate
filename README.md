@@ -22,7 +22,8 @@
 </div>
 
 # IMPORTANT
-At the moment music streaming and downloading is broken and result in an error 403. This issue is known and we are working on a fix. PLEASE DO NOT OPEN ANOTHER ISSUE TICKET! This will cause massive delays and steal a lot of our small developer time.
+# IMPORTANT
+Music streaming and downloading are currently unavailable and returning a 403 error. We are aware of the issue and actively working on a fix. PLEASE DO NOT OPEN NEW ISSUES! Doing so creates delays and takes up valuable time for our small team.
 
 # 📲 Installation
 
