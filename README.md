@@ -23,7 +23,7 @@
 
 # IMPORTANT
 # IMPORTANT
-Music streaming and downloading are currently unavailable and returning a 403 error. We are aware of the issue and actively working on a fix. PLEASE DO NOT OPEN NEW ISSUES! Doing so creates delays and takes up valuable time for our small team.
+Music streaming and downloading are currently unavailable and returning a 403 error. We are aware of the issue and actively working on a fix. **PLEASE DO NOT OPEN NEW ISSUES!** Doing so creates delays and takes up valuable time for our small team.
 
 # 📲 Installation
 
