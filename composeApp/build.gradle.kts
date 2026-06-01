@@ -74,8 +74,9 @@ kotlin {
             implementation(libs.vlcj)
         }
         androidMain.dependencies {
+            implementation( projects.metrolistInnertube )
+
             implementation(libs.kotlinx.coroutines.guava)
-            implementation(libs.newpipe.extractor)
             implementation(libs.nanojson)
             implementation(libs.androidx.webkit)
 

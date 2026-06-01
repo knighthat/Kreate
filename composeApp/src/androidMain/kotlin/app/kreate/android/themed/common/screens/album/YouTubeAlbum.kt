@@ -493,7 +493,6 @@ fun YouTubeAlbum(
                                     isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
                                     itemSelector = itemSelector,
-                                    navController = navController,
                                     showThumbnail = false,
                                     thumbnailOverlay = {
                                         BasicText(

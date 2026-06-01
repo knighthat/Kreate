@@ -370,7 +370,6 @@ fun YouTubePlaylist(
                                 isPlaying = song.shallowCompare( currentMediaItem ),
                                 values = songItemValues,
                                 itemSelector = itemSelector,
-                                navController = navController,
                                 modifier = Modifier.animateItem(),
                                 onClick = {
                                     player.stopRadio()

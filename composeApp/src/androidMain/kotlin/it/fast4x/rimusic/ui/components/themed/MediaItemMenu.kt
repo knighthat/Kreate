@@ -995,7 +995,6 @@ fun MediaItemMenu(
                         hapticFeedback = hapticFeedback,
                         isPlaying = mediaItem.shallowCompare( currentMediaItem ),
                         values = songItemValues,
-                        navController = navController,
                         onLongClick = {
                             val page = if( mediaItem.isLocal ) MenuPage.LocalSong(mediaItem) else MenuPage.Song(mediaItem)
                             menu.show( page, true )

@@ -197,7 +197,6 @@ fun SearchResultScreen(
                                     hapticFeedback = hapticFeedback,
                                     isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
-                                    navController = navController,
                                     onClick = {
                                         player.startRadio( mediaItem, false, song.info?.endpoint )
                                     },

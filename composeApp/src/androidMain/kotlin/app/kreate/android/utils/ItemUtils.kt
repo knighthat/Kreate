@@ -92,7 +92,6 @@ object ItemUtils {
                         hapticFeedback = hapticFeedback,
                         values = songItemValues,
                         isPlaying = childItem.key == currentlyPlaying,
-                        navController = navController,
                         onClick = {
                             player.forcePlay( childItem.asMediaItem )
                         },
@@ -181,7 +180,6 @@ object ItemUtils {
                         hapticFeedback = hapticFeedback,
                         values = songIV,
                         isPlaying = item.id == currentlyPlaying,
-                        navController = navController,
                         onClick = {
                             player.forcePlay( item.toMediaItem )
                         },

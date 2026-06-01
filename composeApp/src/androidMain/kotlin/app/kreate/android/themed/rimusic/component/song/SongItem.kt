@@ -44,7 +44,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
-import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.ItemSelector
@@ -76,7 +75,6 @@ import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shimmerEffect
 import kotlinx.coroutines.Dispatchers
-import me.knighthat.component.menu.song.SongItemMenu
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.koin.java.KoinJavaComponent.inject
@@ -417,14 +415,12 @@ object SongItem: Visual() {
         modifier: Modifier = Modifier,
         isInPlaylistScreen: Boolean = false,
         itemSelector: ItemSelector<Song>? = null,
-        navController: NavController? = null,
         isRecommended: Boolean = false,
         showThumbnail: Boolean = true,
         trailingContent: @Composable (RowScope.() -> Unit)? = null,
         thumbnailOverlay: @Composable BoxScope.() -> Unit = {},
         onClick: () -> Unit = {}
     ) {
-        val menu = if( navController != null && onLongClick == null ) SongItemMenu( navController, song ) else null
         Structure(
             thumbnail = {
                 Thumbnail(
@@ -474,9 +470,7 @@ object SongItem: Visual() {
             },
             modifier = modifier.songItemModifier( isPlaying, values, onClick ) {
                 hapticFeedback.performHapticFeedback( HapticFeedbackType.LongPress )
-
-                onLongClick?.invoke()
-                menu?.openMenu()
+                onLongClick.invoke()
             }
         )
     }
@@ -492,7 +486,6 @@ object SongItem: Visual() {
         modifier: Modifier = Modifier,
         isInPlaylistScreen: Boolean = false,
         itemSelector: ItemSelector<Song>? = null,
-        navController: NavController? = null,
         isRecommended: Boolean = false,
         showThumbnail: Boolean = true,
         trailingContent: @Composable RowScope.() -> Unit = {},
@@ -507,7 +500,6 @@ object SongItem: Visual() {
             modifier = modifier,
             isInPlaylistScreen = isInPlaylistScreen,
             itemSelector = itemSelector,
-            navController = navController,
             isRecommended = isRecommended,
             showThumbnail = showThumbnail,
             onLongClick = onLongClick,
@@ -527,7 +519,6 @@ object SongItem: Visual() {
         modifier: Modifier = Modifier,
         isInPlaylistScreen: Boolean = false,
         itemSelector: ItemSelector<Song>? = null,
-        navController: NavController? = null,
         isRecommended: Boolean = false,
         showThumbnail: Boolean = true,
         trailingContent: @Composable RowScope.() -> Unit = {},
@@ -542,7 +533,6 @@ object SongItem: Visual() {
             modifier = modifier,
             isInPlaylistScreen = isInPlaylistScreen,
             itemSelector = itemSelector,
-            navController = navController,
             isRecommended = isRecommended,
             showThumbnail = showThumbnail,
             onLongClick = onLongClick,
@@ -562,7 +552,6 @@ object SongItem: Visual() {
         modifier: Modifier = Modifier,
         isInPlaylistScreen: Boolean = false,
         itemSelector: ItemSelector<Song>? = null,
-        navController: NavController? = null,
         isRecommended: Boolean = false,
         showThumbnail: Boolean = true,
         trailingContent: @Composable RowScope.() -> Unit = {},
@@ -577,7 +566,6 @@ object SongItem: Visual() {
             modifier = modifier,
             isInPlaylistScreen = isInPlaylistScreen,
             itemSelector = itemSelector,
-            navController = navController,
             isRecommended = isRecommended,
             showThumbnail = showThumbnail,
             onLongClick = onLongClick,

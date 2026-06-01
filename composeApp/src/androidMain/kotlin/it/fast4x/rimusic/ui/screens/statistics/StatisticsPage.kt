@@ -294,7 +294,6 @@ fun StatisticsPage(
                             hapticFeedback = hapticFeedback,
                             values = songItemValues,
                             isPlaying = song.shallowCompare( currentMediaItem ),
-                            navController = navController,
                             thumbnailOverlay = {
                                 BasicText(
                                     text = "${index + 1}",

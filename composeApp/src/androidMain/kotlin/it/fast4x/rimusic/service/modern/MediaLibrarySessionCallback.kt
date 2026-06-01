@@ -552,20 +552,17 @@ class MediaLibrarySessionCallback(
             .build()
 
     private fun Song.toMediaItem(path: String) =
-        MediaItem.Builder()
-            .setMediaId("$path/$id")
-            .setMediaMetadata(
-                MediaMetadata.Builder()
-                    .setTitle(cleanTitle())
-                    .setSubtitle(cleanArtistsText())
-                    .setArtist(cleanArtistsText())
-                    .setArtworkUri(cleanThumbnailUrl()?.toUri())
-                    .setIsPlayable(true)
-                    .setIsBrowsable(false)
-                    .setMediaType(MediaMetadata.MEDIA_TYPE_MUSIC)
-                    .build()
-            )
-            .build()
+        with( this.asMediaItem ) {
+            buildUpon().setMediaId( "$path/$id" )
+                       .setMediaMetadata(
+                           mediaMetadata.buildUpon()
+                                        .setIsPlayable( true )
+                                        .setIsBrowsable( false )
+                                        .setMediaType( MediaMetadata.MEDIA_TYPE_MUSIC )
+                                        .build()
+                       )
+                       .build()
+        }
 
     private fun getCountCachedSongs() =
         database.formatTable

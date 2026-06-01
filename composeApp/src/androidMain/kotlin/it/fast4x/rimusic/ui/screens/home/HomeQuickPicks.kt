@@ -526,7 +526,6 @@ fun HomeQuickPicks(
                                     isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
                                     modifier = Modifier.width( itemInHorizontalGridWidth ),
-                                    navController = navController,
                                     onLongClick = {
                                         val page = MenuPage.Song(song.asMediaItem)
                                         bottomMenu.show( page, true )
@@ -555,7 +554,6 @@ fun HomeQuickPicks(
                                     isPlaying = song.shallowCompare( currentMediaItem ),
                                     values = songItemValues,
                                     modifier = Modifier.width( itemInHorizontalGridWidth ),
-                                    navController = navController,
                                     onLongClick = {
                                         val page = MenuPage.Song(song.asMediaItem)
                                         bottomMenu.show( page, true )

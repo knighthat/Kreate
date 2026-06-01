@@ -1,8 +1,8 @@
 
 [versions]
 # App properties
-versionCode = "137"
-versionName = "2.1.6"
+versionCode = "138"
+versionName = "2.2.0"
 compileSdk = "36"
 minSdk = "23"
 
@@ -18,7 +18,7 @@ palette = "1.0.0"
 desugaring = "2.1.5"
 appcompat = "1.7.1"
 materialIcons = "1.7.3"
-androidmaterial = "1.13.0"
+androidmaterial = "1.14.0"
 constraintlayout = "1.1.1"
 translator = "1.1.1"
 kotlin-csv = "1.10.0"
@@ -35,17 +35,17 @@ hypnoticcanvas = "0.4.1"
 ksoup = "0.6.0"
 jetbrains-annotations = "26.1.0"
 lombok = "1.18.46"
-junit5 = "6.0.3"
+junit5 = "6.1.0"
 webkit = "1.15.0"
 newpipe-extractor = "v0.26.0"
 compose-kmp = "1.11.0"
-license-report = "3.1.1"
+license-report = "3.1.2"
 material3-kmp = "1.9.0"
 junit4 = "4.13.2"
 robolectric = "4.16.1"
 androidTest = "1.7.0"
 lifecycle = "2.10.0"
-kotlinx-serialization = "1.10.0"
+kotlinx-serialization = "1.11.0"
 koin = "4.2.1"
 kermit = "2.1.0"
 javax = "1"
@@ -113,8 +113,8 @@ hypnoticcanvas = { group = "com.mikepenz.hypnoticcanvas", name = "hypnoticcanvas
 hypnoticcanvas-shaders = { group = "com.mikepenz.hypnoticcanvas", name = "hypnoticcanvas-shaders", version.ref = "hypnoticcanvas" }
 
 # Newpipe extractor
-newpipe-extractor = { module = "com.github.teamnewpipe:NewPipeExtractor", version.ref = "newpipe-extractor" }
 nanojson = { group = "com.github.TeamNewPipe", name = "nanojson", version = "e9d656ddb49a412a5a0a5d5ef20ca7ef09549996" }
+metrolist-extractor = { module = "com.github.MetrolistGroup:MetrolistExtractor", version = "6305155" }
 
 # Annotations
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
