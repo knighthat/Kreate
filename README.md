@@ -21,6 +21,9 @@
 
 </div>
 
+# IMPORTNATN
+At the moment music streaming and downloading is broken and resilt in an error 403. This issue is known and we are working on a fix. PLEASE DO NOT OPEN ANOTHER ISSUE TICKET!
+
 # 📲 Installation
 
 [![Get it on Github](./assets/get-it-on/GitHub.png)](https://github.com/knighthat/RiMusic/releases/latest)
