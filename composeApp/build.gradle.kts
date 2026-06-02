@@ -110,6 +110,8 @@ kotlin {
             implementation( libs.androidx.test )
         }
         commonMain.dependencies {
+            implementation( projects.resources )
+
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
