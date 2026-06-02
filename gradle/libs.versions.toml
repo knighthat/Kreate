@@ -49,6 +49,9 @@ kotlinx-serialization = "1.11.0"
 koin = "4.2.1"
 kermit = "2.1.0"
 javax = "1"
+kotlinStdlib = "2.3.10"
+runner = "1.7.0"
+junit = "1.1.5"
 
 
 [libraries]
@@ -130,6 +133,8 @@ junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 androidx-test = { group = "androidx.test", name = "core", version.ref = "androidTest" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
+androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
 
 # MonetCompat
 monetcompat = {  group = "com.github.KieronQuinn", name = "MonetCompat", version.ref = "monetcompat" }
