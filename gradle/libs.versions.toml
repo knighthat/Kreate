@@ -52,6 +52,8 @@ javax = "1"
 kotlinStdlib = "2.3.10"
 runner = "1.7.0"
 junit = "1.1.5"
+okio = "3.16.2"
+core-ktx = "1.13.1"
 
 
 [libraries]
@@ -80,6 +82,7 @@ androidx-glance-widgets = { group = "androidx.glance", name = "glance-appwidget"
 androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
 androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycle" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 
 # Ktor
 ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
@@ -98,6 +101,8 @@ compose-kmp-ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref 
 compose-kmp-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "compose-kmp" }
 compose-kmp-material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "material3-kmp" }
 compose-kmp-animation = { group = "org.jetbrains.compose.animation", name = "animation", version.ref = "compose-kmp" }
+compose-kmp-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-kmp" }
+compose-kmp-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-kmp" }
 
 # OkHttp
 okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp3" }
@@ -160,6 +165,7 @@ desugaring-nio = { group = "com.android.tools", name = "desugar_jdk_libs_nio", v
 # This lib isn't used by the project, but it provides @Inject for discord module.
 # Doing this is easier than removing unsused files every update with the upstream
 javax = { module = "javax.inject:javax.inject", version.ref = "javax" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 
 
 [plugins]

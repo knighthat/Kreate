@@ -25,10 +25,10 @@ private fun String.isDigitOnly(): Boolean = Regex("^\\d+").matches( this )
 /**
  * Converts current string into [Duration].
  *
- * Returns [Duration.ZERO] if blank,
+ * Returns [Duration.Companion.ZERO] if blank,
  * or format is invalid.
  *
- * @return [Duration] instance from [String], [Duration.ZERO] if [String] is `null`
+ * @return [Duration] instance from [String], [Duration.Companion.ZERO] if [String] is `null`
  */
 fun String?.toDuration(): Duration {
     if( this.isNullOrBlank() )

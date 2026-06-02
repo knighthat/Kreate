@@ -190,6 +190,7 @@ fun LazyListScope.debugSection(search: SettingEntrySearch ) {
                     val logFiles = remember {
                         val fileNameFormat = TimeDateUtils.logFileName()
                         getRuntimeLogDir()
+                            .toFile()
                             .listFiles()
                             .orEmpty()
                             .sortedByDescending {
