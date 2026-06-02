@@ -5,6 +5,9 @@ plugins {
     // Android
     alias( libs.plugins.android.kotlin.multiplatform.library )
     alias( libs.plugins.android.lint )
+
+    // Compose
+    alias( libs.plugins.kotlin.compose )
 }
 
 kotlin {
@@ -24,6 +27,10 @@ kotlin {
         }.configure {
             instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
+
+        compilerOptions {
+            enableCoreLibraryDesugaring = true
+        }
     }
     jvm()
 
@@ -34,11 +41,20 @@ kotlin {
     // See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
     sourceSets {
         commonMain.dependencies {
+            // Expose Path interface for subscribing modules
+            api( libs.okio )
+            implementation( libs.koin.core )
+            implementation( libs.kermit )
+            // Compose
+            implementation( libs.compose.kmp.runtime )
+            implementation( libs.compose.kmp.ui )
+            implementation( libs.compose.kmp.resources )
         }
         commonTest.dependencies {
             implementation( libs.kotlin.test )
         }
         androidMain.dependencies {
+            implementation( libs.androidx.core.ktx )
         }
         getByName("androidDeviceTest"). dependencies {
             implementation( libs.androidx.junit )
@@ -46,4 +62,8 @@ kotlin {
             implementation( libs.androidx.test )
         }
     }
+}
+
+dependencies {
+    coreLibraryDesugaring( libs.desugaring.nio )
 }
