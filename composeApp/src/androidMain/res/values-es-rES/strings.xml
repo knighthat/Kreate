@@ -580,7 +580,7 @@
     <string name="settings_enable_pip_auto">Habilitar imagen en imagen automático</string>
     <string name="pipmodule_cover">Portada</string>
     <string name="settings_pip_module">Módulo PIP</string>
-    <string name="menu_go_to_picture_in_picture">PIP</string>
+    <string name="menu_go_to_picture_in_picture">Picture in picture</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">A partir de Android 12 pip puede habilitarse automáticamente</string>
     <string name="showsecondline">Mostrar traducción en la segunda línea</string>
     <string name="resume_playback_on_start">Reanudar reproducción al iniciar</string>
