@@ -87,7 +87,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
-import me.knighthat.component.dialog.InputDialog
+import me.knighthat.component.dialog.Dialog
 import me.knighthat.sync.YouTubeSync
 
 
@@ -402,7 +402,7 @@ class BottomMenu {
             }
 
             // Button dialog won't show up without this
-            buttons.filterIsInstance<InputDialog>().forEach { it.Render() }
+            buttons.filterIsInstance<Dialog>().forEach { it.Render() }
 
             // If there's a previous page, go back to it.
             // Otherwise, close the menu.
