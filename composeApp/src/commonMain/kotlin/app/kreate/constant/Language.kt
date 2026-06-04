@@ -1,8 +1,8 @@
 package app.kreate.constant
 
 import androidx.compose.runtime.Composable
-import me.knighthat.kreate.composeapp.generated.resources.Res
-import me.knighthat.kreate.composeapp.generated.resources.locale_system
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.locale_system
 import org.jetbrains.compose.resources.stringResource
 import java.util.Locale
 import me.bush.translator.Language as TranslatorLanguage

@@ -8,6 +8,7 @@ plugins {
 
     // Compose
     alias( libs.plugins.kotlin.compose )
+    alias( libs.plugins.jetbrains.compose )
 }
 
 kotlin {
@@ -18,6 +19,9 @@ kotlin {
         namespace = "app.kreate.resources"
         compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
+        // Expose resources to other modules.
+        // Required! Without this option, final APK won't include this module's resources
+        androidResources.enable = true
 
         withHostTestBuilder {
         }
@@ -66,4 +70,9 @@ kotlin {
 
 dependencies {
     coreLibraryDesugaring( libs.desugaring.nio )
+}
+
+compose {
+    // Make Res class importable from other places
+    resources.publicResClass = true
 }
