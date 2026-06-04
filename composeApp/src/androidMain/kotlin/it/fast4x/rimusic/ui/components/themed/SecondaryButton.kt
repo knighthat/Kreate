@@ -14,8 +14,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import it.fast4x.rimusic.ui.styling.primaryButton
 import it.fast4x.rimusic.colorPalette
+import it.fast4x.rimusic.ui.styling.primaryButton
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun SecondaryCircleButton(
@@ -66,3 +68,27 @@ fun SecondaryButton(
         )
     }
 }
+
+@Composable
+fun SecondaryButton(
+    onClick: () -> Unit,
+    iconId: DrawableResource,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) =
+    Box(
+        modifier = modifier
+            //.clip(CircleShape)
+            .clickable(enabled = enabled, onClick = onClick)
+            //.background(colorPalette.primaryButton)
+            .size(36.dp)
+    ) {
+        Image(
+            painter = painterResource(iconId),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(colorPalette().text),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .size(22.dp)
+        )
+    }

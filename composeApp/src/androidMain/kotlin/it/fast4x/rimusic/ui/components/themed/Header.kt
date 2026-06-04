@@ -39,6 +39,7 @@ import it.fast4x.rimusic.ui.styling.shimmer
 import it.fast4x.rimusic.utils.bold
 import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.semiBold
+import org.jetbrains.compose.resources.DrawableResource
 import kotlin.random.Random
 
 @Composable
@@ -194,6 +195,50 @@ fun HeaderWithIcon (
 
     }
 }
+
+@Composable
+fun HeaderWithIcon (
+    title: String,
+    modifier: Modifier,
+    iconId: DrawableResource,
+    showIcon: Boolean = true,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) =
+    //val disableIconButtonOnTop by rememberPreference(disableIconButtonOnTopKey, false)
+    Row (
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            //.requiredHeight(Dimensions.halfheaderHeight)
+            .padding(all = 8.dp)
+
+    ){
+
+        BasicText(
+            text = title,
+            style = TextStyle(
+                fontSize = typography().xxl.bold.fontSize,
+                fontWeight = typography().xxl.bold.fontWeight,
+                color = colorPalette().text,
+                textAlign = if( UiType.ViMusic.isNotCurrent()) TextAlign.Center else TextAlign.End
+
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .fillMaxSize(if( showIcon && UiType.ViMusic.isCurrent() ) 0.9f else 1f)
+        )
+
+        if ( showIcon && UiType.ViMusic.isCurrent() &&
+            ( NavigationBarPosition.Left.isCurrent() || NavigationBarPosition.Right.isCurrent()) )
+            SecondaryButton(
+                iconId = iconId,
+                enabled = enabled,
+                onClick = onClick,
+            )
+
+    }
 
 @Composable
 fun HalfHeader(

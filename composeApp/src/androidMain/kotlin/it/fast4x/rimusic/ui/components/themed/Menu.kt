@@ -4,7 +4,6 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,10 +24,12 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import it.fast4x.rimusic.utils.medium
-import it.fast4x.rimusic.utils.secondary
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
+import it.fast4x.rimusic.utils.medium
+import it.fast4x.rimusic.utils.secondary
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 inline fun Menu(
@@ -118,3 +119,23 @@ fun MenuEntry(
         trailingContent
     )
 }
+
+@Composable
+fun MenuEntry(
+    icon: DrawableResource,
+    text: String,
+    onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
+    secondaryText: String? = null,
+    enabled: Boolean = true,
+    trailingContent: (@Composable () -> Unit)? = null
+) =
+    MenuEntry(
+        painterResource( icon ),
+        text,
+        onClick,
+        onLongClick,
+        secondaryText,
+        enabled,
+        trailingContent
+    )

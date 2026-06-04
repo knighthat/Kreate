@@ -9,10 +9,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
@@ -31,6 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
+import org.jetbrains.compose.resources.painterResource
 
 @SuppressLint("ComposableNaming")
 @Composable
@@ -75,7 +74,7 @@ class Repeat private constructor(
         get() = stringResource( messageId )
     override val icon: Painter
         @Composable
-        get() = painterResource( type.androidIconId )
+        get() = painterResource( type.iconId )
 
     override fun onShortClick() { type = type.next() }
 }

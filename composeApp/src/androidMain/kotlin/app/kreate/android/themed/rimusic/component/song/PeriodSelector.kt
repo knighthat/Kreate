@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.kreate.android.Preferences
@@ -29,12 +30,14 @@ class PeriodSelector(override val menuState: MenuState): MenuIcon, Descriptive, 
 
     var period: StatisticsType by Preferences.HOME_SONGS_TOP_PLAYLIST_PERIOD
 
-    override val iconId: Int
-        get() = period.androidIconId
+    override val iconId: Int = R.drawable.close
     override val messageId: Int = R.string.statistics
     override val menuIconTitle: String
         @Composable
         get() = stringResource( messageId )
+    override val icon: Painter
+        @Composable
+        get() = period.icon
 
     override var menuStyle: MenuStyle = Preferences.MENU_STYLE.value
 
@@ -75,7 +78,7 @@ class PeriodSelector(override val menuState: MenuState): MenuIcon, Descriptive, 
 
             StatisticsType.entries.forEach {
                 MenuEntry(
-                    icon = it.androidIconId,
+                    icon = it.iconId,
                     text = it.text,
                     onClick = {
                         onDismiss( it )

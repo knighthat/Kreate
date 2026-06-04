@@ -8,9 +8,10 @@ import app.kreate.android.Preferences
 import it.fast4x.rimusic.Database
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
+import org.jetbrains.compose.resources.DrawableResource
 
 @Composable
-fun getLikeState(mediaId: String): Int {
+fun getLikeState(mediaId: String): DrawableResource {
     val songLikeState by remember( mediaId ) {
         Database.songTable
                 .likeState( mediaId )

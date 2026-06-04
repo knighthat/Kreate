@@ -1,31 +1,40 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import app.kreate.android.R
+import app.kreate.component.Drawable
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.all_inclusive
+import kreate.resources.generated.resources.stat_3months
+import kreate.resources.generated.resources.stat_6months
+import kreate.resources.generated.resources.stat_month
+import kreate.resources.generated.resources.stat_today
+import kreate.resources.generated.resources.stat_week
+import kreate.resources.generated.resources.stat_year
 import me.knighthat.enums.TextView
+import org.jetbrains.compose.resources.DrawableResource
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 
 enum class StatisticsType(
     val duration: Duration,
-    @field:DrawableRes override val androidIconId: Int,
+    override val iconId: DrawableResource,
     @field:StringRes override val androidTextId: Int
 ): Drawable, TextView {
 
-    Today( 1.days, R.drawable.stat_today, R.string.today ),
+    Today(1.days, Res.drawable.stat_today, R.string.today),
 
-    OneWeek( 7.days, R.drawable.stat_week, R.string._1_week ),
+    OneWeek(7.days, Res.drawable.stat_week, R.string._1_week),
 
-    OneMonth( 30.days, R.drawable.stat_month, R.string._1_month ),
+    OneMonth(30.days, Res.drawable.stat_month, R.string._1_month),
 
-    ThreeMonths( 90.days, R.drawable.stat_3months, R.string._3_month ),
+    ThreeMonths(90.days, Res.drawable.stat_3months, R.string._3_month),
 
-    SixMonths( 180.days, R.drawable.stat_6months, R.string._6_month ),
+    SixMonths(180.days, Res.drawable.stat_6months, R.string._6_month),
 
-    OneYear( 365.days, R.drawable.stat_year, R.string._1_year ),
+    OneYear(365.days, Res.drawable.stat_year, R.string._1_year),
 
-    All( Duration.INFINITE, R.drawable.calendar_clear, R.string.all );
+    All(Duration.INFINITE, Res.drawable.all_inclusive, R.string.all);
 
     /**
      * For example:

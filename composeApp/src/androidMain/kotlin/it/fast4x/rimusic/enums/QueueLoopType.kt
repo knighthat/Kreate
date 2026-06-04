@@ -1,18 +1,22 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.DrawableRes
 import androidx.media3.common.Player
-import app.kreate.android.R
+import app.kreate.component.Drawable
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.all_inclusive
+import kreate.resources.generated.resources.repeat
+import kreate.resources.generated.resources.repeat_one
 import org.intellij.lang.annotations.MagicConstant
+import org.jetbrains.compose.resources.DrawableResource
 
 enum class QueueLoopType(
     @field:MagicConstant(valuesFromClass = Player::class) val type: Int,
-    @field:DrawableRes override val androidIconId: Int
+    override val iconId: DrawableResource
 ): Drawable {
 
-    Default( Player.REPEAT_MODE_OFF, R.drawable.repeat ),
-    RepeatOne( Player.REPEAT_MODE_ONE, R.drawable.repeatone ),
-    RepeatAll( Player.REPEAT_MODE_ALL, R.drawable.infinite );
+    Default(Player.REPEAT_MODE_OFF, Res.drawable.repeat),
+    RepeatOne(Player.REPEAT_MODE_ONE, Res.drawable.repeat_one),
+    RepeatAll(Player.REPEAT_MODE_ALL, Res.drawable.all_inclusive);
 
     /**
      * Go through all values of [QueueLoopType] from top to bottom.
