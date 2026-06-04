@@ -78,8 +78,9 @@ object PlaybackController {
                 if( isShuffleOn ) R.drawable.shuffle_filled else R.drawable.shuffle
             }
 
-            NotificationButtons.Search,
-            NotificationButtons.Radio -> button.androidIconId
+            NotificationButtons.Search -> R.drawable.search
+
+            NotificationButtons.Radio -> R.drawable.radio
         }
 
     suspend fun makeButton(

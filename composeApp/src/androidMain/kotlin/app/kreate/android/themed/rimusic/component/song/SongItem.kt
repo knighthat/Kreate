@@ -75,8 +75,12 @@ import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shimmerEffect
 import kotlinx.coroutines.Dispatchers
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.download
+import kreate.resources.generated.resources.download_progress
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
+import org.jetbrains.compose.resources.painterResource
 import org.koin.java.KoinJavaComponent.inject
 
 object SongItem: Visual() {
@@ -188,9 +192,9 @@ object SongItem: Visual() {
         val downloadState = getDownloadState( songId )
 
         val iconId = when( downloadState ) {
-            Download.STATE_DOWNLOADING  -> R.drawable.download_progress
-            Download.STATE_REMOVING     -> R.drawable.download
-            else                        -> cacheState.androidIconId
+            Download.STATE_DOWNLOADING  -> Res.drawable.download_progress
+            Download.STATE_REMOVING     -> Res.drawable.download
+            else                        -> cacheState.iconId
         }
         val color = when( cacheState ) {
             DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED   -> values.uncachedColor

@@ -1,47 +1,57 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.OptIn
 import androidx.annotation.StringRes
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
+import app.kreate.component.Drawable
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.add_to_queue
+import kreate.resources.generated.resources.blank
+import kreate.resources.generated.resources.delete
+import kreate.resources.generated.resources.download
+import kreate.resources.generated.resources.download_progress
+import kreate.resources.generated.resources.favorite_filled
+import kreate.resources.generated.resources.heart_dislike
+import kreate.resources.generated.resources.heart_outline
+import kreate.resources.generated.resources.skip_next
 import me.knighthat.enums.TextView
+import org.jetbrains.compose.resources.DrawableResource
 
 enum class QueueSwipeAction(
-    @field:DrawableRes override val androidIconId: Int,
+    override val iconId: DrawableResource,
     @field:StringRes override val androidTextId: Int,
 ): Drawable, TextView {
 
-    NoAction( R.drawable.close, R.string.none ),
+    NoAction(Res.drawable.blank, R.string.none),
 
-    PlayNext( R.drawable.play_skip_forward, R.string.play_next ),
+    PlayNext(Res.drawable.skip_next, R.string.play_next),
 
-    Download( R.drawable.download, R.string.download ),
+    Download(Res.drawable.download, R.string.download),
 
-    Favourite( R.drawable.heart_outline, R.string.favorites ),
+    Favourite(Res.drawable.favorite_filled, R.string.favorites),
 
-    RemoveFromQueue( R.drawable.trash, R.string.remove_from_queue ),
+    RemoveFromQueue(Res.drawable.delete, R.string.remove_from_queue),
 
-    Enqueue( R.drawable.enqueue, R.string.enqueue );
+    Enqueue(Res.drawable.add_to_queue, R.string.enqueue);
 
     @OptIn(UnstableApi::class)
-    fun getStateIcon( likeState: Boolean?, downloadState: Int, downloadedStateMedia: DownloadedStateMedia ): Int? =
+    fun getStateIcon( likeState: Boolean?, downloadState: Int, downloadedStateMedia: DownloadedStateMedia ): DrawableResource =
         when( this ) {
-            NoAction -> null
             Download -> when( downloadedStateMedia ) {
                 DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED -> when (downloadState) {
-                    androidx.media3.exoplayer.offline.Download.STATE_DOWNLOADING -> R.drawable.download_progress
-                    androidx.media3.exoplayer.offline.Download.STATE_QUEUED -> R.drawable.download_progress
-                    androidx.media3.exoplayer.offline.Download.STATE_RESTARTING -> R.drawable.download_progress
-                    else -> downloadedStateMedia.androidIconId
+                    androidx.media3.exoplayer.offline.Download.STATE_DOWNLOADING,
+                    androidx.media3.exoplayer.offline.Download.STATE_QUEUED,
+                    androidx.media3.exoplayer.offline.Download.STATE_RESTARTING -> Res.drawable.download_progress
+                    else -> downloadedStateMedia.iconId
                 }
-                else -> downloadedStateMedia.androidIconId
+                else -> downloadedStateMedia.iconId
             }
             Favourite -> when( likeState ) {
-                false -> R.drawable.heart_dislike
-                null  -> R.drawable.heart_outline
-                else  -> R.drawable.heart
+                false -> Res.drawable.heart_dislike
+                null  -> Res.drawable.heart_outline
+                else  -> Res.drawable.favorite_filled
             }
-            else -> androidIconId
+            else -> iconId
         }
 }

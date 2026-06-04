@@ -549,7 +549,7 @@ fun ControlsEssential(
     )
 
     IconButton(
-        icon = queueLoopType.androidIconId,
+        icon = queueLoopType.iconId,
         color = colorPalette().text,
         onClick = { queueLoopType = queueLoopType.next() },
         modifier = Modifier.size( 26.dp )

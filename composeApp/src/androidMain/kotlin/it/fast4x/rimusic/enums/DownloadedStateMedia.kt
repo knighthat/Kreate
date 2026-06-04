@@ -1,17 +1,20 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.DrawableRes
-import app.kreate.android.R
+import app.kreate.component.Drawable
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.download
+import kreate.resources.generated.resources.download_done
+import org.jetbrains.compose.resources.DrawableResource
 
 enum class DownloadedStateMedia(
-    @field:DrawableRes override val androidIconId: Int
+    override val iconId: DrawableResource
 ): Drawable {
 
-    CACHED( R.drawable.download ),
+    CACHED(Res.drawable.download),
 
-    CACHED_AND_DOWNLOADED( R.drawable.downloaded ),
+    CACHED_AND_DOWNLOADED(Res.drawable.download_done),
 
-    DOWNLOADED( R.drawable.downloaded ),
+    DOWNLOADED(Res.drawable.download_done),
 
-    NOT_CACHED_OR_DOWNLOADED( R.drawable.download );
+    NOT_CACHED_OR_DOWNLOADED(Res.drawable.download);
 }

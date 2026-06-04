@@ -1,31 +1,36 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import app.kreate.android.R
+import app.kreate.component.Drawable
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.add_to_queue
+import kreate.resources.generated.resources.blank
+import kreate.resources.generated.resources.bookmark
+import kreate.resources.generated.resources.bookmark_filled
+import kreate.resources.generated.resources.skip_next
 import me.knighthat.enums.TextView
+import org.jetbrains.compose.resources.DrawableResource
 
 enum class AlbumSwipeAction(
-    @field:DrawableRes override val androidIconId: Int,
+    override val iconId: DrawableResource,
     @field:StringRes override val androidTextId: Int,
 ): Drawable, TextView {
 
-    NoAction( R.drawable.close, R.string.none ),
+    NoAction(Res.drawable.blank, R.string.none),
 
-    PlayNext( R.drawable.play_skip_forward, R.string.play_next ),
+    PlayNext(Res.drawable.skip_next, R.string.play_next),
 
-    Bookmark( R.drawable.bookmark_outline, R.string.bookmark ),
+    Bookmark(Res.drawable.bookmark, R.string.bookmark),
 
-    Enqueue( R.drawable.enqueue, R.string.enqueue );
+    Enqueue(Res.drawable.add_to_queue, R.string.enqueue);
 
-    fun getStateIcon(bookmarkedState: Long?): Int? {
-        return when (this) {
-            Bookmark -> when(bookmarkedState) {
-                null -> R.drawable.bookmark_outline
-                else -> R.drawable.bookmark
+    fun getStateIcon(bookmarkedState: Long?): DrawableResource =
+        when ( this ) {
+            Bookmark -> when( bookmarkedState ) {
+                null -> Res.drawable.bookmark
+                else -> Res.drawable.bookmark_filled
             }
-            NoAction -> null
-            else -> androidIconId
+            else -> iconId
         }
-    }
 }

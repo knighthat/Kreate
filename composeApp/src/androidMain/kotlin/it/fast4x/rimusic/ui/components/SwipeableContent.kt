@@ -18,13 +18,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.ViewConfiguration
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
@@ -47,11 +45,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun SwipeableContent(
-    swipeToLeftIcon: Int? = null,
-    swipeToRightIcon: Int? = null,
+    swipeToLeftIcon: DrawableResource,
+    swipeToRightIcon: DrawableResource,
     onSwipeToLeft: () -> Unit,
     onSwipeToRight: () -> Unit,
     modifier: Modifier = Modifier,
@@ -94,19 +94,13 @@ fun SwipeableContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val icon = when (dismissState.targetValue) {
-                        SwipeToDismissBoxValue.StartToEnd -> if (swipeToRightIcon == null) null else ImageVector.vectorResource(
-                            swipeToRightIcon
-                        )
-
-                        SwipeToDismissBoxValue.EndToStart -> if (swipeToLeftIcon == null) null else ImageVector.vectorResource(
-                            swipeToLeftIcon
-                        )
-
+                        SwipeToDismissBoxValue.StartToEnd -> swipeToRightIcon
+                        SwipeToDismissBoxValue.EndToStart -> swipeToLeftIcon
                         SwipeToDismissBoxValue.Settled -> null
                     }
                     if (icon != null)
                         Icon(
-                            imageVector = icon,
+                            painter = painterResource( icon ),
                             contentDescription = null,
                             tint = colorPalette().accent,
                         )
