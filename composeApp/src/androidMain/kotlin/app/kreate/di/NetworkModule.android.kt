@@ -25,6 +25,7 @@ import kotlinx.serialization.json.Json
 import me.knighthat.innertube.Constants
 import me.knighthat.utils.Toaster
 import okhttp3.Dns
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -105,7 +106,7 @@ actual val networkModule: Module = module {
         }
 
         val client = OkHttpClient.Builder().build()
-        val url = Preferences.DOH_SERVER.value.url!!        // Cannot be null if other than NONE
+        val url = Preferences.DOH_SERVER.value.url.toHttpUrlOrNull()!!        // Cannot be null if other than NONE
         val addresses = Preferences.DOH_SERVER.value.address.map( InetAddress::getByName )
 
         val dns = DnsOverHttps
