@@ -1,13 +1,15 @@
 package it.fast4x.rimusic.ui.styling
 
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 
-data class Appearance(
+
+@Immutable
+actual data class Appearance actual constructor(
     val colorPalette: ColorPalette,
     val typography: Typography,
     val thumbnailShape: Shape
@@ -37,5 +39,3 @@ data class Appearance(
         }
     }
 }
-
-val LocalAppearance = staticCompositionLocalOf<Appearance> { TODO() }

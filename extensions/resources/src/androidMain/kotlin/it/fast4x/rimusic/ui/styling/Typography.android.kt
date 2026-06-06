@@ -10,11 +10,11 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import app.kreate.android.R
+import app.kreate.resources.R
 import it.fast4x.rimusic.enums.FontType
 
 @Immutable
-data class Typography(
+actual data class Typography actual constructor(
     val xxxs: TextStyle,
     val xxs: TextStyle,
     val xs: TextStyle,

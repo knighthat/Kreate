@@ -13,7 +13,7 @@ import it.fast4x.rimusic.enums.ColorPaletteName
 
 
 @Immutable
-data class ColorPalette(
+actual data class ColorPalette actual constructor(
     val background0: Color,
     val background1: Color,
     val background2: Color,
@@ -21,8 +21,8 @@ data class ColorPalette(
     val background4: Color,
     val accent: Color,
     val onAccent: Color,
-    val red: Color = Color(0xffbf4040),
-    val blue: Color = Color(0xff4472cf),
+    val red: Color,
+    val blue: Color,
     val text: Color,
     val textSecondary: Color,
     val textDisabled: Color,
@@ -69,6 +69,8 @@ val DefaultDarkColorPalette = ColorPalette(
     iconButtonPlayer = Color(0xffe1e1e2),
     accent = Color(0xFF2b9348),
     onAccent = Color.White,
+    red = Color(0xffbf4040),
+    blue = Color(0xff4472cf),
     isDark = true
 )
 
@@ -84,6 +86,8 @@ val DefaultLightColorPalette = ColorPalette(
     iconButtonPlayer = Color(0xff212121),
     accent = Color(0xFF2b9348),
     onAccent = Color.White,
+    red = Color(0xffbf4040),
+    blue = Color(0xff4472cf),
     isDark = false
 )
 
