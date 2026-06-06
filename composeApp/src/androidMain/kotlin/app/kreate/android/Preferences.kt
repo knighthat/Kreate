@@ -221,9 +221,6 @@ sealed class Preferences<T>(
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Swipe action">
-        val ENABLE_SWIPE_ACTION by lazy {
-            Boolean( preferences, Key.ENABLE_SWIPE_ACTION, "isSwipeToActionEnabled", true )
-        }
         val QUEUE_SWIPE_LEFT_ACTION by lazy {
             Enum( preferences, Key.QUEUE_SWIPE_LEFT_ACTION, "queueSwipeLeftAction", QueueSwipeAction.RemoveFromQueue )
         }
@@ -253,16 +250,10 @@ sealed class Preferences<T>(
         val MINI_PLAYER_PROGRESS_BAR by lazy {
             Enum( preferences, Key.MINI_PLAYER_PROGRESS_BAR, "backgroundProgress", BackgroundProgress.MiniPlayer )
         }
-        val MINI_DISABLE_SWIPE_DOWN_TO_DISMISS by lazy {
-            Boolean( preferences, Key.MINI_DISABLE_SWIPE_DOWN_TO_DISMISS, "disableClosingPlayerSwipingDown", false )
-        }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Player">
         val PLAYER_CONTROLS_TYPE by lazy {
             Enum( preferences, Key.PLAYER_CONTROLS_TYPE, "playerControlsType", PlayerControlsType.Essential )
-        }
-        val PLAYER_IS_CONTROLS_EXPANDED by lazy {
-            Boolean( preferences, Key.PLAYER_IS_CONTROLS_EXPANDED, "controlsExpanded", true )
         }
         val PLAYER_INFO_TYPE by lazy {
             Enum( preferences, Key.PLAYER_INFO_TYPE, "playerInfoType", PlayerInfoType.Essential )
@@ -297,18 +288,6 @@ sealed class Preferences<T>(
         val PLAYER_NO_THUMBNAIL_SWIPE_ANIMATION by lazy {
             Enum( preferences, Key.PLAYER_NO_THUMBNAIL_SWIPE_ANIMATION, "swipeAnimationsNoThumbnail", SwipeAnimationNoThumbnail.Sliding )
         }
-        val PLAYER_SHOW_THUMBNAIL by lazy {
-            Boolean( preferences, Key.PLAYER_SHOW_THUMBNAIL, "showthumbnail", true )
-        }
-        val PLAYER_BOTTOM_GRADIENT by lazy {
-            Boolean( preferences, Key.PLAYER_BOTTOM_GRADIENT, "bottomgradient", false )
-        }
-        val PLAYER_EXPANDED by lazy {
-            Boolean( preferences, Key.PLAYER_EXPANDED, "expandedplayer", false )
-        }
-        val PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED by lazy {
-            Boolean( preferences, Key.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED, "disablePlayerHorizontalSwipe", false )
-        }
         val PLAYER_THUMBNAIL_FADE by lazy {
             Float( preferences, Key.PLAYER_THUMBNAIL_FADE, "thumbnailFade", 5F )
         }
@@ -321,152 +300,14 @@ sealed class Preferences<T>(
         val PLAYER_THUMBNAIL_SPACING_LANDSCAPE by lazy {
             Float( preferences, Key.PLAYER_THUMBNAIL_SPACING_LANDSCAPE, "thumbnailSpacingL", 0F )
         }
-        val PLAYER_VISUALIZER by lazy {
-            Boolean( preferences, Key.PLAYER_VISUALIZER, "visualizerEnabled", false )
-        }
         val PLAYER_CURRENT_VISUALIZER  by lazy {
             Int( preferences, Key.PLAYER_CURRENT_VISUALIZER , "currentVisualizerKey", 0 )
-        }
-        val PLAYER_TAP_THUMBNAIL_FOR_LYRICS by lazy {
-            Boolean( preferences, Key.PLAYER_TAP_THUMBNAIL_FOR_LYRICS, "thumbnailTapEnabled", true )
-        }
-        val PLAYER_ACTION_ADD_TO_PLAYLIST by lazy {
-            Boolean( preferences, Key.PLAYER_ACTION_ADD_TO_PLAYLIST, "showButtonPlayerAddToPlaylist", true )
-        }
-        val PLAYER_ACTION_OPEN_QUEUE_ARROW by lazy {
-            Boolean( preferences, Key.PLAYER_ACTION_OPEN_QUEUE_ARROW, "showButtonPlayerArrow", true )
-        }
-        val PLAYER_ACTION_DOWNLOAD by lazy {
-            Boolean( preferences, Key.PLAYER_ACTION_DOWNLOAD, "showButtonPlayerDownload", true )
-        }
-        val PLAYER_ACTION_LOOP by lazy {
-            Boolean( preferences, Key.PLAYER_ACTION_LOOP, "showButtonPlayerLoop", true )
-        }
-        val PLAYER_ACTION_SHOW_LYRICS by lazy {
-            Boolean( preferences, Key.PLAYER_ACTION_SHOW_LYRICS, "showButtonPlayerLyrics", true )
-        }
-        val PLAYER_ACTION_TOGGLE_EXPAND by lazy {
-            Boolean( preferences, Key.PLAYER_ACTION_TOGGLE_EXPAND, "expandedplayertoggle", true )
-        }
-        val PLAYER_ACTION_SHUFFLE by lazy {
-            Boolean( preferences, Key.PLAYER_ACTION_SHUFFLE, "showButtonPlayerShuffle", true )
-        }
-        val PLAYER_ACTION_SLEEP_TIMER by lazy {
-            Boolean( preferences, Key.PLAYER_ACTION_SLEEP_TIMER, "showButtonPlayerSleepTimer", false )
-        }
-        val PLAYER_ACTION_SHOW_MENU by lazy {
-            Boolean( preferences, Key.PLAYER_ACTION_SHOW_MENU, "showButtonPlayerMenu", false )
-        }
-        val PLAYER_ACTION_START_RADIO by lazy {
-            Boolean( preferences, Key.PLAYER_ACTION_START_RADIO, "showButtonPlayerStartRadio", false )
-        }
-        val PLAYER_ACTION_OPEN_EQUALIZER by lazy {
-            Boolean( preferences, Key.PLAYER_ACTION_OPEN_EQUALIZER, "showButtonPlayerSystemEqualizer", false )
-        }
-        val PLAYER_ACTION_DISCOVER by lazy {
-            Boolean( preferences, Key.PLAYER_ACTION_DISCOVER, "showButtonPlayerDiscover", false )
-        }
-        val PLAYER_ACTION_TOGGLE_VIDEO by lazy {
-            Boolean( preferences, Key.PLAYER_ACTION_TOGGLE_VIDEO, "showButtonPlayerVideo", false )
-        }
-        val PLAYER_ACTION_LYRICS_POPUP_MESSAGE by lazy {
-            Boolean( preferences, Key.PLAYER_ACTION_LYRICS_POPUP_MESSAGE, "playerEnableLyricsPopupMessage", true )
-        }
-        val PLAYER_TRANSPARENT_ACTIONS_BAR by lazy {
-            Boolean( preferences, Key.PLAYER_TRANSPARENT_ACTIONS_BAR, "transparentBackgroundPlayerActionBar", false )
-        }
-        val PLAYER_ACTION_BUTTONS_SPACED_EVENLY by lazy {
-            Boolean( preferences, Key.PLAYER_ACTION_BUTTONS_SPACED_EVENLY, "actionspacedevenly", false )
-        }
-        val PLAYER_ACTIONS_BAR_TAP_TO_OPEN_QUEUE by lazy {
-            Boolean( preferences, Key.PLAYER_ACTIONS_BAR_TAP_TO_OPEN_QUEUE, "tapqueue", true )
-        }
-        val PLAYER_ACTIONS_BAR_SWIPE_UP_TO_OPEN_QUEUE by lazy {
-            Boolean( preferences, Key.PLAYER_ACTIONS_BAR_SWIPE_UP_TO_OPEN_QUEUE, "actionExpanded", true )
-        }
-        val PLAYER_IS_ACTIONS_BAR_EXPANDED by lazy {
-            Boolean( preferences, Key.PLAYER_IS_ACTIONS_BAR_EXPANDED, "swipeUpQueue", true )
-        }
-        val PLAYER_SHOW_TOTAL_QUEUE_TIME by lazy {
-            Boolean( preferences, Key.PLAYER_SHOW_TOTAL_QUEUE_TIME, "showTotalTimeQueue", true )
-        }
-        val PLAYER_IS_QUEUE_DURATION_EXPANDED by lazy {
-            Boolean( preferences, Key.PLAYER_IS_QUEUE_DURATION_EXPANDED, "queueDurationExpanded", true )
-        }
-        val PLAYER_SHOW_NEXT_IN_QUEUE by lazy {
-            Boolean( preferences, Key.PLAYER_SHOW_NEXT_IN_QUEUE, "showNextSongsInPlayer", false )
-        }
-        val PLAYER_IS_NEXT_IN_QUEUE_EXPANDED by lazy {
-            Boolean( preferences, Key.PLAYER_IS_NEXT_IN_QUEUE_EXPANDED, "miniQueueExpanded", true )
-        }
-        val PLAYER_SHOW_NEXT_IN_QUEUE_THUMBNAIL by lazy {
-            Boolean( preferences, Key.PLAYER_SHOW_NEXT_IN_QUEUE_THUMBNAIL, "showalbumcover", true )
-        }
-        val PLAYER_SHOW_SONGS_REMAINING_TIME by lazy {
-            Boolean( preferences, Key.PLAYER_SHOW_SONGS_REMAINING_TIME, "showRemainingSongTime", true )
-        }
-        val PLAYER_SHOW_SEEK_BUTTONS by lazy {
-            Boolean(preferences, Key.PLAYER_SHOW_SEEK_BUTTONS, "", true)
-        }
-        val PLAYER_SHOW_TOP_ACTIONS_BAR by lazy {
-            Boolean( preferences, Key.PLAYER_SHOW_TOP_ACTIONS_BAR, "showTopActionsBar", true )
-        }
-        val PLAYER_IS_CONTROL_AND_TIMELINE_SWAPPED by lazy {
-            Boolean( preferences, Key.PLAYER_IS_CONTROL_AND_TIMELINE_SWAPPED, "playerSwapControlsWithTimeline", false )
-        }
-        val PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER by lazy {
-            Boolean( preferences, Key.PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER, "showvisthumbnail", false )
-        }
-        val PLAYER_SHRINK_THUMBNAIL_ON_PAUSE by lazy {
-            Boolean( preferences, Key.PLAYER_SHRINK_THUMBNAIL_ON_PAUSE, "thumbnailpause", false )
-        }
-        val PLAYER_KEEP_MINIMIZED by lazy {
-            Boolean( preferences, Key.PLAYER_KEEP_MINIMIZED, "keepPlayerMinimized", false )
-        }
-        val PLAYER_BACKGROUND_BLUR by lazy {
-            Boolean( preferences, Key.PLAYER_BACKGROUND_BLUR, "noblur", true )
         }
         val PLAYER_BACKGROUND_BLUR_STRENGTH by lazy {
             Float( preferences, Key.PLAYER_BACKGROUND_BLUR_STRENGTH, "blurScale", 25F )
         }
         val PLAYER_BACKGROUND_BACK_DROP by lazy {
             Float( preferences, Key.PLAYER_BACKGROUND_BACK_DROP, "playerBackdrop", 0F )
-        }
-        val PLAYER_BACKGROUND_FADING_EDGE by lazy {
-            Boolean( preferences, Key.PLAYER_BACKGROUND_FADING_EDGE, "fadingedge", false )
-        }
-        val PLAYER_STATS_FOR_NERDS by lazy {
-            Boolean( preferences, Key.PLAYER_STATS_FOR_NERDS, "statsfornerds", false )
-        }
-        val PLAYER_IS_STATS_FOR_NERDS_EXPANDED by lazy {
-            Boolean( preferences, Key.PLAYER_IS_STATS_FOR_NERDS_EXPANDED, "statsExpanded", true )
-        }
-        val PLAYER_THUMBNAILS_CAROUSEL by lazy {
-            Boolean( preferences, Key.PLAYER_THUMBNAILS_CAROUSEL, "carousel", true )
-        }
-        val PLAYER_THUMBNAIL_ANIMATION by lazy {
-            Boolean( preferences, Key.PLAYER_THUMBNAIL_ANIMATION, "showCoverThumbnailAnimation", false )
-        }
-        val PLAYER_THUMBNAIL_ROTATION by lazy {
-            Boolean( preferences, Key.PLAYER_THUMBNAIL_ROTATION, "albumCoverRotation", false )
-        }
-        val PLAYER_IS_TITLE_EXPANDED by lazy {
-            Boolean( preferences, Key.PLAYER_IS_TITLE_EXPANDED, "titleExpanded", true )
-        }
-        val PLAYER_IS_TIMELINE_EXPANDED by lazy {
-            Boolean( preferences, Key.PLAYER_IS_TIMELINE_EXPANDED, "timelineExpanded", true )
-        }
-        val PLAYER_SONG_INFO_ICON by lazy {
-            Boolean( preferences, Key.PLAYER_SONG_INFO_ICON, "playerInfoShowIcons", true )
-        }
-        val PLAYER_TOP_PADDING by lazy {
-            Boolean( preferences, Key.PLAYER_TOP_PADDING, "topPadding", true )
-        }
-        val PLAYER_EXTRA_SPACE by lazy {
-            Boolean( preferences, Key.PLAYER_EXTRA_SPACE, "extraspace", false )
-        }
-        val PLAYER_ROTATING_ALBUM_COVER by lazy {
-            Boolean( preferences, Key.PLAYER_ROTATING_ALBUM_COVER, "rotatingAlbumCover", false )
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Cache">
@@ -519,27 +360,6 @@ sealed class Preferences<T>(
         val LYRICS_ALIGNMENT by lazy {
             Enum( preferences, Key.LYRICS_ALIGNMENT, "lyricsAlignment", LyricsAlignment.Center )
         }
-        val LYRICS_SHOW_THUMBNAIL by lazy {
-            Boolean( preferences, Key.LYRICS_SHOW_THUMBNAIL, "showlyricsthumbnail", false )
-        }
-        val LYRICS_JUMP_ON_TAP by lazy {
-            Boolean( preferences, Key.LYRICS_JUMP_ON_TAP, "clickOnLyricsText", true )
-        }
-        val LYRICS_SHOW_ACCENT_BACKGROUND by lazy {
-            Boolean( preferences, Key.LYRICS_SHOW_ACCENT_BACKGROUND, "showBackgroundLyrics", false )
-        }
-        val LYRICS_SYNCHRONIZED by lazy {
-            Boolean( preferences, Key.LYRICS_SYNCHRONIZED, "isShowingSynchronizedLyrics", false )
-        }
-        val LYRICS_SHOW_SECOND_LINE by lazy {
-            Boolean( preferences, Key.LYRICS_SHOW_SECOND_LINE, "showSecondLine", false )
-        }
-        val LYRICS_ANIMATE_SIZE by lazy {
-            Boolean( preferences, Key.LYRICS_ANIMATE_SIZE, "lyricsSizeAnimate", false )
-        }
-        val LYRICS_LANDSCAPE_CONTROLS by lazy {
-            Boolean( preferences, Key.LYRICS_LANDSCAPE_CONTROLS, "landscapeControls", true )
-        }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Page type">
         val HOME_ARTIST_TYPE by lazy {
@@ -568,32 +388,11 @@ sealed class Preferences<T>(
         val AUDIO_REVERB_PRESET by lazy {
             Int(preferences, Key.AUDIO_REVERB_PRESET, "audioReverbPreset", 0)
         }
-        val AUDIO_SKIP_SILENCE by lazy {
-            Boolean( preferences, Key.AUDIO_SKIP_SILENCE, "skipSilence", false )
-        }
-        val AUDIO_VOLUME_NORMALIZATION by lazy {
-            Boolean( preferences, Key.AUDIO_VOLUME_NORMALIZATION, "volumeNormalization", false )
-        }
         val AUDIO_VOLUME_NORMALIZATION_TARGET by lazy {
             Float( preferences, Key.AUDIO_VOLUME_NORMALIZATION_TARGET, "loudnessBaseGain", 5F )
         }
-        val AUDIO_SHAKE_TO_SKIP by lazy {
-            Boolean( preferences, Key.AUDIO_SHAKE_TO_SKIP, "shakeEventEnabled", false )
-        }
-        val AUDIO_VOLUME_BUTTONS_CHANGE_SONG by lazy {
-            Boolean( preferences, Key.AUDIO_VOLUME_BUTTONS_CHANGE_SONG, "useVolumeKeysToChangeSong", false )
-        }
-        val AUDIO_BASS_BOOSTED by lazy {
-            Boolean( preferences, Key.AUDIO_BASS_BOOSTED, "bassboostEnabled", false )
-        }
         val AUDIO_BASS_BOOST_LEVEL by lazy {
             Float( preferences, Key.AUDIO_BASS_BOOST_LEVEL, "bassboostLevel", .5F )
-        }
-        val AUDIO_SMART_PAUSE_DURING_CALLS by lazy {
-            Boolean( preferences, Key.AUDIO_SMART_PAUSE_DURING_CALLS, "handleAudioFocusEnabled", true )
-        }
-        val AUDIO_SPEED by lazy {
-            Boolean( preferences, Key.AUDIO_SPEED, "showPlaybackSpeedButton", false )
         }
         val AUDIO_SPEED_VALUE by lazy {
             Float( preferences, Key.AUDIO_SPEED_VALUE, "playbackSpeed", 1F )
@@ -612,18 +411,6 @@ sealed class Preferences<T>(
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="YouTube">
-        val YOUTUBE_LOGIN by lazy {
-            Boolean( preferences, Key.YOUTUBE_LOGIN, "enableYoutubeLogin", false )
-        }
-        val YOUTUBE_PLAYLISTS_SYNC by lazy {
-            Boolean( preferences, Key.YOUTUBE_PLAYLISTS_SYNC, "enableYoutubeSync", false )
-        }
-        val YOUTUBE_ARTISTS_SYNC by lazy {
-            Boolean(preferences, Key.YOUTUBE_ARTISTS_SYNC, "", false)
-        }
-        val YOUTUBE_ALBUMS_SYNC by lazy {
-            Boolean(preferences, Key.YOUTUBE_ALBUMS_SYNC, "", false)
-        }
         val YOUTUBE_VISITOR_DATA by lazy {
             String( encryptedPreferences, Key.YOUTUBE_VISITOR_DATA, "ytVisitorData", Constants.CHROME_WINDOWS_VISITOR_DATA )
         }
@@ -659,49 +446,13 @@ sealed class Preferences<T>(
         val QUICK_PICKS_MIN_DURATION by lazy {
             Enum( preferences, Key.QUICK_PICKS_MIN_DURATION, "exoPlayerMinTimeForEvent", ExoPlayerMinTimeForEvent.`20s` )
         }
-        val QUICK_PICKS_SHOW_TIPS by lazy {
-            Boolean( preferences, Key.QUICK_PICKS_SHOW_TIPS, "showTips", true )
-        }
-        val QUICK_PICKS_SHOW_RELATED_ALBUMS by lazy {
-            Boolean( preferences, Key.QUICK_PICKS_SHOW_RELATED_ALBUMS, "showRelatedAlbums", true )
-        }
-        val QUICK_PICKS_SHOW_RELATED_ARTISTS by lazy {
-            Boolean( preferences, Key.QUICK_PICKS_SHOW_RELATED_ARTISTS, "showSimilarArtists", true )
-        }
-        val QUICK_PICKS_SHOW_NEW_ALBUMS_ARTISTS by lazy {
-            Boolean( preferences, Key.QUICK_PICKS_SHOW_NEW_ALBUMS_ARTISTS, "showNewAlbumsArtists", true )
-        }
-        val QUICK_PICKS_SHOW_NEW_ALBUMS by lazy {
-            Boolean( preferences, Key.QUICK_PICKS_SHOW_NEW_ALBUMS, "showNewAlbums", true )
-        }
-        val QUICK_PICKS_SHOW_MIGHT_LIKE_PLAYLISTS by lazy {
-            Boolean( preferences, Key.QUICK_PICKS_SHOW_MIGHT_LIKE_PLAYLISTS, "showPlaylistMightLike", true )
-        }
-        val QUICK_PICKS_SHOW_MOODS_AND_GENRES by lazy {
-            Boolean( preferences, Key.QUICK_PICKS_SHOW_MOODS_AND_GENRES, "showMoodsAndGenres", true )
-        }
-        val QUICK_PICKS_SHOW_MONTHLY_PLAYLISTS by lazy {
-            Boolean( preferences, Key.QUICK_PICKS_SHOW_MONTHLY_PLAYLISTS, "showMonthlyPlaylistInQuickPicks", true )
-        }
-        val QUICK_PICKS_SHOW_CHARTS by lazy {
-            Boolean( preferences, Key.QUICK_PICKS_SHOW_CHARTS, "showCharts", true )
-        }
-        val QUICK_PICKS_PAGE by lazy {
-            Boolean( preferences, Key.QUICK_PICKS_PAGE, "enableQuickPicksPage", true )
-        }
         //</editor-fold>
         //<editor-fold desc="Discord">
-        val DISCORD_LOGIN by lazy {
-            Boolean( preferences, Key.DISCORD_LOGIN, "isDiscordPresenceEnabled", false )
-        }
         val DISCORD_ACCESS_TOKEN by lazy {
             String( encryptedPreferences, Key.DISCORD_ACCESS_TOKEN, "", "" )
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Proxy">
-        val IS_PROXY_ENABLED by lazy {
-            Boolean( preferences, Key.IS_PROXY_ENABLED, "isProxyEnabled", false )
-        }
         val PROXY_SCHEME by lazy {
             Enum( preferences, Key.PROXY_SCHEME, "ProxyMode", Proxy.Type.HTTP )
         }
@@ -782,12 +533,6 @@ sealed class Preferences<T>(
         }
         //</editor-fold>
         //<editor-fold desc="Logging">
-        val RUNTIME_LOG by lazy {
-            Boolean(preferences, Key.RUNTIME_LOG, "logDebugEnabled", false)
-        }
-        val RUNTIME_LOG_SHARED by lazy {
-            Boolean(preferences, Key.RUNTIME_LOG_SHARED, "", true)
-        }
         val RUNTIME_LOG_LEVEL by lazy {
             Int(preferences, Key.RUNTIME_LOG_LEVEL, "", Log.INFO)
         }
@@ -872,9 +617,6 @@ sealed class Preferences<T>(
         val QUEUE_LOOP_TYPE by lazy {
             Enum( preferences, Key.QUEUE_LOOP_TYPE, "queueLoopType", QueueLoopType.Default )
         }
-        val QUEUE_AUTO_APPEND by lazy {
-            Boolean( preferences, Key.QUEUE_AUTO_APPEND, "autoLoadSongsInQueue", true )
-        }
         val CAROUSEL_SIZE by lazy {
             Enum( preferences, Key.CAROUSEL_SIZE, "carouselSize", CarouselSize.Biggest )
         }
@@ -902,9 +644,6 @@ sealed class Preferences<T>(
         val CHECK_UPDATE by lazy {
             Enum( preferences, Key.CHECK_UPDATE, "checkUpdateState", CheckUpdateState.DISABLED )
         }
-        val SHOW_CHECK_UPDATE_STATUS by lazy {
-            Boolean( preferences, Key.SHOW_CHECK_UPDATE_STATUS, "", true )
-        }
         val APP_LANGUAGE by lazy {
             Enum( preferences, Key.APP_LANGUAGE, "languageApp", Language.SYSTEM )
         }
@@ -920,27 +659,6 @@ sealed class Preferences<T>(
         val STATISTIC_PAGE_CATEGORY by lazy {
             Enum( preferences, Key.STATISTIC_PAGE_CATEGORY, "statisticsCategory", StatisticsCategory.Songs )
         }
-        val MARQUEE_TEXT_EFFECT by lazy {
-            Boolean(preferences, Key.MARQUEE_TEXT_EFFECT, "", true )
-        }
-        val PARENTAL_CONTROL by lazy {
-            Boolean( preferences, Key.PARENTAL_CONTROL, "parentalControlEnabled", false )
-        }
-        val ROTATION_EFFECT by lazy {
-            Boolean( preferences, Key.ROTATION_EFFECT, "effectRotation", true )
-        }
-        val TRANSPARENT_TIMELINE by lazy {
-            Boolean( preferences, Key.TRANSPARENT_TIMELINE, "transparentbar", true )
-        }
-        val BLACK_GRADIENT by lazy {
-            Boolean( preferences, Key.BLACK_GRADIENT, "blackgradient", false )
-        }
-        val TEXT_OUTLINE by lazy {
-            Boolean( preferences, Key.TEXT_OUTLINE, "textoutline", false )
-        }
-        val SHOW_FLOATING_ICON by lazy {
-            Boolean( preferences, Key.SHOW_FLOATING_ICON, "showFloatingIcon", false )
-        }
         val FLOATING_ICON_X_OFFSET by lazy {
             Float( preferences, Key.FLOATING_ICON_X_OFFSET, "floatActionIconOffsetX", 0F )
         }
@@ -952,114 +670,6 @@ sealed class Preferences<T>(
         }
         val MULTI_FLOATING_ICON_Y_OFFSET by lazy {
             Float( preferences, Key.MULTI_FLOATING_ICON_Y_OFFSET, "multiFloatActionIconOffsetY", 0F )
-        }
-        val ZOOM_OUT_ANIMATION by lazy {
-            Boolean( preferences, Key.ZOOM_OUT_ANIMATION, "buttonzoomout", false )
-        }
-        val ENABLE_DISCOVER by lazy {
-            Boolean( preferences, Key.ENABLE_DISCOVER, "discover", false )
-        }
-        val ENABLE_PERSISTENT_QUEUE by lazy {
-            Boolean( preferences, Key.ENABLE_PERSISTENT_QUEUE, "persistentQueue", false )
-        }
-        val RESUME_PLAYBACK_ON_STARTUP by lazy {
-            Boolean( preferences, Key.RESUME_PLAYBACK_ON_STARTUP, "resumePlaybackOnStart", false )
-        }
-        val RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE by lazy {
-            Boolean( preferences, Key.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE, "resumePlaybackWhenDeviceConnected", false )
-        }
-        val CLOSE_APP_ON_BACK by lazy {
-            Boolean( preferences, Key.CLOSE_APP_ON_BACK, "closeWithBackButton", true )
-        }
-        val PLAYBACK_SKIP_ON_ERROR by lazy {
-            Boolean( preferences, Key.PLAYBACK_SKIP_ON_ERROR, "skipMediaOnError", false )
-        }
-        val USE_SYSTEM_FONT by lazy {
-            Boolean( preferences, Key.USE_SYSTEM_FONT, "useSystemFont", false )
-        }
-        val APPLY_FONT_PADDING by lazy {
-            Boolean( preferences, Key.APPLY_FONT_PADDING, "applyFontPadding", false )
-        }
-        val SHOW_SEARCH_IN_NAVIGATION_BAR by lazy {
-            Boolean( preferences, Key.SHOW_SEARCH_IN_NAVIGATION_BAR, "showSearchTab", false )
-        }
-        val SHOW_STATS_IN_NAVIGATION_BAR by lazy {
-            Boolean( preferences, Key.SHOW_STATS_IN_NAVIGATION_BAR, "showStatsInNavbar", false )
-        }
-        val SHOW_LISTENING_STATS by lazy {
-            Boolean( preferences, Key.SHOW_LISTENING_STATS, "showStatsListeningTime", true )
-        }
-        val HOME_SONGS_SHOW_FAVORITES_CHIP by lazy {
-            Boolean( preferences, Key.HOME_SONGS_SHOW_FAVORITES_CHIP, "showFavoritesPlaylist", true )
-        }
-        val HOME_SONGS_SHOW_CACHED_CHIP by lazy {
-            Boolean( preferences, Key.HOME_SONGS_SHOW_CACHED_CHIP, "showCachedPlaylist", true )
-        }
-        val HOME_SONGS_SHOW_DOWNLOADED_CHIP by lazy {
-            Boolean( preferences, Key.HOME_SONGS_SHOW_DOWNLOADED_CHIP, "showDownloadedPlaylist", true )
-        }
-        val HOME_SONGS_SHOW_MOST_PLAYED_CHIP by lazy {
-            Boolean( preferences, Key.HOME_SONGS_SHOW_MOST_PLAYED_CHIP, "showMyTopPlaylist", true )
-        }
-        val HOME_SONGS_SHOW_ON_DEVICE_CHIP by lazy {
-            Boolean( preferences, Key.HOME_SONGS_SHOW_ON_DEVICE_CHIP, "showOnDevicePlaylist", true )
-        }
-        val HOME_SONGS_ON_DEVICE_SHOW_FOLDERS by lazy {
-            Boolean( preferences, Key.HOME_SONGS_ON_DEVICE_SHOW_FOLDERS, "showFoldersOnDevice", true )
-        }
-        val HOME_SONGS_INCLUDE_ON_DEVICE_IN_ALL by lazy {
-            Boolean( preferences, Key.HOME_SONGS_INCLUDE_ON_DEVICE_IN_ALL, "includeLocalSongs", false )
-        }
-        val MONTHLY_PLAYLIST_COMPILATION by lazy {
-            Boolean( preferences, Key.MONTHLY_PLAYLIST_COMPILATION, "enableCreateMonthlyPlaylists", true )
-        }
-        val SHOW_MONTHLY_PLAYLISTS by lazy {
-            Boolean( preferences, Key.SHOW_MONTHLY_PLAYLISTS, "showMonthlyPlaylists", true )
-        }
-        val SHOW_PINNED_PLAYLISTS by lazy {
-            Boolean( preferences, Key.SHOW_PINNED_PLAYLISTS, "showPinnedPlaylists", true )
-        }
-        val SHOW_PLAYLIST_INDICATOR by lazy {
-            Boolean( preferences, Key.SHOW_PLAYLIST_INDICATOR, "playlistindicator", false )
-        }
-        val PAUSE_WHEN_VOLUME_SET_TO_ZERO by lazy {
-            Boolean( preferences, Key.PAUSE_WHEN_VOLUME_SET_TO_ZERO, "isPauseOnVolumeZeroEnabled", false )
-        }
-        val PAUSE_HISTORY by lazy {
-            Boolean( preferences, Key.PAUSE_HISTORY, "pauseListenHistory", false )
-        }
-        val IS_PIP_ENABLED by lazy {
-            Boolean( preferences, Key.IS_PIP_ENABLED, "enablePicturInPicture", false )
-        }
-        val IS_AUTO_PIP_ENABLED by lazy {
-            Boolean( preferences, Key.IS_AUTO_PIP_ENABLED, "enablePicturInPictureAuto", false )
-        }
-        val AUTO_DOWNLOAD by lazy {
-            Boolean( preferences, Key.AUTO_DOWNLOAD, "autoDownloadSong", false )
-        }
-        val AUTO_DOWNLOAD_ON_LIKE by lazy {
-            Boolean( preferences, Key.AUTO_DOWNLOAD_ON_LIKE, "autoDownloadSongWhenLiked", false )
-        }
-        val AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED by lazy {
-            Boolean( preferences, Key.AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED, "autoDownloadSongWhenAlbumBookmarked", false )
-        }
-        val KEEP_SCREEN_ON by lazy {
-            Boolean( preferences, Key.KEEP_SCREEN_ON, "isKeepScreenOnEnabled", false )
-        }
-        val AUTO_SYNC by lazy {
-            Boolean( preferences, Key.AUTO_SYNC, "autosync", false )
-        }
-        val PAUSE_SEARCH_HISTORY by lazy {
-            Boolean( preferences, Key.PAUSE_SEARCH_HISTORY, "pauseSearchHistory", false )
-        }
-        val IS_DATA_KEY_LOADED by lazy {
-            Boolean( preferences, Key.IS_DATA_KEY_LOADED, "loadedData", false )
-        }
-        val LOCAL_PLAYLIST_SMART_RECOMMENDATION by lazy {
-            Boolean( preferences, Key.LOCAL_PLAYLIST_SMART_RECOMMENDATION, "isRecommendationEnabled", false )
-        }
-        val IS_CONNECTION_METERED by lazy {
-            Boolean( preferences, Key.IS_CONNECTION_METERED, "isConnectionMeteredEnabled", true )
         }
         val SMART_REWIND by lazy {
             Float(preferences, Key.SMART_REWIND, "", 3f)
@@ -1082,18 +692,12 @@ sealed class Preferences<T>(
         val ARTIST_SCREEN_TAB_INDEX  by lazy {
             Int( preferences, Key.ARTIST_SCREEN_TAB_INDEX , "artistScreenTabIndex", 0 )
         }
-        val SINGLE_BACK_FROM_SEARCH by lazy {
-            Boolean(preferences, Key.SINGLE_BACK_FROM_SEARCH, "", true)
-        }
-        val SONG_EMPTY_DURATION_PLACEHOLDER by lazy {
-            Boolean(preferences, Key.SONG_EMPTY_DURATION_PLACEHOLDER, "", false)
-        }
         val ACTIVE_PROFILE by lazy {
             String(profilePreferences, Key.ACTIVE_PROFILE, "", "default")
         }
 
         fun isLoggedInToDiscord(): kotlin.Boolean =
-            DISCORD_LOGIN.value && DISCORD_ACCESS_TOKEN.value.isNotBlank()
+            app.kreate.preferences.Preferences.DISCORD_LOGIN.value && DISCORD_ACCESS_TOKEN.value.isNotBlank()
 
         /**
          * Finalize all changes and write it to disk.

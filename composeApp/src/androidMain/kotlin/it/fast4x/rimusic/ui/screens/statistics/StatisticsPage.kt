@@ -39,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
@@ -103,7 +104,7 @@ fun StatisticsPage(
 
     val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
 
-    val showStatsListeningTime by Preferences.SHOW_LISTENING_STATS
+    val showStatsListeningTime by app.kreate.preferences.Preferences.SHOW_LISTENING_STATS.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
 

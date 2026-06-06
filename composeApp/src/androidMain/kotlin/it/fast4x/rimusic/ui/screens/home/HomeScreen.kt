@@ -43,7 +43,7 @@ fun HomeScreen(
         onTabChanged,
         miniPlayer,
         navBarContent = { Item ->
-            if ( Preferences.QUICK_PICKS_PAGE.value )
+            if ( app.kreate.preferences.Preferences.QUICK_PICKS_PAGE.value )
                 Item(0, stringResource(R.string.quick_picks), R.drawable.sparkles)
             Item(1, stringResource(R.string.songs), R.drawable.musical_notes)
             Item(2, stringResource(R.string.artists), R.drawable.people)

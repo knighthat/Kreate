@@ -124,6 +124,7 @@ import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.saveImageToInternalStorage
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.update
 import me.knighthat.component.ResetCache
 import me.knighthat.component.playlist.PinPlaylist
 import me.knighthat.component.playlist.RenamePlaylistDialog
@@ -165,8 +166,8 @@ fun LocalPlaylistSongs(
     val uriHandler = LocalUriHandler.current
 
     // Settings
-    val parentalControlEnabled by Preferences.PARENTAL_CONTROL
-    var isRecommendationEnabled by Preferences.LOCAL_PLAYLIST_SMART_RECOMMENDATION
+    val parentalControlEnabled by app.kreate.preferences.Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
+    val isRecommendationEnabled by app.kreate.preferences.Preferences.LOCAL_PLAYLIST_SMART_RECOMMENDATION.collectAsStateWithLifecycle()
 
     // Non-vital
     val thumbnailUrl = remember { mutableStateOf("") }
@@ -233,7 +234,7 @@ fun LocalPlaylistSongs(
             // Open to move position
             itemSelector.isActive = false
             // Disable smart recommendation, it breaks the index
-            isRecommendationEnabled = false
+            app.kreate.preferences.Preferences.LOCAL_PLAYLIST_SMART_RECOMMENDATION.update { false }
         }
     }
 
@@ -345,7 +346,7 @@ fun LocalPlaylistSongs(
         }
     }
 
-    var autosync by Preferences.AUTO_SYNC
+    val autosync by app.kreate.preferences.Preferences.AUTO_SYNC.collectAsStateWithLifecycle()
 
     val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
 
@@ -500,7 +501,7 @@ fun LocalPlaylistSongs(
                             modifier = Modifier
                                 .combinedClickable(
                                     onClick = {
-                                        isRecommendationEnabled = !isRecommendationEnabled
+                                        app.kreate.preferences.Preferences.LOCAL_PLAYLIST_SMART_RECOMMENDATION.flip()
                                     },
                                     onLongClick = {
                                         Toaster.i( R.string.info_smart_recommendation )
@@ -729,7 +730,7 @@ fun LocalPlaylistSongs(
 
         FloatingActionsContainerWithScrollToTop(lazyListState = lazyListState)
 
-        val showFloatingIcon by Preferences.SHOW_FLOATING_ICON
+        val showFloatingIcon by app.kreate.preferences.Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
         if ( UiType.ViMusic.isCurrent() && showFloatingIcon )
             FloatingActionsContainerWithScrollToTop(
                 lazyListState = lazyListState,

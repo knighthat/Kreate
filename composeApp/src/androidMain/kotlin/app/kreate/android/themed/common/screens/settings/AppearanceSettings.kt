@@ -20,12 +20,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.SettingComponents
@@ -34,6 +36,7 @@ import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.android.themed.common.screens.settings.player.playerActionBarSection
 import app.kreate.android.themed.common.screens.settings.player.playerAppearanceSection
+import app.kreate.android.themed.common.screens.settings.player.playerFullscreenLyrics
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.WallpaperType
@@ -68,12 +71,17 @@ fun AppearanceSettings(paddingValues: PaddingValues) {
     ) {
         search.ToolBarButton()
 
+        val showThumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+        val lyricsShowThumbnail by app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+
         LazyColumn(
             state = scrollState,
             contentPadding = PaddingValues(bottom = Dimensions.bottomSpacer)
         ) {
-            playerAppearanceSection( search, isLandscapeMode )
+            playerAppearanceSection( search, isLandscapeMode, showThumbnail )
             playerActionBarSection( search, isLandscapeMode )
+            if( lyricsShowThumbnail )
+                playerFullscreenLyrics( search )
 
             header( R.string.notification_player )
             entry( search, R.string.notificationPlayerFirstIcon ) {

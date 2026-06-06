@@ -56,6 +56,7 @@ import androidx.compose.ui.util.fastDistinctBy
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastFilterNotNull
 import androidx.compose.ui.util.fastMapNotNull
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
@@ -128,6 +129,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.knighthat.innertube.model.InnertubeCharts
 import me.knighthat.innertube.model.InnertubePlaylist
@@ -181,15 +183,15 @@ fun HomeQuickPicks(
     var chartsPageResult by persist<Result<Innertube.ChartsPage?>>("home/chartsPage")
     var chartsPageInit by persist<Innertube.ChartsPage>("home/chartsPage")
 
-    val showRelatedAlbums by Preferences.QUICK_PICKS_SHOW_RELATED_ALBUMS
-    val showSimilarArtists by Preferences.QUICK_PICKS_SHOW_RELATED_ARTISTS
-    val showNewAlbumsArtists by Preferences.QUICK_PICKS_SHOW_NEW_ALBUMS_ARTISTS
-    val showPlaylistMightLike by Preferences.QUICK_PICKS_SHOW_MIGHT_LIKE_PLAYLISTS
-    val showMoodsAndGenres by Preferences.QUICK_PICKS_SHOW_MOODS_AND_GENRES
-    val showNewAlbums by Preferences.QUICK_PICKS_SHOW_NEW_ALBUMS
-    val showMonthlyPlaylistInQuickPicks by Preferences.QUICK_PICKS_SHOW_MONTHLY_PLAYLISTS
-    val showTips by Preferences.QUICK_PICKS_SHOW_TIPS
-    val showCharts by Preferences.QUICK_PICKS_SHOW_CHARTS
+    val showRelatedAlbums by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_RELATED_ALBUMS.collectAsStateWithLifecycle()
+    val showSimilarArtists by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_RELATED_ARTISTS.collectAsStateWithLifecycle()
+    val showNewAlbumsArtists by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_NEW_ALBUMS_ARTISTS.collectAsStateWithLifecycle()
+    val showPlaylistMightLike by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_MIGHT_LIKE_PLAYLISTS.collectAsStateWithLifecycle()
+    val showMoodsAndGenres by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_MOODS_AND_GENRES.collectAsStateWithLifecycle()
+    val showNewAlbums by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_NEW_ALBUMS.collectAsStateWithLifecycle()
+    val showMonthlyPlaylistInQuickPicks by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_MONTHLY_PLAYLISTS.collectAsStateWithLifecycle()
+    val showTips by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_TIPS.collectAsStateWithLifecycle()
+    val showCharts by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_CHARTS.collectAsStateWithLifecycle()
 
     val refreshScope = rememberCoroutineScope()
     val last50Year: Duration = 18250.days
@@ -197,9 +199,9 @@ fun HomeQuickPicks(
 
     var countryCode by Preferences.APP_REGION
 
-    val parentalControlEnabled by Preferences.PARENTAL_CONTROL
+    val parentalControlEnabled by app.kreate.preferences.Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
 
-    var loadedData by Preferences.IS_DATA_KEY_LOADED
+    val loadedData by app.kreate.preferences.Preferences.IS_DATA_KEY_LOADED.collectAsStateWithLifecycle()
 
     suspend fun loadData() {
 
@@ -270,9 +272,9 @@ fun HomeQuickPicks(
 
         }.onFailure {
             Logger.e( tag = "HomeQuickPicks" ) { "loadData failed!" }
-            loadedData = false
+            app.kreate.preferences.Preferences.IS_DATA_KEY_LOADED.update { false }
         }.onSuccess {
-            loadedData = true
+            app.kreate.preferences.Preferences.IS_DATA_KEY_LOADED.update { true }
         }
     }
 
@@ -284,7 +286,7 @@ fun HomeQuickPicks(
 
     fun refresh() {
         if (refreshing) return
-        loadedData = false
+        app.kreate.preferences.Preferences.IS_DATA_KEY_LOADED.update { false }
         relatedPageResult = null
         relatedInit = null
         trending = null
@@ -309,7 +311,7 @@ fun HomeQuickPicks(
         .padding(top = 24.dp, bottom = 8.dp)
         .padding(endPaddingValues)
 
-    val showSearchTab by Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR
+    val showSearchTab by app.kreate.preferences.Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR.collectAsStateWithLifecycle()
 
     val cache: Cache = koinInject(CacheType.CACHE)
     var cachedSongs by remember { mutableStateOf( emptyList<String>() ) }
@@ -791,7 +793,8 @@ fun HomeQuickPicks(
                         }
                     }
 
-                if( Preferences.QUICK_PICKS_SHOW_CHARTS.value ) {
+                val showCharts by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_CHARTS.collectAsStateWithLifecycle()
+                if( showCharts ) {
                     var charts by remember {
                         // Use [referentialEqualityPolicy] to limit update to when it changes
                         // object, not the state of contents
@@ -1103,7 +1106,7 @@ fun HomeQuickPicks(
             }
 
 
-            val showFloatingIcon by Preferences.SHOW_FLOATING_ICON
+            val showFloatingIcon by app.kreate.preferences.Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
             if (UiType.ViMusic.isCurrent() && showFloatingIcon)
                 MultiFloatingActionsContainer(
                     iconId = R.drawable.search,

@@ -86,7 +86,7 @@ private fun verifyDoH( resolver: DnsOverHttps, addresses: List<InetAddress>, dom
 
 actual val networkModule: Module = module {
     factory<Proxy> {       // Recreate proxy instance every time it's called
-        if( !Preferences.IS_PROXY_ENABLED.value ) {
+        if( !app.kreate.preferences.Preferences.IS_PROXY_ENABLED.value ) {
             Logger.d( tag = LOGGING_TAG ) { "Proxy is not enabled" }
             return@factory Proxy.NO_PROXY
         }

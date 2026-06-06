@@ -35,6 +35,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
@@ -76,7 +77,8 @@ private fun RowScope.SkipTimeButton(
     doubleTapAdjustment: Long = 10_000L,
     longTapAdjustment: Long = 30_000L
 ) {
-    if( !Preferences.PLAYER_SHOW_SEEK_BUTTONS.value ) return
+    val enabled by app.kreate.preferences.Preferences.PLAYER_SHOW_SEEK_BUTTONS.collectAsStateWithLifecycle()
+    if( !enabled ) return
 
     fun seekTo( adjustment: Long ) {
         val adjustedPosition = position.operation( adjustment )
@@ -106,7 +108,7 @@ private fun RowScope.SkipTimeButton(
 @Composable
 private fun outlineColorState(): State<Color> {
     val colorPaletteMode by Preferences.THEME_MODE
-    val textOutline by Preferences.TEXT_OUTLINE
+    val textOutline by app.kreate.preferences.Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
     val isDarkTheme = isSystemInDarkTheme()
 
     return remember {
@@ -192,7 +194,7 @@ fun DurationIndicator(
         }
 
         // Remaining duration
-        val showRemainingSongTime by Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME
+        val showRemainingSongTime by app.kreate.preferences.Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME.collectAsStateWithLifecycle()
         if( showRemainingSongTime ) {
             Box(
                 modifier = Modifier.weight( 1f )

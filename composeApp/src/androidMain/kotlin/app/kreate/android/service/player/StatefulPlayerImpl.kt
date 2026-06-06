@@ -124,7 +124,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
         val preferences: SharedPreferences by inject(PrefType.DEFAULT)
         preferences.registerOnSharedPreferenceChangeListener( this )
 
-        skipSilenceEnabled = Preferences.AUDIO_SKIP_SILENCE.value
+        skipSilenceEnabled = app.kreate.preferences.Preferences.AUDIO_SKIP_SILENCE.value
         repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
         volume = Preferences.AUDIO_VOLUME.value
         setGlobalVolume( player.volume )
@@ -215,7 +215,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
     }
 
     private fun loadPersistentQueue() {
-        if ( Preferences.ENABLE_PERSISTENT_QUEUE.value )
+        if ( app.kreate.preferences.Preferences.ENABLE_PERSISTENT_QUEUE.value )
             logger.d { "Persistent queue enabled! Loading from database..." }
         else
             return
@@ -592,7 +592,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
                 loudnessEnhancer.release()
 
             loudnessEnhancer = LoudnessEnhancer(audioSessionId)
-            loudnessEnhancer.enabled = Preferences.AUDIO_VOLUME_NORMALIZATION.value
+            loudnessEnhancer.enabled = app.kreate.preferences.Preferences.AUDIO_VOLUME_NORMALIZATION.value
 
             normalizeLoudness()
         } catch( err: Exception ) {
@@ -605,7 +605,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
                 bassBoost.release()
 
             bassBoost = BassBoost(0, audioSessionId)
-            bassBoost.enabled = Preferences.AUDIO_BASS_BOOSTED.value
+            bassBoost.enabled = app.kreate.preferences.Preferences.AUDIO_BASS_BOOSTED.value
 
             boostLowFrequencies()
         } catch( err: Exception ) {

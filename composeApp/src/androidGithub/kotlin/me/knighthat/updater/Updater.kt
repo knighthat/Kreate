@@ -114,11 +114,12 @@ object Updater : KoinComponent {
             return@launch
         }
 
+        val showStatus = app.kreate.preferences.Preferences.SHOW_CHECK_UPDATE_STATUS.value
         try {
             fetchUpdate()
 
             val isNewUpdateAvailable = trimVersion( BuildConfig.VERSION_NAME ) != trimVersion( tagName )
-            if( !isNewUpdateAvailable && (Preferences.SHOW_CHECK_UPDATE_STATUS.value || isForced) ) {
+            if( !isNewUpdateAvailable && (showStatus || isForced) ) {
                 Toaster.i( R.string.info_no_update_available )
                 return@launch
             }
@@ -131,7 +132,7 @@ object Updater : KoinComponent {
         } catch( e: Exception ) {
             Logger.e( e, "Updater" ) { "Failed to fetch new updates" }
 
-            if( e is NoSuchElementException && Preferences.SHOW_CHECK_UPDATE_STATUS.value ) {
+            if( e is NoSuchElementException && showStatus ) {
                 Toaster.i( R.string.info_no_update_available )
                 return@launch
             }

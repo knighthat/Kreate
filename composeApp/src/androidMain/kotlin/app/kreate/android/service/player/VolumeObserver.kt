@@ -6,8 +6,6 @@ import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import androidx.media3.exoplayer.ExoPlayer
-import app.kreate.android.Preferences
 
 class VolumeObserver(
     private val context: Context,
@@ -28,7 +26,7 @@ class VolumeObserver(
                .unregisterContentObserver( this )
 
     override fun onChange( selfChange: Boolean ) {
-        if( !Preferences.PAUSE_WHEN_VOLUME_SET_TO_ZERO.value ) return
+        if( !app.kreate.preferences.Preferences.PAUSE_WHEN_VOLUME_SET_TO_ZERO.value ) return
 
         val volume = audioManager.getStreamVolume( AudioManager.STREAM_MUSIC )
 

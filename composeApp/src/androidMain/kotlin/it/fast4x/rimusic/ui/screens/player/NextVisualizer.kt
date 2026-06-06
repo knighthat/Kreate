@@ -28,8 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.SecondaryTextButton
@@ -44,7 +44,7 @@ fun NextVisualizer(
 ) {
 
     val context = LocalContext.current
-    val visualizerEnabled by Preferences.PLAYER_VISUALIZER
+    val visualizerEnabled by app.kreate.preferences.Preferences.PLAYER_VISUALIZER.collectAsStateWithLifecycle()
 
     if (visualizerEnabled) {
 

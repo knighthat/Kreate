@@ -7,8 +7,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import it.fast4x.rimusic.Database
@@ -20,7 +20,7 @@ import org.koin.compose.koinInject
 @Composable
 fun ApplyDiscoverToQueue( player: StatefulPlayer = koinInject() ) {
     /*   DISCOVER  */
-    val discoverIsEnabled by Preferences.ENABLE_DISCOVER
+    val discoverIsEnabled by app.kreate.preferences.Preferences.ENABLE_DISCOVER.collectAsStateWithLifecycle()
     if (!discoverIsEnabled) return
 
     var listMediaItemsIndex = remember {

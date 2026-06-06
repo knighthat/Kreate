@@ -316,7 +316,7 @@ fun AppNavigation(
                         Uri.encode( query )
                     )
 
-                    if ( !Preferences.PAUSE_SEARCH_HISTORY.value )
+                    if ( !app.kreate.preferences.Preferences.PAUSE_SEARCH_HISTORY.value )
                         Database.asyncTransaction {
                             // Must ignore to prevent "UNIQUE constraint" exception
                             searchTable.insertIgnore( SearchQuery(query = query) )
@@ -468,7 +468,7 @@ fun AppNavigation(
         }
 
         val activity = context as? Activity
-        if( Preferences.CLOSE_APP_ON_BACK.value ) {
+        if( app.kreate.preferences.Preferences.CLOSE_APP_ON_BACK.value ) {
             if( !isWarned ) {
                 Toaster.i( R.string.press_once_again_to_exit )
                 isWarned = true

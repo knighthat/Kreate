@@ -7,6 +7,6 @@ import app.kreate.android.Preferences
 object InnertubeUtils {
 
     val isLoggedIn: Boolean by derivedStateOf {
-        Preferences.YOUTUBE_LOGIN.value && Preferences.YOUTUBE_SYNC_ID.value.isNotBlank()
+        app.kreate.preferences.Preferences.YOUTUBE_LOGIN.value && Preferences.YOUTUBE_SYNC_ID.value.isNotBlank()
     }
 }

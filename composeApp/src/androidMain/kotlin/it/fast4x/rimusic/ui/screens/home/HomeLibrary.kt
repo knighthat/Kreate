@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMapNotNull
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
@@ -168,7 +169,7 @@ fun HomeLibrary(
                 .collectLatest { items = it }
     }
     LaunchedEffect( Unit ) {
-        if( !InnertubeUtils.isLoggedIn || !Preferences.YOUTUBE_PLAYLISTS_SYNC.value )
+        if( !InnertubeUtils.isLoggedIn || !app.kreate.preferences.Preferences.YOUTUBE_PLAYLISTS_SYNC.value )
             return@LaunchedEffect
         
         CoroutineScope( Dispatchers.IO ).launch {
@@ -187,8 +188,8 @@ fun HomeLibrary(
     }
 
     // START: Additional playlists
-    val showPinnedPlaylists by Preferences.SHOW_PINNED_PLAYLISTS
-    val showMonthlyPlaylists by Preferences.SHOW_MONTHLY_PLAYLISTS
+    val showPinnedPlaylists by app.kreate.preferences.Preferences.SHOW_PINNED_PLAYLISTS.collectAsStateWithLifecycle()
+    val showMonthlyPlaylists by app.kreate.preferences.Preferences.SHOW_MONTHLY_PLAYLISTS.collectAsStateWithLifecycle()
 
     val buttonsList = mutableListOf(PlaylistsType.Playlist to stringResource(R.string.playlists))
     buttonsList += PlaylistsType.YTPlaylist to stringResource(R.string.yt_playlists)
@@ -204,11 +205,12 @@ fun HomeLibrary(
     // END - New playlist
 
     // START - Monthly playlist
-    if ( Preferences.MONTHLY_PLAYLIST_COMPILATION.value )
+    val compileMonthlyPlaylist by app.kreate.preferences.Preferences.MONTHLY_PLAYLIST_COMPILATION.collectAsStateWithLifecycle()
+    if ( compileMonthlyPlaylist )
         CheckMonthlyPlaylist()
     // END - Monthly playlist
 
-    val doAutoSync by Preferences.AUTO_SYNC
+    val doAutoSync by app.kreate.preferences.Preferences.AUTO_SYNC.collectAsStateWithLifecycle()
     var justSynced by rememberSaveable { mutableStateOf(!doAutoSync) }
 
     var refreshing by remember { mutableStateOf(false) }
@@ -316,7 +318,7 @@ fun HomeLibrary(
 
             FloatingActionsContainerWithScrollToTop(lazyGridState = lazyGridState)
 
-            val showFloatingIcon by Preferences.SHOW_FLOATING_ICON
+            val showFloatingIcon by app.kreate.preferences.Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
             if (UiType.ViMusic.isCurrent() && showFloatingIcon)
                 MultiFloatingActionsContainer(
                     iconId = R.drawable.search,

@@ -55,6 +55,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -174,7 +175,7 @@ fun MiniPlayer(
         }
     )
     val backgroundProgress by Preferences.MINI_PLAYER_PROGRESS_BAR
-    val effectRotationEnabled by Preferences.ROTATION_EFFECT
+    val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
     val shouldBePlayingTransition = updateTransition(shouldBePlaying, label = "shouldBePlaying")
     val playPauseRoundness by shouldBePlayingTransition.animateDp(
         transitionSpec = { tween(durationMillis = 100, easing = LinearEasing) },
@@ -187,7 +188,7 @@ fun MiniPlayer(
         targetValue = if (isRotated) 360F else 0f,
         animationSpec = tween(durationMillis = 200), label = ""
     )
-    val disableClosingPlayerSwipingDown by Preferences.MINI_DISABLE_SWIPE_DOWN_TO_DISMISS
+    val disableClosingPlayerSwipingDown by app.kreate.preferences.Preferences.MINI_DISABLE_SWIPE_DOWN_TO_DISMISS.collectAsStateWithLifecycle()
 
     SwipeToDismissBox(
         modifier = Modifier

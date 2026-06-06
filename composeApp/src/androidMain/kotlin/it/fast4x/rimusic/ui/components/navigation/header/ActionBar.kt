@@ -16,8 +16,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import it.fast4x.rimusic.colorPalette
@@ -35,7 +35,7 @@ private fun HamburgerMenu(
     onItemClick: (NavRoutes) -> Unit,
     onDismissRequest: () -> Unit
 ) {
-    val enablePictureInPicture by Preferences.IS_PIP_ENABLED
+    val enablePictureInPicture by app.kreate.preferences.Preferences.IS_PIP_ENABLED.collectAsStateWithLifecycle()
     val pipHandler = rememberPipHandler()
 
     val menu = DropdownMenu(
@@ -99,7 +99,7 @@ fun ActionBar(
     // Search Icon
     HeaderIcon( R.drawable.search ) {
         navController.navigate( NavRoutes.search.name ) {
-            if( Preferences.SINGLE_BACK_FROM_SEARCH.value )
+            if( app.kreate.preferences.Preferences.SINGLE_BACK_FROM_SEARCH.value )
                 popUpTo( NavRoutes.search.name )
             launchSingleTop = true
         }

@@ -110,6 +110,7 @@ import androidx.compose.ui.util.fastZip
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.ColorUtils.colorToHSL
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -190,6 +191,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import me.knighthat.component.player.BlurAdjuster
 import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
@@ -217,54 +219,53 @@ fun Player(
     val menuState = LocalMenuState.current
     val player: StatefulPlayer = koinInject()
     // Settings
-    val disablePlayerHorizontalSwipe by Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED
-    val showlyricsthumbnail by Preferences.LYRICS_SHOW_THUMBNAIL
-    val effectRotationEnabled by Preferences.ROTATION_EFFECT
+    val disablePlayerHorizontalSwipe by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED.collectAsStateWithLifecycle()
+    val showlyricsthumbnail by app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+    val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
     val playerThumbnailSize by Preferences.PLAYER_PORTRAIT_THUMBNAIL_SIZE
     var playerThumbnailSizeL by Preferences.PLAYER_LANDSCAPE_THUMBNAIL_SIZE
-    val showvisthumbnail by Preferences.PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER
+    val showvisthumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER.collectAsStateWithLifecycle()
     var thumbnailSpacing  by Preferences.PLAYER_THUMBNAIL_SPACING
     var thumbnailSpacingL  by Preferences.PLAYER_THUMBNAIL_SPACING_LANDSCAPE
     var thumbnailFade  by Preferences.PLAYER_THUMBNAIL_FADE
     var thumbnailFadeEx  by Preferences.PLAYER_THUMBNAIL_FADE_EX
     var imageCoverSize by Preferences.PLAYER_THUMBNAIL_VINYL_SIZE
-    val queueDurationExpanded by Preferences.PLAYER_IS_QUEUE_DURATION_EXPANDED
-    val statsExpanded by Preferences.PLAYER_IS_STATS_FOR_NERDS_EXPANDED
-    var showthumbnail by Preferences.PLAYER_SHOW_THUMBNAIL
-    val showButtonPlayerMenu by Preferences.PLAYER_ACTION_SHOW_MENU
-    val showTotalTimeQueue by Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME
+    val queueDurationExpanded by app.kreate.preferences.Preferences.PLAYER_IS_QUEUE_DURATION_EXPANDED.collectAsStateWithLifecycle()
+    val statsExpanded by app.kreate.preferences.Preferences.PLAYER_IS_STATS_FOR_NERDS_EXPANDED.collectAsStateWithLifecycle()
+    val showthumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+    val showButtonPlayerMenu by app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_MENU.collectAsStateWithLifecycle()
+    val showTotalTimeQueue by app.kreate.preferences.Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.collectAsStateWithLifecycle()
     val backgroundProgress by Preferences.MINI_PLAYER_PROGRESS_BAR
     var queueLoopState = Preferences.QUEUE_LOOP_TYPE
     val playerType by Preferences.PLAYER_TYPE
     val queueType by Preferences.QUEUE_TYPE
-    val noblur by Preferences.PLAYER_BACKGROUND_BLUR
-    val fadingedge by Preferences.PLAYER_BACKGROUND_FADING_EDGE
+    val noblur by app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR.collectAsStateWithLifecycle()
+    val fadingedge by app.kreate.preferences.Preferences.PLAYER_BACKGROUND_FADING_EDGE.collectAsStateWithLifecycle()
     val colorPaletteMode by Preferences.THEME_MODE
     val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
     val animatedGradient by Preferences.ANIMATED_GRADIENT
-    val thumbnailTapEnabled by Preferences.PLAYER_TAP_THUMBNAIL_FOR_LYRICS
-    val showTopActionsBar by Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR
-    val blackgradient by Preferences.BLACK_GRADIENT
-    val bottomgradient by Preferences.PLAYER_BOTTOM_GRADIENT
-    var discoverState = Preferences.ENABLE_DISCOVER
-    val titleExpanded by Preferences.PLAYER_IS_TITLE_EXPANDED
-    val timelineExpanded by Preferences.PLAYER_IS_TIMELINE_EXPANDED
-    val controlsExpanded by Preferences.PLAYER_IS_CONTROLS_EXPANDED
-    val showCoverThumbnailAnimation by Preferences.PLAYER_THUMBNAIL_ANIMATION
+    val thumbnailTapEnabled by app.kreate.preferences.Preferences.PLAYER_TAP_THUMBNAIL_FOR_LYRICS.collectAsStateWithLifecycle()
+    val showTopActionsBar by app.kreate.preferences.Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.collectAsStateWithLifecycle()
+    val blackgradient by app.kreate.preferences.Preferences.BLACK_GRADIENT.collectAsStateWithLifecycle()
+    val bottomgradient by app.kreate.preferences.Preferences.PLAYER_BOTTOM_GRADIENT.collectAsStateWithLifecycle()
+    val discoverState by app.kreate.preferences.Preferences.ENABLE_DISCOVER.collectAsStateWithLifecycle()
+    val titleExpanded by app.kreate.preferences.Preferences.PLAYER_IS_TITLE_EXPANDED.collectAsStateWithLifecycle()
+    val timelineExpanded by app.kreate.preferences.Preferences.PLAYER_IS_TIMELINE_EXPANDED.collectAsStateWithLifecycle()
+    val controlsExpanded by app.kreate.preferences.Preferences.PLAYER_IS_CONTROLS_EXPANDED.collectAsStateWithLifecycle()
+    val showCoverThumbnailAnimation by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_ANIMATION.collectAsStateWithLifecycle()
     var coverThumbnailAnimation by Preferences.PLAYER_THUMBNAIL_TYPE
-    var albumCoverRotation by Preferences.PLAYER_THUMBNAIL_ROTATION
-    val textoutline by Preferences.TEXT_OUTLINE
-    val carousel by Preferences.PLAYER_THUMBNAILS_CAROUSEL
+    val albumCoverRotation by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_ROTATION.collectAsStateWithLifecycle()
+    val textoutline by app.kreate.preferences.Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
+    val carousel by app.kreate.preferences.Preferences.PLAYER_THUMBNAILS_CAROUSEL.collectAsStateWithLifecycle()
     val carouselSize by Preferences.CAROUSEL_SIZE
-    val clickLyricsText by Preferences.LYRICS_JUMP_ON_TAP
-    var extraspace by Preferences.PLAYER_EXTRA_SPACE
+    val clickLyricsText by app.kreate.preferences.Preferences.LYRICS_JUMP_ON_TAP.collectAsStateWithLifecycle()
+    val extraspace by app.kreate.preferences.Preferences.PLAYER_EXTRA_SPACE.collectAsStateWithLifecycle()
     val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
     val thumbnailType by Preferences.THUMBNAIL_TYPE
-    val statsfornerds by Preferences.PLAYER_STATS_FOR_NERDS
-    val topPadding by Preferences.PLAYER_TOP_PADDING
+    val statsfornerds by app.kreate.preferences.Preferences.PLAYER_STATS_FOR_NERDS.collectAsStateWithLifecycle()
+    val topPadding by app.kreate.preferences.Preferences.PLAYER_TOP_PADDING.collectAsStateWithLifecycle()
     var swipeAnimationNoThumbnail by Preferences.PLAYER_NO_THUMBNAIL_SWIPE_ANIMATION
-    val expandPlayerState = Preferences.PLAYER_EXPANDED
-    var expandedplayer by expandPlayerState
+    val expandPlayerState by app.kreate.preferences.Preferences.PLAYER_EXPANDED.collectAsStateWithLifecycle()
 
 
     if (player.currentTimeline.windowCount == 0) return
@@ -403,7 +404,8 @@ fun Player(
 
     var updateBrush by remember { mutableStateOf(false) }
 
-    if (showlyricsthumbnail) expandedplayer = false
+    if (showlyricsthumbnail)
+        app.kreate.preferences.Preferences.PLAYER_EXPANDED.update { false }
 
     LaunchedEffect(mediaItem.mediaId) {
         updateBrush = true
@@ -713,7 +715,7 @@ fun Player(
                         1.0f to if (bottomgradient) if (colorPaletteMode == ColorPaletteMode.Light) Color.White.copy(
                             if (isLandscape) 0.8f else 0.75f
                         ) else Color.Black.copy(if (isLandscape) 0.8f else 0.75f) else Color.Transparent,
-                        startY = if (isLandscape) 600f else if (expandedplayer) 1300f else 950f,
+                        startY = if (isLandscape) 600f else if (expandPlayerState) 1300f else 950f,
                         endY = POSITIVE_INFINITY
                     )
                 )
@@ -733,7 +735,7 @@ fun Player(
                     },
                     onDoubleClick = {
                         if (!showlyricsthumbnail && !showvisthumbnail)
-                            showthumbnail = !showthumbnail
+                            app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.flip()
                     },
                     onLongClick = {
                         blurAdjuster.isActive =
@@ -1013,7 +1015,7 @@ fun Player(
             mediaItem = mediaItem,
             onCollapse = onDismiss,
             onBlurScaleChange = { blurAdjuster.strength = it },
-            expandedPlayer = expandedplayer,
+            expandedPlayer = expandPlayerState,
             titleExpanded = titleExpanded,
             timelineExpanded = timelineExpanded,
             controlsExpanded = controlsExpanded,
@@ -1041,9 +1043,7 @@ fun Player(
             showVisualizerState,
             showSleepTimerState,
             showLyricsState,
-            discoverState,
             queueLoopState,
-            expandPlayerState,
             onDismiss
         )
 
@@ -1137,7 +1137,7 @@ fun Player(
                                                 },
                                                 onDoubleClick = {
                                                     if (!showlyricsthumbnail && !showvisthumbnail)
-                                                        showthumbnail = !showthumbnail
+                                                        app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.flip()
                                                 },
                                                 onLongClick = {
                                                     blurAdjuster.isActive = showthumbnail || (isShowingLyrics && !isShowingVisualizer) || !noblur
@@ -1154,7 +1154,7 @@ fun Player(
                              1.0f to if (bottomgradient) if (lightTheme) Color.White.copy(
                                  if (isLandscape) 0.8f else 0.75f
                              ) else Color.Black.copy(if (isLandscape) 0.8f else 0.75f) else Color.Transparent,
-                             startY = if (isLandscape) 600f else if (expandedplayer) 1300f else 950f,
+                             startY = if (isLandscape) 600f else if (expandPlayerState) 1300f else 950f,
                              endY = POSITIVE_INFINITY
                          )
                      )
@@ -1671,7 +1671,7 @@ fun Player(
                                                        },
                                                        onDoubleClick = {
                                                            if (!showlyricsthumbnail && !showvisthumbnail)
-                                                               showthumbnail = !showthumbnail
+                                                               app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.flip()
                                                        },
                                                        onLongClick = {
                                                            blurAdjuster.isActive = showthumbnail || (isShowingLyrics && !isShowingVisualizer) || !noblur
@@ -1682,12 +1682,12 @@ fun Player(
                             if ((swipeAnimationNoThumbnail == SwipeAnimationNoThumbnail.Scale) && isDraggedFS){
                                 Column {
                                     Spacer(modifier = Modifier
-                                        .conditional((screenWidth <= (screenHeight / 2)) && (showlyricsthumbnail || (!expandedplayer && !isShowingLyrics))) {
+                                        .conditional((screenWidth <= (screenHeight / 2)) && (showlyricsthumbnail || (!expandPlayerState && !isShowingLyrics))) {
                                             height(screenWidth)}
-                                        .conditional((screenWidth > (screenHeight / 2)) || expandedplayer || (isShowingLyrics && !showlyricsthumbnail)) {weight(1f)})
+                                        .conditional((screenWidth > (screenHeight / 2)) || expandPlayerState || (isShowingLyrics && !showlyricsthumbnail)) {weight(1f)})
 
                                     Box(modifier = Modifier
-                                        .conditional(!expandedplayer && (!isShowingLyrics || showlyricsthumbnail)) {weight(1f)}
+                                        .conditional(!expandPlayerState && (!isShowingLyrics || showlyricsthumbnail)) {weight(1f)}
                                     ) {
                                         Controller(
                                             mediaItem = player.getMediaItemAt(it),
@@ -1706,7 +1706,7 @@ fun Player(
                                 1.0f to if (bottomgradient) if (colorPaletteMode == ColorPaletteMode.Light) Color.White.copy(
                                     if (isLandscape) 0.8f else 0.75f
                                 ) else Color.Black.copy(if (isLandscape) 0.8f else 0.75f) else Color.Transparent,
-                                startY = if (isLandscape) 600f else if (expandedplayer) 1300f else 950f,
+                                startY = if (isLandscape) 600f else if (expandPlayerState) 1300f else 950f,
                                 endY = POSITIVE_INFINITY
                             )
                         )
@@ -1836,8 +1836,8 @@ fun Player(
                 BoxWithConstraints(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .conditional((screenWidth <= (screenHeight / 2)) && (showlyricsthumbnail || (!expandedplayer && !isShowingLyrics))) {height(screenWidth)}
-                        .conditional((screenWidth > (screenHeight / 2)) || expandedplayer || (isShowingLyrics && !showlyricsthumbnail)) {weight(1f)}
+                        .conditional((screenWidth <= (screenHeight / 2)) && (showlyricsthumbnail || (!expandPlayerState && !isShowingLyrics))) {height(screenWidth)}
+                        .conditional((screenWidth > (screenHeight / 2)) || expandPlayerState || (isShowingLyrics && !showlyricsthumbnail)) {weight(1f)}
                 ) {
 
                       if (showthumbnail) {
@@ -1858,12 +1858,12 @@ fun Player(
 
                                  val pageSpacing = (thumbnailSpacing.toInt()*0.01*(screenHeight) - if (carousel) (3*carouselSize.size.dp) else (2*playerThumbnailSize.size.dp))
                                  val animatePageSpacing by animateDpAsState(
-                                     if (expandedplayer) (thumbnailSpacing.toInt()*0.01*(screenHeight) - if (carousel) (3*carouselSize.size.dp) else (2*carouselSize.size.dp)) else 10.dp,
+                                     if (expandPlayerState) (thumbnailSpacing.toInt()*0.01*(screenHeight) - if (carousel) (3*carouselSize.size.dp) else (2*carouselSize.size.dp)) else 10.dp,
                                      label = ""
                                  )
 
                                  val animatePadding by animateDpAsState(
-                                     if (expandedplayer) carouselSize.size.dp else playerThumbnailSize.size.dp
+                                     if (expandPlayerState) carouselSize.size.dp else playerThumbnailSize.size.dp
                                  )
                                  VerticalPager(
                                      state = pagerState,
@@ -1875,15 +1875,15 @@ fun Player(
                                      pageSpacing = animatePageSpacing,
                                      beyondViewportPageCount = 2,
                                      flingBehavior = fling,
-                                     userScrollEnabled = expandedplayer || !disablePlayerHorizontalSwipe,
+                                     userScrollEnabled = expandPlayerState || !disablePlayerHorizontalSwipe,
                                      modifier = Modifier
                                          .padding(
-                                             all = (if (expandedplayer) 0.dp else if (thumbnailType == ThumbnailType.Modern) -(10.dp) else 0.dp).coerceAtLeast(
+                                             all = (if (expandPlayerState) 0.dp else if (thumbnailType == ThumbnailType.Modern) -(10.dp) else 0.dp).coerceAtLeast(
                                                  0.dp
                                              )
                                          )
                                          .conditional(fadingedge) {
-                                             VerticalfadingEdge2(fade = (if (expandedplayer) thumbnailFadeEx else thumbnailFade)*0.05f,showTopActionsBar,topPadding,expandedplayer)
+                                             VerticalfadingEdge2(fade = (if (expandPlayerState) thumbnailFadeEx else thumbnailFade)*0.05f,showTopActionsBar,topPadding,expandPlayerState)
                                          }
                                  ){
 
@@ -1943,7 +1943,7 @@ fun Player(
                                                  }
                                              },
                                              onLongClick = {
-                                                 if (it == pagerState.settledPage && (expandedplayer || fadingedge))
+                                                 if (it == pagerState.settledPage && (expandPlayerState || fadingedge))
                                                      showThumbnailOffsetDialog = true
                                              }
                                          )
@@ -1978,7 +1978,7 @@ fun Player(
                                                  contentScale = ContentScale.Fit,
                                                  modifier = coverModifier
                                              )
-                                             if (isDragged && expandedplayer && it == player.currentMediaItemIndex) {
+                                             if (isDragged && expandPlayerState && it == player.currentMediaItemIndex) {
                                                  Box(modifier = Modifier
                                                      .align(Alignment.Center)
                                                      .matchParentSize()
@@ -2047,9 +2047,9 @@ fun Player(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                    .conditional(!expandedplayer && (!isShowingLyrics || showlyricsthumbnail)){weight(1f)}
+                    .conditional(!expandPlayerState && (!isShowingLyrics || showlyricsthumbnail)){weight(1f)}
                 ){
-                if (!expandedplayer || !isShowingLyrics || queueDurationExpanded) {
+                if (!expandPlayerState || !isShowingLyrics || queueDurationExpanded) {
                     if (showTotalTimeQueue)
                         Row(
                             horizontalArrangement = Arrangement.Center,
@@ -2108,7 +2108,7 @@ fun Player(
                     )
                 }
                 Box(modifier = Modifier
-                    .conditional(!expandedplayer && (!isShowingLyrics || showlyricsthumbnail)){weight(1f)}) {
+                    .conditional(!expandPlayerState && (!isShowingLyrics || showlyricsthumbnail)){weight(1f)}) {
                     if (playerType == PlayerType.Essential || isShowingLyrics || isShowingVisualizer) {
                         Controller(
                             mediaItem,
@@ -2174,8 +2174,8 @@ fun Player(
                     queueLoopState.value = it
                     showQueue = false
                 },
-                onDiscoverClick = {
-                    discoverState.value = it
+                onDiscoverClick = { enabled ->
+                    app.kreate.preferences.Preferences.ENABLE_DISCOVER.update { enabled }
                 }
             )
         }

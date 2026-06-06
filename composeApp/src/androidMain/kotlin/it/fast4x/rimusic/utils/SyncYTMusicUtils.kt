@@ -3,11 +3,11 @@ package it.fast4x.rimusic.utils
 import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
@@ -24,6 +24,7 @@ import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -196,7 +197,9 @@ suspend fun removeYTSongFromPlaylist(
 @Composable
 fun autoSyncToolbutton(messageId: Int): MenuIcon = object : MenuIcon, DynamicColor, Descriptive {
 
-    override var isFirstColor: Boolean by Preferences.AUTO_SYNC
+    override var isFirstColor: Boolean
+        get() = app.kreate.preferences.Preferences.AUTO_SYNC.value
+        set(value) = app.kreate.preferences.Preferences.AUTO_SYNC.update { value }
     override val iconId: Int = R.drawable.sync
     override val messageId: Int = messageId
     override val menuIconTitle: String
@@ -205,6 +208,17 @@ fun autoSyncToolbutton(messageId: Int): MenuIcon = object : MenuIcon, DynamicCol
 
     override fun onShortClick() {
         isFirstColor = !isFirstColor
+        app.kreate.preferences.Preferences.AUTO_SYNC.update { isFirstColor }
+    }
+
+    @Composable
+    override fun ToolBarButton() {
+        super<MenuIcon>.ToolBarButton()
+
+        val isEnabled by app.kreate.preferences.Preferences.AUTO_SYNC.collectAsStateWithLifecycle()
+        LaunchedEffect( isEnabled ) {
+            isFirstColor = isEnabled
+        }
     }
 }
 

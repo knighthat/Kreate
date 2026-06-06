@@ -11,7 +11,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.database.models.Song
 import it.fast4x.rimusic.Database
@@ -76,7 +75,7 @@ class Bookmark(
 
                         if( isInit )
                             isInit = false
-                        else if( Preferences.AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED.value )
+                        else if( app.kreate.preferences.Preferences.AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED.value )
                             downloadOnBookmark()
                     }
         }

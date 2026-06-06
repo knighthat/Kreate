@@ -74,6 +74,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -151,6 +152,7 @@ import it.fast4x.rimusic.utils.textCopyToClipboard
 import it.fast4x.rimusic.utils.thumbnail
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
@@ -236,7 +238,7 @@ MainActivity :
             startApp()
         }
 
-        if ( Preferences.AUDIO_SHAKE_TO_SKIP.value ) {
+        if ( app.kreate.preferences.Preferences.AUDIO_SHAKE_TO_SKIP.value ) {
             sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
             Objects.requireNonNull(sensorManager)
                 ?.registerListener(
@@ -288,9 +290,9 @@ MainActivity :
     )
     fun startApp() {
         // Used in QuickPics for load data from remote instead of last saved in SharedPreferences
-        Preferences.IS_DATA_KEY_LOADED.value = false
+        app.kreate.preferences.Preferences.IS_DATA_KEY_LOADED.value = false
 
-        if ( !Preferences.CLOSE_APP_ON_BACK.value )
+        if ( !app.kreate.preferences.Preferences.CLOSE_APP_ON_BACK.value )
             if (Build.VERSION.SDK_INT >= 33) {
                 onBackInvokedDispatcher.registerOnBackInvokedCallback(
                     OnBackInvokedDispatcher.PRIORITY_DEFAULT
@@ -312,7 +314,7 @@ MainActivity :
 
         intentUriData = intent.data ?: intent.getStringExtra(Intent.EXTRA_TEXT)?.toUri()
 
-        if ( Preferences.KEEP_SCREEN_ON.value )
+        if ( app.kreate.preferences.Preferences.KEEP_SCREEN_ON.value )
             window.addFlags( WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON )
 
         setContent {
@@ -321,7 +323,7 @@ MainActivity :
 
             // Valid to get log when app crash
             if (intent.action == action_copy_crash_log) {
-                Preferences.RUNTIME_LOG.value = true
+                app.kreate.preferences.Preferences.RUNTIME_LOG.update { true }
                 loadAppLog(this@MainActivity, type = LogType.Crash).let {
                     if (it != null) textCopyToClipboard(it, this@MainActivity)
                 }
@@ -355,8 +357,8 @@ MainActivity :
                     val colorPaletteName by Preferences.COLOR_PALETTE
                     val colorPaletteMode by Preferences.THEME_MODE
                     val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
-                    val useSystemFont by Preferences.USE_SYSTEM_FONT
-                    val applyFontPadding by Preferences.APPLY_FONT_PADDING
+                    val useSystemFont = app.kreate.preferences.Preferences.USE_SYSTEM_FONT.value
+                    val applyFontPadding = app.kreate.preferences.Preferences.APPLY_FONT_PADDING.value
 
                     var colorPalette =
                         colorPaletteOf(colorPaletteName, colorPaletteMode, !lightTheme)
@@ -570,8 +572,8 @@ MainActivity :
                             Preferences.Key.USE_SYSTEM_FONT,
                             Preferences.Key.APPLY_FONT_PADDING,
                             Preferences.Key.FONT -> {
-                                val useSystemFont = sharedPreferences.getBoolean( Preferences.Key.USE_SYSTEM_FONT, Preferences.USE_SYSTEM_FONT.defaultValue )
-                                val applyFontPadding = sharedPreferences.getBoolean( Preferences.Key.APPLY_FONT_PADDING, Preferences.APPLY_FONT_PADDING.defaultValue )
+                                val useSystemFont = sharedPreferences.getBoolean( Preferences.Key.USE_SYSTEM_FONT, app.kreate.preferences.Preferences.USE_SYSTEM_FONT.defaultValue )
+                                val applyFontPadding = sharedPreferences.getBoolean( Preferences.Key.APPLY_FONT_PADDING, app.kreate.preferences.Preferences.APPLY_FONT_PADDING.defaultValue )
                                 val fontType = sharedPreferences.getEnum( Preferences.Key.FONT, Preferences.FONT.defaultValue )
 
                                 appearance = appearance.copy(
@@ -729,7 +731,7 @@ MainActivity :
 
                                 // In case [tabIndex] results to 0 and quick page
                                 // isn't enabled change it to Songs page.
-                                if( !Preferences.QUICK_PICKS_PAGE.value && tab == HomeScreenTabs.QuickPics )
+                                if( !app.kreate.preferences.Preferences.QUICK_PICKS_PAGE.value && tab == HomeScreenTabs.QuickPics )
                                     tab = HomeScreenTabs.Songs
 
                                 // Always set to empty to prevent unwanted outcome
@@ -754,7 +756,7 @@ MainActivity :
                             val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
 
                             val isVideo = player.currentMediaItem?.isVideo ?: false
-                            val isVideoEnabled by Preferences.PLAYER_ACTION_TOGGLE_VIDEO
+                            val isVideoEnabled by app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_VIDEO.collectAsStateWithLifecycle()
 
                             val youtubePlayer: @Composable () -> Unit = {
                                 player.currentMediaItem?.mediaId?.let {
@@ -853,7 +855,7 @@ MainActivity :
                     } else {
                         if (launchedFromNotification) {
                             intent.replaceExtras(Bundle())
-                            showPlayer = !Preferences.PLAYER_KEEP_MINIMIZED.value
+                            showPlayer = !app.kreate.preferences.Preferences.PLAYER_KEEP_MINIMIZED.value
                         } else {
                             showPlayer = false
                         }
@@ -863,7 +865,7 @@ MainActivity :
                         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                             if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED && mediaItem != null) {
                                 if ( mediaItem.localConfiguration?.tag !== PersistentQueue.Tag )
-                                    showPlayer = !Preferences.PLAYER_KEEP_MINIMIZED.value
+                                    showPlayer = !app.kreate.preferences.Preferences.PLAYER_KEEP_MINIMIZED.value
                             }
 
                             setDynamicPalette(mediaItem?.mediaMetadata?.artworkUri.thumbnail(1200).toString())
@@ -919,7 +921,7 @@ MainActivity :
                         }?.let { videoId ->
                             Innertube.song(videoId)?.getOrNull()?.let { song ->
                                 withContext(Dispatchers.Main) {
-                                    if ( !song.explicit && !Preferences.PARENTAL_CONTROL.value )
+                                    if ( !song.explicit && !app.kreate.preferences.Preferences.PARENTAL_CONTROL.value )
                                         player.forcePlay(song.asMediaItem)
                                     else
                                         Toaster.w( "Parental control is enabled" )
@@ -937,7 +939,7 @@ MainActivity :
     private val sensorListener: SensorEventListener = object : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent) {
 
-            if ( Preferences.AUDIO_SHAKE_TO_SKIP.value ) {
+            if ( app.kreate.preferences.Preferences.AUDIO_SHAKE_TO_SKIP.value ) {
                 // Fetching x,y,z values
                 val x = event.values[0]
                 val y = event.values[1]

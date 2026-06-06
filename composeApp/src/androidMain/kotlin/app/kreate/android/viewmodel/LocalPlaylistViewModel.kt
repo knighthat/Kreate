@@ -53,10 +53,9 @@ class LocalPlaylistViewModel(
 
     init {
         viewModelScope.launch {
-            val isEnabled = snapshotFlow { Preferences.LOCAL_PLAYLIST_SMART_RECOMMENDATION.value }
             val maxCount = snapshotFlow { Preferences.MAX_NUMBER_OF_SMART_RECOMMENDATIONS.value }
 
-            combine( isEnabled, maxCount ) { enabled, count ->
+            combine( app.kreate.preferences.Preferences.LOCAL_PLAYLIST_SMART_RECOMMENDATION, maxCount ) { enabled, count ->
                 if( !enabled )
                     return@combine emptyMap()
 

@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -82,7 +83,7 @@ import org.koin.compose.koinInject
 fun NextVisualizer( player: StatefulPlayer = koinInject() ) {
 
     val context = LocalContext.current
-    val visualizerEnabled by Preferences.PLAYER_VISUALIZER
+    val visualizerEnabled by app.kreate.preferences.Preferences.PLAYER_VISUALIZER.collectAsStateWithLifecycle()
 
     if (visualizerEnabled) {
 

@@ -51,6 +51,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
@@ -103,7 +104,7 @@ fun OnlineSearch(
 ) {
     val appearance = LocalAppearance.current
     // Settings
-    val isHistoryPaused by Preferences.PAUSE_SEARCH_HISTORY
+    val isHistoryPaused by app.kreate.preferences.Preferences.PAUSE_SEARCH_HISTORY.collectAsStateWithLifecycle()
 
     var reloadHistory by remember {
         mutableStateOf(false)

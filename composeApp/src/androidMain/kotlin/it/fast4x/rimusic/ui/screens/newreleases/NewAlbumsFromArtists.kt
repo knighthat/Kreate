@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
@@ -63,7 +64,7 @@ fun NewAlbumsFromArtists(
     }
 
     val navigationBarPosition by Preferences.NAVIGATION_BAR_POSITION
-    val showSearchTab by Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR
+    val showSearchTab by app.kreate.preferences.Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR.collectAsStateWithLifecycle()
 
     val lazyGridState = rememberLazyGridState()
 

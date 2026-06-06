@@ -48,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
@@ -99,11 +100,11 @@ fun InfoAlbumAndArtistEssential(
     val context = LocalContext.current
     val playerControlsType by Preferences.PLAYER_CONTROLS_TYPE
     val colorPaletteMode by Preferences.THEME_MODE
-    var effectRotationEnabled by Preferences.ROTATION_EFFECT
-    val marqueEffect by Preferences.MARQUEE_TEXT_EFFECT
+    val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
+    val marqueEffect by app.kreate.preferences.Preferences.MARQUEE_TEXT_EFFECT.collectAsStateWithLifecycle()
     var isRotated by rememberSaveable { mutableStateOf(false) }
     var showSelectDialog by remember { mutableStateOf(false) }
-    var textoutline by Preferences.TEXT_OUTLINE
+    val textoutline by app.kreate.preferences.Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
     val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
     var likeButtonWidth by remember{ mutableStateOf(0.dp) }
     val currentMediaItem = player.currentMediaItem
@@ -364,7 +365,7 @@ fun ControlsEssential(
     val context = LocalContext.current
     val colorPaletteName by Preferences.COLOR_PALETTE
     val colorPaletteMode by Preferences.THEME_MODE
-    var effectRotationEnabled by Preferences.ROTATION_EFFECT
+    val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
     var isRotated by rememberSaveable { mutableStateOf(false) }
     val rotationAngle by animateFloatAsState(
         targetValue = if (isRotated) 360F else 0f,

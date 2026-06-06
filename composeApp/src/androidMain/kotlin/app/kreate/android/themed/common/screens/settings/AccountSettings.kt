@@ -38,6 +38,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.innertube.InnertubeProvider
+import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.RestartPlayerService
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
@@ -92,8 +93,8 @@ fun AccountSettings(
             header( { "youtube" } )
             entry( search, "youtube" ) {
                 SettingComponents.BooleanEntry(
-                    Preferences.YOUTUBE_LOGIN,
-                    stringResource( R.string.setting_entry_youtube_login )
+                    preference = app.kreate.preferences.Preferences.YOUTUBE_LOGIN,
+                    title = stringResource( R.string.setting_entry_youtube_login )
                 ) {
                     if( it ) return@BooleanEntry
 
@@ -107,7 +108,7 @@ fun AccountSettings(
             }
             animatedEntry(
                 key = "ytLoginChildren",
-                visible = Preferences.YOUTUBE_LOGIN.value,
+                visibleState = app.kreate.preferences.Preferences.YOUTUBE_LOGIN,
                 modifier = Modifier.padding( start = 25.dp )
             ) {
                 var loginYouTube by remember { mutableStateOf(false) }
@@ -177,7 +178,7 @@ fun AccountSettings(
                     )
                     if( search appearsIn syncPlaylistsTitle )
                         SettingComponents.BooleanEntry(
-                            preference = Preferences.YOUTUBE_PLAYLISTS_SYNC,
+                            preference = app.kreate.preferences.Preferences.YOUTUBE_PLAYLISTS_SYNC,
                             title = syncPlaylistsTitle
                         )
 
@@ -187,7 +188,7 @@ fun AccountSettings(
                     )
                     if( search appearsIn syncArtistsTitle )
                         SettingComponents.BooleanEntry(
-                            preference = Preferences.YOUTUBE_ARTISTS_SYNC,
+                            preference = app.kreate.preferences.Preferences.YOUTUBE_ARTISTS_SYNC,
                             title = syncArtistsTitle
                         )
 
@@ -197,7 +198,7 @@ fun AccountSettings(
                     )
                     if( search appearsIn syncAlbumsTitle )
                         SettingComponents.BooleanEntry(
-                            preference = Preferences.YOUTUBE_ALBUMS_SYNC,
+                            preference = app.kreate.preferences.Preferences.YOUTUBE_ALBUMS_SYNC,
                             title = syncAlbumsTitle
                         )
                 }
@@ -237,7 +238,7 @@ fun AccountSettings(
             header( { "discord" } )
             entry( search, R.string.discord_enable_rich_presence ) {
                 SettingComponents.BooleanEntry(
-                    preference = Preferences.DISCORD_LOGIN,
+                    preference = app.kreate.preferences.Preferences.DISCORD_LOGIN,
                     title = stringResource( R.string.discord_enable_rich_presence ),
                     onValueChanged = {
                         val token by Preferences.DISCORD_ACCESS_TOKEN
@@ -257,7 +258,7 @@ fun AccountSettings(
             }
             animatedEntry(
                 key = "discordLoginChildren",
-                visible = Preferences.DISCORD_LOGIN.value,
+                visibleState = app.kreate.preferences.Preferences.DISCORD_LOGIN,
                 modifier = Modifier.padding( start = 25.dp )
             ) {
                 var loginDiscord by remember { mutableStateOf(false) }

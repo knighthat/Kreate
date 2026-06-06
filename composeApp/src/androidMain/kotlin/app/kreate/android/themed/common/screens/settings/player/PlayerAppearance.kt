@@ -15,8 +15,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
@@ -38,53 +40,29 @@ import it.fast4x.rimusic.enums.PlayerType
 import it.fast4x.rimusic.enums.ThumbnailRoundness
 import it.fast4x.rimusic.enums.ThumbnailType
 import it.fast4x.rimusic.ui.components.themed.AppearancePresetDialog
+import kotlinx.coroutines.flow.update
 
-fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandscape: Boolean ) {
+fun LazyListScope.playerAppearanceSection(
+    search: SettingEntrySearch,
+    isLandscape: Boolean,
+    showthumbnail: Boolean
+) {
     header( R.string.player )
 
-    var showthumbnail by Preferences.PLAYER_SHOW_THUMBNAIL
-    var showlyricsthumbnail by Preferences.LYRICS_SHOW_THUMBNAIL
-    var expandedplayer by Preferences.PLAYER_EXPANDED
-    var visualizerEnabled by Preferences.PLAYER_VISUALIZER
-    var expandedplayertoggle by Preferences.PLAYER_ACTION_TOGGLE_EXPAND
-    var showNextSongsInPlayer by Preferences.PLAYER_SHOW_NEXT_IN_QUEUE
     var thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
     var playerBackgroundColors by Preferences.PLAYER_BACKGROUND
-    var showTopActionsBar by Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR
     var playerInfoType by Preferences.PLAYER_INFO_TYPE
     var playerType by Preferences.PLAYER_TYPE
-    var showCoverThumbnailAnimation by Preferences.PLAYER_THUMBNAIL_ANIMATION
 
     if( !isLandscape ) {
         entry( search, R.string.appearancepresets ) {
-            var transparentbar by Preferences.TRANSPARENT_TIMELINE
             var playerPlayButtonType by Preferences.PLAYER_PLAY_BUTTON_TYPE
-            var bottomgradient by Preferences.PLAYER_BOTTOM_GRADIENT
             var playerTimelineType by Preferences.PLAYER_TIMELINE_TYPE
             var playerThumbnailSize by Preferences.PLAYER_PORTRAIT_THUMBNAIL_SIZE
             var playerTimelineSize by Preferences.PLAYER_TIMELINE_SIZE
-            var showButtonPlayerAddToPlaylist by Preferences.PLAYER_ACTION_ADD_TO_PLAYLIST
-            var showButtonPlayerArrow by Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW
-            var showButtonPlayerDownload by Preferences.PLAYER_ACTION_DOWNLOAD
-            var showButtonPlayerLoop by Preferences.PLAYER_ACTION_LOOP
-            var showButtonPlayerLyrics by Preferences.PLAYER_ACTION_SHOW_LYRICS
-            var showButtonPlayerShuffle by Preferences.PLAYER_ACTION_SHUFFLE
-            var showButtonPlayerSleepTimer by Preferences.PLAYER_ACTION_SLEEP_TIMER
-            var showButtonPlayerMenu by Preferences.PLAYER_ACTION_SHOW_MENU
-            var showButtonPlayerStartradio by Preferences.PLAYER_ACTION_START_RADIO
-            var showButtonPlayerDiscover by Preferences.PLAYER_ACTION_DISCOVER
-            var showButtonPlayerVideo by Preferences.PLAYER_ACTION_TOGGLE_VIDEO
-            var showTotalTimeQueue by Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME
-            var showRemainingSongTime by Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME
             var playerControlsType by Preferences.PLAYER_CONTROLS_TYPE
-            var transparentBackgroundActionBarPlayer by Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR
-            var actionspacedevenly by Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY
             var thumbnailType by Preferences.THUMBNAIL_TYPE
-            var noblur by Preferences.PLAYER_BACKGROUND_BLUR
-            var fadingedge by Preferences.PLAYER_BACKGROUND_FADING_EDGE
             var carouselSize by Preferences.CAROUSEL_SIZE
-            var playerInfoShowIcons by Preferences.PLAYER_SONG_INFO_ICON
-            var topPadding by Preferences.PLAYER_TOP_PADDING
             var animatedGradient by Preferences.ANIMATED_GRADIENT
             var blurStrength by Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH
             var thumbnailFadeEx  by Preferences.PLAYER_THUMBNAIL_FADE_EX
@@ -98,8 +76,8 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
                 AppearancePresetDialog(
                     onDismiss = {appearanceChooser = false},
                     onClick0 = {
-                        showTopActionsBar = true
-                        showthumbnail = true
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.update { true }
                         playerBackgroundColors = PlayerBackgroundColors.BlurredCoverColor
                         blurStrength = 50f
                         thumbnailRoundness = ThumbnailRoundness.None
@@ -108,132 +86,130 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
                         playerTimelineSize = PlayerTimelineSize.Biggest
                         playerControlsType = PlayerControlsType.Essential
                         playerPlayButtonType = PlayerPlayButtonType.Disabled
-                        transparentbar = true
+                        app.kreate.preferences.Preferences.TRANSPARENT_TIMELINE.update { true }
                         playerType = PlayerType.Essential
-                        showlyricsthumbnail = false
-                        expandedplayer = true
+                        app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_EXPANDED.update { true }
                         thumbnailType = ThumbnailType.Modern
                         playerThumbnailSize = PlayerThumbnailSize.Big
-                        showTotalTimeQueue = false
-                        bottomgradient = true
-                        showRemainingSongTime = true
-                        showNextSongsInPlayer = false
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_BOTTOM_GRADIENT.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.update { false }
                         colorPaletteName = ColorPaletteName.Dynamic
                         colorPaletteMode = ColorPaletteMode.System
                         ///////ACTION BAR BUTTONS////////////////
-                        transparentBackgroundActionBarPlayer = true
-                        actionspacedevenly = true
-                        showButtonPlayerVideo = false
-                        showButtonPlayerDiscover = false
-                        showButtonPlayerDownload = false
-                        showButtonPlayerAddToPlaylist = true
-                        showButtonPlayerLoop = false
-                        showButtonPlayerShuffle = true
-                        showButtonPlayerLyrics = false
-                        expandedplayertoggle = false
-                        showButtonPlayerSleepTimer = false
-                        visualizerEnabled = false
+                        app.kreate.preferences.Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_VIDEO.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_DISCOVER.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_DOWNLOAD.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_ADD_TO_PLAYLIST.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_LOOP.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHUFFLE.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_LYRICS.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_EXPAND.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SLEEP_TIMER.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_VISUALIZER.update { false }
                         appearanceChooser = false
-                        showButtonPlayerArrow = false
-                        showButtonPlayerStartradio = false
-                        showButtonPlayerMenu = true
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW.update {  false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_START_RADIO.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_MENU.update { true }
                         ///////////////////////////
                         appearanceChooser = false
                     },
                     onClick1 = {
-                        showTopActionsBar = true
-                        showthumbnail = true
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.update { true }
                         playerBackgroundColors = PlayerBackgroundColors.BlurredCoverColor
                         blurStrength = 50f
                         playerInfoType = PlayerInfoType.Essential
                         playerPlayButtonType = PlayerPlayButtonType.Disabled
                         playerTimelineType = PlayerTimelineType.ThinBar
                         playerControlsType = PlayerControlsType.Essential
-                        transparentbar = true
+                        app.kreate.preferences.Preferences.TRANSPARENT_TIMELINE.update { true }
                         playerType = PlayerType.Modern
-                        expandedplayer = true
-                        fadingedge = true
+                        app.kreate.preferences.Preferences.PLAYER_EXPANDED.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_BACKGROUND_FADING_EDGE.update { true }
                         thumbnailFadeEx = 4f
                         thumbnailSpacing = -32f
                         thumbnailType = ThumbnailType.Essential
                         carouselSize = CarouselSize.Big
                         playerThumbnailSize = PlayerThumbnailSize.Biggest
-                        showTotalTimeQueue = false
-                        transparentBackgroundActionBarPlayer = true
-                        showRemainingSongTime = true
-                        bottomgradient = true
-                        showlyricsthumbnail = false
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_BOTTOM_GRADIENT.update { true }
+                        app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.update { false }
                         thumbnailRoundness = ThumbnailRoundness.Medium
-                        showNextSongsInPlayer = true
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.update { true }
                         colorPaletteName = ColorPaletteName.Dynamic
                         colorPaletteMode = ColorPaletteMode.System
                         ///////ACTION BAR BUTTONS////////////////
-                        transparentBackgroundActionBarPlayer = true
-                        actionspacedevenly = true
-                        showButtonPlayerVideo = false
-                        showButtonPlayerDiscover = false
-                        showButtonPlayerDownload = false
-                        showButtonPlayerAddToPlaylist = true
-                        showButtonPlayerLoop = false
-                        showButtonPlayerShuffle = false
-                        showButtonPlayerLyrics = false
-                        expandedplayertoggle = true
-                        showButtonPlayerSleepTimer = false
-                        visualizerEnabled = false
+                        app.kreate.preferences.Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_VIDEO.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_DISCOVER.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_DOWNLOAD.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_ADD_TO_PLAYLIST.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_LOOP.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHUFFLE.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_LYRICS.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_EXPAND.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SLEEP_TIMER.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_VISUALIZER.update { false }
                         appearanceChooser = false
-                        showButtonPlayerArrow = false
-                        showButtonPlayerStartradio = false
-                        showButtonPlayerMenu = true
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW.update {  false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_START_RADIO.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_MENU.update { true }
                         ///////////////////////////
                         appearanceChooser = false
                     },
                     onClick2 = {
-                        showTopActionsBar = false
-                        showthumbnail = false
-                        noblur = true
-                        topPadding = false
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_TOP_PADDING.update { false }
                         playerBackgroundColors = PlayerBackgroundColors.BlurredCoverColor
                         blurStrength = 50f
                         playerPlayButtonType = PlayerPlayButtonType.Disabled
                         playerInfoType = PlayerInfoType.Modern
-                        playerInfoShowIcons = false
+                        app.kreate.preferences.Preferences.PLAYER_SONG_INFO_ICON.update { false }
                         playerTimelineType = PlayerTimelineType.ThinBar
                         playerControlsType = PlayerControlsType.Essential
-                        transparentbar = true
+                        app.kreate.preferences.Preferences.TRANSPARENT_TIMELINE.update { true }
                         playerType = PlayerType.Modern
-                        expandedplayer = true
-                        showTotalTimeQueue = false
-                        transparentBackgroundActionBarPlayer = true
-                        showRemainingSongTime = true
-                        bottomgradient = true
-                        showlyricsthumbnail = false
-                        showNextSongsInPlayer = false
+                        app.kreate.preferences.Preferences.PLAYER_EXPANDED.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_BOTTOM_GRADIENT.update { true }
+                        app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.update { false }
                         colorPaletteName = ColorPaletteName.Dynamic
                         colorPaletteMode = ColorPaletteMode.System
                         ///////ACTION BAR BUTTONS////////////////
-                        transparentBackgroundActionBarPlayer = true
-                        actionspacedevenly = true
-                        showButtonPlayerVideo = false
-                        showButtonPlayerDiscover = false
-                        showButtonPlayerDownload = false
-                        showButtonPlayerAddToPlaylist = false
-                        showButtonPlayerLoop = false
-                        showButtonPlayerShuffle = false
-                        showButtonPlayerLyrics = false
-                        expandedplayertoggle = false
-                        showButtonPlayerSleepTimer = false
-                        visualizerEnabled = false
+                        app.kreate.preferences.Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_VIDEO.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_DISCOVER.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_DOWNLOAD.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_ADD_TO_PLAYLIST.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_LOOP.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHUFFLE.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_LYRICS.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_EXPAND.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SLEEP_TIMER.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_VISUALIZER.update { false }
                         appearanceChooser = false
-                        showButtonPlayerArrow = false
-                        showButtonPlayerStartradio = false
-                        showButtonPlayerMenu = true
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW.update {  false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_START_RADIO.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_MENU.update { true }
                         ///////////////////////////
                         appearanceChooser = false
                     },
                     onClick3 = {
-                        showTopActionsBar = false
-                        topPadding = false
-                        showthumbnail = true
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_TOP_PADDING.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.update { true }
                         playerBackgroundColors = PlayerBackgroundColors.BlurredCoverColor
                         blurStrength = 50f
                         playerInfoType = PlayerInfoType.Essential
@@ -242,45 +218,44 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
                         playerControlsType = PlayerControlsType.Modern
                         playerPlayButtonType = PlayerPlayButtonType.Disabled
                         colorPaletteName = ColorPaletteName.PureBlack
-                        transparentbar = false
+                        app.kreate.preferences.Preferences.TRANSPARENT_TIMELINE.update { false }
                         playerType = PlayerType.Essential
-                        expandedplayer = false
+                        app.kreate.preferences.Preferences.PLAYER_EXPANDED.update { false }
                         playerThumbnailSize = PlayerThumbnailSize.Expanded
-                        showTotalTimeQueue = false
-                        transparentBackgroundActionBarPlayer = true
-                        showRemainingSongTime = true
-                        bottomgradient = true
-                        showlyricsthumbnail = false
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_BOTTOM_GRADIENT.update { true }
+                        app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.update { false }
                         thumbnailType = ThumbnailType.Essential
                         thumbnailRoundness = ThumbnailRoundness.Light
                         playerType = PlayerType.Modern
-                        fadingedge = true
+                        app.kreate.preferences.Preferences.PLAYER_BACKGROUND_FADING_EDGE.update { true }
                         thumbnailFade = 5f
-                        showNextSongsInPlayer = false
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.update { false }
                         ///////ACTION BAR BUTTONS////////////////
-                        transparentBackgroundActionBarPlayer = true
-                        actionspacedevenly = true
-                        showButtonPlayerVideo = false
-                        showButtonPlayerDiscover = false
-                        showButtonPlayerDownload = false
-                        showButtonPlayerAddToPlaylist = false
-                        showButtonPlayerLoop = true
-                        showButtonPlayerShuffle = true
-                        showButtonPlayerLyrics = false
-                        expandedplayertoggle = false
-                        showButtonPlayerSleepTimer = false
-                        visualizerEnabled = false
+                        app.kreate.preferences.Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_VIDEO.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_DISCOVER.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_DOWNLOAD.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_ADD_TO_PLAYLIST.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_LOOP.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHUFFLE.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_LYRICS.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_EXPAND.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SLEEP_TIMER.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_VISUALIZER.update { false }
                         appearanceChooser = false
-                        showButtonPlayerArrow = true
-                        showButtonPlayerStartradio = false
-                        showButtonPlayerMenu = true
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW.update {  true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_START_RADIO.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_MENU.update { true }
                         ///////////////////////////
                         appearanceChooser = false
                     },
                     onClick4 = {
-                        showTopActionsBar = false
-                        topPadding = true
-                        showthumbnail = true
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_TOP_PADDING.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.update { true }
                         playerBackgroundColors = PlayerBackgroundColors.AnimatedGradient
                         animatedGradient = AnimatedGradient.Linear
                         playerInfoType = PlayerInfoType.Essential
@@ -290,44 +265,43 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
                         playerPlayButtonType = PlayerPlayButtonType.Square
                         colorPaletteName = ColorPaletteName.Dynamic
                         colorPaletteMode = ColorPaletteMode.PitchBlack
-                        transparentbar = false
+                        app.kreate.preferences.Preferences.TRANSPARENT_TIMELINE.update { false }
                         playerType = PlayerType.Modern
-                        expandedplayer = false
+                        app.kreate.preferences.Preferences.PLAYER_EXPANDED.update { false }
                         playerThumbnailSize = PlayerThumbnailSize.Biggest
-                        showTotalTimeQueue = false
-                        transparentBackgroundActionBarPlayer = true
-                        showRemainingSongTime = true
-                        showlyricsthumbnail = false
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME.update { true }
+                        app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.update { false }
                         thumbnailType = ThumbnailType.Modern
                         thumbnailRoundness = ThumbnailRoundness.Heavy
-                        fadingedge = true
+                        app.kreate.preferences.Preferences.PLAYER_BACKGROUND_FADING_EDGE.update { true }
                         thumbnailFade = 0f
                         thumbnailFadeEx = 5f
                         thumbnailSpacing = -32f
-                        showNextSongsInPlayer = false
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.update { false }
                         ///////ACTION BAR BUTTONS////////////////
-                        transparentBackgroundActionBarPlayer = true
-                        actionspacedevenly = true
-                        showButtonPlayerVideo = false
-                        showButtonPlayerDiscover = false
-                        showButtonPlayerDownload = true
-                        showButtonPlayerAddToPlaylist = false
-                        showButtonPlayerLoop = false
-                        showButtonPlayerShuffle = false
-                        showButtonPlayerLyrics = false
-                        expandedplayertoggle = true
-                        showButtonPlayerSleepTimer = false
-                        visualizerEnabled = false
+                        app.kreate.preferences.Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_VIDEO.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_DISCOVER.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_DOWNLOAD.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_ADD_TO_PLAYLIST.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_LOOP.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHUFFLE.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_LYRICS.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_EXPAND.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SLEEP_TIMER.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_VISUALIZER.update { false }
                         appearanceChooser = false
-                        showButtonPlayerArrow =false
-                        showButtonPlayerStartradio = false
-                        showButtonPlayerMenu = true
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_START_RADIO.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_MENU.update { true }
                         ///////////////////////////
                         appearanceChooser = false
                     },
                     onClick5 = {
-                        showTopActionsBar = true
-                        showthumbnail = true
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.update { true }
                         playerBackgroundColors = PlayerBackgroundColors.CoverColorGradient
                         playerInfoType = PlayerInfoType.Essential
                         playerTimelineType = PlayerTimelineType.Wavy
@@ -336,34 +310,33 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
                         playerPlayButtonType = PlayerPlayButtonType.CircularRibbed
                         colorPaletteName = ColorPaletteName.Dynamic
                         colorPaletteMode = ColorPaletteMode.System
-                        transparentbar = false
+                        app.kreate.preferences.Preferences.TRANSPARENT_TIMELINE.update { false }
                         playerType = PlayerType.Essential
-                        expandedplayer = true
+                        app.kreate.preferences.Preferences.PLAYER_EXPANDED.update { true }
                         playerThumbnailSize = PlayerThumbnailSize.Big
-                        showTotalTimeQueue = false
-                        transparentBackgroundActionBarPlayer = true
-                        showRemainingSongTime = true
-                        showlyricsthumbnail = false
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME.update { true }
+                        app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.update { false }
                         thumbnailType = ThumbnailType.Modern
                         thumbnailRoundness = ThumbnailRoundness.Heavy
-                        showNextSongsInPlayer = false
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.update { false }
                         ///////ACTION BAR BUTTONS////////////////
-                        transparentBackgroundActionBarPlayer = true
-                        actionspacedevenly = true
-                        showButtonPlayerVideo = false
-                        showButtonPlayerDiscover = false
-                        showButtonPlayerDownload = false
-                        showButtonPlayerAddToPlaylist = false
-                        showButtonPlayerLoop = false
-                        showButtonPlayerShuffle = true
-                        showButtonPlayerLyrics = true
-                        expandedplayertoggle = false
-                        showButtonPlayerSleepTimer = false
-                        visualizerEnabled = false
+                        app.kreate.preferences.Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_VIDEO.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_DISCOVER.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_DOWNLOAD.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_ADD_TO_PLAYLIST.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_LOOP.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHUFFLE.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_LYRICS.update { true }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_EXPAND.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SLEEP_TIMER.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_VISUALIZER.update { false }
                         appearanceChooser = false
-                        showButtonPlayerArrow =false
-                        showButtonPlayerStartradio = false
-                        showButtonPlayerMenu = true
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_START_RADIO.update { false }
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_MENU.update { true }
                         ///////////////////////////
                         appearanceChooser = false
                     }
@@ -378,14 +351,14 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
         }
         entry( search, R.string.show_player_top_actions_bar ) {
             SettingComponents.BooleanEntry(
-                    Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR,
-                    titleId = R.string.show_player_top_actions_bar
+                    preference = app.kreate.preferences.Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR,
+                    title = stringResource( R.string.show_player_top_actions_bar )
                 )
         }
         entry( search, R.string.blankspace ) {
             SettingComponents.BooleanEntry(
-                    Preferences.PLAYER_TOP_PADDING,
-                    R.string.blankspace
+                    preference = app.kreate.preferences.Preferences.PLAYER_TOP_PADDING,
+                    title = stringResource( R.string.blankspace )
                 )
         }
     }
@@ -407,8 +380,8 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
         additionalCheck = playerBackgroundColors == PlayerBackgroundColors.BlurredCoverColor
     ) {
         SettingComponents.BooleanEntry(
-            Preferences.PLAYER_SHOW_THUMBNAIL,
-            R.string.show_thumbnail
+            preference = app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL,
+            title = stringResource( R.string.show_thumbnail )
         )
     }
     animatedEntry(
@@ -429,7 +402,7 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
     }
     animatedEntry(
         key = "showThumbnailTrueChildren",
-        visible = showthumbnail,
+        visibleState = app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL,
         modifier = Modifier.padding(
             start = if ( playerBackgroundColors == PlayerBackgroundColors.BlurredCoverColor )
                 25.dp
@@ -440,15 +413,17 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
         Column {
             if ( playerType == PlayerType.Modern && search appearsIn R.string.fadingedge )
                 SettingComponents.BooleanEntry(
-                    Preferences.PLAYER_BACKGROUND_FADING_EDGE,
-                    R.string.fadingedge
+                    preference = app.kreate.preferences.Preferences.PLAYER_BACKGROUND_FADING_EDGE,
+                    title = stringResource( R.string.fadingedge )
                 )
 
+            val expandedplayer by app.kreate.preferences.Preferences.PLAYER_EXPANDED.collectAsStateWithLifecycle()
+            val expandedplayertoggle by app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_EXPAND.collectAsStateWithLifecycle()
             if ( playerType == PlayerType.Modern && !isLandscape && (expandedplayertoggle || expandedplayer) ) {
                 if ( search appearsIn R.string.carousel )
                     SettingComponents.BooleanEntry(
-                        Preferences.PLAYER_THUMBNAILS_CAROUSEL,
-                        R.string.carousel
+                        preference = app.kreate.preferences.Preferences.PLAYER_THUMBNAILS_CAROUSEL,
+                        title = stringResource( R.string.carousel )
                     )
 
                 if ( search appearsIn R.string.carouselsize )
@@ -460,26 +435,28 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
             if ( playerType == PlayerType.Essential ) {
                 if ( search appearsIn R.string.thumbnailpause )
                     SettingComponents.BooleanEntry(
-                        Preferences.PLAYER_SHRINK_THUMBNAIL_ON_PAUSE,
-                        R.string.thumbnailpause
+                        preference = app.kreate.preferences.Preferences.PLAYER_SHRINK_THUMBNAIL_ON_PAUSE,
+                        title = stringResource( R.string.thumbnailpause )
                     )
                 if ( search appearsIn R.string.show_lyrics_thumbnail )
                     SettingComponents.BooleanEntry(
-                        Preferences.LYRICS_SHOW_THUMBNAIL,
-                        R.string.show_lyrics_thumbnail
+                        preference = app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL,
+                        title = stringResource( R.string.show_lyrics_thumbnail )
                     )
+                val visualizerEnabled by app.kreate.preferences.Preferences.PLAYER_VISUALIZER.collectAsStateWithLifecycle()
                 if ( visualizerEnabled && search appearsIn R.string.showvisthumbnail )
                     SettingComponents.BooleanEntry(
-                        Preferences.PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER,
-                        R.string.showvisthumbnail
+                        preference = app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER,
+                        title = stringResource( R.string.showvisthumbnail )
                     )
             }
 
             if ( search appearsIn R.string.show_cover_thumbnail_animation ) {
                 SettingComponents.BooleanEntry(
-                    Preferences.PLAYER_THUMBNAIL_ANIMATION,
-                    R.string.show_cover_thumbnail_animation
+                    preference = app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_ANIMATION,
+                    title = stringResource( R.string.show_cover_thumbnail_animation )
                 )
+                val showCoverThumbnailAnimation by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_ANIMATION.collectAsStateWithLifecycle()
                 AnimatedVisibility( showCoverThumbnailAnimation ) {
                     if( search appearsIn R.string.cover_thumbnail_animation_type )
                         SettingComponents.EnumEntry(
@@ -541,8 +518,8 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
         additionalCheck = !showthumbnail
     ) {
         SettingComponents.BooleanEntry(
-            Preferences.PLAYER_BACKGROUND_BLUR,
-            R.string.noblur
+            preference = app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR,
+            title = stringResource( R.string.noblur )
         )
     }
     entry(
@@ -551,8 +528,8 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
         additionalCheck = !(showthumbnail && playerType == PlayerType.Essential)
     ) {
         SettingComponents.BooleanEntry(
-            Preferences.PLAYER_STATS_FOR_NERDS,
-            R.string.statsfornerdsplayer
+            preference = app.kreate.preferences.Preferences.PLAYER_STATS_FOR_NERDS,
+            title = stringResource( R.string.statsfornerdsplayer )
         )
     }
     entry(
@@ -579,8 +556,8 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
     ) {
         if( search appearsIn R.string.pinfo_show_icons )
             SettingComponents.BooleanEntry(
-                Preferences.PLAYER_SONG_INFO_ICON,
-                R.string.pinfo_show_icons
+                preference = app.kreate.preferences.Preferences.PLAYER_SONG_INFO_ICON,
+                title = stringResource( R.string.pinfo_show_icons )
             )
     }
     entry( search, R.string.miniplayertype ) {
@@ -591,8 +568,8 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
     }
     entry( search, R.string.player_swap_controls_with_timeline ) {
         SettingComponents.BooleanEntry(
-            Preferences.PLAYER_IS_CONTROL_AND_TIMELINE_SWAPPED,
-            R.string.player_swap_controls_with_timeline
+            preference = app.kreate.preferences.Preferences.PLAYER_IS_CONTROL_AND_TIMELINE_SWAPPED,
+            title = stringResource( R.string.player_swap_controls_with_timeline )
         )
     }
     entry( search, R.string.timeline ) {
@@ -603,8 +580,8 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
     }
     entry( search, R.string.transparentbar ) {
         SettingComponents.BooleanEntry(
-            Preferences.TRANSPARENT_TIMELINE,
-            R.string.transparentbar
+            preference = app.kreate.preferences.Preferences.TRANSPARENT_TIMELINE,
+            title = stringResource( R.string.transparentbar )
         )
     }
     entry( search, R.string.pcontrols_type ) {
@@ -621,8 +598,8 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
     }
     entry( search, R.string.buttonzoomout ) {
         SettingComponents.BooleanEntry(
-            Preferences.ZOOM_OUT_ANIMATION,
-            R.string.buttonzoomout
+            preference = app.kreate.preferences.Preferences.ZOOM_OUT_ANIMATION,
+            title = stringResource ( R.string.buttonzoomout )
         )
     }
     entry( search, R.string.icon_like_button ) {
@@ -656,20 +633,20 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
         Column {
             if( search appearsIn R.string.rotating_cover_title )
                 SettingComponents.BooleanEntry(
-                    Preferences.PLAYER_ROTATING_ALBUM_COVER,
-                    R.string.rotating_cover_title
+                    preference = app.kreate.preferences.Preferences.PLAYER_ROTATING_ALBUM_COVER,
+                    title = stringResource( R.string.rotating_cover_title )
                 )
 
             if ( search appearsIn R.string.bottomgradient )
                 SettingComponents.BooleanEntry(
-                    Preferences.PLAYER_BOTTOM_GRADIENT,
-                    R.string.bottomgradient
+                    preference = app.kreate.preferences.Preferences.PLAYER_BOTTOM_GRADIENT,
+                    title = stringResource( R.string.bottomgradient )
                 )
 
             if ( playerType == PlayerType.Modern && search appearsIn R.string.albumCoverRotation )
                 SettingComponents.BooleanEntry(
-                    Preferences.PLAYER_THUMBNAIL_ROTATION,
-                    R.string.albumCoverRotation
+                    preference = app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_ROTATION,
+                    title = stringResource( R.string.albumCoverRotation )
                 )
         }
     }
@@ -680,43 +657,43 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
     ) {
         if( search appearsIn R.string.blackgradient )
             SettingComponents.BooleanEntry(
-                Preferences.BLACK_GRADIENT,
-                R.string.blackgradient,
+                preference = app.kreate.preferences.Preferences.BLACK_GRADIENT,
+                title = stringResource( R.string.blackgradient ),
             )
     }
     entry( search, R.string.textoutline ) {
         SettingComponents.BooleanEntry(
-            Preferences.TEXT_OUTLINE,
-            R.string.textoutline
+            preference = app.kreate.preferences.Preferences.TEXT_OUTLINE,
+            title = stringResource( R.string.textoutline )
         )
     }
     entry( search, R.string.show_total_time_of_queue ) {
         SettingComponents.BooleanEntry(
-            Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME,
-            R.string.show_total_time_of_queue
+            preference = app.kreate.preferences.Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME,
+            title = stringResource( R.string.show_total_time_of_queue )
         )
     }
     entry( search, R.string.show_remaining_song_time ) {
         SettingComponents.BooleanEntry(
-            Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME,
-            R.string.show_remaining_song_time
+            preference = app.kreate.preferences.Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME,
+            title = stringResource( R.string.show_remaining_song_time )
         )
     }
     entry( search, R.string.setting_entry_show_seek_forward_backward ) {
         SettingComponents.BooleanEntry(
-            preference = Preferences.PLAYER_SHOW_SEEK_BUTTONS,
+            preference = app.kreate.preferences.Preferences.PLAYER_SHOW_SEEK_BUTTONS,
             title = stringResource( R.string.setting_entry_show_seek_forward_backward )
         )
     }
     entry( search, R.string.show_next_songs_in_player ) {
         SettingComponents.BooleanEntry(
-            Preferences.PLAYER_SHOW_NEXT_IN_QUEUE,
-            R.string.show_next_songs_in_player
+            preference = app.kreate.preferences.Preferences.PLAYER_SHOW_NEXT_IN_QUEUE,
+            title =   stringResource( R.string.show_next_songs_in_player )
         )
     }
     animatedEntry(
         key = "showNextSongsInPlayerChildren",
-        visible = showNextSongsInPlayer,
+        visibleState = app.kreate.preferences.Preferences.PLAYER_SHOW_NEXT_IN_QUEUE,
         modifier = Modifier.padding( start = 25.dp )
     ) {
         Column {
@@ -728,14 +705,14 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
 
             if ( search appearsIn R.string.showalbumcover )
                 SettingComponents.BooleanEntry(
-                    Preferences.PLAYER_SHOW_NEXT_IN_QUEUE_THUMBNAIL,
-                    R.string.showalbumcover
+                    preference = app.kreate.preferences.Preferences.PLAYER_SHOW_NEXT_IN_QUEUE_THUMBNAIL,
+                    title = stringResource( R.string.showalbumcover )
                 )
         }
     }
     entry( search, R.string.setting_entry_marquee_effect ) {
         SettingComponents.BooleanEntry(
-            preference = Preferences.MARQUEE_TEXT_EFFECT,
+            preference = app.kreate.preferences.Preferences.MARQUEE_TEXT_EFFECT,
             title = stringResource( R.string.setting_entry_marquee_effect ),
             subtitle = stringResource( R.string.setting_description_marquee_effect )
         )
@@ -746,41 +723,41 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
         R.string.disable_horizontal_swipe to R.string.disable_song_switching_via_swipe
     entry( search, titleId ) {
         SettingComponents.BooleanEntry(
-            Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED,
-            titleId,
+            preference = app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED,
+            title = stringResource( titleId ),
             subtitleId
         )
     }
     entry( search, R.string.player_rotating_buttons ) {
         SettingComponents.BooleanEntry(
-            Preferences.ROTATION_EFFECT,
-            R.string.player_rotating_buttons,
+            preference = app.kreate.preferences.Preferences.ROTATION_EFFECT,
+            title = stringResource( R.string.player_rotating_buttons) ,
             R.string.player_enable_rotation_buttons
         )
     }
     entry( search, R.string.toggle_lyrics ) {
          SettingComponents.BooleanEntry(
-            Preferences.PLAYER_TAP_THUMBNAIL_FOR_LYRICS,
-            R.string.toggle_lyrics,
+            preference = app.kreate.preferences.Preferences.PLAYER_TAP_THUMBNAIL_FOR_LYRICS,
+            title = stringResource( R.string.toggle_lyrics) ,
             R.string.by_tapping_on_the_thumbnail
         )
     }
     entry( search, R.string.click_lyrics_text ) {
         SettingComponents.BooleanEntry(
-            Preferences.LYRICS_JUMP_ON_TAP,
-            R.string.click_lyrics_text
+            preference = app.kreate.preferences.Preferences.LYRICS_JUMP_ON_TAP,
+            title = stringResource( R.string.click_lyrics_text )
         )
     }
     entry( search, R.string.show_background_in_lyrics ) {
         SettingComponents.BooleanEntry(
-            Preferences.LYRICS_SHOW_ACCENT_BACKGROUND,
-            R.string.show_background_in_lyrics
+            preference = app.kreate.preferences.Preferences.LYRICS_SHOW_ACCENT_BACKGROUND,
+            title = stringResource( R.string.show_background_in_lyrics )
         )
     }
     entry( search, R.string.player_enable_lyrics_popup_message ) {
         SettingComponents.BooleanEntry(
-            Preferences.PLAYER_ACTION_LYRICS_POPUP_MESSAGE,
-            R.string.player_enable_lyrics_popup_message
+            preference = app.kreate.preferences.Preferences.PLAYER_ACTION_LYRICS_POPUP_MESSAGE,
+            title = stringResource( R.string.player_enable_lyrics_popup_message )
         )
     }
     entry( search, R.string.background_progress_bar ) {
@@ -791,8 +768,8 @@ fun LazyListScope.playerAppearanceSection( search: SettingEntrySearch, isLandsca
     }
     entry( search, R.string.visualizer ) {
         SettingComponents.BooleanEntry(
-            preference = Preferences.PLAYER_VISUALIZER,
-            titleId = R.string.visualizer,
+            preference = app.kreate.preferences.Preferences.PLAYER_VISUALIZER,
+            title = stringResource( R.string.visualizer ),
             subtitleId = R.string.visualizer_require_mic_permission
         )
     }

@@ -93,6 +93,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
@@ -1233,10 +1234,10 @@ fun BlurParamsDialog(
         var thumbnailSpacingL by Preferences.PLAYER_THUMBNAIL_SPACING_LANDSCAPE
         var thumbnailFade by Preferences.PLAYER_THUMBNAIL_FADE
         var thumbnailFadeEx by Preferences.PLAYER_THUMBNAIL_FADE_EX
-        var fadingedge by Preferences.PLAYER_BACKGROUND_FADING_EDGE
+        val fadingedge by app.kreate.preferences.Preferences.PLAYER_BACKGROUND_FADING_EDGE.collectAsStateWithLifecycle()
         var imageCoverSize by Preferences.PLAYER_THUMBNAIL_VINYL_SIZE
-        val showCoverThumbnailAnimation by Preferences.PLAYER_THUMBNAIL_ANIMATION
-        val expandedplayer by Preferences.PLAYER_EXPANDED
+        val showCoverThumbnailAnimation by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_ANIMATION.collectAsStateWithLifecycle()
+        val expandedplayer by app.kreate.preferences.Preferences.PLAYER_EXPANDED.collectAsStateWithLifecycle()
         DefaultDialog(
             onDismiss = {
                 spacingValue(thumbnailSpacing)

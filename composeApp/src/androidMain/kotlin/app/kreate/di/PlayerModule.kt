@@ -3,7 +3,6 @@
 package app.kreate.di
 
 import android.content.Context
-import androidx.compose.runtime.getValue
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.database.StandaloneDatabaseProvider
@@ -138,7 +137,7 @@ val playerModule = module {
         dataSource.setLoadErrorHandlingPolicy( ErrorHandlingPolicy() )
         //</editor-fold>
         //<editor-fold desc="Audio handlers">
-        val handleAudioFocus by Preferences.AUDIO_SMART_PAUSE_DURING_CALLS
+        val handleAudioFocus = app.kreate.preferences.Preferences.AUDIO_SMART_PAUSE_DURING_CALLS.value
         val audioAttributes = AudioAttributes.Builder()
             .setUsage( C.USAGE_MEDIA )
             .setContentType( C.AUDIO_CONTENT_TYPE_MUSIC )

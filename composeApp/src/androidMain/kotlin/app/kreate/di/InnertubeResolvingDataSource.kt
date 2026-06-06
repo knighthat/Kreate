@@ -183,7 +183,7 @@ private fun extractFormat(
         AudioQualityFormat.High -> sortedAudioFormats.last()
         AudioQualityFormat.Low -> sortedAudioFormats.first()
         AudioQualityFormat.Auto ->
-            if ( connectionMetered && Preferences.IS_CONNECTION_METERED.value )
+            if ( connectionMetered && app.kreate.preferences.Preferences.IS_CONNECTION_METERED.value )
                 sortedAudioFormats[sortedAudioFormats.size / 2]
             else
                 sortedAudioFormats.last()

@@ -87,6 +87,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
@@ -198,8 +199,8 @@ fun Lyrics(
         val currentView = LocalView.current
         val player: StatefulPlayer = koinInject()
 
-        var showlyricsthumbnail by Preferences.LYRICS_SHOW_THUMBNAIL
-        var isShowingSynchronizedLyrics by Preferences.LYRICS_SYNCHRONIZED
+        val showlyricsthumbnail by app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+        val isShowingSynchronizedLyrics by app.kreate.preferences.Preferences.LYRICS_SYNCHRONIZED.collectAsStateWithLifecycle()
         var invalidLrc by remember(mediaId, isShowingSynchronizedLyrics) { mutableStateOf(false) }
         var isPicking by remember(mediaId, isShowingSynchronizedLyrics) { mutableStateOf(false) }
         var lyricsColor by Preferences.LYRICS_COLOR
@@ -239,7 +240,7 @@ fun Lyrics(
         }
 
         var romanization by Preferences.LYRICS_ROMANIZATION_TYPE
-        var showSecondLine by Preferences.LYRICS_SHOW_SECOND_LINE
+        val showSecondLine by app.kreate.preferences.Preferences.LYRICS_SHOW_SECOND_LINE.collectAsStateWithLifecycle()
 
         var otherLanguageApp by Preferences.OTHER_APP_LANGUAGE
         var lyricsBackground by Preferences.LYRICS_BACKGROUND
@@ -312,8 +313,8 @@ fun Lyrics(
         }
 
         var fontSize by Preferences.LYRICS_FONT_SIZE
-        val showBackgroundLyrics by Preferences.LYRICS_SHOW_ACCENT_BACKGROUND
-        val playerEnableLyricsPopupMessage by Preferences.PLAYER_ACTION_LYRICS_POPUP_MESSAGE
+        val showBackgroundLyrics by app.kreate.preferences.Preferences.LYRICS_SHOW_ACCENT_BACKGROUND.collectAsStateWithLifecycle()
+        val playerEnableLyricsPopupMessage by app.kreate.preferences.Preferences.PLAYER_ACTION_LYRICS_POPUP_MESSAGE.collectAsStateWithLifecycle()
 
         var checkedLyricsLrc by remember {
             mutableStateOf(false)
@@ -329,7 +330,7 @@ fun Lyrics(
         }
         var lyricsHighlight by Preferences.LYRICS_HIGHLIGHT
         var lyricsAlignment by Preferences.LYRICS_ALIGNMENT
-        var lyricsSizeAnimate by Preferences.LYRICS_ANIMATE_SIZE
+        val lyricsSizeAnimate by app.kreate.preferences.Preferences.LYRICS_ANIMATE_SIZE.collectAsStateWithLifecycle()
         val mediaMetadata = mediaMetadataProvider()
         var artistName by rememberSaveable { mutableStateOf(cleanPrefix(mediaMetadata.artist?.toString().orEmpty()))}
         var title by rememberSaveable { mutableStateOf(cleanPrefix(mediaMetadata.title?.toString().orEmpty()))}
@@ -340,8 +341,8 @@ fun Lyrics(
             mutableStateOf(false)
         }
         val lightTheme = colorPaletteMode == ColorPaletteMode.Light || (colorPaletteMode == ColorPaletteMode.System && (!isSystemInDarkTheme()))
-        val effectRotationEnabled by Preferences.ROTATION_EFFECT
-        var landscapeControls by Preferences.LYRICS_LANDSCAPE_CONTROLS
+        val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
+        val landscapeControls by app.kreate.preferences.Preferences.LYRICS_LANDSCAPE_CONTROLS.collectAsStateWithLifecycle()
         var isRotated by rememberSaveable { mutableStateOf(false) }
         val rotationAngle by animateFloatAsState(
             targetValue = if (isRotated) 360F else 0f,
@@ -1871,7 +1872,7 @@ fun Lyrics(
                                                 enabled = true,
                                                 onClick = {
                                                     menuState.hide()
-                                                    landscapeControls = !landscapeControls
+                                                    app.kreate.preferences.Preferences.LYRICS_LANDSCAPE_CONTROLS.flip()
                                                 }
                                             )
                                         }
@@ -2196,7 +2197,7 @@ fun Lyrics(
                                             enabled = true,
                                             onClick = {
                                                 menuState.hide()
-                                                showSecondLine = !showSecondLine
+                                                app.kreate.preferences.Preferences.LYRICS_SHOW_SECOND_LINE.flip()
                                             }
                                         )
 
@@ -2207,7 +2208,7 @@ fun Lyrics(
                                                 enabled = true,
                                                 onClick = {
                                                     menuState.hide()
-                                                    lyricsSizeAnimate = !lyricsSizeAnimate
+                                                    app.kreate.preferences.Preferences.LYRICS_ANIMATE_SIZE.flip()
                                                 }
                                             )
                                         }
@@ -2310,8 +2311,7 @@ fun Lyrics(
                                             ) + " kugou.com and LrcLib.net",
                                             onClick = {
                                                 menuState.hide()
-                                                isShowingSynchronizedLyrics =
-                                                    !isShowingSynchronizedLyrics
+                                                app.kreate.preferences.Preferences.LYRICS_SYNCHRONIZED.flip()
                                             }
                                         )
 

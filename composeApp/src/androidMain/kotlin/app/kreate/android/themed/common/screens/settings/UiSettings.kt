@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
@@ -138,58 +139,58 @@ fun UiSettings( paddingValues: PaddingValues ) {
                     action = SettingComponents.Action.RESTART_APP
                 ) {
                     if ( it == UiType.ViMusic ) {
-                        Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED.value = true
+                        app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED.value = true
                         Preferences.PLAYER_TIMELINE_TYPE.reset()
-                        Preferences.PLAYER_VISUALIZER.reset()
+                        app.kreate.preferences.Preferences.PLAYER_VISUALIZER.reset()
                         Preferences.PLAYER_PORTRAIT_THUMBNAIL_SIZE.value = PlayerThumbnailSize.Medium
-                        Preferences.PLAYER_TAP_THUMBNAIL_FOR_LYRICS.reset()
-                        Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR.reset()
-                        Preferences.SHOW_STATS_IN_NAVIGATION_BAR.value = true
+                        app.kreate.preferences.Preferences.PLAYER_TAP_THUMBNAIL_FOR_LYRICS.reset()
+                        app.kreate.preferences.Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR.reset()
+                        app.kreate.preferences.Preferences.SHOW_STATS_IN_NAVIGATION_BAR.value = true
                         Preferences.NAVIGATION_BAR_POSITION.value = NavigationBarPosition.Left
-                        Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.value = false
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.value = false
                         Preferences.PLAYER_TYPE.value = PlayerType.Modern
                         Preferences.QUEUE_TYPE.value = QueueType.Modern
-                        Preferences.PLAYER_BACKGROUND_FADING_EDGE.reset()
-                        Preferences.PLAYER_THUMBNAILS_CAROUSEL.reset()
+                        app.kreate.preferences.Preferences.PLAYER_BACKGROUND_FADING_EDGE.reset()
+                        app.kreate.preferences.Preferences.PLAYER_THUMBNAILS_CAROUSEL.reset()
                         Preferences.CAROUSEL_SIZE.value = CarouselSize.Medium
                         Preferences.THUMBNAIL_TYPE.value = ThumbnailType.Essential
                         Preferences.PLAYER_TIMELINE_SIZE.value = PlayerTimelineSize.Medium
-                        Preferences.PLAYER_SONG_INFO_ICON.reset()
+                        app.kreate.preferences.Preferences.PLAYER_SONG_INFO_ICON.reset()
                         Preferences.MINI_PLAYER_TYPE.reset()
-                        Preferences.PLAYER_IS_CONTROL_AND_TIMELINE_SWAPPED.reset()
+                        app.kreate.preferences.Preferences.PLAYER_IS_CONTROL_AND_TIMELINE_SWAPPED.reset()
                         Preferences.PLAYER_CONTROLS_TYPE.reset()
                         Preferences.PLAYER_PLAY_BUTTON_TYPE.reset()
-                        Preferences.ZOOM_OUT_ANIMATION.value = true
+                        app.kreate.preferences.Preferences.ZOOM_OUT_ANIMATION.value = true
                         Preferences.LIKE_ICON.reset()
                         Preferences.PLAYER_BACKGROUND.value = PlayerBackgroundColors.CoverColorGradient
-                        Preferences.BLACK_GRADIENT.value = true
-                        Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.value = false
-                        Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME.value = false
-                        Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.reset()
-                        Preferences.MARQUEE_TEXT_EFFECT.reset()
-                        Preferences.ROTATION_EFFECT.reset()
-                        Preferences.LYRICS_JUMP_ON_TAP.reset()
-                        Preferences.PLAYER_ACTION_LYRICS_POPUP_MESSAGE.reset()
+                        app.kreate.preferences.Preferences.BLACK_GRADIENT.value = true
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.value = false
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME.value = false
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.reset()
+                        app.kreate.preferences.Preferences.MARQUEE_TEXT_EFFECT.reset()
+                        app.kreate.preferences.Preferences.ROTATION_EFFECT.reset()
+                        app.kreate.preferences.Preferences.LYRICS_JUMP_ON_TAP.reset()
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_LYRICS_POPUP_MESSAGE.reset()
                         Preferences.MINI_PLAYER_PROGRESS_BAR.reset()
-                        Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.value = true
-                        Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY.reset()
-                        Preferences.PLAYER_ACTIONS_BAR_TAP_TO_OPEN_QUEUE.value = false
-                        Preferences.PLAYER_ACTIONS_BAR_SWIPE_UP_TO_OPEN_QUEUE.reset()
-                        Preferences.PLAYER_ACTION_DISCOVER.reset()
-                        Preferences.PLAYER_ACTION_DOWNLOAD.value = false
-                        Preferences.PLAYER_ACTION_ADD_TO_PLAYLIST.value = false
-                        Preferences.PLAYER_ACTION_LOOP.value = false
-                        Preferences.PLAYER_ACTION_SHUFFLE.value = false
-                        Preferences.PLAYER_ACTION_SHOW_LYRICS.value = false
-                        Preferences.PLAYER_ACTION_TOGGLE_EXPAND.value = false
-                        Preferences.PLAYER_ACTION_SLEEP_TIMER.reset()
-                        Preferences.PLAYER_ACTION_OPEN_EQUALIZER.reset()
-                        Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW.value = false
-                        Preferences.PLAYER_ACTION_SHOW_MENU.value = true
-                        Preferences.PLAYER_SHOW_THUMBNAIL.reset()
-                        Preferences.PLAYER_KEEP_MINIMIZED.reset()
+                        app.kreate.preferences.Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.value = true
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY.reset()
+                        app.kreate.preferences.Preferences.PLAYER_ACTIONS_BAR_TAP_TO_OPEN_QUEUE.value = false
+                        app.kreate.preferences.Preferences.PLAYER_ACTIONS_BAR_SWIPE_UP_TO_OPEN_QUEUE.reset()
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_DISCOVER.reset()
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_DOWNLOAD.value = false
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_ADD_TO_PLAYLIST.value = false
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_LOOP.value = false
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHUFFLE.value = false
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_LYRICS.value = false
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_EXPAND.value = false
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SLEEP_TIMER.reset()
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_OPEN_EQUALIZER.reset()
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW.value = false
+                        app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_MENU.value = true
+                        app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.reset()
+                        app.kreate.preferences.Preferences.PLAYER_KEEP_MINIMIZED.reset()
                     } else {
-                        Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED.reset()
+                        app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED.reset()
                         Preferences.NAVIGATION_BAR_POSITION.reset()
                     }
                 }
@@ -247,9 +248,9 @@ fun UiSettings( paddingValues: PaddingValues ) {
                 additionalCheck = UiType.ViMusic.isCurrent()
             ) {
                 SettingComponents.BooleanEntry(
-                    Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR,
-                    R.string.vimusic_show_search_button_in_navigation_bar,
-                    R.string.vismusic_only_in_left_right_navigation_bar
+                    preference = app.kreate.preferences.Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR,
+                    title = stringResource( R.string.vimusic_show_search_button_in_navigation_bar ),
+                    subtitleId = R.string.vismusic_only_in_left_right_navigation_bar
                 )
             }
             entry(
@@ -258,14 +259,14 @@ fun UiSettings( paddingValues: PaddingValues ) {
                 additionalCheck = UiType.ViMusic.isCurrent()
             ) {
                 SettingComponents.BooleanEntry(
-                    Preferences.SHOW_STATS_IN_NAVIGATION_BAR,
-                    R.string.show_statistics_in_navigation_bar
+                    preference = app.kreate.preferences.Preferences.SHOW_STATS_IN_NAVIGATION_BAR,
+                    title = stringResource( R.string.show_statistics_in_navigation_bar )
                 )
             }
             entry( search, R.string.show_floating_icon ) {
                 SettingComponents.BooleanEntry(
-                    Preferences.SHOW_FLOATING_ICON,
-                    R.string.show_floating_icon
+                    preference = app.kreate.preferences.Preferences.SHOW_FLOATING_ICON,
+                    title = stringResource( R.string.show_floating_icon )
                 )
             }
             entry( search, R.string.settings_use_font_type ) {
@@ -276,16 +277,16 @@ fun UiSettings( paddingValues: PaddingValues ) {
             }
             entry( search, R.string.use_system_font ) {
                 SettingComponents.BooleanEntry(
-                    Preferences.USE_SYSTEM_FONT,
-                    R.string.use_system_font,
-                    R.string.use_font_by_the_system
+                    preference = app.kreate.preferences.Preferences.USE_SYSTEM_FONT,
+                    title = stringResource( R.string.use_system_font ),
+                    subtitleId = R.string.use_font_by_the_system
                 )
             }
             entry( search, R.string.apply_font_padding ) {
                 SettingComponents.BooleanEntry(
-                    Preferences.APPLY_FONT_PADDING,
-                    R.string.apply_font_padding,
-                    R.string.add_spacing_around_texts
+                    preference = app.kreate.preferences.Preferences.APPLY_FONT_PADDING,
+                    title = stringResource( R.string.apply_font_padding ),
+                    subtitleId = R.string.add_spacing_around_texts
                 )
             }
             entry( search, R.string.swipe_to_action ) {
@@ -297,24 +298,24 @@ fun UiSettings( paddingValues: PaddingValues ) {
                 val showFavorites = stringResource( R.string.setting_entry_show_chip, stringResource( R.string.favorites ) )
                 if( search appearsIn showFavorites )
                     SettingComponents.BooleanEntry(
-                        Preferences.HOME_SONGS_SHOW_FAVORITES_CHIP,
-                        showFavorites
+                        preference = app.kreate.preferences.Preferences.HOME_SONGS_SHOW_FAVORITES_CHIP,
+                        title = showFavorites
                     )
             }
             item {
                 val showCached = stringResource( R.string.setting_entry_show_chip, stringResource( R.string.cached ) )
                 if( search appearsIn showCached )
                     SettingComponents.BooleanEntry(
-                        Preferences.HOME_SONGS_SHOW_CACHED_CHIP,
-                        showCached
+                        preference = app.kreate.preferences.Preferences.HOME_SONGS_SHOW_CACHED_CHIP,
+                        title = showCached
                     )
             }
             item {
                 val showDownloaded = stringResource( R.string.setting_entry_show_chip, stringResource( R.string.downloaded ) )
                 if ( search appearsIn showDownloaded )
                     SettingComponents.BooleanEntry(
-                        Preferences.HOME_SONGS_SHOW_DOWNLOADED_CHIP,
-                        showDownloaded
+                        preference = app.kreate.preferences.Preferences.HOME_SONGS_SHOW_DOWNLOADED_CHIP,
+                        title = showDownloaded
                     )
             }
             item {
@@ -324,21 +325,21 @@ fun UiSettings( paddingValues: PaddingValues ) {
                 )
                 if ( search appearsIn showMostPlayed )
                     SettingComponents.BooleanEntry(
-                        Preferences.HOME_SONGS_SHOW_MOST_PLAYED_CHIP,
-                        showMostPlayed
+                        preference = app.kreate.preferences.Preferences.HOME_SONGS_SHOW_MOST_PLAYED_CHIP,
+                        title = showMostPlayed
                     )
             }
             item {
                 val showOnDevice = stringResource( R.string.setting_entry_show_chip, stringResource( R.string.on_device ) )
                 if ( search appearsIn showOnDevice )
                     SettingComponents.BooleanEntry(
-                        Preferences.HOME_SONGS_SHOW_ON_DEVICE_CHIP,
-                        showOnDevice
+                        preference = app.kreate.preferences.Preferences.HOME_SONGS_SHOW_ON_DEVICE_CHIP,
+                        title = showOnDevice
                     )
             }
             entry( search, R.string.setting_entry_song_empty_duration_placeholder ) {
                 SettingComponents.BooleanEntry(
-                    preference = Preferences.SONG_EMPTY_DURATION_PLACEHOLDER,
+                    preference = app.kreate.preferences.Preferences.SONG_EMPTY_DURATION_PLACEHOLDER,
                     title = stringResource( R.string.setting_entry_song_empty_duration_placeholder ),
                     subtitle = stringResource( R.string.setting_description_song_empty_duration_placeholder )
                 )
@@ -360,13 +361,13 @@ fun UiSettings( paddingValues: PaddingValues ) {
                 val showPinned = stringResource( R.string.setting_entry_show_chip, stringResource( R.string.pinned_playlists ) )
                 if ( search appearsIn showPinned )
                     SettingComponents.BooleanEntry(
-                        Preferences.SHOW_PINNED_PLAYLISTS,
-                        showPinned
+                        preference = app.kreate.preferences.Preferences.SHOW_PINNED_PLAYLISTS,
+                        title = showPinned
                     )
             }
             entry( search, R.string.setting_entry_monthly_playlist_compilation ) {
                 SettingComponents.BooleanEntry(
-                    preference = Preferences.MONTHLY_PLAYLIST_COMPILATION,
+                    preference = app.kreate.preferences.Preferences.MONTHLY_PLAYLIST_COMPILATION,
                     title = stringResource( R.string.setting_entry_monthly_playlist_compilation ),
                     subtitle = stringResource( R.string.setting_description_monthly_playlist_compilation )
                 )
@@ -375,7 +376,7 @@ fun UiSettings( paddingValues: PaddingValues ) {
                 val showMonthly = stringResource( R.string.setting_entry_show_chip, stringResource( R.string.monthly_playlists ) )
                 if ( search appearsIn showMonthly )
                     SettingComponents.BooleanEntry(
-                        preference = Preferences.SHOW_MONTHLY_PLAYLISTS,
+                        preference = app.kreate.preferences.Preferences.SHOW_MONTHLY_PLAYLISTS,
                         title = showMonthly
                     )
             }
@@ -456,9 +457,9 @@ fun UiSettings( paddingValues: PaddingValues ) {
             }
             entry( search, R.string.listening_time ) {
                 SettingComponents.BooleanEntry(
-                    Preferences.SHOW_LISTENING_STATS,
-                    R.string.listening_time,
-                    R.string.shows_the_number_of_songs_heard_and_their_listening_time
+                    preference = app.kreate.preferences.Preferences.SHOW_LISTENING_STATS,
+                    title = stringResource( R.string.listening_time ),
+                    subtitleId = R.string.shows_the_number_of_songs_heard_and_their_listening_time
                 )
             }
 
@@ -477,7 +478,7 @@ fun UiSettings( paddingValues: PaddingValues ) {
             header( android.R.string.search_go )
             entry( search, R.string.setting_entry_single_back_from_search ) {
                 SettingComponents.BooleanEntry(
-                    preference = Preferences.SINGLE_BACK_FROM_SEARCH,
+                    preference = app.kreate.preferences.Preferences.SINGLE_BACK_FROM_SEARCH,
                     title = stringResource( R.string.setting_entry_single_back_from_search ),
                     subtitle = stringResource( R.string.setting_description_single_back_from_search )
                 )

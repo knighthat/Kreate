@@ -6,12 +6,15 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
@@ -63,16 +66,13 @@ fun LazyListScope.updateSection( search: SettingEntrySearch ) {
             R.string.show_quotes,
             stringResource( R.string.info_no_update_available )
         )
-        if( search appearsIn updateAvailableTitle )
+        if( search appearsIn updateAvailableTitle ) {
+            val isActive by app.kreate.preferences.Preferences.SHOW_CHECK_UPDATE_STATUS.collectAsStateWithLifecycle()
             SettingComponents.BooleanEntry(
-                preference = Preferences.SHOW_CHECK_UPDATE_STATUS,
+                preference = app.kreate.preferences.Preferences.SHOW_CHECK_UPDATE_STATUS,
                 title = updateAvailableTitle,
-                subtitle = stringResource(
-                    if( Preferences.SHOW_CHECK_UPDATE_STATUS.value )
-                        R.string.setting_description_show_no_update_available_yes
-                    else
-                        R.string.setting_description_show_no_update_available_no
-                )
+                subtitleId = if( isActive ) R.string.setting_description_show_no_update_available_yes else R.string.setting_description_show_no_update_available_no
             )
+        }
     }
 }
