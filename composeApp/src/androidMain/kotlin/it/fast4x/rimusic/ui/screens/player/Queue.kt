@@ -419,7 +419,7 @@ fun Queue(
                         buttons = mutableListOf<Button>().apply {
                             add( locator )
                             add( search )
-                            if( Preferences.PLAYER_ACTION_DISCOVER.value )
+                            if( app.kreate.preferences.Preferences.PLAYER_ACTION_DISCOVER.value )
                                 add( discover )
                             add( positionLock )
                             add( repeat )

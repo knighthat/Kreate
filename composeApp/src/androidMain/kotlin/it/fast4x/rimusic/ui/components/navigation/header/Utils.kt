@@ -37,10 +37,10 @@ internal class Preference {
     internal companion object {
 
         @Composable
-        fun parentalControl(): Boolean = Preferences.PARENTAL_CONTROL.value
+        fun parentalControl(): Boolean = app.kreate.preferences.Preferences.PARENTAL_CONTROL.value
 
         @Composable
-        fun debugLog(): Boolean = Preferences.RUNTIME_LOG.value
+        fun debugLog(): Boolean = app.kreate.preferences.Preferences.RUNTIME_LOG.value
 
         @Composable
         fun colorTheme(): ColorPaletteMode = Preferences.THEME_MODE.value

@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
@@ -71,12 +72,12 @@ fun Controls(
 ) {
     var playerTimelineSize by Preferences.PLAYER_TIMELINE_SIZE
     val playerInfoType by Preferences.PLAYER_INFO_TYPE
-    var playerSwapControlsWithTimeline by Preferences.PLAYER_IS_CONTROL_AND_TIMELINE_SWAPPED
-    var showlyricsthumbnail by Preferences.LYRICS_SHOW_THUMBNAIL
-    var transparentBackgroundActionBarPlayer by Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR
+    val playerSwapControlsWithTimeline by app.kreate.preferences.Preferences.PLAYER_IS_CONTROL_AND_TIMELINE_SWAPPED.collectAsStateWithLifecycle()
+    val showlyricsthumbnail by app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+    val transparentBackgroundActionBarPlayer by app.kreate.preferences.Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.collectAsStateWithLifecycle()
     var playerControlsType by Preferences.PLAYER_CONTROLS_TYPE
     var playerPlayButtonType by Preferences.PLAYER_PLAY_BUTTON_TYPE
-    var showthumbnail by Preferences.PLAYER_SHOW_THUMBNAIL
+    val showthumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
     var playerType by Preferences.PLAYER_TYPE
     val expandedlandscape = (isLandscape && playerType == PlayerType.Modern) || (expandedPlayer && !showthumbnail)
 
@@ -288,7 +289,7 @@ fun Controls(
 
 fun Modifier.bounceClick() = composed {
     var buttonState by remember { mutableStateOf(ButtonState.Idle) }
-    var buttonzoomout by Preferences.ZOOM_OUT_ANIMATION
+    val buttonzoomout by app.kreate.preferences.Preferences.ZOOM_OUT_ANIMATION.collectAsStateWithLifecycle()
     val scale by animateFloatAsState(if ((buttonState == ButtonState.Pressed) && (buttonzoomout)) 0.8f else 1f)
 
     this

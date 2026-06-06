@@ -18,10 +18,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
@@ -65,7 +65,7 @@ fun SearchYoutubeEntity (
             modifier = Modifier.padding(bottom = 12.dp)
         )
     }
-    val isVideoEnabled by Preferences.PLAYER_ACTION_TOGGLE_VIDEO
+    val isVideoEnabled by app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_VIDEO.collectAsStateWithLifecycle()
 
     Box(
         modifier = Modifier

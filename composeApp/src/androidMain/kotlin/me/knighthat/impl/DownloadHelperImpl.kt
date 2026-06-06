@@ -3,7 +3,6 @@ package me.knighthat.impl
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.annotation.OptIn
-import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
@@ -14,7 +13,6 @@ import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.scheduler.Requirements
-import app.kreate.android.Preferences
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.DownloadHelper
 import app.kreate.database.models.Song
@@ -185,14 +183,14 @@ class DownloadHelperImpl(
     }
 
     override fun autoDownload( mediaItem: MediaItem ) {
-        if ( Preferences.AUTO_DOWNLOAD.value ) {
+        if ( app.kreate.preferences.Preferences.AUTO_DOWNLOAD.value ) {
             if (downloads.value[mediaItem.mediaId]?.state != Download.STATE_COMPLETED)
                 addDownload(mediaItem)
         }
     }
 
     override fun autoDownloadWhenLiked( mediaItem: MediaItem ) {
-        if ( Preferences.AUTO_DOWNLOAD_ON_LIKE.value ) {
+        if ( app.kreate.preferences.Preferences.AUTO_DOWNLOAD_ON_LIKE.value ) {
             Database.asyncQuery {
                 runBlocking {
                     if( songTable.isLiked( mediaItem.mediaId ).first() )
@@ -206,7 +204,7 @@ class DownloadHelperImpl(
 
     override fun downloadOnLike( mediaItem: MediaItem, likeState: Boolean? ) {
         // Only continues when this setting is enabled
-        val isSettingEnabled by Preferences.AUTO_DOWNLOAD_ON_LIKE
+        val isSettingEnabled = app.kreate.preferences.Preferences.AUTO_DOWNLOAD_ON_LIKE.value
         if( !isSettingEnabled || !isNetworkConnected( context ) )
             return
 

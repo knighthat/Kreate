@@ -37,6 +37,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -94,7 +95,7 @@ fun Thumbnail(
         it to (it - 64.dp).px
     }
 
-    var showlyricsthumbnail by Preferences.LYRICS_SHOW_THUMBNAIL
+    val showlyricsthumbnail by app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
     var error by remember {
         mutableStateOf<PlaybackException?>(player.playerError)
     }
@@ -122,8 +123,8 @@ fun Thumbnail(
         mutableStateOf(true)
     }
 
-    val clickLyricsText by Preferences.LYRICS_JUMP_ON_TAP
-    var showvisthumbnail by Preferences.PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER
+    val clickLyricsText by app.kreate.preferences.Preferences.LYRICS_JUMP_ON_TAP.collectAsStateWithLifecycle()
+    val showvisthumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER.collectAsStateWithLifecycle()
     //var expandedlyrics by rememberPreference(expandedlyricsKey,false)
 
     val currentWindow by player.currentWindowState.collectAsState()
@@ -148,7 +149,7 @@ fun Thumbnail(
         onSuccess = { artImageAvailable = true }
     )
 
-    val showCoverThumbnailAnimation by Preferences.PLAYER_THUMBNAIL_ANIMATION
+    val showCoverThumbnailAnimation by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_ANIMATION.collectAsStateWithLifecycle()
     var coverThumbnailAnimation by Preferences.PLAYER_THUMBNAIL_TYPE
 
 
@@ -415,7 +416,7 @@ fun Thumbnail(
 fun Modifier.thumbnailpause(
     shouldBePlaying: Boolean
 ) = composed {
-    var thumbnailpause by Preferences.PLAYER_SHRINK_THUMBNAIL_ON_PAUSE
+    val thumbnailpause by app.kreate.preferences.Preferences.PLAYER_SHRINK_THUMBNAIL_ON_PAUSE.collectAsStateWithLifecycle()
     val scale by animateFloatAsState(if ((thumbnailpause) && (!shouldBePlaying)) 0.9f else 1f)
 
     this

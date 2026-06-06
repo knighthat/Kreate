@@ -45,7 +45,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.constant.MenuPage
@@ -400,7 +399,7 @@ fun YouTubePlaylist(
                         }
                 }
 
-                val showFloatingIcon by Preferences.SHOW_FLOATING_ICON
+                val showFloatingIcon by app.kreate.preferences.Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
                 if( UiType.ViMusic.isCurrent() && showFloatingIcon )
                     FloatingActionsContainerWithScrollToTop(
                         lazyListState = viewModel.listState,

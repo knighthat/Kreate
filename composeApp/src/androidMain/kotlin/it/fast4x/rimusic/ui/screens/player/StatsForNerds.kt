@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheSpan
@@ -90,11 +91,11 @@ fun StatsForNerds(
                 ?: flowOf( null )
         }.collectAsState( null, Dispatchers.IO )
 
-        val showThumbnail by Preferences.PLAYER_SHOW_THUMBNAIL
-        val statsForNerds by Preferences.PLAYER_STATS_FOR_NERDS
+        val showThumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+        val statsForNerds by app.kreate.preferences.Preferences.PLAYER_STATS_FOR_NERDS.collectAsStateWithLifecycle()
         val playerType by Preferences.PLAYER_TYPE
-        val transparentBackgroundActionBarPlayer by Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR
-        var blackgradient by Preferences.BLACK_GRADIENT
+        val transparentBackgroundActionBarPlayer by app.kreate.preferences.Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.collectAsStateWithLifecycle()
+        val blackgradient by app.kreate.preferences.Preferences.BLACK_GRADIENT.collectAsStateWithLifecycle()
         val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
         var statsfornerdsfull by remember {mutableStateOf(false)}
         val rotationAngle by animateFloatAsState(

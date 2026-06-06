@@ -12,12 +12,12 @@ fun initKoin( config: KoinAppDeclaration? = null ) {
         config?.invoke( this )
 
         modules(
+            datastoreModule,
             databaseModule,
             viewModelModule,
             networkModule,
             imageModule,
             externalServicesModule,
-            datastoreModule,
             *platformModules
         )
     }

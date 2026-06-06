@@ -507,7 +507,7 @@ class MediaLibrarySessionCallback(
                 0,
                 0
             )
-        if( !Preferences.ENABLE_PERSISTENT_QUEUE.value )
+        if( !app.kreate.preferences.Preferences.ENABLE_PERSISTENT_QUEUE.value )
             return Futures.immediateFuture(defaultResult)
 
         scope.future {

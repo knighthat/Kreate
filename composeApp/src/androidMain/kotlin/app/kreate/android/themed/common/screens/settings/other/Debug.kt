@@ -26,10 +26,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
+import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.header
@@ -126,26 +128,26 @@ fun LazyListScope.debugSection(search: SettingEntrySearch ) {
 
         if( search appearsIn R.string.setting_entry_runtime_log )
             SettingComponents.BooleanEntry(
-                preference = Preferences.RUNTIME_LOG,
+                preference = app.kreate.preferences.Preferences.RUNTIME_LOG,
                 title = stringResource( R.string.setting_entry_runtime_log ),
                 subtitle = stringResource( R.string.setting_description_runtime_log, BuildConfig.APP_NAME ),
                 action = SettingComponents.Action.RESTART_APP
             )
+        val isRuntimeLogEnabled by app.kreate.preferences.Preferences.RUNTIME_LOG.collectAsStateWithLifecycle()
         AnimatedVisibility(
-            visible = Preferences.RUNTIME_LOG.value,
+            visible = isRuntimeLogEnabled,
             modifier = Modifier.padding( start = SettingComponents.CHILDREN_PADDING.dp )
         ) {
             Column {
                 if( search appearsIn R.string.setting_entry_enable_runtime_log_share )
                     SettingComponents.BooleanEntry(
-                        preference = Preferences.RUNTIME_LOG_SHARED,
+                        preference = app.kreate.preferences.Preferences.RUNTIME_LOG_SHARED,
                         title = stringResource( R.string.setting_entry_enable_runtime_log_share ),
-                        subtitle = stringResource(
-                            if( Preferences.RUNTIME_LOG_SHARED.value )
+                        subtitleId =
+                            if( app.kreate.preferences.Preferences.RUNTIME_LOG_SHARED.value )
                                 R.string.setting_description_runtime_log_share_on
                             else
-                                R.string.setting_description_runtime_log_share_off
-                        ),
+                                R.string.setting_description_runtime_log_share_off,
                         action = SettingComponents.Action.RESTART_APP
                     )
 

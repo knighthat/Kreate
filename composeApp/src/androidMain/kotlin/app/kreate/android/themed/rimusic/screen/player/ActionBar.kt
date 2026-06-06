@@ -59,6 +59,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -128,9 +129,7 @@ fun BoxScope.ActionBar(
     showVisualizerState: MutableState<Boolean>,
     showSleepTimerState: MutableState<Boolean>,
     showLyricsState: MutableState<Boolean>,
-    discoverState: MutableState<Boolean>,
     queueLoopState: MutableState<QueueLoopType>,
-    expandPlayerState: MutableState<Boolean>,
     onDismiss: () -> Unit
 ) {
     // Essentials
@@ -141,13 +140,13 @@ fun BoxScope.ActionBar(
     val mediaItem = player.currentMediaItem ?: return
 
     val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
-    val blackGradient by Preferences.BLACK_GRADIENT
-    val showLyricsThumbnail by Preferences.LYRICS_SHOW_THUMBNAIL
-    val showNextSongsInPlayer by Preferences.PLAYER_SHOW_NEXT_IN_QUEUE
-    val miniQueueExpanded by Preferences.PLAYER_IS_NEXT_IN_QUEUE_EXPANDED
-    val tapQueue by Preferences.PLAYER_ACTIONS_BAR_TAP_TO_OPEN_QUEUE
-    val transparentBackgroundActionBarPlayer by Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR
-    val swipeUpQueue by Preferences.PLAYER_ACTIONS_BAR_SWIPE_UP_TO_OPEN_QUEUE
+    val blackGradient by app.kreate.preferences.Preferences.BLACK_GRADIENT.collectAsStateWithLifecycle()
+    val showLyricsThumbnail by app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+    val showNextSongsInPlayer by app.kreate.preferences.Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.collectAsStateWithLifecycle()
+    val miniQueueExpanded by app.kreate.preferences.Preferences.PLAYER_IS_NEXT_IN_QUEUE_EXPANDED.collectAsStateWithLifecycle()
+    val tapQueue by app.kreate.preferences.Preferences.PLAYER_ACTIONS_BAR_TAP_TO_OPEN_QUEUE.collectAsStateWithLifecycle()
+    val transparentBackgroundActionBarPlayer by app.kreate.preferences.Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.collectAsStateWithLifecycle()
+    val swipeUpQueue by app.kreate.preferences.Preferences.PLAYER_ACTIONS_BAR_SWIPE_UP_TO_OPEN_QUEUE.collectAsStateWithLifecycle()
 
     var showQueue by showQueueState
     var isShowingVisualizer by showVisualizerState
@@ -300,7 +299,7 @@ fun BoxScope.ActionBar(
                                     }
                                 )
                         ) {
-                            val showAlbumCover by Preferences.PLAYER_SHOW_NEXT_IN_QUEUE_THUMBNAIL
+                            val showAlbumCover by app.kreate.preferences.Preferences.PLAYER_SHOW_NEXT_IN_QUEUE_THUMBNAIL.collectAsStateWithLifecycle()
                             if ( showAlbumCover )
                                 Box( Modifier.align(Alignment.CenterVertically) ) {
                                     ImageFactory.AsyncImage(
@@ -323,7 +322,7 @@ fun BoxScope.ActionBar(
                                     .fillMaxWidth()
                             ) {
                                 val colorPaletteMode by Preferences.THEME_MODE
-                                val textOutline by Preferences.TEXT_OUTLINE
+                                val textOutline by app.kreate.preferences.Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
 
                                 //<editor-fold defaultstate="collapsed" desc="Title">
                                 Box {
@@ -422,7 +421,7 @@ fun BoxScope.ActionBar(
                 }
             }
 
-            val actionsSpaceEvenly by Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY
+            val actionsSpaceEvenly by app.kreate.preferences.Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY.collectAsStateWithLifecycle()
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = if (actionsSpaceEvenly) Arrangement.SpaceEvenly else Arrangement.SpaceBetween,
@@ -430,7 +429,7 @@ fun BoxScope.ActionBar(
                     .padding(horizontal = 12.dp)
                     .fillMaxWidth()
             ) {
-                val showButtonPlayerVideo by Preferences.PLAYER_ACTION_TOGGLE_VIDEO
+                val showButtonPlayerVideo by app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_VIDEO.collectAsStateWithLifecycle()
                 if (showButtonPlayerVideo)
                     IconButton(
                         icon = R.drawable.video,
@@ -442,18 +441,20 @@ fun BoxScope.ActionBar(
                         modifier = Modifier.size( 24.dp )
                     )
 
-                val showButtonPlayerDiscover by Preferences.PLAYER_ACTION_DISCOVER
+                val showButtonPlayerDiscover by app.kreate.preferences.Preferences.PLAYER_ACTION_DISCOVER.collectAsStateWithLifecycle()
                 if (showButtonPlayerDiscover) {
-                    var discoverIsEnabled by discoverState
+                    val discoverState by app.kreate.preferences.Preferences.ENABLE_DISCOVER.collectAsStateWithLifecycle()
 
                     IconButton(
                         icon = R.drawable.star_brilliant,
-                        color = if (discoverIsEnabled) colorPalette().text else colorPalette().textDisabled,
+                        color = if (discoverState) colorPalette().text else colorPalette().textDisabled,
                         onClick = {},
                         modifier = Modifier
                             .size(24.dp)
                             .combinedClickable(
-                                onClick = { discoverIsEnabled = !discoverIsEnabled },
+                                onClick = {
+                                    app.kreate.preferences.Preferences.ENABLE_DISCOVER.flip()
+                                },
                                 onLongClick = {
                                     Toaster.i(R.string.discoverinfo)
                                 }
@@ -461,7 +462,7 @@ fun BoxScope.ActionBar(
                     )
                 }
 
-                val showButtonPlayerDownload by Preferences.PLAYER_ACTION_DOWNLOAD
+                val showButtonPlayerDownload by app.kreate.preferences.Preferences.PLAYER_ACTION_DOWNLOAD.collectAsStateWithLifecycle()
                 if (showButtonPlayerDownload) {
                     val isDownloaded = isDownloadedSong( mediaItem.mediaId )
 
@@ -487,9 +488,9 @@ fun BoxScope.ActionBar(
                     )
                 }
 
-                val showButtonPlayerAddToPlaylist by Preferences.PLAYER_ACTION_ADD_TO_PLAYLIST
+                val showButtonPlayerAddToPlaylist by app.kreate.preferences.Preferences.PLAYER_ACTION_ADD_TO_PLAYLIST.collectAsStateWithLifecycle()
                 if (showButtonPlayerAddToPlaylist) {
-                    val showPlaylistIndicator by Preferences.SHOW_PLAYLIST_INDICATOR
+                    val showPlaylistIndicator by app.kreate.preferences.Preferences.SHOW_PLAYLIST_INDICATOR.collectAsStateWithLifecycle()
                     val colorPaletteName by Preferences.COLOR_PALETTE
                     val color = colorPalette()
                     val isSongMappedToPlaylist by remember( mediaItem.mediaId ) {
@@ -528,10 +529,10 @@ fun BoxScope.ActionBar(
                     )
                 }
 
-                val showButtonPlayerLoop by Preferences.PLAYER_ACTION_LOOP
+                val showButtonPlayerLoop by app.kreate.preferences.Preferences.PLAYER_ACTION_LOOP.collectAsStateWithLifecycle()
                 if (showButtonPlayerLoop) {
                     var queueLoopType by queueLoopState
-                    val effectRotationEnabled by Preferences.ROTATION_EFFECT
+                    val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
 
                     IconButton(
                         icon = queueLoopType.iconId,
@@ -545,7 +546,7 @@ fun BoxScope.ActionBar(
                     )
                 }
 
-                val showButtonPlayerShuffle by Preferences.PLAYER_ACTION_SHUFFLE
+                val showButtonPlayerShuffle by app.kreate.preferences.Preferences.PLAYER_ACTION_SHUFFLE.collectAsStateWithLifecycle()
                 if (showButtonPlayerShuffle)
                     IconButton(
                         icon = R.drawable.shuffle,
@@ -554,7 +555,7 @@ fun BoxScope.ActionBar(
                         modifier = Modifier.size( 24.dp )
                     )
 
-                val showButtonPlayerLyrics by Preferences.PLAYER_ACTION_SHOW_LYRICS
+                val showButtonPlayerLyrics by app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_LYRICS.collectAsStateWithLifecycle()
                 if (showButtonPlayerLyrics)
                     IconButton(
                         icon = R.drawable.song_lyrics,
@@ -569,23 +570,23 @@ fun BoxScope.ActionBar(
                     )
 
                 val playerType by Preferences.PLAYER_TYPE
-                val showThumbnail by Preferences.PLAYER_SHOW_THUMBNAIL
+                val showThumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
                 if (!isLandscape || ((playerType == PlayerType.Essential) && !showThumbnail)) {
-                    val expandedPlayerToggle by Preferences.PLAYER_ACTION_TOGGLE_EXPAND
-                    var expandedPlayer by expandPlayerState
+                    val expandedPlayerToggle by app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_EXPAND.collectAsStateWithLifecycle()
+                    val expandedPlayer by app.kreate.preferences.Preferences.PLAYER_EXPANDED.collectAsStateWithLifecycle()
 
                     if (expandedPlayerToggle && !showLyricsThumbnail)
                         IconButton(
                             icon = R.drawable.maximize,
                             color = if ( expandedPlayer ) colorPalette().accent else Color.Gray,
                             onClick = {
-                                expandedPlayer = !expandedPlayer
+                                app.kreate.preferences.Preferences.PLAYER_EXPANDED.flip()
                             },
                             modifier = Modifier.size( 20.dp )
                         )
                 }
 
-                val visualizerEnabled by Preferences.PLAYER_VISUALIZER
+                val visualizerEnabled by app.kreate.preferences.Preferences.PLAYER_VISUALIZER.collectAsStateWithLifecycle()
                 if (visualizerEnabled)
                     IconButton(
                         icon = R.drawable.sound_effect,
@@ -599,7 +600,7 @@ fun BoxScope.ActionBar(
                     )
 
 
-                val showButtonPlayerSleepTimer by Preferences.PLAYER_ACTION_SLEEP_TIMER
+                val showButtonPlayerSleepTimer by app.kreate.preferences.Preferences.PLAYER_ACTION_SLEEP_TIMER.collectAsStateWithLifecycle()
                 if (showButtonPlayerSleepTimer) {
                     val sleepTimerMillisLeft: Long? by player.sleepTimerRemaining().collectAsState( null )
 
@@ -613,7 +614,7 @@ fun BoxScope.ActionBar(
                     )
                 }
 
-                val showButtonPlayerSystemEqualizer by Preferences.PLAYER_ACTION_OPEN_EQUALIZER
+                val showButtonPlayerSystemEqualizer by app.kreate.preferences.Preferences.PLAYER_ACTION_OPEN_EQUALIZER.collectAsStateWithLifecycle()
                 if (showButtonPlayerSystemEqualizer) {
                     val activityResultLauncher =
                         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
@@ -647,7 +648,7 @@ fun BoxScope.ActionBar(
                     )
                 }
 
-                val showButtonPlayerStartRadio by Preferences.PLAYER_ACTION_START_RADIO
+                val showButtonPlayerStartRadio by app.kreate.preferences.Preferences.PLAYER_ACTION_START_RADIO.collectAsStateWithLifecycle()
                 if (showButtonPlayerStartRadio)
                     IconButton(
                         icon = R.drawable.radio,
@@ -658,7 +659,7 @@ fun BoxScope.ActionBar(
                         modifier = Modifier.size( 24.dp )
                     )
 
-                val showPlaybackSpeedButton by Preferences.AUDIO_SPEED
+                val showPlaybackSpeedButton by app.kreate.preferences.Preferences.AUDIO_SPEED.collectAsStateWithLifecycle()
                 if( showPlaybackSpeedButton ) {
                     val playbackSpeed = remember { PlaybackSpeed() }
 
@@ -666,7 +667,7 @@ fun BoxScope.ActionBar(
                     playbackSpeed.ToolBarButton()
                 }
 
-                val showButtonPlayerArrow by Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW
+                val showButtonPlayerArrow by app.kreate.preferences.Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW.collectAsStateWithLifecycle()
                 if (showButtonPlayerArrow)
                     IconButton(
                         icon = R.drawable.chevron_up,
@@ -680,7 +681,7 @@ fun BoxScope.ActionBar(
                             .size(24.dp),
                     )
 
-                val showButtonPlayerMenu by Preferences.PLAYER_ACTION_SHOW_MENU
+                val showButtonPlayerMenu by app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_MENU.collectAsStateWithLifecycle()
                 if( showButtonPlayerMenu || isLandscape ) {
                     val isInLandscape = isLandscape
 

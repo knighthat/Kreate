@@ -67,7 +67,7 @@ class ExoPlayerListener(
      */
     @AnyThread
     fun saveQueueToDatabase() {
-        if( !Preferences.ENABLE_PERSISTENT_QUEUE.value ) return
+        if( !app.kreate.preferences.Preferences.ENABLE_PERSISTENT_QUEUE.value ) return
 
         CoroutineScope( Dispatchers.Default ).launch {
             val (queue, index, playerPos) = withContext(Dispatchers.Main ) {
@@ -129,7 +129,7 @@ class ExoPlayerListener(
         // - Feature is disabled
         // - When song is repeated
         // - Start new queue
-        if( !Preferences.QUEUE_AUTO_APPEND.value
+        if( !app.kreate.preferences.Preferences.QUEUE_AUTO_APPEND.value
             || reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT
             || reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
         ) return
@@ -214,7 +214,7 @@ class ExoPlayerListener(
 
         // TODO: Add additional recovery step if type of error allows it
 
-        if ( Preferences.PLAYBACK_SKIP_ON_ERROR.value && player.hasNextMediaItem() )
+        if ( app.kreate.preferences.Preferences.PLAYBACK_SKIP_ON_ERROR.value && player.hasNextMediaItem() )
             player.playNext()
     }
 

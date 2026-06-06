@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastMapNotNull
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
@@ -135,8 +136,8 @@ fun HomeLibrary(
     val importPlaylistDialog = ImportSongsFromCSV()
 
     // START: Additional playlists
-    val showPinnedPlaylists by Preferences.SHOW_PINNED_PLAYLISTS
-    val showMonthlyPlaylists by Preferences.SHOW_MONTHLY_PLAYLISTS
+    val showPinnedPlaylists by app.kreate.preferences.Preferences.SHOW_PINNED_PLAYLISTS.collectAsStateWithLifecycle()
+    val showMonthlyPlaylists by app.kreate.preferences.Preferences.SHOW_MONTHLY_PLAYLISTS.collectAsStateWithLifecycle()
 
     val buttonsList = mutableListOf(PlaylistsType.Playlist to stringResource(R.string.playlists))
     buttonsList += PlaylistsType.YTPlaylist to stringResource(R.string.yt_playlists)
@@ -152,7 +153,8 @@ fun HomeLibrary(
     // END - New playlist
 
     // START - Monthly playlist
-    if ( Preferences.MONTHLY_PLAYLIST_COMPILATION.value )
+    val compileMonthlyPlaylist by app.kreate.preferences.Preferences.MONTHLY_PLAYLIST_COMPILATION.collectAsStateWithLifecycle()
+    if ( compileMonthlyPlaylist )
         CheckMonthlyPlaylist()
     // END - Monthly playlist
 
@@ -231,7 +233,7 @@ fun HomeLibrary(
 
             FloatingActionsContainerWithScrollToTop(lazyGridState = lazyGridState)
 
-            val showFloatingIcon by Preferences.SHOW_FLOATING_ICON
+            val showFloatingIcon by app.kreate.preferences.Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
             if (UiType.ViMusic.isCurrent() && showFloatingIcon)
                 MultiFloatingActionsContainer(
                     iconId = R.drawable.search,

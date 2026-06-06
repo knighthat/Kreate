@@ -7,7 +7,10 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.kreate.preferences.Preferences
 import org.koin.java.KoinJavaComponent.inject
 
 fun LazyListScope.entry(
@@ -44,5 +47,17 @@ fun LazyListScope.animatedEntry(
     content: @Composable AnimatedVisibilityScope.() -> Unit
 ) =
     item( key, contentType ) {
+        AnimatedVisibility( visible, modifier, content = content )
+    }
+
+fun LazyListScope.animatedEntry(
+    key: Any?,
+    visibleState: Preferences.BooleanPref,
+    modifier: Modifier = Modifier,
+    contentType: Any? = null,
+    content: @Composable AnimatedVisibilityScope.() -> Unit
+) =
+    item( key, contentType ) {
+        val visible by visibleState.collectAsStateWithLifecycle()
         AnimatedVisibility( visible, modifier, content = content )
     }

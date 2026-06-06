@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastJoinToString
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
@@ -160,16 +161,18 @@ object SongItem: Visual() {
         duration: String?,
         values: Values,
         modifier: Modifier = Modifier
-    ) =
+    ) {
+        val durationPlaceholder by app.kreate.preferences.Preferences.SONG_EMPTY_DURATION_PLACEHOLDER.collectAsStateWithLifecycle()
         Text(
             text = duration
-                ?: if( Preferences.SONG_EMPTY_DURATION_PLACEHOLDER.value ) "--:--" else "",
+                ?: if( durationPlaceholder ) "--:--" else "",
             style = values.durationTextStyle,
             color = values.durationColor,
             maxLines = 1,
             overflow = TextOverflow.Clip,
             modifier = modifier.scrollingText()
         )
+    }
 
     /**
      * Stateful button to display current cache status of a song.
@@ -265,7 +268,7 @@ object SongItem: Visual() {
 
             // Show icon if song belongs to a playlist,
             // except for when it's in a playlist.
-            val showInPlaylistIndicator by Preferences.SHOW_PLAYLIST_INDICATOR
+            val showInPlaylistIndicator by app.kreate.preferences.Preferences.SHOW_PLAYLIST_INDICATOR.collectAsStateWithLifecycle()
             if( !isInPlaylistScreen && showInPlaylistIndicator ) {
 
                 val isExistedInAPlaylist by remember {

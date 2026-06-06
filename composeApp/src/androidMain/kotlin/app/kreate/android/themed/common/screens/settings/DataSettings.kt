@@ -27,6 +27,7 @@ import androidx.media3.datasource.cache.Cache
 import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.RestartPlayerService
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
@@ -295,9 +296,9 @@ fun DataSettings( paddingValues: PaddingValues ) {
             header( R.string.search_history )
             entry( search, R.string.pause_search_history ) {
                 SettingComponents.BooleanEntry(
-                    Preferences.PAUSE_SEARCH_HISTORY,
-                    R.string.pause_search_history,
-                    R.string.neither_save_new_searched_query,
+                    preference = app.kreate.preferences.Preferences.PAUSE_SEARCH_HISTORY,
+                    title = stringResource( R.string.pause_search_history ),
+                    subtitleId = R.string.neither_save_new_searched_query,
                     action = SettingComponents.Action.RESTART_PLAYER_SERVICE
                 )
             }

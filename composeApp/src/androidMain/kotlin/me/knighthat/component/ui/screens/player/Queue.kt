@@ -3,6 +3,7 @@ package me.knighthat.component.ui.screens.player
 import android.annotation.SuppressLint
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +11,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
@@ -26,6 +28,7 @@ import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.mediaItems
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
@@ -43,11 +46,22 @@ fun Discover(
     override val messageId: Int = R.string.discoverinfo
 
     // Active state of this button
-    override var isFirstColor: Boolean by Preferences.ENABLE_DISCOVER
+    override var isFirstColor: Boolean by rememberSaveable { mutableStateOf(false) }
 
     override fun onShortClick() {
         isFirstColor = !isFirstColor
+        app.kreate.preferences.Preferences.ENABLE_DISCOVER.update { isFirstColor }
         onDiscoverClick( isFirstColor )
+    }
+
+    @Composable
+    override fun ToolBarButton() {
+        super<MenuIcon>.ToolBarButton()
+
+        val isEnabled by app.kreate.preferences.Preferences.ENABLE_DISCOVER.collectAsStateWithLifecycle()
+        LaunchedEffect( isEnabled ) {
+            isFirstColor = isEnabled
+        }
     }
 }
 
@@ -147,7 +161,7 @@ fun DeleteFromQueue(
 fun QueueArrow(
     onShortClick: () -> Unit
 ): Icon = object: Icon {
-    override val isEnabled: Boolean by Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW
+    override val isEnabled: Boolean by app.kreate.preferences.Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW.collectAsStateWithLifecycle()
     override val iconId: Int = R.drawable.chevron_down
 
     override fun onShortClick() = onShortClick()

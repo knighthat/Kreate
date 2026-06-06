@@ -316,7 +316,7 @@ class PlayerServiceModern:
 
         /* Queue is saved in events without scheduling it (remove this in future)*/
         // Load persistent queue when start activity and save periodically in background
-        if ( Preferences.ENABLE_PERSISTENT_QUEUE.value ) {
+        if ( app.kreate.preferences.Preferences.ENABLE_PERSISTENT_QUEUE.value ) {
             maybeResumePlaybackOnStart()
 
             val scheduler = Executors.newScheduledThreadPool(1)
@@ -365,7 +365,7 @@ class PlayerServiceModern:
         playbackStats: PlaybackStats
     ) {
         // if pause listen history is enabled, don't register statistic event
-        if ( Preferences.PAUSE_HISTORY.value ) return
+        if ( app.kreate.preferences.Preferences.PAUSE_HISTORY.value ) return
 
         val mediaItem =
             eventTime.timeline.getWindow(eventTime.windowIndex, Timeline.Window()).mediaItem
@@ -458,7 +458,7 @@ class PlayerServiceModern:
             Preferences.Key.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE -> maybeResumePlaybackWhenDeviceConnected()
 
             Preferences.Key.AUDIO_SKIP_SILENCE ->
-                player.skipSilenceEnabled = sharedPreferences.getBoolean( key, Preferences.AUDIO_SKIP_SILENCE.defaultValue )
+                player.skipSilenceEnabled = sharedPreferences.getBoolean( key, app.kreate.preferences.Preferences.AUDIO_SKIP_SILENCE.defaultValue )
 
             Preferences.Key.QUEUE_LOOP_TYPE ->
                 player.repeatMode = sharedPreferences.getEnum( key, Preferences.QUEUE_LOOP_TYPE.defaultValue ).type
@@ -471,7 +471,7 @@ class PlayerServiceModern:
     private fun maybeResumePlaybackWhenDeviceConnected() {
         if ( !isAtLeastAndroid6 ) return
 
-        if ( Preferences.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE.value ) {
+        if ( app.kreate.preferences.Preferences.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE.value ) {
             if (audioManager == null)
                 audioManager = getSystemService( AUDIO_SERVICE ) as? AudioManager
 
@@ -599,8 +599,8 @@ class PlayerServiceModern:
     }
 
     private fun maybeResumePlaybackOnStart() {
-        if( Preferences.ENABLE_PERSISTENT_QUEUE.value
-            && Preferences.RESUME_PLAYBACK_ON_STARTUP.value
+        if( app.kreate.preferences.Preferences.ENABLE_PERSISTENT_QUEUE.value
+            && app.kreate.preferences.Preferences.RESUME_PLAYBACK_ON_STARTUP.value
             && AppLifecycleTracker.isInForeground()
         ) player.play()
     }

@@ -23,8 +23,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import it.fast4x.rimusic.Database
@@ -71,8 +73,8 @@ fun QuickPicksSettings( paddingValues: PaddingValues ) {
             item {
                 if( search appearsIn R.string.enable_quick_picks_page )
                     SettingComponents.BooleanEntry(
-                        Preferences.QUICK_PICKS_PAGE,
-                        R.string.enable_quick_picks_page
+                        preference = app.kreate.preferences.Preferences.QUICK_PICKS_PAGE,
+                        title = stringResource( R.string.enable_quick_picks_page )
                     )
             }
 
@@ -80,14 +82,15 @@ fun QuickPicksSettings( paddingValues: PaddingValues ) {
                 val title = stringResource( R.string.show_quotes, stringResource( R.string.tips ) )
                 if( search appearsIn title )
                     SettingComponents.BooleanEntry(
-                        Preferences.QUICK_PICKS_SHOW_TIPS,
-                        title
+                        preference = app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_TIPS,
+                        title = title
                     )
             }
 
             item {
+                val isVisible by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_TIPS.collectAsStateWithLifecycle()
                 AnimatedVisibility(
-                    visible = Preferences.QUICK_PICKS_SHOW_TIPS.value,
+                    visible = isVisible,
                     enter = fadeIn(tween(100)),
                     exit = fadeOut(tween(100)),
                 ) {
@@ -100,8 +103,8 @@ fun QuickPicksSettings( paddingValues: PaddingValues ) {
                 val title = stringResource( R.string.show_quotes, stringResource( R.string.charts ) )
                 if( search appearsIn title )
                     SettingComponents.BooleanEntry(
-                        Preferences.QUICK_PICKS_SHOW_CHARTS,
-                        title
+                        preference = app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_CHARTS,
+                        title = title
                     )
             }
 
@@ -109,8 +112,8 @@ fun QuickPicksSettings( paddingValues: PaddingValues ) {
                 val title = stringResource( R.string.show_quotes, stringResource( R.string.related_albums ) )
                 if( search appearsIn title )
                     SettingComponents.BooleanEntry(
-                        Preferences.QUICK_PICKS_SHOW_RELATED_ALBUMS,
-                        title
+                        preference = app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_RELATED_ALBUMS,
+                        title = title
                     )
             }
 
@@ -118,8 +121,8 @@ fun QuickPicksSettings( paddingValues: PaddingValues ) {
                 val title = stringResource( R.string.show_quotes, stringResource( R.string.similar_artists ) )
                 if( search appearsIn title )
                     SettingComponents.BooleanEntry(
-                        Preferences.QUICK_PICKS_SHOW_RELATED_ARTISTS,
-                        title
+                        preference = app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_RELATED_ARTISTS,
+                        title = title
                     )
             }
 
@@ -127,8 +130,8 @@ fun QuickPicksSettings( paddingValues: PaddingValues ) {
                 val title = stringResource( R.string.show_quotes, stringResource( R.string.new_albums_of_your_artists ) )
                 if( search appearsIn title )
                     SettingComponents.BooleanEntry(
-                        Preferences.QUICK_PICKS_SHOW_NEW_ALBUMS_ARTISTS,
-                        title
+                        preference = app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_NEW_ALBUMS_ARTISTS,
+                        title = title
                     )
             }
 
@@ -136,8 +139,8 @@ fun QuickPicksSettings( paddingValues: PaddingValues ) {
                 val title = stringResource( R.string.show_quotes, stringResource( R.string.new_albums ) )
                 if( search appearsIn title )
                     SettingComponents.BooleanEntry(
-                        Preferences.QUICK_PICKS_SHOW_NEW_ALBUMS,
-                        title
+                        preference = app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_NEW_ALBUMS,
+                        title = title
                     )
             }
 
@@ -145,8 +148,8 @@ fun QuickPicksSettings( paddingValues: PaddingValues ) {
                 val title = stringResource( R.string.show_quotes, stringResource( R.string.playlists_you_might_like ) )
                 if( search appearsIn title )
                     SettingComponents.BooleanEntry(
-                        Preferences.QUICK_PICKS_SHOW_MIGHT_LIKE_PLAYLISTS,
-                        title
+                        preference = app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_MIGHT_LIKE_PLAYLISTS,
+                        title = title
                     )
             }
 
@@ -154,8 +157,8 @@ fun QuickPicksSettings( paddingValues: PaddingValues ) {
                 val title = stringResource( R.string.show_quotes, stringResource( R.string.moods_and_genres ) )
                 if( search appearsIn title )
                     SettingComponents.BooleanEntry(
-                        Preferences.QUICK_PICKS_SHOW_MOODS_AND_GENRES,
-                        title
+                        preference = app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_MOODS_AND_GENRES,
+                        title = title
                     )
             }
 
@@ -163,8 +166,8 @@ fun QuickPicksSettings( paddingValues: PaddingValues ) {
                 val title = stringResource( R.string.show_quotes, stringResource( R.string.monthly_playlists ) )
                 if( search appearsIn title )
                     SettingComponents.BooleanEntry(
-                        Preferences.QUICK_PICKS_SHOW_MONTHLY_PLAYLISTS,
-                        title
+                        preference = app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_MONTHLY_PLAYLISTS,
+                        title = title
                     )
             }
 

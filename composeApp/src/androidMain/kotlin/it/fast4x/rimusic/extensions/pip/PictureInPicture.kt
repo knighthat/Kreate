@@ -28,7 +28,7 @@ import androidx.core.app.OnPictureInPictureModeChangedProvider
 import androidx.core.app.PictureInPictureModeChangedInfo
 import androidx.core.graphics.drawable.toIcon
 import androidx.core.graphics.toRect
-import app.kreate.android.Preferences
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.drawable.AppIcon
 import it.fast4x.compose.persist.findActivityNullable
 import it.fast4x.rimusic.utils.ActionReceiver
@@ -177,8 +177,8 @@ fun Pip(
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
 
-    val enablePictureInPicture by Preferences.IS_PIP_ENABLED
-    val enablePictureInPictureAuto by Preferences.IS_AUTO_PIP_ENABLED
+    val enablePictureInPicture by app.kreate.preferences.Preferences.IS_PIP_ENABLED.collectAsStateWithLifecycle()
+    val enablePictureInPictureAuto by app.kreate.preferences.Preferences.IS_AUTO_PIP_ENABLED.collectAsStateWithLifecycle()
 
     DisposableEffect(context, actions) {
         val currentActions = actions ?: return@DisposableEffect onDispose { }

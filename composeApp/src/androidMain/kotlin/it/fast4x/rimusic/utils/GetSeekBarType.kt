@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
@@ -55,7 +56,7 @@ fun GetSeekBar(
     var scrubbingPosition by remember( mediaItem.mediaId ) {
         mutableStateOf<Long?>(null)
     }
-    var transparentbar by Preferences.TRANSPARENT_TIMELINE
+    val transparentbar by app.kreate.preferences.Preferences.TRANSPARENT_TIMELINE.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val (position, duration) = positionAndDuration
     val animatedPosition = remember { Animatable(position.toFloat()) }

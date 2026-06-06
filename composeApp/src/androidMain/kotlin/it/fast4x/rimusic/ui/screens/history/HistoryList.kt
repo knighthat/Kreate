@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastDistinctBy
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
@@ -82,7 +83,7 @@ fun HistoryList(
     val (colorPalette, typography) = LocalAppearance.current
     val menuState = LocalMenuState.current
 
-    val parentalControlEnabled by Preferences.PARENTAL_CONTROL
+    val parentalControlEnabled by app.kreate.preferences.Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
 
     /**
      * Topology:

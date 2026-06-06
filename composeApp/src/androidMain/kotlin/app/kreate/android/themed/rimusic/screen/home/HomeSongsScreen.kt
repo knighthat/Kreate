@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
@@ -166,11 +167,11 @@ fun HomeSongsScreen(
             ) {
                 Column {
                     //<editor-fold defaultstate="collapsed" desc="Chips">
-                    val showFavoritesPlaylist by Preferences.HOME_SONGS_SHOW_FAVORITES_CHIP
-                    val showCachedPlaylist by Preferences.HOME_SONGS_SHOW_CACHED_CHIP
-                    val showDownloadedPlaylist by Preferences.HOME_SONGS_SHOW_DOWNLOADED_CHIP
-                    val showMyTopPlaylist by Preferences.HOME_SONGS_SHOW_MOST_PLAYED_CHIP
-                    val showOnDevice by Preferences.HOME_SONGS_SHOW_ON_DEVICE_CHIP
+                    val showFavoritesPlaylist by app.kreate.preferences.Preferences.HOME_SONGS_SHOW_FAVORITES_CHIP.collectAsStateWithLifecycle()
+                    val showCachedPlaylist by app.kreate.preferences.Preferences.HOME_SONGS_SHOW_CACHED_CHIP.collectAsStateWithLifecycle()
+                    val showDownloadedPlaylist by app.kreate.preferences.Preferences.HOME_SONGS_SHOW_DOWNLOADED_CHIP.collectAsStateWithLifecycle()
+                    val showMyTopPlaylist by app.kreate.preferences.Preferences.HOME_SONGS_SHOW_MOST_PLAYED_CHIP.collectAsStateWithLifecycle()
+                    val showOnDevice by app.kreate.preferences.Preferences.HOME_SONGS_SHOW_ON_DEVICE_CHIP.collectAsStateWithLifecycle()
                     val chips = remember( showFavoritesPlaylist, showCachedPlaylist, showMyTopPlaylist, showDownloadedPlaylist) {
                         buildList {
                             add( BuiltInPlaylist.All )
@@ -229,7 +230,7 @@ fun HomeSongsScreen(
 
         FloatingActionsContainerWithScrollToTop(lazyListState = lazyListState)
 
-        val showFloatingIcon by Preferences.SHOW_FLOATING_ICON
+        val showFloatingIcon by app.kreate.preferences.Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
         if( UiType.ViMusic.isCurrent() && showFloatingIcon )
             MultiFloatingActionsContainer(
                 iconId = R.drawable.search,

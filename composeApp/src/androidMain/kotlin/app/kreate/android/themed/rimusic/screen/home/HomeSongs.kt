@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
@@ -108,9 +109,9 @@ fun HomeSongs(
     val (colorPalette, typography) = LocalAppearance.current
 
     //<editor-fold defaultstate="collapsed" desc="Settings">
-    val parentalControlEnabled by Preferences.PARENTAL_CONTROL
+    val parentalControlEnabled by app.kreate.preferences.Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
     val maxTopPlaylistItems by Preferences.MAX_NUMBER_OF_TOP_PLAYED
-    val includeLocalSongs by Preferences.HOME_SONGS_INCLUDE_ON_DEVICE_IN_ALL
+    val includeLocalSongs by app.kreate.preferences.Preferences.HOME_SONGS_INCLUDE_ON_DEVICE_IN_ALL.collectAsStateWithLifecycle()
     val excludeSongWithDurationLimit by Preferences.LIMIT_SONGS_WITH_DURATION
     //</editor-fold>
 

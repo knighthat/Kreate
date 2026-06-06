@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
@@ -99,8 +100,8 @@ fun SearchResultScreen(
 
     val hapticFeedback = LocalHapticFeedback.current
 
-    val isVideoEnabled by Preferences.PLAYER_ACTION_TOGGLE_VIDEO
-    val parentalControlEnabled by Preferences.PARENTAL_CONTROL
+    val isVideoEnabled by app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_VIDEO.collectAsStateWithLifecycle()
+    val parentalControlEnabled by app.kreate.preferences.Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
 
     val headerContent: @Composable (textButton: (@Composable () -> Unit)?) -> Unit = {
         Title(

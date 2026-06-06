@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.enums.DohServer
+import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
@@ -68,13 +69,13 @@ fun NetworkSettings( paddingValues: PaddingValues ) {
             )
             entry( search, R.string.enable_proxy ) {
                 SettingComponents.BooleanEntry(
-                    Preferences.IS_PROXY_ENABLED,
-                    R.string.enable_proxy
+                    preference = app.kreate.preferences.Preferences.IS_PROXY_ENABLED,
+                    title = stringResource( R.string.enable_proxy )
                 )
             }
             animatedEntry(
                 key = "proxyChildren",
-                visible = Preferences.IS_PROXY_ENABLED.value,
+                visibleState = app.kreate.preferences.Preferences.IS_PROXY_ENABLED,
                 modifier = Modifier.padding( start = 25.dp )
             ) {
                 Column {

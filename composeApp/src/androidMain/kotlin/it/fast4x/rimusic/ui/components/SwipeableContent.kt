@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.ViewConfiguration
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
@@ -67,7 +68,7 @@ fun SwipeableContent(
             return@rememberSwipeToDismissBoxState false
         }
     )
-    val isSwipeToActionEnabled by Preferences.ENABLE_SWIPE_ACTION
+    val isSwipeToActionEnabled by app.kreate.preferences.Preferences.ENABLE_SWIPE_ACTION.collectAsStateWithLifecycle()
 
     val current = LocalViewConfiguration.current
     CompositionLocalProvider(LocalViewConfiguration provides object : ViewConfiguration by current{

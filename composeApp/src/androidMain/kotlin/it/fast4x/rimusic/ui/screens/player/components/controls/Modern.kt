@@ -45,6 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
@@ -96,11 +97,11 @@ fun InfoAlbumAndArtistModern(
     val context = LocalContext.current
     val colorPaletteMode by Preferences.THEME_MODE
     val playerControlsType by Preferences.PLAYER_CONTROLS_TYPE
-    var effectRotationEnabled by Preferences.ROTATION_EFFECT
+    val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
     var isRotated by rememberSaveable { mutableStateOf(false) }
     var showSelectDialog by remember { mutableStateOf(false) }
     val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
-    val playerInfoShowIcon by Preferences.PLAYER_SONG_INFO_ICON
+    val playerInfoShowIcon by app.kreate.preferences.Preferences.PLAYER_SONG_INFO_ICON.collectAsStateWithLifecycle()
     val currentMediaItem = player.currentMediaItem
 
     Row(
@@ -154,7 +155,7 @@ fun InfoAlbumAndArtistModern(
                 )
 
 
-            val textoutline by Preferences.TEXT_OUTLINE
+            val textoutline by app.kreate.preferences.Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -309,7 +310,7 @@ fun InfoAlbumAndArtistModern(
                 }
             )
 
-        var textoutline by Preferences.TEXT_OUTLINE
+        val textoutline by app.kreate.preferences.Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
         Box(
 
         ) {
@@ -362,7 +363,7 @@ fun ControlsModern(
     player: StatefulPlayer = koinInject(),
     onShowSpeedPlayerDialog: () -> Unit
 ) {
-    var effectRotationEnabled by Preferences.ROTATION_EFFECT
+    val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
     var isRotated by rememberSaveable { mutableStateOf(false) }
     val rotationAngle by animateFloatAsState(
         targetValue = if (isRotated) 360F else 0f,

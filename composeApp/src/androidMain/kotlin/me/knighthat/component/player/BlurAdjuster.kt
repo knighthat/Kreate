@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,8 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.ui.components.themed.IconButton
@@ -30,7 +33,7 @@ class BlurAdjuster private constructor(
     activeState: MutableState<Boolean>,
     strengthState: MutableState<Float>,
     backdropState: MutableState<Float>,
-    rotatingCoverState: MutableState<Boolean>
+    rotatingCoverState: State<Boolean>
 ): Dialog {
 
     companion object {
@@ -39,17 +42,17 @@ class BlurAdjuster private constructor(
             remember { mutableStateOf( false ) },
             Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH,
             Preferences.PLAYER_BACKGROUND_BACK_DROP,
-            Preferences.PLAYER_ROTATING_ALBUM_COVER
+            app.kreate.preferences.Preferences.PLAYER_ROTATING_ALBUM_COVER.collectAsStateWithLifecycle()
         )
     }
 
+    val isCoverRotating: Boolean by rotatingCoverState
     override val dialogTitle: String
         @Composable
         get() = stringResource( R.string.controls_title_blur_effect )
 
     var strength: Float by strengthState
     var backdrop: Float by backdropState
-    var isCoverRotating: Boolean by rotatingCoverState
     override var isActive: Boolean by activeState
 
     fun onDismiss()  { isActive = false }
@@ -119,8 +122,8 @@ class BlurAdjuster private constructor(
                 )
 
                 SettingComponents.BooleanEntry(
-                    Preferences.PLAYER_ROTATING_ALBUM_COVER,
-                    R.string.rotating_cover_title
+                    preference = app.kreate.preferences.Preferences.PLAYER_ROTATING_ALBUM_COVER,
+                    title = stringResource( R.string.rotating_cover_title )
                 )
             }
         }

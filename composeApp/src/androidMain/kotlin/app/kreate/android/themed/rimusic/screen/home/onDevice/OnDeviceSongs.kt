@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastMap
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
@@ -99,8 +100,8 @@ fun OnDeviceSong(
     val menuState = LocalMenuState.current
 
     //<editor-fold defaultstate="collapsed" desc="Settings">
-    val parentalControlEnabled by Preferences.PARENTAL_CONTROL
-    val showFolder4LocalSongs by Preferences.HOME_SONGS_ON_DEVICE_SHOW_FOLDERS
+    val parentalControlEnabled by app.kreate.preferences.Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
+    val showFolder4LocalSongs by app.kreate.preferences.Preferences.HOME_SONGS_ON_DEVICE_SHOW_FOLDERS.collectAsStateWithLifecycle()
     //</editor-fold>
 
     var songsOnDevice by remember {
