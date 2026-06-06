@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Terminar</string>
     <string name="hidesong">Você realmente quer esconder essa música? O tempo de reprodução e a memória transitória serão apagados. Esta ação é irreversível.</string>
@@ -187,17 +187,12 @@
     <string name="play_button">Botão reproduzir</string>
     <string name="close_app_with_back_button">Fechar o aplicativo com o botão Voltar</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Quando você usar o botão Voltar na página inicial</string>
-    <string name="audio_quality_format_high">Alto</string>
     <string name="audio_quality_format_medium">Médio</string>
-    <string name="audio_quality_format_low">Baixa</string>
     <string name="audio_quality_format_unknown">Desconhecido</string>
     <string name="do_you_really_want_to_delete_download">Você realmente quer excluir o download?</string>
     <string name="disable_scrolling_text">Desativar rolagem do texto</string>
     <string name="scrolling_text_is_used_for_long_texts">Rolagem de texto é usado para textos longos</string>
     <string name="audio_quality_format">Formato de qualidade de áudio</string>
-    <string name="by_most_played_song">Por músicas mais tocadas</string>
-    <string name="by_last_played_song">Por últimas músicas tocadas</string>
-    <string name="audio_quality_automatic">Automático</string>
     <string name="statistics_songs_heard">músicas ouvidas</string>
     <string name="statistics_of_time_taken">do tempo gasto</string>
     <string name="statistics_max_number_of_items">Número máximo de itens</string>
@@ -291,8 +286,6 @@
     <string name="sort_duration">Duração</string>
     <string name="pause_between_songs">Pausar entre músicas</string>
     <string name="navigation_bar_type">Tipo de barra de navegação</string>
-    <string name="icon_and_text">Ícone e texto</string>
-    <string name="only_icon">Somente ícones</string>
     <string name="action_bar_show_menu_button">Mostrar botão de menu</string>
     <string name="sort_album">Álbum</string>
     <string name="show_total_time_of_queue">Mostrar tempo total da fila</string>
@@ -313,15 +306,12 @@
     <string name="pick_from">Selecionar de</string>
     <string name="download_cover">Baixar capa</string>
     <string name="menu_style">Estilo do menu</string>
-    <string name="style_grid">Grade</string>
-    <string name="style_list">Lista</string>
     <string name="direction_bottom">Direction bottom</string>
     <string name="event_shake">Agitar</string>
     <string name="shake_to_change_song">Agite para mudar a música</string>
     <string name="history">História</string>
     <string name="yesterday">Ontem</string>
     <string name="last_week">Última semana</string>
-    <string name="by_casual_played_song">Músicas tocadas casualmente</string>
     <string name="theme_material_you">Seu Material </string>
     <string name="show_statistics_in_navigation_bar">Mostrar estatísticas na barra de navegação</string>
     <string name="settings">Configurações</string>
@@ -416,12 +406,6 @@
     <string name="pinfo_album_and_artist_name">Álbum e nome do artista</string>
     <string name="show_player_top_actions_bar">Mostrar barra de ação superior</string>
     <string name="icon_like_button">Botão \"curtir\"</string>
-    <string name="icon_like_apple">Maçã</string>
-    <string name="icon_like_breaked">Coração partido</string>
-    <string name="icon_like_gift">Presente</string>
-    <string name="icon_like_shape">Forma</string>
-    <string name="icon_like_striped">Listrado</string>
-    <string name="icon_like_brilliant">Brilhante</string>
     <string name="player_swap_controls_with_timeline">Trocar controles pela linha do tempo</string>
     <string name="player_enable_lyrics_popup_message">Ativar mensagem pop-up de letras</string>
     <string name="exclude_songs_with_duration_limit">Excluir músicas com duração limitada</string>
@@ -430,8 +414,6 @@
     <string name="enable_quick_picks_page">Habilitar a aba de escolhas rápidas</string>
     <string name="parental_control">Controle dos pais</string>
     <string name="info_prevent_play_songs_with_age_limitation">Prevenir reprodução de músicas com limitação de idade</string>
-    <string name="cache_location_private">Privado</string>
-    <string name="cache_location_system">Sistema</string>
     <string name="debug">DEPURAÇÃO</string>
     <string name="setting_entry_runtime_log">Registro de execução</string>
     <string name="setting_description_runtime_log">Registrando tudo o que está acontecendo no %s</string>
@@ -578,7 +560,6 @@
     <string name="failed_to_remove_thumbnail">Falha ao Remover a Miniatura</string>
     <string name="settings_enable_pip">Ativar Picture in Picture</string>
     <string name="settings_enable_pip_auto">Habilitar Picture in Picture automático</string>
-    <string name="pipmodule_cover">Capa</string>
     <string name="settings_pip_module">Módulo Pip</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">Desde o Android 12, picture in picture pode ser habilitado automaticamente</string>
@@ -592,10 +573,6 @@
     <string name="original_lyrics">Letras originais</string>
     <string name="translated_lyrics">Letras Traduzidas</string>
     <string name="press_once_again_to_exit">Pressione mais uma vez para sair</string>
-    <string name="music_animations_bars">Barras</string>
-    <string name="music_animations_crazy_bars">Barras malucas</string>
-    <string name="music_animations_crazy_points">Pontos malucos</string>
-    <string name="music_animations_bubbles">Bolhas</string>
     <string name="now_playing_indicator">Indicador de reprodução atual</string>
     <string name="good_morning">Bom Dia</string>
     <string name="good_afternoon">Boa Tarde</string>
@@ -609,9 +586,6 @@
     <string name="jump_previous_blank">Deixe em branco ou em 0 para o botão de voltar a música sempre tocar a música anterior</string>
     <string name="delete_hidden_songs">Você realmente deseja excluir todas as músicas ocultas do banco de dados? Esta ação é irreversível.</string>
     <string name="delete_hidden_songs_message">Excluir músicas ocultas</string>
-    <string name="cover_type_vinyl">Vinil</string>
-    <string name="cover_type_cd">CD</string>
-    <string name="cover_type_cd_with_cover">CD com capa</string>
     <string name="wallpaper">Papel de parede</string>
     <string name="enable_wallpaper">Habilitar papel de parede</string>
     <string name="set_cover_thumbnail_as_wallpaper">Definir miniatura da capa como papel de parede</string>
@@ -742,13 +716,8 @@
     <string name="error_message_unsupported_local_playlist">Formato não suportado</string>
     <string name="error_message_import_local_playlist_failed">Ocorreu um erro ao importar a playlist local</string>
     <string name="dialog_title_color_picker">Seletor de cores</string>
-    <string name="setting_description_only_available_in_theme">Disponível apenas no tema %s</string>
     <string name="setting_description_app_language">Aplicar apenas ao idioma do aplicativo; o idioma do sistema não é afetado</string>
     <string name="currently_selected">Atualmente selecionado: %s</string>
-    <string name="setting_description_update_checker_ask">Avisar quando uma nova versão estiver disponível para baixar</string>
-    <string name="setting_description_update_checker_disabled">%s não irá te notificar sobre novas atualizações</string>
-    <string name="setting_description_update_checker_automatic">Automatically download \&amp; install new version when available</string>
-    <string name="setting_title_update_checker_automatic">Baixar e instalar automaticamente</string>
     <string name="setting_entry_update_checker">Atualização do aplicativo</string>
     <string name="update_dialog_init_status">Iniciando</string>
     <string name="update_dialog_downloading_status">Baixando</string>
@@ -778,7 +747,6 @@
     <string name="setting_description_delete_search_history">Excluir %s</string>
     <string name="setting_entry_live_wallpaper">Fundo animado</string>
     <string name="setting_description_live_wallpaper">Definir seu papel de parede para a foto da música em reprodução</string>
-    <string name="word_lockscreen">Tela de bloqueio</string>
     <string name="warning_only_available_on_android_and_above">Disponível apenas no Android %1$s+ (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Retorno Único</string>
     <string name="setting_description_single_back_from_search">Prevenir páginas de pesquisa duplicadas quando clicar no ícone de pesquisa</string>
@@ -812,10 +780,6 @@
     <string name="setting_entry_sync_quotes">Sincronizar \"%s\"</string>
     <string name="setting_entry_test_proxy">Testar proxy</string>
     <string name="success_proxy_verified">Proxy está configurado corretamente</string>
-    <string name="cache_location_split">Dividir</string>
-    <string name="setting_description_cache_location_system">Armazenar em cache e baixados no cache do aplicativo, o que pode ser eliminado limpando o cache nas configurações</string>
-    <string name="setting_description_cache_location_private">Armazenar músicas armazenadas em cache e baixadas no armazenamento privado do aplicativo, que só podem ser apagadas se os dados do aplicativo forem apagados</string>
-    <string name="setting_description_cache_location_split">Músicas em cache armazenadas no cache do app e músicas baixadas no armazenamento privado do aplicativo</string>
     <string name="theme_light">Claro</string>
     <string name="theme_dark">Escuro</string>
     <string name="theme_pitch_black">Preto Profundo</string>
@@ -865,15 +829,8 @@
     <string name="setting_entry_thumbnail_size">Tamanho da miniatura</string>
     <string name="warning_end_of_list">Fim da lista</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
-    <string name="doh_none">None</string>
-    <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (family)</string>
-    <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (secured)</string>
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
-    <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>

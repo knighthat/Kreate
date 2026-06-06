@@ -14,6 +14,7 @@ import it.fast4x.rimusic.service.MyDownloadHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.getString
 
 object PlaybackController {
 
@@ -90,7 +91,7 @@ object PlaybackController {
         builder: CommandButton.Builder.() -> Unit = {}
     ): CommandButton =
         CommandButton.Builder( CommandButton.ICON_UNDEFINED )
-                     .setDisplayName( context.resources.getString( button.androidTextId ) )
+                     .setDisplayName( getString(button.textId) )
                      .setSessionCommand( button.sessionCommand )
                      .apply {
                          getIconId( player, button ).also( ::setCustomIconResId )

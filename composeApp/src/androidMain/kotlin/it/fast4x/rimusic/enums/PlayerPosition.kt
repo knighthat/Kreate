@@ -1,13 +1,15 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.StringRes
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.position_bottom
+import kreate.resources.generated.resources.position_top
+import org.jetbrains.compose.resources.StringResource
 
 enum class PlayerPosition(
-    @field:StringRes override val androidTextId: Int
+    override val textId: StringResource
 ): TextView {
 
-    Top( R.string.position_top ),
-    Bottom( R.string.position_bottom );
+    Top(Res.string.position_top),
+    Bottom(Res.string.position_bottom);
 }

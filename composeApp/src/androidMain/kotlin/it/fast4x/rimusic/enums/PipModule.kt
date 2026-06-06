@@ -1,12 +1,13 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.StringRes
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.pipmodule_cover
+import org.jetbrains.compose.resources.StringResource
 
 enum class PipModule(
-    @field:StringRes override val androidTextId: Int
+    override val textId: StringResource
 ): TextView {
 
-    Cover( R.string.pipmodule_cover )
+    Cover(Res.string.pipmodule_cover)
 }

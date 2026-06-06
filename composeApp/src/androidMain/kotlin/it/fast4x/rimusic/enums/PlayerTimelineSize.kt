@@ -1,21 +1,26 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.StringRes
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.size_big
+import kreate.resources.generated.resources.size_bigger
+import kreate.resources.generated.resources.size_biggest
+import kreate.resources.generated.resources.size_medium
+import kreate.resources.generated.resources.size_small
+import org.jetbrains.compose.resources.StringResource
 
 enum class PlayerTimelineSize(
     val size: Int,
-    @field:StringRes override val androidTextId: Int
+    override val textId: StringResource
 ): TextView {
 
-    Small( 90, R.string.small ),
+    Small(90, Res.string.size_small),
 
-    Medium( 55, R.string.medium ),
+    Medium(55, Res.string.size_medium),
 
-    Big( 30, R.string.big ),
+    Big(30, Res.string.size_big),
 
-    Biggest( 20, R.string.biggest ),
+    Biggest(20, Res.string.size_bigger),
 
-    Expanded( 0, R.string.expanded );
+    Expanded(0, Res.string.size_biggest);
 }

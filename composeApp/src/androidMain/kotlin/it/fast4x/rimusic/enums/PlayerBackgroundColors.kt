@@ -1,24 +1,31 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.StringRes
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.animated_gradient
+import kreate.resources.generated.resources.blurred_song_cover
+import kreate.resources.generated.resources.color_palette
+import kreate.resources.generated.resources.gradient_from_song_cover
+import kreate.resources.generated.resources.gradient_from_system_theme
+import kreate.resources.generated.resources.song_cover
+import kreate.resources.generated.resources.system_theme
+import org.jetbrains.compose.resources.StringResource
 
 enum class PlayerBackgroundColors(
-    @field:StringRes override val androidTextId: Int
+    override val textId: StringResource
 ): TextView {
 
-    CoverColor( R.string.bg_colors_background_from_cover ),
+    CoverColor(Res.string.song_cover),
 
-    ThemeColor( R.string.bg_colors_background_from_theme ),
+    ThemeColor(Res.string.system_theme),
 
-    CoverColorGradient( R.string.bg_colors_gradient_background_from_cover ),
+    CoverColorGradient(Res.string.gradient_from_song_cover),
 
-    ThemeColorGradient( R.string.bg_colors_gradient_background_from_theme ),
+    ThemeColorGradient(Res.string.gradient_from_system_theme),
 
-    BlurredCoverColor( R.string.bg_colors_blurred_cover_background ),
+    BlurredCoverColor(Res.string.blurred_song_cover),
 
-    ColorPalette( R.string.colorpalette ),
+    ColorPalette(Res.string.color_palette),
 
-    AnimatedGradient( R.string.animatedgradient );
+    AnimatedGradient(Res.string.animated_gradient);
 }

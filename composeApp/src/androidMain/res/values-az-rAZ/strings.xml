@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Bitdi</string>
     <string name="hidesong">Həqiqətən bu mahnını gizlətmək istəyirsiz? Onun dinlənmə vaxtı və qalığı silinəcək. Bu tələb geri dönməzdir.</string>
@@ -187,17 +187,12 @@
     <string name="play_button">Səsləndir düyməsi</string>
     <string name="close_app_with_back_button">Geri düyməsi ilə tətbiqi bağla</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Əsas səhifədən geri düyməsin istifadə edəndə</string>
-    <string name="audio_quality_format_high">Yüksək</string>
     <string name="audio_quality_format_medium">Orta</string>
-    <string name="audio_quality_format_low">Zəif</string>
     <string name="audio_quality_format_unknown">Naməlum</string>
     <string name="do_you_really_want_to_delete_download">Həqiqətən yükləməni silmək istəyirsiniz?</string>
     <string name="disable_scrolling_text">Sürüşən mətni qapat</string>
     <string name="scrolling_text_is_used_for_long_texts">Sürüşən mətn uzun mətnlər üçün faydalıdır</string>
     <string name="audio_quality_format">Səs Keyfiyyət Formatı</string>
-    <string name="by_most_played_song">Ən çox dinlənən mahnıya görə</string>
-    <string name="by_last_played_song">Son dinlənən mahnıya görə</string>
-    <string name="audio_quality_automatic">Avtomatik</string>
     <string name="statistics_songs_heard">mahnı dinlənildi</string>
     <string name="statistics_of_time_taken">vaxt keçdi</string>
     <string name="statistics_max_number_of_items">Maksimum element sayı</string>
@@ -291,8 +286,6 @@
     <string name="sort_duration">Müddət</string>
     <string name="pause_between_songs">Mahnılar arası fasilə</string>
     <string name="navigation_bar_type">Fəaliyyət cərgəsi növü</string>
-    <string name="icon_and_text">İşarə və mətn</string>
-    <string name="only_icon">Yalnız işarə</string>
     <string name="action_bar_show_menu_button">Menyu düyməsini göstər</string>
     <string name="sort_album">Albom</string>
     <string name="show_total_time_of_queue">Növbənin ümumi müddətin göstər</string>
@@ -313,15 +306,12 @@
     <string name="pick_from">Buradan seç</string>
     <string name="download_cover">Yükləmə cildi</string>
     <string name="menu_style">Menyu üslubu</string>
-    <string name="style_grid">Şəbəkə</string>
-    <string name="style_list">Siyahı</string>
     <string name="direction_bottom">Aşağı</string>
     <string name="event_shake">Titrət</string>
     <string name="shake_to_change_song">Mahnını dəyişmək üçün titrət</string>
     <string name="history">Tarixçə</string>
     <string name="yesterday">Dünən</string>
     <string name="last_week">Keçən həftə</string>
-    <string name="by_casual_played_song">Təsadüfən dinlənilən mahnıya görə</string>
     <string name="theme_material_you">Material You</string>
     <string name="show_statistics_in_navigation_bar">Fəaliyyət cərgəsində statistikanı göstər</string>
     <string name="settings">Tənzimləmələr</string>
@@ -416,12 +406,6 @@
     <string name="pinfo_album_and_artist_name">Albom və sənətkar adı</string>
     <string name="show_player_top_actions_bar">Üst fəaliyyət cizgisin göstər</string>
     <string name="icon_like_button">Bəyənmə düyməsi</string>
-    <string name="icon_like_apple">Apple (Alma)</string>
-    <string name="icon_like_breaked">Qırılmış</string>
-    <string name="icon_like_gift">Hədiyyə</string>
-    <string name="icon_like_shape">Şəkil</string>
-    <string name="icon_like_striped">Zolaqlı</string>
-    <string name="icon_like_brilliant">Parlaq</string>
     <string name="player_swap_controls_with_timeline">İdarəediciləri vaxt cizgisi ilə dəyişdir</string>
     <string name="player_enable_lyrics_popup_message">Lirika ani məlumatın aktivləşdir</string>
     <string name="exclude_songs_with_duration_limit">Müddət həddi olan mahnıları çıxar</string>
@@ -430,8 +414,6 @@
     <string name="enable_quick_picks_page">Cəld Seçimlər Səhifəsini Aktivləşdir</string>
     <string name="parental_control">Valideyn nəzarəti</string>
     <string name="info_prevent_play_songs_with_age_limitation">Yaş məhdudiyyətli mahnıları səsləndirməyi əngəllə</string>
-    <string name="cache_location_private">Şəxsi</string>
-    <string name="cache_location_system">Sistem</string>
     <string name="debug">SINAQ</string>
     <string name="setting_entry_runtime_log">İş vaxtı jurnalı</string>
     <string name="setting_description_runtime_log">%s üzərindən olan hər şeyi qeydə alır</string>
@@ -578,7 +560,6 @@
     <string name="failed_to_remove_thumbnail">Miniatürü Silmək Olmadı</string>
     <string name="settings_enable_pip">Şəkil içində şəkili aktiv et</string>
     <string name="settings_enable_pip_auto">Şəkil içində Şəkili Avtomatik Aktivləşdir</string>
-    <string name="pipmodule_cover">Cild</string>
     <string name="settings_pip_module">Pip keçidi</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">Android 12-dən pip birbaşa aktivləşdirilə bilər</string>
@@ -592,10 +573,6 @@
     <string name="original_lyrics">Əsil Lirika</string>
     <string name="translated_lyrics">Tərcümə Edilən Lirika</string>
     <string name="press_once_again_to_exit">Çıxmaq üçün təkrar toxun</string>
-    <string name="music_animations_bars">Cizgilər</string>
-    <string name="music_animations_crazy_bars">Coşqun Cizgilər</string>
-    <string name="music_animations_crazy_points">Coşqun Nöqtələr</string>
-    <string name="music_animations_bubbles">Qabarcıqlar</string>
     <string name="now_playing_indicator">İndi Səslənir Göstəricisi</string>
     <string name="good_morning">Sabahınız Xeyir</string>
     <string name="good_afternoon">Günortanız Xeyir</string>
@@ -609,9 +586,6 @@
     <string name="jump_previous_blank">Əvvəlki Mahnını Kəsintisiz Oynatmaq üçün Əvvəlki Düyməyə Boş və ya 0 qoyun</string>
     <string name="delete_hidden_songs">Həqiqətən məlumat bazasından bütün gizli mahnıları silmək istəyirsiniz? Bu fəaliyyət geri dəyişmir.</string>
     <string name="delete_hidden_songs_message">Gizli mahnıları sil</string>
-    <string name="cover_type_vinyl">Vinil</string>
-    <string name="cover_type_cd">Disk</string>
-    <string name="cover_type_cd_with_cover">Cildli Disk</string>
     <string name="wallpaper">Divar kağızı</string>
     <string name="enable_wallpaper">Divar kağızın aktiv et</string>
     <string name="set_cover_thumbnail_as_wallpaper">Cild miniatürün divar kağızı kimi yerləşdir</string>
@@ -742,13 +716,8 @@
     <string name="error_message_unsupported_local_playlist">Dəstəklənməyən format</string>
     <string name="error_message_import_local_playlist_failed">Yerli pleylist idxal edilərkən xəta baş verdi</string>
     <string name="dialog_title_color_picker">Rəng seçici</string>
-    <string name="setting_description_only_available_in_theme">Yalnız %s mövzusunda əlçatandır</string>
     <string name="setting_description_app_language">Yalnız tətbiq dilinə aiddir; sistem dili təsirlənmir</string>
     <string name="currently_selected">Hazırda seçilib: %s</string>
-    <string name="setting_description_update_checker_ask">Yükləmək üçün yeni versiya mövcuddursa bildir</string>
-    <string name="setting_description_update_checker_disabled">%s sizə yeni yenilənmələr barədə elan verməyəcək</string>
-    <string name="setting_description_update_checker_automatic">Başlanğıcda yeni versiyanı avtomatik yüklə və quraşdır</string>
-    <string name="setting_title_update_checker_automatic">Birbaşa yüklə və quraşdır</string>
     <string name="setting_entry_update_checker">Tətbiq yenilənməsi</string>
     <string name="update_dialog_init_status">Tətbiq olunur</string>
     <string name="update_dialog_downloading_status">Endirilir</string>
@@ -778,7 +747,6 @@
     <string name="setting_description_delete_search_history">%s sil</string>
     <string name="setting_entry_live_wallpaper">Canlı divar kağızı</string>
     <string name="setting_description_live_wallpaper">Divar kağızınızı hazırda səslənən mahnı miniatürünə uyğunlaşdırın</string>
-    <string name="word_lockscreen">Kilid ekranı</string>
     <string name="warning_only_available_on_android_and_above">Yalnız Android %1$s+ (%2$d) versiyasında mövcuddur</string>
     <string name="setting_entry_single_back_from_search">Tək geriyə</string>
     <string name="setting_description_single_back_from_search">Axtarış işarəsinə kliklədiyiniz zaman oxşar axtarış səhifələrinin qarşısını alın</string>
@@ -812,10 +780,6 @@
     <string name="setting_entry_sync_quotes">\"%s\" sinxronizasiyası</string>
     <string name="setting_entry_test_proxy">Proxy yoxlama</string>
     <string name="success_proxy_verified">Proksi düzgün qurulub</string>
-    <string name="cache_location_split">Ayırın</string>
-    <string name="setting_description_cache_location_system">Həm keşkələnən, həm də endirilmiş tətbiqin keşində saxlayın, tənzimləmələrdəki keşkəni silməklə də silinə bilər</string>
-    <string name="setting_description_cache_location_private">Həm keşkələnən, həm də endirilmiş mahnıları tətbiqin fərdi yaddaşında saxlayın, yalnız tətbiq məlumatları təmizləndikdə silinə bilər</string>
-    <string name="setting_description_cache_location_split">Keşkələnmiş mahnılar tətbiq keşkəsi, endirilmiş mahnılar isə tətbiqin fərdi yaddaşında mövcud olur</string>
     <string name="theme_light">İşıqlı</string>
     <string name="theme_dark">Qara</string>
     <string name="theme_pitch_black">Qatran qarası</string>
@@ -865,15 +829,8 @@
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
     <string name="warning_end_of_list">End of list</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
-    <string name="doh_none">None</string>
-    <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (family)</string>
-    <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (secured)</string>
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
-    <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>

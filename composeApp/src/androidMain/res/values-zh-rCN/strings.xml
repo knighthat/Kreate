@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">完成</string>
     <string name="hidesong">你真的想要隐藏这首歌吗？它的播放记录和缓存将会被清除。（这个动作是不可逆的）</string>
@@ -187,17 +187,12 @@
     <string name="play_button">“播放”按钮</string>
     <string name="close_app_with_back_button">使用“Back”按钮关闭应用程序</string>
     <string name="when_you_use_the_back_button_from_the_home_page">当您使用主页上的“Back”按钮时</string>
-    <string name="audio_quality_format_high">高</string>
     <string name="audio_quality_format_medium">中</string>
-    <string name="audio_quality_format_low">低</string>
     <string name="audio_quality_format_unknown">未知的</string>
     <string name="do_you_really_want_to_delete_download">你真的想要删除下载吗？</string>
     <string name="disable_scrolling_text">禁用滚动文本</string>
     <string name="scrolling_text_is_used_for_long_texts">滚动文本用于长文本</string>
     <string name="audio_quality_format">音频质量格式</string>
-    <string name="by_most_played_song">按播放次数最多的歌曲</string>
-    <string name="by_last_played_song">按最后播放的歌曲</string>
-    <string name="audio_quality_automatic">自动</string>
     <string name="statistics_songs_heard">歌曲已收听</string>
     <string name="statistics_of_time_taken">时间已花费</string>
     <string name="statistics_max_number_of_items">最大条目数</string>
@@ -291,8 +286,6 @@
     <string name="sort_duration">持续时间</string>
     <string name="pause_between_songs">歌曲之间暂停</string>
     <string name="navigation_bar_type">导航栏类型</string>
-    <string name="icon_and_text">图标和文本</string>
-    <string name="only_icon">只有图标</string>
     <string name="action_bar_show_menu_button">显示菜单按钮</string>
     <string name="sort_album">专辑</string>
     <string name="show_total_time_of_queue">显示队列的总时间</string>
@@ -313,15 +306,12 @@
     <string name="pick_from">选择自</string>
     <string name="download_cover">下载专辑封面</string>
     <string name="menu_style">菜单样式</string>
-    <string name="style_grid">网格</string>
-    <string name="style_list">列表</string>
     <string name="direction_bottom">Direction bottom</string>
     <string name="event_shake">摇晃</string>
     <string name="shake_to_change_song">摇晃以更改歌曲</string>
     <string name="history">历史记录</string>
     <string name="yesterday">昨天</string>
     <string name="last_week">上周</string>
-    <string name="by_casual_played_song">按任何播放过的歌曲</string>
     <string name="theme_material_you">Material You</string>
     <string name="show_statistics_in_navigation_bar">在导航栏中显示数据</string>
     <string name="settings">设置</string>
@@ -416,12 +406,6 @@
     <string name="pinfo_album_and_artist_name">专辑和艺术家名称</string>
     <string name="show_player_top_actions_bar">显示顶栏</string>
     <string name="icon_like_button">点赞按钮</string>
-    <string name="icon_like_apple">苹果风格</string>
-    <string name="icon_like_breaked">破碎风格</string>
-    <string name="icon_like_gift">礼物风格</string>
-    <string name="icon_like_shape">特殊形状风格</string>
-    <string name="icon_like_striped">条纹风格</string>
-    <string name="icon_like_brilliant">杰出风格</string>
     <string name="player_swap_controls_with_timeline">交换播放控制和时间线</string>
     <string name="player_enable_lyrics_popup_message">启用弹出式歌词消息</string>
     <string name="exclude_songs_with_duration_limit">利用时长排除歌曲</string>
@@ -430,8 +414,6 @@
     <string name="enable_quick_picks_page">启用快速精选页面</string>
     <string name="parental_control">家长控制</string>
     <string name="info_prevent_play_songs_with_age_limitation">防止播放有年龄限制的歌曲</string>
-    <string name="cache_location_private">本地</string>
-    <string name="cache_location_system">系统</string>
     <string name="debug">调试</string>
     <string name="setting_entry_runtime_log">Runtime log</string>
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
@@ -578,7 +560,6 @@
     <string name="failed_to_remove_thumbnail">删除缩略图失败</string>
     <string name="settings_enable_pip">启用画中画</string>
     <string name="settings_enable_pip_auto">启用画中画动画</string>
-    <string name="pipmodule_cover">封面</string>
     <string name="settings_pip_module">画中画模块</string>
     <string name="menu_go_to_picture_in_picture">画中画</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">从安卓12开始画中画可以自动启用</string>
@@ -592,10 +573,6 @@
     <string name="original_lyrics">原始歌词</string>
     <string name="translated_lyrics">已翻译的歌词</string>
     <string name="press_once_again_to_exit">再次以退出</string>
-    <string name="music_animations_bars">条状</string>
-    <string name="music_animations_crazy_bars">疯狂条状</string>
-    <string name="music_animations_crazy_points">疯狂斑点</string>
-    <string name="music_animations_bubbles">气泡</string>
     <string name="now_playing_indicator">现在播放指示器</string>
     <string name="good_morning">早上好</string>
     <string name="good_afternoon">下午好</string>
@@ -609,9 +586,6 @@
     <string name="jump_previous_blank">留空或置0使得向前按钮总是直接播放上一首歌曲</string>
     <string name="delete_hidden_songs">您确定要从数据库中删除所有隐藏的歌曲吗？此操作不可逆。</string>
     <string name="delete_hidden_songs_message">删除隐藏歌曲</string>
-    <string name="cover_type_vinyl">黑胶唱片</string>
-    <string name="cover_type_cd">CD</string>
-    <string name="cover_type_cd_with_cover">带封面的 CD</string>
     <string name="wallpaper">背景</string>
     <string name="enable_wallpaper">启用背景</string>
     <string name="set_cover_thumbnail_as_wallpaper">设置封面缩略图为背景</string>
@@ -742,13 +716,8 @@
     <string name="error_message_unsupported_local_playlist">Unsupported format</string>
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
-    <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
     <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
     <string name="currently_selected">Currently selected: %s</string>
-    <string name="setting_description_update_checker_ask">Prompt when a new version is available to download</string>
-    <string name="setting_description_update_checker_disabled">%s will not notify you about new updates</string>
-    <string name="setting_description_update_checker_automatic">Automatically download \&amp; install new version when available</string>
-    <string name="setting_title_update_checker_automatic">Download and install automatically</string>
     <string name="setting_entry_update_checker">App update</string>
     <string name="update_dialog_init_status">Initializing</string>
     <string name="update_dialog_downloading_status">Downloading</string>
@@ -778,7 +747,6 @@
     <string name="setting_description_delete_search_history">Delete %s</string>
     <string name="setting_entry_live_wallpaper">Live wallpaper</string>
     <string name="setting_description_live_wallpaper">Set your wallpaper to the thumbnail of the currently playing song</string>
-    <string name="word_lockscreen">Lockscreen</string>
     <string name="warning_only_available_on_android_and_above">Only available on Android %1$s+ (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Single back</string>
     <string name="setting_description_single_back_from_search">Prevent duplicate search pages when you click search icon</string>
@@ -812,10 +780,6 @@
     <string name="setting_entry_sync_quotes">Sync \"%s\"</string>
     <string name="setting_entry_test_proxy">Test proxy</string>
     <string name="success_proxy_verified">Proxy is correctly configured</string>
-    <string name="cache_location_split">Split</string>
-    <string name="setting_description_cache_location_system">Store both cached and downloaded in the app\'s cache, which can be deleted by clearing the cache in settings</string>
-    <string name="setting_description_cache_location_private">Store both cached and downloaded songs in the app\'s private storage, which can only be deleted if the app\'s data is wiped</string>
-    <string name="setting_description_cache_location_split">Cached songs live in app\'s cache, and downloaded songs live in app\'s private storage</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_pitch_black">Pitch black</string>
@@ -865,15 +829,8 @@
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
     <string name="warning_end_of_list">End of list</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
-    <string name="doh_none">None</string>
-    <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (family)</string>
-    <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (secured)</string>
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
-    <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>

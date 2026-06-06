@@ -54,6 +54,10 @@ import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.medium
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.audio_quality_format_high
+import kreate.resources.generated.resources.audio_quality_format_low
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
@@ -445,9 +449,9 @@ fun StatsForNerds(
 @Composable
 fun getQuality(format: Format): String {
     return when (format.itag?.toString()) {
-        "251", "141" -> stringResource(R.string.audio_quality_format_high)
-        "250", "140", "171" -> stringResource(R.string.audio_quality_format_medium)
-        "249", "139" -> stringResource(R.string.audio_quality_format_low)
+        "251", "141" -> stringResource( Res.string.audio_quality_format_high )
+        "250", "140", "171" -> stringResource( R.string.audio_quality_format_medium )
+        "249", "139" -> stringResource( Res.string.audio_quality_format_low )
         else -> format.itag.toString()
     }
 }

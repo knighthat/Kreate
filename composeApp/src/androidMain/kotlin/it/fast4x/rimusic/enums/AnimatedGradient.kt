@@ -1,40 +1,55 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.StringRes
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.animated_gradient_black_cherry_cosmo
+import kreate.resources.generated.resources.animated_gradient_flow
+import kreate.resources.generated.resources.animated_gradient_fluid_song_cover
+import kreate.resources.generated.resources.animated_gradient_fluid_system_theme
+import kreate.resources.generated.resources.animated_gradient_glossy
+import kreate.resources.generated.resources.animated_gradient_golden_magma
+import kreate.resources.generated.resources.animated_gradient_ice_reflection
+import kreate.resources.generated.resources.animated_gradient_ink_flow
+import kreate.resources.generated.resources.animated_gradient_linear
+import kreate.resources.generated.resources.animated_gradient_mesh
+import kreate.resources.generated.resources.animated_gradient_mesmerizing_lens
+import kreate.resources.generated.resources.animated_gradient_oil_flow
+import kreate.resources.generated.resources.animated_gradient_purple_liquid
+import kreate.resources.generated.resources.animated_gradient_stage
+import kreate.resources.generated.resources.word_random
+import org.jetbrains.compose.resources.StringResource
 
 enum class AnimatedGradient(
-    @field:StringRes override val androidTextId: Int
+    override val textId: StringResource
 ): TextView {
 
-    FluidThemeColorGradient( R.string.bg_colors_fluid_gradient_background_from_theme ),
+    FluidThemeColorGradient(Res.string.animated_gradient_fluid_system_theme),
 
-    FluidCoverColorGradient( R.string.bg_colors_fluid_gradient_background_from_cover ),
+    FluidCoverColorGradient(Res.string.animated_gradient_fluid_song_cover),
 
-    Linear( R.string.linear ),
+    Linear(Res.string.animated_gradient_linear),
 
-    Mesh( R.string.mesh ),
+    Mesh(Res.string.animated_gradient_mesh),
 
-    MesmerizingLens( R.string.mesmerizinglens ),
+    MesmerizingLens(Res.string.animated_gradient_mesmerizing_lens),
 
-    GlossyGradients( R.string.glossygradient ),
+    GlossyGradients(Res.string.animated_gradient_glossy),
 
-    GradientFlow( R.string.gradientflow ),
+    GradientFlow(Res.string.animated_gradient_flow),
 
-    PurpleLiquid( R.string.purpleliquid ),
+    PurpleLiquid(Res.string.animated_gradient_purple_liquid),
 
-    InkFlow( R.string.inkflow ),
+    InkFlow(Res.string.animated_gradient_ink_flow),
 
-    OilFlow( R.string.oilflow ),
+    OilFlow(Res.string.animated_gradient_oil_flow),
 
-    IceReflection( R.string.icereflection ),
+    IceReflection(Res.string.animated_gradient_ice_reflection),
 
-    Stage( R.string.stage ),
+    Stage(Res.string.animated_gradient_stage),
 
-    GoldenMagma( R.string.goldenmagma ),
+    GoldenMagma(Res.string.animated_gradient_golden_magma),
 
-    BlackCherryCosmos( R.string.blackcherrycosmos ),
+    BlackCherryCosmos(Res.string.animated_gradient_black_cherry_cosmo),
 
-    Random( R.string.random );
+    Random(Res.string.word_random);
 }

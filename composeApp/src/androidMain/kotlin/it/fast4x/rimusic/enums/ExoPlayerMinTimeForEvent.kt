@@ -1,7 +1,7 @@
 package it.fast4x.rimusic.enums
 
 import androidx.compose.runtime.Composable
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
 
 enum class ExoPlayerMinTimeForEvent(
     val asSeconds: Int

@@ -1,13 +1,15 @@
 package app.kreate.android.enums
 
-import androidx.annotation.StringRes
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.word_disabled
+import kreate.resources.generated.resources.word_icon
+import org.jetbrains.compose.resources.StringResource
 
 enum class PlatformIndicatorType(
-    @field:StringRes override val androidTextId: Int
+    override val textId: StringResource
 ): TextView {
 
-    ICON( R.string.word_icon ),
-    DISABLED( R.string.vt_disabled );
+    ICON(Res.string.word_icon),
+    DISABLED(Res.string.word_disabled);
 }

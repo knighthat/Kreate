@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Kész</string>
     <string name="hidesong">Biztosan el szeretné rejteni ezt a dalt? Törlésre kerül a lejátszási ideje, valamint a gyorsítótárból is eltűnik. Ez a művelet visszavonhatatlan.</string>
@@ -187,17 +187,12 @@
     <string name="play_button">Lejátszás gomb</string>
     <string name="close_app_with_back_button">App bezárás a vissza gombbal</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Amikor a kezdőlapról a vissza gombot használja</string>
-    <string name="audio_quality_format_high">Magas</string>
     <string name="audio_quality_format_medium">Közepes</string>
-    <string name="audio_quality_format_low">Alacsony</string>
     <string name="audio_quality_format_unknown">Ismeretlen</string>
     <string name="do_you_really_want_to_delete_download">Biztosan törölni szeretnéd a letöltést?</string>
     <string name="disable_scrolling_text">Szövegbeúsztatás letiltása</string>
     <string name="scrolling_text_is_used_for_long_texts">Úsztassa be a szöveget a képre, ha az túl hosszú</string>
     <string name="audio_quality_format">Hangminőség formátum</string>
-    <string name="by_most_played_song">Legtöbb lejátszás szerint</string>
-    <string name="by_last_played_song">Legutóbb játszott szerint</string>
-    <string name="audio_quality_automatic">Automatikus</string>
     <string name="statistics_songs_heard">lejátszott dalok</string>
     <string name="statistics_of_time_taken">az eltöltött időből</string>
     <string name="statistics_max_number_of_items">Maximális tételek száma</string>
@@ -291,8 +286,6 @@
     <string name="sort_duration">Időtartam</string>
     <string name="pause_between_songs">Szünet a dalok között</string>
     <string name="navigation_bar_type">Navigációs sáv típusa</string>
-    <string name="icon_and_text">Ikon és szöveg</string>
-    <string name="only_icon">Csak ikon</string>
     <string name="action_bar_show_menu_button">Menü gomb megjelenítése</string>
     <string name="sort_album">Album</string>
     <string name="show_total_time_of_queue">Mutassa a sorban állás teljes idejét</string>
@@ -313,15 +306,12 @@
     <string name="pick_from">Válassz innen</string>
     <string name="download_cover">Borító letöltése</string>
     <string name="menu_style">Menü stílus</string>
-    <string name="style_grid">Rács</string>
-    <string name="style_list">Lista</string>
     <string name="direction_bottom">Alulra</string>
     <string name="event_shake">Rázás</string>
     <string name="shake_to_change_song">Rázd meg dalváltáshoz</string>
     <string name="history">Előzmények</string>
     <string name="yesterday">Tegnap</string>
     <string name="last_week">Előző héten</string>
-    <string name="by_casual_played_song">Utoljára lejátszott dalok alapján</string>
     <string name="theme_material_you">Material You</string>
     <string name="show_statistics_in_navigation_bar">Statisztikák mutatása a navigációs sávon</string>
     <string name="settings">Beállítások</string>
@@ -416,12 +406,6 @@
     <string name="pinfo_album_and_artist_name">Album és előadó neve</string>
     <string name="show_player_top_actions_bar">A felső műveletsor megjelenítése</string>
     <string name="icon_like_button">Kedvelés gomb</string>
-    <string name="icon_like_apple">Apple</string>
-    <string name="icon_like_breaked">Törött</string>
-    <string name="icon_like_gift">Ajándék</string>
-    <string name="icon_like_shape">Alak</string>
-    <string name="icon_like_striped">Csíkos</string>
-    <string name="icon_like_brilliant">Ragyogó</string>
     <string name="player_swap_controls_with_timeline">Cserélje fel a vezérlőket az idővonallal</string>
     <string name="player_enable_lyrics_popup_message">A dalszöveg felugró üzenetének engedélyezése</string>
     <string name="exclude_songs_with_duration_limit">Tartalomkorlátozott dalok kizárása</string>
@@ -430,8 +414,6 @@
     <string name="enable_quick_picks_page">A Gyors választás oldal engedélyezése</string>
     <string name="parental_control">Szülői felügyelet</string>
     <string name="info_prevent_play_songs_with_age_limitation">Korhatáros dalok lejátszásának megakadályozása</string>
-    <string name="cache_location_private">Privát</string>
-    <string name="cache_location_system">Rendszer</string>
     <string name="debug">Hibakeresés</string>
     <string name="setting_entry_runtime_log">Runtime log</string>
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
@@ -578,7 +560,6 @@
     <string name="failed_to_remove_thumbnail">A miniatűr eltávolítása sikertelen</string>
     <string name="settings_enable_pip">Kép-a-képben engedélyezése</string>
     <string name="settings_enable_pip_auto">Automata kép-a-képben engedélyezése</string>
-    <string name="pipmodule_cover">Borító</string>
     <string name="settings_pip_module">Pip modul</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">Android 12-től automatikusan bekapcsolható a pip</string>
@@ -592,10 +573,6 @@
     <string name="original_lyrics">Eredeti dalszöveg</string>
     <string name="translated_lyrics">Fordított dalszöveg</string>
     <string name="press_once_again_to_exit">Nyomjon rá még egyszer a kilépéshez</string>
-    <string name="music_animations_bars">Sáv</string>
-    <string name="music_animations_crazy_bars">Őrült Sávok</string>
-    <string name="music_animations_crazy_points">Őrült Pontok</string>
-    <string name="music_animations_bubbles">Buborékok</string>
     <string name="now_playing_indicator">Jelenleg Játszott Indikátor</string>
     <string name="good_morning">Jó Reggelt</string>
     <string name="good_afternoon">Jó Napot</string>
@@ -609,9 +586,6 @@
     <string name="jump_previous_blank">Hagyja üresen vagy 0, hogy az Előző gomb mindig az előző dalt játssza le</string>
     <string name="delete_hidden_songs">Biztosan ki akarja törölni az összes rejtett dalt az adatbázisból? Ez a művelet nem visszafordítható.</string>
     <string name="delete_hidden_songs_message">Rejtett dalok törlése</string>
-    <string name="cover_type_vinyl">Bakelit</string>
-    <string name="cover_type_cd">CD</string>
-    <string name="cover_type_cd_with_cover">Borítós CD</string>
     <string name="wallpaper">Háttér</string>
     <string name="enable_wallpaper">Háttér engedélyezése</string>
     <string name="set_cover_thumbnail_as_wallpaper">Miniatűr borítókép használata háttérként</string>
@@ -742,13 +716,8 @@
     <string name="error_message_unsupported_local_playlist">Nem támogatott formátum</string>
     <string name="error_message_import_local_playlist_failed">Helyi lejátszási lista importálásakor fellépő hiba</string>
     <string name="dialog_title_color_picker">Szín választó</string>
-    <string name="setting_description_only_available_in_theme">Csak a %s témában elérhető</string>
     <string name="setting_description_app_language">Csak az app nyelvére van befolyással, a rendszerére nem</string>
     <string name="currently_selected">Jelenleg kiválasztva: %s</string>
-    <string name="setting_description_update_checker_ask">Értesítés, ha új verzió érhető el</string>
-    <string name="setting_description_update_checker_disabled">%s nem fogja értesíteni az új frissítésekről</string>
-    <string name="setting_description_update_checker_automatic">Automatically download \&amp; install new version when available</string>
-    <string name="setting_title_update_checker_automatic">Letöltés és telepítés automatikusan</string>
     <string name="setting_entry_update_checker">App frissítés</string>
     <string name="update_dialog_init_status">Előkészítés</string>
     <string name="update_dialog_downloading_status">Letöltés alatt</string>
@@ -778,7 +747,6 @@
     <string name="setting_description_delete_search_history">%s törlése</string>
     <string name="setting_entry_live_wallpaper">Élő háttér</string>
     <string name="setting_description_live_wallpaper">Használja a jelenleg játszott zene borítóját háttérként</string>
-    <string name="word_lockscreen">Záróképernyő</string>
     <string name="warning_only_available_on_android_and_above">Csak Android %1$s+ (%2$d) esetén elérhető</string>
     <string name="setting_entry_single_back_from_search">Egyszeri vissza</string>
     <string name="setting_description_single_back_from_search">Dupla keresés megelőzése az ikonra koppintáskor</string>
@@ -812,10 +780,6 @@
     <string name="setting_entry_sync_quotes">Sync \"%s\"</string>
     <string name="setting_entry_test_proxy">Test proxy</string>
     <string name="success_proxy_verified">Proxy is correctly configured</string>
-    <string name="cache_location_split">Split</string>
-    <string name="setting_description_cache_location_system">Store both cached and downloaded in the app\'s cache, which can be deleted by clearing the cache in settings</string>
-    <string name="setting_description_cache_location_private">Store both cached and downloaded songs in the app\'s private storage, which can only be deleted if the app\'s data is wiped</string>
-    <string name="setting_description_cache_location_split">Cached songs live in app\'s cache, and downloaded songs live in app\'s private storage</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_pitch_black">Pitch black</string>
@@ -865,15 +829,8 @@
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
     <string name="warning_end_of_list">End of list</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
-    <string name="doh_none">None</string>
-    <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (family)</string>
-    <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (secured)</string>
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
-    <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>

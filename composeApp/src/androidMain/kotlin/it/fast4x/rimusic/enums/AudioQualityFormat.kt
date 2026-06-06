@@ -1,16 +1,19 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.StringRes
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.audio_quality_automatic
+import kreate.resources.generated.resources.audio_quality_format_high
+import kreate.resources.generated.resources.audio_quality_format_low
+import org.jetbrains.compose.resources.StringResource
 
 enum class AudioQualityFormat(
-    @field:StringRes override val androidTextId: Int
+    override val textId: StringResource,
 ): TextView {
 
-    Auto( R.string.audio_quality_automatic ),
+    Auto(Res.string.audio_quality_automatic),
 
-    High( R.string.audio_quality_format_high ),
+    High(Res.string.audio_quality_format_high),
 
-    Low( R.string.audio_quality_format_low );
+    Low(Res.string.audio_quality_format_low);
 }

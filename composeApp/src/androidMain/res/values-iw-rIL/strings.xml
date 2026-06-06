@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">בוצע</string>
     <string name="hidesong">האם באמת תרצו להסתיר את השיר? זמן ההשמעה וזיכרון המטמון שלו ימחקו.\n הפעולה הזאת לא ניתנת לביטול.</string>
@@ -187,17 +187,12 @@
     <string name="play_button">לחצן ההפעלה</string>
     <string name="close_app_with_back_button">סגור את האפליקציה עם כפתור חזרה</string>
     <string name="when_you_use_the_back_button_from_the_home_page">כאשר אתה משתמש בכפתור החזרה מדף הבית</string>
-    <string name="audio_quality_format_high">גבוה</string>
     <string name="audio_quality_format_medium">בינוני</string>
-    <string name="audio_quality_format_low">נמוך</string>
     <string name="audio_quality_format_unknown">לא ידוע</string>
     <string name="do_you_really_want_to_delete_download">האם אתה באמת רוצה למחוק את ההורדה הזו?</string>
     <string name="disable_scrolling_text">השבת טקסט גלילה</string>
     <string name="scrolling_text_is_used_for_long_texts">טקסט גלילה משמש לטקסטים ארוכים</string>
     <string name="audio_quality_format">פורמט איכות שמע</string>
-    <string name="by_most_played_song">מאת שיר המושמע ביותר</string>
-    <string name="by_last_played_song">מאת שיר שהושמע לאחרונה</string>
-    <string name="audio_quality_automatic">אוטומטי</string>
     <string name="statistics_songs_heard">שירים שנשמעו</string>
     <string name="statistics_of_time_taken">של זמן שלקח</string>
     <string name="statistics_max_number_of_items">מספר פריטים מקסימלי</string>
@@ -291,8 +286,6 @@
     <string name="sort_duration">משך</string>
     <string name="pause_between_songs">הפסקה בין השירים</string>
     <string name="navigation_bar_type">סוג סרגל הניווט</string>
-    <string name="icon_and_text">אייקון וטקסט</string>
-    <string name="only_icon">סמל בלבד</string>
     <string name="action_bar_show_menu_button">הצג כפתור תפריט</string>
     <string name="sort_album">אלבום</string>
     <string name="show_total_time_of_queue">הצג את הזמן הכולל של התור</string>
@@ -313,15 +306,12 @@
     <string name="pick_from">לאסוף מ</string>
     <string name="download_cover">הורד עטיפה</string>
     <string name="menu_style">עיצוב תפריט</string>
-    <string name="style_grid">רשת</string>
-    <string name="style_list">רשימה</string>
     <string name="direction_bottom">Direction bottom</string>
     <string name="event_shake">לְנַעֵר</string>
     <string name="shake_to_change_song">לנער כדי לשנות שיר</string>
     <string name="history">היסטוריה</string>
     <string name="yesterday">אתמול</string>
     <string name="last_week">שבוע שעבר</string>
-    <string name="by_casual_played_song">By Casual played song</string>
     <string name="theme_material_you">חומר אתה</string>
     <string name="show_statistics_in_navigation_bar">הצג נתונים סטטיסטיים בסרגל הניווט</string>
     <string name="settings">הגדרות</string>
@@ -416,12 +406,6 @@
     <string name="pinfo_album_and_artist_name">אלבום ושם אמן</string>
     <string name="show_player_top_actions_bar">הצג את סרגל הפעולות העליון</string>
     <string name="icon_like_button">כפתור \"אהבתי\"</string>
-    <string name="icon_like_apple">תפוח</string>
-    <string name="icon_like_breaked">שבור</string>
-    <string name="icon_like_gift">מתנה</string>
-    <string name="icon_like_shape">צורה</string>
-    <string name="icon_like_striped">Striped</string>
-    <string name="icon_like_brilliant">מבריק</string>
     <string name="player_swap_controls_with_timeline">החלף פקדים עם ציר הזמן</string>
     <string name="player_enable_lyrics_popup_message">אפשר הודעה קופצת למילים</string>
     <string name="exclude_songs_with_duration_limit">אל תכלול שירים עם הגבלת זמן</string>
@@ -430,8 +414,6 @@
     <string name="enable_quick_picks_page">אפשר דף בחירות מהירות</string>
     <string name="parental_control">בקרת הורים</string>
     <string name="info_prevent_play_songs_with_age_limitation">מנע השמעת שירים עם הגבלת גיל</string>
-    <string name="cache_location_private">פרטי</string>
-    <string name="cache_location_system">מערכת</string>
     <string name="debug">ניפוי באגים</string>
     <string name="setting_entry_runtime_log">Runtime log</string>
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
@@ -578,7 +560,6 @@
     <string name="failed_to_remove_thumbnail">Failed to Remove Thumbnail</string>
     <string name="settings_enable_pip">Enable Picture in Picture</string>
     <string name="settings_enable_pip_auto">Enable Automatic Picture in Picture</string>
-    <string name="pipmodule_cover">כיסוי</string>
     <string name="settings_pip_module">Pip module</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">From Android 12 pip can be automatically enabled</string>
@@ -592,10 +573,6 @@
     <string name="original_lyrics">Original Lyrics</string>
     <string name="translated_lyrics">Translated Lyrics</string>
     <string name="press_once_again_to_exit">לחץ עוד פעם ליציאה</string>
-    <string name="music_animations_bars">Bars</string>
-    <string name="music_animations_crazy_bars">Crazy Bars</string>
-    <string name="music_animations_crazy_points">Crazy Points</string>
-    <string name="music_animations_bubbles">Bubbles</string>
     <string name="now_playing_indicator">Now Playing Indicator</string>
     <string name="good_morning">Good Morning</string>
     <string name="good_afternoon">Good Afternoon</string>
@@ -609,9 +586,6 @@
     <string name="jump_previous_blank">Leave it Blank or 0 for Previous Button to Always Play the Previous Song</string>
     <string name="delete_hidden_songs">אתה באמת רוצה למחוק את כל השירים המוסתרים ממסד הנתונים? פעולה זו אינה הפיכה.</string>
     <string name="delete_hidden_songs_message">מחק שירים מוסתרים</string>
-    <string name="cover_type_vinyl">Vinyl</string>
-    <string name="cover_type_cd">CD</string>
-    <string name="cover_type_cd_with_cover">CD with Cover</string>
     <string name="wallpaper">Wallpaper</string>
     <string name="enable_wallpaper">Enable wallpaper</string>
     <string name="set_cover_thumbnail_as_wallpaper">Set cover thumbnail as wallpaper</string>
@@ -742,13 +716,8 @@
     <string name="error_message_unsupported_local_playlist">Unsupported format</string>
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
-    <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
     <string name="setting_description_app_language">מוכל רק לשפת האפליקציה; שפת המערכת לא מושפעת</string>
     <string name="currently_selected">Currently selected: %s</string>
-    <string name="setting_description_update_checker_ask">Prompt when a new version is available to download</string>
-    <string name="setting_description_update_checker_disabled">%s לא תודיע לך על עדכונים חדשים</string>
-    <string name="setting_description_update_checker_automatic">הורד והתקן גרסא חדשה בהפעלה</string>
-    <string name="setting_title_update_checker_automatic">הורד והתקן באופן אוטומטי</string>
     <string name="setting_entry_update_checker">עדכוני אפליקציה</string>
     <string name="update_dialog_init_status">Initializing</string>
     <string name="update_dialog_downloading_status">מוריד</string>
@@ -778,7 +747,6 @@
     <string name="setting_description_delete_search_history">Delete %s</string>
     <string name="setting_entry_live_wallpaper">Live wallpaper</string>
     <string name="setting_description_live_wallpaper">Set your wallpaper to the thumbnail of the currently playing song</string>
-    <string name="word_lockscreen">Lockscreen</string>
     <string name="warning_only_available_on_android_and_above">Only available on Android %1$s+ (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Single back</string>
     <string name="setting_description_single_back_from_search">Prevent duplicate search pages when you click search icon</string>
@@ -812,10 +780,6 @@
     <string name="setting_entry_sync_quotes">Sync \"%s\"</string>
     <string name="setting_entry_test_proxy">Test proxy</string>
     <string name="success_proxy_verified">Proxy is correctly configured</string>
-    <string name="cache_location_split">Split</string>
-    <string name="setting_description_cache_location_system">Store both cached and downloaded in the app\'s cache, which can be deleted by clearing the cache in settings</string>
-    <string name="setting_description_cache_location_private">Store both cached and downloaded songs in the app\'s private storage, which can only be deleted if the app\'s data is wiped</string>
-    <string name="setting_description_cache_location_split">Cached songs live in app\'s cache, and downloaded songs live in app\'s private storage</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_pitch_black">Pitch black</string>
@@ -865,15 +829,8 @@
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
     <string name="warning_end_of_list">End of list</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
-    <string name="doh_none">None</string>
-    <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (family)</string>
-    <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (secured)</string>
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
-    <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>

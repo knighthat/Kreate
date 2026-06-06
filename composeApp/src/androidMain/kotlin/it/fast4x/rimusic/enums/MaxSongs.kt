@@ -1,9 +1,10 @@
 package it.fast4x.rimusic.enums
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.word_unlimited
+import org.jetbrains.compose.resources.stringResource
 
 enum class MaxSongs: TextView {
 
@@ -20,7 +21,7 @@ enum class MaxSongs: TextView {
     override val text: String
         @Composable
         get() = when( this ) {
-            Unlimited -> stringResource( R.string.unlimited)
+            Unlimited -> stringResource(Res.string.word_unlimited )
             else -> this.name
         }
 

@@ -51,6 +51,7 @@ import me.knighthat.component.export.ExportSettingsDialog
 import me.knighthat.component.import.ImportDatabase
 import me.knighthat.component.import.ImportSettings
 import me.knighthat.utils.Toaster
+import org.jetbrains.compose.resources.stringResource
 import org.koin.java.KoinJavaComponent.inject
 import kotlin.math.roundToInt
 

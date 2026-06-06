@@ -1,4 +1,4 @@
-package it.fast4x.rimusic.enums
+package app.kreate.constants
 
 import app.kreate.component.TextView
 import kreate.resources.generated.resources.Res
@@ -6,10 +6,11 @@ import kreate.resources.generated.resources.word_legacy
 import kreate.resources.generated.resources.word_modern
 import org.jetbrains.compose.resources.StringResource
 
-enum class MiniPlayerType(
-    override val textId: StringResource
-): TextView {
 
-    Essential(Res.string.word_legacy),
-    Modern(Res.string.word_modern);
+enum class Type(
+    override val textId: StringResource
+) : TextView {
+
+    LEGACY(Res.string.word_legacy),
+    MODERN(Res.string.word_modern)
 }

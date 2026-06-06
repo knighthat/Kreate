@@ -42,7 +42,10 @@ import it.fast4x.rimusic.enums.ThumbnailType
 import it.fast4x.rimusic.enums.UiType
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.setting_description_only_available_in_theme
 import me.knighthat.component.dialog.InputDialogConstraints
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
 
 
@@ -200,9 +203,9 @@ fun UiSettings( paddingValues: PaddingValues ) {
                 val subtitleId by remember { derivedStateOf {
                     // Use [Preferences] for observable state (because of [derivedStateOf])
                     if( Preferences.MAIN_THEME.value == UiType.ViMusic )
-                        R.string.setting_description_only_available_in_theme
+                        Res.string.setting_description_only_available_in_theme
                     else
-                        Preferences.NAVIGATION_BAR_POSITION.value.androidTextId
+                        Preferences.NAVIGATION_BAR_POSITION.value.textId
                 }}
 
                 SettingComponents.EnumEntry(

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Зроблено</string>
     <string name="hidesong">Ви дійсно хочете приховати цю пісню? Час її відтворення та кеш буде витерто. Ця дія є незворотною.</string>
@@ -187,17 +187,12 @@
     <string name="play_button">Кнопка відтворення</string>
     <string name="close_app_with_back_button">Закрийте програму за допомогою кнопки Назад</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Коли ви використовуєте кнопку Назад з домашньої сторінки</string>
-    <string name="audio_quality_format_high">Висока</string>
     <string name="audio_quality_format_medium">Середні</string>
-    <string name="audio_quality_format_low">Низько</string>
     <string name="audio_quality_format_unknown">Невідомо</string>
     <string name="do_you_really_want_to_delete_download">Ви дійсно хочете видалити завантаження?</string>
     <string name="disable_scrolling_text">Вимкнути прокрутку тексту</string>
     <string name="scrolling_text_is_used_for_long_texts">Прокрутка тексту використовується для довгих текстів</string>
     <string name="audio_quality_format">Якість звуку Формат</string>
-    <string name="by_most_played_song">За найпопулярнішою піснею</string>
-    <string name="by_last_played_song">За останньою відтвореною піснею</string>
-    <string name="audio_quality_automatic">Автоматично</string>
     <string name="statistics_songs_heard">пісні чути</string>
     <string name="statistics_of_time_taken">витраченого часу</string>
     <string name="statistics_max_number_of_items">Максимальна кількість позицій</string>
@@ -291,8 +286,6 @@
     <string name="sort_duration">Тривалість</string>
     <string name="pause_between_songs">Пауза між треками</string>
     <string name="navigation_bar_type">Тип панелі навігації</string>
-    <string name="icon_and_text">Іконка та текст</string>
-    <string name="only_icon">Тільки іконка</string>
     <string name="action_bar_show_menu_button">Показати кнопку меню</string>
     <string name="sort_album">Альбом</string>
     <string name="show_total_time_of_queue">Показати загальний час черги</string>
@@ -313,15 +306,12 @@
     <string name="pick_from">Вибрати із</string>
     <string name="download_cover">Завантажити обкладинку</string>
     <string name="menu_style">Стиль меню</string>
-    <string name="style_grid">Сітка</string>
-    <string name="style_list">Список</string>
     <string name="direction_bottom">Direction bottom</string>
     <string name="event_shake">Потрясти</string>
     <string name="shake_to_change_song">Потрусити, щоб змінити пісню</string>
     <string name="history">Історія</string>
     <string name="yesterday">Вчора</string>
     <string name="last_week">Минулого тижня</string>
-    <string name="by_casual_played_song">За іноді відтвореною піснею</string>
     <string name="theme_material_you">Material You</string>
     <string name="show_statistics_in_navigation_bar">Показувати статистику в панелі навігації</string>
     <string name="settings">Налаштування</string>
@@ -416,12 +406,6 @@
     <string name="pinfo_album_and_artist_name">Альбом та ім\'я виконавця</string>
     <string name="show_player_top_actions_bar">Показувати верхню панель дій</string>
     <string name="icon_like_button">Кнопка \"Мені подобається\"</string>
-    <string name="icon_like_apple">Яблуко</string>
-    <string name="icon_like_breaked">Зламана</string>
-    <string name="icon_like_gift">Подарунок</string>
-    <string name="icon_like_shape">Форма</string>
-    <string name="icon_like_striped">Смугастий</string>
-    <string name="icon_like_brilliant">Діамант</string>
     <string name="player_swap_controls_with_timeline">Поміняти місцями елементи керування з таймлайном</string>
     <string name="player_enable_lyrics_popup_message">Увімкнути повідомлення з текстами, що спливає</string>
     <string name="exclude_songs_with_duration_limit">Виключити пісні з обмеженням тривалості</string>
@@ -430,8 +414,6 @@
     <string name="enable_quick_picks_page">Увімкнути сторінку швидкого вибору</string>
     <string name="parental_control">Батьківський контроль</string>
     <string name="info_prevent_play_songs_with_age_limitation">Запобігти відтворення пісень з обмеженням віку</string>
-    <string name="cache_location_private">Приватний</string>
-    <string name="cache_location_system">Система</string>
     <string name="debug">НАЛАГОДЖЕННЯ</string>
     <string name="setting_entry_runtime_log">Runtime log</string>
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
@@ -578,7 +560,6 @@
     <string name="failed_to_remove_thumbnail">Не вдалося видалити мініатюру</string>
     <string name="settings_enable_pip">Увімкнути \"Картинку в картинці\"</string>
     <string name="settings_enable_pip_auto">Увімкнути автоматично \"Картинка в картинці\"</string>
-    <string name="pipmodule_cover">Обкладинка</string>
     <string name="settings_pip_module">Модуль Pip</string>
     <string name="menu_go_to_picture_in_picture">Картинка в картинці</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">З Android 12 pip можна увімкнути автоматично</string>
@@ -592,10 +573,6 @@
     <string name="original_lyrics">Оригінальний текст</string>
     <string name="translated_lyrics">Переклад тексту</string>
     <string name="press_once_again_to_exit">Натисніть ще раз, щоб вийти</string>
-    <string name="music_animations_bars">Bars</string>
-    <string name="music_animations_crazy_bars">Crazy Bars</string>
-    <string name="music_animations_crazy_points">Crazy Points</string>
-    <string name="music_animations_bubbles">Спливаючі чати</string>
     <string name="now_playing_indicator">Індикатор відтворення</string>
     <string name="good_morning">Доброго ранку</string>
     <string name="good_afternoon">Добрий день</string>
@@ -609,9 +586,6 @@
     <string name="jump_previous_blank">Залишіть поле порожнім або 0 для кнопки \"Назад\", щоб завжди відтворювати попередню пісню</string>
     <string name="delete_hidden_songs">Ви дійсно хочете видалити всі приховані пісні з бази даних? Ця дія необоротна.</string>
     <string name="delete_hidden_songs_message">Видалити приховані пісні</string>
-    <string name="cover_type_vinyl">Вініл</string>
-    <string name="cover_type_cd">Компакт-диск</string>
-    <string name="cover_type_cd_with_cover">Компакт-диск із обкладинкою</string>
     <string name="wallpaper">Шпалери</string>
     <string name="enable_wallpaper">Включити шпалери</string>
     <string name="set_cover_thumbnail_as_wallpaper">Встановити мініатюру обкладинки як шпалери</string>
@@ -742,13 +716,8 @@
     <string name="error_message_unsupported_local_playlist">Формат не підтримується</string>
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
-    <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
     <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
     <string name="currently_selected">Currently selected: %s</string>
-    <string name="setting_description_update_checker_ask">Prompt when a new version is available to download</string>
-    <string name="setting_description_update_checker_disabled">%s will not notify you about new updates</string>
-    <string name="setting_description_update_checker_automatic">Automatically download \&amp; install new version when available</string>
-    <string name="setting_title_update_checker_automatic">Download and install automatically</string>
     <string name="setting_entry_update_checker">Оновити застосунок</string>
     <string name="update_dialog_init_status">Ініціалізується</string>
     <string name="update_dialog_downloading_status">Завантажується</string>
@@ -778,7 +747,6 @@
     <string name="setting_description_delete_search_history">Видалити %s</string>
     <string name="setting_entry_live_wallpaper">Live wallpaper</string>
     <string name="setting_description_live_wallpaper">Set your wallpaper to the thumbnail of the currently playing song</string>
-    <string name="word_lockscreen">Lockscreen</string>
     <string name="warning_only_available_on_android_and_above">Only available on Android %1$s+ (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Single back</string>
     <string name="setting_description_single_back_from_search">Prevent duplicate search pages when you click search icon</string>
@@ -812,10 +780,6 @@
     <string name="setting_entry_sync_quotes">Sync \"%s\"</string>
     <string name="setting_entry_test_proxy">Test proxy</string>
     <string name="success_proxy_verified">Proxy is correctly configured</string>
-    <string name="cache_location_split">Split</string>
-    <string name="setting_description_cache_location_system">Store both cached and downloaded in the app\'s cache, which can be deleted by clearing the cache in settings</string>
-    <string name="setting_description_cache_location_private">Store both cached and downloaded songs in the app\'s private storage, which can only be deleted if the app\'s data is wiped</string>
-    <string name="setting_description_cache_location_split">Cached songs live in app\'s cache, and downloaded songs live in app\'s private storage</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_pitch_black">Pitch black</string>
@@ -865,15 +829,8 @@
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
     <string name="warning_end_of_list">End of list</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
-    <string name="doh_none">None</string>
-    <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (family)</string>
-    <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (secured)</string>
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
-    <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>

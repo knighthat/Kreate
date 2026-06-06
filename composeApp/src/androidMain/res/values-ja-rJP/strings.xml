@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">完了</string>
     <string name="hidesong">この曲を非表示にしますか？再生時間とキャッシュは消去されます。\nこの操作は元に戻せません。</string>
@@ -187,17 +187,12 @@
     <string name="play_button">再生ボタン</string>
     <string name="close_app_with_back_button">戻るボタンでアプリを閉じる</string>
     <string name="when_you_use_the_back_button_from_the_home_page">ホームページから戻るボタンを使用する場合</string>
-    <string name="audio_quality_format_high">高</string>
     <string name="audio_quality_format_medium">中</string>
-    <string name="audio_quality_format_low">低</string>
     <string name="audio_quality_format_unknown">不明</string>
     <string name="do_you_really_want_to_delete_download">本当にダウンロードを削除しますか？</string>
     <string name="disable_scrolling_text">テキストスクロールを無効化</string>
     <string name="scrolling_text_is_used_for_long_texts">長いテキストがスクロールされます</string>
     <string name="audio_quality_format">音質</string>
-    <string name="by_most_played_song">最も再生された曲</string>
-    <string name="by_last_played_song">最後に再生した曲</string>
-    <string name="audio_quality_automatic">自動</string>
     <string name="statistics_songs_heard">曲聴きました</string>
     <string name="statistics_of_time_taken">経過</string>
     <string name="statistics_max_number_of_items">アイテムの最大数</string>
@@ -291,8 +286,6 @@
     <string name="sort_duration">長さ</string>
     <string name="pause_between_songs">曲間で一時停止</string>
     <string name="navigation_bar_type">ナビゲーションバーの種類</string>
-    <string name="icon_and_text">アイコンとテキスト</string>
-    <string name="only_icon">アイコンのみ</string>
     <string name="action_bar_show_menu_button">メニューボタンを表示</string>
     <string name="sort_album">アルバム</string>
     <string name="show_total_time_of_queue">キューの合計時間を表示</string>
@@ -313,15 +306,12 @@
     <string name="pick_from">次から選択</string>
     <string name="download_cover">カバー画像のダウンロード</string>
     <string name="menu_style">メニュースタイル</string>
-    <string name="style_grid">グリッド</string>
-    <string name="style_list">リスト</string>
     <string name="direction_bottom">Direction bottom</string>
     <string name="event_shake">振る</string>
     <string name="shake_to_change_song">端末を振って曲を変える</string>
     <string name="history">履歴</string>
     <string name="yesterday">昨日</string>
     <string name="last_week">先週</string>
-    <string name="by_casual_played_song">再生した曲からランダムに</string>
     <string name="theme_material_you">Material You</string>
     <string name="show_statistics_in_navigation_bar">ナビゲーションバーに統計情報を表示</string>
     <string name="settings">設定</string>
@@ -416,12 +406,6 @@
     <string name="pinfo_album_and_artist_name">アルバムとアーティスト名</string>
     <string name="show_player_top_actions_bar">上部の操作バーを表示</string>
     <string name="icon_like_button">いいねボタン</string>
-    <string name="icon_like_apple">Apple</string>
-    <string name="icon_like_breaked">Breaked</string>
-    <string name="icon_like_gift">ギフト</string>
-    <string name="icon_like_shape">Shape</string>
-    <string name="icon_like_striped">Striped</string>
-    <string name="icon_like_brilliant">Brilliant</string>
     <string name="player_swap_controls_with_timeline">タイムラインとコントロールを入れ替え</string>
     <string name="player_enable_lyrics_popup_message">歌詞のポップアップを有効にする</string>
     <string name="exclude_songs_with_duration_limit">時間制限のある曲を除外</string>
@@ -430,8 +414,6 @@
     <string name="enable_quick_picks_page">おすすめページを使用</string>
     <string name="parental_control">保護者による管理</string>
     <string name="info_prevent_play_songs_with_age_limitation">年齢制限のある曲を再生しない</string>
-    <string name="cache_location_private">プライベート</string>
-    <string name="cache_location_system">システム</string>
     <string name="debug">デバッグ</string>
     <string name="setting_entry_runtime_log">Runtime log</string>
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
@@ -578,7 +560,6 @@
     <string name="failed_to_remove_thumbnail">サムネイルの削除に失敗しました</string>
     <string name="settings_enable_pip">Picture in Pictureを有効にする</string>
     <string name="settings_enable_pip_auto">自動Picture in Pictureを有効にする</string>
-    <string name="pipmodule_cover">カバー</string>
     <string name="settings_pip_module">Pip モジュール</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">Android 12からpipは自動的に有効になります</string>
@@ -592,10 +573,6 @@
     <string name="original_lyrics">オリジナルの歌詞</string>
     <string name="translated_lyrics">翻訳された歌詞</string>
     <string name="press_once_again_to_exit">もう一度押して終了</string>
-    <string name="music_animations_bars">バー</string>
-    <string name="music_animations_crazy_bars">クレイジーバー</string>
-    <string name="music_animations_crazy_points">クレイジーポイント</string>
-    <string name="music_animations_bubbles">バブル</string>
     <string name="now_playing_indicator">再生中のインジケーター</string>
     <string name="good_morning">おはようございます</string>
     <string name="good_afternoon">こんにちは</string>
@@ -609,9 +586,6 @@
     <string name="jump_previous_blank">前の曲に戻るボタンで常に前の曲に戻りたい場合は空白のままにするか、0を入力してください</string>
     <string name="delete_hidden_songs">本当にデータベースから非表示の曲を全て削除しますか？この操作は取り消しできません。</string>
     <string name="delete_hidden_songs_message">非表示の曲を削除</string>
-    <string name="cover_type_vinyl">レコード</string>
-    <string name="cover_type_cd">CD</string>
-    <string name="cover_type_cd_with_cover">カバー付きのCD</string>
     <string name="wallpaper">壁紙</string>
     <string name="enable_wallpaper">壁紙を有効にする</string>
     <string name="set_cover_thumbnail_as_wallpaper">カバーサムネイルを壁紙に設定</string>
@@ -742,13 +716,8 @@
     <string name="error_message_unsupported_local_playlist">Unsupported format</string>
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
-    <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
     <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
     <string name="currently_selected">Currently selected: %s</string>
-    <string name="setting_description_update_checker_ask">Prompt when a new version is available to download</string>
-    <string name="setting_description_update_checker_disabled">%s will not notify you about new updates</string>
-    <string name="setting_description_update_checker_automatic">Automatically download \&amp; install new version when available</string>
-    <string name="setting_title_update_checker_automatic">Download and install automatically</string>
     <string name="setting_entry_update_checker">App update</string>
     <string name="update_dialog_init_status">Initializing</string>
     <string name="update_dialog_downloading_status">Downloading</string>
@@ -778,7 +747,6 @@
     <string name="setting_description_delete_search_history">Delete %s</string>
     <string name="setting_entry_live_wallpaper">Live wallpaper</string>
     <string name="setting_description_live_wallpaper">Set your wallpaper to the thumbnail of the currently playing song</string>
-    <string name="word_lockscreen">Lockscreen</string>
     <string name="warning_only_available_on_android_and_above">Only available on Android %1$s+ (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Single back</string>
     <string name="setting_description_single_back_from_search">Prevent duplicate search pages when you click search icon</string>
@@ -812,10 +780,6 @@
     <string name="setting_entry_sync_quotes">Sync \"%s\"</string>
     <string name="setting_entry_test_proxy">Test proxy</string>
     <string name="success_proxy_verified">Proxy is correctly configured</string>
-    <string name="cache_location_split">Split</string>
-    <string name="setting_description_cache_location_system">Store both cached and downloaded in the app\'s cache, which can be deleted by clearing the cache in settings</string>
-    <string name="setting_description_cache_location_private">Store both cached and downloaded songs in the app\'s private storage, which can only be deleted if the app\'s data is wiped</string>
-    <string name="setting_description_cache_location_split">Cached songs live in app\'s cache, and downloaded songs live in app\'s private storage</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_pitch_black">Pitch black</string>
@@ -865,15 +829,8 @@
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
     <string name="warning_end_of_list">End of list</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
-    <string name="doh_none">None</string>
-    <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (family)</string>
-    <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (secured)</string>
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
-    <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>

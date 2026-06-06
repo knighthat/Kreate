@@ -1,13 +1,15 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.StringRes
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.menu_style_grid
+import kreate.resources.generated.resources.menu_style_list
+import org.jetbrains.compose.resources.StringResource
 
 enum class MenuStyle(
-    @field:StringRes override val androidTextId: Int
+    override val textId: StringResource
 ): TextView {
 
-    List( R.string.style_list ),
-    Grid( R.string.style_grid );
+    List(Res.string.menu_style_list),
+    Grid(Res.string.menu_style_grid);
 }

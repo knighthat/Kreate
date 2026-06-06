@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Fait</string>
     <string name="hidesong">Voulez-vous vraiment masquer ce titre ? Son temps de lecture et son cache seront effacés. Cette action est irréversible.</string>
@@ -187,17 +187,12 @@
     <string name="play_button">Habillage du bouton lecture</string>
     <string name="close_app_with_back_button">Fermer l\'application avec le bouton Retour</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Lorsque vous utilisez le bouton Retour de la page d\'accueil</string>
-    <string name="audio_quality_format_high">Élevée</string>
     <string name="audio_quality_format_medium">Moyenne</string>
-    <string name="audio_quality_format_low">Basse</string>
     <string name="audio_quality_format_unknown">Inconnue</string>
     <string name="do_you_really_want_to_delete_download">Voulez-vous vraiment supprimer le téléchargement ?</string>
     <string name="disable_scrolling_text">Désactiver le défilement du texte</string>
     <string name="scrolling_text_is_used_for_long_texts">Le défilement du texte est utilisé pour les longs textes</string>
     <string name="audio_quality_format">Qualité audio</string>
-    <string name="by_most_played_song">Par les titres les plus joués</string>
-    <string name="by_last_played_song">Par les titres joués dernièrement</string>
-    <string name="audio_quality_automatic">Automatique</string>
     <string name="statistics_songs_heard">titres écoutés</string>
     <string name="statistics_of_time_taken">du temps écoulé</string>
     <string name="statistics_max_number_of_items">Nombre maximum d\'éléments</string>
@@ -291,8 +286,6 @@
     <string name="sort_duration">Durée</string>
     <string name="pause_between_songs">Mettre en pause entre les titres</string>
     <string name="navigation_bar_type">Type de barre de navigation</string>
-    <string name="icon_and_text">Texte et icône</string>
-    <string name="only_icon">Icône uniquement</string>
     <string name="action_bar_show_menu_button">Afficher le bouton menu</string>
     <string name="sort_album">Album</string>
     <string name="show_total_time_of_queue">Afficher la durée totale de la file d\'attente</string>
@@ -313,15 +306,12 @@
     <string name="pick_from">Choisir parmi</string>
     <string name="download_cover">Télécharger la pochette d\'album</string>
     <string name="menu_style">Style du menu</string>
-    <string name="style_grid">Grille</string>
-    <string name="style_list">Liste</string>
     <string name="direction_bottom">En bas</string>
     <string name="event_shake">Secouer</string>
     <string name="shake_to_change_song">Secouer pour changer de titre</string>
     <string name="history">Historique</string>
     <string name="yesterday">Hier</string>
     <string name="last_week">Semaine dernière</string>
-    <string name="by_casual_played_song">En mode aléatoire</string>
     <string name="theme_material_you">Material You</string>
     <string name="show_statistics_in_navigation_bar">Afficher les statistiques dans la barre de navigation.
  
@@ -418,12 +408,6 @@
     <string name="pinfo_album_and_artist_name">Album et nom de l\'artiste</string>
     <string name="show_player_top_actions_bar">Afficher la barre d\'action supérieure</string>
     <string name="icon_like_button">Bouton J\'aime</string>
-    <string name="icon_like_apple">Pomme</string>
-    <string name="icon_like_breaked">Brisé</string>
-    <string name="icon_like_gift">Cadeau</string>
-    <string name="icon_like_shape">Forme</string>
-    <string name="icon_like_striped">Rayé</string>
-    <string name="icon_like_brilliant">Brillant</string>
     <string name="player_swap_controls_with_timeline">Échanger les contrôles avec la barre de progression</string>
     <string name="player_enable_lyrics_popup_message">Activer les messages des paroles</string>
     <string name="exclude_songs_with_duration_limit">Exclure les titres avec une limite de durée</string>
@@ -432,8 +416,6 @@
     <string name="enable_quick_picks_page">Activer la page de Sélection Rapide</string>
     <string name="parental_control">Contrôle parental</string>
     <string name="info_prevent_play_songs_with_age_limitation">Empêcher la lecture de titres avec une limite d\'âge</string>
-    <string name="cache_location_private">Privé</string>
-    <string name="cache_location_system">Système</string>
     <string name="debug">DÉBOGAGE</string>
     <string name="setting_entry_runtime_log">Journal d\'exécution</string>
     <string name="setting_description_runtime_log">Enregistrement de tout ce qui se passe dans %s</string>
@@ -581,7 +563,6 @@ Volume BAS : titre précédent</string>
     <string name="failed_to_remove_thumbnail">Échec de la suppression de la miniature</string>
     <string name="settings_enable_pip">Activer Picture in Picture</string>
     <string name="settings_enable_pip_auto">Activer Picture in Picture automatiquement</string>
-    <string name="pipmodule_cover">Pochette</string>
     <string name="settings_pip_module">Module Picture in Picture </string>
     <string name="menu_go_to_picture_in_picture">Picture in Picture</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">À partir d\'Android 12, Picture in Picture peut être activé automatiquement</string>
@@ -595,10 +576,6 @@ Volume BAS : titre précédent</string>
     <string name="original_lyrics">Paroles originales</string>
     <string name="translated_lyrics">Paroles traduites</string>
     <string name="press_once_again_to_exit">Appuyer à nouveau pour quitter</string>
-    <string name="music_animations_bars">Barres</string>
-    <string name="music_animations_crazy_bars">Barres Folles</string>
-    <string name="music_animations_crazy_points">Points Fous</string>
-    <string name="music_animations_bubbles">Bulles</string>
     <string name="now_playing_indicator">Indicateur de lecture en cours</string>
     <string name="good_morning">Bonjour</string>
     <string name="good_afternoon">Bonjour</string>
@@ -612,9 +589,6 @@ Volume BAS : titre précédent</string>
     <string name="jump_previous_blank">Laissez-le vide ou à 0 pour que le bouton Précédent lise toujours le titre précédent</string>
     <string name="delete_hidden_songs">Voulez-vous vraiment supprimer tous les titres cachés de la base de données ? Cette action est irréversible.</string>
     <string name="delete_hidden_songs_message">Supprimer les titres cachés</string>
-    <string name="cover_type_vinyl">Vinyle</string>
-    <string name="cover_type_cd">CD</string>
-    <string name="cover_type_cd_with_cover">CD avec pochette</string>
     <string name="wallpaper">Fond d\'écran</string>
     <string name="enable_wallpaper">Activer le fond d\'écran</string>
     <string name="set_cover_thumbnail_as_wallpaper">Définir la pochette comme fond d\'écran</string>
@@ -745,13 +719,8 @@ Volume BAS : titre précédent</string>
     <string name="error_message_unsupported_local_playlist">Format non supporté</string>
     <string name="error_message_import_local_playlist_failed">Une erreur s\'est produite pendant l\'importation de la playlist locale</string>
     <string name="dialog_title_color_picker">Pipette couleurs</string>
-    <string name="setting_description_only_available_in_theme">Disponible uniquement dans le thème %s</string>
     <string name="setting_description_app_language">S\'applique uniquement à la langue de l\'application ; La langue du système n\'est pas affectée</string>
     <string name="currently_selected">Actuellement sélectionné : %s</string>
-    <string name="setting_description_update_checker_ask">Demander quand une nouvelle version est disponible au téléchargement</string>
-    <string name="setting_description_update_checker_disabled">%s ne vous informera pas des nouvelles mises à jour</string>
-    <string name="setting_description_update_checker_automatic">Télécharger et installer automatiquement la nouvelle version au démarrage</string>
-    <string name="setting_title_update_checker_automatic">Télécharger et installer automatiquement</string>
     <string name="setting_entry_update_checker">Mise à jour de l\'application</string>
     <string name="update_dialog_init_status">Initialisation en cours</string>
     <string name="update_dialog_downloading_status">Téléchargement en cours</string>
@@ -781,7 +750,6 @@ Volume BAS : titre précédent</string>
     <string name="setting_description_delete_search_history">Supprimer %s</string>
     <string name="setting_entry_live_wallpaper">Fond d\'écran animé</string>
     <string name="setting_description_live_wallpaper">Définissez votre fond d\'écran avec la pochette du titre en cours de lecture</string>
-    <string name="word_lockscreen">Écran de verrouillage</string>
     <string name="warning_only_available_on_android_and_above">Disponible uniquement sur Android %1$s+ (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Retour unique</string>
     <string name="setting_description_single_back_from_search">Empêcher les pages de recherche en double lorsque vous cliquez sur l\'icône de recherche</string>
@@ -815,10 +783,6 @@ Volume BAS : titre précédent</string>
     <string name="setting_entry_sync_quotes">Synchroniser « %s »</string>
     <string name="setting_entry_test_proxy">Proxy de test</string>
     <string name="success_proxy_verified">Le proxy est correctement configuré</string>
-    <string name="cache_location_split">Diviser</string>
-    <string name="setting_description_cache_location_system">Stockez à la fois les données mises en cache et téléchargées dans le cache de l\'application, qui peut être supprimé en effaçant le cache dans les paramètres</string>
-    <string name="setting_description_cache_location_private">Stockez les titres en cache et téléchargés dans le stockage privé de l\'application, qui ne peut être supprimé que si les données de l\'application sont effacées</string>
-    <string name="setting_description_cache_location_split">Les titres mis en cache vivent dans le cache de l\'application et les titres téléchargés vivent dans le stockage privé de l\'application</string>
     <string name="theme_light">Clair</string>
     <string name="theme_dark">Sombre</string>
     <string name="theme_pitch_black">Noir Absolu</string>
@@ -868,15 +832,8 @@ Volume BAS : titre précédent</string>
     <string name="setting_entry_thumbnail_size">Taille des vignettes</string>
     <string name="warning_end_of_list">Fin de la liste</string>
     <string name="setting_header_dns_over_https">DNS sur HTTPS</string>
-    <string name="doh_none">Aucun</string>
-    <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (famille)</string>
-    <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (sécurisé)</string>
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (publicités &amp; traqueurs)</string>
-    <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (famille)</string>
     <string name="setting_entry_select_dns_over_https_server">Sélectionner le serveur DoH</string>
     <string name="error_required_report">Une erreur s\'est produite ! Veuillez envoyer un rapport accompagné des journaux.</string>
     <string name="error_failed_to_verify_proxy">Échec de la vérification du proxy</string>

@@ -1,22 +1,35 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.roundness_sharp
+import kreate.resources.generated.resources.roundness_soft
+import kreate.resources.generated.resources.roundness_squircle
+import kreate.resources.generated.resources.roundness_subtle
+import org.jetbrains.compose.resources.StringResource
 
 enum class ThumbnailRoundness(
-    val shape: Shape,
-    @field:StringRes override val androidTextId: Int
+    val size: Int,
+    override val textId: StringResource
 ): TextView {
 
-    None( RoundedCornerShape(0.dp), R.string.none ),
+    None(0, Res.string.roundness_sharp),
 
-    Light( RoundedCornerShape(8.dp), R.string.light ),
+    Light(8, Res.string.roundness_subtle),
 
-    Medium( RoundedCornerShape(12.dp), R.string.medium ),
+    Medium(12, Res.string.roundness_soft),
 
-    Heavy( RoundedCornerShape(16.dp), R.string.heavy );
+    Heavy(16, Res.string.roundness_squircle);
+
+    val shape: Shape
+        get() = when( this ) {
+            None    -> RectangleShape
+            Light   -> RoundedCornerShape(size.dp)
+            Medium  -> RoundedCornerShape(size.dp)
+            Heavy   -> RoundedCornerShape(size.dp)
+        }
 }
