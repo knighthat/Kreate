@@ -9,12 +9,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import app.kreate.android.service.player.StatefulPlayer
+import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.ui.components.MusicAnimation
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.onOverlay
-import it.fast4x.rimusic.colorPalette
 
 @OptIn(UnstableApi::class)
 @Composable

@@ -53,11 +53,14 @@ kotlin {
             implementation( libs.compose.kmp.runtime )
             implementation( libs.compose.kmp.ui )
             implementation( libs.compose.kmp.resources )
+            implementation( libs.compose.kmp.foundation )
         }
         commonTest.dependencies {
             implementation( libs.kotlin.test )
         }
         androidMain.dependencies {
+            // Expose some Palette interface
+            api( libs.androidx.palette )
             implementation( libs.androidx.core.ktx )
         }
         getByName("androidDeviceTest"). dependencies {
@@ -65,6 +68,10 @@ kotlin {
             implementation( libs.androidx.runner )
             implementation( libs.androidx.test )
         }
+    }
+
+    compilerOptions {
+        freeCompilerArgs.add( "-Xexpect-actual-classes" )
     }
 }
 
