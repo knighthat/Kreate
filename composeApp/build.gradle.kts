@@ -111,6 +111,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation( projects.resources )
+            implementation( projects.preferences )
 
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)

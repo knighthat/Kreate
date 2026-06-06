@@ -30,6 +30,8 @@ include(":discord")
 project(":discord").projectDir = file("extensions/discord")
 include(":resources")
 project(":resources").projectDir = file("extensions/resources")
+include(":preferences")
+project(":preferences").projectDir = file("extensions/preferences")
 // Submodules
 include(":innertube")
 project(":innertube").projectDir = file("modules/innertube")
