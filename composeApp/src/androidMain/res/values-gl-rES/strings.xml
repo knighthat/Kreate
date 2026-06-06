@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Feito</string>
     <string name="hidesong">Realmente queres agochar esta canción? O tempo de reprodución e a caché serán borrados. Esta acción é irreversible.</string>
@@ -187,17 +187,12 @@
     <string name="play_button">Reproducir</string>
     <string name="close_app_with_back_button">Pechar a aplicación co botón Atrás</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Cando usa o botón Atrás da páxina de inicio</string>
-    <string name="audio_quality_format_high">Alto</string>
     <string name="audio_quality_format_medium">Medio</string>
-    <string name="audio_quality_format_low">Baixo</string>
     <string name="audio_quality_format_unknown">Descoñecido</string>
     <string name="do_you_really_want_to_delete_download">Realmente queres eliminar a descarga?</string>
     <string name="disable_scrolling_text">Desactiva o desprazamento do texto</string>
     <string name="scrolling_text_is_used_for_long_texts">O de desprazamento de texto úsase para textos longos</string>
     <string name="audio_quality_format">Formato de calidade de audio</string>
-    <string name="by_most_played_song">Por Canción máis reproducida</string>
-    <string name="by_last_played_song">Por Última canción reproducida</string>
-    <string name="audio_quality_automatic">Automático</string>
     <string name="statistics_songs_heard">cancións escoitadas</string>
     <string name="statistics_of_time_taken">do tempo empregado</string>
     <string name="statistics_max_number_of_items">Número máximo de elementos</string>
@@ -291,8 +286,6 @@
     <string name="sort_duration">Duración</string>
     <string name="pause_between_songs">Pausa entre cancións</string>
     <string name="navigation_bar_type">Tipo de barra de navegación</string>
-    <string name="icon_and_text">Icona e texto</string>
-    <string name="only_icon">Só icona</string>
     <string name="action_bar_show_menu_button">Amosar botón de menú</string>
     <string name="sort_album">Álbum</string>
     <string name="show_total_time_of_queue">Amosar o tempo total da cola</string>
@@ -313,15 +306,12 @@
     <string name="pick_from">Escolle de</string>
     <string name="download_cover">Descargar portada</string>
     <string name="menu_style">Estilo do menú</string>
-    <string name="style_grid">Reixa</string>
-    <string name="style_list">Listaxe</string>
     <string name="direction_bottom">Inferior</string>
     <string name="event_shake">Axitar</string>
     <string name="shake_to_change_song">Axita para trocar de canción</string>
     <string name="history">Historial</string>
     <string name="yesterday">Onte</string>
     <string name="last_week">A semana pasada</string>
-    <string name="by_casual_played_song">Por cancións reproducidas de forma casual</string>
     <string name="theme_material_you">Material You</string>
     <string name="show_statistics_in_navigation_bar">Amosar estatísticas na barra de navegación</string>
     <string name="settings">Axustes</string>
@@ -416,12 +406,6 @@
     <string name="pinfo_album_and_artist_name">Álbum e nome do artista</string>
     <string name="show_player_top_actions_bar">Amosar a barra de accións superiores</string>
     <string name="icon_like_button">Botón Gústame</string>
-    <string name="icon_like_apple">Apple</string>
-    <string name="icon_like_breaked">Roto</string>
-    <string name="icon_like_gift">Agasallo</string>
-    <string name="icon_like_shape">Forma</string>
-    <string name="icon_like_striped">Raiado</string>
-    <string name="icon_like_brilliant">Brillante</string>
     <string name="player_swap_controls_with_timeline">Intercambiar controis coa liña de tempo</string>
     <string name="player_enable_lyrics_popup_message">Activar a mensaxe emerxente da letra</string>
     <string name="exclude_songs_with_duration_limit">Excluír cancións cun límite de duración</string>
@@ -430,8 +414,6 @@
     <string name="enable_quick_picks_page">Activa a páxina de seleccións rápidas</string>
     <string name="parental_control">Control Parental</string>
     <string name="info_prevent_play_songs_with_age_limitation">Evita reproducir cancións con limitación de idade</string>
-    <string name="cache_location_private">Privado</string>
-    <string name="cache_location_system">Sistema</string>
     <string name="debug">DEPURAR</string>
     <string name="setting_entry_runtime_log">Rexistro de execución</string>
     <string name="setting_description_runtime_log">Rexistrando todo o que está a acontecer en %s</string>
@@ -578,7 +560,6 @@
     <string name="failed_to_remove_thumbnail">Erro ao Eliminar a Miniatura</string>
     <string name="settings_enable_pip">Habilitar Imaxe en Imaxe</string>
     <string name="settings_enable_pip_auto">Habilitar Imaxe en Imaxe Automática</string>
-    <string name="pipmodule_cover">Portada</string>
     <string name="settings_pip_module">Módulo Pip</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">A partir de Android 12, a función de Imaxe en Imaxe (PiP) pode ser habilitada automaticamente</string>
@@ -592,10 +573,6 @@
     <string name="original_lyrics">Letras orixinais</string>
     <string name="translated_lyrics">Letras traducidas</string>
     <string name="press_once_again_to_exit">Preme novamente para saír</string>
-    <string name="music_animations_bars">Barras</string>
-    <string name="music_animations_crazy_bars">Barras tolas</string>
-    <string name="music_animations_crazy_points">Puntos tolos</string>
-    <string name="music_animations_bubbles">Burbullas</string>
     <string name="now_playing_indicator">Indicador de reprodución actual</string>
     <string name="good_morning">Bo día</string>
     <string name="good_afternoon">Boas tardes</string>
@@ -609,9 +586,6 @@
     <string name="jump_previous_blank">Déixao en branco ou en 0 para que o botón Anterior sempre reproduza a canción anterior</string>
     <string name="delete_hidden_songs">Estás certo de que queres eliminar todas as cancións agochadas da base de datos? Esta acción é irreversible.</string>
     <string name="delete_hidden_songs_message">Eliminar cancións agochadas</string>
-    <string name="cover_type_vinyl">Vinilo</string>
-    <string name="cover_type_cd">CD</string>
-    <string name="cover_type_cd_with_cover">CD con portada</string>
     <string name="wallpaper">Fondo de pantalla</string>
     <string name="enable_wallpaper">Activar fondo de pantalla</string>
     <string name="set_cover_thumbnail_as_wallpaper">Establecer a miniatura da portada como fondo de pantalla</string>
@@ -742,13 +716,8 @@
     <string name="error_message_unsupported_local_playlist">Formato incompatíbel</string>
     <string name="error_message_import_local_playlist_failed">Produciuse un erro ao importar a lista de reprodución local</string>
     <string name="dialog_title_color_picker">Selector de cor</string>
-    <string name="setting_description_only_available_in_theme">Só dispoñible no tema %s</string>
     <string name="setting_description_app_language">Aplicase só ao idioma da aplicación; o idioma do sistema non se ve afectado</string>
     <string name="currently_selected">Seleccionado agora: %s</string>
-    <string name="setting_description_update_checker_ask">Avisar cando haxa unha nova versión dispoñible para descargar</string>
-    <string name="setting_description_update_checker_disabled">%s non che notificará sobre novas actualizacións</string>
-    <string name="setting_description_update_checker_automatic">Automatically download \&amp; install new version when available</string>
-    <string name="setting_title_update_checker_automatic">Descargar e instalar automaticamente</string>
     <string name="setting_entry_update_checker">Actualización da aplicación</string>
     <string name="update_dialog_init_status">Inicializando</string>
     <string name="update_dialog_downloading_status">Descargando</string>
@@ -778,7 +747,6 @@
     <string name="setting_description_delete_search_history">Eliminar %s</string>
     <string name="setting_entry_live_wallpaper">Fondo de pantalla animado</string>
     <string name="setting_description_live_wallpaper">Establece o teu fondo de pantalla como a miniatura da canción que se está a reproducir</string>
-    <string name="word_lockscreen">Pantalla de bloqueo</string>
     <string name="warning_only_available_on_android_and_above">Só dispoñible en Android %1$s ou superior (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Volver un paso atrás</string>
     <string name="setting_description_single_back_from_search">Evitar páxinas de busca duplicadas ao premer na icona de busca</string>
@@ -812,10 +780,6 @@
     <string name="setting_entry_sync_quotes">Sincronizar \"%s\"</string>
     <string name="setting_entry_test_proxy">Probar proxy</string>
     <string name="success_proxy_verified">O proxy está configurado correctamente</string>
-    <string name="cache_location_split">Dividir</string>
-    <string name="setting_description_cache_location_system">Almacenar tanto o contido en caché como o descargado na caché da aplicación, que se pode borrar ao limpar a caché nas configuracións</string>
-    <string name="setting_description_cache_location_private">Almacenar tanto as cancións en caché como as descargadas no almacenamento privado da aplicación, que só se pode borrar se se elimina o contido da aplicación</string>
-    <string name="setting_description_cache_location_split">As cancións en caché almacénanse na caché da aplicación, e as cancións descargadas almacénanse no almacenamento privado da aplicación</string>
     <string name="theme_light">Claro</string>
     <string name="theme_dark">Escuro</string>
     <string name="theme_pitch_black">Negro total</string>
@@ -865,15 +829,8 @@
     <string name="setting_entry_thumbnail_size">Tamaño da miniatura</string>
     <string name="warning_end_of_list">End of list</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
-    <string name="doh_none">None</string>
-    <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (family)</string>
-    <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (secured)</string>
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
-    <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>

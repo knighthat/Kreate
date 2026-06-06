@@ -131,11 +131,16 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.by_casual_played_song
+import kreate.resources.generated.resources.by_last_played_song
+import kreate.resources.generated.resources.by_most_played_song
 import me.knighthat.innertube.model.InnertubeCharts
 import me.knighthat.innertube.model.InnertubePlaylist
 import me.knighthat.innertube.model.InnertubeRankedArtist
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -458,7 +463,7 @@ fun HomeQuickPicks(
                                 Menu {
                                     MenuEntry(
                                         icon = R.drawable.chevron_up,
-                                        text = stringResource(R.string.by_most_played_song),
+                                        text = stringResource( Res.string.by_most_played_song ),
                                         onClick = {
                                             playEventType = PlayEventsType.MostPlayed
                                             menuState.hide()
@@ -466,7 +471,7 @@ fun HomeQuickPicks(
                                     )
                                     MenuEntry(
                                         icon = R.drawable.chevron_down,
-                                        text = stringResource(R.string.by_last_played_song),
+                                        text = stringResource( Res.string.by_last_played_song ),
                                         onClick = {
                                             playEventType = PlayEventsType.LastPlayed
                                             menuState.hide()
@@ -474,7 +479,7 @@ fun HomeQuickPicks(
                                     )
                                     MenuEntry(
                                         icon = R.drawable.random,
-                                        text = stringResource(R.string.by_casual_played_song),
+                                        text = stringResource( Res.string.by_casual_played_song ),
                                         onClick = {
                                             playEventType = PlayEventsType.CasualPlayed
                                             menuState.hide()

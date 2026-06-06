@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Fertig</string>
     <string name="hidesong">Soll der Titel wirklich ausblendet werden? Die Wiedergabezeit und der Cache werden zurückgesetzt. Diese Aktion kann nicht rückgängig gemacht werden.</string>
@@ -187,17 +187,12 @@
     <string name="play_button">Play-Button</string>
     <string name="close_app_with_back_button">App mit \"Zurück\" schließen</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Wenn die \"Zurück\" Taste/Geste auf der Startseite betätigt wird</string>
-    <string name="audio_quality_format_high">Hoch</string>
     <string name="audio_quality_format_medium">Mittel</string>
-    <string name="audio_quality_format_low">Niedrig</string>
     <string name="audio_quality_format_unknown">Unbekannt</string>
     <string name="do_you_really_want_to_delete_download">Möchtest Du den Download wirklich löschen?</string>
     <string name="disable_scrolling_text">Lauftext deaktivieren</string>
     <string name="scrolling_text_is_used_for_long_texts">Lauftext wird für lange Texte verwendet</string>
     <string name="audio_quality_format">Audioqualität</string>
-    <string name="by_most_played_song">Nach meistgespieltem Lied</string>
-    <string name="by_last_played_song">Nach zuletzt gespieltem Lied</string>
-    <string name="audio_quality_automatic">Automatisch</string>
     <string name="statistics_songs_heard">gehörte Titel</string>
     <string name="statistics_of_time_taken">Wiedergabezeit</string>
     <string name="statistics_max_number_of_items">Max. Anzahl der Elemente</string>
@@ -291,8 +286,6 @@
     <string name="sort_duration">Dauer</string>
     <string name="pause_between_songs">Pause zwischen Liedern</string>
     <string name="navigation_bar_type">Stil der Navigationsleiste</string>
-    <string name="icon_and_text">Symbole und Text</string>
-    <string name="only_icon">Nur Symbole</string>
     <string name="action_bar_show_menu_button">Menütaste anzeigen</string>
     <string name="sort_album">Album</string>
     <string name="show_total_time_of_queue">Gesamtzeit der Warteschlange anzeigen</string>
@@ -313,15 +306,12 @@
     <string name="pick_from">Auswählen von</string>
     <string name="download_cover">Cover herunterladen</string>
     <string name="menu_style">Menüdarstellung</string>
-    <string name="style_grid">Raster</string>
-    <string name="style_list">Liste</string>
     <string name="direction_bottom">Unten</string>
     <string name="event_shake">Schütteln</string>
     <string name="shake_to_change_song">Schütteln um Titel zu wechseln</string>
     <string name="history">Verlauf</string>
     <string name="yesterday">Gestern</string>
     <string name="last_week">Letzte Woche</string>
-    <string name="by_casual_played_song">Nach zufällig gespieltem Lied</string>
     <string name="theme_material_you">Material You</string>
     <string name="show_statistics_in_navigation_bar">Statistiken in der Navigationsleiste anzeigen</string>
     <string name="settings">Einstellungen</string>
@@ -416,12 +406,6 @@
     <string name="pinfo_album_and_artist_name">Album und Interpreten Header</string>
     <string name="show_player_top_actions_bar">Obere Aktionsleiste anzeigen</string>
     <string name="icon_like_button">\"Gefällt mir\" Button</string>
-    <string name="icon_like_apple">Apfel</string>
-    <string name="icon_like_breaked">Zerbrochen</string>
-    <string name="icon_like_gift">Geschenk</string>
-    <string name="icon_like_shape">Niedlich</string>
-    <string name="icon_like_striped">Gestreift</string>
-    <string name="icon_like_brilliant">Strahlend</string>
     <string name="player_swap_controls_with_timeline">Steuerelemente mit Zeitleiste tauschen</string>
     <string name="player_enable_lyrics_popup_message">Liedtext-Popup-Nachricht aktivieren</string>
     <string name="exclude_songs_with_duration_limit">Schließe Titel über ein Zeitlimit aus</string>
@@ -430,8 +414,6 @@
     <string name="enable_quick_picks_page">Schnellauswahl-Seite aktiveren</string>
     <string name="parental_control">Jugendschutz</string>
     <string name="info_prevent_play_songs_with_age_limitation">Verhindere die Wiedergabe von Liedern mit Altersbegrenzung</string>
-    <string name="cache_location_private">Privat</string>
-    <string name="cache_location_system">System</string>
     <string name="debug">DEBUG</string>
     <string name="setting_entry_runtime_log">Runtime log</string>
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
@@ -578,7 +560,6 @@
     <string name="failed_to_remove_thumbnail">Fehler beim Entfernen des Vorschaubilds</string>
     <string name="settings_enable_pip">Bild im Bild aktivieren</string>
     <string name="settings_enable_pip_auto">Automatisches Bild im Bild aktivieren</string>
-    <string name="pipmodule_cover">Cover</string>
     <string name="settings_pip_module">Bild im Bild Modul</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">Ab Android 12 kann Bild im Bild automatisch aktiviert werden</string>
@@ -592,10 +573,6 @@
     <string name="original_lyrics">Originaler Liedtext</string>
     <string name="translated_lyrics">Übersetzter Liedtext</string>
     <string name="press_once_again_to_exit">Zum Beenden erneut drücken</string>
-    <string name="music_animations_bars">Balken</string>
-    <string name="music_animations_crazy_bars">Verrückte Balken</string>
-    <string name="music_animations_crazy_points">Verrückte Punkte</string>
-    <string name="music_animations_bubbles">Blasen</string>
     <string name="now_playing_indicator">Aktuell-Gespielt-Indikator</string>
     <string name="good_morning">Guten Morgen</string>
     <string name="good_afternoon">Guten Tag</string>
@@ -609,9 +586,6 @@
     <string name="jump_previous_blank">Leerlassen oder 0 damit der Rückwärts-Button immer zum vorherigen Titel springt</string>
     <string name="delete_hidden_songs">Sollen alle versteckten Titel aus der Datenbank entfernt werden? Diese Aktion kann nicht rückgängig gemacht werden.</string>
     <string name="delete_hidden_songs_message">Versteckte Titel löschen</string>
-    <string name="cover_type_vinyl">Schallplatte</string>
-    <string name="cover_type_cd">CD</string>
-    <string name="cover_type_cd_with_cover">CD mit Songcover</string>
     <string name="wallpaper">Hintergrundbild</string>
     <string name="enable_wallpaper">Wallpaper aktivieren</string>
     <string name="set_cover_thumbnail_as_wallpaper">Verwende Cover als Wallpaper</string>
@@ -742,13 +716,8 @@
     <string name="error_message_unsupported_local_playlist">Nicht unterstütztes Format</string>
     <string name="error_message_import_local_playlist_failed">Fehler beim Importieren der lokalen Wiedergabeliste</string>
     <string name="dialog_title_color_picker">Farbwähler</string>
-    <string name="setting_description_only_available_in_theme">Nur verfügbar im %s Thema</string>
     <string name="setting_description_app_language">Betrifft nur die App Sprache, die Systemsprache wird nicht geändert</string>
     <string name="currently_selected">Aktuell ausgewählt: %s</string>
-    <string name="setting_description_update_checker_ask">Pop-Up zeigen, wenn eine neue Version verfügbar ist</string>
-    <string name="setting_description_update_checker_disabled">%s wird dich nicht über neue Versionen informieren</string>
-    <string name="setting_description_update_checker_automatic">Automatisch neue Version beim Starten der App herunterladen und installieren</string>
-    <string name="setting_title_update_checker_automatic">Automatisch herunterladen und Installieren</string>
     <string name="setting_entry_update_checker">App Aktualisierung</string>
     <string name="update_dialog_init_status">Initialisieren...</string>
     <string name="update_dialog_downloading_status">Herunterladen...</string>
@@ -778,7 +747,6 @@
     <string name="setting_description_delete_search_history">\"%s\" löschen</string>
     <string name="setting_entry_live_wallpaper">Live-Hintergrund</string>
     <string name="setting_description_live_wallpaper">Setze das Cover des aktuell spielenden Songs als Hintergrund</string>
-    <string name="word_lockscreen">Sperrbildschirm</string>
     <string name="warning_only_available_on_android_and_above">Nur verfügbar auf Android %1$s+ (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Single back</string>
     <string name="setting_description_single_back_from_search">Doppelte Such-Seiten beim klicken des Such-Icons verhindern</string>
@@ -812,10 +780,6 @@
     <string name="setting_entry_sync_quotes">Synchronisiere \"%s\"</string>
     <string name="setting_entry_test_proxy">Proxy testen</string>
     <string name="success_proxy_verified">Proxy ist korrekt konfiguriert</string>
-    <string name="cache_location_split">Aufteilen</string>
-    <string name="setting_description_cache_location_system">Zwischengespeicherte und heruntergeladene Titel im Cache der App speichern</string>
-    <string name="setting_description_cache_location_private">Zwischengespeicherte und heruntergeladene Titel im privaten Speicher der App speichern</string>
-    <string name="setting_description_cache_location_split">Zwischengespeicherte Titel im Cache speichern, heruntergeladene im privaten Speicher der App</string>
     <string name="theme_light">Hell</string>
     <string name="theme_dark">Dunkel</string>
     <string name="theme_pitch_black">Tiefschwarz</string>
@@ -865,15 +829,8 @@
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
     <string name="warning_end_of_list">End of list</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
-    <string name="doh_none">None</string>
-    <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (family)</string>
-    <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (secured)</string>
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
-    <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>

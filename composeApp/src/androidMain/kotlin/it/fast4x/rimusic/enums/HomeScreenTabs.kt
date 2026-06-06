@@ -1,25 +1,32 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.StringRes
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.tab_albums
+import kreate.resources.generated.resources.tab_artists
+import kreate.resources.generated.resources.tab_playlists
+import kreate.resources.generated.resources.tab_quick_picks
+import kreate.resources.generated.resources.tab_search
+import kreate.resources.generated.resources.tab_songs
+import kreate.resources.generated.resources.word_default
+import org.jetbrains.compose.resources.StringResource
 
 enum class HomeScreenTabs(
     val index: Int,
-    @field:StringRes override val androidTextId: Int
+    override val textId: StringResource
 ): TextView {
 
-    Default( 0, R.string._default ),
+    Default(0, Res.string.word_default),
 
-    QuickPics( 0, R.string.quick_picks ),
+    QuickPics(0, Res.string.tab_quick_picks),
 
-    Songs( 1, R.string.songs ),
+    Songs(1, Res.string.tab_songs),
 
-    Artists( 2, R.string.artists ),
+    Artists(2, Res.string.tab_artists),
 
-    Albums( 3, R.string.albums ),
+    Albums(3, Res.string.tab_albums),
 
-    Playlists( 4, R.string.playlists ),
+    Playlists(4, Res.string.tab_playlists),
 
-    Search( 5, android.R.string.search_go );
+    Search(5, Res.string.tab_search);
 }

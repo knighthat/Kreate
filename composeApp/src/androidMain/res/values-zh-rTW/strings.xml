@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">完成</string>
     <string name="hidesong">你真的要隱藏這首歌曲嗎? 播放記錄和暫存將被清除. \n此動作不可逆.</string>
@@ -187,17 +187,12 @@
     <string name="play_button">播放按鈕</string>
     <string name="close_app_with_back_button">返回按鈕關閉App</string>
     <string name="when_you_use_the_back_button_from_the_home_page">當你按下首頁的“返回”按鈕時</string>
-    <string name="audio_quality_format_high">高</string>
     <string name="audio_quality_format_medium">中</string>
-    <string name="audio_quality_format_low">低</string>
     <string name="audio_quality_format_unknown">未知的</string>
     <string name="do_you_really_want_to_delete_download">你真的要移除下載嗎?</string>
     <string name="disable_scrolling_text">停用捲動文字</string>
     <string name="scrolling_text_is_used_for_long_texts">捲動文字用於長文本當中</string>
     <string name="audio_quality_format">音質格式</string>
-    <string name="by_most_played_song">最常播放的歌曲</string>
-    <string name="by_last_played_song">播放次數最少的歌曲</string>
-    <string name="audio_quality_automatic">自動</string>
     <string name="statistics_songs_heard">聽過的歌曲</string>
     <string name="statistics_of_time_taken">已經過的時間</string>
     <string name="statistics_max_number_of_items">歌曲數量上限</string>
@@ -291,8 +286,6 @@
     <string name="sort_duration">時間長度</string>
     <string name="pause_between_songs">在歌曲之間暫停</string>
     <string name="navigation_bar_type">導覽列樣式</string>
-    <string name="icon_and_text">圖示與文字</string>
-    <string name="only_icon">只有圖示</string>
     <string name="action_bar_show_menu_button">顯示清單按鈕</string>
     <string name="sort_album">專輯</string>
     <string name="show_total_time_of_queue">顯示佇列的總時間長度</string>
@@ -313,15 +306,12 @@
     <string name="pick_from">挑選</string>
     <string name="download_cover">下載封面</string>
     <string name="menu_style">功能表樣式</string>
-    <string name="style_grid">網格</string>
-    <string name="style_list">清單</string>
     <string name="direction_bottom">下方</string>
     <string name="event_shake">搖一搖</string>
     <string name="shake_to_change_song">搖一搖切換下一首歌</string>
     <string name="history">歷史</string>
     <string name="yesterday">昨天</string>
     <string name="last_week">上週</string>
-    <string name="by_casual_played_song">平常播放的歌曲</string>
     <string name="theme_material_you">Material You設計</string>
     <string name="show_statistics_in_navigation_bar">在導航列中顯示統計數據</string>
     <string name="settings">設定</string>
@@ -416,12 +406,6 @@
     <string name="pinfo_album_and_artist_name">專輯及藝人名稱</string>
     <string name="show_player_top_actions_bar">顯示上方操作欄</string>
     <string name="icon_like_button">喜歡按鈕</string>
-    <string name="icon_like_apple">蘋果</string>
-    <string name="icon_like_breaked">Breaked</string>
-    <string name="icon_like_gift">禮物</string>
-    <string name="icon_like_shape">形狀</string>
-    <string name="icon_like_striped">條紋</string>
-    <string name="icon_like_brilliant">傑出的</string>
     <string name="player_swap_controls_with_timeline">Swap controls with timeline</string>
     <string name="player_enable_lyrics_popup_message">Enable lyrics popup message</string>
     <string name="exclude_songs_with_duration_limit">排除超過限制時長的歌曲</string>
@@ -430,8 +414,6 @@
     <string name="enable_quick_picks_page">啟用精選頁面</string>
     <string name="parental_control">家長或監護人設定</string>
     <string name="info_prevent_play_songs_with_age_limitation">防止播放有年齡限制的歌曲</string>
-    <string name="cache_location_private">私人的</string>
-    <string name="cache_location_system">系統</string>
     <string name="debug">除錯</string>
     <string name="setting_entry_runtime_log">執行日誌</string>
     <string name="setting_description_runtime_log">所有日誌都會儲存在 %s</string>
@@ -578,7 +560,6 @@
     <string name="failed_to_remove_thumbnail">Failed to Remove Thumbnail</string>
     <string name="settings_enable_pip">Enable Picture in Picture</string>
     <string name="settings_enable_pip_auto">Enable Automatic Picture in Picture</string>
-    <string name="pipmodule_cover">封面</string>
     <string name="settings_pip_module">Pip module</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">From Android 12 pip can be automatically enabled</string>
@@ -592,10 +573,6 @@
     <string name="original_lyrics">歌詞原文</string>
     <string name="translated_lyrics">已翻譯的歌詞</string>
     <string name="press_once_again_to_exit">再按一次以離開應用程式</string>
-    <string name="music_animations_bars">Bars</string>
-    <string name="music_animations_crazy_bars">Crazy Bars</string>
-    <string name="music_animations_crazy_points">Crazy Points</string>
-    <string name="music_animations_bubbles">泡泡</string>
     <string name="now_playing_indicator">Now Playing Indicator</string>
     <string name="good_morning">早上好</string>
     <string name="good_afternoon">下午好</string>
@@ -609,9 +586,6 @@
     <string name="jump_previous_blank">Leave it Blank or 0 for Previous Button to Always Play the Previous Song</string>
     <string name="delete_hidden_songs">你確定要從資料庫中刪除所有隱藏的歌曲嗎? 此動作不可逆。</string>
     <string name="delete_hidden_songs_message">刪除隱藏的歌曲</string>
-    <string name="cover_type_vinyl">Vinyl</string>
-    <string name="cover_type_cd">CD</string>
-    <string name="cover_type_cd_with_cover">CD with Cover</string>
     <string name="wallpaper">Wallpaper</string>
     <string name="enable_wallpaper">開啟壁紙</string>
     <string name="set_cover_thumbnail_as_wallpaper">Set cover thumbnail as wallpaper</string>
@@ -742,13 +716,8 @@
     <string name="error_message_unsupported_local_playlist">不支持的格式</string>
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
-    <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
     <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
     <string name="currently_selected">Currently selected: %s</string>
-    <string name="setting_description_update_checker_ask">Prompt when a new version is available to download</string>
-    <string name="setting_description_update_checker_disabled">%s will not notify you about new updates</string>
-    <string name="setting_description_update_checker_automatic">Automatically download and install new version on startup</string>
-    <string name="setting_title_update_checker_automatic">Download and install automatically</string>
     <string name="setting_entry_update_checker">App update</string>
     <string name="update_dialog_init_status">Initializing</string>
     <string name="update_dialog_downloading_status">Downloading</string>
@@ -778,7 +747,6 @@
     <string name="setting_description_delete_search_history">Delete %s</string>
     <string name="setting_entry_live_wallpaper">Live wallpaper</string>
     <string name="setting_description_live_wallpaper">Set your wallpaper to the thumbnail of the currently playing song</string>
-    <string name="word_lockscreen">Lockscreen</string>
     <string name="warning_only_available_on_android_and_above">Only available on Android %1$s+ (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Single back</string>
     <string name="setting_description_single_back_from_search">Prevent duplicate search pages when you click search icon</string>
@@ -812,10 +780,6 @@
     <string name="setting_entry_sync_quotes">Sync \"%s\"</string>
     <string name="setting_entry_test_proxy">Test proxy</string>
     <string name="success_proxy_verified">Proxy is correctly configured</string>
-    <string name="cache_location_split">Split</string>
-    <string name="setting_description_cache_location_system">Store both cached and downloaded in the app\'s cache, which can be deleted by clearing the cache in settings</string>
-    <string name="setting_description_cache_location_private">Store both cached and downloaded songs in the app\'s private storage, which can only be deleted if the app\'s data is wiped</string>
-    <string name="setting_description_cache_location_split">Cached songs live in app\'s cache, and downloaded songs live in app\'s private storage</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_pitch_black">Pitch black</string>
@@ -865,15 +829,8 @@
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
     <string name="warning_end_of_list">End of list</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
-    <string name="doh_none">None</string>
-    <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (family)</string>
-    <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (secured)</string>
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
-    <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>

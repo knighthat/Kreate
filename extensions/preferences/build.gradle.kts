@@ -38,6 +38,7 @@ kotlin {
             implementation( libs.kermit )
             implementation( libs.koin.core )
             implementation( libs.kotlinx.coroutines )
+            implementation( libs.compose.kmp.resources )
             // Datastore
             implementation( libs.datastore )
             implementation( libs.datastore.preferences )

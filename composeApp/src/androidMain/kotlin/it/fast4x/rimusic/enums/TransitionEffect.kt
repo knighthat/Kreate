@@ -1,22 +1,28 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.StringRes
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.transition_animation_expand
+import kreate.resources.generated.resources.transition_animation_fade
+import kreate.resources.generated.resources.transition_animation_horizontal_slide
+import kreate.resources.generated.resources.transition_animation_no_effect
+import kreate.resources.generated.resources.transition_animation_vertical_slide
+import kreate.resources.generated.resources.transition_animation_zoom
+import org.jetbrains.compose.resources.StringResource
 
 enum class TransitionEffect(
-    @field:StringRes override val androidTextId: Int
+    override val textId: StringResource
 ): TextView {
 
-    SlideVertical( R.string.te_slide_vertical ),
+    SlideVertical(Res.string.transition_animation_vertical_slide),
 
-    SlideHorizontal( R.string.te_slide_horizontal ),
+    SlideHorizontal(Res.string.transition_animation_horizontal_slide),
 
-    Scale( R.string.te_scale ),
+    Scale(Res.string.transition_animation_zoom),
 
-    Fade( R.string.te_fade ),
+    Fade(Res.string.transition_animation_fade),
 
-    Expand( R.string.te_expand ),
+    Expand(Res.string.transition_animation_expand),
 
-    None( R.string.none );
+    None(Res.string.transition_animation_no_effect);
 }

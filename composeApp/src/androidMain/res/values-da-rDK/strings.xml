@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Færdig</string>
     <string name="hidesong">Skal denne sang virkelig skjules? Dens afspilningstid og cache slettes. Dette er irreversibelt.</string>
@@ -187,17 +187,12 @@
     <string name="play_button">Afspilningsknap</string>
     <string name="close_app_with_back_button">Luk app med Tilbage-knap</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Når Tilbage-knappen bruges fra startsiden</string>
-    <string name="audio_quality_format_high">Høj</string>
     <string name="audio_quality_format_medium">Mellem</string>
-    <string name="audio_quality_format_low">Lav</string>
     <string name="audio_quality_format_unknown">Ukendt</string>
     <string name="do_you_really_want_to_delete_download">Vil du virkelig slette hentningen?</string>
     <string name="disable_scrolling_text">Deaktivér rullende tekst</string>
     <string name="scrolling_text_is_used_for_long_texts">Rullende tekst bruges til lang tekst</string>
     <string name="audio_quality_format">Lydkvalitetsformat</string>
-    <string name="by_most_played_song">Efter Mest afspillet sang</string>
-    <string name="by_last_played_song">Efter Senest afspillet sang</string>
-    <string name="audio_quality_automatic">Automatisk</string>
     <string name="statistics_songs_heard">sange hørt</string>
     <string name="statistics_of_time_taken">af tid taget</string>
     <string name="statistics_max_number_of_items">Maks. antal elementer</string>
@@ -291,8 +286,6 @@
     <string name="sort_duration">Varighed</string>
     <string name="pause_between_songs">Pause mellem sange</string>
     <string name="navigation_bar_type">Navigationslinjetype</string>
-    <string name="icon_and_text">Ikon og tekst</string>
-    <string name="only_icon">Kun ikon</string>
     <string name="action_bar_show_menu_button">Vis Menu-knap</string>
     <string name="sort_album">Album</string>
     <string name="show_total_time_of_queue">Vis samlede tid for kø</string>
@@ -313,15 +306,12 @@
     <string name="pick_from">Vælg fra</string>
     <string name="download_cover">Hent cover</string>
     <string name="menu_style">Menustil</string>
-    <string name="style_grid">Gitter</string>
-    <string name="style_list">Liste</string>
     <string name="direction_bottom">Ned</string>
     <string name="event_shake">Ryst</string>
     <string name="shake_to_change_song">Ryst for at skifte sang</string>
     <string name="history">Historik</string>
     <string name="yesterday">I går</string>
     <string name="last_week">Sidste uge</string>
-    <string name="by_casual_played_song">Efter Tilfældigt afspillet sang</string>
     <string name="theme_material_you">Material You</string>
     <string name="show_statistics_in_navigation_bar">Vis statistikker i navigationslinjen</string>
     <string name="settings">Indstillinger</string>
@@ -416,12 +406,6 @@
     <string name="pinfo_album_and_artist_name">Album- og kunstnernavn</string>
     <string name="show_player_top_actions_bar">Vis øverste handlingslinje</string>
     <string name="icon_like_button">Kan lide-knap</string>
-    <string name="icon_like_apple">Æble</string>
-    <string name="icon_like_breaked">Knust</string>
-    <string name="icon_like_gift">Gave</string>
-    <string name="icon_like_shape">Form</string>
-    <string name="icon_like_striped">Stribet</string>
-    <string name="icon_like_brilliant">Strålende</string>
     <string name="player_swap_controls_with_timeline">Byt kontroller med tidslinje</string>
     <string name="player_enable_lyrics_popup_message">Aktivér pop op-besked om sangtekst</string>
     <string name="exclude_songs_with_duration_limit">Ekskluder sange med varighedsgrænse</string>
@@ -430,8 +414,6 @@
     <string name="enable_quick_picks_page">Aktivér Hurtige Valg-siden</string>
     <string name="parental_control">Forældrekontrol</string>
     <string name="info_prevent_play_songs_with_age_limitation">Undgå at afspille sange med aldersbegrænsning</string>
-    <string name="cache_location_private">Privat</string>
-    <string name="cache_location_system">System</string>
     <string name="debug">FEJLFINDING</string>
     <string name="setting_entry_runtime_log">Kørselslog</string>
     <string name="setting_description_runtime_log">Logger alt, der sker i %s</string>
@@ -578,7 +560,6 @@
     <string name="failed_to_remove_thumbnail">Kunne ikke fjerne miniaturebillede</string>
     <string name="settings_enable_pip">Aktivér billede-i-billede</string>
     <string name="settings_enable_pip_auto">Aktivér automatisk billede-i-billede</string>
-    <string name="pipmodule_cover">Cover</string>
     <string name="settings_pip_module">BiB-modul</string>
     <string name="menu_go_to_picture_in_picture">BiB</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">Fra Android 12 kan BiB aktiveres automatisk</string>
@@ -592,10 +573,6 @@
     <string name="original_lyrics">Originale sangtekster</string>
     <string name="translated_lyrics">Oversatte sangtekster</string>
     <string name="press_once_again_to_exit">Tryk igen for at afslutte</string>
-    <string name="music_animations_bars">Bjælker</string>
-    <string name="music_animations_crazy_bars">Skøre bjælker</string>
-    <string name="music_animations_crazy_points">Skøre spidser</string>
-    <string name="music_animations_bubbles">Bobler</string>
     <string name="now_playing_indicator">\'Afspiller nu\'-indikator</string>
     <string name="good_morning">Godmorgen</string>
     <string name="good_afternoon">Godeftermiddag</string>
@@ -609,9 +586,6 @@
     <string name="jump_previous_blank">Lad stå tomt eller sæt til 0 for at Forrige-knappen altid afspiller forrige sang</string>
     <string name="delete_hidden_songs">Vil du virkelig slette alle skjulte sange fra databasen? Denne handling kan ikke fortrydes.</string>
     <string name="delete_hidden_songs_message">Slet skjulte sange</string>
-    <string name="cover_type_vinyl">Vinyl</string>
-    <string name="cover_type_cd">CD</string>
-    <string name="cover_type_cd_with_cover">CD med cover</string>
     <string name="wallpaper">Baggrund</string>
     <string name="enable_wallpaper">Aktivér baggrund</string>
     <string name="set_cover_thumbnail_as_wallpaper">Indstil coverbillede som baggrund</string>
@@ -742,13 +716,8 @@
     <string name="error_message_unsupported_local_playlist">Ikke-understøttet format</string>
     <string name="error_message_import_local_playlist_failed">Fejl opstod under import af lokal playliste</string>
     <string name="dialog_title_color_picker">Farvevælger</string>
-    <string name="setting_description_only_available_in_theme">Kun tilgængelig i %s tema</string>
     <string name="setting_description_app_language">Gælder kun for appens sprog; systemsproget påvirkes ikke</string>
     <string name="currently_selected">Valgt: %s</string>
-    <string name="setting_description_update_checker_ask">Spørg, når en ny version er klar til download</string>
-    <string name="setting_description_update_checker_disabled">%s underretter dig ikke om nye opdateringer</string>
-    <string name="setting_description_update_checker_automatic">Download og installer automatisk den nye version ved opstart</string>
-    <string name="setting_title_update_checker_automatic">Download og installer automatisk</string>
     <string name="setting_entry_update_checker">App-opdatering</string>
     <string name="update_dialog_init_status">Initialiserer</string>
     <string name="update_dialog_downloading_status">Henter</string>
@@ -778,7 +747,6 @@
     <string name="setting_description_delete_search_history">Slet %s</string>
     <string name="setting_entry_live_wallpaper">Levende baggrund</string>
     <string name="setting_description_live_wallpaper">Indstil din baggrund til miniaturen af den aktuelt afspillende sang</string>
-    <string name="word_lockscreen">Låseskærm</string>
     <string name="warning_only_available_on_android_and_above">Kun tilgængelig på Android %1$s+ (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Single back</string>
     <string name="setting_description_single_back_from_search">Prevent duplicate search pages when you click search icon</string>
@@ -812,10 +780,6 @@
     <string name="setting_entry_sync_quotes">Sync \"%s\"</string>
     <string name="setting_entry_test_proxy">Test proxy</string>
     <string name="success_proxy_verified">Proxy er konfigureret korrekt</string>
-    <string name="cache_location_split">Split</string>
-    <string name="setting_description_cache_location_system">Store both cached and downloaded in the app\'s cache, which can be deleted by clearing the cache in settings</string>
-    <string name="setting_description_cache_location_private">Store both cached and downloaded songs in the app\'s private storage, which can only be deleted if the app\'s data is wiped</string>
-    <string name="setting_description_cache_location_split">Cached songs live in app\'s cache, and downloaded songs live in app\'s private storage</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_pitch_black">Pitch black</string>
@@ -865,15 +829,8 @@
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
     <string name="warning_end_of_list">End of list</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
-    <string name="doh_none">None</string>
-    <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (family)</string>
-    <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (secured)</string>
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
-    <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>

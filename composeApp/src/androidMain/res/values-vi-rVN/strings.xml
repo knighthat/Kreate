@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Xong</string>
     <string name="hidesong">Bạn có thực sự muốn ẩn bài hát này? Tất cả dữ liệu sẽ bị xóa. Hành động này không thể thay đổi được.</string>
@@ -187,17 +187,12 @@
     <string name="play_button">Nút phát</string>
     <string name="close_app_with_back_button">Đóng ứng dụng bằng nút \"quay về\"</string>
     <string name="when_you_use_the_back_button_from_the_home_page">When you use the back button from the home page</string>
-    <string name="audio_quality_format_high">Cao</string>
     <string name="audio_quality_format_medium">Trung bình</string>
-    <string name="audio_quality_format_low">Thấp</string>
     <string name="audio_quality_format_unknown">Không định dạng</string>
     <string name="do_you_really_want_to_delete_download">Bạn có thật sự muốn xóa?</string>
     <string name="disable_scrolling_text">Tắt hiệu ứng chữ chạy</string>
     <string name="scrolling_text_is_used_for_long_texts">Áp dụng cho các dòng chữ dài</string>
     <string name="audio_quality_format">Chất lượng âm thanh</string>
-    <string name="by_most_played_song">Xếp theo nhạc thường nghe</string>
-    <string name="by_last_played_song">Xếp theo nhạc vừa nghe</string>
-    <string name="audio_quality_automatic">Tự động</string>
     <string name="statistics_songs_heard">bài hát đã nghe</string>
     <string name="statistics_of_time_taken">of time taken</string>
     <string name="statistics_max_number_of_items">Số bài hát tối đa</string>
@@ -291,8 +286,6 @@
     <string name="sort_duration">Thời lượng</string>
     <string name="pause_between_songs">Dừng giữa các bài hát</string>
     <string name="navigation_bar_type">Giao diện thanh điều hướng</string>
-    <string name="icon_and_text">Chữ và biểu tượng</string>
-    <string name="only_icon">Chỉ biểu tượng</string>
     <string name="action_bar_show_menu_button">Show menu button</string>
     <string name="sort_album">Album</string>
     <string name="show_total_time_of_queue">Hiện thị tông thời gian của danh sách chờ</string>
@@ -313,15 +306,12 @@
     <string name="pick_from">Chọn từ</string>
     <string name="download_cover">Tải ảnh bìa</string>
     <string name="menu_style">Giao diện bảng chọn</string>
-    <string name="style_grid">Lưới</string>
-    <string name="style_list">Danh sách</string>
     <string name="direction_bottom">Dưới</string>
     <string name="event_shake">Lắc</string>
     <string name="shake_to_change_song">Lắc điện thoại để đổi nhạc</string>
     <string name="history">Lịch sử</string>
     <string name="yesterday">Hôm qua</string>
     <string name="last_week">Tuần trước</string>
-    <string name="by_casual_played_song">By Casual played song</string>
     <string name="theme_material_you">Material You</string>
     <string name="show_statistics_in_navigation_bar">Hiển thị nút tới trang thống kê trên thanh điều hướng</string>
     <string name="settings">Cài đặt</string>
@@ -416,12 +406,6 @@
     <string name="pinfo_album_and_artist_name">Album and artist name</string>
     <string name="show_player_top_actions_bar">Hiện thanh tương tác</string>
     <string name="icon_like_button">Nút yêu thích</string>
-    <string name="icon_like_apple">Trái táo</string>
-    <string name="icon_like_breaked">Breaked</string>
-    <string name="icon_like_gift">Hộp quà</string>
-    <string name="icon_like_shape">Shape</string>
-    <string name="icon_like_striped">Sọc</string>
-    <string name="icon_like_brilliant">Sáng kiến</string>
     <string name="player_swap_controls_with_timeline">Hoán đổi vị trí với thanh thời gian</string>
     <string name="player_enable_lyrics_popup_message">Enable lyrics popup message</string>
     <string name="exclude_songs_with_duration_limit">Loại bài hát bằng thời lượng</string>
@@ -430,8 +414,6 @@
     <string name="enable_quick_picks_page">Bật trang chọn nhanh</string>
     <string name="parental_control">Kiểm soát của cha mẹ</string>
     <string name="info_prevent_play_songs_with_age_limitation">Loại bỏ nhạc bị giới hạn độ tuổi</string>
-    <string name="cache_location_private">Bảo mật</string>
-    <string name="cache_location_system">Hệ thống</string>
     <string name="debug">DEBUG</string>
     <string name="setting_entry_runtime_log">Nhật ký</string>
     <string name="setting_description_runtime_log">Ghi lại tất cả sự kiện xảy ra trên %s</string>
@@ -578,7 +560,6 @@
     <string name="failed_to_remove_thumbnail">Failed to Remove Thumbnail</string>
     <string name="settings_enable_pip">Enable Picture in Picture</string>
     <string name="settings_enable_pip_auto">Enable Automatic Picture in Picture</string>
-    <string name="pipmodule_cover">Cover</string>
     <string name="settings_pip_module">Pip module</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">From Android 12 pip can be automatically enabled</string>
@@ -592,10 +573,6 @@
     <string name="original_lyrics">Original Lyrics</string>
     <string name="translated_lyrics">Translated Lyrics</string>
     <string name="press_once_again_to_exit">Nhấn một lần nữa để thoát</string>
-    <string name="music_animations_bars">Bars</string>
-    <string name="music_animations_crazy_bars">Crazy Bars</string>
-    <string name="music_animations_crazy_points">Crazy Points</string>
-    <string name="music_animations_bubbles">Bubbles</string>
     <string name="now_playing_indicator">Now Playing Indicator</string>
     <string name="good_morning">Good Morning</string>
     <string name="good_afternoon">Good Afternoon</string>
@@ -609,9 +586,6 @@
     <string name="jump_previous_blank">Leave it Blank or 0 for Previous Button to Always Play the Previous Song</string>
     <string name="delete_hidden_songs">Do you really want to delete all hidden songs from database? This action is irreversible.</string>
     <string name="delete_hidden_songs_message">Xóa nhạc bị ẩn</string>
-    <string name="cover_type_vinyl">Vinyl</string>
-    <string name="cover_type_cd">CD</string>
-    <string name="cover_type_cd_with_cover">CD with Cover</string>
     <string name="wallpaper">Hình nền</string>
     <string name="enable_wallpaper">Enable wallpaper</string>
     <string name="set_cover_thumbnail_as_wallpaper">Đặt ảnh bìa làm hình nền</string>
@@ -742,13 +716,8 @@
     <string name="error_message_unsupported_local_playlist">Định dạng không hỗ trợ</string>
     <string name="error_message_import_local_playlist_failed">Đã có lỗi xảy ra trong khi nhập danh sách phát</string>
     <string name="dialog_title_color_picker">Bộ chọn màu</string>
-    <string name="setting_description_only_available_in_theme">Chỉ có thể điều chỉnh khi giao diện %s được chọn</string>
     <string name="setting_description_app_language">Chỉ áp dụng cho ứng dụng, ngôn ngữ trên hệ thống sẽ giữ nguyên</string>
     <string name="currently_selected">Đang chọn: %s</string>
-    <string name="setting_description_update_checker_ask">Nhắc khi có bản cập mới</string>
-    <string name="setting_description_update_checker_disabled">%s sẽ không nhắc khi có phiên bản mới</string>
-    <string name="setting_description_update_checker_automatic">Tự động tải và cài đặt cập nhật mới</string>
-    <string name="setting_title_update_checker_automatic">Tự động</string>
     <string name="setting_entry_update_checker">Cập nhật</string>
     <string name="update_dialog_init_status">Thiết lập</string>
     <string name="update_dialog_downloading_status">Đang tải</string>
@@ -778,7 +747,6 @@
     <string name="setting_description_delete_search_history">Delete %s</string>
     <string name="setting_entry_live_wallpaper">Đặt ảnh bìa thành hình nền</string>
     <string name="setting_description_live_wallpaper">Thay đổi ảnh nền máy thành ảnh bìa của bài nhạc</string>
-    <string name="word_lockscreen">Màn hình khóa</string>
     <string name="warning_only_available_on_android_and_above">Chỉ khả dụng trên Android %1$s+ (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Quay về một lần</string>
     <string name="setting_description_single_back_from_search">Trang tìm kiếm sẽ không yêu cầu quay về nhiều lần</string>
@@ -812,10 +780,6 @@
     <string name="setting_entry_sync_quotes">Sync \"%s\"</string>
     <string name="setting_entry_test_proxy">Test proxy</string>
     <string name="success_proxy_verified">Proxy is correctly configured</string>
-    <string name="cache_location_split">Chia</string>
-    <string name="setting_description_cache_location_system">Chứa cả nhạc lưu tạm và nhạc tải xuống vào bộ nhớ tạm, bộ nhớ này có thể bị xóa bởi hệ thống</string>
-    <string name="setting_description_cache_location_private">Chứa cả nhạc lưu tạm và nhạc tải xuống vào bộ nhớ dài hạn, bộ nhớ này không thể bị xóa bởi hệ thống</string>
-    <string name="setting_description_cache_location_split">Chứa nhạc đã nghe vào bộ nhớ tạm, bản tải xuống vào bộ nhớ dài hạn</string>
     <string name="theme_light">Sáng</string>
     <string name="theme_dark">Tối</string>
     <string name="theme_pitch_black">Toàn đen</string>
@@ -865,15 +829,8 @@
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
     <string name="warning_end_of_list">End of list</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
-    <string name="doh_none">None</string>
-    <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (family)</string>
-    <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (secured)</string>
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
-    <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>

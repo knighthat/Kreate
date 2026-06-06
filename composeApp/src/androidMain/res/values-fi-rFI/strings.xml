@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Valmis</string>
     <string name="hidesong">Haluatko varmasti piilottaa tämän kappaleen? Sen toistoaika ja välimuisti tyhjennetään. Tämä toiminto on peruuttamaton.</string>
@@ -187,17 +187,12 @@
     <string name="play_button">Soita painike</string>
     <string name="close_app_with_back_button">Sulje sovellus takaisinpainikkeella</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Kun takaisinpainiketta/-elettä käytetään kotisivulla</string>
-    <string name="audio_quality_format_high">Korkea</string>
     <string name="audio_quality_format_medium">Keskitaso</string>
-    <string name="audio_quality_format_low">Matala</string>
     <string name="audio_quality_format_unknown">Tuntematon</string>
     <string name="do_you_really_want_to_delete_download">Haluatko varmasti poistaa latauksen?</string>
     <string name="disable_scrolling_text">Poista vieritysteksti käytöstä</string>
     <string name="scrolling_text_is_used_for_long_texts">Vieritystekstiä käytetään pitkiin teksteihin</string>
     <string name="audio_quality_format">Äänenlaatu</string>
-    <string name="by_most_played_song">Soitetuimman kappaleen mukaan</string>
-    <string name="by_last_played_song">Viimeksi soitetun kappaleen mukaan</string>
-    <string name="audio_quality_automatic">Automaattinen</string>
     <string name="statistics_songs_heard">kuunneltua kappaletta</string>
     <string name="statistics_of_time_taken">aikaa käytetty</string>
     <string name="statistics_max_number_of_items">Suurin määrä kohteita</string>
@@ -291,8 +286,6 @@
     <string name="sort_duration">Kesto</string>
     <string name="pause_between_songs">Tauko kappaleiden välissä</string>
     <string name="navigation_bar_type">Navigointipalkin tyyli</string>
-    <string name="icon_and_text">Kuvake ja teksti</string>
-    <string name="only_icon">Vain kuvake</string>
     <string name="action_bar_show_menu_button">Näytä Menu -nappi</string>
     <string name="sort_album">Albumi</string>
     <string name="show_total_time_of_queue">Näytä jonon kokonaiskesto</string>
@@ -313,15 +306,12 @@
     <string name="pick_from">Valitse palvelusta</string>
     <string name="download_cover">Lataa kansikuva</string>
     <string name="menu_style">Valikon tyyli</string>
-    <string name="style_grid">Ruudukko</string>
-    <string name="style_list">Lista</string>
     <string name="direction_bottom">Alhaalla</string>
     <string name="event_shake">Ravista</string>
     <string name="shake_to_change_song">Ravista vaihtaaksesi kappaletta</string>
     <string name="history">Historia</string>
     <string name="yesterday">Eilen</string>
     <string name="last_week">Viime viikolla</string>
-    <string name="by_casual_played_song">Satunnainen</string>
     <string name="theme_material_you">Material You</string>
     <string name="show_statistics_in_navigation_bar">Näytä tilastoja navigointipalkissa</string>
     <string name="settings">Asetukset</string>
@@ -416,12 +406,6 @@
     <string name="pinfo_album_and_artist_name">Albumin ja artistin nimi</string>
     <string name="show_player_top_actions_bar">Näytä ylätoimintapalkki</string>
     <string name="icon_like_button">Tykkää -nappi</string>
-    <string name="icon_like_apple">Omena</string>
-    <string name="icon_like_breaked">Rikki</string>
-    <string name="icon_like_gift">Lahja</string>
-    <string name="icon_like_shape">Söpö</string>
-    <string name="icon_like_striped">Raidoitettu</string>
-    <string name="icon_like_brilliant">Loistava</string>
     <string name="player_swap_controls_with_timeline">Vaihda aikajanan ja nappien paikkaa keskenään</string>
     <string name="player_enable_lyrics_popup_message">Ota sanoitusten ponnahdusikkuna käyttöön</string>
     <string name="exclude_songs_with_duration_limit">Jätä pois kappaleet, joiden kesto on rajoitettu</string>
@@ -430,8 +414,6 @@
     <string name="enable_quick_picks_page">Ota pikavalinnat käyttöön</string>
     <string name="parental_control">Lapsilukko</string>
     <string name="info_prevent_play_songs_with_age_limitation">Estää soittamasta kappaleita, joissa on ikärajoitus</string>
-    <string name="cache_location_private">Yksityinen</string>
-    <string name="cache_location_system">Järjestelmä</string>
     <string name="debug">DEBUG</string>
     <string name="setting_entry_runtime_log">Runtime log</string>
     <string name="setting_description_runtime_log">Logging everything that is going on in %s</string>
@@ -578,7 +560,6 @@
     <string name="failed_to_remove_thumbnail">Pienoiskuvan poisto epäonnistui</string>
     <string name="settings_enable_pip">Ota kuva kuvassa käyttöön</string>
     <string name="settings_enable_pip_auto">Ota käyttöön automaattinen kuva kuvassa</string>
-    <string name="pipmodule_cover">Kansi</string>
     <string name="settings_pip_module">Kuva kuvassa -moduuli</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">Android 12:sta lähtien PIP voidaan ottaa käyttöön automaattisesti</string>
@@ -592,10 +573,6 @@
     <string name="original_lyrics">Alkuperäiset sanoitukset</string>
     <string name="translated_lyrics">Käännetyt sanoitukset</string>
     <string name="press_once_again_to_exit">Paina uudelleen poistuaksesi ohjelmasta</string>
-    <string name="music_animations_bars">Palkit</string>
-    <string name="music_animations_crazy_bars">Kahjot palkit</string>
-    <string name="music_animations_crazy_points">Kahjot pisteet</string>
-    <string name="music_animations_bubbles">Kuplat</string>
     <string name="now_playing_indicator">Toiston ilmaisin</string>
     <string name="good_morning">Hyvää huomenta</string>
     <string name="good_afternoon">Hyvää päivää</string>
@@ -609,9 +586,6 @@
     <string name="jump_previous_blank">Jätä tyhjäksi tai aseta arvo 0, jos haluat, että edellinen painike toistaa aina edellisen kappaleen</string>
     <string name="delete_hidden_songs">Haluatko varmasti poistaa kaikki piilotetut kappaleet tietokannasta? Tämä toimenpide on peruuttamaton.</string>
     <string name="delete_hidden_songs_message">Poista piilotetut kappaleet</string>
-    <string name="cover_type_vinyl">Vinyyli</string>
-    <string name="cover_type_cd">CD</string>
-    <string name="cover_type_cd_with_cover">CD kansikuvalla</string>
     <string name="wallpaper">Taustakuva</string>
     <string name="enable_wallpaper">Käytä taustakuvaa</string>
     <string name="set_cover_thumbnail_as_wallpaper">Aseta kansikuva taustakuvaksi</string>
@@ -742,13 +716,8 @@
     <string name="error_message_unsupported_local_playlist">Unsupported format</string>
     <string name="error_message_import_local_playlist_failed">Error occurs while importing local playlist</string>
     <string name="dialog_title_color_picker">Color picker</string>
-    <string name="setting_description_only_available_in_theme">Only available in %s theme</string>
     <string name="setting_description_app_language">Applies only to the app\'s language; system language is unaffected</string>
     <string name="currently_selected">Currently selected: %s</string>
-    <string name="setting_description_update_checker_ask">Prompt when a new version is available to download</string>
-    <string name="setting_description_update_checker_disabled">%s will not notify you about new updates</string>
-    <string name="setting_description_update_checker_automatic">Automatically download \&amp; install new version when available</string>
-    <string name="setting_title_update_checker_automatic">Download and install automatically</string>
     <string name="setting_entry_update_checker">App update</string>
     <string name="update_dialog_init_status">Initializing</string>
     <string name="update_dialog_downloading_status">Downloading</string>
@@ -778,7 +747,6 @@
     <string name="setting_description_delete_search_history">Delete %s</string>
     <string name="setting_entry_live_wallpaper">Live wallpaper</string>
     <string name="setting_description_live_wallpaper">Set your wallpaper to the thumbnail of the currently playing song</string>
-    <string name="word_lockscreen">Lockscreen</string>
     <string name="warning_only_available_on_android_and_above">Only available on Android %1$s+ (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Single back</string>
     <string name="setting_description_single_back_from_search">Prevent duplicate search pages when you click search icon</string>
@@ -812,10 +780,6 @@
     <string name="setting_entry_sync_quotes">Sync \"%s\"</string>
     <string name="setting_entry_test_proxy">Test proxy</string>
     <string name="success_proxy_verified">Proxy is correctly configured</string>
-    <string name="cache_location_split">Split</string>
-    <string name="setting_description_cache_location_system">Store both cached and downloaded in the app\'s cache, which can be deleted by clearing the cache in settings</string>
-    <string name="setting_description_cache_location_private">Store both cached and downloaded songs in the app\'s private storage, which can only be deleted if the app\'s data is wiped</string>
-    <string name="setting_description_cache_location_split">Cached songs live in app\'s cache, and downloaded songs live in app\'s private storage</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_pitch_black">Pitch black</string>
@@ -865,15 +829,8 @@
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
     <string name="warning_end_of_list">End of list</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
-    <string name="doh_none">None</string>
-    <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (family)</string>
-    <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (secured)</string>
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
-    <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>

@@ -1,15 +1,21 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.StringRes
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.setting_description_update_checker_ask
+import kreate.resources.generated.resources.setting_description_update_checker_automatic
+import kreate.resources.generated.resources.setting_description_update_checker_disabled
+import kreate.resources.generated.resources.setting_title_update_checker_ask
+import kreate.resources.generated.resources.setting_title_update_checker_automatic
+import kreate.resources.generated.resources.word_disabled
+import org.jetbrains.compose.resources.StringResource
 
 enum class CheckUpdateState(
-    @field:StringRes override val androidTextId: Int,
-    @field:StringRes val subtitleId: Int
+    override val textId: StringResource,
+    val subtitleId: StringResource
 ): TextView {
 
-    DOWNLOAD_INSTALL( R.string.setting_title_update_checker_automatic, R.string.setting_description_update_checker_automatic ),
-    DISABLED( R.string.vt_disabled, R.string.setting_description_update_checker_disabled ),
-    ASK( R.string.ask, R.string.setting_description_update_checker_ask );
+    DOWNLOAD_INSTALL(Res.string.setting_title_update_checker_automatic, Res.string.setting_description_update_checker_automatic),
+    DISABLED(Res.string.word_disabled, Res.string.setting_description_update_checker_disabled),
+    ASK(Res.string.setting_title_update_checker_ask, Res.string.setting_description_update_checker_ask);
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="done">Fet</string>
     <string name="hidesong">Vols amagar aquesta cançó? El seu temps de reproducció i la memòria cau s\'esborrarà. Aquesta acció no es pot desfer.</string>
@@ -187,17 +187,12 @@
     <string name="play_button">Botó de reproducció</string>
     <string name="close_app_with_back_button">Tanca l\'aplicació amb el botó Enrere</string>
     <string name="when_you_use_the_back_button_from_the_home_page">Quan utilitzeu el botó enrere de la pàgina d\'inici</string>
-    <string name="audio_quality_format_high">Alta</string>
     <string name="audio_quality_format_medium">Mitjana</string>
-    <string name="audio_quality_format_low">Baixa</string>
     <string name="audio_quality_format_unknown">Desconegut</string>
     <string name="do_you_really_want_to_delete_download">Realment voleu suprimir la descàrrega?</string>
     <string name="disable_scrolling_text">Desactiva el text de desplaçament</string>
     <string name="scrolling_text_is_used_for_long_texts">El text de desplaçament s\'utilitza per a textos llargs</string>
     <string name="audio_quality_format">Format de qualitat d\'àudio</string>
-    <string name="by_most_played_song">Per Cançó més reproduïda</string>
-    <string name="by_last_played_song">Per Darrera cançó reproduïda</string>
-    <string name="audio_quality_automatic">Automàtic</string>
     <string name="statistics_songs_heard">cançons escoltades</string>
     <string name="statistics_of_time_taken">de temps ocupat</string>
     <string name="statistics_max_number_of_items">Nombre màxim d\'elements</string>
@@ -291,8 +286,6 @@
     <string name="sort_duration">Duració</string>
     <string name="pause_between_songs">Pausa entre cançons</string>
     <string name="navigation_bar_type">Tipus de barra de navegació</string>
-    <string name="icon_and_text">Icones i text</string>
-    <string name="only_icon">Només icones</string>
     <string name="action_bar_show_menu_button">Mostra el botó del menú</string>
     <string name="sort_album">Àlbum</string>
     <string name="show_total_time_of_queue">Mostra el temps total de la cua</string>
@@ -313,15 +306,12 @@
     <string name="pick_from">Tria de</string>
     <string name="download_cover">Descarrega la portada</string>
     <string name="menu_style">Estil del menú</string>
-    <string name="style_grid">Quadrícula</string>
-    <string name="style_list">Llista</string>
     <string name="direction_bottom">A baix</string>
     <string name="event_shake">Sacseja</string>
     <string name="shake_to_change_song">Sacseja per canviar de cançó</string>
     <string name="history">Historial</string>
     <string name="yesterday">Ahir</string>
     <string name="last_week">La setmana passada</string>
-    <string name="by_casual_played_song">Cançó interpretada per Casual</string>
     <string name="theme_material_you">Material You</string>
     <string name="show_statistics_in_navigation_bar">Mostra les estadístiques a la barra de navegació</string>
     <string name="settings">Paràmetres</string>
@@ -416,12 +406,6 @@
     <string name="pinfo_album_and_artist_name">Àlbum i nom de l\'artista</string>
     <string name="show_player_top_actions_bar">Mostra la barra d\'accions superior</string>
     <string name="icon_like_button">Botó M\'agrada</string>
-    <string name="icon_like_apple">Poma</string>
-    <string name="icon_like_breaked">Trencat</string>
-    <string name="icon_like_gift">Regal</string>
-    <string name="icon_like_shape">Forma</string>
-    <string name="icon_like_striped">Ratllat</string>
-    <string name="icon_like_brilliant">Brillant</string>
     <string name="player_swap_controls_with_timeline">Canvia els controls amb la línia de temps</string>
     <string name="player_enable_lyrics_popup_message">Activa el missatge emergent de la lletra</string>
     <string name="exclude_songs_with_duration_limit">Exclou cançons amb un límit de durada</string>
@@ -430,8 +414,6 @@
     <string name="enable_quick_picks_page">Activa la pàgina de selecció ràpida</string>
     <string name="parental_control">Control parental</string>
     <string name="info_prevent_play_songs_with_age_limitation">Eviteu reproduir cançons amb limitació d\'edat</string>
-    <string name="cache_location_private">Privat</string>
-    <string name="cache_location_system">Sistema</string>
     <string name="debug">DEPURACIÓ</string>
     <string name="setting_entry_runtime_log">Registre d\'execució</string>
     <string name="setting_description_runtime_log">Registrant tot el que està passant a %s</string>
@@ -578,7 +560,6 @@
     <string name="failed_to_remove_thumbnail">No s\'ha pogut eliminar la miniatura</string>
     <string name="settings_enable_pip">Activa la Imatge sobre la Imatge</string>
     <string name="settings_enable_pip_auto">Activa la Imatge sobre la Imatge automàticament</string>
-    <string name="pipmodule_cover">Coberta</string>
     <string name="settings_pip_module">Mòdul PIP</string>
     <string name="menu_go_to_picture_in_picture">PIP</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">Des d\'Android 12, pip es pot activar automàticament</string>
@@ -592,10 +573,6 @@
     <string name="original_lyrics">Lletres originals</string>
     <string name="translated_lyrics">Lletres traduïdes</string>
     <string name="press_once_again_to_exit">Premeu una altra vegada per sortir</string>
-    <string name="music_animations_bars">Barres</string>
-    <string name="music_animations_crazy_bars">Barres boges</string>
-    <string name="music_animations_crazy_points">Punts bojos</string>
-    <string name="music_animations_bubbles">Bombolles</string>
     <string name="now_playing_indicator">Indicador de reproducció ara</string>
     <string name="good_morning">Bon dia</string>
     <string name="good_afternoon">Bona tarda</string>
@@ -609,9 +586,6 @@
     <string name="jump_previous_blank">Deixeu-lo en blanc o 0 per al botó anterior per reproduir sempre la cançó anterior</string>
     <string name="delete_hidden_songs">Realment voleu suprimir totes les cançons ocultes de la base de dades? Aquesta acció és irreversible.</string>
     <string name="delete_hidden_songs_message">Suprimeix les cançons amagades</string>
-    <string name="cover_type_vinyl">Vinil</string>
-    <string name="cover_type_cd">CD</string>
-    <string name="cover_type_cd_with_cover">CD amb portada</string>
     <string name="wallpaper">Fons de pantalla</string>
     <string name="enable_wallpaper">Activa el fons de pantalla</string>
     <string name="set_cover_thumbnail_as_wallpaper">Estableix la miniatura de la portada com a fons de pantalla</string>
@@ -742,13 +716,8 @@
     <string name="error_message_unsupported_local_playlist">Format no suportat</string>
     <string name="error_message_import_local_playlist_failed">Ha ocorregut un error mentre s\'importava la llista de reproducció local</string>
     <string name="dialog_title_color_picker">Selector de colors</string>
-    <string name="setting_description_only_available_in_theme">Tan sols disponible en el tema %s</string>
     <string name="setting_description_app_language">S\'aplica només a l\'idioma de l\'aplicació, l\'idioma del sistema no es veu afectat</string>
     <string name="currently_selected">Seleccionat actualment: %s</string>
-    <string name="setting_description_update_checker_ask">Notificar quan hi hagi una nova versió disponible per descarregar</string>
-    <string name="setting_description_update_checker_disabled">%s No et notificarà sobre noves actualitzacions</string>
-    <string name="setting_description_update_checker_automatic">Descarregar automàticament i instal·lar nova versió a l\'inicialitzar</string>
-    <string name="setting_title_update_checker_automatic">Descarregar i instal·lar automàticament</string>
     <string name="setting_entry_update_checker">Actualització de l\'aplicació</string>
     <string name="update_dialog_init_status">Inicialitzant</string>
     <string name="update_dialog_downloading_status">Descarregant</string>
@@ -778,7 +747,6 @@
     <string name="setting_description_delete_search_history">Eliminar %s</string>
     <string name="setting_entry_live_wallpaper">Fons de pantalla animat</string>
     <string name="setting_description_live_wallpaper">Establir la portada de la cançó que es reprodueixi com a fons de pantalla</string>
-    <string name="word_lockscreen">Pantalla de bloqueig</string>
     <string name="warning_only_available_on_android_and_above">Disponible tan sols en Android %1$s+ (%2$d)</string>
     <string name="setting_entry_single_back_from_search">Cerca única</string>
     <string name="setting_description_single_back_from_search">Evitar pàgines de cerca duplicada quan prems la icona de cercar</string>
@@ -812,10 +780,6 @@
     <string name="setting_entry_sync_quotes">Sincronitzar \"%s\"</string>
     <string name="setting_entry_test_proxy">Provar proxy</string>
     <string name="success_proxy_verified">El proxy està correctament configurat</string>
-    <string name="cache_location_split">Partir</string>
-    <string name="setting_description_cache_location_system">Guardar tant el contingut descarregar com el guardat en la memòria cau a la memòria cau, el qual pot ser esborrat en netejar la memòria cau a configuració</string>
-    <string name="setting_description_cache_location_private">Guardar tant el contingut descarregar com el guardat en la memòria cau a l\'emmagatzematge privat de l\'aplicació, el qual pot ser esborrat en netejar la memòria cau a configuració</string>
-    <string name="setting_description_cache_location_split">Cançons a la memòria cau es guarden a la memòria cau de l\'aplicació i les cançons descarregades a l\'emmagatzematge privat de l\'aplicació</string>
     <string name="theme_light">Clar</string>
     <string name="theme_dark">Fosc</string>
     <string name="theme_pitch_black">Negre opac</string>
@@ -865,15 +829,8 @@
     <string name="setting_entry_thumbnail_size">Thumbnail size</string>
     <string name="warning_end_of_list">End of list</string>
     <string name="setting_header_dns_over_https">DNS over HTTPS</string>
-    <string name="doh_none">None</string>
-    <string name="doh_cloudflare">Cloudflare</string>
-    <string name="doh_cloudflare_family">Cloudflare (family)</string>
-    <string name="doh_quad9">Quad9</string>
-    <string name="doh_quad9_secured">Quad9 (secured)</string>
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
-    <string name="doh_mullvad">Mullvad</string>
-    <string name="doh_mullvad_family">Mullvad (family)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
     <string name="error_required_report">Error occurs! Please submit report with log(s)</string>
     <string name="error_failed_to_verify_proxy">Failed to verify proxy</string>

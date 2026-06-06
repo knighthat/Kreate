@@ -1,13 +1,15 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.StringRes
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.chip_library
+import kreate.resources.generated.resources.chip_liked
+import org.jetbrains.compose.resources.StringResource
 
 enum class ArtistsType(
-    @field:StringRes override val androidTextId: Int
+    override val textId: StringResource
 ): TextView {
 
-    Favorites( R.string.favorites ),
-    Library( R.string.library );
+    Favorites(Res.string.chip_liked),
+    Library(Res.string.chip_library);
 }

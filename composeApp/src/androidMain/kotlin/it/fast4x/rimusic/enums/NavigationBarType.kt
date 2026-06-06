@@ -1,18 +1,20 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import app.kreate.android.Preferences
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.icon_and_text
+import kreate.resources.generated.resources.only_icon
+import org.jetbrains.compose.resources.StringResource
 
 
 enum class NavigationBarType(
-    @field:StringRes override val androidTextId: Int
+    override val textId: StringResource
 ): TextView {
 
-    IconAndText( R.string.icon_and_text ),
-    IconOnly( R.string.only_icon );
+    IconAndText(Res.string.icon_and_text),
+    IconOnly(Res.string.only_icon);
 
     companion object {
 

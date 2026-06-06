@@ -1,14 +1,17 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.StringRes
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.cover_type_cd
+import kreate.resources.generated.resources.cover_type_cd_with_cover
+import kreate.resources.generated.resources.cover_type_vinyl
+import org.jetbrains.compose.resources.StringResource
 
 enum class ThumbnailCoverType(
-    @field:StringRes override val androidTextId: Int
+    override val textId: StringResource
 ): TextView {
 
-    Vinyl (R.string.cover_type_vinyl ),
-    CD( R.string.cover_type_cd ),
-    CDwithCover( R.string.cover_type_cd_with_cover );
+    Vinyl(Res.string.cover_type_vinyl),
+    CD(Res.string.cover_type_cd),
+    CDwithCover(Res.string.cover_type_cd_with_cover);
 }

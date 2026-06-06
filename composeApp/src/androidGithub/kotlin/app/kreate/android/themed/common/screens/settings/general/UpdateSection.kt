@@ -23,6 +23,7 @@ import it.fast4x.rimusic.enums.CheckUpdateState
 import it.fast4x.rimusic.ui.components.themed.SecondaryTextButton
 import me.knighthat.updater.ChangelogsDialog
 import me.knighthat.updater.Updater
+import org.jetbrains.compose.resources.stringResource
 
 
 fun LazyListScope.updateSection( search: SettingEntrySearch ) {

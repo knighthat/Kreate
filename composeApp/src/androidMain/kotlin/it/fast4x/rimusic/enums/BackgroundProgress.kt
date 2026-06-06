@@ -1,18 +1,22 @@
 package it.fast4x.rimusic.enums;
 
-import androidx.annotation.StringRes
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.mini_player
+import kreate.resources.generated.resources.word_both
+import kreate.resources.generated.resources.word_disabled
+import kreate.resources.generated.resources.word_player
+import org.jetbrains.compose.resources.StringResource
 
 enum class BackgroundProgress(
-    @field:StringRes override val androidTextId: Int
+    override val textId: StringResource
 ): TextView {
 
-    Player( R.string.player ),
+    Player(Res.string.word_player),
 
-    MiniPlayer( R.string.minimized_player ),
+    MiniPlayer(Res.string.mini_player),
 
-    Both( R.string.both ),
+    Both(Res.string.word_both),
 
-    Disabled( R.string.vt_disabled );
+    Disabled(Res.string.word_disabled);
 }

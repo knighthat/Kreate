@@ -1,20 +1,25 @@
 package it.fast4x.rimusic.enums
 
-import androidx.annotation.StringRes
-import app.kreate.android.R
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.now_playling_animation_bars
+import kreate.resources.generated.resources.now_playling_animation_bubbles
+import kreate.resources.generated.resources.now_playling_animation_crazy_points
+import kreate.resources.generated.resources.now_playlist_animation_crazy_bars
+import kreate.resources.generated.resources.word_disabled
+import org.jetbrains.compose.resources.StringResource
 
 enum class MusicAnimationType(
-    @field:StringRes override val androidTextId: Int
+    override val textId: StringResource
 ): TextView {
 
-    Disabled( R.string.vt_disabled ),
+    Disabled(Res.string.word_disabled),
 
-    Bars( R.string.music_animations_bars ),
+    Bars(Res.string.now_playling_animation_bars),
 
-    CrazyBars( R.string.music_animations_crazy_bars ),
+    CrazyBars(Res.string.now_playlist_animation_crazy_bars),
 
-    CrazyPoints( R.string.music_animations_crazy_points ),
+    CrazyPoints(Res.string.now_playling_animation_crazy_points),
 
-    Bubbles( R.string.music_animations_bubbles );
+    Bubbles(Res.string.now_playling_animation_bubbles);
 }
