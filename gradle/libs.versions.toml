@@ -54,6 +54,7 @@ runner = "1.7.0"
 junit = "1.1.5"
 okio = "3.16.2"
 core-ktx = "1.13.1"
+datastore = "1.2.1"
 
 
 [libraries]
@@ -153,6 +154,11 @@ koin-navigation = { module = "io.insert-koin:koin-compose-viewmodel-navigation",
 # Logging
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kermit-io = { module = "co.touchlab:kermit-io", version.ref = "kermit" }
+
+# Preferences
+datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+
 
 # Extras
 translator = {  group = "com.github.therealbush", name = "translator", version.ref = "translator" }
