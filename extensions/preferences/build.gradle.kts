@@ -8,7 +8,6 @@ plugins {
 }
 
 kotlin {
-
     // Target declarations - add or remove as needed below. These define
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
@@ -34,13 +33,21 @@ kotlin {
     // See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
     sourceSets {
         commonMain.dependencies {
+            implementation( projects.resources )
+
+            implementation( libs.kermit )
+            implementation( libs.koin.core )
+            implementation( libs.kotlinx.coroutines )
+            // Datastore
+            implementation( libs.datastore )
+            implementation( libs.datastore.preferences )
         }
         commonTest.dependencies {
             implementation( libs.kotlin.test )
         }
         androidMain.dependencies {
         }
-        getByName("androidDeviceTest").dependencies {
+        getByName( "androidDeviceTest" ).dependencies {
             implementation( libs.androidx.junit )
             implementation( libs.androidx.runner )
             implementation( libs.androidx.test )
