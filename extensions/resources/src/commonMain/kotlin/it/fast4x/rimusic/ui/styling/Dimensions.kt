@@ -1,10 +1,13 @@
 package it.fast4x.rimusic.ui.styling
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+
+
+@Composable
+expect fun getSongDimension(): Dp
 
 @Suppress("ClassName")
 object Dimensions {
@@ -36,9 +39,7 @@ object Dimensions {
         object player {
             val song: Dp
                 @Composable
-                get() = with(LocalConfiguration.current) {
-                    minOf(screenHeightDp, screenWidthDp)
-                }.dp
+                get() = getSongDimension()
         }
     }
 
