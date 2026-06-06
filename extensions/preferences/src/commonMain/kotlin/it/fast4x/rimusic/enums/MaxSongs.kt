@@ -21,7 +21,7 @@ enum class MaxSongs: TextView {
     override val text: String
         @Composable
         get() = when( this ) {
-            Unlimited -> stringResource(Res.string.word_unlimited )
+            Unlimited -> stringResource( Res.string.word_unlimited )
             else -> this.name
         }
 

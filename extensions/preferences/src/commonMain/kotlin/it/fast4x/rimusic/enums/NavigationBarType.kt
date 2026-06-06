@@ -1,8 +1,8 @@
 package it.fast4x.rimusic.enums
 
 import androidx.compose.runtime.Composable
-import app.kreate.android.Preferences
 import app.kreate.component.TextView
+import app.kreate.preferences.Preferences
 import kreate.resources.generated.resources.Res
 import kreate.resources.generated.resources.icon_and_text
 import kreate.resources.generated.resources.only_icon

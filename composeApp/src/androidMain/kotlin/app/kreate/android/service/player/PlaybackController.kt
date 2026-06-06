@@ -7,10 +7,17 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.session.CommandButton
+import androidx.media3.session.SessionCommand
 import app.kreate.android.R
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.NotificationButtons
 import it.fast4x.rimusic.service.MyDownloadHelper
+import it.fast4x.rimusic.service.modern.MediaSessionConstants.CommandSearch
+import it.fast4x.rimusic.service.modern.MediaSessionConstants.CommandStartRadio
+import it.fast4x.rimusic.service.modern.MediaSessionConstants.CommandToggleDownload
+import it.fast4x.rimusic.service.modern.MediaSessionConstants.CommandToggleLike
+import it.fast4x.rimusic.service.modern.MediaSessionConstants.CommandToggleRepeatMode
+import it.fast4x.rimusic.service.modern.MediaSessionConstants.CommandToggleShuffle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -84,6 +91,16 @@ object PlaybackController {
             NotificationButtons.Radio -> R.drawable.radio
         }
 
+    fun getCommandButton( button: NotificationButtons ): SessionCommand =
+        when( button ) {
+            NotificationButtons.Download -> CommandToggleDownload
+            NotificationButtons.Favorites -> CommandToggleLike
+            NotificationButtons.Repeat -> CommandToggleRepeatMode
+            NotificationButtons.Shuffle -> CommandToggleShuffle
+            NotificationButtons.Radio -> CommandStartRadio
+            NotificationButtons.Search -> CommandSearch
+        }
+
     suspend fun makeButton(
         context: Context,
         player: Player,
@@ -92,7 +109,7 @@ object PlaybackController {
     ): CommandButton =
         CommandButton.Builder( CommandButton.ICON_UNDEFINED )
                      .setDisplayName( getString(button.textId) )
-                     .setSessionCommand( button.sessionCommand )
+                     .setSessionCommand( getCommandButton(button) )
                      .apply {
                          getIconId( player, button ).also( ::setCustomIconResId )
                          builder()

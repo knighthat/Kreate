@@ -1,9 +1,9 @@
 package it.fast4x.rimusic.enums
 
 import androidx.compose.runtime.Composable
+import app.kreate.component.TextView
 import kreate.resources.generated.resources.Res
 import kreate.resources.generated.resources.word_disabled
-import me.knighthat.enums.TextView
 import org.jetbrains.compose.resources.stringResource
 
 enum class DurationInSeconds {
