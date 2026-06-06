@@ -45,9 +45,79 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.bookmark
+import kreate.resources.generated.resources.bookmark_filled
+import kreate.resources.generated.resources.download_progress
+import kreate.resources.generated.resources.favorite_filled
+import kreate.resources.generated.resources.heart_dislike
+import kreate.resources.generated.resources.heart_outline
 import me.knighthat.sync.YouTubeSync
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+
+
+@OptIn(UnstableApi::class)
+private fun getStateIcon(
+    action: QueueSwipeAction,
+    likeState: Boolean?,
+    downloadState: Int,
+    downloadedStateMedia: DownloadedStateMedia
+): DrawableResource =
+    when( action ) {
+        QueueSwipeAction.Download -> when( downloadedStateMedia ) {
+            DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED -> when (downloadState) {
+                Download.STATE_DOWNLOADING,
+                Download.STATE_QUEUED,
+                Download.STATE_RESTARTING -> Res.drawable.download_progress
+                else -> downloadedStateMedia.iconId
+            }
+            else -> downloadedStateMedia.iconId
+        }
+        QueueSwipeAction.Favourite -> when( likeState ) {
+            false -> Res.drawable.heart_dislike
+            null  -> Res.drawable.heart_outline
+            else  -> Res.drawable.favorite_filled
+        }
+        else -> action.iconId
+    }
+
+@OptIn(UnstableApi::class)
+private fun getStateIcon(
+    action: PlaylistSwipeAction,
+    likeState: Boolean?,
+    downloadState: Int,
+    downloadedStateMedia: DownloadedStateMedia
+): DrawableResource =
+    when( action ) {
+        PlaylistSwipeAction.Download -> when( downloadedStateMedia ) {
+            DownloadedStateMedia.NOT_CACHED_OR_DOWNLOADED -> when (downloadState) {
+                Download.STATE_DOWNLOADING,
+                Download.STATE_QUEUED,
+                Download.STATE_RESTARTING -> Res.drawable.download_progress
+                else -> downloadedStateMedia.iconId
+            }
+            else -> downloadedStateMedia.iconId
+        }
+        PlaylistSwipeAction.Favourite -> when( likeState ) {
+            false -> Res.drawable.heart_dislike
+            null  -> Res.drawable.heart_outline
+            else  -> Res.drawable.favorite_filled
+        }
+        else -> action.iconId
+    }
+
+private fun getStateIcon(
+    action: AlbumSwipeAction,
+    bookmarkedState: Long?
+): DrawableResource =
+        when ( action ) {
+            AlbumSwipeAction.Bookmark -> when( bookmarkedState ) {
+                null -> Res.drawable.bookmark
+                else -> Res.drawable.bookmark_filled
+            }
+            else -> action.iconId
+        }
 
 @Composable
 fun SwipeableContent(
@@ -184,12 +254,14 @@ fun SwipeableQueueItem(
     val swipeRighCallback = getActionCallback(queueSwipeRightAction)
 
     SwipeableContent(
-        swipeToLeftIcon = queueSwipeLeftAction.getStateIcon(
+        swipeToLeftIcon = getStateIcon(
+            queueSwipeLeftAction,
             songLikeState,
             downloadState,
             downloadedStateMedia
         ),
-        swipeToRightIcon = queueSwipeRightAction.getStateIcon(
+        swipeToRightIcon = getStateIcon(
+            queueSwipeRightAction,
             songLikeState,
             downloadState,
             downloadedStateMedia
@@ -246,12 +318,14 @@ fun SwipeablePlaylistItem(
     val swipeRighCallback = getActionCallback(playlistSwipeRightAction)
 
     SwipeableContent(
-        swipeToLeftIcon =  playlistSwipeLeftAction.getStateIcon(
+        swipeToLeftIcon =  getStateIcon(
+            playlistSwipeLeftAction,
             songLikeState,
             downloadState,
             downloadedStateMedia
         ),
-        swipeToRightIcon =  playlistSwipeRightAction.getStateIcon(
+        swipeToRightIcon =  getStateIcon(
+            playlistSwipeRightAction,
             songLikeState,
             downloadState,
             downloadedStateMedia
@@ -291,8 +365,8 @@ fun SwipeableAlbumItem(
     }
 
     SwipeableContent(
-        swipeToLeftIcon =  albumSwipeLeftAction.getStateIcon( album?.bookmarkedAt ),
-        swipeToRightIcon =  albumSwipeRightAction.getStateIcon( album?.bookmarkedAt ),
+        swipeToLeftIcon =  getStateIcon( albumSwipeLeftAction, album?.bookmarkedAt ),
+        swipeToRightIcon =  getStateIcon( albumSwipeRightAction, album?.bookmarkedAt ),
         onSwipeToLeft = getActionCallback( albumSwipeLeftAction ),
         onSwipeToRight = getActionCallback( albumSwipeRightAction )
     ) {

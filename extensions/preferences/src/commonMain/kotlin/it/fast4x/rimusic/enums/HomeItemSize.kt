@@ -1,11 +1,9 @@
 package it.fast4x.rimusic.enums
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.kreate.component.Drawable
 import app.kreate.component.TextView
-import it.fast4x.rimusic.ui.styling.px
 import kreate.resources.generated.resources.Res
 import kreate.resources.generated.resources.arrow_shape_up
 import kreate.resources.generated.resources.arrow_shape_up_stack
@@ -27,7 +25,4 @@ enum class HomeItemSize (
     BIG(162, Res.string.size_big, Res.drawable.arrow_shape_up_stack_2);
 
     val dp: Dp = this.size.dp
-    val px: Int
-        @Composable
-        get() = this.dp.px
 }

@@ -1,7 +1,5 @@
 package app.kreate.constant
 
-import org.jetbrains.annotations.Contract
-
 
 enum class SortOrder( val rotationZ: Float, val asSqlString: String ) {
     ASCENDING( 0f, "ASC" ),
@@ -23,10 +21,6 @@ enum class SortOrder( val rotationZ: Float, val asSqlString: String ) {
      *
      * @return a new list regardless selected value
      */
-    @Contract(
-        value = "_->new",
-        pure = true
-    )
     fun <T> applyTo( items: List<T> ): List<T> =
         when( this ) {
             DESCENDING -> items.reversed()

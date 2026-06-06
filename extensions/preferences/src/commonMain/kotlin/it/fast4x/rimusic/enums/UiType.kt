@@ -1,8 +1,8 @@
 package it.fast4x.rimusic.enums
 
 import androidx.compose.runtime.Composable
-import app.kreate.android.Preferences
-import me.knighthat.enums.TextView
+import app.kreate.component.TextView
+import app.kreate.preferences.Preferences
 
 enum class UiType: TextView {
     RiMusic,

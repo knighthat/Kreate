@@ -5,6 +5,10 @@ plugins {
     // Android
     alias( libs.plugins.android.kotlin.multiplatform.library )
     alias( libs.plugins.android.lint )
+
+    // Compose
+    alias( libs.plugins.jetbrains.compose )
+    alias( libs.plugins.kotlin.compose )
 }
 
 kotlin {
@@ -35,10 +39,15 @@ kotlin {
         commonMain.dependencies {
             implementation( projects.resources )
 
+            // Expose Translator classes
+            api( libs.translator )
             implementation( libs.kermit )
             implementation( libs.koin.core )
             implementation( libs.kotlinx.coroutines )
+            // Compose
+            implementation( libs.compose.kmp.ui )
             implementation( libs.compose.kmp.resources )
+            implementation( libs.compose.kmp.foundation )
             // Datastore
             implementation( libs.datastore )
             implementation( libs.datastore.preferences )
@@ -47,6 +56,7 @@ kotlin {
             implementation( libs.kotlin.test )
         }
         androidMain.dependencies {
+            implementation( libs.media3.ktx )
         }
         getByName( "androidDeviceTest" ).dependencies {
             implementation( libs.androidx.junit )

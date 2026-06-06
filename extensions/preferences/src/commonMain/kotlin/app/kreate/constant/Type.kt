@@ -1,4 +1,4 @@
-package app.kreate.constants
+package app.kreate.constant
 
 import app.kreate.component.TextView
 import kreate.resources.generated.resources.Res

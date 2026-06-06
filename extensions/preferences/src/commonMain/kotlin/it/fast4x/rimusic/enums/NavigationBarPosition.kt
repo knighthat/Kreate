@@ -1,7 +1,7 @@
 package it.fast4x.rimusic.enums
 
-import app.kreate.android.Preferences
 import app.kreate.component.TextView
+import app.kreate.preferences.Preferences
 import kreate.resources.generated.resources.Res
 import kreate.resources.generated.resources.position_bottom
 import kreate.resources.generated.resources.position_left
