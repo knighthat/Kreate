@@ -1,7 +1,9 @@
 package app.kreate.preferences
 
+import androidx.compose.ui.graphics.Color
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import app.kreate.android.enums.DohServer
 import app.kreate.android.enums.PlatformIndicatorType
@@ -74,6 +76,8 @@ import it.fast4x.rimusic.enums.ThumbnailRoundness
 import it.fast4x.rimusic.enums.TransitionEffect
 import it.fast4x.rimusic.enums.UiType
 import it.fast4x.rimusic.enums.WallpaperType
+import it.fast4x.rimusic.ui.styling.DefaultDarkColorPalette
+import it.fast4x.rimusic.ui.styling.DefaultLightColorPalette
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -562,6 +566,70 @@ sealed class Preferences<K, V>(
             EnumPref(preferences, Key.PROXY_SCHEME, Proxy.Type.HTTP, Proxy.Type::entries)
         }
         //</editor-fold>
+        //<editor-fold desc="Custom light colors">
+        val CUSTOM_LIGHT_THEME_BACKGROUND_0 by lazy {
+            ColorPref(preferences, Key.CUSTOM_LIGHT_THEME_BACKGROUND_0, DefaultLightColorPalette.background0)
+        }
+        val CUSTOM_LIGHT_THEME_BACKGROUND_1 by lazy {
+            ColorPref(preferences, Key.CUSTOM_LIGHT_THEME_BACKGROUND_1, DefaultLightColorPalette.background1)
+        }
+        val CUSTOM_LIGHT_THEME_BACKGROUND_2 by lazy {
+            ColorPref(preferences, Key.CUSTOM_LIGHT_THEME_BACKGROUND_2, DefaultLightColorPalette.background2)
+        }
+        val CUSTOM_LIGHT_THEME_BACKGROUND_3 by lazy {
+            ColorPref(preferences, Key.CUSTOM_LIGHT_THEME_BACKGROUND_3, DefaultLightColorPalette.background3)
+        }
+        val CUSTOM_LIGHT_THEME_BACKGROUND_4 by lazy {
+            ColorPref(preferences, Key.CUSTOM_LIGHT_THEME_BACKGROUND_4, DefaultLightColorPalette.background4)
+        }
+        val CUSTOM_LIGHT_TEXT by lazy {
+            ColorPref(preferences, Key.CUSTOM_LIGHT_TEXT, DefaultLightColorPalette.text)
+        }
+        val CUSTOM_LIGHT_TEXT_SECONDARY by lazy {
+            ColorPref(preferences, Key.CUSTOM_LIGHT_TEXT_SECONDARY, DefaultLightColorPalette.textSecondary)
+        }
+        val CUSTOM_LIGHT_TEXT_DISABLED by lazy {
+            ColorPref(preferences, Key.CUSTOM_LIGHT_TEXT_DISABLED, DefaultLightColorPalette.textDisabled)
+        }
+        val CUSTOM_LIGHT_PLAY_BUTTON by lazy {
+            ColorPref(preferences, Key.CUSTOM_LIGHT_PLAY_BUTTON, DefaultLightColorPalette.iconButtonPlayer)
+        }
+        val CUSTOM_LIGHT_ACCENT by lazy {
+            ColorPref(preferences, Key.CUSTOM_LIGHT_ACCENT, DefaultLightColorPalette.accent)
+        }
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Custom dark theme">
+        val CUSTOM_DARK_THEME_BACKGROUND_0 by lazy {
+            ColorPref(preferences, Key.CUSTOM_DARK_THEME_BACKGROUND_0, DefaultDarkColorPalette.background0)
+        }
+        val CUSTOM_DARK_THEME_BACKGROUND_1 by lazy {
+            ColorPref(preferences, Key.CUSTOM_DARK_THEME_BACKGROUND_1, DefaultDarkColorPalette.background1)
+        }
+        val CUSTOM_DARK_THEME_BACKGROUND_2 by lazy {
+            ColorPref(preferences, Key.CUSTOM_DARK_THEME_BACKGROUND_2, DefaultDarkColorPalette.background2)
+        }
+        val CUSTOM_DARK_THEME_BACKGROUND_3 by lazy {
+            ColorPref(preferences, Key.CUSTOM_DARK_THEME_BACKGROUND_3, DefaultDarkColorPalette.background3)
+        }
+        val CUSTOM_DARK_THEME_BACKGROUND_4 by lazy {
+            ColorPref(preferences, Key.CUSTOM_DARK_THEME_BACKGROUND_4, DefaultDarkColorPalette.background4)
+        }
+        val CUSTOM_DARK_TEXT by lazy {
+            ColorPref(preferences, Key.CUSTOM_DARK_TEXT, DefaultDarkColorPalette.text)
+        }
+        val CUSTOM_DARK_TEXT_SECONDARY by lazy {
+            ColorPref(preferences, Key.CUSTOM_DARK_TEXT_SECONDARY, DefaultDarkColorPalette.textSecondary)
+        }
+        val CUSTOM_DARK_TEXT_DISABLED by lazy {
+            ColorPref(preferences, Key.CUSTOM_DARK_TEXT_DISABLED, DefaultDarkColorPalette.textDisabled)
+        }
+        val CUSTOM_DARK_PLAY_BUTTON by lazy {
+            ColorPref(preferences, Key.CUSTOM_DARK_PLAY_BUTTON, DefaultDarkColorPalette.iconButtonPlayer)
+        }
+        val CUSTOM_DARK_ACCENT by lazy {
+            ColorPref(preferences, Key.CUSTOM_DARK_ACCENT, DefaultDarkColorPalette.accent)
+        }
+        //</editor-fold>
         //<editor-fold desc="Logging">
         val RUNTIME_LOG by lazy {
             BooleanPref(preferences, Key.RUNTIME_LOG, false)
@@ -807,6 +875,9 @@ sealed class Preferences<K, V>(
         val STATISTIC_PAGE_CATEGORY by lazy {
             EnumPref(preferences, Key.STATISTIC_PAGE_CATEGORY, StatisticsCategory.Songs, StatisticsCategory::entries)
         }
+        val CUSTOM_COLOR by lazy {
+            ColorPref(preferences, Key.CUSTOM_COLOR, Color.Green)
+        }
     }
 
     private val _internalState = MutableStateFlow(defaultValue)
@@ -893,6 +964,20 @@ sealed class Preferences<K, V>(
         override fun deserialize( key: String ): E? = entries().firstOrNull { it.name == key }
 
         override fun serialize( value: E ): String = value.name
+    }
+
+    // [Color] is just value class of ULong. Similarly to Enum, we can store
+    // this value as its primitive value - Long, and use simple reverse lookup
+    // to get the value back flawlessly
+    class ColorPref(
+        storage: Storage,
+        key: Preferences.Key,
+        defaultValue: Color
+    ) : Preferences<Long, Color>(storage, longPreferencesKey(key.value), defaultValue) {
+
+        override fun deserialize( key: Long ): Color = Color(key.toULong())
+
+        override fun serialize( value: Color ): Long = value.value.toLong()
     }
 
     class Key private constructor(val value: String) {
@@ -1071,6 +1156,30 @@ sealed class Preferences<K, V>(
             val IS_PROXY_ENABLED = Key("is_proxy_enabled")
             val PROXY_SCHEME = Key("proxy_scheme")
             //</editor-fold>
+            //<editor-fold desc="Custom light colors">
+            val CUSTOM_LIGHT_THEME_BACKGROUND_0 = Key("custom_light_theme_background_0")
+            val CUSTOM_LIGHT_THEME_BACKGROUND_1 = Key("custom_light_theme_background_1")
+            val CUSTOM_LIGHT_THEME_BACKGROUND_2 = Key("custom_light_theme_background_2")
+            val CUSTOM_LIGHT_THEME_BACKGROUND_3 = Key("custom_light_theme_background_3")
+            val CUSTOM_LIGHT_THEME_BACKGROUND_4 = Key("custom_light_theme_background_4")
+            val CUSTOM_LIGHT_TEXT = Key("custom_light_text")
+            val CUSTOM_LIGHT_TEXT_SECONDARY = Key("custom_light_text_secondary")
+            val CUSTOM_LIGHT_TEXT_DISABLED = Key("custom_light_text_disabled")
+            val CUSTOM_LIGHT_PLAY_BUTTON = Key("custom_light_play_button")
+            val CUSTOM_LIGHT_ACCENT = Key("custom_light_accent")
+            //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="Custom dark theme">
+            val CUSTOM_DARK_THEME_BACKGROUND_0 = Key("custom_dark_theme_background_0")
+            val CUSTOM_DARK_THEME_BACKGROUND_1 = Key("custom_dark_theme_background_1")
+            val CUSTOM_DARK_THEME_BACKGROUND_2 = Key("custom_dark_theme_background_2")
+            val CUSTOM_DARK_THEME_BACKGROUND_3 = Key("custom_dark_theme_background_3")
+            val CUSTOM_DARK_THEME_BACKGROUND_4 = Key("custom_dark_theme_background_4")
+            val CUSTOM_DARK_TEXT = Key("custom_dark_text")
+            val CUSTOM_DARK_TEXT_SECONDARY = Key("custom_dark_text_secondary")
+            val CUSTOM_DARK_TEXT_DISABLED = Key("custom_dark_text_disabled")
+            val CUSTOM_DARK_PLAY_BUTTON = Key("custom_dark_play_button")
+            val CUSTOM_DARK_ACCENT = Key("custom_dark_accent")
+            //</editor-fold>
             //<editor-fold desc="Logging">
             val RUNTIME_LOG = Key("runtime_log")
             val RUNTIME_LOG_SHARED = Key("runtime_log_shared")
@@ -1157,6 +1266,7 @@ sealed class Preferences<K, V>(
             val OTHER_APP_LANGUAGE = Key("other_app_language")
             val HOME_ARTIST_AND_ALBUM_FILTER = Key("home_artist_and_album_filter")
             val STATISTIC_PAGE_CATEGORY = Key("statistic_page_category")
+            val CUSTOM_COLOR = Key("custom_color")
         }
     }
 }

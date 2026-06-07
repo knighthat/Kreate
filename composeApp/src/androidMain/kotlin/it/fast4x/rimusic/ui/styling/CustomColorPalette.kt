@@ -1,7 +1,7 @@
 package it.fast4x.rimusic.ui.styling
 
 import android.content.Context
-import app.kreate.android.Preferences
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.enums.ColorPaletteMode
 
 
@@ -32,7 +32,7 @@ fun customColorPalette(colorPalette: ColorPalette, context: Context, isSystemInD
         accent = Preferences.CUSTOM_DARK_ACCENT.value
     )
 
-    val colorPaletteMode = app.kreate.preferences.Preferences.THEME_MODE.value
+    val colorPaletteMode = Preferences.THEME_MODE.value
     return when (colorPaletteMode) {
         ColorPaletteMode.Dark, ColorPaletteMode.PitchBlack -> customThemeDark
         ColorPaletteMode.Light -> customThemeLight
