@@ -35,7 +35,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.innertube.InnertubeProvider
@@ -46,6 +45,7 @@ import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.extensions.discord.DiscordLoginAndGetToken
@@ -94,7 +94,7 @@ fun AccountSettings(
             header( { "youtube" } )
             entry( search, "youtube" ) {
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.YOUTUBE_LOGIN,
+                    preference = Preferences.YOUTUBE_LOGIN,
                     title = stringResource( R.string.setting_entry_youtube_login )
                 ) {
                     if( it ) return@BooleanEntry
@@ -109,7 +109,7 @@ fun AccountSettings(
             }
             animatedEntry(
                 key = "ytLoginChildren",
-                visibleState = app.kreate.preferences.Preferences.YOUTUBE_LOGIN,
+                visibleState = Preferences.YOUTUBE_LOGIN,
                 modifier = Modifier.padding( start = 25.dp )
             ) {
                 var loginYouTube by remember { mutableStateOf(false) }
@@ -179,7 +179,7 @@ fun AccountSettings(
                     )
                     if( search appearsIn syncPlaylistsTitle )
                         SettingComponents.BooleanEntry(
-                            preference = app.kreate.preferences.Preferences.YOUTUBE_PLAYLISTS_SYNC,
+                            preference = Preferences.YOUTUBE_PLAYLISTS_SYNC,
                             title = syncPlaylistsTitle
                         )
 
@@ -189,7 +189,7 @@ fun AccountSettings(
                     )
                     if( search appearsIn syncArtistsTitle )
                         SettingComponents.BooleanEntry(
-                            preference = app.kreate.preferences.Preferences.YOUTUBE_ARTISTS_SYNC,
+                            preference = Preferences.YOUTUBE_ARTISTS_SYNC,
                             title = syncArtistsTitle
                         )
 
@@ -199,12 +199,12 @@ fun AccountSettings(
                     )
                     if( search appearsIn syncAlbumsTitle )
                         SettingComponents.BooleanEntry(
-                            preference = app.kreate.preferences.Preferences.YOUTUBE_ALBUMS_SYNC,
+                            preference = Preferences.YOUTUBE_ALBUMS_SYNC,
                             title = syncAlbumsTitle
                         )
                 }
 
-                val radius by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
+                val radius by Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
                 CustomModalBottomSheet(
                     showSheet = loginYouTube,
                     onDismissRequest = { loginYouTube = false },
@@ -240,10 +240,10 @@ fun AccountSettings(
             header( { "discord" } )
             entry( search, R.string.discord_enable_rich_presence ) {
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.DISCORD_LOGIN,
+                    preference = Preferences.DISCORD_LOGIN,
                     title = stringResource( R.string.discord_enable_rich_presence ),
                     onValueChanged = {
-                        val token by Preferences.DISCORD_ACCESS_TOKEN
+                        val token = Preferences.DISCORD_ACCESS_TOKEN.value
                         if( token.isBlank() ) return@BooleanEntry
 
                         if( it )
@@ -260,7 +260,7 @@ fun AccountSettings(
             }
             animatedEntry(
                 key = "discordLoginChildren",
-                visibleState = app.kreate.preferences.Preferences.DISCORD_LOGIN,
+                visibleState = Preferences.DISCORD_LOGIN,
                 modifier = Modifier.padding( start = 25.dp )
             ) {
                 var loginDiscord by remember { mutableStateOf(false) }
@@ -297,7 +297,7 @@ fun AccountSettings(
                         )
                     }
 
-                val radius by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
+                val radius by Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
                 CustomModalBottomSheet(
                     showSheet = loginDiscord,
                     onDismissRequest = { loginDiscord = false },

@@ -79,6 +79,7 @@ import it.fast4x.rimusic.ui.screens.searchresult.SearchResultScreen
 import it.fast4x.rimusic.ui.screens.settings.SettingsScreen
 import it.fast4x.rimusic.ui.screens.statistics.StatisticsScreen
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.update
 import me.knighthat.updater.ChangelogsDialog
 import me.knighthat.updater.UpdateHandler
 import me.knighthat.utils.Toaster
@@ -438,7 +439,8 @@ fun AppNavigation(
     }
     crashReportDialog.Render()
 
-    if( Preferences.SEEN_CHANGELOGS_VERSION.value != BuildConfig.VERSION_NAME ) {
+    val seenVersion by app.kreate.preferences.Preferences.SEEN_CHANGELOGS_VERSION.collectAsStateWithLifecycle()
+    if( seenVersion != BuildConfig.VERSION_NAME ) {
         val changelogs = remember {
             object: ChangelogsDialog(context) {
                 // Automatically enable dialog when this class is init
@@ -446,7 +448,7 @@ fun AppNavigation(
 
                 override fun hideDialog() {
                     super.hideDialog()
-                    Preferences.SEEN_CHANGELOGS_VERSION.value = BuildConfig.VERSION_NAME
+                    app.kreate.preferences.Preferences.SEEN_CHANGELOGS_VERSION.update { BuildConfig.VERSION_NAME }
                 }
             }
         }
