@@ -57,6 +57,7 @@ kotlin {
         }
         androidMain.dependencies {
             implementation( libs.media3.ktx )
+            implementation( libs.androidx.core.ktx )
         }
         getByName( "androidDeviceTest" ).dependencies {
             implementation( libs.androidx.junit )

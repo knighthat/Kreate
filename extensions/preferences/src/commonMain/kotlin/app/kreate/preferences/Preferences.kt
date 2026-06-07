@@ -109,7 +109,8 @@ sealed class Preferences<K, V>(
 
         private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-        internal val preferences: Storage by inject(PrefType.DEFAULT)
+        private val preferences: Storage by inject(PrefType.DEFAULT)
+        private val credentials: Storage by inject(PrefType.CREDENTIALS)
 
         //<editor-fold desc="Item size">
         val HOME_ARTIST_ITEM_SIZE by lazy {
@@ -514,6 +515,30 @@ sealed class Preferences<K, V>(
         val YOUTUBE_ALBUMS_SYNC by lazy {
             BooleanPref(preferences, Key.YOUTUBE_ALBUMS_SYNC, false)
         }
+        val YOUTUBE_VISITOR_DATA by lazy {
+            StringPref(credentials, Key.YOUTUBE_VISITOR_DATA, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36")
+        }
+        val YOUTUBE_SYNC_ID by lazy {
+            StringPref(credentials, Key.YOUTUBE_SYNC_ID, "")
+        }
+        val YOUTUBE_COOKIES by lazy {
+            StringPref(credentials, Key.YOUTUBE_COOKIES, "")
+        }
+        val YOUTUBE_ACCOUNT_NAME by lazy {
+            StringPref(credentials, Key.YOUTUBE_ACCOUNT_NAME, "")
+        }
+        val YOUTUBE_ACCOUNT_EMAIL by lazy {
+            StringPref(credentials, Key.YOUTUBE_ACCOUNT_EMAIL, "")
+        }
+        val YOUTUBE_SELF_CHANNEL_HANDLE by lazy {
+            StringPref(credentials, Key.YOUTUBE_SELF_CHANNEL_HANDLE, "")
+        }
+        val YOUTUBE_ACCOUNT_AVATAR by lazy {
+            StringPref(credentials, Key.YOUTUBE_ACCOUNT_AVATAR, "")
+        }
+        val YOUTUBE_LAST_VIDEO_ID by lazy {
+            StringPref(preferences, Key.YOUTUBE_LAST_VIDEO_ID, "")
+        }
         //</editor-fold>
         //<editor-fold desc="Quick picks">
         val QUICK_PICKS_SHOW_TIPS by lazy {
@@ -557,6 +582,9 @@ sealed class Preferences<K, V>(
         val DISCORD_LOGIN by lazy {
             BooleanPref(preferences, Key.DISCORD_LOGIN, false)
         }
+        val DISCORD_ACCESS_TOKEN by lazy {
+            StringPref(credentials, Key.DISCORD_ACCESS_TOKEN, "")
+        }
         //</editor-fold>
         //<editor-fold desc="Proxy">
         val IS_PROXY_ENABLED by lazy {
@@ -564,6 +592,9 @@ sealed class Preferences<K, V>(
         }
         val PROXY_SCHEME by lazy {
             EnumPref(preferences, Key.PROXY_SCHEME, Proxy.Type.HTTP, Proxy.Type::entries)
+        }
+        val PROXY_HOST by lazy {
+            StringPref(preferences, Key.PROXY_HOST, "")
         }
         //</editor-fold>
         //<editor-fold desc="Custom light colors">
@@ -878,6 +909,12 @@ sealed class Preferences<K, V>(
         val CUSTOM_COLOR by lazy {
             ColorPref(preferences, Key.CUSTOM_COLOR, Color.Green)
         }
+        val LOCAL_SONGS_FOLDER by lazy {
+            StringPref(preferences, Key.LOCAL_SONGS_FOLDER, "/")
+        }
+        val SEEN_CHANGELOGS_VERSION by lazy {
+            StringPref(preferences, Key.SEEN_CHANGELOGS_VERSION, "")
+        }
     }
 
     private val _internalState = MutableStateFlow(defaultValue)
@@ -978,6 +1015,17 @@ sealed class Preferences<K, V>(
         override fun deserialize( key: Long ): Color = Color(key.toULong())
 
         override fun serialize( value: Color ): Long = value.value.toLong()
+    }
+
+    class StringPref(
+        storage: Storage,
+        key: Preferences.Key,
+        defaultValue: String
+    ) : Preferences<String, String>(storage, stringPreferencesKey(key.value), defaultValue) {
+
+        override fun deserialize( key: String ): String = key
+
+        override fun serialize( value: String ): String = value
     }
 
     class Key private constructor(val value: String) {
@@ -1134,6 +1182,14 @@ sealed class Preferences<K, V>(
             val YOUTUBE_PLAYLISTS_SYNC = Key("youtube_playlists_sync")
             val YOUTUBE_ARTISTS_SYNC = Key("youtube_artists_sync")
             val YOUTUBE_ALBUMS_SYNC = Key("youtube_albums_sync")
+            val YOUTUBE_VISITOR_DATA = Key("youtube_visitor_data")
+            val YOUTUBE_SYNC_ID = Key("youtube_sync_id")
+            val YOUTUBE_COOKIES = Key("youtube_cookies")
+            val YOUTUBE_ACCOUNT_NAME = Key("youtube_account_name")
+            val YOUTUBE_ACCOUNT_EMAIL = Key("youtube_account_email")
+            val YOUTUBE_SELF_CHANNEL_HANDLE = Key("youtube_self_channel_handle")
+            val YOUTUBE_ACCOUNT_AVATAR = Key("youtube_account_avatar")
+            val YOUTUBE_LAST_VIDEO_ID = Key("youtube_last_video_id")
             //</editor-fold>
             //<editor-fold desc="Quick picks">
             val QUICK_PICKS_SHOW_TIPS = Key("quick_picks_show_tips")
@@ -1151,10 +1207,12 @@ sealed class Preferences<K, V>(
             //</editor-fold>
             //<editor-fold desc="Discord">
             val DISCORD_LOGIN = Key("discord_login")
+            val DISCORD_ACCESS_TOKEN = Key("discord_access_token")
             //</editor-fold>
             //<editor-fold desc="Proxy">
             val IS_PROXY_ENABLED = Key("is_proxy_enabled")
             val PROXY_SCHEME = Key("proxy_scheme")
+            val PROXY_HOST = Key("proxy_host")
             //</editor-fold>
             //<editor-fold desc="Custom light colors">
             val CUSTOM_LIGHT_THEME_BACKGROUND_0 = Key("custom_light_theme_background_0")
@@ -1267,6 +1325,9 @@ sealed class Preferences<K, V>(
             val HOME_ARTIST_AND_ALBUM_FILTER = Key("home_artist_and_album_filter")
             val STATISTIC_PAGE_CATEGORY = Key("statistic_page_category")
             val CUSTOM_COLOR = Key("custom_color")
+            val APP_REGION = Key("app_region")
+            val LOCAL_SONGS_FOLDER = Key("local_songs_folder")
+            val SEEN_CHANGELOGS_VERSION = Key("seen_changelogs_version")
         }
     }
 }

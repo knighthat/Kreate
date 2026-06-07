@@ -22,7 +22,6 @@ import android.os.Handler
 import android.os.Looper
 import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.getValue
 import androidx.core.content.ContextCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -329,7 +328,7 @@ class PlayerServiceModern:
         }
 
         if( Preferences.isLoggedInToDiscord() ) {
-            val token by Preferences.DISCORD_ACCESS_TOKEN
+            val token = app.kreate.preferences.Preferences.DISCORD_ACCESS_TOKEN.value
             discord.login( token )
         }
     }

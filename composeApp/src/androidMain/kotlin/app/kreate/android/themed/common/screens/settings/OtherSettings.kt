@@ -23,14 +23,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
-import app.kreate.android.themed.common.component.settings.animatedEntry
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.android.themed.common.screens.settings.other.debugSection
@@ -41,7 +38,6 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.utils.isAtLeastAndroid10
 import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isIgnoringBatteryOptimizations
-import me.knighthat.component.dialog.InputDialogConstraints
 import me.knighthat.utils.Toaster
 import java.io.File
 
@@ -114,18 +110,6 @@ fun OtherSettings( paddingValues: PaddingValues ) {
                     title = stringResource( R.string.folders ),
                     subtitleId = R.string.show_folders_in_on_device_page
                 )
-            }
-            animatedEntry(
-                key = "showFolderChildren",
-                visibleState = app.kreate.preferences.Preferences.HOME_SONGS_ON_DEVICE_SHOW_FOLDERS,
-                modifier = Modifier.padding( start = 25.dp )
-            ) {
-                if( search appearsIn R.string.folder_that_will_show_when_you_open_on_device_page )
-                    SettingComponents.InputDialogEntry(
-                        Preferences.LOCAL_SONGS_FOLDER,
-                        R.string.folder_that_will_show_when_you_open_on_device_page,
-                        InputDialogConstraints.ANDROID_FILE_PATH
-                    )
             }
 
             header( R.string.androidheadunit )

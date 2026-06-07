@@ -24,6 +24,7 @@ import app.kreate.android.R
 import app.kreate.android.enums.DohServer
 import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.EnumEntry
+import app.kreate.android.themed.common.component.settings.InputDialogEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
@@ -101,8 +102,8 @@ fun NetworkSettings( paddingValues: PaddingValues ) {
 
                     if( search appearsIn R.string.proxy_host )
                         SettingComponents.InputDialogEntry(
-                            preference = Preferences.PROXY_HOST,
-                            titleId = R.string.proxy_host,
+                            preference = app.kreate.preferences.Preferences.PROXY_HOST,
+                            title = stringResource( R.string.proxy_host ),
                             constraint = InputDialogConstraints.ALL,
                             keyboardOption = KeyboardOptions(keyboardType = KeyboardType.Uri)
                         )

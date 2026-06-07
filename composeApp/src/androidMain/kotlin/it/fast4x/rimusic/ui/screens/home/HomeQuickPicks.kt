@@ -63,7 +63,6 @@ import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
@@ -78,6 +77,7 @@ import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
+import app.kreate.preferences.APP_REGION
 import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persist
 import it.fast4x.compose.persist.persistList
@@ -203,7 +203,7 @@ fun HomeQuickPicks(
     val last50Year: Duration = 18250.days
     val from = last50Year.inWholeMilliseconds
 
-    var countryCode by Preferences.APP_REGION
+    val countryCode by app.kreate.preferences.Preferences.APP_REGION.collectAsStateWithLifecycle()
 
     val parentalControlEnabled by app.kreate.preferences.Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
 
@@ -829,7 +829,7 @@ fun HomeQuickPicks(
                                                 icon = R.drawable.arrow_right,
                                                 text = item.countryDisplayName,
                                                 onClick = {
-                                                    countryCode = item.countryCode
+                                                    app.kreate.preferences.Preferences.APP_REGION.update { item.countryCode }
                                                     menuState.hide()
                                                 }
                                             )

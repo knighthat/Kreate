@@ -2,11 +2,11 @@ package app.kreate.android.utils.innertube
 
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import app.kreate.android.Preferences
+import app.kreate.preferences.Preferences
 
 object InnertubeUtils {
 
     val isLoggedIn: Boolean by derivedStateOf {
-        app.kreate.preferences.Preferences.YOUTUBE_LOGIN.value && Preferences.YOUTUBE_SYNC_ID.value.isNotBlank()
+        Preferences.YOUTUBE_LOGIN.value && Preferences.YOUTUBE_SYNC_ID.value.isNotBlank()
     }
 }

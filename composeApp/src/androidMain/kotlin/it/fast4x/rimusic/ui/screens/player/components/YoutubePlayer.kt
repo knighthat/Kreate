@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -25,6 +26,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFram
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.ui.styling.collapsedPlayerProgressBar
+import kotlinx.coroutines.flow.update
 
 
 @Composable
@@ -38,7 +40,7 @@ fun YoutubePlayer(
 
     if (!showPlayer) return
 
-    var lastYTVideoId by Preferences.YOUTUBE_LAST_VIDEO_ID
+    val lastYTVideoId by app.kreate.preferences.Preferences.YOUTUBE_LAST_VIDEO_ID.collectAsStateWithLifecycle()
     var lastYTVideoSeconds by Preferences.YOUTUBE_LAST_VIDEO_SECONDS
 
 //    val currentYTVideoId by remember { mutableStateOf(ytVideoId) }
@@ -82,7 +84,7 @@ fun YoutubePlayer(
                     override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
                         onCurrentSecond(second)
                         lastYTVideoSeconds = second
-                        lastYTVideoId = ytVideoId
+                        app.kreate.preferences.Preferences.YOUTUBE_LAST_VIDEO_ID.update { ytVideoId }
                     }
 
                 }

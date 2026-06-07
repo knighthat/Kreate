@@ -1,12 +1,9 @@
 package app.kreate.android.utils.innertube
 
-import android.content.Context
-import android.telephony.TelephonyManager
-import androidx.core.content.getSystemService
-import app.kreate.android.Preferences
 import app.kreate.constant.Language
+import app.kreate.preferences.APP_REGION
+import app.kreate.preferences.Preferences
 import me.knighthat.innertube.request.Localization
-import org.koin.java.KoinJavaComponent.inject
 import java.util.Locale
 
 
@@ -15,7 +12,7 @@ val CURRENT_LOCALE: Localization
 
 // hl
 val HOST_LANGUAGE: String
-    get() = when ( app.kreate.preferences.Preferences.APP_LANGUAGE.value ) {
+    get() = when ( Preferences.APP_LANGUAGE.value ) {
         Language.SYSTEM ->
             try {
                 enumValueOf<Language>(Locale.getDefault().language).code
@@ -23,7 +20,7 @@ val HOST_LANGUAGE: String
                 "en"
             }
 
-        else -> app.kreate.preferences.Preferences.APP_LANGUAGE.value.code
+        else -> Preferences.APP_LANGUAGE.value.code
     }
 
 // gl
@@ -34,15 +31,3 @@ val GEO_LOCATION: String
         else
             it
     }
-
-fun getSystemCountryCode(): String {
-    val context: Context by inject(Context::class.java)
-    var countryCode = Locale.getDefault().country
-    if( countryCode !in Locale.getISOCountries() )
-        countryCode = context.getSystemService<TelephonyManager>()
-                             ?.networkCountryIso
-                             ?.uppercase()
-                             .orEmpty()
-
-    return countryCode.ifBlank { "US" }
-}

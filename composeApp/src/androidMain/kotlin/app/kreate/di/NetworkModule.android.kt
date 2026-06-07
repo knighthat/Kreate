@@ -94,7 +94,7 @@ actual val networkModule: Module = module {
 
         val proxy = Proxy(
             app.kreate.preferences.Preferences.PROXY_SCHEME.value,
-            InetSocketAddress(Preferences.PROXY_HOST.value, Preferences.PROXY_PORT.value)
+            InetSocketAddress(app.kreate.preferences.Preferences.PROXY_HOST.value, Preferences.PROXY_PORT.value)
         )
         // Must verify to prevent network failure
         runBlocking( Dispatchers.IO ) { proxy.takeIf( ::verifyProxy ) ?: Proxy.NO_PROXY }

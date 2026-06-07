@@ -14,10 +14,8 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
-import app.kreate.android.utils.innertube.getSystemCountryCode
 import app.kreate.di.PrefType
 import co.touchlab.kermit.Logger
-import me.knighthat.innertube.Constants
 import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Blocking
 import org.jetbrains.annotations.NonBlocking
@@ -150,43 +148,11 @@ sealed class Preferences<T>(
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="YouTube">
-        val YOUTUBE_VISITOR_DATA by lazy {
-            String( encryptedPreferences, Key.YOUTUBE_VISITOR_DATA, "ytVisitorData", Constants.CHROME_WINDOWS_VISITOR_DATA )
-        }
-        val YOUTUBE_SYNC_ID by lazy {
-            String( encryptedPreferences, Key.YOUTUBE_SYNC_ID, "ytDataSyncIdKey", "" )
-        }
-        val YOUTUBE_COOKIES by lazy {
-            String( encryptedPreferences, Key.YOUTUBE_COOKIES, "ytCookie", "" )
-        }
-        val YOUTUBE_ACCOUNT_NAME by lazy {
-            String( encryptedPreferences, Key.YOUTUBE_ACCOUNT_NAME, "ytAccountNameKey", "" )
-        }
-        val YOUTUBE_ACCOUNT_EMAIL by lazy {
-            String( encryptedPreferences, Key.YOUTUBE_ACCOUNT_EMAIL, "ytAccountEmailKey", "" )
-        }
-        val YOUTUBE_SELF_CHANNEL_HANDLE by lazy {
-            String( encryptedPreferences, Key.YOUTUBE_SELF_CHANNEL_HANDLE, "ytAccountChannelHandleKey", "" )
-        }
-        val YOUTUBE_ACCOUNT_AVATAR by lazy {
-            String( encryptedPreferences, Key.YOUTUBE_ACCOUNT_AVATAR, "ytAccountThumbnailKey", "" )
-        }
-        val YOUTUBE_LAST_VIDEO_ID by lazy {
-            String( preferences, Key.YOUTUBE_LAST_VIDEO_ID, "lastVideoId", "" )
-        }
         val YOUTUBE_LAST_VIDEO_SECONDS by lazy {
             Float( preferences, Key.YOUTUBE_LAST_VIDEO_SECONDS, "lastVideoSeconds", 0F )
         }
         //</editor-fold>
-        //<editor-fold desc="Discord">
-        val DISCORD_ACCESS_TOKEN by lazy {
-            String( encryptedPreferences, Key.DISCORD_ACCESS_TOKEN, "", "" )
-        }
-        //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Proxy">
-        val PROXY_HOST by lazy {
-            String( preferences, Key.PROXY_HOST, "proxyHostnameKey", "" )
-        }
         val PROXY_PORT  by lazy {
             Int( preferences, Key.PROXY_PORT , "proxyPort", 1080 )
         }
@@ -220,9 +186,6 @@ sealed class Preferences<T>(
         val LIVE_WALLPAPER_RESET_DURATION by lazy {
             Long(preferences, Key.LIVE_WALLPAPER_RESET_DURATION, "", -1L)
         }
-        val APP_REGION by lazy {
-            String( preferences, Key.APP_REGION, "", getSystemCountryCode() )
-        }
         val FLOATING_ICON_X_OFFSET by lazy {
             Float( preferences, Key.FLOATING_ICON_X_OFFSET, "floatActionIconOffsetX", 0F )
         }
@@ -238,12 +201,6 @@ sealed class Preferences<T>(
         val SMART_REWIND by lazy {
             Float(preferences, Key.SMART_REWIND, "", 3f)
         }
-        val LOCAL_SONGS_FOLDER by lazy {
-            String( preferences, Key.LOCAL_SONGS_FOLDER, "defaultFolder", "/" )
-        }
-        val SEEN_CHANGELOGS_VERSION by lazy {
-            String( preferences, Key.SEEN_CHANGELOGS_VERSION, "seenChangelogsVersionKey", "" )
-        }
         val SEARCH_RESULTS_TAB_INDEX by lazy {
             Int( preferences, Key.SEARCH_RESULTS_TAB_INDEX, "searchResultScreenTabIndex", 0 )
         }
@@ -258,7 +215,7 @@ sealed class Preferences<T>(
         }
 
         fun isLoggedInToDiscord(): kotlin.Boolean =
-            app.kreate.preferences.Preferences.DISCORD_LOGIN.value && DISCORD_ACCESS_TOKEN.value.isNotBlank()
+            app.kreate.preferences.Preferences.DISCORD_LOGIN.value && app.kreate.preferences.Preferences.DISCORD_ACCESS_TOKEN.value.isNotBlank()
 
         /**
          * Finalize all changes and write it to disk.

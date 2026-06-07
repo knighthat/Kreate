@@ -19,9 +19,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.EnumEntry
+import app.kreate.android.themed.common.component.settings.ListEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
@@ -30,6 +30,7 @@ import app.kreate.android.themed.common.screens.settings.general.playerSettingsS
 import app.kreate.android.themed.common.screens.settings.general.updateSection
 import app.kreate.android.utils.innertube.HOST_LANGUAGE
 import app.kreate.constant.Language
+import app.kreate.preferences.APP_REGION
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.ui.styling.Dimensions
@@ -97,15 +98,17 @@ fun GeneralSettings( paddingValues: PaddingValues ) {
                 )
             }
             entry( search, R.string.setting_entry_app_region ) {
+                val selected = app.kreate.preferences.Preferences.APP_REGION.collectAsStateWithLifecycle()
+
                 SettingComponents.ListEntry(
-                    preference = Preferences.APP_REGION,
+                    entries = emptyArray<String>(),
+                    selectedState = selected,
                     title = stringResource( R.string.setting_entry_app_region ),
                     getName = {
                         val locale = Locale(HOST_LANGUAGE, it)
                         locale.getDisplayCountry( locale )
                     },
-                    getList = { Locale.getISOCountries() },
-                    subtitle = stringResource( R.string.setting_description_app_region )
+                    subtitle = stringResource( R.string.setting_description_app_region ),
                 )
             }
 
