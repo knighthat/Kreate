@@ -12,23 +12,26 @@ import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
 
 
+
+
 @Immutable
-actual data class ColorPalette actual constructor(
-    val background0: Color,
-    val background1: Color,
-    val background2: Color,
-    val background3: Color,
-    val background4: Color,
-    val accent: Color,
-    val onAccent: Color,
-    val red: Color,
-    val blue: Color,
-    val text: Color,
-    val textSecondary: Color,
-    val textDisabled: Color,
-    val isDark: Boolean,
-    val iconButtonPlayer: Color,
+actual class ColorPalette actual constructor(
+    actual val background0: Color,
+    actual val background1: Color,
+    actual val background2: Color,
+    actual val background3: Color,
+    actual val background4: Color,
+    actual val accent: Color,
+    actual val onAccent: Color,
+    actual val red: Color,
+    actual val blue: Color,
+    actual val text: Color,
+    actual val textSecondary: Color,
+    actual val textDisabled: Color,
+    actual val isDark: Boolean,
+    actual val iconButtonPlayer: Color
 ) {
+
     companion object : Saver<ColorPalette, List<Any>> {
         override fun restore(value: List<Any>) = when (val accent = value[0] as Int) {
             0 -> DefaultDarkColorPalette
@@ -53,59 +56,40 @@ actual data class ColorPalette actual constructor(
                 value.isDark
             )
     }
+
+    actual fun copy(
+        background0: Color,
+        background1: Color,
+        background2: Color,
+        background3: Color,
+        background4: Color,
+        accent: Color,
+        onAccent: Color,
+        red: Color,
+        blue: Color,
+        text: Color,
+        textSecondary: Color,
+        textDisabled: Color,
+        isDark: Boolean,
+        iconButtonPlayer: Color
+    ) =
+        ColorPalette(
+            background0 = background0,
+            background1 = background1,
+            background2 = background2,
+            background3 = background3,
+            background4 = background4,
+            accent = accent,
+            onAccent = onAccent,
+            red = red,
+            blue = blue,
+            text = text,
+            textSecondary = textSecondary,
+            textDisabled = textDisabled,
+            isDark = isDark,
+            iconButtonPlayer = iconButtonPlayer
+        )
 }
-
-
-
-val DefaultDarkColorPalette = ColorPalette(
-    background0 = Color(0xff16171d),
-    background1 = Color(0xff1f2029),
-    background2 = Color(0xff2b2d3b),
-    background3 = Color(0xff495057),
-    background4 = Color(0xff333333),
-    text = Color(0xffe1e1e2),
-    textSecondary = Color(0xffa3a4a6),
-    textDisabled = Color(0xff6f6f73),
-    iconButtonPlayer = Color(0xffe1e1e2),
-    accent = Color(0xFF2b9348),
-    onAccent = Color.White,
-    red = Color(0xffbf4040),
-    blue = Color(0xff4472cf),
-    isDark = true
-)
-
-val DefaultLightColorPalette = ColorPalette(
-    background0 = Color(0xfffdfdfe),
-    background1 = Color(0xfff8f8fc),
-    background2 = Color(0xffeaeaf5),
-    background3 = Color(0xffeaeafd),
-    background4 = Color(0xffeaeafd),
-    text = Color(0xff212121),
-    textSecondary = Color(0xff656566),
-    textDisabled = Color(0xff9d9d9d),
-    iconButtonPlayer = Color(0xff212121),
-    accent = Color(0xFF2b9348),
-    onAccent = Color.White,
-    red = Color(0xffbf4040),
-    blue = Color(0xff4472cf),
-    isDark = false
-)
-
-val PureBlackColorPalette = DefaultDarkColorPalette.copy(
-    background0 = Color.Black,
-    background1 = Color.Black,
-    background2 = Color.Black,
-    accent = Color.White,
-    onAccent = Color.DarkGray
-    )
-
-val ModernBlackColorPalette = DefaultDarkColorPalette.copy(
-    background0 = Color.Black,
-    background1 = Color.Black,
-    //background2 = DefaultDarkColorPalette.background2, // Color.Black,
-    background2 = Color.Black,
-    background3 = DefaultDarkColorPalette.accent
-)
 
 fun colorPaletteOf(
     colorPaletteName: ColorPaletteName,

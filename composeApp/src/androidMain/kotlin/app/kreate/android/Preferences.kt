@@ -17,8 +17,6 @@ import androidx.core.content.edit
 import app.kreate.android.utils.innertube.getSystemCountryCode
 import app.kreate.di.PrefType
 import co.touchlab.kermit.Logger
-import it.fast4x.rimusic.ui.styling.DefaultDarkColorPalette
-import it.fast4x.rimusic.ui.styling.DefaultLightColorPalette
 import me.knighthat.innertube.Constants
 import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Blocking
@@ -193,70 +191,6 @@ sealed class Preferences<T>(
             Int( preferences, Key.PROXY_PORT , "proxyPort", 1080 )
         }
         //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Custom light colors">
-        val CUSTOM_LIGHT_THEME_BACKGROUND_0 by lazy {
-            Color(preferences, Key.CUSTOM_LIGHT_THEME_BACKGROUND_0, "customThemeLight_Background0", DefaultLightColorPalette.background0)
-        }
-        val CUSTOM_LIGHT_THEME_BACKGROUND_1 by lazy {
-            Color(preferences, Key.CUSTOM_LIGHT_THEME_BACKGROUND_1, "customThemeLight_Background1", DefaultLightColorPalette.background1)
-        }
-        val CUSTOM_LIGHT_THEME_BACKGROUND_2 by lazy {
-            Color(preferences, Key.CUSTOM_LIGHT_THEME_BACKGROUND_2, "customThemeLight_Background2", DefaultLightColorPalette.background2)
-        }
-        val CUSTOM_LIGHT_THEME_BACKGROUND_3 by lazy {
-            Color(preferences, Key.CUSTOM_LIGHT_THEME_BACKGROUND_3, "customThemeLight_Background3", DefaultLightColorPalette.background3)
-        }
-        val CUSTOM_LIGHT_THEME_BACKGROUND_4 by lazy {
-            Color(preferences, Key.CUSTOM_LIGHT_THEME_BACKGROUND_4, "customThemeLight_Background4", DefaultLightColorPalette.background4)
-        }
-        val CUSTOM_LIGHT_TEXT by lazy {
-            Color(preferences, Key.CUSTOM_LIGHT_TEXT, "customThemeLight_Text", DefaultLightColorPalette.text)
-        }
-        val CUSTOM_LIGHT_TEXT_SECONDARY by lazy {
-            Color(preferences, Key.CUSTOM_LIGHT_TEXT_SECONDARY, "customThemeLight_textSecondary", DefaultLightColorPalette.textSecondary)
-        }
-        val CUSTOM_LIGHT_TEXT_DISABLED by lazy {
-            Color(preferences, Key.CUSTOM_LIGHT_TEXT_DISABLED, "customThemeLight_textDisabled", DefaultLightColorPalette.textDisabled)
-        }
-        val CUSTOM_LIGHT_PLAY_BUTTON by lazy {
-            Color(preferences, Key.CUSTOM_LIGHT_PLAY_BUTTON, "customThemeLight_iconButtonPlayer", DefaultLightColorPalette.iconButtonPlayer)
-        }
-        val CUSTOM_LIGHT_ACCENT by lazy {
-            Color(preferences, Key.CUSTOM_LIGHT_ACCENT, "customThemeLight_accent", DefaultLightColorPalette.accent)
-        }
-        //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Custom dark theme">
-        val CUSTOM_DARK_THEME_BACKGROUND_0 by lazy {
-            Color(preferences, Key.CUSTOM_DARK_THEME_BACKGROUND_0, "customThemeDark_Background0", DefaultDarkColorPalette.background0)
-        }
-        val CUSTOM_DARK_THEME_BACKGROUND_1 by lazy {
-            Color(preferences, Key.CUSTOM_DARK_THEME_BACKGROUND_1, "customThemeDark_Background1", DefaultDarkColorPalette.background1)
-        }
-        val CUSTOM_DARK_THEME_BACKGROUND_2 by lazy {
-            Color(preferences, Key.CUSTOM_DARK_THEME_BACKGROUND_2, "customThemeDark_Background2", DefaultDarkColorPalette.background2)
-        }
-        val CUSTOM_DARK_THEME_BACKGROUND_3 by lazy {
-            Color(preferences, Key.CUSTOM_DARK_THEME_BACKGROUND_3, "customThemeDark_Background3", DefaultDarkColorPalette.background3)
-        }
-        val CUSTOM_DARK_THEME_BACKGROUND_4 by lazy {
-            Color(preferences, Key.CUSTOM_DARK_THEME_BACKGROUND_4, "customThemeDark_Background4", DefaultDarkColorPalette.background4)
-        }
-        val CUSTOM_DARK_TEXT by lazy {
-            Color(preferences, Key.CUSTOM_DARK_TEXT, "customThemeDark_Text", DefaultDarkColorPalette.text)
-        }
-        val CUSTOM_DARK_TEXT_SECONDARY by lazy {
-            Color(preferences, Key.CUSTOM_DARK_TEXT_SECONDARY, "customThemeDark_textSecondary", DefaultDarkColorPalette.textSecondary)
-        }
-        val CUSTOM_DARK_TEXT_DISABLED by lazy {
-            Color(preferences, Key.CUSTOM_DARK_TEXT_DISABLED, "customThemeDark_textDisabled", DefaultDarkColorPalette.textDisabled)
-        }
-        val CUSTOM_DARK_PLAY_BUTTON by lazy {
-            Color(preferences, Key.CUSTOM_DARK_PLAY_BUTTON, "customThemeDark_iconButtonPlayer", DefaultDarkColorPalette.iconButtonPlayer)
-        }
-        val CUSTOM_DARK_ACCENT by lazy {
-            Color(preferences, Key.CUSTOM_DARK_ACCENT, "customThemeDark_accent", DefaultDarkColorPalette.accent)
-        }
-        //</editor-fold>
         //<editor-fold desc="Logging">
         val RUNTIME_LOG_LEVEL by lazy {
             Int(preferences, Key.RUNTIME_LOG_LEVEL, "", Log.INFO)
@@ -309,9 +243,6 @@ sealed class Preferences<T>(
         }
         val SEEN_CHANGELOGS_VERSION by lazy {
             String( preferences, Key.SEEN_CHANGELOGS_VERSION, "seenChangelogsVersionKey", "" )
-        }
-        val CUSTOM_COLOR by lazy {
-            Color(preferences, Key.CUSTOM_COLOR, "customColor", androidx.compose.ui.graphics.Color.Green)
         }
         val SEARCH_RESULTS_TAB_INDEX by lazy {
             Int( preferences, Key.SEARCH_RESULTS_TAB_INDEX, "searchResultScreenTabIndex", 0 )
@@ -940,7 +871,7 @@ sealed class Preferences<T>(
                 putInt( key, value.hashCode() )
             }
     }
-    
+
     object Key {
         const val HOME_ARTIST_ITEM_SIZE = "HomeAristItemSize"
         const val HOME_ALBUM_ITEM_SIZE = "HomeAlbumItemSize"

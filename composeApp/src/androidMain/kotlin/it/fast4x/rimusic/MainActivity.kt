@@ -339,7 +339,7 @@ MainActivity :
             var showPlayer by rememberSaveable { mutableStateOf(false) }
             var switchToAudioPlayer by rememberSaveable { mutableStateOf(false) }
             val animatedGradient by app.kreate.preferences.Preferences.ANIMATED_GRADIENT.collectAsStateWithLifecycle()
-            var customColor by Preferences.CUSTOM_COLOR
+            val customColor by app.kreate.preferences.Preferences.CUSTOM_COLOR.collectAsStateWithLifecycle()
             val lightTheme = colorPaletteMode == ColorPaletteMode.Light || (colorPaletteMode == ColorPaletteMode.System && (!isSystemInDarkTheme()))
 
 

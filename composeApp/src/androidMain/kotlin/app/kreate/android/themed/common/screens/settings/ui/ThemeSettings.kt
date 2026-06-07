@@ -21,13 +21,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.themed.common.component.settings.ColorPickerEntry
 import app.kreate.android.themed.common.component.settings.EnumEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.SettingHeader
 import app.kreate.android.themed.common.component.settings.entry
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
@@ -90,11 +91,11 @@ fun ThemeSettings( search: SettingEntrySearch ) {
         }
 
     AnimatedVisibility(visible = colorPaletteName == ColorPaletteName.CustomColor) {
-        SettingComponents.ColorPicker(
+        SettingComponents.ColorPickerEntry(
             preference = Preferences.CUSTOM_COLOR,
-            titleId = R.string.customcolor,
-            modifier = Modifier.padding( start = 25.dp ),
-            subtitle = stringResource( R.string.restarting_rimusic_is_required )
+            title = stringResource( R.string.customcolor ),
+            subtitleId = R.string.restarting_rimusic_is_required,
+            modifier = Modifier.padding( start = 25.dp )
         )
     }
     AnimatedVisibility(visible = colorPaletteName == ColorPaletteName.Customized) {
@@ -163,54 +164,54 @@ fun IndividualColorSection( search: SettingEntrySearch ) =
                 )
             }
         if( search appearsIn R.string.color_background_1  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_LIGHT_THEME_BACKGROUND_0,
                 title = stringResource( R.string.color_background_1 )
             )
         if( search appearsIn R.string.color_background_2  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_LIGHT_THEME_BACKGROUND_1,
-                titleId = R.string.color_background_2
+                title = stringResource( R.string.color_background_2 )
             )
         if( search appearsIn R.string.color_background_3  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_LIGHT_THEME_BACKGROUND_2,
-                titleId = R.string.color_background_3
+                title = stringResource( R.string.color_background_3 )
             )
         if( search appearsIn R.string.color_background_4  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_LIGHT_THEME_BACKGROUND_3,
-                titleId = R.string.color_background_4
+                title = stringResource( R.string.color_background_4 )
             )
         if( search appearsIn R.string.color_background_5  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_LIGHT_THEME_BACKGROUND_4,
-                titleId = R.string.color_background_5
+                title = stringResource( R.string.color_background_5 )
             )
         if( search appearsIn R.string.color_text  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_LIGHT_TEXT,
-                titleId = R.string.color_text
+                title = stringResource( R.string.color_text )
             )
         if( search appearsIn R.string.color_text_secondary  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_LIGHT_TEXT_SECONDARY,
-                titleId = R.string.color_text_secondary
+                title = stringResource( R.string.color_text_secondary )
             )
         if( search appearsIn R.string.color_text_disabled  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_LIGHT_TEXT_DISABLED,
-                titleId = R.string.color_text_disabled
+                title = stringResource( R.string.color_text_disabled )
             )
         if( search appearsIn R.string.color_icon_button_player  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_LIGHT_PLAY_BUTTON,
-                titleId = R.string.color_icon_button_player
+                title = stringResource( R.string.color_icon_button_player )
             )
         if( search appearsIn R.string.color_accent  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_LIGHT_ACCENT,
-                titleId = R.string.color_accent
+                title = stringResource( R.string.color_accent )
             )
 
         SettingHeader( R.string.title_customized_dark_theme_colors )
@@ -228,54 +229,54 @@ fun IndividualColorSection( search: SettingEntrySearch ) =
                 )
             }
         if( search appearsIn R.string.color_background_1  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_DARK_THEME_BACKGROUND_0,
-                titleId = R.string.color_background_1
+                title = stringResource( R.string.color_background_1 )
             )
         if( search appearsIn R.string.color_background_2  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_DARK_THEME_BACKGROUND_1,
-                titleId = R.string.color_background_2
+                title = stringResource( R.string.color_background_2 )
             )
         if( search appearsIn R.string.color_background_3  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_DARK_THEME_BACKGROUND_2,
-                titleId = R.string.color_background_3
+                title = stringResource( R.string.color_background_3 )
             )
         if( search appearsIn R.string.color_background_4  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_DARK_THEME_BACKGROUND_3,
-                titleId = R.string.color_background_4
+                title = stringResource( R.string.color_background_4 )
             )
         if( search appearsIn R.string.color_background_5  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_DARK_THEME_BACKGROUND_4,
-                titleId = R.string.color_background_5
+                title = stringResource( R.string.color_background_5 )
             )
         if( search appearsIn R.string.color_text  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_DARK_TEXT,
-                titleId = R.string.color_text
+                title = stringResource( R.string.color_text )
             )
         if( search appearsIn R.string.color_text_secondary  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_DARK_TEXT_SECONDARY,
-                titleId = R.string.color_text_secondary
+                title = stringResource( R.string.color_text_secondary )
             )
         if( search appearsIn R.string.color_text_disabled  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_DARK_TEXT_DISABLED,
-                titleId = R.string.color_text_disabled
+                title = stringResource( R.string.color_text_disabled )
             )
         if( search appearsIn R.string.color_icon_button_player  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_DARK_PLAY_BUTTON,
-                titleId = R.string.color_icon_button_player
+                title = stringResource( R.string.color_icon_button_player )
             )
         if( search appearsIn R.string.color_accent  )
-            SettingComponents.ColorPicker(
+            SettingComponents.ColorPickerEntry(
                 preference = Preferences.CUSTOM_DARK_ACCENT,
-                titleId = R.string.color_accent
+                title = stringResource( R.string.color_accent )
             )
     }
 
@@ -315,16 +316,16 @@ fun LazyListScope.themeSettingsSection( search: SettingEntrySearch ) {
 
                 ColorPaletteName.CustomColor ->
                     if( search appearsIn R.string.customcolor )
-                        SettingComponents.ColorPicker(
+                        SettingComponents.ColorPickerEntry(
                             preference = Preferences.CUSTOM_COLOR,
-                            titleId = R.string.customcolor,
-                            subtitle = stringResource( R.string.restarting_rimusic_is_required )
+                            title = stringResource( R.string.customcolor ),
+                            subtitleId = R.string.restarting_rimusic_is_required
                         )
 
                 else ->
                     if( search appearsIn R.string.theme_mode )
                         SettingComponents.EnumEntry(
-                            preference = app.kreate.preferences.Preferences.THEME_MODE,
+                            preference = Preferences.THEME_MODE,
                             title = stringResource( R.string.theme_mode )
                         )
             }
