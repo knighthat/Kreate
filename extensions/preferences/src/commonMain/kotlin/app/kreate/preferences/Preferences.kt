@@ -3,6 +3,7 @@ package app.kreate.preferences
 import androidx.compose.ui.graphics.Color
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import app.kreate.android.enums.DohServer
@@ -398,6 +399,27 @@ sealed class Preferences<K, V>(
         val PLAYER_NO_THUMBNAIL_SWIPE_ANIMATION by lazy {
             EnumPref(preferences, Key.PLAYER_NO_THUMBNAIL_SWIPE_ANIMATION, SwipeAnimationNoThumbnail.Sliding, SwipeAnimationNoThumbnail::entries)
         }
+        val PLAYER_THUMBNAIL_VINYL_SIZE by lazy {
+            FloatPref(preferences, Key.PLAYER_THUMBNAIL_VINYL_SIZE, 50F)
+        }
+        val PLAYER_THUMBNAIL_FADE by lazy {
+            FloatPref(preferences, Key.PLAYER_THUMBNAIL_FADE, 5F)
+        }
+        val PLAYER_THUMBNAIL_FADE_EX by lazy {
+            FloatPref(preferences, Key.PLAYER_THUMBNAIL_FADE_EX, 5F)
+        }
+        val PLAYER_THUMBNAIL_SPACING by lazy {
+            FloatPref(preferences, Key.PLAYER_THUMBNAIL_SPACING, 0F)
+        }
+        val PLAYER_THUMBNAIL_SPACING_LANDSCAPE by lazy {
+            FloatPref(preferences, Key.PLAYER_THUMBNAIL_SPACING_LANDSCAPE, 0F)
+        }
+        val PLAYER_BACKGROUND_BLUR_STRENGTH by lazy {
+            FloatPref(preferences, Key.PLAYER_BACKGROUND_BLUR_STRENGTH, 25F)
+        }
+        val PLAYER_BACKGROUND_BACK_DROP by lazy {
+            FloatPref(preferences, Key.PLAYER_BACKGROUND_BACK_DROP, 0F)
+        }
         //</editor-fold>
         //<editor-fold desc="Cache">
         val EXO_CACHE_LOCATION by lazy {
@@ -455,6 +477,12 @@ sealed class Preferences<K, V>(
         val LYRICS_ALIGNMENT by lazy {
             EnumPref(preferences, Key.LYRICS_ALIGNMENT, LyricsAlignment.Center, LyricsAlignment::entries)
         }
+        val LYRICS_SIZE by lazy {
+            FloatPref(preferences, Key.LYRICS_SIZE, 5F)
+        }
+        val LYRICS_SIZE_LANDSCAPE by lazy {
+            FloatPref(preferences, Key.LYRICS_SIZE_LANDSCAPE, 5F)
+        }
         //</editor-fold>
         //<editor-fold desc="Page type">
         val HOME_ARTIST_TYPE by lazy {
@@ -501,6 +529,27 @@ sealed class Preferences<K, V>(
         val AUDIO_QUALITY by lazy {
             EnumPref(preferences, Key.AUDIO_QUALITY, AudioQualityFormat.Auto, AudioQualityFormat::entries)
         }
+        val AUDIO_VOLUME_NORMALIZATION_TARGET by lazy {
+            FloatPref(preferences, Key.AUDIO_VOLUME_NORMALIZATION_TARGET, 5F)
+        }
+        val AUDIO_BASS_BOOST_LEVEL by lazy {
+            FloatPref(preferences, Key.AUDIO_BASS_BOOST_LEVEL, .5F)
+        }
+        val AUDIO_SPEED_VALUE by lazy {
+            FloatPref(preferences, Key.AUDIO_SPEED_VALUE, 1F)
+        }
+        val AUDIO_PITCH by lazy {
+            FloatPref(preferences, Key.AUDIO_PITCH, 1F)
+        }
+        val AUDIO_VOLUME by lazy {
+            FloatPref(preferences, Key.AUDIO_VOLUME, .5F)
+        }
+        val AUDIO_DEVICE_VOLUME by lazy {
+            FloatPref(preferences, Key.AUDIO_DEVICE_VOLUME, .5f)
+        }
+        val AUDIO_MEDLEY_DURATION by lazy {
+            FloatPref(preferences, Key.AUDIO_MEDLEY_DURATION, 0F)
+        }
         //</editor-fold>
         //<editor-fold desc="YouTube">
         val YOUTUBE_LOGIN by lazy {
@@ -538,6 +587,9 @@ sealed class Preferences<K, V>(
         }
         val YOUTUBE_LAST_VIDEO_ID by lazy {
             StringPref(preferences, Key.YOUTUBE_LAST_VIDEO_ID, "")
+        }
+        val YOUTUBE_LAST_VIDEO_SECONDS by lazy {
+            FloatPref(preferences, Key.YOUTUBE_LAST_VIDEO_SECONDS, 0F)
         }
         //</editor-fold>
         //<editor-fold desc="Quick picks">
@@ -915,6 +967,21 @@ sealed class Preferences<K, V>(
         val SEEN_CHANGELOGS_VERSION by lazy {
             StringPref(preferences, Key.SEEN_CHANGELOGS_VERSION, "")
         }
+        val FLOATING_ICON_X_OFFSET by lazy {
+            FloatPref(preferences, Key.FLOATING_ICON_X_OFFSET, 0F)
+        }
+        val FLOATING_ICON_Y_OFFSET by lazy {
+            FloatPref(preferences, Key.FLOATING_ICON_Y_OFFSET, 0F)
+        }
+        val MULTI_FLOATING_ICON_X_OFFSET by lazy {
+            FloatPref(preferences, Key.MULTI_FLOATING_ICON_X_OFFSET, 0F)
+        }
+        val MULTI_FLOATING_ICON_Y_OFFSET by lazy {
+            FloatPref(preferences, Key.MULTI_FLOATING_ICON_Y_OFFSET, 0F)
+        }
+        val SMART_REWIND by lazy {
+            FloatPref(preferences, Key.SMART_REWIND, 3f)
+        }
     }
 
     private val _internalState = MutableStateFlow(defaultValue)
@@ -1028,6 +1095,17 @@ sealed class Preferences<K, V>(
         override fun serialize( value: String ): String = value
     }
 
+    class FloatPref(
+        storage: Storage,
+        key: Preferences.Key,
+        defaultValue: Float
+    ) : Preferences<Float, Float>(storage, floatPreferencesKey(key.value), defaultValue) {
+
+        override fun deserialize( key: Float ): Float = key
+
+        override fun serialize( value: Float ): Float = value
+    }
+
     class Key private constructor(val value: String) {
         companion object {
             //<editor-fold desc="Item size">
@@ -1135,6 +1213,13 @@ sealed class Preferences<K, V>(
             val PLAYER_BACKGROUND = Key("player_background")
             val PLAYER_THUMBNAIL_TYPE = Key("player_thumbnail_type")
             val PLAYER_NO_THUMBNAIL_SWIPE_ANIMATION = Key("player_no_thumbnail_swipe_animation")
+            val PLAYER_THUMBNAIL_VINYL_SIZE = Key("player_thumbnail_vinyl_size")
+            val PLAYER_THUMBNAIL_FADE = Key("player_thumbnail_fade")
+            val PLAYER_THUMBNAIL_FADE_EX = Key("player_thumbnail_fade_ex")
+            val PLAYER_THUMBNAIL_SPACING = Key("player_thumbnail_spacing")
+            val PLAYER_THUMBNAIL_SPACING_LANDSCAPE = Key("player_thumbnail_spacing_landscape")
+            val PLAYER_BACKGROUND_BLUR_STRENGTH = Key("player_background_blur_strength")
+            val PLAYER_BACKGROUND_BACK_DROP = Key("player_background_back_drop")
             //</editor-fold>
             //<editor-fold desc="Cache">
             val EXO_CACHE_LOCATION = Key("exo_cache_location")
@@ -1158,6 +1243,8 @@ sealed class Preferences<K, V>(
             val LYRICS_BACKGROUND = Key("lyrics_background")
             val LYRICS_HIGHLIGHT = Key("lyrics_highlight")
             val LYRICS_ALIGNMENT = Key("lyrics_alignment")
+            val LYRICS_SIZE = Key("lyrics_size")
+            val LYRICS_SIZE_LANDSCAPE = Key("lyrics_size_landscape")
             //</editor-fold>
             //<editor-fold desc="Page type">
             val HOME_ARTIST_TYPE = Key("home_artist_type")
@@ -1176,6 +1263,13 @@ sealed class Preferences<K, V>(
             val AUDIO_SPEED = Key("audio_speed")
             val AUDIO_FADE_DURATION = Key("audio_fade_duration")
             val AUDIO_QUALITY = Key("audio_quality")
+            val AUDIO_VOLUME_NORMALIZATION_TARGET = Key("audio_volume_normalization_target")
+            val AUDIO_BASS_BOOST_LEVEL = Key("audio_bass_boost_level")
+            val AUDIO_SPEED_VALUE = Key("audio_speed_value")
+            val AUDIO_PITCH = Key("audio_pitch")
+            val AUDIO_VOLUME = Key("audio_volume")
+            val AUDIO_DEVICE_VOLUME = Key("audio_device_volume")
+            val AUDIO_MEDLEY_DURATION = Key("audio_medley_duration")
             //</editor-fold>
             //<editor-fold desc="YouTube">
             val YOUTUBE_LOGIN = Key("youtube_login")
@@ -1190,6 +1284,7 @@ sealed class Preferences<K, V>(
             val YOUTUBE_SELF_CHANNEL_HANDLE = Key("youtube_self_channel_handle")
             val YOUTUBE_ACCOUNT_AVATAR = Key("youtube_account_avatar")
             val YOUTUBE_LAST_VIDEO_ID = Key("youtube_last_video_id")
+            val YOUTUBE_LAST_VIDEO_SECONDS = Key("youtube_last_video_seconds")
             //</editor-fold>
             //<editor-fold desc="Quick picks">
             val QUICK_PICKS_SHOW_TIPS = Key("quick_picks_show_tips")
@@ -1328,6 +1423,11 @@ sealed class Preferences<K, V>(
             val APP_REGION = Key("app_region")
             val LOCAL_SONGS_FOLDER = Key("local_songs_folder")
             val SEEN_CHANGELOGS_VERSION = Key("seen_changelogs_version")
+            val FLOATING_ICON_X_OFFSET = Key("floating_icon_x_offset")
+            val FLOATING_ICON_Y_OFFSET = Key("floating_icon_y_offset")
+            val MULTI_FLOATING_ICON_X_OFFSET = Key("multi_floating_icon_x_offset")
+            val MULTI_FLOATING_ICON_Y_OFFSET = Key("multi_floating_icon_y_offset")
+            val SMART_REWIND = Key("smart_rewind")
         }
     }
 }

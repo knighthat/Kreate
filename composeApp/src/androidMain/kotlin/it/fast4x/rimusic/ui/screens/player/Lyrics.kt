@@ -91,7 +91,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.database.models.Lyrics
@@ -334,8 +333,8 @@ fun Lyrics(
         val mediaMetadata = mediaMetadataProvider()
         var artistName by rememberSaveable { mutableStateOf(cleanPrefix(mediaMetadata.artist?.toString().orEmpty()))}
         var title by rememberSaveable { mutableStateOf(cleanPrefix(mediaMetadata.title?.toString().orEmpty()))}
-        var lyricsSize by Preferences.LYRICS_SIZE
-        var lyricsSizeL by Preferences.LYRICS_SIZE_LANDSCAPE
+        val lyricsSize by app.kreate.preferences.Preferences.LYRICS_SIZE.collectAsStateWithLifecycle()
+        val lyricsSizeL by app.kreate.preferences.Preferences.LYRICS_SIZE_LANDSCAPE.collectAsStateWithLifecycle()
         var customSize = if (isLandscape) lyricsSizeL else lyricsSize
         var showLyricsSizeDialog by rememberSaveable {
             mutableStateOf(false)
@@ -353,8 +352,12 @@ fun Lyrics(
         if (showLyricsSizeDialog) {
             LyricsSizeDialog(
                 onDismiss = { showLyricsSizeDialog = false},
-                sizeValue = { lyricsSize = it },
-                sizeValueL = { lyricsSizeL = it}
+                sizeValue = { newValue ->
+                    app.kreate.preferences.Preferences.LYRICS_SIZE.update { newValue }
+                },
+                sizeValueL = { newValue ->
+                    app.kreate.preferences.Preferences.LYRICS_SIZE_LANDSCAPE.update { newValue }
+                }
             )
         }
 

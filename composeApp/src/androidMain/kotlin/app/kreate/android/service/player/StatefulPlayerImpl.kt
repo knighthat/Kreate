@@ -127,11 +127,11 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
 
         skipSilenceEnabled = app.kreate.preferences.Preferences.AUDIO_SKIP_SILENCE.value
         repeatMode = app.kreate.preferences.Preferences.QUEUE_LOOP_TYPE.value.type
-        volume = Preferences.AUDIO_VOLUME.value
+        volume = app.kreate.preferences.Preferences.AUDIO_VOLUME.value
         setGlobalVolume( player.volume )
         playbackParameters = PlaybackParameters(
-            Preferences.AUDIO_SPEED_VALUE.value,
-            Preferences.AUDIO_PITCH.value
+            app.kreate.preferences.Preferences.AUDIO_SPEED_VALUE.value,
+            app.kreate.preferences.Preferences.AUDIO_PITCH.value
         )
 
         loadPersistentQueue()
@@ -512,7 +512,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
                                                    .findBySongId( mediaId )
                                                    .mapNotNull { it?.loudnessDb }
                                                    .first()
-                val targetLoudness by Preferences.AUDIO_VOLUME_NORMALIZATION_TARGET
+                val targetLoudness = app.kreate.preferences.Preferences.AUDIO_VOLUME_NORMALIZATION_TARGET.value
                 val targetGain = (targetLoudness - mediaLoudness) * 100f
                 loudnessEnhancer.setTargetGain( targetGain.toInt() )
 
@@ -534,7 +534,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
             bassBoostJob?.cancel()
 
             bassBoostJob = coroutineScope.launch {
-                val setting by Preferences.AUDIO_BASS_BOOST_LEVEL
+                val setting = app.kreate.preferences.Preferences.AUDIO_BASS_BOOST_LEVEL.value
                 val target = (setting * 1000f).coerceIn( 0f, 1000f ).toInt().toShort()
                 bassBoost.setStrength( target )
 

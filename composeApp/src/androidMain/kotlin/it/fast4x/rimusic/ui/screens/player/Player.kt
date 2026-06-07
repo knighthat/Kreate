@@ -118,7 +118,6 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import androidx.palette.graphics.Palette
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.drawable.AppIcon
@@ -224,11 +223,11 @@ fun Player(
     val playerThumbnailSize by app.kreate.preferences.Preferences.PLAYER_PORTRAIT_THUMBNAIL_SIZE.collectAsStateWithLifecycle()
     val playerThumbnailSizeL by app.kreate.preferences.Preferences.PLAYER_LANDSCAPE_THUMBNAIL_SIZE.collectAsStateWithLifecycle()
     val showvisthumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER.collectAsStateWithLifecycle()
-    var thumbnailSpacing  by Preferences.PLAYER_THUMBNAIL_SPACING
-    var thumbnailSpacingL  by Preferences.PLAYER_THUMBNAIL_SPACING_LANDSCAPE
-    var thumbnailFade  by Preferences.PLAYER_THUMBNAIL_FADE
-    var thumbnailFadeEx  by Preferences.PLAYER_THUMBNAIL_FADE_EX
-    var imageCoverSize by Preferences.PLAYER_THUMBNAIL_VINYL_SIZE
+    val thumbnailSpacing  by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING.collectAsStateWithLifecycle()
+    val thumbnailSpacingL  by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING_LANDSCAPE.collectAsStateWithLifecycle()
+    val thumbnailFade  by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE.collectAsStateWithLifecycle()
+    val thumbnailFadeEx  by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE_EX.collectAsStateWithLifecycle()
+    val imageCoverSize by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_VINYL_SIZE.collectAsStateWithLifecycle()
     val queueDurationExpanded by app.kreate.preferences.Preferences.PLAYER_IS_QUEUE_DURATION_EXPANDED.collectAsStateWithLifecycle()
     val statsExpanded by app.kreate.preferences.Preferences.PLAYER_IS_STATS_FOR_NERDS_EXPANDED.collectAsStateWithLifecycle()
     val showthumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
@@ -301,11 +300,21 @@ fun Player(
 
         ThumbnailOffsetDialog(
             onDismiss = { showThumbnailOffsetDialog = false},
-            spacingValue = { thumbnailSpacing = it },
-            spacingValueL = { thumbnailSpacingL = it },
-            fadeValue = { thumbnailFade = it },
-            fadeValueEx = { thumbnailFadeEx = it },
-            imageCoverSizeValue = { imageCoverSize = it }
+            spacingValue = { newValue ->
+                app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING.update { newValue }
+            },
+            spacingValueL = { newValue ->
+                app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING_LANDSCAPE.update { newValue }
+            },
+            fadeValue = { newValue ->
+                app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE.update { newValue }
+            },
+            fadeValueEx = { newValue ->
+                app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE_EX.update { newValue }
+            },
+            imageCoverSizeValue = { newValue ->
+                app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_VINYL_SIZE.update { newValue }
+            }
         )
     }
 

@@ -6,22 +6,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.EnumEntry
+import app.kreate.android.themed.common.component.settings.InputDialogEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
+import app.kreate.android.themed.common.component.settings.SliderEntry
 import app.kreate.android.themed.common.component.settings.animatedEntry
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
@@ -55,11 +56,9 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
         }
     }
     entry( search, R.string.setting_entry_smart_rewind ) {
-        val smartRewindInt by remember {derivedStateOf {
-            Preferences.SMART_REWIND.value.toInt()
-        }}
+        val smartRewindInt by app.kreate.preferences.Preferences.SMART_REWIND.collectAsStateWithLifecycle()
         SettingComponents.InputDialogEntry(
-            preference = Preferences.SMART_REWIND,
+            preference = app.kreate.preferences.Preferences.SMART_REWIND,
             title = stringResource( R.string.setting_entry_smart_rewind ),
             constraint = InputDialogConstraints.POSITIVE_DECIMAL,
             keyboardOption = KeyboardOptions.Default.copy( keyboardType = KeyboardType.Number ),
@@ -67,7 +66,7 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
                 R.string.setting_description_smart_rewind,
                 pluralStringResource(
                     R.plurals.second,
-                    smartRewindInt ,
+                    smartRewindInt.toInt(),
                     smartRewindInt
                 )
             )
@@ -230,9 +229,9 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     ) {
         if( search appearsIn R.string.settings_loudness_base_gain )
             SettingComponents.SliderEntry(
-                preference = Preferences.AUDIO_VOLUME_NORMALIZATION_TARGET,
-                titleId = R.string.settings_loudness_base_gain,
-                subtitleId = R.string.settings_target_gain_loudness_info,
+                preference = app.kreate.preferences.Preferences.AUDIO_VOLUME_NORMALIZATION_TARGET,
+                title = stringResource( R.string.settings_loudness_base_gain ),
+                subtitle = stringResource( R.string.settings_target_gain_loudness_info ),
                 // Matches -20.0 to 20.0, allows empty string and incomplete decimal (i.e. 11.)
                 constraints = "^$|^-?(20(\\.[0]?)?|1\\d(\\.\\d?)?|[1-9](\\.\\d?)?|0(\\.\\d?)?)$",
                 valueRange = -20f..20f,
@@ -254,7 +253,7 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     ) {
         if( search appearsIn R.string.settings_bass_boost_level )
             SettingComponents.SliderEntry(
-                preference = Preferences.AUDIO_BASS_BOOST_LEVEL,
+                preference = app.kreate.preferences.Preferences.AUDIO_BASS_BOOST_LEVEL,
                 title = stringResource( R.string.settings_bass_boost_level ),
                 // Accepts 0.0 to 1.0, including empty string and incomplete decimal (i.e. 0.)
                 constraints = "^$|^\\.$|^(0?(\\.\\d)?|1(\\.0)?)$",

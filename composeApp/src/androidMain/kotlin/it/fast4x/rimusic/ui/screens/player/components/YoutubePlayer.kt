@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
@@ -18,7 +17,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
@@ -41,12 +39,13 @@ fun YoutubePlayer(
     if (!showPlayer) return
 
     val lastYTVideoId by app.kreate.preferences.Preferences.YOUTUBE_LAST_VIDEO_ID.collectAsStateWithLifecycle()
-    var lastYTVideoSeconds by Preferences.YOUTUBE_LAST_VIDEO_SECONDS
+    val lastYTVideoSeconds by app.kreate.preferences.Preferences.YOUTUBE_LAST_VIDEO_SECONDS.collectAsStateWithLifecycle()
 
 //    val currentYTVideoId by remember { mutableStateOf(ytVideoId) }
 //    println("mediaItem youtubePlayer called currentYTVideoId $currentYTVideoId ytVideoId $ytVideoId lastYTVideoId $lastYTVideoId")
 
-    if (ytVideoId != lastYTVideoId) lastYTVideoSeconds = 0f
+    if (ytVideoId != lastYTVideoId)
+        app.kreate.preferences.Preferences.YOUTUBE_LAST_VIDEO_SECONDS.update { 0f }
 
     Box {
         Box{
@@ -83,7 +82,7 @@ fun YoutubePlayer(
 
                     override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
                         onCurrentSecond(second)
-                        lastYTVideoSeconds = second
+                        app.kreate.preferences.Preferences.YOUTUBE_LAST_VIDEO_SECONDS.update { second }
                         app.kreate.preferences.Preferences.YOUTUBE_LAST_VIDEO_ID.update { ytVideoId }
                     }
 

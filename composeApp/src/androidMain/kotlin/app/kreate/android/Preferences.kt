@@ -77,29 +77,8 @@ sealed class Preferences<T>(
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Player">
-        val PLAYER_THUMBNAIL_VINYL_SIZE by lazy {
-            Float( preferences, Key.PLAYER_THUMBNAIL_VINYL_SIZE, "VinylSize", 50F )
-        }
-        val PLAYER_THUMBNAIL_FADE by lazy {
-            Float( preferences, Key.PLAYER_THUMBNAIL_FADE, "thumbnailFade", 5F )
-        }
-        val PLAYER_THUMBNAIL_FADE_EX by lazy {
-            Float( preferences, Key.PLAYER_THUMBNAIL_FADE_EX, "thumbnailFadeEx", 5F )
-        }
-        val PLAYER_THUMBNAIL_SPACING by lazy {
-            Float( preferences, Key.PLAYER_THUMBNAIL_SPACING, "thumbnailSpacing", 0F )
-        }
-        val PLAYER_THUMBNAIL_SPACING_LANDSCAPE by lazy {
-            Float( preferences, Key.PLAYER_THUMBNAIL_SPACING_LANDSCAPE, "thumbnailSpacingL", 0F )
-        }
         val PLAYER_CURRENT_VISUALIZER  by lazy {
             Int( preferences, Key.PLAYER_CURRENT_VISUALIZER , "currentVisualizerKey", 0 )
-        }
-        val PLAYER_BACKGROUND_BLUR_STRENGTH by lazy {
-            Float( preferences, Key.PLAYER_BACKGROUND_BLUR_STRENGTH, "blurScale", 25F )
-        }
-        val PLAYER_BACKGROUND_BACK_DROP by lazy {
-            Float( preferences, Key.PLAYER_BACKGROUND_BACK_DROP, "playerBackdrop", 0F )
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Cache">
@@ -113,43 +92,9 @@ sealed class Preferences<T>(
             Long(preferences, Key.EXO_DOWNLOAD_SIZE, "", kotlin.Long.MAX_VALUE)
         }
         //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Lyrics">
-        val LYRICS_SIZE by lazy {
-            Float( preferences, Key.LYRICS_SIZE, "lyricsSize", 5F )
-        }
-        val LYRICS_SIZE_LANDSCAPE by lazy {
-            Float( preferences, Key.LYRICS_SIZE_LANDSCAPE, "lyricsSizeL", 5F )
-        }
-        //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Audio">
         val AUDIO_REVERB_PRESET by lazy {
             Int(preferences, Key.AUDIO_REVERB_PRESET, "audioReverbPreset", 0)
-        }
-        val AUDIO_VOLUME_NORMALIZATION_TARGET by lazy {
-            Float( preferences, Key.AUDIO_VOLUME_NORMALIZATION_TARGET, "loudnessBaseGain", 5F )
-        }
-        val AUDIO_BASS_BOOST_LEVEL by lazy {
-            Float( preferences, Key.AUDIO_BASS_BOOST_LEVEL, "bassboostLevel", .5F )
-        }
-        val AUDIO_SPEED_VALUE by lazy {
-            Float( preferences, Key.AUDIO_SPEED_VALUE, "playbackSpeed", 1F )
-        }
-        val AUDIO_PITCH by lazy {
-            Float( preferences, Key.AUDIO_PITCH, "playbackPitch", 1F )
-        }
-        val AUDIO_VOLUME by lazy {
-            Float( preferences, Key.AUDIO_VOLUME, "playbackVolume", .5F )
-        }
-        val AUDIO_DEVICE_VOLUME by lazy {
-            Float( preferences, Key.AUDIO_DEVICE_VOLUME, "playbackDeviceVolume", .5f )
-        }
-        val AUDIO_MEDLEY_DURATION by lazy {
-            Float( preferences, Key.AUDIO_MEDLEY_DURATION, "playbackDuration", 0F )
-        }
-        //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="YouTube">
-        val YOUTUBE_LAST_VIDEO_SECONDS by lazy {
-            Float( preferences, Key.YOUTUBE_LAST_VIDEO_SECONDS, "lastVideoSeconds", 0F )
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Proxy">
@@ -185,21 +130,6 @@ sealed class Preferences<T>(
 
         val LIVE_WALLPAPER_RESET_DURATION by lazy {
             Long(preferences, Key.LIVE_WALLPAPER_RESET_DURATION, "", -1L)
-        }
-        val FLOATING_ICON_X_OFFSET by lazy {
-            Float( preferences, Key.FLOATING_ICON_X_OFFSET, "floatActionIconOffsetX", 0F )
-        }
-        val FLOATING_ICON_Y_OFFSET by lazy {
-            Float( preferences, Key.FLOATING_ICON_Y_OFFSET, "floatActionIconOffsetY", 0F )
-        }
-        val MULTI_FLOATING_ICON_X_OFFSET by lazy {
-            Float( preferences, Key.MULTI_FLOATING_ICON_X_OFFSET, "multiFloatActionIconOffsetX", 0F )
-        }
-        val MULTI_FLOATING_ICON_Y_OFFSET by lazy {
-            Float( preferences, Key.MULTI_FLOATING_ICON_Y_OFFSET, "multiFloatActionIconOffsetY", 0F )
-        }
-        val SMART_REWIND by lazy {
-            Float(preferences, Key.SMART_REWIND, "", 3f)
         }
         val SEARCH_RESULTS_TAB_INDEX by lazy {
             Int( preferences, Key.SEARCH_RESULTS_TAB_INDEX, "searchResultScreenTabIndex", 0 )
