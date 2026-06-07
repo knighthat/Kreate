@@ -50,6 +50,7 @@ import app.kreate.android.utils.isLocalFile
 import app.kreate.android.widget.Widget
 import app.kreate.database.models.Event
 import app.kreate.di.CacheType
+import app.kreate.preferences.QUEUE_LOOP_TYPE
 import co.touchlab.kermit.Logger
 import com.google.common.util.concurrent.MoreExecutors
 import io.ktor.client.HttpClient
@@ -378,7 +379,7 @@ class PlayerServiceModern:
             }
 
 
-        if ( totalPlayTimeMs <= Preferences.QUICK_PICKS_MIN_DURATION.value.asMillis )
+        if ( totalPlayTimeMs <= app.kreate.preferences.Preferences.QUICK_PICKS_MIN_DURATION.value.asMillis )
             return
 
         /*
@@ -461,7 +462,7 @@ class PlayerServiceModern:
                 player.skipSilenceEnabled = sharedPreferences.getBoolean( key, app.kreate.preferences.Preferences.AUDIO_SKIP_SILENCE.defaultValue )
 
             Preferences.Key.QUEUE_LOOP_TYPE ->
-                player.repeatMode = sharedPreferences.getEnum( key, Preferences.QUEUE_LOOP_TYPE.defaultValue ).type
+                player.repeatMode = sharedPreferences.getEnum( key, app.kreate.preferences.Preferences.QUEUE_LOOP_TYPE.defaultValue ).type
         }
     }
 
@@ -517,7 +518,7 @@ class PlayerServiceModern:
     }
 
     private fun updateWallpaper( bitmap: Bitmap ) {
-        val type by Preferences.LIVE_WALLPAPER
+        val type = app.kreate.preferences.Preferences.LIVE_WALLPAPER.value
         if( type == WallpaperType.DISABLED ) return
 
         coroutineScope.launch( Dispatchers.Default ) {
@@ -606,7 +607,7 @@ class PlayerServiceModern:
     }
 
     private fun revertWallpaperToDefault() {
-        val type by Preferences.LIVE_WALLPAPER
+        val type = app.kreate.preferences.Preferences.LIVE_WALLPAPER.value
         if (type == WallpaperType.DISABLED) return
         coroutineScope.launch(Dispatchers.IO) {
             val mgr = WallpaperManager.getInstance(this@PlayerServiceModern)

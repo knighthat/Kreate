@@ -66,7 +66,6 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.themed.common.component.menu.MenuButton
@@ -320,7 +319,7 @@ class BottomMenu {
                 }
             ) { screen ->
 
-                if( Preferences.MENU_STYLE.value === MenuStyle.List )
+                if( app.kreate.preferences.Preferences.MENU_STYLE.value === MenuStyle.List )
                     LazyColumn {
                         items(
                             items = buttons,

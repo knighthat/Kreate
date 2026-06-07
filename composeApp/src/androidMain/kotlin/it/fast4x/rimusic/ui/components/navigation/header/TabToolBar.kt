@@ -3,9 +3,20 @@ package it.fast4x.rimusic.ui.components.navigation.header
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +45,7 @@ object TabToolBar {
     ) {
         val density = LocalDensity.current.density
         var availableWidth by remember { mutableStateOf(0.dp) }
+        val coroutineScope = rememberCoroutineScope()
 
         /*
             `15.dp` is a magic number used to approximate the spacing
@@ -55,7 +67,7 @@ object TabToolBar {
             isClustered = buttons.size > canDisplay
         }
 
-        val ellipsisMenu = EllipsisMenuComponent.init {
+        val ellipsisMenu = EllipsisMenuComponent.init( coroutineScope ) {
             buttons.takeLast(
                 /*
                  * Take what isn't displayed, or 0 if [canDisplay]

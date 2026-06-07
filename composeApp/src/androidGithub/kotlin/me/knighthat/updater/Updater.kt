@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Looper
 import androidx.compose.ui.util.fastFirstOrNull
 import app.kreate.android.BuildConfig
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
@@ -124,7 +123,7 @@ object Updater : KoinComponent {
                 return@launch
             }
 
-            when( Preferences.CHECK_UPDATE.value ) {
+            when( app.kreate.preferences.Preferences.CHECK_UPDATE.value ) {
                 CheckUpdateState.ASK                -> NewUpdatePrompt.isActive = isNewUpdateAvailable
                 CheckUpdateState.DOWNLOAD_INSTALL   -> DownloadAndInstallDialog.isActive = isNewUpdateAvailable
                 CheckUpdateState.DISABLED           -> NewUpdatePrompt.isActive = isForced && isNewUpdateAvailable

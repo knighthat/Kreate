@@ -11,7 +11,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import app.kreate.android.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 
@@ -43,7 +42,7 @@ internal class Preference {
         fun debugLog(): Boolean = app.kreate.preferences.Preferences.RUNTIME_LOG.value
 
         @Composable
-        fun colorTheme(): ColorPaletteMode = Preferences.THEME_MODE.value
+        fun colorTheme(): ColorPaletteMode = app.kreate.preferences.Preferences.THEME_MODE.value
     }
 }
 

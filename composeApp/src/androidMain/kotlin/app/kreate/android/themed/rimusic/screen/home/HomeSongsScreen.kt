@@ -17,7 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -57,6 +57,7 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.enqueue
+import kotlinx.coroutines.flow.update
 import me.knighthat.component.ResetCache
 import me.knighthat.component.tab.ImportSongsFromCSV
 import me.knighthat.component.tab.LikeComponent
@@ -78,8 +79,9 @@ fun HomeSongsScreen(
     val lazyListState = rememberLazyListState()
     val context = LocalContext.current
     val menuState = LocalMenuState.current
+    val coroutineScope = rememberCoroutineScope()
 
-    var builtInPlaylist by Preferences.HOME_SONGS_TYPE
+    val builtInPlaylist by app.kreate.preferences.Preferences.HOME_SONGS_TYPE.collectAsStateWithLifecycle()
 
     val itemsOnDisplayState = remember { mutableStateListOf<Song>() }
 
@@ -107,6 +109,7 @@ fun HomeSongsScreen(
     }
     val addToFavorite = LikeComponent(::getSongs)
     val addToPlaylist = PlaylistsMenu.init(
+        coroutineScope = coroutineScope,
         navController = navController,
         mediaItems = { _ -> getMediaItems() },
         onFailure = { throwable, preview ->
@@ -192,7 +195,9 @@ fun HomeSongsScreen(
                     ButtonsRow(
                         chips = chips,
                         currentValue = builtInPlaylist,
-                        onValueUpdate = { builtInPlaylist = it }
+                        onValueUpdate = { newValue ->
+                            app.kreate.preferences.Preferences.HOME_SONGS_TYPE.update { newValue }
+                        }
                     )
 
                     when (builtInPlaylist) {

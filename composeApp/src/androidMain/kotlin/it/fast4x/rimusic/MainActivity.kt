@@ -318,7 +318,7 @@ MainActivity :
             window.addFlags( WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON )
 
         setContent {
-            val colorPaletteMode by Preferences.THEME_MODE
+            val colorPaletteMode by app.kreate.preferences.Preferences.THEME_MODE.collectAsStateWithLifecycle()
             val isPicthBlack = colorPaletteMode == ColorPaletteMode.PitchBlack
 
             // Valid to get log when app crash
@@ -338,7 +338,7 @@ MainActivity :
             val navController = rememberNavController()
             var showPlayer by rememberSaveable { mutableStateOf(false) }
             var switchToAudioPlayer by rememberSaveable { mutableStateOf(false) }
-            var animatedGradient by Preferences.ANIMATED_GRADIENT
+            val animatedGradient by app.kreate.preferences.Preferences.ANIMATED_GRADIENT.collectAsStateWithLifecycle()
             var customColor by Preferences.CUSTOM_COLOR
             val lightTheme = colorPaletteMode == ColorPaletteMode.Light || (colorPaletteMode == ColorPaletteMode.System && (!isSystemInDarkTheme()))
 
@@ -354,16 +354,16 @@ MainActivity :
                 stateSaver = Appearance.Companion
             ) {
                 with(preferences) {
-                    val colorPaletteName by Preferences.COLOR_PALETTE
-                    val colorPaletteMode by Preferences.THEME_MODE
-                    val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
+                    val colorPaletteName = app.kreate.preferences.Preferences.COLOR_PALETTE.value
+                    val colorPaletteMode = app.kreate.preferences.Preferences.THEME_MODE.value
+                    val thumbnailRoundness = app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.value
                     val useSystemFont = app.kreate.preferences.Preferences.USE_SYSTEM_FONT.value
                     val applyFontPadding = app.kreate.preferences.Preferences.APPLY_FONT_PADDING.value
+                    val fontType = app.kreate.preferences.Preferences.FONT.value
 
                     var colorPalette =
                         colorPaletteOf(colorPaletteName, colorPaletteMode, !lightTheme)
 
-                    val fontType by Preferences.FONT
 
                     if (colorPaletteName == ColorPaletteName.MaterialYou) {
                         colorPalette = dynamicColorPaletteOf(
@@ -398,8 +398,8 @@ MainActivity :
             }
 
             fun setDynamicPalette(url: String) {
-                val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
-                val colorPaletteName by Preferences.COLOR_PALETTE
+                val playerBackgroundColors = app.kreate.preferences.Preferences.PLAYER_BACKGROUND.value
+                val colorPaletteName = app.kreate.preferences.Preferences.COLOR_PALETTE.value
                 val isDynamicPalette = colorPaletteName == ColorPaletteName.Dynamic
                 val isCoverColor =
                     playerBackgroundColors == PlayerBackgroundColors.CoverColorGradient ||
@@ -408,7 +408,7 @@ MainActivity :
 
                 if (!isDynamicPalette) return
 
-                val colorPaletteMode by Preferences.THEME_MODE
+                val colorPaletteMode = app.kreate.preferences.Preferences.THEME_MODE.value
                 coroutineScope.launch(Dispatchers.Main) {
                     val result = ImageFactory.requestBuilder( url ) {
                         allowHardware( false )
@@ -485,8 +485,8 @@ MainActivity :
                             Preferences.Key.CUSTOM_DARK_TEXT_DISABLED,
                             Preferences.Key.CUSTOM_DARK_PLAY_BUTTON,
                             Preferences.Key.CUSTOM_DARK_ACCENT -> {
-                                val colorPaletteName = sharedPreferences.getEnum( Preferences.Key.COLOR_PALETTE, Preferences.COLOR_PALETTE.defaultValue )
-                                val colorPaletteMode = sharedPreferences.getEnum( Preferences.Key.THEME_MODE, Preferences.THEME_MODE.defaultValue )
+                                val colorPaletteName = sharedPreferences.getEnum( Preferences.Key.COLOR_PALETTE, app.kreate.preferences.Preferences.COLOR_PALETTE.defaultValue )
+                                val colorPaletteMode = sharedPreferences.getEnum( Preferences.Key.THEME_MODE, app.kreate.preferences.Preferences.THEME_MODE.defaultValue )
 
                                 var colorPalette = colorPaletteOf(
                                     colorPaletteName,
@@ -574,7 +574,7 @@ MainActivity :
                             Preferences.Key.FONT -> {
                                 val useSystemFont = sharedPreferences.getBoolean( Preferences.Key.USE_SYSTEM_FONT, app.kreate.preferences.Preferences.USE_SYSTEM_FONT.defaultValue )
                                 val applyFontPadding = sharedPreferences.getBoolean( Preferences.Key.APPLY_FONT_PADDING, app.kreate.preferences.Preferences.APPLY_FONT_PADDING.defaultValue )
-                                val fontType = sharedPreferences.getEnum( Preferences.Key.FONT, Preferences.FONT.defaultValue )
+                                val fontType = sharedPreferences.getEnum( Preferences.Key.FONT, app.kreate.preferences.Preferences.FONT.defaultValue )
 
                                 appearance = appearance.copy(
                                     typography = typographyOf(
@@ -591,7 +591,7 @@ MainActivity :
                 with(preferences) {
                     registerOnSharedPreferenceChangeListener(listener)
 
-                    val colorPaletteName by Preferences.COLOR_PALETTE
+                    val colorPaletteName = app.kreate.preferences.Preferences.COLOR_PALETTE.value
                     if (colorPaletteName == ColorPaletteName.Dynamic) {
                         setDynamicPalette(
                             (player.currentMediaItem?.mediaMetadata?.artworkUri.thumbnail(1200)
@@ -611,7 +611,7 @@ MainActivity :
                 }
 
             LaunchedEffect(Unit) {
-                val colorPaletteName by Preferences.COLOR_PALETTE
+                val colorPaletteName = app.kreate.preferences.Preferences.COLOR_PALETTE.value
                 if (colorPaletteName == ColorPaletteName.Customized) {
                     appearance = appearance.copy(
                         colorPalette = customColorPalette(
@@ -671,7 +671,7 @@ MainActivity :
 
                 CrossfadeContainer(state = pipState.value) { isCurrentInPip ->
                     println("MainActivity pipState ${pipState.value} CrossfadeContainer isCurrentInPip $isCurrentInPip ")
-                    val pipModule by Preferences.PIP_MODULE
+                    val pipModule by app.kreate.preferences.Preferences.PIP_MODULE.collectAsStateWithLifecycle()
                     if (isCurrentInPip) {
                         Box(
                             modifier = Modifier
@@ -726,7 +726,7 @@ MainActivity :
                                     action_library  -> HomeScreenTabs.Playlists
                                     action_search   -> HomeScreenTabs.Search
                                     // If not opened from shortcuts, then use default page (from settings)
-                                    else            -> Preferences.STARTUP_SCREEN.value
+                                    else            -> app.kreate.preferences.Preferences.STARTUP_SCREEN.value
                                 }
 
                                 // In case [tabIndex] results to 0 and quick page
@@ -753,7 +753,7 @@ MainActivity :
                             )
 
 
-                            val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
+                            val thumbnailRoundness by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
 
                             val isVideo = player.currentMediaItem?.isVideo ?: false
                             val isVideoEnabled by app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_VIDEO.collectAsStateWithLifecycle()
@@ -1072,7 +1072,7 @@ MainActivity :
         monetColors: ColorScheme,
         isInitialChange: Boolean
     ) {
-        val colorPaletteName by Preferences.COLOR_PALETTE
+        val colorPaletteName = app.kreate.preferences.Preferences.COLOR_PALETTE.value
         if (!isInitialChange && colorPaletteName == ColorPaletteName.MaterialYou) {
             /*
             monet.updateMonetColors()

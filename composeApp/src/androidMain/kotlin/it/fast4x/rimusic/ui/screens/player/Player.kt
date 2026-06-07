@@ -125,6 +125,8 @@ import app.kreate.android.drawable.AppIcon
 import app.kreate.android.screens.player.background.BlurredCover
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.screen.player.ActionBar
+import app.kreate.constant.Type
+import app.kreate.preferences.QUEUE_LOOP_TYPE
 import app.kreate.util.readableText
 import coil3.request.allowHardware
 import com.mikepenz.hypnoticcanvas.shaderBackground
@@ -147,10 +149,7 @@ import it.fast4x.rimusic.enums.BackgroundProgress
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.PlayerBackgroundColors
-import it.fast4x.rimusic.enums.PlayerType
-import it.fast4x.rimusic.enums.QueueType
 import it.fast4x.rimusic.enums.SwipeAnimationNoThumbnail
-import it.fast4x.rimusic.enums.ThumbnailType
 import it.fast4x.rimusic.models.Info
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.typography
@@ -222,8 +221,8 @@ fun Player(
     val disablePlayerHorizontalSwipe by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED.collectAsStateWithLifecycle()
     val showlyricsthumbnail by app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
     val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
-    val playerThumbnailSize by Preferences.PLAYER_PORTRAIT_THUMBNAIL_SIZE
-    var playerThumbnailSizeL by Preferences.PLAYER_LANDSCAPE_THUMBNAIL_SIZE
+    val playerThumbnailSize by app.kreate.preferences.Preferences.PLAYER_PORTRAIT_THUMBNAIL_SIZE.collectAsStateWithLifecycle()
+    val playerThumbnailSizeL by app.kreate.preferences.Preferences.PLAYER_LANDSCAPE_THUMBNAIL_SIZE.collectAsStateWithLifecycle()
     val showvisthumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER.collectAsStateWithLifecycle()
     var thumbnailSpacing  by Preferences.PLAYER_THUMBNAIL_SPACING
     var thumbnailSpacingL  by Preferences.PLAYER_THUMBNAIL_SPACING_LANDSCAPE
@@ -235,36 +234,34 @@ fun Player(
     val showthumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
     val showButtonPlayerMenu by app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_MENU.collectAsStateWithLifecycle()
     val showTotalTimeQueue by app.kreate.preferences.Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.collectAsStateWithLifecycle()
-    val backgroundProgress by Preferences.MINI_PLAYER_PROGRESS_BAR
-    var queueLoopState = Preferences.QUEUE_LOOP_TYPE
-    val playerType by Preferences.PLAYER_TYPE
-    val queueType by Preferences.QUEUE_TYPE
+    val backgroundProgress by app.kreate.preferences.Preferences.MINI_PLAYER_PROGRESS_BAR.collectAsStateWithLifecycle()
+    val playerType by app.kreate.preferences.Preferences.PLAYER_TYPE.collectAsStateWithLifecycle()
+    val queueType by app.kreate.preferences.Preferences.QUEUE_TYPE.collectAsStateWithLifecycle()
     val noblur by app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR.collectAsStateWithLifecycle()
     val fadingedge by app.kreate.preferences.Preferences.PLAYER_BACKGROUND_FADING_EDGE.collectAsStateWithLifecycle()
-    val colorPaletteMode by Preferences.THEME_MODE
-    val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
-    val animatedGradient by Preferences.ANIMATED_GRADIENT
+    val colorPaletteMode by app.kreate.preferences.Preferences.THEME_MODE.collectAsStateWithLifecycle()
+    val playerBackgroundColors by app.kreate.preferences.Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
+    val animatedGradient by app.kreate.preferences.Preferences.ANIMATED_GRADIENT.collectAsStateWithLifecycle()
     val thumbnailTapEnabled by app.kreate.preferences.Preferences.PLAYER_TAP_THUMBNAIL_FOR_LYRICS.collectAsStateWithLifecycle()
     val showTopActionsBar by app.kreate.preferences.Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.collectAsStateWithLifecycle()
     val blackgradient by app.kreate.preferences.Preferences.BLACK_GRADIENT.collectAsStateWithLifecycle()
     val bottomgradient by app.kreate.preferences.Preferences.PLAYER_BOTTOM_GRADIENT.collectAsStateWithLifecycle()
-    val discoverState by app.kreate.preferences.Preferences.ENABLE_DISCOVER.collectAsStateWithLifecycle()
     val titleExpanded by app.kreate.preferences.Preferences.PLAYER_IS_TITLE_EXPANDED.collectAsStateWithLifecycle()
     val timelineExpanded by app.kreate.preferences.Preferences.PLAYER_IS_TIMELINE_EXPANDED.collectAsStateWithLifecycle()
     val controlsExpanded by app.kreate.preferences.Preferences.PLAYER_IS_CONTROLS_EXPANDED.collectAsStateWithLifecycle()
     val showCoverThumbnailAnimation by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_ANIMATION.collectAsStateWithLifecycle()
-    var coverThumbnailAnimation by Preferences.PLAYER_THUMBNAIL_TYPE
+    val coverThumbnailAnimation by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_TYPE.collectAsStateWithLifecycle()
     val albumCoverRotation by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_ROTATION.collectAsStateWithLifecycle()
     val textoutline by app.kreate.preferences.Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
     val carousel by app.kreate.preferences.Preferences.PLAYER_THUMBNAILS_CAROUSEL.collectAsStateWithLifecycle()
-    val carouselSize by Preferences.CAROUSEL_SIZE
+    val carouselSize by app.kreate.preferences.Preferences.CAROUSEL_SIZE.collectAsStateWithLifecycle()
     val clickLyricsText by app.kreate.preferences.Preferences.LYRICS_JUMP_ON_TAP.collectAsStateWithLifecycle()
     val extraspace by app.kreate.preferences.Preferences.PLAYER_EXTRA_SPACE.collectAsStateWithLifecycle()
-    val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
-    val thumbnailType by Preferences.THUMBNAIL_TYPE
+    val thumbnailRoundness by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
+    val thumbnailType by app.kreate.preferences.Preferences.THUMBNAIL_TYPE.collectAsStateWithLifecycle()
     val statsfornerds by app.kreate.preferences.Preferences.PLAYER_STATS_FOR_NERDS.collectAsStateWithLifecycle()
     val topPadding by app.kreate.preferences.Preferences.PLAYER_TOP_PADDING.collectAsStateWithLifecycle()
-    var swipeAnimationNoThumbnail by Preferences.PLAYER_NO_THUMBNAIL_SWIPE_ANIMATION
+    val swipeAnimationNoThumbnail by app.kreate.preferences.Preferences.PLAYER_NO_THUMBNAIL_SWIPE_ANIMATION.collectAsStateWithLifecycle()
     val expandPlayerState by app.kreate.preferences.Preferences.PLAYER_EXPANDED.collectAsStateWithLifecycle()
 
 
@@ -707,7 +704,7 @@ fun Player(
     val blurAdjuster = BlurAdjuster()
 
     if (!isGradientBackgroundEnabled) {
-        if (playerBackgroundColors == PlayerBackgroundColors.BlurredCoverColor && (playerType == PlayerType.Essential || (showthumbnail && (!albumCoverRotation)))) {
+        if (playerBackgroundColors == PlayerBackgroundColors.BlurredCoverColor && (playerType == Type.LEGACY || (showthumbnail && (!albumCoverRotation)))) {
             containerModifier = containerModifier
                 .background(
                     Brush.verticalGradient(
@@ -750,7 +747,7 @@ fun Player(
                         onDragStart = {
                         },
                         onDragEnd = {
-                            if (!disablePlayerHorizontalSwipe && playerType == PlayerType.Essential) {
+                            if (!disablePlayerHorizontalSwipe && playerType == Type.LEGACY) {
                                 if (deltaX > 5) {
                                     player.playPrevious()
                                 } else if (deltaX < -5) {
@@ -986,7 +983,7 @@ fun Player(
                             onDragStart = {
                             },
                             onDragEnd = {
-                                if (!disablePlayerHorizontalSwipe && playerType == PlayerType.Essential) {
+                                if (!disablePlayerHorizontalSwipe && playerType == Type.LEGACY) {
                                     if (deltaX > 5) {
                                         player.playPrevious()
                                     } else if (deltaX < -5) {
@@ -1043,7 +1040,6 @@ fun Player(
             showVisualizerState,
             showSleepTimerState,
             showLyricsState,
-            queueLoopState,
             onDismiss
         )
 
@@ -1051,7 +1047,7 @@ fun Player(
 
         if (isLandscape) {
          Box{
-             if (playerBackgroundColors == PlayerBackgroundColors.BlurredCoverColor && playerType == PlayerType.Modern && (!showthumbnail || albumCoverRotation)) {
+             if (playerBackgroundColors == PlayerBackgroundColors.BlurredCoverColor && playerType == Type.MODERN && (!showthumbnail || albumCoverRotation)) {
                  val fling = PagerDefaults.flingBehavior(
                      state = pagerStateFS,
                      snapPositionalThreshold = 0.20f
@@ -1178,7 +1174,7 @@ fun Player(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = containerModifier
-                    .padding(top = if (playerType == PlayerType.Essential) 40.dp else 20.dp)
+                    .padding(top = if (playerType == Type.LEGACY) 40.dp else 20.dp)
                     .padding(top = if (extraspace) 10.dp else 0.dp)
                     .drawBehind {
                         if (backgroundProgress == BackgroundProgress.Both || backgroundProgress == BackgroundProgress.Player) {
@@ -1201,7 +1197,7 @@ fun Player(
                         .animateContentSize()
                        // .border(BorderStroke(1.dp, Color.Blue))
                 ) {
-                    if (showthumbnail && (playerType == PlayerType.Essential)) {
+                    if (showthumbnail && (playerType == Type.LEGACY)) {
                         Box(
                             contentAlignment = Alignment.Center,
                             /*modifier = Modifier
@@ -1212,7 +1208,7 @@ fun Player(
                                 thumbnailContent()
                         }
                     }
-                    if (isShowingVisualizer && !showvisthumbnail && playerType == PlayerType.Essential) {
+                    if (isShowingVisualizer && !showvisthumbnail && playerType == Type.LEGACY) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth(0.5f)
@@ -1224,7 +1220,7 @@ fun Player(
                                         onDragStart = {
                                         },
                                         onDragEnd = {
-                                            if (!disablePlayerHorizontalSwipe && playerType == PlayerType.Essential) {
+                                            if (!disablePlayerHorizontalSwipe && playerType == Type.LEGACY) {
                                                 if (deltaX > 5) {
                                                     player.playPrevious()
                                                 } else if (deltaX < -5) {
@@ -1293,7 +1289,7 @@ fun Player(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    if (playerType == PlayerType.Modern) {
+                    if (playerType == Type.MODERN) {
                         BoxWithConstraints(
                              contentAlignment = Alignment.Center,
                              modifier = Modifier
@@ -1332,7 +1328,7 @@ fun Player(
                                      userScrollEnabled = !disablePlayerHorizontalSwipe,
                                      modifier = Modifier
                                          .padding(
-                                             all = (if (thumbnailType == ThumbnailType.Modern) -(10.dp) else 0.dp).coerceAtLeast(
+                                             all = (if (thumbnailType == Type.MODERN) -(10.dp) else 0.dp).coerceAtLeast(
                                                  0.dp
                                              )
                                          )
@@ -1365,12 +1361,12 @@ fun Player(
                                                  fraction = 1f - pageOffSet.coerceIn(0f,5f)
                                              )
                                          }
-                                         .conditional(thumbnailType == ThumbnailType.Modern) {
+                                         .conditional(thumbnailType == Type.MODERN) {
                                              padding(
                                                  all = 10.dp
                                              )
                                          }
-                                         .conditional(thumbnailType == ThumbnailType.Modern) {
+                                         .conditional(thumbnailType == Type.MODERN) {
                                              doubleShadowDrop(
                                                  if (showCoverThumbnailAnimation) CircleShape else thumbnailRoundness.shape,
                                                  4.dp,
@@ -1454,7 +1450,7 @@ fun Player(
                                                 onDragStart = {
                                                 },
                                                 onDragEnd = {
-                                                    if (!disablePlayerHorizontalSwipe && playerType == PlayerType.Essential) {
+                                                    if (!disablePlayerHorizontalSwipe && playerType == Type.LEGACY) {
                                                         if (deltaX > 5) {
                                                             player.playPrevious()
                                                         } else if (deltaX < -5) {
@@ -1475,11 +1471,11 @@ fun Player(
                             }
                         }
                     }
-                    if (playerType == PlayerType.Essential || isShowingVisualizer) {
+                    if (playerType == Type.LEGACY || isShowingVisualizer) {
                         Controller(
                             mediaItem,
                             Modifier.padding(vertical = 8.dp)
-                                    .conditional( playerType == PlayerType.Essential ) {
+                                    .conditional( playerType == Type.LEGACY ) {
                                         fillMaxHeight().weight( 1f )
                                     }
                         )
@@ -1501,7 +1497,7 @@ fun Player(
                             Modifier.padding( vertical = 8.dp )
                         )
                     }
-                    if (!showthumbnail || playerType == PlayerType.Modern) {
+                    if (!showthumbnail || playerType == Type.MODERN) {
                         StatsForNerds(
                             mediaId = mediaItem.mediaId,
                             isDisplayed = statsfornerds,
@@ -1514,7 +1510,7 @@ fun Player(
          }
         } else {
            Box {
-               if (playerBackgroundColors == PlayerBackgroundColors.BlurredCoverColor && playerType == PlayerType.Modern && (!showthumbnail || albumCoverRotation)) {
+               if (playerBackgroundColors == PlayerBackgroundColors.BlurredCoverColor && playerType == Type.MODERN && (!showthumbnail || albumCoverRotation)) {
                     val fling = PagerDefaults.flingBehavior(
                         state = pagerStateFS,
                         snapPositionalThreshold = 0.30f
@@ -1842,7 +1838,7 @@ fun Player(
 
                       if (showthumbnail) {
                          if ((!isShowingLyrics && !isShowingVisualizer) || (isShowingVisualizer && showvisthumbnail) || (isShowingLyrics && showlyricsthumbnail)) {
-                             if (playerType == PlayerType.Modern) {
+                             if (playerType == Type.MODERN) {
                                  val fling = PagerDefaults.flingBehavior(state = pagerState,snapPositionalThreshold = 0.25f)
 
                                  pagerState.LaunchedEffectScrollToPage(player.currentMediaItemIndex)
@@ -1878,7 +1874,7 @@ fun Player(
                                      userScrollEnabled = expandPlayerState || !disablePlayerHorizontalSwipe,
                                      modifier = Modifier
                                          .padding(
-                                             all = (if (expandPlayerState) 0.dp else if (thumbnailType == ThumbnailType.Modern) -(10.dp) else 0.dp).coerceAtLeast(
+                                             all = (if (expandPlayerState) 0.dp else if (thumbnailType == Type.MODERN) -(10.dp) else 0.dp).coerceAtLeast(
                                                  0.dp
                                              )
                                          )
@@ -1916,12 +1912,12 @@ fun Player(
                                                  )
                                              }
                                          }
-                                         .conditional(thumbnailType == ThumbnailType.Modern) {
+                                         .conditional(thumbnailType == Type.MODERN) {
                                              padding(
                                                  all = 10.dp
                                              )
                                          }
-                                         .conditional(thumbnailType == ThumbnailType.Modern) {
+                                         .conditional(thumbnailType == Type.MODERN) {
                                              doubleShadowDrop(
                                                  if (showCoverThumbnailAnimation) CircleShape else thumbnailRoundness.shape,
                                                  4.dp,
@@ -2109,7 +2105,7 @@ fun Player(
                 }
                 Box(modifier = Modifier
                     .conditional(!expandPlayerState && (!isShowingLyrics || showlyricsthumbnail)){weight(1f)}) {
-                    if (playerType == PlayerType.Essential || isShowingLyrics || isShowingVisualizer) {
+                    if (playerType == Type.LEGACY || isShowingLyrics || isShowingVisualizer) {
                         Controller(
                             mediaItem,
                             Modifier.padding( vertical = 4.dp )
@@ -2136,7 +2132,7 @@ fun Player(
                     }
                 }
 
-                if (!showthumbnail || playerType == PlayerType.Modern) {
+                if (!showthumbnail || playerType == Type.MODERN) {
                     if (!isShowingLyrics || statsExpanded) {
                         StatsForNerds(
                             mediaId = mediaItem.mediaId,
@@ -2154,8 +2150,8 @@ fun Player(
         CustomModalBottomSheet(
             showSheet = showQueue,
             onDismissRequest = { showQueue = false },
-            containerColor = if (queueType == QueueType.Modern) Color.Transparent else colorPalette().background2,
-            contentColor = if (queueType == QueueType.Modern) Color.Transparent else colorPalette().background2,
+            containerColor = if (queueType === Type.MODERN) Color.Transparent else colorPalette().background2,
+            contentColor = if (queueType === Type.MODERN) Color.Transparent else colorPalette().background2,
             modifier = Modifier
                 .fillMaxWidth(),
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -2170,8 +2166,8 @@ fun Player(
         ) {
             Queue(
                 navController = navController,
-                onDismiss = {
-                    queueLoopState.value = it
+                onDismiss = { value ->
+                    app.kreate.preferences.Preferences.QUEUE_LOOP_TYPE.update { value }
                     showQueue = false
                 },
                 onDiscoverClick = { enabled ->
@@ -2183,8 +2179,8 @@ fun Player(
         CustomModalBottomSheet(
             showSheet = showSearchEntity,
             onDismissRequest = { showSearchEntity = false },
-            containerColor = if (playerType == PlayerType.Modern) Color.Transparent else colorPalette().background2,
-            contentColor = if (playerType == PlayerType.Modern) Color.Transparent else colorPalette().background2,
+            containerColor = if (playerType == Type.MODERN) Color.Transparent else colorPalette().background2,
+            contentColor = if (playerType == Type.MODERN) Color.Transparent else colorPalette().background2,
             modifier = Modifier
                 .fillMaxWidth(),
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),

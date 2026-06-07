@@ -2,10 +2,8 @@ package app.kreate.android.coil3
 
 import android.content.Context
 import android.graphics.Bitmap
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import app.kreate.android.R
 import app.kreate.util.thumbnail
@@ -19,7 +17,6 @@ import coil3.request.placeholder
 import coil3.request.transformations
 import coil3.toBitmap
 import coil3.transform.Transformation
-import it.fast4x.rimusic.ui.styling.LocalAppearance
 import org.jetbrains.annotations.Contract
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -34,14 +31,6 @@ object ImageFactory : KoinComponent {
     // is fit for majority of devices and the their storage sizes
     // isn't too big either.
     const val THUMBNAIL_SIZE = 900;
-    val defaultModifier: Modifier
-        @Composable
-        get() {
-            val appearance = LocalAppearance.current
-
-            return Modifier.clip( appearance.thumbnailShape )
-                           .fillMaxSize()
-        }
 
     fun requestBuilder(
         thumbnailUrl: String?,
@@ -64,7 +53,7 @@ object ImageFactory : KoinComponent {
     @Composable
     fun AsyncImage(
         thumbnailUrl: String?,
-        modifier: Modifier = defaultModifier,
+        modifier: Modifier = Modifier,
         contentDescription: String? = null,
         contentScale: ContentScale = ContentScale.FillBounds,
         transformations: List<Transformation> = emptyList()

@@ -57,13 +57,13 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
@@ -257,7 +257,7 @@ fun NonQueuedMediaItemMenuLibrary(
         )
     }
 
-    val menuStyle by Preferences.MENU_STYLE
+    val menuStyle by app.kreate.preferences.Preferences.MENU_STYLE.collectAsStateWithLifecycle()
 
     if (menuStyle == MenuStyle.Grid) {
 
@@ -346,7 +346,7 @@ fun NonQueuedMediaItemMenu(
 ) {
     val player: StatefulPlayer = koinInject()
 
-    val menuStyle by Preferences.MENU_STYLE
+    val menuStyle by app.kreate.preferences.Preferences.MENU_STYLE.collectAsStateWithLifecycle()
 
     //println("mediaItem in NonQueuedMediaItemMenu albumId ${mediaItem.mediaMetadata.extras?.getString("albumId")}")
 
@@ -408,7 +408,7 @@ fun QueuedMediaItemMenu(
     val context = LocalContext.current
     val player: StatefulPlayer = koinInject()
 
-    val menuStyle by Preferences.MENU_STYLE
+    val menuStyle by app.kreate.preferences.Preferences.MENU_STYLE.collectAsStateWithLifecycle()
 
     if (menuStyle == MenuStyle.Grid) {
         BaseMediaItemGridMenu(

@@ -37,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,11 +50,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
@@ -62,6 +63,7 @@ import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.playlist.PositionLock
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
+import app.kreate.constant.Type
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
@@ -72,7 +74,6 @@ import it.fast4x.compose.reordering.rememberReorderingState
 import it.fast4x.compose.reordering.reorder
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.QueueLoopType
-import it.fast4x.rimusic.enums.QueueType
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
@@ -125,6 +126,7 @@ fun Queue(
     val hapticFeedback = LocalHapticFeedback.current
     val menuState = LocalMenuState.current
     val menu = LocalBottomMenu.current
+    val coroutineScope = rememberCoroutineScope()
 
     val rippleIndication = ripple(bounded = false)
 
@@ -184,7 +186,7 @@ fun Queue(
         )
         val shuffle = ShuffleQueue( player, reorderingState )
         val discover = Discover( onDiscoverClick )
-        val repeat = Repeat.init()
+        val repeat = Repeat.init( coroutineScope )
         val deleteDialog = DeleteFromQueue {
             if( itemSelector.isEmpty() ) {
                 player.stop()
@@ -203,6 +205,7 @@ fun Queue(
             onDismiss()
         }
         val addToPlaylist = PlaylistsMenu.init(
+            coroutineScope = coroutineScope,
             navController = navController,
             mediaItems = { getSongs().map( Song::asMediaItem ) },
             onFailure = { throwable, preview ->
@@ -222,8 +225,8 @@ fun Queue(
         (deleteDialog as Dialog).Render()
 
         Column {
-            val queueType by Preferences.QUEUE_TYPE
-            val backgroundAlpha = if( queueType == QueueType.Modern ) .5f else 1f
+            val queueType by app.kreate.preferences.Preferences.QUEUE_TYPE.collectAsStateWithLifecycle()
+            val backgroundAlpha = if( queueType == Type.MODERN ) .5f else 1f
 
             LazyColumn(
                 state = reorderingState.lazyListState,

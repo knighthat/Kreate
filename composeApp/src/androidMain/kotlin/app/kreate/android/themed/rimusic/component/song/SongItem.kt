@@ -321,15 +321,17 @@ object SongItem: Visual() {
 
             thumbnailOverlay()
 
-            if( isLiked )
+            if( isLiked ) {
+                val icon by app.kreate.preferences.Preferences.LIKE_ICON.collectAsStateWithLifecycle()
                 Icon(
-                    painter = Preferences.LIKE_ICON.value.likedIcon,
+                    painter = icon.likedIcon,
                     contentDescription = null,
                     tint = values.likedIconColor,
                     modifier = Modifier.size( LIKE_ICON_SIZE.dp )
                                        .align( Alignment.BottomStart )
                                        .absoluteOffset( x = (-8).dp )
                 )
+            }
         }
 
     @Composable

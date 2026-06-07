@@ -16,9 +16,10 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
 import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.database.models.PersistentQueue
+import app.kreate.preferences.Preferences
+import app.kreate.preferences.QUEUE_LOOP_TYPE
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.NotificationButtons
 import it.fast4x.rimusic.enums.QueueLoopType
@@ -67,7 +68,7 @@ class ExoPlayerListener(
      */
     @AnyThread
     fun saveQueueToDatabase() {
-        if( !app.kreate.preferences.Preferences.ENABLE_PERSISTENT_QUEUE.value ) return
+        if( !Preferences.ENABLE_PERSISTENT_QUEUE.value ) return
 
         CoroutineScope( Dispatchers.Default ).launch {
             val (queue, index, playerPos) = withContext(Dispatchers.Main ) {
@@ -129,7 +130,7 @@ class ExoPlayerListener(
         // - Feature is disabled
         // - When song is repeated
         // - Start new queue
-        if( !app.kreate.preferences.Preferences.QUEUE_AUTO_APPEND.value
+        if( !Preferences.QUEUE_AUTO_APPEND.value
             || reason == Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT
             || reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED
         ) return
@@ -214,7 +215,7 @@ class ExoPlayerListener(
 
         // TODO: Add additional recovery step if type of error allows it
 
-        if ( app.kreate.preferences.Preferences.PLAYBACK_SKIP_ON_ERROR.value && player.hasNextMediaItem() )
+        if ( Preferences.PLAYBACK_SKIP_ON_ERROR.value && player.hasNextMediaItem() )
             player.playNext()
     }
 

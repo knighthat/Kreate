@@ -41,7 +41,6 @@ import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.drawable.AppIcon
-import app.kreate.android.enums.PlatformIndicatorType
 import app.kreate.android.themed.rimusic.component.MultiplatformItem
 import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.ItemUtils
@@ -74,7 +73,7 @@ object PlaylistItem: Visual(), MultiplatformItem {
 
     val REGEX_PLAYLIST_ID = Regex("^(PL|UU|LL|RD|OL|VL)")
     val CORNERS = listOf( Alignment.TopStart, Alignment.TopEnd, Alignment.BottomStart, Alignment.BottomEnd )
-    override val platformIndicatorType: PlatformIndicatorType by Preferences.PLAYLISTS_PLATFORM_INDICATOR
+    override val platformIndicatorType = app.kreate.preferences.Preferences.PLAYLISTS_PLATFORM_INDICATOR
     override val thumbnailRoundnessPercent: Preferences.Int = Preferences.PLAYLIST_THUMBNAIL_ROUNDNESS_PERCENT
 
     override fun thumbnailSize() = DpSize(Preferences.PLAYLIST_THUMBNAIL_SIZE.value.dp, Preferences.PLAYLIST_THUMBNAIL_SIZE.value.dp)

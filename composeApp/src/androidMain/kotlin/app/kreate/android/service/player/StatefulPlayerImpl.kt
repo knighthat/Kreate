@@ -37,6 +37,7 @@ import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
 import app.kreate.di.PrefType
+import app.kreate.preferences.QUEUE_LOOP_TYPE
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.Database
@@ -125,7 +126,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
         preferences.registerOnSharedPreferenceChangeListener( this )
 
         skipSilenceEnabled = app.kreate.preferences.Preferences.AUDIO_SKIP_SILENCE.value
-        repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
+        repeatMode = app.kreate.preferences.Preferences.QUEUE_LOOP_TYPE.value.type
         volume = Preferences.AUDIO_VOLUME.value
         setGlobalVolume( player.volume )
         playbackParameters = PlaybackParameters(
@@ -410,7 +411,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
             onIsPlayingChanged( true )
         }
 
-        val duration = Preferences.AUDIO_FADE_DURATION.value.asMillis
+        val duration = app.kreate.preferences.Preferences.AUDIO_FADE_DURATION.value.asMillis
         if( duration == 0L ) {
             action()
             return
@@ -428,7 +429,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
     }
 
     override fun pause() {
-        val duration = Preferences.AUDIO_FADE_DURATION.value.asMillis
+        val duration = app.kreate.preferences.Preferences.AUDIO_FADE_DURATION.value.asMillis
         if( duration == 0L ) {
             player.pause()
             return

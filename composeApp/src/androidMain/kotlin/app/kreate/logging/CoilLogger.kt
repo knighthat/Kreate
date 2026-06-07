@@ -1,7 +1,6 @@
 package app.kreate.logging
 
 import app.kreate.android.BuildConfig
-import app.kreate.android.Preferences
 import co.touchlab.kermit.Severity
 import coil3.request.NullRequestDataException
 import coil3.util.Logger
@@ -24,7 +23,7 @@ class CoilLogger : Logger {
             if ( BuildConfig.DEBUG )
                 Logger.Level.Verbose
             else
-                when ( Preferences.RUNTIME_LOG_SEVERITY.value ) {
+                when ( app.kreate.preferences.Preferences.RUNTIME_LOG_SEVERITY.value ) {
                     Severity.Verbose -> Logger.Level.Verbose
                     Severity.Debug -> Logger.Level.Debug
                     Severity.Info -> Logger.Level.Info

@@ -44,7 +44,6 @@ import androidx.compose.ui.util.fastMapNotNull
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
@@ -101,8 +100,8 @@ fun HomeArtists(
     val coroutineScope = rememberCoroutineScope()
 
     // Settings
-    var artistType by Preferences.HOME_ARTIST_TYPE
-    var filterBy by Preferences.HOME_ARTIST_AND_ALBUM_FILTER
+    val artistType by app.kreate.preferences.Preferences.HOME_ARTIST_TYPE.collectAsStateWithLifecycle()
+    val filterBy by app.kreate.preferences.Preferences.HOME_ARTIST_AND_ALBUM_FILTER.collectAsStateWithLifecycle()
 
 
     val items by viewModel.artists.collectAsStateWithLifecycle()
@@ -112,9 +111,9 @@ fun HomeArtists(
     var itemsOnDisplay by persistList<Artist>( "home/artists/on_display" )
 
     val sort = remember {
-        Sort(menuState, Preferences.HOME_ARTISTS_SORT_BY, Preferences.HOME_ARTISTS_SORT_ORDER)
+        Sort(menuState, app.kreate.preferences.Preferences.HOME_ARTISTS_SORT_BY, app.kreate.preferences.Preferences.HOME_ARTISTS_SORT_ORDER, coroutineScope)
     }
-    val itemSize = remember { ItemSize(Preferences.HOME_ARTIST_ITEM_SIZE, menuState) }
+    val itemSize = remember { ItemSize(coroutineScope, app.kreate.preferences.Preferences.HOME_ARTIST_ITEM_SIZE, menuState) }
     val sizeDp by remember {derivedStateOf {
         DpSize(itemSize.size.dp, itemSize.size.dp)
     }}
@@ -132,7 +131,7 @@ fun HomeArtists(
     val buttonsList = ArtistsType.entries.map { it to it.text }
 
     if (!isYouTubeSyncEnabled()) {
-        filterBy = FilterBy.All
+        app.kreate.preferences.Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update { FilterBy.All }
     }
 
     LaunchedEffect( items, search.input ) {
@@ -193,7 +192,9 @@ fun HomeArtists(
                         ButtonsRow(
                             chips = buttonsList,
                             currentValue = artistType,
-                            onValueUpdate = { artistType = it },
+                            onValueUpdate = { newValue ->
+                                app.kreate.preferences.Preferences.HOME_ARTIST_TYPE.update { newValue }
+                            },
                             modifier = Modifier.padding(end = 12.dp)
                         )
                         if (isYouTubeSyncEnabled()) {
@@ -218,11 +219,15 @@ fun HomeArtists(
                                                 FilterMenu(
                                                     title = stringResource(R.string.filter_by),
                                                     onDismiss = menuState::hide,
-                                                    onAll = { filterBy = FilterBy.All },
+                                                    onAll = {
+                                                        app.kreate.preferences.Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update { FilterBy.All }
+                                                            },
                                                     onYoutubeLibrary = {
-                                                        filterBy = FilterBy.YoutubeLibrary
+                                                        app.kreate.preferences.Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update { FilterBy.YoutubeLibrary }
                                                     },
-                                                    onLocal = { filterBy = FilterBy.Local }
+                                                    onLocal = {
+                                                        app.kreate.preferences.Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update { FilterBy.Local }
+                                                    }
                                                 )
                                             }
 

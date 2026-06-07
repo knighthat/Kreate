@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -121,7 +122,7 @@ fun AppNavigation(
 
     val startDestination = remember( startPage ) {
         Preferences.HOME_TAB_INDEX.value =
-            if( startPage == HomeScreenTabs.Search ) Preferences.STARTUP_SCREEN.value.index else startPage.index
+            if( startPage == HomeScreenTabs.Search ) app.kreate.preferences.Preferences.STARTUP_SCREEN.value.index else startPage.index
 
         return@remember if( startPage == HomeScreenTabs.Search )
             NavRoutes.search
@@ -129,12 +130,12 @@ fun AppNavigation(
             NavRoutes.home
     }
 
-    val transitionEffect by Preferences.TRANSITION_EFFECT
+    val transitionEffect by app.kreate.preferences.Preferences.TRANSITION_EFFECT.collectAsStateWithLifecycle()
 
     @Composable
     fun modalBottomSheetPage(content: @Composable () -> Unit) {
         var showSheet by rememberSaveable { mutableStateOf(true) }
-        val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
+        val thumbnailRoundness by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
 
         CustomModalBottomSheet(
             showSheet = showSheet,

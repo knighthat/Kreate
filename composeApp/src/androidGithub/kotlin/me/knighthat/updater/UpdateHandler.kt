@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.BuildConfig
-import app.kreate.android.Preferences
 import it.fast4x.rimusic.enums.CheckUpdateState
 import java.io.File
 
@@ -17,7 +17,7 @@ fun UpdateHandler() {
     DownloadAndInstallDialog.Render()
     NewUpdatePrompt.Render()
 
-    val check4UpdateState by Preferences.CHECK_UPDATE
+    val check4UpdateState by app.kreate.preferences.Preferences.CHECK_UPDATE.collectAsStateWithLifecycle()
     LaunchedEffect( check4UpdateState ) {
         if( check4UpdateState != CheckUpdateState.DISABLED )
             Updater.checkForUpdate( context )

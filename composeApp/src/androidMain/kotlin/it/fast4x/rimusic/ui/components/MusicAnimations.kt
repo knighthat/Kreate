@@ -21,9 +21,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.service.player.StatefulPlayer
 import it.fast4x.rimusic.enums.MusicAnimationType
 import it.fast4x.rimusic.utils.DisposableListener
@@ -49,7 +49,7 @@ fun MusicAnimation(
         }
     }
 
-    val nowPlayingIndicator by Preferences.NOW_PLAYING_INDICATOR
+    val nowPlayingIndicator by app.kreate.preferences.Preferences.NOW_PLAYING_INDICATOR.collectAsStateWithLifecycle()
     if (nowPlayingIndicator == MusicAnimationType.Disabled) return
 
     val animatablesWithSteps = remember {

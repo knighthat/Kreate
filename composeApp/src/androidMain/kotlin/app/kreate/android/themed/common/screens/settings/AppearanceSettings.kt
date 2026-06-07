@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.themed.common.component.settings.EnumEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
@@ -73,12 +74,15 @@ fun AppearanceSettings(paddingValues: PaddingValues) {
 
         val showThumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
         val lyricsShowThumbnail by app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+        val playerBackgroundColors by app.kreate.preferences.Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
+        val playerInfoType by app.kreate.preferences.Preferences.PLAYER_INFO_TYPE.collectAsStateWithLifecycle()
+        val playerType by app.kreate.preferences.Preferences.PLAYER_TYPE.collectAsStateWithLifecycle()
 
         LazyColumn(
             state = scrollState,
             contentPadding = PaddingValues(bottom = Dimensions.bottomSpacer)
         ) {
-            playerAppearanceSection( search, isLandscapeMode, showThumbnail )
+            playerAppearanceSection( search, isLandscapeMode, showThumbnail, playerBackgroundColors, playerInfoType, playerType )
             playerActionBarSection( search, isLandscapeMode )
             if( lyricsShowThumbnail )
                 playerFullscreenLyrics( search )
@@ -86,15 +90,15 @@ fun AppearanceSettings(paddingValues: PaddingValues) {
             header( R.string.notification_player )
             entry( search, R.string.notificationPlayerFirstIcon ) {
                 SettingComponents.EnumEntry(
-                    Preferences.MEDIA_NOTIFICATION_FIRST_ICON,
-                    R.string.notificationPlayerFirstIcon,
+                    preference = app.kreate.preferences.Preferences.MEDIA_NOTIFICATION_FIRST_ICON,
+                    title = stringResource( R.string.notificationPlayerFirstIcon ),
                     action = SettingComponents.Action.RESTART_PLAYER_SERVICE
                 )
             }
             entry( search, R.string.notificationPlayerSecondIcon ) {
                 SettingComponents.EnumEntry(
-                    Preferences.MEDIA_NOTIFICATION_SECOND_ICON,
-                    R.string.notificationPlayerSecondIcon,
+                    preference = app.kreate.preferences.Preferences.MEDIA_NOTIFICATION_SECOND_ICON,
+                    title = stringResource( R.string.notificationPlayerSecondIcon ),
                     action = SettingComponents.Action.RESTART_PLAYER_SERVICE
                 )
             }
@@ -103,7 +107,7 @@ fun AppearanceSettings(paddingValues: PaddingValues) {
 
             entry( search, R.string.setting_entry_live_wallpaper ) {
                 SettingComponents.EnumEntry(
-                    preference = Preferences.LIVE_WALLPAPER,
+                    preference = app.kreate.preferences.Preferences.LIVE_WALLPAPER,
                     title = stringResource( R.string.setting_entry_live_wallpaper ),
                     subtitle = stringResource( R.string.setting_description_live_wallpaper ),
                     action = SettingComponents.Action.RESTART_PLAYER_SERVICE

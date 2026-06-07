@@ -19,6 +19,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.settings.BooleanEntry
+import app.kreate.android.themed.common.component.settings.EnumEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
@@ -27,6 +28,7 @@ import app.kreate.android.themed.common.component.settings.header
 import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.rememberEqualizerLauncher
+import kotlinx.coroutines.flow.update
 import me.knighthat.component.dialog.InputDialogConstraints
 import org.koin.compose.koinInject
 
@@ -37,8 +39,8 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
 
     entry( search, R.string.audio_quality_format ) {
         SettingComponents.EnumEntry(
-            preference = Preferences.AUDIO_QUALITY,
-            titleId = R.string.audio_quality_format,
+            preference = app.kreate.preferences.Preferences.AUDIO_QUALITY,
+            title = stringResource( R.string.audio_quality_format ),
             action = SettingComponents.Action.RESTART_PLAYER_SERVICE
         )
     }
@@ -49,7 +51,7 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
             subtitleId = R.string.info_enable_connection_metered
         ) {
             if ( it )
-                Preferences.AUDIO_QUALITY.value = AudioQualityFormat.Auto
+                app.kreate.preferences.Preferences.AUDIO_QUALITY.update { AudioQualityFormat.Auto }
         }
     }
     entry( search, R.string.setting_entry_smart_rewind ) {
@@ -73,22 +75,22 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     entry( search, R.string.min_listening_time ) {
         SettingComponents.EnumEntry(
-            Preferences.QUICK_PICKS_MIN_DURATION,
-            titleId = R.string.min_listening_time,
+            preference = app.kreate.preferences.Preferences.QUICK_PICKS_MIN_DURATION,
+            title = stringResource( R.string.min_listening_time ),
             subtitleId = R.string.is_min_list_time_for_tips_or_quick_pics
         )
     }
     entry( search, R.string.exclude_songs_with_duration_limit ) {
         SettingComponents.EnumEntry(
-            Preferences.LIMIT_SONGS_WITH_DURATION,
-            titleId = R.string.exclude_songs_with_duration_limit,
+            preference = app.kreate.preferences.Preferences.LIMIT_SONGS_WITH_DURATION,
+            title = stringResource( R.string.exclude_songs_with_duration_limit ),
             subtitleId = R.string.exclude_songs_with_duration_limit_description
         )
     }
     entry( search, R.string.pause_between_songs ) {
         SettingComponents.EnumEntry(
-            Preferences.PAUSE_BETWEEN_SONGS,
-            R.string.pause_between_songs
+            preference = app.kreate.preferences.Preferences.PAUSE_BETWEEN_SONGS,
+            title = stringResource( R.string.pause_between_songs )
         )
     }
     entry( search, R.string.player_pause_listen_history ) {
@@ -108,8 +110,8 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     entry( search, R.string.effect_fade_audio ) {
         SettingComponents.EnumEntry(
-            Preferences.AUDIO_FADE_DURATION,
-            titleId = R.string.effect_fade_audio,
+            preference = app.kreate.preferences.Preferences.AUDIO_FADE_DURATION,
+            title = stringResource( R.string.effect_fade_audio ),
             subtitleId = R.string.effect_fade_audio_description
         )
     }
@@ -137,8 +139,8 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     entry( search, R.string.max_songs_in_queue ) {
         SettingComponents.EnumEntry(
-            Preferences.MAX_NUMBER_OF_SONG_IN_QUEUE,
-            R.string.max_songs_in_queue
+            preference = app.kreate.preferences.Preferences.MAX_NUMBER_OF_SONG_IN_QUEUE,
+            title = stringResource( R.string.max_songs_in_queue )
         )
     }
     entry( search, R.string.discover ) {
@@ -157,8 +159,8 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     entry( search, R.string.now_playing_indicator ) {
         SettingComponents.EnumEntry(
-            Preferences.NOW_PLAYING_INDICATOR,
-            R.string.now_playing_indicator
+            preference = app.kreate.preferences.Preferences.NOW_PLAYING_INDICATOR,
+            title = stringResource( R.string.now_playing_indicator )
         )
     }
     entry( search, R.string.resume_playback, isAtLeastAndroid6 ) {
@@ -322,8 +324,8 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
         Column {
             if( search appearsIn R.string.settings_pip_module )
                 SettingComponents.EnumEntry(
-                    Preferences.PIP_MODULE,
-                    R.string.settings_pip_module,
+                    preference = app.kreate.preferences.Preferences.PIP_MODULE,
+                    title = stringResource( R.string.settings_pip_module ),
                     action = SettingComponents.Action.RESTART_PLAYER_SERVICE
                 )
 

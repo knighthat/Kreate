@@ -93,21 +93,21 @@ actual val networkModule: Module = module {
         }
 
         val proxy = Proxy(
-            Preferences.PROXY_SCHEME.value,
+            app.kreate.preferences.Preferences.PROXY_SCHEME.value,
             InetSocketAddress(Preferences.PROXY_HOST.value, Preferences.PROXY_PORT.value)
         )
         // Must verify to prevent network failure
         runBlocking( Dispatchers.IO ) { proxy.takeIf( ::verifyProxy ) ?: Proxy.NO_PROXY }
     }
     factory<Dns> {
-        if( Preferences.DOH_SERVER.value == DohServer.NONE ) {
+        if( app.kreate.preferences.Preferences.DOH_SERVER.value == DohServer.NONE ) {
             Logger.d( tag = LOGGING_TAG ) { "DoH is not enabled. Using system's DNS" }
             return@factory Dns.SYSTEM
         }
 
         val client = OkHttpClient.Builder().build()
-        val url = Preferences.DOH_SERVER.value.url.toHttpUrlOrNull()!!        // Cannot be null if other than NONE
-        val addresses = Preferences.DOH_SERVER.value.address.map( InetAddress::getByName )
+        val url = app.kreate.preferences.Preferences.DOH_SERVER.value.url.toHttpUrlOrNull()!!        // Cannot be null if other than NONE
+        val addresses = app.kreate.preferences.Preferences.DOH_SERVER.value.address.map( InetAddress::getByName )
 
         val dns = DnsOverHttps
             .Builder()

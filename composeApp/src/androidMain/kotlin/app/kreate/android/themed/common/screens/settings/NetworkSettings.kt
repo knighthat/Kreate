@@ -10,16 +10,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.enums.DohServer
 import app.kreate.android.themed.common.component.settings.BooleanEntry
+import app.kreate.android.themed.common.component.settings.EnumEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
@@ -79,13 +83,15 @@ fun NetworkSettings( paddingValues: PaddingValues ) {
                 modifier = Modifier.padding( start = 25.dp )
             ) {
                 Column {
+                    val resources = LocalResources.current
+
                     if( search appearsIn R.string.proxy_mode )
                         SettingComponents.EnumEntry(
-                            Preferences.PROXY_SCHEME,
-                            R.string.proxy_mode,
-                            {
+                            preference = app.kreate.preferences.Preferences.PROXY_SCHEME,
+                            title = stringResource( R.string.proxy_mode ),
+                            onValueChanged = {
                                 when( it ) {
-                                    Proxy.Type.DIRECT -> stringResource( R.string.proxy_mode_direct )
+                                    Proxy.Type.DIRECT -> resources.getString( R.string.proxy_mode_direct )
                                     else              -> it.name
                                                            .lowercase()
                                                            .replaceFirstChar( Char::uppercase )
@@ -130,27 +136,26 @@ fun NetworkSettings( paddingValues: PaddingValues ) {
             )
             entry( search, R.string.setting_entry_select_dns_over_https_server ) {
                 SettingComponents.EnumEntry(
-                    preference = Preferences.DOH_SERVER,
+                    preference = app.kreate.preferences.Preferences.DOH_SERVER,
                     title = stringResource( R.string.setting_entry_select_dns_over_https_server ),
                     action = SettingComponents.Action.RESTART_APP
                 )
             }
-            entry(
-                search = search,
-                titleId = R.string.setting_entry_test_doh,
-                additionalCheck =  Preferences.DOH_SERVER.value != DohServer.NONE
-            ) {
-                SettingComponents.Text(
-                    title = stringResource( R.string.setting_entry_test_doh ),
-                    onClick = {
-                        CoroutineScope( Dispatchers.IO ).launch {
-                            val dns: Dns by inject(Dns::class.java)
-                            if( dns !== Dns.SYSTEM )
-                                Toaster.s( R.string.success_doh_verified )
-                            // Failed dns message will be displayed automatically
+            item {
+                val dohServer by app.kreate.preferences.Preferences.DOH_SERVER.collectAsStateWithLifecycle()
+
+                if( search appearsIn R.string.setting_entry_test_doh && dohServer !== DohServer.NONE )
+                    SettingComponents.Text(
+                        title = stringResource( R.string.setting_entry_test_doh ),
+                        onClick = {
+                            CoroutineScope( Dispatchers.IO ).launch {
+                                val dns: Dns by inject(Dns::class.java)
+                                if( dns !== Dns.SYSTEM )
+                                    Toaster.s( R.string.success_doh_verified )
+                                // Failed dns message will be displayed automatically
+                            }
                         }
-                    }
-                )
+                    )
             }
         }
     }

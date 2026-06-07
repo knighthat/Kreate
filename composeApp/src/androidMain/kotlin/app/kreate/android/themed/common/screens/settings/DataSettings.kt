@@ -28,6 +28,7 @@ import app.kreate.android.BuildConfig
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.BooleanEntry
+import app.kreate.android.themed.common.component.settings.EnumEntry
 import app.kreate.android.themed.common.component.settings.RestartPlayerService
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
@@ -244,9 +245,9 @@ fun DataSettings( paddingValues: PaddingValues ) {
             }
             entry( search, R.string.set_cache_location ) {
                 SettingComponents.EnumEntry(
-                    preference = Preferences.EXO_CACHE_LOCATION,
+                    preference = app.kreate.preferences.Preferences.EXO_CACHE_LOCATION,
                     title = stringResource( R.string.set_cache_location ),
-                    subtitle = stringResource( Preferences.EXO_CACHE_LOCATION.value.subtitleId ),
+                    subtitle = stringResource( app.kreate.preferences.Preferences.EXO_CACHE_LOCATION.value.subtitleId ),
                     action = SettingComponents.Action.RESTART_APP
                 )
             }

@@ -168,7 +168,7 @@ fun HomeQuickPicks(
     val menuState = LocalMenuState.current
     val windowInsets = LocalPlayerAwareWindowInsets.current
     val bottomMenu = LocalBottomMenu.current
-    var playEventType by Preferences.QUICK_PICKS_TYPE
+    val playEventType by app.kreate.preferences.Preferences.QUICK_PICKS_TYPE.collectAsStateWithLifecycle()
 
     var trending by persist<Song?>("home/trending")
     val trendingInit by persist<Song?>(tag = "home/trending")
@@ -466,7 +466,7 @@ fun HomeQuickPicks(
                                         icon = R.drawable.chevron_up,
                                         text = stringResource( Res.string.by_most_played_song ),
                                         onClick = {
-                                            playEventType = PlayEventsType.MostPlayed
+                                            app.kreate.preferences.Preferences.QUICK_PICKS_TYPE.update { PlayEventsType.MostPlayed }
                                             menuState.hide()
                                         }
                                     )
@@ -474,7 +474,7 @@ fun HomeQuickPicks(
                                         icon = R.drawable.chevron_down,
                                         text = stringResource( Res.string.by_last_played_song ),
                                         onClick = {
-                                            playEventType = PlayEventsType.LastPlayed
+                                            app.kreate.preferences.Preferences.QUICK_PICKS_TYPE.update { PlayEventsType.LastPlayed }
                                             menuState.hide()
                                         }
                                     )
@@ -482,7 +482,7 @@ fun HomeQuickPicks(
                                         icon = R.drawable.random,
                                         text = stringResource( Res.string.by_casual_played_song ),
                                         onClick = {
-                                            playEventType = PlayEventsType.CasualPlayed
+                                            app.kreate.preferences.Preferences.QUICK_PICKS_TYPE.update { PlayEventsType.CasualPlayed }
                                             menuState.hide()
                                         }
                                     )

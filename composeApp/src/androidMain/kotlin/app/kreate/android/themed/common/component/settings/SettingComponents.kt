@@ -23,6 +23,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ListItemColors
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.runtime.Composable
@@ -48,6 +50,7 @@ import app.kreate.component.TextView
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.Switch
+import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.semiBold
 import me.knighthat.component.dialog.Dialog
 import me.knighthat.component.dialog.RestartAppDialog
@@ -78,6 +81,16 @@ object SettingComponents {
     const val VERTICAL_SPACING = 12
 
     const val CHILDREN_PADDING = 25
+
+    @Composable
+    fun getColors( isEnabled: Boolean ): ListItemColors =
+        with( LocalAppearance.current.colorPalette ) {
+            ListItemDefaults.colors(
+                containerColor = Color.Transparent,
+                headlineColor = if( isEnabled ) text else textDisabled,
+                supportingColor = if( isEnabled ) textSecondary else textDisabled
+            )
+        }
 
     @Composable
     fun Description(

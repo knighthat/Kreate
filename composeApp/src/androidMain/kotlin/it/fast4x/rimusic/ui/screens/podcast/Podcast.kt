@@ -66,7 +66,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
@@ -190,7 +189,7 @@ fun Podcast(
         mutableStateOf(Download.STATE_STOPPED)
     }
 
-    var thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
+    val thumbnailRoundness by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
 
     val totalDuration by remember {derivedStateOf {
         podcastPage?.listEpisode

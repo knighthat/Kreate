@@ -11,10 +11,12 @@ import app.kreate.constant.Language
 import app.kreate.constant.PlaylistSongSortBy
 import app.kreate.constant.PlaylistSortBy
 import app.kreate.constant.SongSortBy
+import app.kreate.constant.SortOrder
 import app.kreate.constant.Type
 import app.kreate.di.PrefType
 import app.kreate.di.Storage
 import co.touchlab.kermit.Severity
+import it.fast4x.rimusic.enums.AlbumSwipeAction
 import it.fast4x.rimusic.enums.AlbumsType
 import it.fast4x.rimusic.enums.AnimatedGradient
 import it.fast4x.rimusic.enums.ArtistsType
@@ -58,7 +60,9 @@ import it.fast4x.rimusic.enums.PlayerPosition
 import it.fast4x.rimusic.enums.PlayerThumbnailSize
 import it.fast4x.rimusic.enums.PlayerTimelineSize
 import it.fast4x.rimusic.enums.PlayerTimelineType
+import it.fast4x.rimusic.enums.PlaylistSwipeAction
 import it.fast4x.rimusic.enums.PlaylistsType
+import it.fast4x.rimusic.enums.QueueSwipeAction
 import it.fast4x.rimusic.enums.RecommendationsNumber
 import it.fast4x.rimusic.enums.Romanization
 import it.fast4x.rimusic.enums.SongsNumber
@@ -86,7 +90,6 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.net.Proxy
-import javax.swing.SortOrder
 import kotlin.enums.EnumEntries
 import androidx.datastore.preferences.core.Preferences.Key as DatastoreKey
 
@@ -169,6 +172,24 @@ sealed class Preferences<K, V>(
         //<editor-fold desc="Swipe action">
         val ENABLE_SWIPE_ACTION by lazy {
             BooleanPref(preferences, Key.ENABLE_SWIPE_ACTION, true)
+        }
+        val QUEUE_SWIPE_LEFT_ACTION by lazy {
+            EnumPref(preferences, Key.QUEUE_SWIPE_LEFT_ACTION, QueueSwipeAction.RemoveFromQueue, QueueSwipeAction::entries)
+        }
+        val QUEUE_SWIPE_RIGHT_ACTION by lazy {
+            EnumPref(preferences, Key.QUEUE_SWIPE_RIGHT_ACTION, QueueSwipeAction.PlayNext, QueueSwipeAction::entries)
+        }
+        val PLAYLIST_SWIPE_LEFT_ACTION by lazy {
+            EnumPref(preferences, Key.PLAYLIST_SWIPE_LEFT_ACTION, PlaylistSwipeAction.Favourite, PlaylistSwipeAction::entries)
+        }
+        val PLAYLIST_SWIPE_RIGHT_ACTION by lazy {
+            EnumPref(preferences, Key.PLAYLIST_SWIPE_RIGHT_ACTION, PlaylistSwipeAction.PlayNext, PlaylistSwipeAction::entries)
+        }
+        val ALBUM_SWIPE_LEFT_ACTION by lazy {
+            EnumPref(preferences, Key.ALBUM_SWIPE_LEFT_ACTION, AlbumSwipeAction.PlayNext, AlbumSwipeAction::entries)
+        }
+        val ALBUM_SWIPE_RIGHT_ACTION by lazy {
+            EnumPref(preferences, Key.ALBUM_SWIPE_RIGHT_ACTION, AlbumSwipeAction.Bookmark, AlbumSwipeAction::entries)
         }
         //</editor-fold>
         //<editor-fold desc="Mini player">
@@ -866,7 +887,7 @@ sealed class Preferences<K, V>(
         storage: Storage,
         key: Preferences.Key,
         defaultValue: E,
-        private val entries: () -> EnumEntries<E>
+        val entries: () -> EnumEntries<E>
     ) : Preferences<String, E>(storage, stringPreferencesKey(key.value), defaultValue) {
 
         override fun deserialize( key: String ): E? = entries().firstOrNull { it.name == key }
@@ -905,6 +926,12 @@ sealed class Preferences<K, V>(
             //</editor-fold>
             //<editor-fold desc="Swipe action">
             val ENABLE_SWIPE_ACTION = Key("enable_swipe_action")
+            val QUEUE_SWIPE_LEFT_ACTION = Key("queue_swipe_left_action")
+            val QUEUE_SWIPE_RIGHT_ACTION = Key("queue_swipe_right_action")
+            val PLAYLIST_SWIPE_LEFT_ACTION = Key("playlist_swipe_left_action")
+            val PLAYLIST_SWIPE_RIGHT_ACTION = Key("playlist_swipe_right_action")
+            val ALBUM_SWIPE_LEFT_ACTION = Key("album_swipe_left_action")
+            val ALBUM_SWIPE_RIGHT_ACTION = Key("album_swipe_right_action")
             //</editor-fold>
             //<editor-fold desc="Mini player">
             val MINI_DISABLE_SWIPE_DOWN_TO_DISMISS = Key("mini_disable_swipe_down_to_dismiss")

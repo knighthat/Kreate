@@ -52,17 +52,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
+import app.kreate.constant.Type
+import app.kreate.preferences.Preferences
+import app.kreate.preferences.QUEUE_LOOP_TYPE
 import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.PlayerBackgroundColors
-import it.fast4x.rimusic.enums.PlayerControlsType
 import it.fast4x.rimusic.enums.PlayerPlayButtonType
 import it.fast4x.rimusic.models.Info
 import it.fast4x.rimusic.typography
@@ -81,6 +82,7 @@ import it.fast4x.rimusic.utils.smartRewind
 import it.fast4x.rimusic.utils.textCopyToClipboard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
 import org.koin.compose.koinInject
@@ -98,14 +100,14 @@ fun InfoAlbumAndArtistEssential(
     onCollapse: () -> Unit
 ) {
     val context = LocalContext.current
-    val playerControlsType by Preferences.PLAYER_CONTROLS_TYPE
-    val colorPaletteMode by Preferences.THEME_MODE
-    val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
-    val marqueEffect by app.kreate.preferences.Preferences.MARQUEE_TEXT_EFFECT.collectAsStateWithLifecycle()
+    val playerControlsType by Preferences.PLAYER_CONTROLS_TYPE.collectAsStateWithLifecycle()
+    val colorPaletteMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
+    val effectRotationEnabled by Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
+    val marqueEffect by Preferences.MARQUEE_TEXT_EFFECT.collectAsStateWithLifecycle()
     var isRotated by rememberSaveable { mutableStateOf(false) }
     var showSelectDialog by remember { mutableStateOf(false) }
-    val textoutline by app.kreate.preferences.Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
-    val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
+    val textoutline by Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
+    val playerBackgroundColors by Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
     var likeButtonWidth by remember{ mutableStateOf(0.dp) }
     val currentMediaItem = player.currentMediaItem
 
@@ -166,7 +168,7 @@ fun InfoAlbumAndArtistEssential(
                 Row(verticalAlignment = Alignment.CenterVertically,
                     modifier = modifierTitle
                     .conditional( marqueEffect ) {padding(horizontal = maxWidth * 0.025f)}
-                    .conditional(playerControlsType == PlayerControlsType.Modern){padding(start = likeButtonWidth)}
+                    .conditional(playerControlsType == Type.MODERN){padding(start = likeButtonWidth)}
                 ) {
                     if ( mediaItem.isExplicit ) {
                         IconButton(
@@ -224,7 +226,7 @@ fun InfoAlbumAndArtistEssential(
             }
 
             //}
-            if (playerControlsType == PlayerControlsType.Modern){
+            if (playerControlsType === Type.MODERN){
                 BoxWithConstraints(
                     modifier = Modifier.weight(0.1f)
                 ) {
@@ -363,9 +365,9 @@ fun ControlsEssential(
     onShowSpeedPlayerDialog: () -> Unit,
 ) {
     val context = LocalContext.current
-    val colorPaletteName by Preferences.COLOR_PALETTE
-    val colorPaletteMode by Preferences.THEME_MODE
-    val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
+    val colorPaletteName by Preferences.COLOR_PALETTE.collectAsStateWithLifecycle()
+    val colorPaletteMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
+    val effectRotationEnabled by Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
     var isRotated by rememberSaveable { mutableStateOf(false) }
     val rotationAngle by animateFloatAsState(
         targetValue = if (isRotated) 360F else 0f,
@@ -378,8 +380,8 @@ fun ControlsEssential(
         targetValueByState = { if (it) 32.dp else 16.dp }
     )
 
-    var queueLoopType by Preferences.QUEUE_LOOP_TYPE
-    val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
+    val queueLoopType by Preferences.QUEUE_LOOP_TYPE.collectAsStateWithLifecycle()
+    val playerBackgroundColors by Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
     val currentMediaItem = player.currentMediaItem
 
     Box {
@@ -552,7 +554,9 @@ fun ControlsEssential(
     IconButton(
         icon = queueLoopType.iconId,
         color = colorPalette().text,
-        onClick = { queueLoopType = queueLoopType.next() },
+        onClick = {
+            Preferences.QUEUE_LOOP_TYPE.update { queueLoopType.next() }
+        },
         modifier = Modifier.size( 26.dp )
     )
 }

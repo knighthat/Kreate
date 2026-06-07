@@ -41,8 +41,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.PlayerPosition
@@ -85,8 +86,8 @@ fun ScaffoldTB(
     //val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     //var expanded by remember { mutableStateOf(false) }
-    val transitionEffect by Preferences.TRANSITION_EFFECT
-    val playerPosition by Preferences.MINI_PLAYER_POSITION
+    val transitionEffect by Preferences.TRANSITION_EFFECT.collectAsStateWithLifecycle()
+    val playerPosition by Preferences.MINI_PLAYER_POSITION.collectAsStateWithLifecycle()
 
     androidx.compose.material3.Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

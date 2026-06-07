@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
@@ -203,6 +204,7 @@ fun AccountSettings(
                         )
                 }
 
+                val radius by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
                 CustomModalBottomSheet(
                     showSheet = loginYouTube,
                     onDismissRequest = { loginYouTube = false },
@@ -216,7 +218,7 @@ fun AccountSettings(
                             shape = thumbnailShape()
                         ) {}
                     },
-                    shape = Preferences.THUMBNAIL_BORDER_RADIUS.value.shape
+                    shape = radius.shape
                 ) {
                     YouTubeLogin {
                         loginYouTube = false
@@ -295,6 +297,7 @@ fun AccountSettings(
                         )
                     }
 
+                val radius by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
                 CustomModalBottomSheet(
                     showSheet = loginDiscord,
                     onDismissRequest = { loginDiscord = false },
@@ -308,7 +311,7 @@ fun AccountSettings(
                             shape = thumbnailShape()
                         ) {}
                     },
-                    shape = Preferences.THUMBNAIL_BORDER_RADIUS.value.shape
+                    shape = radius.shape
                 ) {
                     DiscordLoginAndGetToken( discord ) { loginDiscord = false }
                 }

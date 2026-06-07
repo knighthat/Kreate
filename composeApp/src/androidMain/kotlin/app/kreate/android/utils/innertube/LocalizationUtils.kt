@@ -15,7 +15,7 @@ val CURRENT_LOCALE: Localization
 
 // hl
 val HOST_LANGUAGE: String
-    get() = when ( Preferences.APP_LANGUAGE.value ) {
+    get() = when ( app.kreate.preferences.Preferences.APP_LANGUAGE.value ) {
         Language.SYSTEM ->
             try {
                 enumValueOf<Language>(Locale.getDefault().language).code
@@ -23,7 +23,7 @@ val HOST_LANGUAGE: String
                 "en"
             }
 
-        else -> Preferences.APP_LANGUAGE.value.code
+        else -> app.kreate.preferences.Preferences.APP_LANGUAGE.value.code
     }
 
 // gl

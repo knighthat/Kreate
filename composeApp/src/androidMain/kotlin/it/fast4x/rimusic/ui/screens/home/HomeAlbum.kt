@@ -46,7 +46,6 @@ import androidx.compose.ui.util.fastMapNotNull
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.Search
@@ -90,6 +89,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.knighthat.component.tab.SongShuffler
@@ -115,10 +115,11 @@ fun HomeAlbums(
     val lazyGridState = rememberLazyGridState()
     val (colorPalette, typography) = LocalAppearance.current
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     // Settings
-    var albumType by Preferences.HOME_ALBUM_TYPE
-    var filterBy by Preferences.HOME_ARTIST_AND_ALBUM_FILTER
+    val albumType by app.kreate.preferences.Preferences.HOME_ALBUM_TYPE.collectAsStateWithLifecycle()
+    val filterBy by app.kreate.preferences.Preferences.HOME_ARTIST_AND_ALBUM_FILTER.collectAsStateWithLifecycle()
 
 
     val items by viewModel.albums.collectAsStateWithLifecycle()
@@ -128,9 +129,9 @@ fun HomeAlbums(
     var itemsOnDisplay by persistList<Album>( "home/albums/on_display" )
 
     val sort = remember {
-        Sort(menuState, Preferences.HOME_ALBUMS_SORT_BY, Preferences.HOME_ALBUM_SORT_ORDER)
+        Sort(menuState, app.kreate.preferences.Preferences.HOME_ALBUMS_SORT_BY, app.kreate.preferences.Preferences.HOME_ALBUM_SORT_ORDER, coroutineScope)
     }
-    val itemSize = remember { ItemSize(Preferences.HOME_ALBUM_ITEM_SIZE, menuState) }
+    val itemSize = remember { ItemSize(coroutineScope, app.kreate.preferences.Preferences.HOME_ALBUM_ITEM_SIZE, menuState) }
     val sizeDp by remember {derivedStateOf {
         DpSize(itemSize.size.dp, itemSize.size.dp)
     }}
@@ -147,7 +148,7 @@ fun HomeAlbums(
     val buttonsList = AlbumsType.entries.map { it to it.text }
 
     if (!isYouTubeSyncEnabled()) {
-        filterBy = FilterBy.All
+        app.kreate.preferences.Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update { FilterBy.All }
     }
 
     LaunchedEffect( items, search.input ) {
@@ -230,7 +231,9 @@ fun HomeAlbums(
                         ButtonsRow(
                             chips = buttonsList,
                             currentValue = albumType,
-                            onValueUpdate = { albumType = it },
+                            onValueUpdate = { newValue ->
+                                app.kreate.preferences.Preferences.HOME_ALBUM_TYPE.update { newValue }
+                            },
                             modifier = Modifier.padding(end = 12.dp)
                         )
                         if (isYouTubeSyncEnabled()) {
@@ -255,11 +258,15 @@ fun HomeAlbums(
                                                 FilterMenu(
                                                     title = stringResource(R.string.filter_by),
                                                     onDismiss = menuState::hide,
-                                                    onAll = { filterBy = FilterBy.All },
-                                                    onYoutubeLibrary = {
-                                                        filterBy = FilterBy.YoutubeLibrary
+                                                    onAll = {
+                                                        app.kreate.preferences.Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update { FilterBy.All }
                                                     },
-                                                    onLocal = { filterBy = FilterBy.Local }
+                                                    onYoutubeLibrary = {
+                                                        app.kreate.preferences.Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update { FilterBy.YoutubeLibrary }
+                                                    },
+                                                    onLocal = {
+                                                        app.kreate.preferences.Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update { FilterBy.Local }
+                                                    }
                                                 )
                                             }
 
