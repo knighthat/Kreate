@@ -16,6 +16,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,7 +35,6 @@ import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
-import app.kreate.android.Preferences
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
@@ -107,20 +107,21 @@ fun HomeSongs(
     val menuState = LocalMenuState.current
     val hapticFeedback = LocalHapticFeedback.current
     val (colorPalette, typography) = LocalAppearance.current
+    val coroutineScope = rememberCoroutineScope()
 
     //<editor-fold defaultstate="collapsed" desc="Settings">
     val parentalControlEnabled by app.kreate.preferences.Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
-    val maxTopPlaylistItems by Preferences.MAX_NUMBER_OF_TOP_PLAYED
+    val maxTopPlaylistItems by app.kreate.preferences.Preferences.MAX_NUMBER_OF_TOP_PLAYED.collectAsStateWithLifecycle()
     val includeLocalSongs by app.kreate.preferences.Preferences.HOME_SONGS_INCLUDE_ON_DEVICE_IN_ALL.collectAsStateWithLifecycle()
-    val excludeSongWithDurationLimit by Preferences.LIMIT_SONGS_WITH_DURATION
+    val excludeSongWithDurationLimit by app.kreate.preferences.Preferences.LIMIT_SONGS_WITH_DURATION.collectAsStateWithLifecycle()
     //</editor-fold>
 
     var items by persistList<Song>( "home/songs" )
 
     val songSort = remember {
-        Sort(menuState, Preferences.HOME_SONGS_SORT_BY, Preferences.HOME_SONGS_SORT_ORDER)
+        Sort(menuState, app.kreate.preferences.Preferences.HOME_SONGS_SORT_BY, app.kreate.preferences.Preferences.HOME_SONGS_SORT_ORDER, coroutineScope)
     }
-    val topPlaylists = remember { PeriodSelector(menuState) }
+    val topPlaylists = remember { PeriodSelector(coroutineScope, menuState) }
     val hiddenSongs = HiddenSongs()
     val exportDialog = ExportSongsToCSVDialog(
         playlistName = builtInPlaylist.text,

@@ -1,13 +1,12 @@
 package app.kreate.android.viewmodel
 
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.kreate.android.Preferences
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistSongsSort
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.Song
+import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.NextBody
@@ -41,7 +40,7 @@ class LocalPlaylistViewModel(
     val playlistId: Long = savedStateHandle["id"]!!
     val relatedSongs: StateFlow<Map<Song, Int>> = _relatedSongs.asStateFlow()
     val items: StateFlow<List<Song>> = _items.asStateFlow()
-    val sort: PlaylistSongsSort = PlaylistSongsSort(menuState)
+    val sort: PlaylistSongsSort = PlaylistSongsSort(viewModelScope, menuState)
     val playlist: StateFlow<Playlist?> =
         Database.playlistTable
                 .findById( playlistId )
@@ -53,9 +52,10 @@ class LocalPlaylistViewModel(
 
     init {
         viewModelScope.launch {
-            val maxCount = snapshotFlow { Preferences.MAX_NUMBER_OF_SMART_RECOMMENDATIONS.value }
-
-            combine( app.kreate.preferences.Preferences.LOCAL_PLAYLIST_SMART_RECOMMENDATION, maxCount ) { enabled, count ->
+            combine(
+                Preferences.LOCAL_PLAYLIST_SMART_RECOMMENDATION,
+                Preferences.MAX_NUMBER_OF_SMART_RECOMMENDATIONS
+            ) { enabled, count ->
                 if( !enabled )
                     return@combine emptyMap()
 

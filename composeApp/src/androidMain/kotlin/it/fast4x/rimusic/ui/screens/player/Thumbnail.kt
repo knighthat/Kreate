@@ -41,14 +41,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.constant.Type
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.enums.ThumbnailType
 import it.fast4x.rimusic.service.LoginRequiredException
 import it.fast4x.rimusic.service.NoInternetException
 import it.fast4x.rimusic.service.PlayableFormatNonSupported
@@ -150,7 +149,7 @@ fun Thumbnail(
     )
 
     val showCoverThumbnailAnimation by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_ANIMATION.collectAsStateWithLifecycle()
-    var coverThumbnailAnimation by Preferences.PLAYER_THUMBNAIL_TYPE
+    val coverThumbnailAnimation by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_TYPE.collectAsStateWithLifecycle()
 
 
     AnimatedContent(
@@ -186,13 +185,13 @@ fun Thumbnail(
         contentAlignment = Alignment.Center, label = ""
     ) { currentWindow ->
 
-        val thumbnailType by Preferences.THUMBNAIL_TYPE
+        val thumbnailType by app.kreate.preferences.Preferences.THUMBNAIL_TYPE.collectAsStateWithLifecycle()
 
         var modifierUiType by remember { mutableStateOf(modifier) }
 
         if (showthumbnail)
             if ((!isShowingLyrics && !isShowingVisualizer) || (isShowingVisualizer && showvisthumbnail) || (isShowingLyrics && showlyricsthumbnail))
-                if (thumbnailType == ThumbnailType.Modern)
+                if ( thumbnailType == Type.MODERN )
                     modifierUiType = modifier
                         .padding(vertical = 8.dp)
                         .aspectRatio(1f)

@@ -43,6 +43,7 @@ private const val CACHE_DIRNAME = "exo_cache"
 private const val DOWNLOAD_CACHE_DIRNAME = "exo_downloads"
 
 private fun initCache( context: Context, size: Long, cacheDirName: String ): Cache {
+    val location = app.kreate.preferences.Preferences.EXO_CACHE_LOCATION.value
     val cacheEvictor = when( size ) {
         0L, Long.MAX_VALUE -> NoOpCacheEvictor()
         else -> LeastRecentlyUsedCacheEvictor( size )
@@ -55,7 +56,7 @@ private fun initCache( context: Context, size: Long, cacheDirName: String ): Cac
         // Looks a bit ugly but what it does is
         // check location set by user and return
         // appropriate path with [cacheDirName] appended.
-        else -> when( Preferences.EXO_CACHE_LOCATION.value ) {
+        else -> when( location ) {
             ExoPlayerCacheLocation.System   -> context.cacheDir
             ExoPlayerCacheLocation.Private  -> context.filesDir
             ExoPlayerCacheLocation.SPLIT    -> if( cacheDirName == DOWNLOAD_CACHE_DIRNAME ) context.filesDir else context.cacheDir

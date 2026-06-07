@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -13,9 +12,10 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.preferences.Preferences
+import app.kreate.preferences.QUEUE_LOOP_TYPE
 import co.touchlab.kermit.Logger
 import it.fast4x.compose.reordering.ReorderingState
 import it.fast4x.rimusic.enums.QueueLoopType
@@ -28,6 +28,7 @@ import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.mediaItems
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -66,20 +67,16 @@ fun Discover(
 }
 
 class Repeat private constructor(
-    private val typeState: MutableState<QueueLoopType>
+    coroutineScope: CoroutineScope
 ): MenuIcon, Descriptive {
 
     companion object {
         @JvmStatic
         @Composable
-        fun init(): Repeat = Repeat(Preferences.QUEUE_LOOP_TYPE)
+        fun init( coroutineScope: CoroutineScope ): Repeat = Repeat(coroutineScope)
     }
 
-    var type: QueueLoopType = typeState.value
-        private set(value) {
-            typeState.value = value
-            field = value
-        }
+    var type: QueueLoopType by mutableStateOf( Preferences.QUEUE_LOOP_TYPE.value )
 
     override val iconId: Int = -1   // Unused
     override val messageId: Int = R.string.repeat
@@ -89,6 +86,14 @@ class Repeat private constructor(
     override val icon: Painter
         @Composable
         get() = painterResource( type.iconId )
+
+    init {
+        coroutineScope.launch {
+            Preferences.QUEUE_LOOP_TYPE
+                       .drop( 1 )
+                       .collect { type = it }
+        }
+    }
 
     override fun onShortClick() { type = type.next() }
 }

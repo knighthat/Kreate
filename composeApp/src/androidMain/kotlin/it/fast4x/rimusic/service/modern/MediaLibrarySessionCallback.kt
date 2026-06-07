@@ -26,7 +26,6 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.StatefulPlayer
@@ -305,7 +304,7 @@ class MediaLibrarySessionCallback(
                         browsableMediaItem(
                             "${PlayerServiceModern.PLAYLIST}/$ID_TOP",
                             context.getString(R.string.playlist_top),
-                            Preferences.MAX_NUMBER_OF_TOP_PLAYED.value.name,
+                            app.kreate.preferences.Preferences.MAX_NUMBER_OF_TOP_PLAYED.value.name,
                             drawableUri(R.drawable.trending),
                             MediaMetadata.MEDIA_TYPE_PLAYLIST
                         ),
@@ -366,7 +365,8 @@ class MediaLibrarySessionCallback(
                                 database.eventTable
                                         .findSongsMostPlayedBetween(
                                             from = 0,
-                                            limit = Preferences.MAX_NUMBER_OF_TOP_PLAYED
+                                            limit = app.kreate.preferences.Preferences
+                                                            .MAX_NUMBER_OF_TOP_PLAYED
                                                             .value
                                                             .toInt()
                                         )
@@ -468,7 +468,8 @@ class MediaLibrarySessionCallback(
                                            // Already in DESC order
                                            .findSongsMostPlayedBetween(
                                                from = 0,
-                                               limit = Preferences.MAX_NUMBER_OF_TOP_PLAYED
+                                               limit = app.kreate.preferences.Preferences
+                                                               .MAX_NUMBER_OF_TOP_PLAYED
                                                                .value
                                                                .toInt()
                                            )

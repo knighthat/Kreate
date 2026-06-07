@@ -11,14 +11,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.core.os.LocaleListCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.themed.common.component.settings.EnumEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
@@ -66,12 +69,13 @@ fun GeneralSettings( paddingValues: PaddingValues ) {
             header(
                 titleId = R.string.languages,
                 subtitle = {
-                    stringResource( R.string.currently_selected, Preferences.APP_LANGUAGE.value.displayName )
+                    val language by app.kreate.preferences.Preferences.APP_LANGUAGE.collectAsStateWithLifecycle()
+                    stringResource( R.string.currently_selected, language.displayName )
                 }
             )
             entry( search, R.string.app_language ) {
                 SettingComponents.EnumEntry(
-                    preference = Preferences.APP_LANGUAGE,
+                    preference = app.kreate.preferences.Preferences.APP_LANGUAGE,
                     title = stringResource( R.string.app_language ),
                     subtitle = stringResource( R.string.setting_description_app_language ),
                     getName = { it.displayName },
@@ -84,7 +88,7 @@ fun GeneralSettings( paddingValues: PaddingValues ) {
                             // Apply it first before really selecting it
                             AppCompatDelegate.setApplicationLocales( locales )
 
-                            Preferences.APP_LANGUAGE.value = it
+                            app.kreate.preferences.Preferences.APP_LANGUAGE.value = it
                         } catch (err: Exception) {
                             err.printStackTrace()
                             err.message?.also( Toaster::e )

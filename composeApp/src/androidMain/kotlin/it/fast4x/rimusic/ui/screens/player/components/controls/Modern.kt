@@ -49,15 +49,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
+import app.kreate.constant.Type
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.PlayerBackgroundColors
-import it.fast4x.rimusic.enums.PlayerControlsType
 import it.fast4x.rimusic.enums.PlayerPlayButtonType
 import it.fast4x.rimusic.models.Info
 import it.fast4x.rimusic.service.modern.isLocal
@@ -95,13 +95,13 @@ fun InfoAlbumAndArtistModern(
     onCollapse: () -> Unit
 ) {
     val context = LocalContext.current
-    val colorPaletteMode by Preferences.THEME_MODE
-    val playerControlsType by Preferences.PLAYER_CONTROLS_TYPE
-    val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
+    val colorPaletteMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
+    val playerControlsType by Preferences.PLAYER_CONTROLS_TYPE.collectAsStateWithLifecycle()
+    val effectRotationEnabled by Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
     var isRotated by rememberSaveable { mutableStateOf(false) }
     var showSelectDialog by remember { mutableStateOf(false) }
-    val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
-    val playerInfoShowIcon by app.kreate.preferences.Preferences.PLAYER_SONG_INFO_ICON.collectAsStateWithLifecycle()
+    val playerBackgroundColors by Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
+    val playerInfoShowIcon by Preferences.PLAYER_SONG_INFO_ICON.collectAsStateWithLifecycle()
     val currentMediaItem = player.currentMediaItem
 
     Row(
@@ -155,7 +155,7 @@ fun InfoAlbumAndArtistModern(
                 )
 
 
-            val textoutline by app.kreate.preferences.Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
+            val textoutline by Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -208,7 +208,7 @@ fun InfoAlbumAndArtistModern(
                 }
             }
             //}
-            if (playerControlsType == PlayerControlsType.Modern)
+            if ( playerControlsType === Type.MODERN )
                 Box(
                     modifier = Modifier
                         .weight(0.1f)
@@ -310,7 +310,7 @@ fun InfoAlbumAndArtistModern(
                 }
             )
 
-        val textoutline by app.kreate.preferences.Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
+        val textoutline by Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
         Box(
 
         ) {
@@ -363,7 +363,7 @@ fun ControlsModern(
     player: StatefulPlayer = koinInject(),
     onShowSpeedPlayerDialog: () -> Unit
 ) {
-    val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
+    val effectRotationEnabled by Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
     var isRotated by rememberSaveable { mutableStateOf(false) }
     val rotationAngle by animateFloatAsState(
         targetValue = if (isRotated) 360F else 0f,

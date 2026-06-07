@@ -30,13 +30,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.constant.Type
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.enums.ButtonState
-import it.fast4x.rimusic.enums.PlayerControlsType
-import it.fast4x.rimusic.enums.PlayerInfoType
 import it.fast4x.rimusic.enums.PlayerPlayButtonType
-import it.fast4x.rimusic.enums.PlayerType
 import it.fast4x.rimusic.models.Info
 import it.fast4x.rimusic.ui.screens.player.components.controls.InfoAlbumAndArtistEssential
 import it.fast4x.rimusic.ui.screens.player.components.controls.InfoAlbumAndArtistModern
@@ -70,16 +68,16 @@ fun Controls(
     modifier: Modifier = Modifier,
     player: StatefulPlayer = koinInject()
 ) {
-    var playerTimelineSize by Preferences.PLAYER_TIMELINE_SIZE
-    val playerInfoType by Preferences.PLAYER_INFO_TYPE
-    val playerSwapControlsWithTimeline by app.kreate.preferences.Preferences.PLAYER_IS_CONTROL_AND_TIMELINE_SWAPPED.collectAsStateWithLifecycle()
-    val showlyricsthumbnail by app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
-    val transparentBackgroundActionBarPlayer by app.kreate.preferences.Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.collectAsStateWithLifecycle()
-    var playerControlsType by Preferences.PLAYER_CONTROLS_TYPE
-    var playerPlayButtonType by Preferences.PLAYER_PLAY_BUTTON_TYPE
-    val showthumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
-    var playerType by Preferences.PLAYER_TYPE
-    val expandedlandscape = (isLandscape && playerType == PlayerType.Modern) || (expandedPlayer && !showthumbnail)
+    val playerTimelineSize by Preferences.PLAYER_TIMELINE_SIZE.collectAsStateWithLifecycle()
+    val playerInfoType by Preferences.PLAYER_INFO_TYPE.collectAsStateWithLifecycle()
+    val playerSwapControlsWithTimeline by Preferences.PLAYER_IS_CONTROL_AND_TIMELINE_SWAPPED.collectAsStateWithLifecycle()
+    val showlyricsthumbnail by Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+    val transparentBackgroundActionBarPlayer by Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.collectAsStateWithLifecycle()
+    val playerControlsType by Preferences.PLAYER_CONTROLS_TYPE.collectAsStateWithLifecycle()
+    val playerPlayButtonType by Preferences.PLAYER_PLAY_BUTTON_TYPE.collectAsStateWithLifecycle()
+    val showthumbnail by Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+    val playerType by Preferences.PLAYER_TYPE.collectAsStateWithLifecycle()
+    val expandedlandscape = (isLandscape && playerType === Type.MODERN) || (expandedPlayer && !showthumbnail)
 
     Box(
         modifier = Modifier
@@ -93,7 +91,7 @@ fun Controls(
                     .padding(horizontal = playerTimelineSize.size.dp)
             ) {
                 if (!isShowingLyrics || titleExpanded) {
-                    if (playerInfoType == PlayerInfoType.Modern)
+                    if ( playerInfoType === Type.MODERN )
                         InfoAlbumAndArtistModern(
                             player = player,
                             navController = navController,
@@ -103,7 +101,7 @@ fun Controls(
                             artistIds = artistIds
                         )
 
-                    if (playerInfoType == PlayerInfoType.Essential)
+                    if ( playerInfoType === Type.LEGACY )
                         InfoAlbumAndArtistEssential(
                             player = player,
                             navController = navController,
@@ -135,7 +133,7 @@ fun Controls(
                             .height(5.dp)
                     )
                 }
-                if (((playerControlsType == PlayerControlsType.Modern) || (!transparentBackgroundActionBarPlayer)) && (playerPlayButtonType != PlayerPlayButtonType.Disabled)) {
+                if (((playerControlsType === Type.MODERN) || (!transparentBackgroundActionBarPlayer)) && (playerPlayButtonType != PlayerPlayButtonType.Disabled)) {
                     Spacer(
                         modifier = Modifier
                             .height(10.dp)
@@ -151,7 +149,7 @@ fun Controls(
                     //.fillMaxHeight(0.40f)
             ) {
 
-                if (playerInfoType == PlayerInfoType.Modern)
+                if ( playerInfoType === Type.MODERN )
                     InfoAlbumAndArtistModern(
                         player = player,
                         navController = navController,
@@ -161,7 +159,7 @@ fun Controls(
                         artistIds = artistIds
                     )
 
-                if (playerInfoType == PlayerInfoType.Essential)
+                if ( playerInfoType === Type.LEGACY )
                     InfoAlbumAndArtistEssential(
                         player = player,
                         navController = navController,
@@ -220,7 +218,7 @@ fun Controls(
                 .padding(horizontal = playerTimelineSize.size.dp)
         ) {
 
-            if (playerInfoType == PlayerInfoType.Modern)
+            if ( playerInfoType === Type.MODERN )
                 InfoAlbumAndArtistModern(
                     player = player,
                     navController = navController,
@@ -230,7 +228,7 @@ fun Controls(
                     artistIds = artistIds
                 )
 
-            if (playerInfoType == PlayerInfoType.Essential)
+            if ( playerInfoType === Type.LEGACY )
                 InfoAlbumAndArtistEssential(
                     player = player,
                     navController = navController,

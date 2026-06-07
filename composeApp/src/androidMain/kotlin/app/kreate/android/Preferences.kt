@@ -14,85 +14,9 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
-import app.kreate.android.enums.DohServer
-import app.kreate.android.enums.PlatformIndicatorType
 import app.kreate.android.utils.innertube.getSystemCountryCode
-import app.kreate.constant.AlbumSortBy
-import app.kreate.constant.ArtistSortBy
-import app.kreate.constant.Language
-import app.kreate.constant.PlaylistSongSortBy
-import app.kreate.constant.PlaylistSortBy
-import app.kreate.constant.SongSortBy
-import app.kreate.constant.SortOrder
 import app.kreate.di.PrefType
 import co.touchlab.kermit.Logger
-import co.touchlab.kermit.Severity
-import it.fast4x.rimusic.enums.AlbumSwipeAction
-import it.fast4x.rimusic.enums.AlbumsType
-import it.fast4x.rimusic.enums.AnimatedGradient
-import it.fast4x.rimusic.enums.ArtistsType
-import it.fast4x.rimusic.enums.AudioQualityFormat
-import it.fast4x.rimusic.enums.BackgroundProgress
-import it.fast4x.rimusic.enums.BuiltInPlaylist
-import it.fast4x.rimusic.enums.CarouselSize
-import it.fast4x.rimusic.enums.CheckUpdateState
-import it.fast4x.rimusic.enums.ColorPaletteMode
-import it.fast4x.rimusic.enums.ColorPaletteName
-import it.fast4x.rimusic.enums.DurationInMilliseconds
-import it.fast4x.rimusic.enums.DurationInMinutes
-import it.fast4x.rimusic.enums.ExoPlayerCacheLocation
-import it.fast4x.rimusic.enums.ExoPlayerMinTimeForEvent
-import it.fast4x.rimusic.enums.FilterBy
-import it.fast4x.rimusic.enums.FontType
-import it.fast4x.rimusic.enums.HistoryType
-import it.fast4x.rimusic.enums.HomeItemSize
-import it.fast4x.rimusic.enums.HomeScreenTabs
-import it.fast4x.rimusic.enums.IconLikeType
-import it.fast4x.rimusic.enums.LyricsAlignment
-import it.fast4x.rimusic.enums.LyricsBackground
-import it.fast4x.rimusic.enums.LyricsColor
-import it.fast4x.rimusic.enums.LyricsFontSize
-import it.fast4x.rimusic.enums.LyricsHighlight
-import it.fast4x.rimusic.enums.LyricsOutline
-import it.fast4x.rimusic.enums.MaxSongs
-import it.fast4x.rimusic.enums.MaxStatisticsItems
-import it.fast4x.rimusic.enums.MaxTopPlaylistItems
-import it.fast4x.rimusic.enums.MenuStyle
-import it.fast4x.rimusic.enums.MiniPlayerType
-import it.fast4x.rimusic.enums.MusicAnimationType
-import it.fast4x.rimusic.enums.NavigationBarPosition
-import it.fast4x.rimusic.enums.NavigationBarType
-import it.fast4x.rimusic.enums.NotificationButtons
-import it.fast4x.rimusic.enums.OnDeviceSongSortBy
-import it.fast4x.rimusic.enums.PauseBetweenSongs
-import it.fast4x.rimusic.enums.PipModule
-import it.fast4x.rimusic.enums.PlayEventsType
-import it.fast4x.rimusic.enums.PlayerBackgroundColors
-import it.fast4x.rimusic.enums.PlayerControlsType
-import it.fast4x.rimusic.enums.PlayerInfoType
-import it.fast4x.rimusic.enums.PlayerPlayButtonType
-import it.fast4x.rimusic.enums.PlayerPosition
-import it.fast4x.rimusic.enums.PlayerThumbnailSize
-import it.fast4x.rimusic.enums.PlayerTimelineSize
-import it.fast4x.rimusic.enums.PlayerTimelineType
-import it.fast4x.rimusic.enums.PlayerType
-import it.fast4x.rimusic.enums.PlaylistSwipeAction
-import it.fast4x.rimusic.enums.PlaylistsType
-import it.fast4x.rimusic.enums.QueueLoopType
-import it.fast4x.rimusic.enums.QueueSwipeAction
-import it.fast4x.rimusic.enums.QueueType
-import it.fast4x.rimusic.enums.RecommendationsNumber
-import it.fast4x.rimusic.enums.Romanization
-import it.fast4x.rimusic.enums.SongsNumber
-import it.fast4x.rimusic.enums.StatisticsCategory
-import it.fast4x.rimusic.enums.StatisticsType
-import it.fast4x.rimusic.enums.SwipeAnimationNoThumbnail
-import it.fast4x.rimusic.enums.ThumbnailCoverType
-import it.fast4x.rimusic.enums.ThumbnailRoundness
-import it.fast4x.rimusic.enums.ThumbnailType
-import it.fast4x.rimusic.enums.TransitionEffect
-import it.fast4x.rimusic.enums.UiType
-import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.ui.styling.DefaultDarkColorPalette
 import it.fast4x.rimusic.ui.styling.DefaultLightColorPalette
 import me.knighthat.innertube.Constants
@@ -102,7 +26,6 @@ import org.jetbrains.annotations.NonBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.java.KoinJavaComponent.inject
-import java.net.Proxy
 
 /**
  * Represents an individual setting.
@@ -144,15 +67,6 @@ sealed class Preferences<T>(
         val encryptedPreferences: SharedPreferences by inject<SharedPreferences>(PrefType.CREDENTIALS)
 
         //<editor-fold defaultstate="collapsed" desc="Item size">
-        val HOME_ARTIST_ITEM_SIZE by lazy {
-            Enum( preferences, Key.HOME_ARTIST_ITEM_SIZE, "AristItemSizeEnum", HomeItemSize.SMALL )
-        }
-        val HOME_ALBUM_ITEM_SIZE by lazy {
-            Enum( preferences, Key.HOME_ALBUM_ITEM_SIZE, "AlbumItemSizeEnum", HomeItemSize.SMALL )
-        }
-        val HOME_LIBRARY_ITEM_SIZE by lazy {
-            Enum( preferences, Key.HOME_LIBRARY_ITEM_SIZE, "LibraryItemSizeEnum", HomeItemSize.SMALL )
-        }
         val SONG_THUMBNAIL_SIZE by lazy {
             Int(preferences, Key.SONG_THUMBNAIL_SIZE, "", 54)
         }
@@ -166,127 +80,9 @@ sealed class Preferences<T>(
             Int(preferences, Key.PLAYLIST_THUMBNAIL_SIZE, "", 128)
         }
         //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Sort by">
-        val HOME_SONGS_SORT_BY by lazy {
-            Enum( preferences, Key.HOME_SONGS_SORT_BY, "", SongSortBy.TITLE )
-        }
-        val HOME_ON_DEVICE_SONGS_SORT_BY by lazy {
-            Enum( preferences, Key.HOME_ON_DEVICE_SONGS_SORT_BY, "", OnDeviceSongSortBy.Title )
-        }
-        val HOME_ARTISTS_SORT_BY by lazy {
-            Enum( preferences, Key.HOME_ARTISTS_SORT_BY, "", ArtistSortBy.TITLE )
-        }
-        val HOME_ALBUMS_SORT_BY by lazy {
-            Enum( preferences, Key.HOME_ALBUMS_SORT_BY, "", AlbumSortBy.TITLE )
-        }
-        val HOME_LIBRARY_SORT_BY by lazy {
-            Enum( preferences, Key.HOME_LIBRARY_SORT_BY, "", PlaylistSortBy.SONG_COUNT )
-        }
-        val PLAYLIST_SONGS_SORT_BY by lazy {
-            Enum( preferences, Key.PLAYLIST_SONGS_SORT_BY, "", PlaylistSongSortBy.TITLE )
-        }
-        //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Sort order">
-        val HOME_SONGS_SORT_ORDER by lazy {
-            Enum( preferences, Key.HOME_SONGS_SORT_ORDER, "", SortOrder.ASCENDING )
-        }
-        val HOME_ARTISTS_SORT_ORDER by lazy {
-            Enum( preferences, Key.HOME_ARTISTS_SORT_ORDER, "", SortOrder.ASCENDING )
-        }
-        val HOME_ALBUM_SORT_ORDER by lazy {
-            Enum( preferences, Key.HOME_ALBUM_SORT_ORDER, "", SortOrder.ASCENDING )
-        }
-        val HOME_LIBRARY_SORT_ORDER by lazy {
-            Enum( preferences, Key.HOME_LIBRARY_SORT_ORDER, "", SortOrder.ASCENDING )
-        }
-        val PLAYLIST_SONGS_SORT_ORDER by lazy {
-            Enum( preferences, Key.PLAYLIST_SONGS_SORT_ORDER, "", SortOrder.ASCENDING )
-        }
-        //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Max # of ...">
-        val MAX_NUMBER_OF_SMART_RECOMMENDATIONS by lazy {
-            Enum( preferences, Key.MAX_NUMBER_OF_SMART_RECOMMENDATIONS, "recommendationsNumber", RecommendationsNumber.`5` )
-        }
-        val MAX_NUMBER_OF_STATISTIC_ITEMS by lazy {
-            Enum( preferences, Key.MAX_NUMBER_OF_STATISTIC_ITEMS, "maxStatisticsItems", MaxStatisticsItems.`10` )
-        }
-        val MAX_NUMBER_OF_TOP_PLAYED by lazy {
-            Enum( preferences, Key.MAX_NUMBER_OF_TOP_PLAYED, "MaxTopPlaylistItems", MaxTopPlaylistItems.`10` )
-        }
-        val MAX_NUMBER_OF_SONG_IN_QUEUE by lazy {
-            Enum( preferences, Key.MAX_NUMBER_OF_SONG_IN_QUEUE, "MaxTopPlaylistItems", MaxSongs.Unlimited )
-        }
-        val MAX_NUMBER_OF_NEXT_IN_QUEUE by lazy {
-            Enum( preferences, Key.MAX_NUMBER_OF_NEXT_IN_QUEUE, "showsongs", SongsNumber.`2` )
-        }
-        //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Swipe action">
-        val QUEUE_SWIPE_LEFT_ACTION by lazy {
-            Enum( preferences, Key.QUEUE_SWIPE_LEFT_ACTION, "queueSwipeLeftAction", QueueSwipeAction.RemoveFromQueue )
-        }
-        val QUEUE_SWIPE_RIGHT_ACTION by lazy {
-            Enum( preferences, Key.QUEUE_SWIPE_RIGHT_ACTION, "queueSwipeRightAction", QueueSwipeAction.PlayNext )
-        }
-        val PLAYLIST_SWIPE_LEFT_ACTION by lazy {
-            Enum( preferences, Key.PLAYLIST_SWIPE_LEFT_ACTION, "playlistSwipeLeftAction", PlaylistSwipeAction.Favourite )
-        }
-        val PLAYLIST_SWIPE_RIGHT_ACTION by lazy {
-            Enum( preferences, Key.PLAYLIST_SWIPE_RIGHT_ACTION, "playlistSwipeRightAction", PlaylistSwipeAction.PlayNext )
-        }
-        val ALBUM_SWIPE_LEFT_ACTION by lazy {
-            Enum( preferences, Key.ALBUM_SWIPE_LEFT_ACTION, "albumSwipeLeftAction", AlbumSwipeAction.PlayNext )
-        }
-        val ALBUM_SWIPE_RIGHT_ACTION by lazy {
-            Enum( preferences, Key.ALBUM_SWIPE_RIGHT_ACTION, "albumSwipeRightAction", AlbumSwipeAction.Bookmark )
-        }
-        //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Mini player">
-        val MINI_PLAYER_POSITION by lazy {
-            Enum( preferences, Key.MINI_PLAYER_POSITION, "playerPosition", PlayerPosition.Bottom )
-        }
-        val MINI_PLAYER_TYPE by lazy {
-            Enum( preferences, Key.MINI_PLAYER_TYPE, "miniPlayerType", MiniPlayerType.Modern )
-        }
-        val MINI_PLAYER_PROGRESS_BAR by lazy {
-            Enum( preferences, Key.MINI_PLAYER_PROGRESS_BAR, "backgroundProgress", BackgroundProgress.MiniPlayer )
-        }
-        //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Player">
-        val PLAYER_CONTROLS_TYPE by lazy {
-            Enum( preferences, Key.PLAYER_CONTROLS_TYPE, "playerControlsType", PlayerControlsType.Essential )
-        }
-        val PLAYER_INFO_TYPE by lazy {
-            Enum( preferences, Key.PLAYER_INFO_TYPE, "playerInfoType", PlayerInfoType.Essential )
-        }
-        val PLAYER_TYPE by lazy {
-            Enum( preferences, Key.PLAYER_TYPE, "playerType", PlayerType.Essential )
-        }
-        val PLAYER_TIMELINE_TYPE by lazy {
-            Enum( preferences, Key.PLAYER_TIMELINE_TYPE, "playerTimelineType", PlayerTimelineType.FakeAudioBar )
-        }
-        val PLAYER_PORTRAIT_THUMBNAIL_SIZE by lazy {
-            Enum( preferences, Key.PLAYER_PORTRAIT_THUMBNAIL_SIZE, "playerThumbnailSize", PlayerThumbnailSize.Biggest )
-        }
-        val PLAYER_LANDSCAPE_THUMBNAIL_SIZE by lazy {
-            Enum( preferences, Key.PLAYER_LANDSCAPE_THUMBNAIL_SIZE, "playerThumbnailSizeL", PlayerThumbnailSize.Biggest )
-        }
-        val PLAYER_TIMELINE_SIZE by lazy {
-            Enum( preferences, Key.PLAYER_TIMELINE_SIZE, "playerTimelineSize", PlayerTimelineSize.Biggest )
-        }
-        val PLAYER_PLAY_BUTTON_TYPE by lazy {
-            Enum( preferences, Key.PLAYER_PLAY_BUTTON_TYPE, "playerPlayButtonType", PlayerPlayButtonType.Disabled )
-        }
-        val PLAYER_BACKGROUND by lazy {
-            Enum( preferences, Key.PLAYER_BACKGROUND, "playerBackgroundColors", PlayerBackgroundColors.BlurredCoverColor )
-        }
-        val PLAYER_THUMBNAIL_TYPE by lazy {
-            Enum( preferences, Key.PLAYER_THUMBNAIL_TYPE, "coverThumbnailAnimation", ThumbnailCoverType.Vinyl )
-        }
         val PLAYER_THUMBNAIL_VINYL_SIZE by lazy {
             Float( preferences, Key.PLAYER_THUMBNAIL_VINYL_SIZE, "VinylSize", 50F )
-        }
-        val PLAYER_NO_THUMBNAIL_SWIPE_ANIMATION by lazy {
-            Enum( preferences, Key.PLAYER_NO_THUMBNAIL_SWIPE_ANIMATION, "swipeAnimationsNoThumbnail", SwipeAnimationNoThumbnail.Sliding )
         }
         val PLAYER_THUMBNAIL_FADE by lazy {
             Float( preferences, Key.PLAYER_THUMBNAIL_FADE, "thumbnailFade", 5F )
@@ -311,9 +107,6 @@ sealed class Preferences<T>(
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Cache">
-        val EXO_CACHE_LOCATION by lazy {
-            Enum( preferences, Key.EXO_CACHE_LOCATION, "exoPlayerCacheLocationKey", ExoPlayerCacheLocation.SPLIT )
-        }
         val IMAGE_CACHE_SIZE by lazy {
             Long(preferences, Key.IMAGE_CACHE_SIZE, "", kotlin.Long.MAX_VALUE)
         }
@@ -324,14 +117,6 @@ sealed class Preferences<T>(
             Long(preferences, Key.EXO_DOWNLOAD_SIZE, "", kotlin.Long.MAX_VALUE)
         }
         //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Notification">
-        val MEDIA_NOTIFICATION_FIRST_ICON by lazy {
-            Enum( preferences, Key.MEDIA_NOTIFICATION_FIRST_ICON, "notificationPlayerFirstIcon", NotificationButtons.Download )
-        }
-        val MEDIA_NOTIFICATION_SECOND_ICON by lazy {
-            Enum( preferences, Key.MEDIA_NOTIFICATION_SECOND_ICON, "notificationPlayerSecondIcon", NotificationButtons.Favorites )
-        }
-        //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Lyrics">
         val LYRICS_SIZE by lazy {
             Float( preferences, Key.LYRICS_SIZE, "lyricsSize", 5F )
@@ -339,52 +124,8 @@ sealed class Preferences<T>(
         val LYRICS_SIZE_LANDSCAPE by lazy {
             Float( preferences, Key.LYRICS_SIZE_LANDSCAPE, "lyricsSizeL", 5F )
         }
-        val LYRICS_COLOR by lazy {
-            Enum( preferences, Key.LYRICS_COLOR, "lyricsColor", LyricsColor.Thememode )
-        }
-        val LYRICS_OUTLINE by lazy {
-            Enum( preferences, Key.LYRICS_OUTLINE, "albumType", LyricsOutline.None )
-        }
-        val LYRICS_FONT_SIZE by lazy {
-            Enum( preferences, Key.LYRICS_FONT_SIZE, "lyricsFontSize", LyricsFontSize.Medium )
-        }
-        val LYRICS_ROMANIZATION_TYPE by lazy {
-            Enum( preferences, Key.LYRICS_ROMANIZATION_TYPE, "romanization", Romanization.Off )
-        }
-        val LYRICS_BACKGROUND by lazy {
-            Enum( preferences, Key.LYRICS_BACKGROUND, "lyricsBackground", LyricsBackground.Black )
-        }
-        val LYRICS_HIGHLIGHT by lazy {
-            Enum( preferences, Key.LYRICS_HIGHLIGHT, "lyricsHighlight", LyricsHighlight.None )
-        }
-        val LYRICS_ALIGNMENT by lazy {
-            Enum( preferences, Key.LYRICS_ALIGNMENT, "lyricsAlignment", LyricsAlignment.Center )
-        }
-        //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Page type">
-        val HOME_ARTIST_TYPE by lazy {
-            Enum( preferences, Key.HOME_ARTIST_TYPE, "artistType", ArtistsType.Favorites )
-        }
-        val HOME_ALBUM_TYPE by lazy {
-            Enum( preferences, Key.HOME_ALBUM_TYPE, "albumType", AlbumsType.Favorites )
-        }
-        val HOME_SONGS_TYPE by lazy {
-            Enum( preferences, Key.HOME_SONGS_TYPE, "builtInPlaylist", BuiltInPlaylist.Favorites )
-        }
-        val HISTORY_PAGE_TYPE by lazy {
-            Enum( preferences, Key.HISTORY_PAGE_TYPE, "historyType", HistoryType.History )
-        }
-        val HOME_LIBRARY_TYPE by lazy {
-            Enum( preferences, Key.HOME_LIBRARY_TYPE, "playlistType", PlaylistsType.Playlist )
-        }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Audio">
-        val AUDIO_FADE_DURATION by lazy {
-            Enum( preferences, Key.AUDIO_FADE_DURATION, "playbackFadeAudioDuration", DurationInMilliseconds.Disabled )
-        }
-        val AUDIO_QUALITY by lazy {
-            Enum( preferences, Key.AUDIO_QUALITY, "audioQualityFormat", AudioQualityFormat.Auto )
-        }
         val AUDIO_REVERB_PRESET by lazy {
             Int(preferences, Key.AUDIO_REVERB_PRESET, "audioReverbPreset", 0)
         }
@@ -439,33 +180,17 @@ sealed class Preferences<T>(
             Float( preferences, Key.YOUTUBE_LAST_VIDEO_SECONDS, "lastVideoSeconds", 0F )
         }
         //</editor-fold>
-        //<editor-fold desc="Quick picks">
-        val QUICK_PICKS_TYPE by lazy {
-            Enum( preferences, Key.QUICK_PICKS_TYPE, "playEventsType", PlayEventsType.MostPlayed )
-        }
-        val QUICK_PICKS_MIN_DURATION by lazy {
-            Enum( preferences, Key.QUICK_PICKS_MIN_DURATION, "exoPlayerMinTimeForEvent", ExoPlayerMinTimeForEvent.`20s` )
-        }
-        //</editor-fold>
         //<editor-fold desc="Discord">
         val DISCORD_ACCESS_TOKEN by lazy {
             String( encryptedPreferences, Key.DISCORD_ACCESS_TOKEN, "", "" )
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Proxy">
-        val PROXY_SCHEME by lazy {
-            Enum( preferences, Key.PROXY_SCHEME, "ProxyMode", Proxy.Type.HTTP )
-        }
         val PROXY_HOST by lazy {
             String( preferences, Key.PROXY_HOST, "proxyHostnameKey", "" )
         }
         val PROXY_PORT  by lazy {
             Int( preferences, Key.PROXY_PORT , "proxyPort", 1080 )
-        }
-        //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="DoH">
-        val DOH_SERVER by lazy {
-            Enum(preferences, Key.DOH_SERVER, "", DohServer.NONE)
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Custom light colors">
@@ -536,25 +261,11 @@ sealed class Preferences<T>(
         val RUNTIME_LOG_LEVEL by lazy {
             Int(preferences, Key.RUNTIME_LOG_LEVEL, "", Log.INFO)
         }
-        val RUNTIME_LOG_SEVERITY by lazy {
-            Enum(preferences, Key.RUNTIME_LOG_SEVERITY, "", Severity.Info)
-        }
         val RUNTIME_LOG_FILE_COUNT by lazy {
             Int(preferences, Key.RUNTIME_LOG_FILE_COUNT, "", 5)
         }
         val RUNTIME_LOG_MAX_SIZE_PER_FILE by lazy {
             Long(preferences, "DebugLogMaxSizePerFile", "", 5L * 1024 * 1024)   // 5 Mb
-        }
-        //</editor-fold>
-        //<editor-fold desc="Platform indicator">
-        val ALBUMS_PLATFORM_INDICATOR by lazy {
-            Enum(preferences, Key.ALBUMS_PLATFORM_INDICATOR, "", PlatformIndicatorType.ICON)
-        }
-        val ARTISTS_PLATFORM_INDICATOR by lazy {
-            Enum(preferences, Key.ARTISTS_PLATFORM_INDICATOR, "", PlatformIndicatorType.ICON)
-        }
-        val PLAYLISTS_PLATFORM_INDICATOR by lazy {
-            Enum(preferences, Key.PLAYLISTS_PLATFORM_INDICATOR, "", PlatformIndicatorType.ICON)
         }
         //</editor-fold>
         //<editor-fold desc="Thumbnail roundness">
@@ -572,92 +283,11 @@ sealed class Preferences<T>(
         }
         //</editor-fold>
 
-        val HOME_SONGS_TOP_PLAYLIST_PERIOD by lazy {
-            Enum( preferences, Key.HOME_SONGS_TOP_PLAYLIST_PERIOD, "", StatisticsType.All )
-        }
-        val MENU_STYLE by lazy {
-            Enum( preferences, Key.MENU_STYLE, "menuStyle", MenuStyle.List )
-        }
-        val MAIN_THEME by lazy {
-            Enum( preferences, Key.MAIN_THEME, "UiType", UiType.RiMusic )
-        }
-        val COLOR_PALETTE by lazy {
-            Enum( preferences, Key.COLOR_PALETTE, "colorPaletteName", ColorPaletteName.Dynamic )
-        }
-        val THEME_MODE by lazy {
-            Enum( preferences, Key.THEME_MODE, "colorPaletteMode", ColorPaletteMode.Dark )
-        }
-        val STARTUP_SCREEN by lazy {
-            Enum( preferences, Key.STARTUP_SCREEN, "indexNavigationTab", HomeScreenTabs.Songs )
-        }
-        val FONT by lazy {
-            Enum( preferences, Key.FONT, "fontType", FontType.Rubik )
-        }
-        val NAVIGATION_BAR_POSITION by lazy {
-            Enum( preferences, Key.NAVIGATION_BAR_POSITION, "navigationBarPosition", NavigationBarPosition.Bottom )
-        }
-        val NAVIGATION_BAR_TYPE by lazy {
-            Enum( preferences, Key.NAVIGATION_BAR_TYPE, "navigationBarType", NavigationBarType.IconAndText )
-        }
-        val PAUSE_BETWEEN_SONGS by lazy {
-            Enum( preferences, Key.PAUSE_BETWEEN_SONGS, "pauseBetweenSongs", PauseBetweenSongs.`0` )
-        }
-        val THUMBNAIL_BORDER_RADIUS by lazy {
-            Enum( preferences, Key.THUMBNAIL_BORDER_RADIUS, "thumbnailRoundness", ThumbnailRoundness.Heavy )
-        }
-        val TRANSITION_EFFECT by lazy {
-            Enum( preferences, Key.TRANSITION_EFFECT, "transitionEffect", TransitionEffect.Scale )
-        }
-        val LIMIT_SONGS_WITH_DURATION by lazy {
-            Enum( preferences, Key.LIMIT_SONGS_WITH_DURATION, "excludeSongsWithDurationLimit", DurationInMinutes.Disabled )
-        }
-        val QUEUE_TYPE by lazy {
-            Enum( preferences, Key.QUEUE_TYPE, "queueType", QueueType.Essential )
-        }
-        val QUEUE_LOOP_TYPE by lazy {
-            Enum( preferences, Key.QUEUE_LOOP_TYPE, "queueLoopType", QueueLoopType.Default )
-        }
-        val CAROUSEL_SIZE by lazy {
-            Enum( preferences, Key.CAROUSEL_SIZE, "carouselSize", CarouselSize.Biggest )
-        }
-        val THUMBNAIL_TYPE by lazy {
-            Enum( preferences, Key.THUMBNAIL_TYPE, "thumbnailType", ThumbnailType.Modern )
-        }
-        val LIKE_ICON by lazy {
-            Enum( preferences, Key.LIKE_ICON, "iconLikeType", IconLikeType.Essential )
-        }
-        val LIVE_WALLPAPER by lazy {
-            Enum(preferences, Key.LIVE_WALLPAPER, "", WallpaperType.DISABLED)
-        }
         val LIVE_WALLPAPER_RESET_DURATION by lazy {
             Long(preferences, Key.LIVE_WALLPAPER_RESET_DURATION, "", -1L)
         }
-        val ANIMATED_GRADIENT by lazy {
-            Enum( preferences, Key.ANIMATED_GRADIENT, "animatedGradient", AnimatedGradient.Linear )
-        }
-        val NOW_PLAYING_INDICATOR by lazy {
-            Enum( preferences, Key.NOW_PLAYING_INDICATOR, "nowPlayingIndicator", MusicAnimationType.Bubbles )
-        }
-        val PIP_MODULE by lazy {
-            Enum( preferences, Key.PIP_MODULE, "pipModule", PipModule.Cover )
-        }
-        val CHECK_UPDATE by lazy {
-            Enum( preferences, Key.CHECK_UPDATE, "checkUpdateState", CheckUpdateState.DISABLED )
-        }
-        val APP_LANGUAGE by lazy {
-            Enum( preferences, Key.APP_LANGUAGE, "languageApp", Language.SYSTEM )
-        }
-        val OTHER_APP_LANGUAGE by lazy {
-            Enum( preferences, Key.OTHER_APP_LANGUAGE, "otherLanguageApp", Language.SYSTEM )
-        }
         val APP_REGION by lazy {
             String( preferences, Key.APP_REGION, "", getSystemCountryCode() )
-        }
-        val HOME_ARTIST_AND_ALBUM_FILTER by lazy {
-            Enum( preferences, Key.HOME_ARTIST_AND_ALBUM_FILTER, "", FilterBy.All )
-        }
-        val STATISTIC_PAGE_CATEGORY by lazy {
-            Enum( preferences, Key.STATISTIC_PAGE_CATEGORY, "statisticsCategory", StatisticsCategory.Songs )
         }
         val FLOATING_ICON_X_OFFSET by lazy {
             Float( preferences, Key.FLOATING_ICON_X_OFFSET, "floatActionIconOffsetX", 0F )

@@ -12,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,12 +21,12 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.component.Drawable
 import app.kreate.component.TextView
 import app.kreate.constant.SortCategory
 import app.kreate.constant.SortOrder
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.typography
@@ -36,15 +37,19 @@ import it.fast4x.rimusic.ui.components.tab.toolbar.DualIcon
 import it.fast4x.rimusic.ui.components.tab.toolbar.Menu
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import it.fast4x.rimusic.utils.semiBold
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
 
 open class Sort<T>(
     override val menuState: MenuState,
-    sortByState: Preferences<T>,
-    sortOrderState: Preferences<SortOrder>,
+    sortByState: Preferences.EnumPref<T>,
+    sortOrderState: Preferences.EnumPref<SortOrder>,
+    coroutineScope: CoroutineScope
 ): MenuIcon, Clickable, Menu, DualIcon where T: Enum<T>, T: SortCategory {
 
-    open var sortBy: T by sortByState
-    open var sortOrder: SortOrder by sortOrderState
+    open var sortBy: T by mutableStateOf( sortByState.value )
+    open var sortOrder: SortOrder by mutableStateOf( sortOrderState.value )
 
     open val arrowDirection: State<Float>
         @Composable
@@ -66,8 +71,23 @@ open class Sort<T>(
             if( sortBy.isRandom ) secondIconId else iconId
         )
 
-    override var menuStyle: MenuStyle by Preferences.MENU_STYLE
+    override var menuStyle: MenuStyle by mutableStateOf( MenuStyle.List )
     override var isFirstIcon: Boolean = !sortBy.isRandom
+
+    init {
+        coroutineScope.launch {
+            sortByState.drop( 1 )
+                       .collect { sortBy = it }
+        }
+        coroutineScope.launch {
+            sortOrderState.drop( 1 )
+                          .collect { sortOrder = it }
+        }
+        coroutineScope.launch {
+            Preferences.MENU_STYLE
+                       .collect { menuStyle = it }
+        }
+    }
 
     /** Flip oder. */
     override fun onShortClick() { sortOrder = !sortOrder }

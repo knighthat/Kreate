@@ -12,9 +12,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.BuildConfig
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.BooleanEntry
+import app.kreate.android.themed.common.component.settings.EnumEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
@@ -30,13 +30,16 @@ fun LazyListScope.updateSection( search: SettingEntrySearch ) {
     header( R.string.update )
 
     entry( search, R.string.update ) {
+        val checkUpdate by app.kreate.preferences.Preferences.CHECK_UPDATE.collectAsStateWithLifecycle()
+
         SettingComponents.EnumEntry(
-            preference = Preferences.CHECK_UPDATE,
-            titleId = R.string.setting_entry_update_checker,
-            subtitle = stringResource( Preferences.CHECK_UPDATE.value.subtitleId, BuildConfig.APP_NAME ),
+            preference = app.kreate.preferences.Preferences.CHECK_UPDATE,
+            title = stringResource( R.string.setting_entry_update_checker ),
+            subtitle = stringResource( checkUpdate.subtitleId, BuildConfig.APP_NAME ),
             trailingContent = {
+
                 AnimatedVisibility(
-                    visible = Preferences.CHECK_UPDATE.either( CheckUpdateState.DISABLED ),
+                    visible = checkUpdate === CheckUpdateState.DISABLED,
                     // Slide in from right + fade in effect.
                     enter = slideInHorizontally(initialOffsetX = { it }) + fadeIn(initialAlpha = 0f),
                     // Slide out from left + fade out effect.

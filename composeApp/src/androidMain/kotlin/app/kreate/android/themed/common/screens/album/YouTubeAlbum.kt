@@ -35,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -221,6 +222,7 @@ fun YouTubeAlbum(
         val menuState = LocalMenuState.current
         val lazyListState = rememberLazyListState()
         val menu = LocalBottomMenu.current
+        val coroutineScope = rememberCoroutineScope()
         //</editor-fold>
 
         var albumPage: InnertubeAlbum? by remember { mutableStateOf( null ) }
@@ -274,6 +276,7 @@ fun YouTubeAlbum(
             }
         }
         val addToPlaylist = PlaylistsMenu.init(
+            coroutineScope,
             navController,
             { getMediaItems() },
             { throwable, preview ->

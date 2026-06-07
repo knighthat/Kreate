@@ -12,11 +12,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.di.CacheType
@@ -53,7 +53,7 @@ fun PlayerMenu(
     val context = LocalContext.current
     val menuState = LocalMenuState.current
     val player: StatefulPlayer = koinInject()
-    val menuStyle by Preferences.MENU_STYLE
+    val menuStyle by app.kreate.preferences.Preferences.MENU_STYLE.collectAsStateWithLifecycle()
 
     //val context = LocalContext.current
 
@@ -162,7 +162,7 @@ fun MiniPlayerMenu(
     onClosePlayer: () -> Unit
 ) {
     val context = LocalContext.current
-    val menuStyle by Preferences.MENU_STYLE
+    val menuStyle by app.kreate.preferences.Preferences.MENU_STYLE.collectAsStateWithLifecycle()
 
     if (menuStyle == MenuStyle.Grid) {
         MiniMediaItemGridMenu(

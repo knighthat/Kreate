@@ -34,9 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
+import app.kreate.preferences.Preferences
 import com.github.doyaaaaaken.kotlincsv.client.KotlinCsvExperimental
 import it.fast4x.compose.persist.PersistMapCleanup
 import it.fast4x.rimusic.colorPalette
@@ -58,8 +59,8 @@ fun LocalPlaylistScreen(
     modifier: Modifier = Modifier,
     miniPlayer: @Composable () -> Unit = {}
 ) {
-    val transitionEffect by Preferences.TRANSITION_EFFECT
-    val playerPosition by Preferences.MINI_PLAYER_POSITION
+    val transitionEffect by Preferences.TRANSITION_EFFECT.collectAsStateWithLifecycle()
+    val playerPosition by Preferences.MINI_PLAYER_POSITION.collectAsStateWithLifecycle()
     val saveableStateHolder = rememberSaveableStateHolder()
     PersistMapCleanup(tagPrefix = "localPlaylist/$playlistId/")
 

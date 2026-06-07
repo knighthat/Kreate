@@ -20,8 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.themed.common.component.settings.EnumEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.SettingHeader
@@ -33,7 +35,7 @@ import it.fast4x.rimusic.ui.components.themed.ConfirmationDialog
 
 @Composable
 fun ThemeSettings( search: SettingEntrySearch ) {
-    var colorPaletteName by Preferences.COLOR_PALETTE
+    val colorPaletteName by app.kreate.preferences.Preferences.COLOR_PALETTE.collectAsStateWithLifecycle()
 
     var resetCustomLightThemeDialog by rememberSaveable { mutableStateOf(false) }
     var resetCustomDarkThemeDialog by rememberSaveable { mutableStateOf(false) }
@@ -80,11 +82,11 @@ fun ThemeSettings( search: SettingEntrySearch ) {
 
     if( search appearsIn R.string.theme  )
         SettingComponents.EnumEntry(
-            Preferences.COLOR_PALETTE,
-            R.string.theme
+            preference = app.kreate.preferences.Preferences.COLOR_PALETTE,
+            title = stringResource( R.string.theme )
         ) {
             if( colorPaletteName == ColorPaletteName.ModernBlack )
-                Preferences.THEME_MODE.value = ColorPaletteMode.System
+                app.kreate.preferences.Preferences.THEME_MODE.value = ColorPaletteMode.System
         }
 
     AnimatedVisibility(visible = colorPaletteName == ColorPaletteName.CustomColor) {
@@ -278,20 +280,22 @@ fun IndividualColorSection( search: SettingEntrySearch ) =
     }
 
 fun LazyListScope.themeSettingsSection( search: SettingEntrySearch ) {
-    var colorPaletteName by Preferences.COLOR_PALETTE
-
     entry( search, R.string.theme ) {
+        val colorPaletteName by app.kreate.preferences.Preferences.COLOR_PALETTE.collectAsStateWithLifecycle()
+
         SettingComponents.EnumEntry(
-            Preferences.COLOR_PALETTE,
-            R.string.theme
+            preference = app.kreate.preferences.Preferences.COLOR_PALETTE,
+            title = stringResource( R.string.theme )
         ) {
             if( colorPaletteName == ColorPaletteName.ModernBlack )
-                Preferences.THEME_MODE.value = ColorPaletteMode.System
+                app.kreate.preferences.Preferences.THEME_MODE.value = ColorPaletteMode.System
         }
     }
     item {
+        val colorPaletteName by app.kreate.preferences.Preferences.COLOR_PALETTE.collectAsStateWithLifecycle()
+
         AnimatedContent(
-            targetState = Preferences.COLOR_PALETTE.value,
+            targetState = colorPaletteName,
             transitionSpec = {
                 expandVertically(
                     animationSpec = tween(durationMillis = 300, delayMillis = 300),
@@ -320,8 +324,8 @@ fun LazyListScope.themeSettingsSection( search: SettingEntrySearch ) {
                 else ->
                     if( search appearsIn R.string.theme_mode )
                         SettingComponents.EnumEntry(
-                            titleId = R.string.theme_mode,
-                            preference = Preferences.THEME_MODE
+                            preference = app.kreate.preferences.Preferences.THEME_MODE,
+                            title = stringResource( R.string.theme_mode )
                         )
             }
         }

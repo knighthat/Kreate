@@ -27,7 +27,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.screen.player.timeline.DurationIndicator
 import it.fast4x.rimusic.colorPalette
@@ -52,7 +51,7 @@ fun GetSeekBar(
     positionAndDuration: Pair<Long, Long>,
     player: StatefulPlayer = koinInject()
 ) {
-    val playerTimelineType by Preferences.PLAYER_TIMELINE_TYPE
+    val playerTimelineType by app.kreate.preferences.Preferences.PLAYER_TIMELINE_TYPE.collectAsStateWithLifecycle()
     var scrubbingPosition by remember( mediaItem.mediaId ) {
         mutableStateOf<Long?>(null)
     }

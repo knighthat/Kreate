@@ -530,7 +530,7 @@ inline fun SelectorArtistsDialog(
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
-    val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
+    val thumbnailRoundness by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
 
     Dialog(onDismissRequest = onDismiss) {
         Box(
@@ -541,7 +541,7 @@ inline fun SelectorArtistsDialog(
         ) {
             if (values != null) {
                 val pagerState = rememberPagerState(pageCount = { values.size })
-                val colorPaletteMode by Preferences.THEME_MODE
+                val colorPaletteMode by app.kreate.preferences.Preferences.THEME_MODE.collectAsStateWithLifecycle()
 
                 Box {
                     HorizontalPager(state = pagerState) { idArtist ->

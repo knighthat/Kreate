@@ -25,6 +25,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -135,6 +136,7 @@ fun YouTubePlaylist(
         val continuation by viewModel.continuation.collectAsStateWithLifecycle()
         val songs by viewModel.songs.collectAsStateWithLifecycle()
         val currentMediaItem by player.currentMediaItemState.collectAsStateWithLifecycle()
+        val coroutineScope = rememberCoroutineScope()
 
         val itemSelector = remember {
             ItemSelector(menuState) { addAll( songs ) }
@@ -156,6 +158,7 @@ fun YouTubePlaylist(
             DeleteAllDownloadedDialog(::getSongs)
         }
         val addToPlaylist = PlaylistsMenu.init(
+            coroutineScope = coroutineScope,
             navController = navController,
             mediaItems = { _ -> getMediaItems() },
             onFailure = { throwable, preview ->

@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import it.fast4x.compose.persist.persist
@@ -52,7 +51,7 @@ fun NewAlbums(
         discoverPage = Innertube.discoverPage()
     }
 
-    val navigationBarPosition by Preferences.NAVIGATION_BAR_POSITION
+    val navigationBarPosition by app.kreate.preferences.Preferences.NAVIGATION_BAR_POSITION.collectAsStateWithLifecycle()
 
     val showSearchTab by app.kreate.preferences.Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR.collectAsStateWithLifecycle()
 

@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.util.readableText
 import it.fast4x.rimusic.colorPalette
@@ -107,7 +106,7 @@ private fun RowScope.SkipTimeButton(
 
 @Composable
 private fun outlineColorState(): State<Color> {
-    val colorPaletteMode by Preferences.THEME_MODE
+    val colorPaletteMode by app.kreate.preferences.Preferences.THEME_MODE.collectAsStateWithLifecycle()
     val textOutline by app.kreate.preferences.Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
     val isDarkTheme = isSystemInDarkTheme()
 
@@ -209,7 +208,7 @@ fun DurationIndicator(
                 }
                 var isPaused by remember { mutableStateOf(false) }
 
-                val pauseBetweenSongs by Preferences.PAUSE_BETWEEN_SONGS
+                val pauseBetweenSongs by app.kreate.preferences.Preferences.PAUSE_BETWEEN_SONGS.collectAsStateWithLifecycle()
                 if(pauseBetweenSongs != PauseBetweenSongs.`0`)
                     LaunchedEffect(timeRemaining) {
                         if(timeRemaining < 500) {

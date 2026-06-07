@@ -31,7 +31,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
@@ -62,6 +61,7 @@ import it.fast4x.rimusic.utils.forcePlay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -128,7 +128,7 @@ fun HistoryList(
     val buttonsList = mutableListOf(HistoryType.History to stringResource(R.string.history))
     buttonsList += HistoryType.YTMHistory to stringResource(R.string.yt_history)
 
-    var historyType by Preferences.HISTORY_PAGE_TYPE
+    val historyType by app.kreate.preferences.Preferences.HISTORY_PAGE_TYPE.collectAsStateWithLifecycle()
 
     var historyPage by persist<Result<HistoryPage>>("home/historyPage")
     LaunchedEffect(Unit, historyType) {
@@ -178,7 +178,9 @@ fun HistoryList(
                 ButtonsRow(
                     chips = buttonsList,
                     currentValue = historyType,
-                    onValueUpdate = { historyType = it },
+                    onValueUpdate = { newValue ->
+                        app.kreate.preferences.Preferences.HISTORY_PAGE_TYPE.update { newValue }
+                    },
                     modifier = Modifier.padding(start = 12.dp, end = 12.dp)
                 )
             }

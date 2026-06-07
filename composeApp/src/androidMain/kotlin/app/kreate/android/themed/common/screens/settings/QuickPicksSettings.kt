@@ -24,9 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.BooleanEntry
+import app.kreate.android.themed.common.component.settings.EnumEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import it.fast4x.rimusic.Database
@@ -95,7 +95,10 @@ fun QuickPicksSettings( paddingValues: PaddingValues ) {
                     exit = fadeOut(tween(100)),
                 ) {
                     if( search appearsIn R.string.tips )
-                        SettingComponents.EnumEntry( Preferences.QUICK_PICKS_TYPE, R.string.tips )
+                        SettingComponents.EnumEntry(
+                            preference = app.kreate.preferences.Preferences.QUICK_PICKS_TYPE,
+                            title = stringResource( R.string.tips )
+                        )
                 }
             }
 

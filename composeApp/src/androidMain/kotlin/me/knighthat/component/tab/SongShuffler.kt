@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.database.models.Song
@@ -50,7 +49,8 @@ class SongShuffler(
                 return
             }
 
-            val maxSongsInQueue: Int = Preferences.MAX_NUMBER_OF_SONG_IN_QUEUE
+            val maxSongsInQueue: Int = app.kreate.preferences.Preferences
+                                               .MAX_NUMBER_OF_SONG_IN_QUEUE
                                                .value
                                                .toInt()
 

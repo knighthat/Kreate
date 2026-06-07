@@ -7,14 +7,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import app.kreate.android.Preferences
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.R
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.enums.StatisticsType
 import it.fast4x.rimusic.typography
@@ -25,10 +27,16 @@ import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import it.fast4x.rimusic.ui.components.themed.Menu
 import it.fast4x.rimusic.ui.components.themed.MenuEntry
 import it.fast4x.rimusic.utils.semiBold
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
 
-class PeriodSelector(override val menuState: MenuState): MenuIcon, Descriptive, Menu {
+class PeriodSelector(
+    coroutineScope: CoroutineScope,
+    override val menuState: MenuState
+): MenuIcon, Descriptive, Menu {
 
-    var period: StatisticsType by Preferences.HOME_SONGS_TOP_PLAYLIST_PERIOD
+    var period: StatisticsType by mutableStateOf( Preferences.HOME_SONGS_TOP_PLAYLIST_PERIOD.value )
 
     override val iconId: Int = R.drawable.close
     override val messageId: Int = R.string.statistics
@@ -39,7 +47,22 @@ class PeriodSelector(override val menuState: MenuState): MenuIcon, Descriptive, 
         @Composable
         get() = period.icon
 
-    override var menuStyle: MenuStyle = Preferences.MENU_STYLE.value
+    override var menuStyle: MenuStyle by mutableStateOf( Preferences.MENU_STYLE.value )
+
+    init {
+        coroutineScope.launch {
+            Preferences.HOME_SONGS_TOP_PLAYLIST_PERIOD
+                       // Drop the first one because it's already assigned
+                       .drop( 1 )
+                       .collect { period = it }
+        }
+        coroutineScope.launch {
+            Preferences.MENU_STYLE
+                       // Drop the first one because it's already assigned
+                       .drop( 1 )
+                       .collect { menuStyle = it }
+        }
+    }
 
     fun onDismiss( period: StatisticsType ) {
         this.period = period
@@ -56,7 +79,7 @@ class PeriodSelector(override val menuState: MenuState): MenuIcon, Descriptive, 
 
     @Composable
     override fun MenuComponent() {
-        val size by Preferences.MAX_NUMBER_OF_TOP_PLAYED
+        val size by Preferences.MAX_NUMBER_OF_TOP_PLAYED.collectAsStateWithLifecycle()
 
         Menu {
             Row(

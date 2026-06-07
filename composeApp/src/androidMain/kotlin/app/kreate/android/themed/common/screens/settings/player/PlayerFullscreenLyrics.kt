@@ -5,14 +5,13 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
 import app.kreate.android.themed.common.component.settings.header
-import it.fast4x.rimusic.enums.PlayerType
+import app.kreate.constant.Type
 
 
 fun LazyListScope.playerFullscreenLyrics( search: SettingEntrySearch ) {
@@ -51,7 +50,7 @@ fun LazyListScope.playerFullscreenLyrics( search: SettingEntrySearch ) {
             val statsForNerd by app.kreate.preferences.Preferences.PLAYER_STATS_FOR_NERDS.collectAsStateWithLifecycle()
             val showThumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
             if( statsForNerd
-                && (!(showThumbnail && Preferences.PLAYER_TYPE.value == PlayerType.Essential))
+                && (!(showThumbnail && app.kreate.preferences.Preferences.PLAYER_TYPE.value === Type.LEGACY))
                 && search appearsIn R.string.statsfornerds
             )
                 SettingComponents.BooleanEntry(

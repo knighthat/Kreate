@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -18,9 +18,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.database.models.PlaylistPreview
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.MenuStyle
@@ -32,34 +32,38 @@ import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.Menu
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import it.fast4x.rimusic.utils.semiBold
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
 import me.knighthat.component.playlist.NewPlaylistDialog
 import me.knighthat.utils.Toaster
 
 class PlaylistsMenu private constructor(
+    coroutineScope: CoroutineScope,
     private val navController: NavController,
     private val mediaItems: (PlaylistPreview) -> List<MediaItem>,
     private val onFailure: (Throwable, PlaylistPreview) -> Unit,
     private val finalAction: (PlaylistPreview) -> Unit,
-    override val menuState: MenuState,
-    styleState: MutableState<MenuStyle>
+    override val menuState: MenuState
 ): MenuIcon, Descriptive, Menu {
 
     companion object {
         @JvmStatic
         @Composable
         fun init(
+            coroutineScope: CoroutineScope,
             navController: NavController,
             mediaItems: (PlaylistPreview) -> List<MediaItem>,
             onFailure: (Throwable, PlaylistPreview) -> Unit,
             finalAction: (PlaylistPreview) -> Unit
         ) = PlaylistsMenu(
+            coroutineScope,
             navController,
             mediaItems,
             onFailure,
             finalAction,
-            LocalMenuState.current,
-            Preferences.MENU_STYLE
+            LocalMenuState.current
         )
     }
 
@@ -69,7 +73,16 @@ class PlaylistsMenu private constructor(
         @Composable
         get() = stringResource( messageId )
 
-    override var menuStyle: MenuStyle by styleState
+    override var menuStyle: MenuStyle by mutableStateOf( Preferences.MENU_STYLE.value )
+
+    init {
+        coroutineScope.launch {
+            Preferences.MENU_STYLE
+                       // Drop first because it's already in init
+                       .drop( 1 )
+                       .collect { menuStyle = it }
+        }
+    }
 
     private fun onAdd( preview: PlaylistPreview ) = Database.asyncTransaction {
         try {

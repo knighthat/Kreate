@@ -39,7 +39,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.themed.rimusic.component.Search
@@ -75,6 +74,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.knighthat.component.playlist.NewPlaylistDialog
 import me.knighthat.component.tab.ImportSongsFromCSV
@@ -102,9 +102,10 @@ fun HomeLibrary(
     val menuState = LocalMenuState.current
     val appearance = LocalAppearance.current
     val menu = LocalBottomMenu.current
+    val coroutineScope = rememberCoroutineScope()
 
     // Non-vital
-    var playlistType by Preferences.HOME_LIBRARY_TYPE
+    val playlistType by app.kreate.preferences.Preferences.HOME_LIBRARY_TYPE.collectAsStateWithLifecycle()
 
     var items by persistList<PlaylistPreview>("home/playlists")
     var onlinePlaylists by remember { mutableStateOf( emptyList<InnertubePlaylist>() ) }
@@ -128,9 +129,9 @@ fun HomeLibrary(
     }}
 
     val sort = remember {
-        Sort(menuState, Preferences.HOME_LIBRARY_SORT_BY, Preferences.HOME_LIBRARY_SORT_ORDER)
+        Sort(menuState, app.kreate.preferences.Preferences.HOME_LIBRARY_SORT_BY, app.kreate.preferences.Preferences.HOME_LIBRARY_SORT_ORDER, coroutineScope)
     }
-    val itemSize = remember { ItemSize(Preferences.HOME_LIBRARY_ITEM_SIZE, menuState) }
+    val itemSize = remember { ItemSize(coroutineScope, app.kreate.preferences.Preferences.HOME_LIBRARY_ITEM_SIZE, menuState) }
     val sizeDp by remember {derivedStateOf {
         DpSize(itemSize.size.dp, itemSize.size.dp)
     }}
@@ -272,7 +273,9 @@ fun HomeLibrary(
                         ButtonsRow(
                             chips = buttonsList,
                             currentValue = playlistType,
-                            onValueUpdate = { playlistType = it },
+                            onValueUpdate = { newValue ->
+                                app.kreate.preferences.Preferences.HOME_LIBRARY_TYPE.update { newValue }
+                            },
                             modifier = Modifier.padding(start = 12.dp, end = 12.dp)
                         )
                     }

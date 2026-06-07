@@ -32,6 +32,7 @@ import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.android.themed.common.component.settings.BooleanEntry
+import app.kreate.android.themed.common.component.settings.EnumEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.header
@@ -153,9 +154,8 @@ fun LazyListScope.debugSection(search: SettingEntrySearch ) {
 
                 if( search appearsIn R.string.setting_entry_runtime_log_level )
                     SettingComponents.EnumEntry(
-                        preference = Preferences.RUNTIME_LOG_SEVERITY,
-                        title = stringResource( R.string.setting_entry_runtime_log_level ),
-                        getName = { it.name }
+                        preference = app.kreate.preferences.Preferences.RUNTIME_LOG_SEVERITY,
+                        title = stringResource( R.string.setting_entry_runtime_log_level )
                     )
 
                 if( search appearsIn R.string.setting_entry_runtime_log_file_count ) {

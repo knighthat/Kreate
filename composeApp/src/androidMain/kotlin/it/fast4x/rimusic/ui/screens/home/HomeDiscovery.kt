@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,7 +26,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import app.kreate.android.Preferences
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
@@ -40,7 +39,7 @@ fun MoodItemColored(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
+    val thumbnailRoundness by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
 
     val moodColor by remember { derivedStateOf { Color(mood.stripeColor) } }
 
@@ -92,7 +91,7 @@ fun MoodGridItemColored(
     modifier: Modifier = Modifier,
     thumbnailSizeDp: Dp
 ) {
-    var thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
+    val thumbnailRoundness by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
 
     val moodColor by remember { derivedStateOf { Color(mood.stripeColor) } }
 
@@ -150,7 +149,7 @@ fun MoodItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
+    val thumbnailRoundness by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
 
     Column (
         verticalArrangement = Arrangement.SpaceAround,
@@ -192,7 +191,7 @@ fun MoodGridItem(
     modifier: Modifier = Modifier,
     thumbnailSizeDp: Dp
 ) {
-    var thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
+    val thumbnailRoundness by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
 
     Column (
         verticalArrangement = Arrangement.SpaceAround,

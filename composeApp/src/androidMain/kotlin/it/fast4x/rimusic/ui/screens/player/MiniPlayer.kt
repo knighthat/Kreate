@@ -60,16 +60,16 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.scrollingText
+import app.kreate.constant.Type
+import app.kreate.preferences.Preferences
 import app.kreate.util.cleanPrefix
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BackgroundProgress
-import it.fast4x.rimusic.enums.MiniPlayerType
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.typography
@@ -148,7 +148,7 @@ fun MiniPlayer(
                 .distinctUntilChanged()
     }.collectAsState( false, Dispatchers.IO )
 
-    var miniPlayerType by Preferences.MINI_PLAYER_TYPE
+    val miniPlayerType by Preferences.MINI_PLAYER_TYPE.collectAsStateWithLifecycle()
 
     fun toggleLike() {
         CoroutineScope( Dispatchers.IO ).launch {
@@ -161,7 +161,7 @@ fun MiniPlayer(
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
             if (value == SwipeToDismissBoxValue.StartToEnd)
-                if (miniPlayerType == MiniPlayerType.Essential)
+                if ( miniPlayerType === Type.LEGACY )
                     toggleLike()
                 else
                     player.seekToPrevious()
@@ -174,8 +174,8 @@ fun MiniPlayer(
             return@rememberSwipeToDismissBoxState false
         }
     )
-    val backgroundProgress by Preferences.MINI_PLAYER_PROGRESS_BAR
-    val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
+    val backgroundProgress by Preferences.MINI_PLAYER_PROGRESS_BAR.collectAsStateWithLifecycle()
+    val effectRotationEnabled by Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
     val shouldBePlayingTransition = updateTransition(shouldBePlaying, label = "shouldBePlaying")
     val playPauseRoundness by shouldBePlayingTransition.animateDp(
         transitionSpec = { tween(durationMillis = 100, easing = LinearEasing) },
@@ -188,7 +188,7 @@ fun MiniPlayer(
         targetValue = if (isRotated) 360F else 0f,
         animationSpec = tween(durationMillis = 200), label = ""
     )
-    val disableClosingPlayerSwipingDown by app.kreate.preferences.Preferences.MINI_DISABLE_SWIPE_DOWN_TO_DISMISS.collectAsStateWithLifecycle()
+    val disableClosingPlayerSwipingDown by Preferences.MINI_DISABLE_SWIPE_DOWN_TO_DISMISS.collectAsStateWithLifecycle()
 
     SwipeToDismissBox(
         modifier = Modifier
@@ -222,7 +222,7 @@ fun MiniPlayer(
                 Icon(
                     imageVector = when (dismissState.targetValue) {
                         SwipeToDismissBoxValue.StartToEnd -> {
-                            if (miniPlayerType == MiniPlayerType.Modern)
+                            if ( miniPlayerType == Type.MODERN )
                                 ImageVector.vectorResource(R.drawable.play_skip_back)
                             else if ( isSongLiked )
                                 ImageVector.vectorResource(R.drawable.heart)
@@ -358,7 +358,7 @@ fun MiniPlayer(
                 modifier = Modifier
                     .height(Dimensions.miniPlayerHeight)
             ) {
-               if (miniPlayerType == MiniPlayerType.Essential)
+               if ( miniPlayerType == Type.LEGACY )
                 it.fast4x.rimusic.ui.components.themed.IconButton(
                     icon = R.drawable.play_skip_back,
                     color = colorPalette().iconButtonPlayer,
@@ -396,7 +396,7 @@ fun MiniPlayer(
                             .size(24.dp)
                     )
                 }
-               if (miniPlayerType == MiniPlayerType.Essential)
+               if ( miniPlayerType == Type.LEGACY )
                 it.fast4x.rimusic.ui.components.themed.IconButton(
                     icon = R.drawable.play_skip_forward,
                     color = colorPalette().iconButtonPlayer,
@@ -409,7 +409,7 @@ fun MiniPlayer(
                         .padding(horizontal = 2.dp, vertical = 8.dp)
                         .size(24.dp)
                 )
-                if (miniPlayerType == MiniPlayerType.Modern) {
+                if ( miniPlayerType == Type.MODERN ) {
                     val iconId by remember {derivedStateOf {
                         with( Preferences.LIKE_ICON.value ) {
                             if( isSongLiked ) likedIconId else neutralIconId

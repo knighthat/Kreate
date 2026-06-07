@@ -10,7 +10,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -131,11 +130,7 @@ fun SettingComponents.BooleanEntry(
                 )
             )
         },
-        colors = ListItemDefaults.colors(
-            containerColor = Color.Transparent,
-            headlineColor = if( isEnabled ) colorPalette.text else colorPalette.textDisabled,
-            supportingColor = if( isEnabled ) colorPalette.textSecondary else colorPalette.textDisabled
-        ),
+        colors = getColors( isEnabled ),
         modifier = modifier
     )
 }

@@ -37,9 +37,9 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.database.models.Playlist
@@ -102,7 +102,7 @@ fun PlaylistsItemMenu(
         mutableStateOf(0.dp)
     }
 
-    val menuStyle by Preferences.MENU_STYLE
+    val menuStyle by app.kreate.preferences.Preferences.MENU_STYLE.collectAsStateWithLifecycle()
 
     if (menuStyle == MenuStyle.Grid) {
         PlaylistsItemGridMenu(

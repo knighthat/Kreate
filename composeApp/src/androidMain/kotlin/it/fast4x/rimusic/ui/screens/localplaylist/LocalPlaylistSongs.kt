@@ -32,6 +32,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -54,7 +55,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
@@ -164,6 +164,7 @@ fun LocalPlaylistSongs(
     val (colorPalette, typography) = LocalAppearance.current
     val lazyListState = rememberLazyListState()
     val uriHandler = LocalUriHandler.current
+    val coroutineScope = rememberCoroutineScope()
 
     // Settings
     val parentalControlEnabled by app.kreate.preferences.Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
@@ -253,6 +254,7 @@ fun LocalPlaylistSongs(
     val addToFavorite = LikeComponent( ::getSongs )
 
     val addToPlaylist = PlaylistsMenu.init(
+        coroutineScope = coroutineScope,
         navController,
         { getMediaItems() },
         { throwable, preview ->
@@ -348,7 +350,7 @@ fun LocalPlaylistSongs(
 
     val autosync by app.kreate.preferences.Preferences.AUTO_SYNC.collectAsStateWithLifecycle()
 
-    val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS
+    val thumbnailRoundness by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
 
     val reorderingState = rememberReorderingState(
         lazyListState = lazyListState,

@@ -37,14 +37,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheSpan
-import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.constant.Type
 import app.kreate.database.models.Format
 import app.kreate.di.CacheType
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.PlayerBackgroundColors
-import it.fast4x.rimusic.enums.PlayerType
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.IconButton
 import it.fast4x.rimusic.ui.styling.onOverlay
@@ -97,10 +96,10 @@ fun StatsForNerds(
 
         val showThumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
         val statsForNerds by app.kreate.preferences.Preferences.PLAYER_STATS_FOR_NERDS.collectAsStateWithLifecycle()
-        val playerType by Preferences.PLAYER_TYPE
+        val playerType by app.kreate.preferences.Preferences.PLAYER_TYPE.collectAsStateWithLifecycle()
         val transparentBackgroundActionBarPlayer by app.kreate.preferences.Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.collectAsStateWithLifecycle()
         val blackgradient by app.kreate.preferences.Preferences.BLACK_GRADIENT.collectAsStateWithLifecycle()
-        val playerBackgroundColors by Preferences.PLAYER_BACKGROUND
+        val playerBackgroundColors by app.kreate.preferences.Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
         var statsfornerdsfull by remember {mutableStateOf(false)}
         val rotationAngle by animateFloatAsState(
             targetValue = if (statsfornerdsfull) 180f else 0f,
@@ -128,7 +127,7 @@ fun StatsForNerds(
             }
         }
 
-    if (showThumbnail && (!statsForNerds || playerType == PlayerType.Essential)) {
+    if (showThumbnail && (!statsForNerds || playerType === Type.LEGACY)) {
         Box(
             modifier = modifier
                 .pointerInput(Unit) {
@@ -272,7 +271,7 @@ fun StatsForNerds(
             }
         }
     }
-        if ((statsForNerds) && (!showThumbnail || playerType == PlayerType.Modern)) {
+        if ((statsForNerds) && (!showThumbnail || playerType === Type.MODERN)) {
             Column(
 
             ) {
