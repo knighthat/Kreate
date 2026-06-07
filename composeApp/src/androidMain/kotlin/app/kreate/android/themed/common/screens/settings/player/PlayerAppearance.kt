@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.EnumEntry
@@ -52,10 +51,6 @@ fun LazyListScope.playerAppearanceSection(
 
     if( !isLandscape ) {
         entry( search, R.string.appearancepresets ) {
-            var blurStrength by Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH
-            var thumbnailFadeEx  by Preferences.PLAYER_THUMBNAIL_FADE_EX
-            var thumbnailFade  by Preferences.PLAYER_THUMBNAIL_FADE
-            var thumbnailSpacing  by Preferences.PLAYER_THUMBNAIL_SPACING
 
             var appearanceChooser by remember{ mutableStateOf(false)}
             if (appearanceChooser) {
@@ -65,7 +60,7 @@ fun LazyListScope.playerAppearanceSection(
                         app.kreate.preferences.Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.update { true }
                         app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.update { true }
                         app.kreate.preferences.Preferences.PLAYER_BACKGROUND.update { PlayerBackgroundColors.BlurredCoverColor }
-                        blurStrength = 50f
+                        app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH.update { 50f }
                         app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.update { ThumbnailRoundness.None }
                         app.kreate.preferences.Preferences.PLAYER_INFO_TYPE.update { Type.LEGACY }
                         app.kreate.preferences.Preferences.PLAYER_TIMELINE_TYPE.update { PlayerTimelineType.ThinBar }
@@ -107,7 +102,7 @@ fun LazyListScope.playerAppearanceSection(
                         app.kreate.preferences.Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.update { true }
                         app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.update { true }
                         app.kreate.preferences.Preferences.PLAYER_BACKGROUND.update { PlayerBackgroundColors.BlurredCoverColor }
-                        blurStrength = 50f
+                        app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH.update { 50f }
                         app.kreate.preferences.Preferences.PLAYER_INFO_TYPE.update { Type.LEGACY }
                         app.kreate.preferences.Preferences.PLAYER_PLAY_BUTTON_TYPE.update { PlayerPlayButtonType.Disabled }
                         app.kreate.preferences.Preferences.PLAYER_TIMELINE_TYPE.update { PlayerTimelineType.ThinBar }
@@ -115,8 +110,8 @@ fun LazyListScope.playerAppearanceSection(
                         app.kreate.preferences.Preferences.TRANSPARENT_TIMELINE.update { true }
                         app.kreate.preferences.Preferences.PLAYER_EXPANDED.update { true }
                         app.kreate.preferences.Preferences.PLAYER_BACKGROUND_FADING_EDGE.update { true }
-                        thumbnailFadeEx = 4f
-                        thumbnailSpacing = -32f
+                        app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE_EX.update { 4f }
+                        app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING.update { -32f }
                         app.kreate.preferences.Preferences.THUMBNAIL_TYPE.update { Type.LEGACY }
                         app.kreate.preferences.Preferences.CAROUSEL_SIZE.update { CarouselSize.Big }
                         app.kreate.preferences.Preferences.PLAYER_PORTRAIT_THUMBNAIL_SIZE.update { PlayerThumbnailSize.Biggest }
@@ -154,7 +149,7 @@ fun LazyListScope.playerAppearanceSection(
                         app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR.update { true }
                         app.kreate.preferences.Preferences.PLAYER_TOP_PADDING.update { false }
                         app.kreate.preferences.Preferences.PLAYER_BACKGROUND.update { PlayerBackgroundColors.BlurredCoverColor }
-                        blurStrength = 50f
+                        app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH.update { 50f }
                         app.kreate.preferences.Preferences.PLAYER_PLAY_BUTTON_TYPE.update { PlayerPlayButtonType.Disabled }
                         app.kreate.preferences.Preferences.PLAYER_INFO_TYPE.update { Type.MODERN }
                         app.kreate.preferences.Preferences.PLAYER_SONG_INFO_ICON.update { false }
@@ -194,7 +189,7 @@ fun LazyListScope.playerAppearanceSection(
                         app.kreate.preferences.Preferences.PLAYER_TOP_PADDING.update { false }
                         app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.update { true }
                         app.kreate.preferences.Preferences.PLAYER_BACKGROUND.update { PlayerBackgroundColors.BlurredCoverColor }
-                        blurStrength = 50f
+                        app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH.update { 50f }
                         app.kreate.preferences.Preferences.PLAYER_INFO_TYPE.update { Type.LEGACY }
                         app.kreate.preferences.Preferences.PLAYER_TIMELINE_TYPE.update { PlayerTimelineType.FakeAudioBar }
                         app.kreate.preferences.Preferences.PLAYER_TIMELINE_SIZE.update { PlayerTimelineSize.Biggest }
@@ -212,7 +207,7 @@ fun LazyListScope.playerAppearanceSection(
                         app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.update { ThumbnailRoundness.Light }
                         app.kreate.preferences.Preferences.PLAYER_TYPE.update { Type.MODERN }
                         app.kreate.preferences.Preferences.PLAYER_BACKGROUND_FADING_EDGE.update { true }
-                        thumbnailFade = 5f
+                        app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE.update { 5f }
                         app.kreate.preferences.Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.update { false }
                         ///////ACTION BAR BUTTONS////////////////
                         app.kreate.preferences.Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.update { true }
@@ -257,9 +252,9 @@ fun LazyListScope.playerAppearanceSection(
                         app.kreate.preferences.Preferences.THUMBNAIL_TYPE.update { Type.MODERN }
                         app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.update { ThumbnailRoundness.Heavy }
                         app.kreate.preferences.Preferences.PLAYER_BACKGROUND_FADING_EDGE.update { true }
-                        thumbnailFade = 0f
-                        thumbnailFadeEx = 5f
-                        thumbnailSpacing = -32f
+                        app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE.update { 0f }
+                        app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE_EX.update { 5f }
+                        app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING.update { -32f }
                         app.kreate.preferences.Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.update { false }
                         ///////ACTION BAR BUTTONS////////////////
                         app.kreate.preferences.Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.update { true }

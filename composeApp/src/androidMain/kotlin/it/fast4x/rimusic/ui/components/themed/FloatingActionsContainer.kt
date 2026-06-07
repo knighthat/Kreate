@@ -31,7 +31,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import it.fast4x.rimusic.LocalPlayerSheetState
@@ -203,8 +202,8 @@ fun BoxScope.FloatingActions(
     val playerSheetState = LocalPlayerSheetState.current
     val bottomPadding = if (!playerSheetState.isVisible) bottomDp + Dimensions.collapsedPlayer else bottomDp
 
-    var offsetX = Preferences.FLOATING_ICON_X_OFFSET
-    var offsetY = Preferences.FLOATING_ICON_Y_OFFSET
+    val offsetX = app.kreate.preferences.Preferences.FLOATING_ICON_X_OFFSET
+    val offsetY = app.kreate.preferences.Preferences.FLOATING_ICON_Y_OFFSET
 
     val modifierActions = Modifier
         .padding(bottom = 16.dp)

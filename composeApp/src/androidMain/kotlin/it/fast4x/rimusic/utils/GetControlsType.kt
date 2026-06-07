@@ -13,12 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.constant.Type
 import it.fast4x.rimusic.enums.PlayerBackgroundColors
 import it.fast4x.rimusic.ui.components.themed.PlaybackParamsDialog
 import it.fast4x.rimusic.ui.screens.player.components.controls.ControlsEssential
 import it.fast4x.rimusic.ui.screens.player.components.controls.ControlsModern
+import kotlinx.coroutines.flow.update
 import kotlin.math.roundToInt
 
 @OptIn(UnstableApi::class)
@@ -35,8 +35,8 @@ fun GetControls(
     val isGradientBackgroundEnabled = playerBackgroundColors == PlayerBackgroundColors.ThemeColorGradient ||
             playerBackgroundColors == PlayerBackgroundColors.CoverColorGradient
 
-    var playbackSpeed by Preferences.AUDIO_SPEED_VALUE
-    var playbackDuration by Preferences.AUDIO_MEDLEY_DURATION
+    val playbackSpeed by app.kreate.preferences.Preferences.AUDIO_SPEED_VALUE.collectAsStateWithLifecycle()
+    val playbackDuration by app.kreate.preferences.Preferences.AUDIO_MEDLEY_DURATION.collectAsStateWithLifecycle()
 
     var showSpeedPlayerDialog by rememberSaveable {
         mutableStateOf(false)
@@ -45,10 +45,12 @@ fun GetControls(
     if (showSpeedPlayerDialog) {
         PlaybackParamsDialog(
             onDismiss = { showSpeedPlayerDialog = false },
-            speedValue = { playbackSpeed = it },
+            speedValue = { newValue ->
+                app.kreate.preferences.Preferences.AUDIO_SPEED_VALUE.update { newValue }
+            },
             pitchValue = {},
-            durationValue = {
-                playbackDuration = it
+            durationValue = { newValue ->
+                app.kreate.preferences.Preferences.AUDIO_MEDLEY_DURATION.update { newValue }
             },
             scaleValue = onBlurScaleChange
         )

@@ -11,38 +11,41 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.ui.components.themed.IconButton
 import it.fast4x.rimusic.ui.components.themed.SliderControl
 import it.fast4x.rimusic.ui.styling.favoritesIcon
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
 import me.knighthat.component.dialog.Dialog
 
 class BlurAdjuster private constructor(
+    coroutineScope: CoroutineScope,
     activeState: MutableState<Boolean>,
-    strengthState: MutableState<Float>,
-    backdropState: MutableState<Float>,
     rotatingCoverState: State<Boolean>
 ): Dialog {
 
     companion object {
         @Composable
         operator fun invoke() = BlurAdjuster(
+            rememberCoroutineScope(),
             remember { mutableStateOf( false ) },
-            Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH,
-            Preferences.PLAYER_BACKGROUND_BACK_DROP,
-            app.kreate.preferences.Preferences.PLAYER_ROTATING_ALBUM_COVER.collectAsStateWithLifecycle()
+            Preferences.PLAYER_ROTATING_ALBUM_COVER.collectAsStateWithLifecycle()
         )
     }
 
@@ -51,9 +54,22 @@ class BlurAdjuster private constructor(
         @Composable
         get() = stringResource( R.string.controls_title_blur_effect )
 
-    var strength: Float by strengthState
-    var backdrop: Float by backdropState
+    var strength: Float by mutableFloatStateOf( Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH.value )
+    var backdrop: Float by mutableFloatStateOf( Preferences.PLAYER_BACKGROUND_BACK_DROP.value )
     override var isActive: Boolean by activeState
+
+    init {
+        coroutineScope.launch {
+            Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH
+                       .drop( 1 )
+                       .collect { strength = it }
+        }
+        coroutineScope.launch {
+            Preferences.PLAYER_BACKGROUND_BACK_DROP
+                       .drop( 1 )
+                       .collect { backdrop = it }
+        }
+    }
 
     fun onDismiss()  { isActive = false }
 

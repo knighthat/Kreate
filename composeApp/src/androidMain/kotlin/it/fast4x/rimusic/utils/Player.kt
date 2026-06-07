@@ -179,7 +179,7 @@ fun Player.playPrevious() {
  * Else, it will move to previous [MediaItem]
  */
 fun Player.smartRewind() =
-    if( !hasPreviousMediaItem() || currentPosition > (Preferences.SMART_REWIND.value * 1000) )
+    if( !hasPreviousMediaItem() || currentPosition > (app.kreate.preferences.Preferences.SMART_REWIND.value * 1000) )
         seekTo( 0 )
     else
         seekToPreviousMediaItem()

@@ -96,7 +96,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
@@ -139,6 +138,7 @@ import it.fast4x.rimusic.utils.setGlobalVolume
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -1116,9 +1116,9 @@ fun BlurParamsDialog(
     val defaultStrength = 25f
     //val defaultStrength2 = 30f
     val defaultDarkenFactor = 0.2f
-    var blurStrength  by Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH
+    val blurStrength  by app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH.collectAsStateWithLifecycle()
     //var blurStrength2  by rememberPreference(blurStrength2Key, defaultStrength2)
-    var blurDarkenFactor  by Preferences.PLAYER_BACKGROUND_BACK_DROP
+    val blurDarkenFactor  by app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BACK_DROP.collectAsStateWithLifecycle()
 
     /*
     var isShowingLyrics by rememberSaveable {
@@ -1145,7 +1145,7 @@ fun BlurParamsDialog(
         ) {
             IconButton(
                 onClick = {
-                    blurStrength = defaultStrength
+                    app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH.update { defaultStrength }
                 },
                 icon = R.drawable.droplet,
                 color = colorPalette().favoritesIcon,
@@ -1155,7 +1155,9 @@ fun BlurParamsDialog(
 
             SliderControl(
                 state = blurStrength,
-                onSlide = { blurStrength = it },
+                onSlide = { newValue ->
+                    app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH.update { newValue }
+                },
                 onSlideComplete = {},
                 toDisplay = { "%.0f".format(it) },
                 range = 0f..100f,
@@ -1230,12 +1232,12 @@ fun BlurParamsDialog(
         val defaultFade = 5f
         val defaultSpacing = 0f
         val defaultImageCoverSize = 50f
-        var thumbnailSpacing by Preferences.PLAYER_THUMBNAIL_SPACING
-        var thumbnailSpacingL by Preferences.PLAYER_THUMBNAIL_SPACING_LANDSCAPE
-        var thumbnailFade by Preferences.PLAYER_THUMBNAIL_FADE
-        var thumbnailFadeEx by Preferences.PLAYER_THUMBNAIL_FADE_EX
+        val thumbnailSpacing by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING.collectAsStateWithLifecycle()
+        val thumbnailSpacingL by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING_LANDSCAPE.collectAsStateWithLifecycle()
+        val thumbnailFade by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE.collectAsStateWithLifecycle()
+        val thumbnailFadeEx by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE_EX.collectAsStateWithLifecycle()
         val fadingedge by app.kreate.preferences.Preferences.PLAYER_BACKGROUND_FADING_EDGE.collectAsStateWithLifecycle()
-        var imageCoverSize by Preferences.PLAYER_THUMBNAIL_VINYL_SIZE
+        val imageCoverSize by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_VINYL_SIZE.collectAsStateWithLifecycle()
         val showCoverThumbnailAnimation by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_ANIMATION.collectAsStateWithLifecycle()
         val expandedplayer by app.kreate.preferences.Preferences.PLAYER_EXPANDED.collectAsStateWithLifecycle()
         DefaultDialog(
@@ -1257,7 +1259,7 @@ fun BlurParamsDialog(
                 ) {
                     IconButton(
                         onClick = {
-                            imageCoverSize = defaultImageCoverSize
+                            app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_VINYL_SIZE.update { defaultImageCoverSize }
                         },
                         icon = R.drawable.album,
                         color = colorPalette().favoritesIcon,
@@ -1267,7 +1269,9 @@ fun BlurParamsDialog(
 
                     SliderControl(
                         state = imageCoverSize,
-                        onSlide = { imageCoverSize = it },
+                        onSlide = { newValue ->
+                            app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_VINYL_SIZE.update { newValue }
+                        },
                         onSlideComplete = {
                             imageCoverSizeValue(imageCoverSize)
                         },
@@ -1288,7 +1292,7 @@ fun BlurParamsDialog(
                     ) {
                         IconButton(
                             onClick = {
-                                thumbnailFadeEx = defaultFade
+                                app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE_EX.update { defaultFade }
                             },
                             icon = R.drawable.droplet,
                             color = colorPalette().favoritesIcon,
@@ -1298,7 +1302,9 @@ fun BlurParamsDialog(
 
                         SliderControl(
                             state = thumbnailFadeEx,
-                            onSlide = { thumbnailFadeEx = it },
+                            onSlide = { newValue ->
+                                app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE_EX.update { newValue }
+                            },
                             onSlideComplete = {},
                             toDisplay = { "%.0f".format(it) },
                             steps = 9,
@@ -1372,7 +1378,7 @@ fun BlurParamsDialog(
                     ) {
                         IconButton(
                             onClick = {
-                                thumbnailFade = defaultFade
+                                app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE.update { defaultFade }
                             },
                             icon = R.drawable.droplet,
                             color = colorPalette().favoritesIcon,
@@ -1382,7 +1388,9 @@ fun BlurParamsDialog(
 
                         SliderControl(
                             state = thumbnailFade,
-                            onSlide = { thumbnailFade = it },
+                            onSlide = { newValue ->
+                                app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE.update { newValue }
+                            },
                             onSlideComplete = {},
                             toDisplay = { "%.0f".format(it) },
                             steps = 9,
@@ -1400,7 +1408,7 @@ fun BlurParamsDialog(
                 ) {
                     IconButton(
                         onClick = {
-                            thumbnailSpacing = defaultSpacing
+                            app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING.update { defaultSpacing }
                         },
                         icon = R.drawable.burger,
                         color = colorPalette().favoritesIcon,
@@ -1410,7 +1418,9 @@ fun BlurParamsDialog(
 
                     SliderControl(
                         state = thumbnailSpacing,
-                        onSlide = { thumbnailSpacing = it },
+                        onSlide = { newValue ->
+                            app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING.update { newValue }
+                        },
                         onSlideComplete = {},
                         toDisplay = { "%.0f".format(it) },
                         range = -50f..50f
@@ -1484,7 +1494,7 @@ fun BlurParamsDialog(
                 ) {
                     IconButton(
                         onClick = {
-                            thumbnailSpacingL = defaultSpacing
+                            app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING_LANDSCAPE.update { defaultSpacing }
                         },
                         icon = R.drawable.burger,
                         color = colorPalette().favoritesIcon,
@@ -1495,7 +1505,9 @@ fun BlurParamsDialog(
 
                     SliderControl(
                         state = thumbnailSpacingL,
-                        onSlide = { thumbnailSpacingL = it },
+                        onSlide = { newValue ->
+                            app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING_LANDSCAPE.update { newValue }
+                        },
                         onSlideComplete = {},
                         toDisplay = { "%.0f".format(it) },
                         range = -50f..50f
@@ -1607,8 +1619,8 @@ fun LyricsSizeDialog(
     sizeValue: (Float) -> Unit,
     sizeValueL: (Float) -> Unit,
 ) {
-    var lyricsSize by Preferences.LYRICS_SIZE
-    var lyricsSizeL by Preferences.LYRICS_SIZE_LANDSCAPE
+    val lyricsSize by app.kreate.preferences.Preferences.LYRICS_SIZE.collectAsStateWithLifecycle()
+    val lyricsSizeL by app.kreate.preferences.Preferences.LYRICS_SIZE_LANDSCAPE.collectAsStateWithLifecycle()
     DefaultDialog(
         onDismiss = {
             sizeValue(lyricsSize)
@@ -1626,7 +1638,7 @@ fun LyricsSizeDialog(
             ) {
                 IconButton(
                     onClick = {
-                        lyricsSize = 20f
+                        app.kreate.preferences.Preferences.LYRICS_SIZE.update { 20f }
                     },
                     icon = R.drawable.text,
                     color = colorPalette().favoritesIcon,
@@ -1636,7 +1648,9 @@ fun LyricsSizeDialog(
 
                 SliderControl(
                     state = lyricsSize,
-                    onSlide = { lyricsSize = it },
+                    onSlide = { newValue ->
+                        app.kreate.preferences.Preferences.LYRICS_SIZE.update { newValue }
+                    },
                     onSlideComplete = {},
                     toDisplay = { "%.0f".format(it) },
                     steps = 82,
@@ -1653,7 +1667,7 @@ fun LyricsSizeDialog(
             ) {
                 IconButton(
                     onClick = {
-                        lyricsSizeL = 20f
+                        app.kreate.preferences.Preferences.LYRICS_SIZE_LANDSCAPE.update { 20f }
                     },
                     icon = R.drawable.text,
                     color = colorPalette().favoritesIcon,
@@ -1663,7 +1677,9 @@ fun LyricsSizeDialog(
 
                 SliderControl(
                     state = lyricsSizeL,
-                    onSlide = { lyricsSizeL = it },
+                    onSlide = { newValue ->
+                        app.kreate.preferences.Preferences.LYRICS_SIZE_LANDSCAPE.update { newValue }
+                    },
                     onSlideComplete = {},
                     toDisplay = { "%.0f".format(it) },
                     range = 18f..100f
@@ -2181,13 +2197,13 @@ fun PlaybackParamsDialog(
     val defaultDuration = 0f
     val defaultStrength = 25f
     val defaultBassboost = 0.5f
-    var playbackSpeed  by Preferences.AUDIO_SPEED_VALUE
-    var playbackPitch  by Preferences.AUDIO_PITCH
-    var playbackVolume  by Preferences.AUDIO_VOLUME
-    var playbackDeviceVolume  by Preferences.AUDIO_DEVICE_VOLUME
-    var playbackDuration by Preferences.AUDIO_MEDLEY_DURATION
-    var blurStrength  by Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH
-    var bassBoost  by Preferences.AUDIO_BASS_BOOST_LEVEL
+    val playbackSpeed  by app.kreate.preferences.Preferences.AUDIO_SPEED_VALUE.collectAsStateWithLifecycle()
+    val playbackPitch  by app.kreate.preferences.Preferences.AUDIO_PITCH.collectAsStateWithLifecycle()
+    val playbackVolume  by app.kreate.preferences.Preferences.AUDIO_VOLUME.collectAsStateWithLifecycle()
+    val playbackDeviceVolume  by app.kreate.preferences.Preferences.AUDIO_DEVICE_VOLUME.collectAsStateWithLifecycle()
+    val playbackDuration by app.kreate.preferences.Preferences.AUDIO_MEDLEY_DURATION.collectAsStateWithLifecycle()
+    val blurStrength  by app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH.collectAsStateWithLifecycle()
+    val bassBoost  by app.kreate.preferences.Preferences.AUDIO_BASS_BOOST_LEVEL.collectAsStateWithLifecycle()
 
     DefaultDialog(
         onDismiss = {
@@ -2216,7 +2232,7 @@ fun PlaybackParamsDialog(
         ) {
             IconButton(
                 onClick = {
-                    blurStrength = defaultStrength
+                    app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH.update { defaultStrength }
                 },
                 icon = R.drawable.droplet,
                 color = colorPalette().favoritesIcon,
@@ -2225,7 +2241,9 @@ fun PlaybackParamsDialog(
             )
             SliderControl(
                 state = blurStrength,
-                onSlide = { blurStrength = it },
+                onSlide = { newValue ->
+                    app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR_STRENGTH.update { newValue }
+                },
                 onSlideComplete = {},
                 toDisplay = { "%.0f".format(it) },
                 range = 0f..50f
@@ -2300,7 +2318,7 @@ fun PlaybackParamsDialog(
         ) {
             IconButton(
                 onClick = {
-                    playbackDuration = defaultDuration
+                    app.kreate.preferences.Preferences.AUDIO_MEDLEY_DURATION.update { defaultDuration }
                 },
                 icon = R.drawable.playbackduration,
                 color = colorPalette().favoritesIcon,
@@ -2310,7 +2328,9 @@ fun PlaybackParamsDialog(
 
             SliderControl(
                 state = playbackDuration,
-                onSlide = { playbackDuration = it },
+                onSlide = { newValue ->
+                    app.kreate.preferences.Preferences.AUDIO_MEDLEY_DURATION.update { newValue }
+                },
                 onSlideComplete = {},
                 toDisplay = { "%.0f".format(playbackDuration) },
                 range = 0f..60f
@@ -2392,7 +2412,7 @@ fun PlaybackParamsDialog(
             ) {
                 IconButton(
                     onClick = {
-                        playbackSpeed = defaultSpeed
+                        app.kreate.preferences.Preferences.AUDIO_SPEED_VALUE.update { defaultSpeed }
                         player.playbackParameters =
                             PlaybackParameters(playbackSpeed, playbackPitch)
                     },
@@ -2404,8 +2424,8 @@ fun PlaybackParamsDialog(
 
                 SliderControl(
                     state = playbackSpeed,
-                    onSlide = {
-                        playbackSpeed = it
+                    onSlide = { newValue ->
+                        app.kreate.preferences.Preferences.AUDIO_SPEED_VALUE.update { newValue }
                         player.playbackParameters =
                             PlaybackParameters(playbackSpeed, playbackPitch)
                     },
@@ -2492,7 +2512,7 @@ fun PlaybackParamsDialog(
             ) {
                 IconButton(
                     onClick = {
-                        playbackPitch = defaultPitch
+                        app.kreate.preferences.Preferences.AUDIO_PITCH.update { defaultPitch }
                         player.playbackParameters =
                             PlaybackParameters(playbackSpeed, playbackPitch)
                     },
@@ -2504,8 +2524,8 @@ fun PlaybackParamsDialog(
 
                 SliderControl(
                     state = playbackPitch,
-                    onSlide = {
-                        playbackPitch = it
+                    onSlide = { newValue ->
+                        app.kreate.preferences.Preferences.AUDIO_PITCH.update { newValue }
                         player.playbackParameters =
                             PlaybackParameters(playbackSpeed, playbackPitch)
                     },
@@ -2592,7 +2612,7 @@ fun PlaybackParamsDialog(
             ) {
                 IconButton(
                     onClick = {
-                        playbackVolume = 0.5f
+                        app.kreate.preferences.Preferences.AUDIO_PITCH.update { 0.5f }
                         player.volume = playbackVolume
                         player.setGlobalVolume(playbackVolume)
                     },
@@ -2604,8 +2624,8 @@ fun PlaybackParamsDialog(
 
                 SliderControl(
                     state = playbackVolume,
-                    onSlide = {
-                        playbackVolume = it
+                    onSlide = { newValue ->
+                        app.kreate.preferences.Preferences.AUDIO_PITCH.update { newValue }
                         player.volume = playbackVolume
                         player.setGlobalVolume(playbackVolume)
                     },
@@ -2691,7 +2711,7 @@ fun PlaybackParamsDialog(
             ) {
                 IconButton(
                     onClick = {
-                        playbackDeviceVolume = getDeviceVolume(context)
+                        app.kreate.preferences.Preferences.AUDIO_DEVICE_VOLUME.update { getDeviceVolume(context) }
                         setDeviceVolume(context, playbackDeviceVolume)
                     },
                     icon = R.drawable.master_volume,
@@ -2702,8 +2722,8 @@ fun PlaybackParamsDialog(
 
                 SliderControl(
                     state = playbackDeviceVolume,
-                    onSlide = {
-                        playbackDeviceVolume = it
+                    onSlide = { newValue ->
+                        app.kreate.preferences.Preferences.AUDIO_DEVICE_VOLUME.update { newValue }
                         setDeviceVolume(context, playbackDeviceVolume)
                     },
                     onSlideComplete = {},
@@ -2729,7 +2749,7 @@ fun PlaybackParamsDialog(
         ) {
             IconButton(
                 onClick = {
-                    playbackDeviceVolume = getDeviceVolume(context)
+                    app.kreate.preferences.Preferences.AUDIO_DEVICE_VOLUME.update { getDeviceVolume(context) }
                     setDeviceVolume(context, playbackDeviceVolume)
                 },
                 icon = R.drawable.musical_notes,
@@ -2741,8 +2761,8 @@ fun PlaybackParamsDialog(
             SliderControl(
                 isEnabled = isBassBoostEnabled(),
                 state = bassBoost,
-                onSlide = {
-                    bassBoost = it
+                onSlide = { newValue ->
+                    app.kreate.preferences.Preferences.AUDIO_BASS_BOOST_LEVEL.update { newValue }
                 },
                 onSlideComplete = {},
                 toDisplay = { "%.1f".format(bassBoost) },

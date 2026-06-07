@@ -53,7 +53,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.ui.styling.favoritesIcon
@@ -115,8 +114,8 @@ fun MultiFloatingActionsButton (
     //var offsetX by remember { mutableStateOf(0f) }
     //var offsetY by remember { mutableStateOf(0f) }
 
-    var offsetX = Preferences.MULTI_FLOATING_ICON_X_OFFSET
-    var offsetY = Preferences.MULTI_FLOATING_ICON_Y_OFFSET
+    val offsetX = app.kreate.preferences.Preferences.MULTI_FLOATING_ICON_X_OFFSET
+    val offsetY = app.kreate.preferences.Preferences.MULTI_FLOATING_ICON_Y_OFFSET
 
     Box(
         modifier = modifier,
