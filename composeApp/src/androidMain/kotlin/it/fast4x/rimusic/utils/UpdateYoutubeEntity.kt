@@ -8,10 +8,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.SongAlbumMap
+import app.kreate.preferences.Preferences
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBody
@@ -29,12 +29,11 @@ fun UpdateYoutubeArtist(browseId: String) {
 
     var artistPage by persist<Innertube.ArtistInfoPage?>("artist/$browseId/artistPage")
     var artist by persist<Artist?>("artist/$browseId/artist")
-    val tabIndex by Preferences.ARTIST_SCREEN_TAB_INDEX
 
     LaunchedEffect(browseId) {
         Database.artistTable
                 .findById( browseId )
-                .combine(snapshotFlow { tabIndex }.map { it != 4 }) { artist, mustFetch -> artist to mustFetch }
+                .combine(Preferences.ARTIST_SCREEN_TAB_INDEX.map { it != 4 }) { artist, mustFetch -> artist to mustFetch }
                 .distinctUntilChanged()
                 .collect { (currentArtist, mustFetch) ->
                     artist = currentArtist

@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import app.kreate.android.enums.DohServer
@@ -122,6 +123,18 @@ sealed class Preferences<K, V>(
         }
         val HOME_LIBRARY_ITEM_SIZE by lazy {
             EnumPref(preferences, Key.HOME_LIBRARY_ITEM_SIZE, HomeItemSize.SMALL, HomeItemSize::entries)
+        }
+        val SONG_THUMBNAIL_SIZE by lazy {
+            IntPref(preferences, Key.SONG_THUMBNAIL_SIZE, 54)
+        }
+        val ALBUM_THUMBNAIL_SIZE by lazy {
+            IntPref(preferences, Key.ALBUM_THUMBNAIL_SIZE, 128)
+        }
+        val ARTIST_THUMBNAIL_SIZE by lazy {
+            IntPref(preferences, Key.ARTIST_THUMBNAIL_SIZE, 128)
+        }
+        val PLAYLIST_THUMBNAIL_SIZE by lazy {
+            IntPref(preferences, Key.PLAYLIST_THUMBNAIL_SIZE, 128)
         }
         //</editor-fold>
         //<editor-fold desc="Sort by">
@@ -420,6 +433,9 @@ sealed class Preferences<K, V>(
         val PLAYER_BACKGROUND_BACK_DROP by lazy {
             FloatPref(preferences, Key.PLAYER_BACKGROUND_BACK_DROP, 0F)
         }
+        val PLAYER_CURRENT_VISUALIZER  by lazy {
+            IntPref(preferences, Key.PLAYER_CURRENT_VISUALIZER , 0)
+        }
         //</editor-fold>
         //<editor-fold desc="Cache">
         val EXO_CACHE_LOCATION by lazy {
@@ -550,6 +566,9 @@ sealed class Preferences<K, V>(
         val AUDIO_MEDLEY_DURATION by lazy {
             FloatPref(preferences, Key.AUDIO_MEDLEY_DURATION, 0F)
         }
+        val AUDIO_REVERB_PRESET by lazy {
+            IntPref(preferences, Key.AUDIO_REVERB_PRESET, 0)
+        }
         //</editor-fold>
         //<editor-fold desc="YouTube">
         val YOUTUBE_LOGIN by lazy {
@@ -648,6 +667,9 @@ sealed class Preferences<K, V>(
         val PROXY_HOST by lazy {
             StringPref(preferences, Key.PROXY_HOST, "")
         }
+        val PROXY_PORT  by lazy {
+            IntPref(preferences, Key.PROXY_PORT , 1080)
+        }
         //</editor-fold>
         //<editor-fold desc="Custom light colors">
         val CUSTOM_LIGHT_THEME_BACKGROUND_0 by lazy {
@@ -722,6 +744,26 @@ sealed class Preferences<K, V>(
         }
         val RUNTIME_LOG_SEVERITY by lazy {
             EnumPref(preferences, Key.RUNTIME_LOG_SEVERITY, Severity.Info, Severity::entries)
+        }
+         val RUNTIME_LOG_LEVEL by lazy {
+            IntPref(preferences, Key.RUNTIME_LOG_LEVEL, 4)
+        }
+        val RUNTIME_LOG_FILE_COUNT by lazy {
+            IntPref(preferences, Key.RUNTIME_LOG_FILE_COUNT, 5)
+        }
+        //</editor-fold>
+        //<editor-fold desc="Thumbnail roundness">
+        val SONG_THUMBNAIL_ROUNDNESS_PERCENT by lazy {
+            IntPref(preferences, Key.SONG_THUMBNAIL_ROUNDNESS_PERCENT, 0)
+        }
+        val ALBUM_THUMBNAIL_ROUNDNESS_PERCENT by lazy {
+            IntPref(preferences, Key.ALBUM_THUMBNAIL_ROUNDNESS_PERCENT, 10)
+        }
+        val ARTIST_THUMBNAIL_ROUNDNESS_PERCENT by lazy {
+            IntPref(preferences, Key.ARTIST_THUMBNAIL_ROUNDNESS_PERCENT, 50)
+        }
+        val PLAYLIST_THUMBNAIL_ROUNDNESS_PERCENT by lazy {
+            IntPref(preferences, Key.PLAYLIST_THUMBNAIL_ROUNDNESS_PERCENT, 10)
         }
         //</editor-fold>
         //<editor-fold desc="Platform indicator">
@@ -982,6 +1024,15 @@ sealed class Preferences<K, V>(
         val SMART_REWIND by lazy {
             FloatPref(preferences, Key.SMART_REWIND, 3f)
         }
+        val SEARCH_RESULTS_TAB_INDEX by lazy {
+            IntPref(preferences, Key.SEARCH_RESULTS_TAB_INDEX, 0)
+        }
+        val HOME_TAB_INDEX by lazy {
+            IntPref(preferences, Key.HOME_TAB_INDEX, 0)
+        }
+        val ARTIST_SCREEN_TAB_INDEX  by lazy {
+            IntPref(preferences, Key.ARTIST_SCREEN_TAB_INDEX , 0)
+        }
     }
 
     private val _internalState = MutableStateFlow(defaultValue)
@@ -1106,12 +1157,27 @@ sealed class Preferences<K, V>(
         override fun serialize( value: Float ): Float = value
     }
 
+    class IntPref(
+        storage: Storage,
+        key: Preferences.Key,
+        defaultValue: Int
+    ) : Preferences<Int, Int>(storage, intPreferencesKey(key.value), defaultValue) {
+
+        override fun deserialize( key: Int ): Int = key
+
+        override fun serialize( value: Int ): Int = value
+    }
+
     class Key private constructor(val value: String) {
         companion object {
             //<editor-fold desc="Item size">
             val HOME_ARTIST_ITEM_SIZE = Key("home_artist_item_size")
             val HOME_ALBUM_ITEM_SIZE = Key("home_album_item_size")
             val HOME_LIBRARY_ITEM_SIZE = Key("home_library_item_size")
+            val SONG_THUMBNAIL_SIZE = Key("song_thumbnail_size")
+            val ALBUM_THUMBNAIL_SIZE = Key("album_thumbnail_size")
+            val ARTIST_THUMBNAIL_SIZE = Key("artist_thumbnail_size")
+            val PLAYLIST_THUMBNAIL_SIZE = Key("playlist_thumbnail_size")
             //</editor-fold>
             //<editor-fold desc="Sort by">
             val HOME_SONGS_SORT_BY = Key("home_songs_sort_by")
@@ -1220,6 +1286,7 @@ sealed class Preferences<K, V>(
             val PLAYER_THUMBNAIL_SPACING_LANDSCAPE = Key("player_thumbnail_spacing_landscape")
             val PLAYER_BACKGROUND_BLUR_STRENGTH = Key("player_background_blur_strength")
             val PLAYER_BACKGROUND_BACK_DROP = Key("player_background_back_drop")
+            val PLAYER_CURRENT_VISUALIZER = Key("player_current_visualizer")
             //</editor-fold>
             //<editor-fold desc="Cache">
             val EXO_CACHE_LOCATION = Key("exo_cache_location")
@@ -1270,6 +1337,7 @@ sealed class Preferences<K, V>(
             val AUDIO_VOLUME = Key("audio_volume")
             val AUDIO_DEVICE_VOLUME = Key("audio_device_volume")
             val AUDIO_MEDLEY_DURATION = Key("audio_medley_duration")
+            val AUDIO_REVERB_PRESET = Key("audio_reverb_preset")
             //</editor-fold>
             //<editor-fold desc="YouTube">
             val YOUTUBE_LOGIN = Key("youtube_login")
@@ -1308,6 +1376,7 @@ sealed class Preferences<K, V>(
             val IS_PROXY_ENABLED = Key("is_proxy_enabled")
             val PROXY_SCHEME = Key("proxy_scheme")
             val PROXY_HOST = Key("proxy_host")
+            val PROXY_PORT = Key("proxy_port")
             //</editor-fold>
             //<editor-fold desc="Custom light colors">
             val CUSTOM_LIGHT_THEME_BACKGROUND_0 = Key("custom_light_theme_background_0")
@@ -1337,6 +1406,14 @@ sealed class Preferences<K, V>(
             val RUNTIME_LOG = Key("runtime_log")
             val RUNTIME_LOG_SHARED = Key("runtime_log_shared")
             val RUNTIME_LOG_SEVERITY = Key("runtime_log_severity")
+            val RUNTIME_LOG_LEVEL = Key("runtime_log_level")
+            val RUNTIME_LOG_FILE_COUNT = Key("runtime_log_file_count")
+            //</editor-fold>
+            //<editor-fold desc="Thumbnail roundness">
+            val SONG_THUMBNAIL_ROUNDNESS_PERCENT = Key("song_thumbnail_roundness_percent")
+            val ALBUM_THUMBNAIL_ROUNDNESS_PERCENT = Key("album_thumbnail_roundness_percent")
+            val ARTIST_THUMBNAIL_ROUNDNESS_PERCENT = Key("artist_thumbnail_roundness_percent")
+            val PLAYLIST_THUMBNAIL_ROUNDNESS_PERCENT = Key("playlist_thumbnail_roundness_percent")
             //</editor-fold>
             //<editor-fold desc="Platform indicator">
             val ALBUMS_PLATFORM_INDICATOR = Key("albums_platform_indicator")
@@ -1428,6 +1505,9 @@ sealed class Preferences<K, V>(
             val MULTI_FLOATING_ICON_X_OFFSET = Key("multi_floating_icon_x_offset")
             val MULTI_FLOATING_ICON_Y_OFFSET = Key("multi_floating_icon_y_offset")
             val SMART_REWIND = Key("smart_rewind")
+            val SEARCH_RESULTS_TAB_INDEX = Key("search_results_tab_index")
+            val HOME_TAB_INDEX = Key("home_tab_index")
+            val ARTIST_SCREEN_TAB_INDEX = Key("artist_screen_tab_index")
         }
     }
 }

@@ -14,12 +14,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.EnumEntry
 import app.kreate.android.themed.common.component.settings.InputDialogEntry
+import app.kreate.android.themed.common.component.settings.ListEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.SliderEntry
@@ -67,7 +67,7 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
                 pluralStringResource(
                     R.plurals.second,
                     smartRewindInt.toInt(),
-                    smartRewindInt
+                    smartRewindInt.toInt()
                 )
             )
         )
@@ -265,8 +265,10 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
             )
     }
     entry( search, R.string.settings_audio_reverb ) {
+        val selected = app.kreate.preferences.Preferences.AUDIO_REVERB_PRESET.collectAsStateWithLifecycle()
         SettingComponents.ListEntry(
-            preference = Preferences.AUDIO_REVERB_PRESET,
+            entries = (0..6).toList().toTypedArray(),
+            selectedState = selected,
             title = stringResource( R.string.settings_audio_reverb ),
             subtitle = stringResource( R.string.settings_audio_reverb_info_apply_a_depth_effect_to_the_audio ),
             getName = {
@@ -281,8 +283,7 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
                     // Code should never reach this, if it does, something else is wrong
                     else -> throw IllegalStateException("Unknown reverb preset $it")
                 }
-            },
-            getList = { (0..6).toList().toTypedArray() }
+            }
         )
     }
     entry( search, R.string.settings_audio_focus ) {

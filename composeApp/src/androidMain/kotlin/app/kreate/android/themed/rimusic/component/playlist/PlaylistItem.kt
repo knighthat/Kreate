@@ -37,8 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastJoinToString
 import androidx.compose.ui.util.fastZip
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.drawable.AppIcon
 import app.kreate.android.themed.rimusic.component.MultiplatformItem
@@ -46,6 +46,7 @@ import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.ItemUtils
 import app.kreate.android.utils.scrollingText
 import app.kreate.database.models.Playlist
+import app.kreate.preferences.Preferences
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.NavRoutes
@@ -73,8 +74,8 @@ object PlaylistItem: Visual(), MultiplatformItem {
 
     val REGEX_PLAYLIST_ID = Regex("^(PL|UU|LL|RD|OL|VL)")
     val CORNERS = listOf( Alignment.TopStart, Alignment.TopEnd, Alignment.BottomStart, Alignment.BottomEnd )
-    override val platformIndicatorType = app.kreate.preferences.Preferences.PLAYLISTS_PLATFORM_INDICATOR
-    override val thumbnailRoundnessPercent: Preferences.Int = Preferences.PLAYLIST_THUMBNAIL_ROUNDNESS_PERCENT
+    override val platformIndicatorType = Preferences.PLAYLISTS_PLATFORM_INDICATOR
+    override val thumbnailRoundnessPercent = Preferences.PLAYLIST_THUMBNAIL_ROUNDNESS_PERCENT
 
     override fun thumbnailSize() = DpSize(Preferences.PLAYLIST_THUMBNAIL_SIZE.value.dp, Preferences.PLAYLIST_THUMBNAIL_SIZE.value.dp)
 
@@ -182,10 +183,11 @@ object PlaylistItem: Visual(), MultiplatformItem {
         showPlatformIcon: Boolean = true,
         useRandom: Boolean = true,
         thumbnailContent: @Composable BoxScope.() -> Unit = {}
-    ) =
+    ) {
+        val percent by thumbnailRoundnessPercent.collectAsStateWithLifecycle()
         Box(
-            modifier = modifier.requiredSize( sizeDp )
-                               .clip( thumbnailShape )
+            modifier.requiredSize( sizeDp )
+                    .clip( getShape(percent) )
         ) {
             BoxWithConstraints( Modifier.fillMaxSize() ) {
                 val indvModifier = remember( thumbnailUrls.size ) {
@@ -232,6 +234,7 @@ object PlaylistItem: Visual(), MultiplatformItem {
 
             thumbnailContent()
         }
+    }
 
     @ExperimentalCoroutinesApi
     @Composable

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Looper
-import android.util.Log
 import androidx.annotation.ColorRes
 import androidx.annotation.MainThread
 import androidx.compose.runtime.MutableState
@@ -62,25 +61,6 @@ sealed class Preferences<T>(
         val preferences: SharedPreferences by inject<SharedPreferences>(PrefType.DEFAULT)
         val encryptedPreferences: SharedPreferences by inject<SharedPreferences>(PrefType.CREDENTIALS)
 
-        //<editor-fold defaultstate="collapsed" desc="Item size">
-        val SONG_THUMBNAIL_SIZE by lazy {
-            Int(preferences, Key.SONG_THUMBNAIL_SIZE, "", 54)
-        }
-        val ALBUM_THUMBNAIL_SIZE by lazy {
-            Int(preferences, Key.ALBUM_THUMBNAIL_SIZE, "", 128)
-        }
-        val ARTIST_THUMBNAIL_SIZE by lazy {
-            Int(preferences, Key.ARTIST_THUMBNAIL_SIZE, "", 128)
-        }
-        val PLAYLIST_THUMBNAIL_SIZE by lazy {
-            Int(preferences, Key.PLAYLIST_THUMBNAIL_SIZE, "", 128)
-        }
-        //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Player">
-        val PLAYER_CURRENT_VISUALIZER  by lazy {
-            Int( preferences, Key.PLAYER_CURRENT_VISUALIZER , "currentVisualizerKey", 0 )
-        }
-        //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Cache">
         val IMAGE_CACHE_SIZE by lazy {
             Long(preferences, Key.IMAGE_CACHE_SIZE, "", kotlin.Long.MAX_VALUE)
@@ -92,53 +72,14 @@ sealed class Preferences<T>(
             Long(preferences, Key.EXO_DOWNLOAD_SIZE, "", kotlin.Long.MAX_VALUE)
         }
         //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Audio">
-        val AUDIO_REVERB_PRESET by lazy {
-            Int(preferences, Key.AUDIO_REVERB_PRESET, "audioReverbPreset", 0)
-        }
-        //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Proxy">
-        val PROXY_PORT  by lazy {
-            Int( preferences, Key.PROXY_PORT , "proxyPort", 1080 )
-        }
-        //</editor-fold>
         //<editor-fold desc="Logging">
-        val RUNTIME_LOG_LEVEL by lazy {
-            Int(preferences, Key.RUNTIME_LOG_LEVEL, "", Log.INFO)
-        }
-        val RUNTIME_LOG_FILE_COUNT by lazy {
-            Int(preferences, Key.RUNTIME_LOG_FILE_COUNT, "", 5)
-        }
         val RUNTIME_LOG_MAX_SIZE_PER_FILE by lazy {
             Long(preferences, "DebugLogMaxSizePerFile", "", 5L * 1024 * 1024)   // 5 Mb
-        }
-        //</editor-fold>
-        //<editor-fold desc="Thumbnail roundness">
-        val SONG_THUMBNAIL_ROUNDNESS_PERCENT by lazy {
-            Int(preferences, Key.SONG_THUMBNAIL_ROUNDNESS_PERCENT, "", 0)
-        }
-        val ALBUM_THUMBNAIL_ROUNDNESS_PERCENT by lazy {
-            Int(preferences, Key.ALBUM_THUMBNAIL_ROUNDNESS_PERCENT, "", 10)
-        }
-        val ARTIST_THUMBNAIL_ROUNDNESS_PERCENT by lazy {
-            Int(preferences, Key.ARTIST_THUMBNAIL_ROUNDNESS_PERCENT, "", 50)
-        }
-        val PLAYLIST_THUMBNAIL_ROUNDNESS_PERCENT by lazy {
-            Int(preferences, Key.PLAYLIST_THUMBNAIL_ROUNDNESS_PERCENT, "", 10)
         }
         //</editor-fold>
 
         val LIVE_WALLPAPER_RESET_DURATION by lazy {
             Long(preferences, Key.LIVE_WALLPAPER_RESET_DURATION, "", -1L)
-        }
-        val SEARCH_RESULTS_TAB_INDEX by lazy {
-            Int( preferences, Key.SEARCH_RESULTS_TAB_INDEX, "searchResultScreenTabIndex", 0 )
-        }
-        val HOME_TAB_INDEX by lazy {
-            Int( preferences, Key.HOME_TAB_INDEX, "homeScreenTabIndex", 0 )
-        }
-        val ARTIST_SCREEN_TAB_INDEX  by lazy {
-            Int( preferences, Key.ARTIST_SCREEN_TAB_INDEX , "artistScreenTabIndex", 0 )
         }
         val ACTIVE_PROFILE by lazy {
             String(profilePreferences, Key.ACTIVE_PROFILE, "", "default")

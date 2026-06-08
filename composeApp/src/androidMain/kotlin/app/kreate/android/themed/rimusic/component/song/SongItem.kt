@@ -45,7 +45,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Visual
@@ -53,6 +52,7 @@ import app.kreate.android.utils.innertube.toSong
 import app.kreate.android.utils.scrollingText
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
+import app.kreate.preferences.Preferences
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
@@ -92,7 +92,7 @@ object SongItem: Visual() {
     const val LIKE_ICON_SIZE = 12
 
     val itemShape: Shape by lazy { RoundedCornerShape(10.dp) }
-    override val thumbnailRoundnessPercent: Preferences.Int = Preferences.SONG_THUMBNAIL_ROUNDNESS_PERCENT
+    override val thumbnailRoundnessPercent = Preferences.SONG_THUMBNAIL_ROUNDNESS_PERCENT
 
     override fun thumbnailSize() = DpSize(Preferences.SONG_THUMBNAIL_SIZE.value.dp, Preferences.SONG_THUMBNAIL_SIZE.value.dp)
 

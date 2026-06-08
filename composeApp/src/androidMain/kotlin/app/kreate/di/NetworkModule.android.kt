@@ -1,7 +1,6 @@
 package app.kreate.di
 
 import app.kreate.android.BuildConfig
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.enums.DohServer
 import app.kreate.logging.OkHttpLogger
@@ -94,7 +93,7 @@ actual val networkModule: Module = module {
 
         val proxy = Proxy(
             app.kreate.preferences.Preferences.PROXY_SCHEME.value,
-            InetSocketAddress(app.kreate.preferences.Preferences.PROXY_HOST.value, Preferences.PROXY_PORT.value)
+            InetSocketAddress(app.kreate.preferences.Preferences.PROXY_HOST.value, app.kreate.preferences.Preferences.PROXY_PORT.value)
         )
         // Must verify to prevent network failure
         runBlocking( Dispatchers.IO ) { proxy.takeIf( ::verifyProxy ) ?: Proxy.NO_PROXY }

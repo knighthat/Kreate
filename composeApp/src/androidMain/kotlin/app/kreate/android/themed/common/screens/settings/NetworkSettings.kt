@@ -19,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.enums.DohServer
 import app.kreate.android.themed.common.component.settings.BooleanEntry
@@ -110,8 +109,8 @@ fun NetworkSettings( paddingValues: PaddingValues ) {
 
                     if( search appearsIn R.string.proxy_port )
                         SettingComponents.InputDialogEntry(
-                            preference = Preferences.PROXY_PORT,
-                            titleId = R.string.proxy_port,
+                            preference = app.kreate.preferences.Preferences.PROXY_PORT,
+                            title = stringResource( R.string.proxy_port ),
                             constraint = InputDialogConstraints.POSITIVE_INTEGER,
                             keyboardOption = KeyboardOptions(keyboardType = KeyboardType.Number)
                         )

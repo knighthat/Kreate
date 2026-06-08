@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,8 +15,9 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.DpSize
-import app.kreate.android.Preferences
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.preferences.Preferences
 
 abstract class Visual {
 
@@ -30,11 +30,7 @@ abstract class Visual {
             }
     }
 
-    protected abstract val thumbnailRoundnessPercent: Preferences.Int
-
-    val thumbnailShape: Shape by derivedStateOf {
-        getShape( thumbnailRoundnessPercent.value )
-    }
+    protected abstract val thumbnailRoundnessPercent: Preferences.IntPref
 
     abstract fun thumbnailSize(): DpSize
 
@@ -52,11 +48,13 @@ abstract class Visual {
             contentAlignment = contentAlignment,
             modifier = modifier.requiredSize( sizeDp )
         ) {
+            val percent by thumbnailRoundnessPercent.collectAsStateWithLifecycle()
+
             if( showThumbnail )
                 ImageFactory.AsyncImage(
                     thumbnailUrl = url,
                     contentScale = contentScale,
-                    modifier = Modifier.clip( thumbnailShape )
+                    modifier = Modifier.clip( getShape(percent) )
                                        .fillMaxSize()
                 )
 

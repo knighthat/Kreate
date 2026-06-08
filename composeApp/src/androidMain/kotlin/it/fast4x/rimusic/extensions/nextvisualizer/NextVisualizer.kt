@@ -37,7 +37,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.drawable.AppIcon
@@ -74,6 +73,7 @@ import it.fast4x.rimusic.utils.hasPermission
 import it.fast4x.rimusic.utils.isCompositionLaunched
 import it.fast4x.rimusic.utils.resize
 import it.fast4x.rimusic.utils.semiBold
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
@@ -148,8 +148,9 @@ fun NextVisualizer( player: StatefulPlayer = koinInject() ) {
             val helper = VisualizerHelper(player.audioSessionId ?: 0)
 
             val visualizersList = getVisualizers()
-            var currentVisualizer by Preferences.PLAYER_CURRENT_VISUALIZER
-            if (currentVisualizer < 0) currentVisualizer = 0
+            val currentVisualizer by app.kreate.preferences.Preferences.PLAYER_CURRENT_VISUALIZER.collectAsStateWithLifecycle()
+            if (currentVisualizer < 0)
+                app.kreate.preferences.Preferences.PLAYER_CURRENT_VISUALIZER.update { 0 }
 
             Box(
                 modifier = Modifier.fillMaxSize()
@@ -200,8 +201,14 @@ fun NextVisualizer( player: StatefulPlayer = koinInject() ) {
                     ) {
                         IconButton(
                             onClick = {
-                                if (currentVisualizer <= visualizersList.lastIndex) currentVisualizer--
-                                if (currentVisualizer < 0) currentVisualizer = visualizersList.lastIndex
+                                if (currentVisualizer <= visualizersList.lastIndex)
+                                    app.kreate.preferences.Preferences.PLAYER_CURRENT_VISUALIZER.update {
+                                        it.dec()
+                                    }
+                                if (currentVisualizer < 0)
+                                    app.kreate.preferences.Preferences.PLAYER_CURRENT_VISUALIZER.update {
+                                        visualizersList.lastIndex
+                                    }
                             },
                             icon = R.drawable.arrow_left,
                             color = colorPalette().text,
@@ -215,7 +222,14 @@ fun NextVisualizer( player: StatefulPlayer = koinInject() ) {
                         )
                         
                         IconButton(
-                            onClick = { if (currentVisualizer < visualizersList.lastIndex) currentVisualizer++ else currentVisualizer = 0 },
+                            onClick = {
+                                app.kreate.preferences.Preferences.PLAYER_CURRENT_VISUALIZER.update {
+                                    if (currentVisualizer < visualizersList.lastIndex)
+                                        it.inc()
+                                    else
+                                        0
+                                }
+                            },
                             icon = R.drawable.arrow_right,
                             color = colorPalette().text,
                             modifier = Modifier

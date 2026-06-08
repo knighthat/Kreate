@@ -10,7 +10,6 @@ import android.media.audiofx.LoudnessEnhancer
 import android.media.audiofx.PresetReverb
 import androidx.annotation.MainThread
 import androidx.annotation.OptIn
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import androidx.core.animation.doOnEnd
@@ -29,7 +28,6 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.offline.Download
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.PlayerEventUpdateDiscord
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
@@ -37,6 +35,7 @@ import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
 import app.kreate.di.PrefType
+import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.models.NavigationEndpoint
@@ -125,13 +124,13 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
         val preferences: SharedPreferences by inject(PrefType.DEFAULT)
         preferences.registerOnSharedPreferenceChangeListener( this )
 
-        skipSilenceEnabled = app.kreate.preferences.Preferences.AUDIO_SKIP_SILENCE.value
-        repeatMode = app.kreate.preferences.Preferences.QUEUE_LOOP_TYPE.value.type
-        volume = app.kreate.preferences.Preferences.AUDIO_VOLUME.value
+        skipSilenceEnabled = Preferences.AUDIO_SKIP_SILENCE.value
+        repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
+        volume = Preferences.AUDIO_VOLUME.value
         setGlobalVolume( player.volume )
         playbackParameters = PlaybackParameters(
-            app.kreate.preferences.Preferences.AUDIO_SPEED_VALUE.value,
-            app.kreate.preferences.Preferences.AUDIO_PITCH.value
+            Preferences.AUDIO_SPEED_VALUE.value,
+            Preferences.AUDIO_PITCH.value
         )
 
         loadPersistentQueue()
@@ -216,7 +215,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
     }
 
     private fun loadPersistentQueue() {
-        if ( app.kreate.preferences.Preferences.ENABLE_PERSISTENT_QUEUE.value )
+        if ( Preferences.ENABLE_PERSISTENT_QUEUE.value )
             logger.d { "Persistent queue enabled! Loading from database..." }
         else
             return
@@ -411,7 +410,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
             onIsPlayingChanged( true )
         }
 
-        val duration = app.kreate.preferences.Preferences.AUDIO_FADE_DURATION.value.asMillis
+        val duration = Preferences.AUDIO_FADE_DURATION.value.asMillis
         if( duration == 0L ) {
             action()
             return
@@ -429,7 +428,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
     }
 
     override fun pause() {
-        val duration = app.kreate.preferences.Preferences.AUDIO_FADE_DURATION.value.asMillis
+        val duration = Preferences.AUDIO_FADE_DURATION.value.asMillis
         if( duration == 0L ) {
             player.pause()
             return
@@ -512,7 +511,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
                                                    .findBySongId( mediaId )
                                                    .mapNotNull { it?.loudnessDb }
                                                    .first()
-                val targetLoudness = app.kreate.preferences.Preferences.AUDIO_VOLUME_NORMALIZATION_TARGET.value
+                val targetLoudness = Preferences.AUDIO_VOLUME_NORMALIZATION_TARGET.value
                 val targetGain = (targetLoudness - mediaLoudness) * 100f
                 loudnessEnhancer.setTargetGain( targetGain.toInt() )
 
@@ -534,7 +533,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
             bassBoostJob?.cancel()
 
             bassBoostJob = coroutineScope.launch {
-                val setting = app.kreate.preferences.Preferences.AUDIO_BASS_BOOST_LEVEL.value
+                val setting = Preferences.AUDIO_BASS_BOOST_LEVEL.value
                 val target = (setting * 1000f).coerceIn( 0f, 1000f ).toInt().toShort()
                 bassBoost.setStrength( target )
 
@@ -556,7 +555,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
             reverbJob?.cancel()
 
             reverbJob = coroutineScope.launch {
-                val preset by Preferences.AUDIO_REVERB_PRESET
+                val preset = Preferences.AUDIO_REVERB_PRESET.value
                 reverb.preset = preset.toShort()
 
                 logger.d { "Reverb set to $preset" }
@@ -593,7 +592,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
                 loudnessEnhancer.release()
 
             loudnessEnhancer = LoudnessEnhancer(audioSessionId)
-            loudnessEnhancer.enabled = app.kreate.preferences.Preferences.AUDIO_VOLUME_NORMALIZATION.value
+            loudnessEnhancer.enabled = Preferences.AUDIO_VOLUME_NORMALIZATION.value
 
             normalizeLoudness()
         } catch( err: Exception ) {
@@ -606,7 +605,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
                 bassBoost.release()
 
             bassBoost = BassBoost(0, audioSessionId)
-            bassBoost.enabled = app.kreate.preferences.Preferences.AUDIO_BASS_BOOSTED.value
+            bassBoost.enabled = Preferences.AUDIO_BASS_BOOSTED.value
 
             boostLowFrequencies()
         } catch( err: Exception ) {
@@ -636,24 +635,24 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
      */
 
     override fun onSharedPreferenceChanged( pref: SharedPreferences, key: String? ) {
-        when( key ) {
-            Preferences.Key.AUDIO_VOLUME_NORMALIZATION -> {
-                if( ::loudnessEnhancer.isInitialized )
-                    loudnessEnhancer.enabled = pref.getBoolean(key, false)
-                normalizeLoudness()
-            }
-            Preferences.Key.AUDIO_VOLUME_NORMALIZATION_TARGET -> normalizeLoudness()
-
-            Preferences.Key.AUDIO_SKIP_SILENCE ->  skipSilenceEnabled = pref.getBoolean( key, false )
-
-            Preferences.Key.AUDIO_BASS_BOOSTED -> {
-                if( ::bassBoost.isInitialized )
-                    bassBoost.enabled = pref.getBoolean(key, false)
-                boostLowFrequencies()
-            }
-            Preferences.Key.AUDIO_BASS_BOOST_LEVEL -> boostLowFrequencies()
-
-            Preferences.Key.AUDIO_REVERB_PRESET -> updateReverb()
-        }
+//        when( key ) {
+//            Preferences.Key.AUDIO_VOLUME_NORMALIZATION -> {
+//                if( ::loudnessEnhancer.isInitialized )
+//                    loudnessEnhancer.enabled = pref.getBoolean(key, false)
+//                normalizeLoudness()
+//            }
+//            Preferences.Key.AUDIO_VOLUME_NORMALIZATION_TARGET -> normalizeLoudness()
+//
+//            Preferences.Key.AUDIO_SKIP_SILENCE ->  skipSilenceEnabled = pref.getBoolean( key, false )
+//
+//            Preferences.Key.AUDIO_BASS_BOOSTED -> {
+//                if( ::bassBoost.isInitialized )
+//                    bassBoost.enabled = pref.getBoolean(key, false)
+//                boostLowFrequencies()
+//            }
+//            Preferences.Key.AUDIO_BASS_BOOST_LEVEL -> boostLowFrequencies()
+//
+//            Preferences.Key.AUDIO_REVERB_PRESET -> updateReverb()
+//        }
     }
 }
