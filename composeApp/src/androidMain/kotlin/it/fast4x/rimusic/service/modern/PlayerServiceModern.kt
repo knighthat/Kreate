@@ -38,7 +38,6 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.StatefulPlayer
@@ -49,7 +48,7 @@ import app.kreate.android.utils.isLocalFile
 import app.kreate.android.widget.Widget
 import app.kreate.database.models.Event
 import app.kreate.di.CacheType
-import app.kreate.preferences.QUEUE_LOOP_TYPE
+import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
 import com.google.common.util.concurrent.MoreExecutors
 import io.ktor.client.HttpClient
@@ -64,7 +63,6 @@ import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.utils.AppLifecycleTracker
 import it.fast4x.rimusic.utils.CoilBitmapLoader
 import it.fast4x.rimusic.utils.collect
-import it.fast4x.rimusic.utils.getEnum
 import it.fast4x.rimusic.utils.intent
 import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isAtLeastAndroid7
@@ -149,6 +147,8 @@ class PlayerServiceModern:
     private var wallpaperRevertJob: Job? = null
     private var wallpaper_cleared: Boolean = false
 
+    private fun isLoggedInToDiscord(): Boolean =
+        Preferences.DISCORD_LOGIN.value && Preferences.DISCORD_ACCESS_TOKEN.value.isNotBlank()
 
     private fun onMediaItemTransition( mediaItem: MediaItem? ) {
         listener.updateMediaControl( this, player )
@@ -158,7 +158,7 @@ class PlayerServiceModern:
             updateDownloadedState()
             updateWidgets()
 
-            if( !Preferences.isLoggedInToDiscord() )
+            if( !isLoggedInToDiscord() )
                 return
 
 //            val startTime = System.currentTimeMillis() - player.currentPosition
@@ -316,7 +316,7 @@ class PlayerServiceModern:
 
         /* Queue is saved in events without scheduling it (remove this in future)*/
         // Load persistent queue when start activity and save periodically in background
-        if ( app.kreate.preferences.Preferences.ENABLE_PERSISTENT_QUEUE.value ) {
+        if ( Preferences.ENABLE_PERSISTENT_QUEUE.value ) {
             maybeResumePlaybackOnStart()
 
             val scheduler = Executors.newScheduledThreadPool(1)
@@ -327,8 +327,8 @@ class PlayerServiceModern:
 
         }
 
-        if( Preferences.isLoggedInToDiscord() ) {
-            val token = app.kreate.preferences.Preferences.DISCORD_ACCESS_TOKEN.value
+        if( isLoggedInToDiscord() ) {
+            val token = Preferences.DISCORD_ACCESS_TOKEN.value
             discord.login( token )
         }
     }
@@ -453,16 +453,16 @@ class PlayerServiceModern:
 
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
-        when (key) {
-
-            Preferences.Key.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE -> maybeResumePlaybackWhenDeviceConnected()
-
-            Preferences.Key.AUDIO_SKIP_SILENCE ->
-                player.skipSilenceEnabled = sharedPreferences.getBoolean( key, app.kreate.preferences.Preferences.AUDIO_SKIP_SILENCE.defaultValue )
-
-            Preferences.Key.QUEUE_LOOP_TYPE ->
-                player.repeatMode = sharedPreferences.getEnum( key, app.kreate.preferences.Preferences.QUEUE_LOOP_TYPE.defaultValue ).type
-        }
+//        when (key) {
+//
+//            Preferences.Key.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE -> maybeResumePlaybackWhenDeviceConnected()
+//
+//            Preferences.Key.AUDIO_SKIP_SILENCE ->
+//                player.skipSilenceEnabled = sharedPreferences.getBoolean( key, app.kreate.preferences.Preferences.AUDIO_SKIP_SILENCE.defaultValue )
+//
+//            Preferences.Key.QUEUE_LOOP_TYPE ->
+//                player.repeatMode = sharedPreferences.getEnum( key, app.kreate.preferences.Preferences.QUEUE_LOOP_TYPE.defaultValue ).type
+//        }
     }
 
     private var audioManager: AudioManager? = null

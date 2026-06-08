@@ -28,16 +28,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.EnumEntry
 import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
+import app.kreate.android.themed.common.component.settings.SliderEntry
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.android.themed.common.screens.settings.player.playerActionBarSection
 import app.kreate.android.themed.common.screens.settings.player.playerAppearanceSection
 import app.kreate.android.themed.common.screens.settings.player.playerFullscreenLyrics
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.WallpaperType
@@ -72,11 +73,11 @@ fun AppearanceSettings(paddingValues: PaddingValues) {
     ) {
         search.ToolBarButton()
 
-        val showThumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
-        val lyricsShowThumbnail by app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
-        val playerBackgroundColors by app.kreate.preferences.Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
-        val playerInfoType by app.kreate.preferences.Preferences.PLAYER_INFO_TYPE.collectAsStateWithLifecycle()
-        val playerType by app.kreate.preferences.Preferences.PLAYER_TYPE.collectAsStateWithLifecycle()
+        val showThumbnail by Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+        val lyricsShowThumbnail by Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+        val playerBackgroundColors by Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
+        val playerInfoType by Preferences.PLAYER_INFO_TYPE.collectAsStateWithLifecycle()
+        val playerType by Preferences.PLAYER_TYPE.collectAsStateWithLifecycle()
 
         LazyColumn(
             state = scrollState,
@@ -90,14 +91,14 @@ fun AppearanceSettings(paddingValues: PaddingValues) {
             header( R.string.notification_player )
             entry( search, R.string.notificationPlayerFirstIcon ) {
                 SettingComponents.EnumEntry(
-                    preference = app.kreate.preferences.Preferences.MEDIA_NOTIFICATION_FIRST_ICON,
+                    preference = Preferences.MEDIA_NOTIFICATION_FIRST_ICON,
                     title = stringResource( R.string.notificationPlayerFirstIcon ),
                     action = SettingComponents.Action.RESTART_PLAYER_SERVICE
                 )
             }
             entry( search, R.string.notificationPlayerSecondIcon ) {
                 SettingComponents.EnumEntry(
-                    preference = app.kreate.preferences.Preferences.MEDIA_NOTIFICATION_SECOND_ICON,
+                    preference = Preferences.MEDIA_NOTIFICATION_SECOND_ICON,
                     title = stringResource( R.string.notificationPlayerSecondIcon ),
                     action = SettingComponents.Action.RESTART_PLAYER_SERVICE
                 )
@@ -107,7 +108,7 @@ fun AppearanceSettings(paddingValues: PaddingValues) {
 
             entry( search, R.string.setting_entry_live_wallpaper ) {
                 SettingComponents.EnumEntry(
-                    preference = app.kreate.preferences.Preferences.LIVE_WALLPAPER,
+                    preference = Preferences.LIVE_WALLPAPER,
                     title = stringResource( R.string.setting_entry_live_wallpaper ),
                     subtitle = stringResource( R.string.setting_description_live_wallpaper ),
                     action = SettingComponents.Action.RESTART_PLAYER_SERVICE

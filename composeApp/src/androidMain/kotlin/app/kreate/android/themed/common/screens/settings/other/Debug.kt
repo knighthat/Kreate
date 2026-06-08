@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.BuildConfig
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.android.themed.common.component.settings.BooleanEntry
@@ -38,6 +37,7 @@ import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.android.themed.common.screens.settings.StorageSizeEntry
+import app.kreate.preferences.Preferences
 import app.kreate.util.getRuntimeLogDir
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.colorPalette
@@ -175,7 +175,7 @@ fun LazyListScope.debugSection(search: SettingEntrySearch ) {
                 }
 
                 if( search appearsIn R.string.settings_entry_runtime_log_max_size_per_file ) {
-                    val maxSizePerFile by Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE
+                    val maxSizePerFile by Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE.collectAsStateWithLifecycle()
                     val sizeString by remember { derivedStateOf {
                         Formatter.formatShortFileSize(context, maxSizePerFile)
                     } }
