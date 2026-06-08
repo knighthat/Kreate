@@ -5,7 +5,6 @@ import androidx.compose.ui.util.fastZip
 import androidx.media3.common.MediaItem
 import androidx.room.Transaction
 import androidx.room.useWriterConnection
-import app.kreate.android.Preferences
 import app.kreate.database.AlbumTable
 import app.kreate.database.AppDatabase
 import app.kreate.database.ArtistTable
@@ -24,6 +23,7 @@ import app.kreate.database.models.Artist
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongArtistMap
+import app.kreate.di.getActiveProfile
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database.asyncQuery
 import it.fast4x.rimusic.Database.asyncTransaction
@@ -36,7 +36,14 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 object Database : KoinComponent {
-    val FILE_NAME = if ( Preferences.ACTIVE_PROFILE.value == "default" ) "data.db" else "data_${Preferences.ACTIVE_PROFILE.value}.db"
+    val FILE_NAME: String
+        get() {
+            val profile = getActiveProfile()
+            return if ( profile == "default" )
+                "data.db"
+            else
+                "data_$profile.db"
+        }
 
     private val _internal by inject<AppDatabase>()
 

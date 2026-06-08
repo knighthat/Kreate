@@ -34,7 +34,6 @@ import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
-import app.kreate.di.PrefType
 import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
 import co.touchlab.kermit.Logger
@@ -121,8 +120,8 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
         this.addListener( this )
         this.addListener( PlayerEventUpdateDiscord() )
 
-        val preferences: SharedPreferences by inject(PrefType.DEFAULT)
-        preferences.registerOnSharedPreferenceChangeListener( this )
+//        val preferences: SharedPreferences by inject(PrefType.DEFAULT)
+//        preferences.registerOnSharedPreferenceChangeListener( this )
 
         skipSilenceEnabled = Preferences.AUDIO_SKIP_SILENCE.value
         repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
@@ -486,8 +485,8 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
 
         player.release()
 
-        val preferences: SharedPreferences by inject(PrefType.DEFAULT)
-        preferences.registerOnSharedPreferenceChangeListener( this )
+//        val preferences: SharedPreferences by inject(PrefType.DEFAULT)
+//        preferences.registerOnSharedPreferenceChangeListener( this )
     }
 
     /*

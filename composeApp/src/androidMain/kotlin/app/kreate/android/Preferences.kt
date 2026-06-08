@@ -61,9 +61,7 @@ sealed class Preferences<T>(
         val preferences: SharedPreferences by inject<SharedPreferences>(PrefType.DEFAULT)
         val encryptedPreferences: SharedPreferences by inject<SharedPreferences>(PrefType.CREDENTIALS)
 
-        val ACTIVE_PROFILE by lazy {
-            String(profilePreferences, Key.ACTIVE_PROFILE, "", "default")
-        }
+
 
         /**
          * Finalize all changes and write it to disk.
