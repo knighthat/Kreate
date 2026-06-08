@@ -45,7 +45,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import app.kreate.android.BuildConfig
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.android.themed.common.component.dialog.Dialog
@@ -122,7 +121,7 @@ fun AppNavigation(
     UpdateHandler()
 
     val startDestination = remember( startPage ) {
-        Preferences.HOME_TAB_INDEX.value =
+        app.kreate.preferences.Preferences.HOME_TAB_INDEX.value =
             if( startPage == HomeScreenTabs.Search ) app.kreate.preferences.Preferences.STARTUP_SCREEN.value.index else startPage.index
 
         return@remember if( startPage == HomeScreenTabs.Search )

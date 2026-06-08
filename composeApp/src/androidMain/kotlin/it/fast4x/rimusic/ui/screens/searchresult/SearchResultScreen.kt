@@ -28,7 +28,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
@@ -71,6 +70,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
@@ -96,7 +96,10 @@ fun SearchResultScreen(
     val (colorPalette, typography) = LocalAppearance.current
     val menu = LocalBottomMenu.current
     val saveableStateHolder = rememberSaveableStateHolder()
-    val (tabIndex, onTabIndexChanges) = Preferences.SEARCH_RESULTS_TAB_INDEX
+    val tabIndex by app.kreate.preferences.Preferences.SEARCH_RESULTS_TAB_INDEX.collectAsStateWithLifecycle()
+    val onTabIndexChanges: (Int) -> Unit = { index ->
+        app.kreate.preferences.Preferences.SEARCH_RESULTS_TAB_INDEX.update { index }
+    }
 
     val hapticFeedback = LocalHapticFeedback.current
 

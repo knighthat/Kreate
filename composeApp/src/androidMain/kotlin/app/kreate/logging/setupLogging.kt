@@ -16,7 +16,7 @@ import kotlinx.io.files.SystemFileSystem
 fun setupLogging( vararg bufferedLoggers: BufferedLogger ) {
     val dir = Path( getRuntimeLogDir().toFile().absolutePath )
     val maxSize = Preferences.RUNTIME_LOG_MAX_SIZE_PER_FILE.value
-    val numFiles = Preferences.RUNTIME_LOG_FILE_COUNT.value
+    val numFiles = app.kreate.preferences.Preferences.RUNTIME_LOG_FILE_COUNT.value
     val severity = app.kreate.preferences.Preferences.RUNTIME_LOG_SEVERITY.value
 
     val config = RollingFileLogWriterConfig(

@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.themed.rimusic.component.MultiplatformItem
 import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
@@ -27,6 +26,7 @@ import app.kreate.android.utils.ItemUtils
 import app.kreate.android.utils.innertube.toArtist
 import app.kreate.android.utils.scrollingText
 import app.kreate.database.models.Artist
+import app.kreate.preferences.Preferences
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.ui.styling.Appearance
@@ -43,8 +43,8 @@ object ArtistItem: Visual(), MultiplatformItem {
     const val ROW_SPACING = AlbumItem.VERTICAL_SPACING * 4
     const val COLUMN_SPACING = 10
 
-    override val platformIndicatorType = app.kreate.preferences.Preferences.ARTISTS_PLATFORM_INDICATOR
-    override val thumbnailRoundnessPercent: Preferences.Int = Preferences.ARTIST_THUMBNAIL_ROUNDNESS_PERCENT
+    override val platformIndicatorType = Preferences.ARTISTS_PLATFORM_INDICATOR
+    override val thumbnailRoundnessPercent = Preferences.ARTIST_THUMBNAIL_ROUNDNESS_PERCENT
 
     override fun thumbnailSize() = DpSize(Preferences.ARTIST_THUMBNAIL_SIZE.value.dp, Preferences.ARTIST_THUMBNAIL_SIZE.value.dp)
 

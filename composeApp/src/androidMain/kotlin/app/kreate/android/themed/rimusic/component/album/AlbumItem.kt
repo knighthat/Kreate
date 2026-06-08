@@ -25,13 +25,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.themed.rimusic.component.MultiplatformItem
 import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.ItemUtils
 import app.kreate.android.utils.innertube.toAlbum
 import app.kreate.android.utils.scrollingText
 import app.kreate.database.models.Album
+import app.kreate.preferences.Preferences
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.ui.styling.Appearance
@@ -51,8 +51,8 @@ object AlbumItem: Visual(), MultiplatformItem {
 
     const val MENU_THUMBNAIL_SIZE = 74
 
-    override val platformIndicatorType = app.kreate.preferences.Preferences.ALBUMS_PLATFORM_INDICATOR
-    override val thumbnailRoundnessPercent: Preferences.Int = Preferences.ALBUM_THUMBNAIL_ROUNDNESS_PERCENT
+    override val platformIndicatorType = Preferences.ALBUMS_PLATFORM_INDICATOR
+    override val thumbnailRoundnessPercent = Preferences.ALBUM_THUMBNAIL_ROUNDNESS_PERCENT
 
     override fun thumbnailSize() = DpSize(Preferences.ALBUM_THUMBNAIL_SIZE.value.dp, Preferences.ALBUM_THUMBNAIL_SIZE.value.dp)
 

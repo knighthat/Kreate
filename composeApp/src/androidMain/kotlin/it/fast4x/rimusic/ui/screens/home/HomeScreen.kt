@@ -4,19 +4,21 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.rimusic.screen.home.HomeSongsScreen
 import it.fast4x.compose.persist.PersistMapCleanup
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.models.toUiMood
 import it.fast4x.rimusic.ui.components.Skeleton
+import kotlinx.coroutines.flow.update
 
 
 @ExperimentalMaterial3Api
@@ -35,7 +37,10 @@ fun HomeScreen(
 
     PersistMapCleanup("home/")
 
-    val (tabIndex, onTabChanged) = Preferences.HOME_TAB_INDEX
+    val tabIndex by app.kreate.preferences.Preferences.HOME_TAB_INDEX.collectAsStateWithLifecycle()
+    val onTabChanged: (Int) -> Unit = { index ->
+        app.kreate.preferences.Preferences.HOME_TAB_INDEX.update { index }
+    }
 
     Skeleton(
         navController,
