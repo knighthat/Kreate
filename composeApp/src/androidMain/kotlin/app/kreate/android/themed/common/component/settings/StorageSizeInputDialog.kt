@@ -37,8 +37,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
-import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.isAtLeastAndroid8
 import me.knighthat.component.dialog.Dialog
@@ -51,7 +51,7 @@ class StorageSizeInputDialog(
     constraint: String,
     currentValue: Long,
     private val context: Context,
-    private val preference: Preferences.Long,
+    private val preference: Preferences.LongPref,
     private val title: String,
     private val onConfirm: () -> Unit
 ) : TextInputDialog(constraint) {

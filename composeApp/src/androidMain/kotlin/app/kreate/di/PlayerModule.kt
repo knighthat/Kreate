@@ -18,13 +18,13 @@ import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import app.kreate.android.Preferences
 import app.kreate.android.service.DownloadHelper
 import app.kreate.android.service.player.ErrorHandlingPolicy
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.player.StatefulPlayerImpl
 import app.kreate.android.service.player.VolumeObserver
 import app.kreate.android.utils.isLocalFile
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.enums.ExoPlayerCacheLocation
 import me.knighthat.impl.DownloadHelperImpl
 import me.knighthat.innertube.UserAgents

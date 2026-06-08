@@ -441,6 +441,15 @@ sealed class Preferences<K, V>(
         val EXO_CACHE_LOCATION by lazy {
             EnumPref(preferences, Key.EXO_CACHE_LOCATION, ExoPlayerCacheLocation.SPLIT, ExoPlayerCacheLocation::entries)
         }
+        val IMAGE_CACHE_SIZE by lazy {
+            LongPref(preferences, Key.IMAGE_CACHE_SIZE, Long.MAX_VALUE)
+        }
+        val EXO_CACHE_SIZE by lazy {
+            LongPref(preferences, Key.EXO_CACHE_SIZE, Long.MAX_VALUE)
+        }
+        val EXO_DOWNLOAD_SIZE by lazy {
+            LongPref(preferences, Key.EXO_DOWNLOAD_SIZE, Long.MAX_VALUE)
+        }
         //</editor-fold>
         //<editor-fold desc="Notification">
         val MEDIA_NOTIFICATION_FIRST_ICON by lazy {
@@ -751,6 +760,9 @@ sealed class Preferences<K, V>(
         val RUNTIME_LOG_FILE_COUNT by lazy {
             IntPref(preferences, Key.RUNTIME_LOG_FILE_COUNT, 5)
         }
+        val RUNTIME_LOG_MAX_SIZE_PER_FILE by lazy {
+            LongPref(preferences, Key.RUNTIME_LOG_MAX_SIZE_PER_FILE, 5L * 1024 * 1024)   // 5 Mb
+        }
         //</editor-fold>
         //<editor-fold desc="Thumbnail roundness">
         val SONG_THUMBNAIL_ROUNDNESS_PERCENT by lazy {
@@ -1033,6 +1045,9 @@ sealed class Preferences<K, V>(
         val ARTIST_SCREEN_TAB_INDEX  by lazy {
             IntPref(preferences, Key.ARTIST_SCREEN_TAB_INDEX , 0)
         }
+        val LIVE_WALLPAPER_RESET_DURATION by lazy {
+            LongPref(preferences, Key.LIVE_WALLPAPER_RESET_DURATION, -1L)
+        }
     }
 
     private val _internalState = MutableStateFlow(defaultValue)
@@ -1168,6 +1183,17 @@ sealed class Preferences<K, V>(
         override fun serialize( value: Int ): Int = value
     }
 
+    class LongPref(
+        storage: Storage,
+        key: Preferences.Key,
+        defaultValue: Long
+    ) : Preferences<Long, Long>(storage, longPreferencesKey(key.value), defaultValue) {
+
+        override fun deserialize( key: Long ): Long = key
+
+        override fun serialize( value: Long ): Long = value
+    }
+
     class Key private constructor(val value: String) {
         companion object {
             //<editor-fold desc="Item size">
@@ -1290,6 +1316,9 @@ sealed class Preferences<K, V>(
             //</editor-fold>
             //<editor-fold desc="Cache">
             val EXO_CACHE_LOCATION = Key("exo_cache_location")
+            val IMAGE_CACHE_SIZE = Key("image_cache_size")
+            val EXO_CACHE_SIZE = Key("exo_cache_size")
+            val EXO_DOWNLOAD_SIZE = Key("exo_download_size")
             //</editor-fold>
             //<editor-fold desc="Notification">
             val MEDIA_NOTIFICATION_FIRST_ICON = Key("media_notification_first_icon")
@@ -1408,6 +1437,7 @@ sealed class Preferences<K, V>(
             val RUNTIME_LOG_SEVERITY = Key("runtime_log_severity")
             val RUNTIME_LOG_LEVEL = Key("runtime_log_level")
             val RUNTIME_LOG_FILE_COUNT = Key("runtime_log_file_count")
+            val RUNTIME_LOG_MAX_SIZE_PER_FILE = Key("runtime_log_max_size_per_file")
             //</editor-fold>
             //<editor-fold desc="Thumbnail roundness">
             val SONG_THUMBNAIL_ROUNDNESS_PERCENT = Key("song_thumbnail_roundness_percent")
@@ -1508,6 +1538,7 @@ sealed class Preferences<K, V>(
             val SEARCH_RESULTS_TAB_INDEX = Key("search_results_tab_index")
             val HOME_TAB_INDEX = Key("home_tab_index")
             val ARTIST_SCREEN_TAB_INDEX = Key("artist_screen_tab_index")
+            val LIVE_WALLPAPER_RESET_DURATION = Key("live_wallpaper_reset_duration")
         }
     }
 }

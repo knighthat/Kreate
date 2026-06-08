@@ -61,32 +61,9 @@ sealed class Preferences<T>(
         val preferences: SharedPreferences by inject<SharedPreferences>(PrefType.DEFAULT)
         val encryptedPreferences: SharedPreferences by inject<SharedPreferences>(PrefType.CREDENTIALS)
 
-        //<editor-fold defaultstate="collapsed" desc="Cache">
-        val IMAGE_CACHE_SIZE by lazy {
-            Long(preferences, Key.IMAGE_CACHE_SIZE, "", kotlin.Long.MAX_VALUE)
-        }
-        val EXO_CACHE_SIZE by lazy {
-            Long(preferences, Key.EXO_CACHE_SIZE, "", kotlin.Long.MAX_VALUE)
-        }
-        val EXO_DOWNLOAD_SIZE by lazy {
-            Long(preferences, Key.EXO_DOWNLOAD_SIZE, "", kotlin.Long.MAX_VALUE)
-        }
-        //</editor-fold>
-        //<editor-fold desc="Logging">
-        val RUNTIME_LOG_MAX_SIZE_PER_FILE by lazy {
-            Long(preferences, "DebugLogMaxSizePerFile", "", 5L * 1024 * 1024)   // 5 Mb
-        }
-        //</editor-fold>
-
-        val LIVE_WALLPAPER_RESET_DURATION by lazy {
-            Long(preferences, Key.LIVE_WALLPAPER_RESET_DURATION, "", -1L)
-        }
         val ACTIVE_PROFILE by lazy {
             String(profilePreferences, Key.ACTIVE_PROFILE, "", "default")
         }
-
-        fun isLoggedInToDiscord(): kotlin.Boolean =
-            app.kreate.preferences.Preferences.DISCORD_LOGIN.value && app.kreate.preferences.Preferences.DISCORD_ACCESS_TOKEN.value.isNotBlank()
 
         /**
          * Finalize all changes and write it to disk.

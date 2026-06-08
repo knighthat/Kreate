@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -22,10 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import app.kreate.android.BuildConfig
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.BooleanEntry
 import app.kreate.android.themed.common.component.settings.EnumEntry
@@ -38,6 +39,7 @@ import app.kreate.android.themed.common.component.settings.data.ImageCacheIndica
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.di.CacheType
+import app.kreate.preferences.Preferences
 import coil3.imageLoader
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
@@ -59,7 +61,7 @@ import kotlin.math.roundToInt
 @Composable
 fun SettingComponents.StorageSizeEntry(
     context: Context,
-    preference: Preferences.Long,
+    preference: Preferences.LongPref,
     title: String,
     subtitle: String,
     currentValue: Long,
@@ -90,7 +92,7 @@ fun SettingComponents.StorageSizeEntry(
     )
 }
 
-fun cacheSubtitle( context: Context, preference: Preferences.Long, currentValue: () -> Long ) =
+fun cacheSubtitle(context: Context, preference: State<Long>, currentValue: () -> Long ) =
     derivedStateOf {
         val fromSetting by preference
         if( fromSetting == 0L ) return@derivedStateOf context.getString( R.string.vt_disabled )
@@ -151,10 +153,11 @@ fun DataSettings( paddingValues: PaddingValues ) {
                     diskCache?.let( ::ImageCacheIndicator )
                 }
                 val cacheSize = diskCache?.maxSize ?: 0
+                val preference = Preferences.IMAGE_CACHE_SIZE.collectAsStateWithLifecycle()
                 // indicator's progress is observable, and is actually gets updated when
                 // cache is cleared. So this is used to re-compose subtitle when action is performed.
                 val subtitle by remember( indicator?.progress ) {
-                    cacheSubtitle( context, Preferences.IMAGE_CACHE_SIZE ) {
+                    cacheSubtitle( context, preference ) {
                         diskCache?.size ?: 0
                     }
                 }
@@ -184,12 +187,13 @@ fun DataSettings( paddingValues: PaddingValues ) {
                 val indicator = remember( cache ) {
                     ExoCacheIndicator(Preferences.EXO_CACHE_SIZE, cache)
                 }
+                val preference = Preferences.EXO_CACHE_SIZE.collectAsStateWithLifecycle()
                 // indicator's progress is observable, and is actually gets updated when
                 // cache is cleared. So this is used to re-compose subtitle when action is performed.
                 val subtitle by remember( indicator.progress ) {
-                    cacheSubtitle( context, Preferences.EXO_CACHE_SIZE, cache::getCacheSpace )
+                    cacheSubtitle( context, preference, cache::getCacheSpace )
                 }
-                val maxCacheSize by Preferences.EXO_CACHE_SIZE
+                val maxCacheSize by Preferences.EXO_CACHE_SIZE.collectAsStateWithLifecycle()
 
                 SettingComponents.StorageSizeEntry(
                     context = context,
@@ -216,12 +220,13 @@ fun DataSettings( paddingValues: PaddingValues ) {
                 val indicator = remember( cache ) {
                     ExoCacheIndicator(Preferences.EXO_DOWNLOAD_SIZE, cache)
                 }
+                val preference = Preferences.EXO_DOWNLOAD_SIZE.collectAsStateWithLifecycle()
                 // indicator's progress is observable, and is actually gets updated when
                 // cache is cleared. So this is used to re-compose subtitle when action is performed.
                 val subtitle by remember( indicator.progress ) {
-                    cacheSubtitle( context, Preferences.EXO_DOWNLOAD_SIZE, cache::getCacheSpace )
+                    cacheSubtitle( context, preference, cache::getCacheSpace )
                 }
-                val maxCacheSize by Preferences.EXO_DOWNLOAD_SIZE
+                val maxCacheSize by Preferences.EXO_DOWNLOAD_SIZE.collectAsStateWithLifecycle()
 
                 SettingComponents.StorageSizeEntry(
                     context = context,

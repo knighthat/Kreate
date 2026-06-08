@@ -1,7 +1,7 @@
 package app.kreate.di
 
-import app.kreate.android.Preferences
 import app.kreate.android.drawable.AppIcon
+import app.kreate.preferences.Preferences
 import coil3.BitmapImage
 import coil3.PlatformContext
 import coil3.asImage
