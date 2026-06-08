@@ -2,6 +2,7 @@ package it.fast4x.rimusic.ui.screens.profiles
 
 import android.app.Activity
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,9 @@ import androidx.core.net.toUri
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.di.ACTIVE_PROFILE_KEY
+import app.kreate.di.PrefType
+import app.kreate.di.getActiveProfile
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
@@ -49,6 +53,7 @@ import it.fast4x.rimusic.utils.intent
 import it.fast4x.rimusic.utils.isAtLeastAndroid7
 import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.semiBold
+import org.koin.java.KoinJavaComponent.get
 import org.koin.java.KoinJavaComponent.inject
 import java.io.BufferedReader
 import java.io.File
@@ -122,7 +127,7 @@ fun ProfileScreen(
                             removingProfile = item
                             showRemovePopup = true
                         },
-                        isEnabled = Preferences.ACTIVE_PROFILE.value != DEFAULT_PROFILE_NAME
+                        isEnabled = getActiveProfile() != DEFAULT_PROFILE_NAME
                     ) {
                         profileToSwitch = DEFAULT_PROFILE_NAME
                         showChangePopup = true
@@ -134,7 +139,7 @@ fun ProfileScreen(
                                 removingProfile = item
                                 showRemovePopup = true
                             },
-                            isEnabled = Preferences.ACTIVE_PROFILE.value != item
+                            isEnabled = getActiveProfile() != item
                         ) {
                             profileToSwitch = item
                             showChangePopup = true
@@ -228,7 +233,10 @@ fun ProfileScreen(
 
 
 private fun changeProfile(profile: String) {
-    Preferences.ACTIVE_PROFILE.value = profile
+    val preference: SharedPreferences = get( SharedPreferences::class.java, PrefType.PROFILES )
+    preference.edit( true ) {
+        putString(ACTIVE_PROFILE_KEY, profile )
+    }
 
     // Unload the preferences to save all changes
     Preferences.unload()
