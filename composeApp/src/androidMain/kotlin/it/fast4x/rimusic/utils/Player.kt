@@ -13,8 +13,8 @@ import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.enums.DurationInMinutes
 import kotlinx.coroutines.CoroutineScope
@@ -179,7 +179,7 @@ fun Player.playPrevious() {
  * Else, it will move to previous [MediaItem]
  */
 fun Player.smartRewind() =
-    if( !hasPreviousMediaItem() || currentPosition > (app.kreate.preferences.Preferences.SMART_REWIND.value * 1000) )
+    if( !hasPreviousMediaItem() || currentPosition > (Preferences.SMART_REWIND.value * 1000) )
         seekTo( 0 )
     else
         seekToPreviousMediaItem()
@@ -277,7 +277,7 @@ fun Player.findMediaItemIndexById(mediaId: String): Int {
 fun Player.excludeMediaItems(mediaItems: List<MediaItem>, context: Context): List<MediaItem> {
     var filteredMediaItems = mediaItems
     runCatching {
-        val excludeSongWithDurationLimit = app.kreate.preferences.Preferences.LIMIT_SONGS_WITH_DURATION.value
+        val excludeSongWithDurationLimit = Preferences.LIMIT_SONGS_WITH_DURATION.value
 
         if (excludeSongWithDurationLimit != DurationInMinutes.Disabled) {
             filteredMediaItems = mediaItems.filter {
@@ -296,7 +296,7 @@ fun Player.excludeMediaItems(mediaItems: List<MediaItem>, context: Context): Lis
 }
 fun Player.excludeMediaItem(mediaItem: MediaItem): Boolean {
     runCatching {
-        val excludeSongWithDurationLimit = app.kreate.preferences.Preferences.LIMIT_SONGS_WITH_DURATION.value
+        val excludeSongWithDurationLimit = Preferences.LIMIT_SONGS_WITH_DURATION.value
         if (excludeSongWithDurationLimit != DurationInMinutes.Disabled) {
             val excludedSong =
                 (mediaItem.mediaMetadata.durationMs ?: Long.MAX_VALUE) <= excludeSongWithDurationLimit.asMillis

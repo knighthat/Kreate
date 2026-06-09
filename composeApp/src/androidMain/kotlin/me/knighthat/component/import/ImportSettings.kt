@@ -6,17 +6,24 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMapNotNull
-import androidx.core.content.edit
-import app.kreate.android.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.doublePreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
+import app.kreate.di.PrefType
+import app.kreate.di.Storage
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.component.ImportFromFile
 import me.knighthat.component.dialog.RestartAppDialog
-import me.knighthat.utils.csv.PreferenceCSV
+import org.koin.java.KoinJavaComponent.get
 import java.io.InputStream
 
 class ImportSettings private constructor(
@@ -24,7 +31,7 @@ class ImportSettings private constructor(
 ): ImportFromFile(launcher) {
 
     companion object {
-        fun onImportFromCsv( inStream: InputStream ) =
+        suspend fun onImportFromCsv( inStream: InputStream ) =
             csvReader().readAllWithHeader( inStream )
                        .fastMapNotNull { row ->
                            val type = row["Type"]
@@ -38,18 +45,51 @@ class ImportSettings private constructor(
                            )
                                null
                            else
-                               PreferenceCSV(type, key, value)
+                               Triple(type, key, value)
                        }
-                       .also { preferences ->
-                           Preferences.preferences.edit( true ) {
-                               preferences.fastForEach { (type, key, value) ->
-                                   val valueStr = value.toString()
+                       .also { entries ->
+                           get<Storage>(Storage::class.java, PrefType.DEFAULT).edit { file ->
+                               // Clear old app configurations so the backup replaces everything
+                               file.clear()
+
+                               entries.forEach { (type, key, value) ->
                                    when( type.lowercase() ) {
-                                       "string" -> putString( key, valueStr )
-                                       "int" -> putInt( key, valueStr.toInt() )
-                                       "long" -> putLong( key, valueStr.toLong() )
-                                       "float" -> putFloat( key, valueStr.toFloat() )
-                                       "boolean" -> putBoolean( key, valueStr.toBoolean() )
+                                       "string_set" -> {
+                                           val key = stringSetPreferencesKey(key)
+                                           val value = value.split(",").toSet()
+                                           file[key] = value
+                                       }
+                                       "string" -> {
+                                           val key = stringPreferencesKey(key)
+                                           file[key] = value
+                                       }
+                                       "int" -> {
+                                           val key = intPreferencesKey(key)
+                                           val value = value.toIntOrNull() ?: return@forEach
+                                           file[key] = value
+                                       }
+                                       "long" -> {
+                                           val key = longPreferencesKey(key)
+                                           val value = value.toLongOrNull() ?: return@forEach
+                                           file[key] = value
+                                       }
+                                       "float" -> {
+                                           val key = floatPreferencesKey(key)
+                                           val value = value.toFloatOrNull() ?: return@forEach
+                                           file[key] = value
+                                       }
+                                       "boolean" -> {
+                                           val key = booleanPreferencesKey(key)
+                                           val value = value.toBooleanStrictOrNull() ?: return@forEach
+                                           file[key] = value
+                                       }
+                                       "double" -> {
+                                           val key = doublePreferencesKey(key)
+                                           val value = value.toDoubleOrNull() ?: return@forEach
+                                           file[key] = value
+                                       }
+                                       // Ignore unapproved types
+                                       else -> return@forEach
                                    }
                                }
                            }
@@ -69,7 +109,9 @@ class ImportSettings private constructor(
                     CoroutineScope(Dispatchers.IO).launch {
                         context.contentResolver
                                .openInputStream( uri )
-                               ?.use( ::onImportFromCsv )
+                               ?.use {
+                                   onImportFromCsv( it )
+                               }
 
                         RestartAppDialog.showDialog()
                     }

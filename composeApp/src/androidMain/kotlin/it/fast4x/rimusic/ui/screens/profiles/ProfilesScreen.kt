@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.navigation.NavController
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.di.ACTIVE_PROFILE_KEY
 import app.kreate.di.PrefType
@@ -239,7 +238,7 @@ private fun changeProfile(profile: String) {
     }
 
     // Unload the preferences to save all changes
-    Preferences.unload()
+//    Preferences.unload()
 
     val context: Context by inject(Context::class.java)
 
