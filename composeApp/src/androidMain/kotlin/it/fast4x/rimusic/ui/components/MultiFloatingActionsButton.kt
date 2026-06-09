@@ -171,8 +171,8 @@ fun MultiFloatingActionsButton (
                              */
                             detectDragGesturesAfterLongPress { change, dragAmount ->
                                 change.consume()
-                                offsetX.value += dragAmount.x
-                                offsetY.value += dragAmount.y
+                                offsetX.update( dragAmount.x )
+                                offsetY.update( dragAmount.y )
 
                             }
                         }

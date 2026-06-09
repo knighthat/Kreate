@@ -125,6 +125,7 @@ import app.kreate.android.screens.player.background.BlurredCover
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.screen.player.ActionBar
 import app.kreate.constant.Type
+import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
 import app.kreate.util.readableText
 import coil3.request.allowHardware
@@ -189,7 +190,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import me.knighthat.component.player.BlurAdjuster
 import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
@@ -217,51 +217,51 @@ fun Player(
     val menuState = LocalMenuState.current
     val player: StatefulPlayer = koinInject()
     // Settings
-    val disablePlayerHorizontalSwipe by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED.collectAsStateWithLifecycle()
-    val showlyricsthumbnail by app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
-    val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
-    val playerThumbnailSize by app.kreate.preferences.Preferences.PLAYER_PORTRAIT_THUMBNAIL_SIZE.collectAsStateWithLifecycle()
-    val playerThumbnailSizeL by app.kreate.preferences.Preferences.PLAYER_LANDSCAPE_THUMBNAIL_SIZE.collectAsStateWithLifecycle()
-    val showvisthumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER.collectAsStateWithLifecycle()
-    val thumbnailSpacing  by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING.collectAsStateWithLifecycle()
-    val thumbnailSpacingL  by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING_LANDSCAPE.collectAsStateWithLifecycle()
-    val thumbnailFade  by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE.collectAsStateWithLifecycle()
-    val thumbnailFadeEx  by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE_EX.collectAsStateWithLifecycle()
-    val imageCoverSize by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_VINYL_SIZE.collectAsStateWithLifecycle()
-    val queueDurationExpanded by app.kreate.preferences.Preferences.PLAYER_IS_QUEUE_DURATION_EXPANDED.collectAsStateWithLifecycle()
-    val statsExpanded by app.kreate.preferences.Preferences.PLAYER_IS_STATS_FOR_NERDS_EXPANDED.collectAsStateWithLifecycle()
-    val showthumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
-    val showButtonPlayerMenu by app.kreate.preferences.Preferences.PLAYER_ACTION_SHOW_MENU.collectAsStateWithLifecycle()
-    val showTotalTimeQueue by app.kreate.preferences.Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.collectAsStateWithLifecycle()
-    val backgroundProgress by app.kreate.preferences.Preferences.MINI_PLAYER_PROGRESS_BAR.collectAsStateWithLifecycle()
-    val playerType by app.kreate.preferences.Preferences.PLAYER_TYPE.collectAsStateWithLifecycle()
-    val queueType by app.kreate.preferences.Preferences.QUEUE_TYPE.collectAsStateWithLifecycle()
-    val noblur by app.kreate.preferences.Preferences.PLAYER_BACKGROUND_BLUR.collectAsStateWithLifecycle()
-    val fadingedge by app.kreate.preferences.Preferences.PLAYER_BACKGROUND_FADING_EDGE.collectAsStateWithLifecycle()
-    val colorPaletteMode by app.kreate.preferences.Preferences.THEME_MODE.collectAsStateWithLifecycle()
-    val playerBackgroundColors by app.kreate.preferences.Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
-    val animatedGradient by app.kreate.preferences.Preferences.ANIMATED_GRADIENT.collectAsStateWithLifecycle()
-    val thumbnailTapEnabled by app.kreate.preferences.Preferences.PLAYER_TAP_THUMBNAIL_FOR_LYRICS.collectAsStateWithLifecycle()
-    val showTopActionsBar by app.kreate.preferences.Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.collectAsStateWithLifecycle()
-    val blackgradient by app.kreate.preferences.Preferences.BLACK_GRADIENT.collectAsStateWithLifecycle()
-    val bottomgradient by app.kreate.preferences.Preferences.PLAYER_BOTTOM_GRADIENT.collectAsStateWithLifecycle()
-    val titleExpanded by app.kreate.preferences.Preferences.PLAYER_IS_TITLE_EXPANDED.collectAsStateWithLifecycle()
-    val timelineExpanded by app.kreate.preferences.Preferences.PLAYER_IS_TIMELINE_EXPANDED.collectAsStateWithLifecycle()
-    val controlsExpanded by app.kreate.preferences.Preferences.PLAYER_IS_CONTROLS_EXPANDED.collectAsStateWithLifecycle()
-    val showCoverThumbnailAnimation by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_ANIMATION.collectAsStateWithLifecycle()
-    val coverThumbnailAnimation by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_TYPE.collectAsStateWithLifecycle()
-    val albumCoverRotation by app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_ROTATION.collectAsStateWithLifecycle()
-    val textoutline by app.kreate.preferences.Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
-    val carousel by app.kreate.preferences.Preferences.PLAYER_THUMBNAILS_CAROUSEL.collectAsStateWithLifecycle()
-    val carouselSize by app.kreate.preferences.Preferences.CAROUSEL_SIZE.collectAsStateWithLifecycle()
-    val clickLyricsText by app.kreate.preferences.Preferences.LYRICS_JUMP_ON_TAP.collectAsStateWithLifecycle()
-    val extraspace by app.kreate.preferences.Preferences.PLAYER_EXTRA_SPACE.collectAsStateWithLifecycle()
-    val thumbnailRoundness by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
-    val thumbnailType by app.kreate.preferences.Preferences.THUMBNAIL_TYPE.collectAsStateWithLifecycle()
-    val statsfornerds by app.kreate.preferences.Preferences.PLAYER_STATS_FOR_NERDS.collectAsStateWithLifecycle()
-    val topPadding by app.kreate.preferences.Preferences.PLAYER_TOP_PADDING.collectAsStateWithLifecycle()
-    val swipeAnimationNoThumbnail by app.kreate.preferences.Preferences.PLAYER_NO_THUMBNAIL_SWIPE_ANIMATION.collectAsStateWithLifecycle()
-    val expandPlayerState by app.kreate.preferences.Preferences.PLAYER_EXPANDED.collectAsStateWithLifecycle()
+    val disablePlayerHorizontalSwipe by Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED.collectAsStateWithLifecycle()
+    val showlyricsthumbnail by Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+    val effectRotationEnabled by Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
+    val playerThumbnailSize by Preferences.PLAYER_PORTRAIT_THUMBNAIL_SIZE.collectAsStateWithLifecycle()
+    val playerThumbnailSizeL by Preferences.PLAYER_LANDSCAPE_THUMBNAIL_SIZE.collectAsStateWithLifecycle()
+    val showvisthumbnail by Preferences.PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER.collectAsStateWithLifecycle()
+    val thumbnailSpacing  by Preferences.PLAYER_THUMBNAIL_SPACING.collectAsStateWithLifecycle()
+    val thumbnailSpacingL  by Preferences.PLAYER_THUMBNAIL_SPACING_LANDSCAPE.collectAsStateWithLifecycle()
+    val thumbnailFade  by Preferences.PLAYER_THUMBNAIL_FADE.collectAsStateWithLifecycle()
+    val thumbnailFadeEx  by Preferences.PLAYER_THUMBNAIL_FADE_EX.collectAsStateWithLifecycle()
+    val imageCoverSize by Preferences.PLAYER_THUMBNAIL_VINYL_SIZE.collectAsStateWithLifecycle()
+    val queueDurationExpanded by Preferences.PLAYER_IS_QUEUE_DURATION_EXPANDED.collectAsStateWithLifecycle()
+    val statsExpanded by Preferences.PLAYER_IS_STATS_FOR_NERDS_EXPANDED.collectAsStateWithLifecycle()
+    val showthumbnail by Preferences.PLAYER_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+    val showButtonPlayerMenu by Preferences.PLAYER_ACTION_SHOW_MENU.collectAsStateWithLifecycle()
+    val showTotalTimeQueue by Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.collectAsStateWithLifecycle()
+    val backgroundProgress by Preferences.MINI_PLAYER_PROGRESS_BAR.collectAsStateWithLifecycle()
+    val playerType by Preferences.PLAYER_TYPE.collectAsStateWithLifecycle()
+    val queueType by Preferences.QUEUE_TYPE.collectAsStateWithLifecycle()
+    val noblur by Preferences.PLAYER_BACKGROUND_BLUR.collectAsStateWithLifecycle()
+    val fadingedge by Preferences.PLAYER_BACKGROUND_FADING_EDGE.collectAsStateWithLifecycle()
+    val colorPaletteMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
+    val playerBackgroundColors by Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
+    val animatedGradient by Preferences.ANIMATED_GRADIENT.collectAsStateWithLifecycle()
+    val thumbnailTapEnabled by Preferences.PLAYER_TAP_THUMBNAIL_FOR_LYRICS.collectAsStateWithLifecycle()
+    val showTopActionsBar by Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.collectAsStateWithLifecycle()
+    val blackgradient by Preferences.BLACK_GRADIENT.collectAsStateWithLifecycle()
+    val bottomgradient by Preferences.PLAYER_BOTTOM_GRADIENT.collectAsStateWithLifecycle()
+    val titleExpanded by Preferences.PLAYER_IS_TITLE_EXPANDED.collectAsStateWithLifecycle()
+    val timelineExpanded by Preferences.PLAYER_IS_TIMELINE_EXPANDED.collectAsStateWithLifecycle()
+    val controlsExpanded by Preferences.PLAYER_IS_CONTROLS_EXPANDED.collectAsStateWithLifecycle()
+    val showCoverThumbnailAnimation by Preferences.PLAYER_THUMBNAIL_ANIMATION.collectAsStateWithLifecycle()
+    val coverThumbnailAnimation by Preferences.PLAYER_THUMBNAIL_TYPE.collectAsStateWithLifecycle()
+    val albumCoverRotation by Preferences.PLAYER_THUMBNAIL_ROTATION.collectAsStateWithLifecycle()
+    val textoutline by Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
+    val carousel by Preferences.PLAYER_THUMBNAILS_CAROUSEL.collectAsStateWithLifecycle()
+    val carouselSize by Preferences.CAROUSEL_SIZE.collectAsStateWithLifecycle()
+    val clickLyricsText by Preferences.LYRICS_JUMP_ON_TAP.collectAsStateWithLifecycle()
+    val extraspace by Preferences.PLAYER_EXTRA_SPACE.collectAsStateWithLifecycle()
+    val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
+    val thumbnailType by Preferences.THUMBNAIL_TYPE.collectAsStateWithLifecycle()
+    val statsfornerds by Preferences.PLAYER_STATS_FOR_NERDS.collectAsStateWithLifecycle()
+    val topPadding by Preferences.PLAYER_TOP_PADDING.collectAsStateWithLifecycle()
+    val swipeAnimationNoThumbnail by Preferences.PLAYER_NO_THUMBNAIL_SWIPE_ANIMATION.collectAsStateWithLifecycle()
+    val expandPlayerState by Preferences.PLAYER_EXPANDED.collectAsStateWithLifecycle()
 
 
     if (player.currentTimeline.windowCount == 0) return
@@ -301,19 +301,19 @@ fun Player(
         ThumbnailOffsetDialog(
             onDismiss = { showThumbnailOffsetDialog = false},
             spacingValue = { newValue ->
-                app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING.update { newValue }
+                Preferences.PLAYER_THUMBNAIL_SPACING.update( newValue )
             },
             spacingValueL = { newValue ->
-                app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_SPACING_LANDSCAPE.update { newValue }
+                Preferences.PLAYER_THUMBNAIL_SPACING_LANDSCAPE.update( newValue )
             },
             fadeValue = { newValue ->
-                app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE.update { newValue }
+                Preferences.PLAYER_THUMBNAIL_FADE.update( newValue )
             },
             fadeValueEx = { newValue ->
-                app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_FADE_EX.update { newValue }
+                Preferences.PLAYER_THUMBNAIL_FADE_EX.update( newValue )
             },
             imageCoverSizeValue = { newValue ->
-                app.kreate.preferences.Preferences.PLAYER_THUMBNAIL_VINYL_SIZE.update { newValue }
+                Preferences.PLAYER_THUMBNAIL_VINYL_SIZE.update( newValue )
             }
         )
     }
@@ -411,7 +411,7 @@ fun Player(
     var updateBrush by remember { mutableStateOf(false) }
 
     if (showlyricsthumbnail)
-        app.kreate.preferences.Preferences.PLAYER_EXPANDED.update { false }
+        Preferences.PLAYER_EXPANDED.update( false )
 
     LaunchedEffect(mediaItem.mediaId) {
         updateBrush = true
@@ -741,7 +741,7 @@ fun Player(
                     },
                     onDoubleClick = {
                         if (!showlyricsthumbnail && !showvisthumbnail)
-                            app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.flip()
+                            Preferences.PLAYER_SHOW_THUMBNAIL.flip()
                     },
                     onLongClick = {
                         blurAdjuster.isActive =
@@ -1142,7 +1142,7 @@ fun Player(
                                                 },
                                                 onDoubleClick = {
                                                     if (!showlyricsthumbnail && !showvisthumbnail)
-                                                        app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.flip()
+                                                        Preferences.PLAYER_SHOW_THUMBNAIL.flip()
                                                 },
                                                 onLongClick = {
                                                     blurAdjuster.isActive = showthumbnail || (isShowingLyrics && !isShowingVisualizer) || !noblur
@@ -1676,7 +1676,7 @@ fun Player(
                                                        },
                                                        onDoubleClick = {
                                                            if (!showlyricsthumbnail && !showvisthumbnail)
-                                                               app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL.flip()
+                                                               Preferences.PLAYER_SHOW_THUMBNAIL.flip()
                                                        },
                                                        onLongClick = {
                                                            blurAdjuster.isActive = showthumbnail || (isShowingLyrics && !isShowingVisualizer) || !noblur
@@ -2176,11 +2176,11 @@ fun Player(
             Queue(
                 navController = navController,
                 onDismiss = { value ->
-                    app.kreate.preferences.Preferences.QUEUE_LOOP_TYPE.update { value }
+                    Preferences.QUEUE_LOOP_TYPE.update( value )
                     showQueue = false
                 },
                 onDiscoverClick = { enabled ->
-                    app.kreate.preferences.Preferences.ENABLE_DISCOVER.update { enabled }
+                    Preferences.ENABLE_DISCOVER.update( enabled )
                 }
             )
         }

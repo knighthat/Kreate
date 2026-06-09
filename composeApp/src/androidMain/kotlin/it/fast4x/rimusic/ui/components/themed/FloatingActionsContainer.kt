@@ -221,8 +221,8 @@ fun BoxScope.FloatingActions(
              */
             detectDragGesturesAfterLongPress { change, dragAmount ->
                 change.consume()
-                offsetX.value += dragAmount.x
-                offsetY.value += dragAmount.y
+                offsetX.update( offsetX.value + dragAmount.x )
+                offsetY.update( offsetY.value + dragAmount.y )
 
             }
         }

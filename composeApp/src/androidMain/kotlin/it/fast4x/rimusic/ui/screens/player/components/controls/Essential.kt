@@ -82,7 +82,6 @@ import it.fast4x.rimusic.utils.smartRewind
 import it.fast4x.rimusic.utils.textCopyToClipboard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
 import org.koin.compose.koinInject
@@ -555,7 +554,7 @@ fun ControlsEssential(
         icon = queueLoopType.iconId,
         color = colorPalette().text,
         onClick = {
-            Preferences.QUEUE_LOOP_TYPE.update { queueLoopType.next() }
+            Preferences.QUEUE_LOOP_TYPE.update( queueLoopType.next() )
         },
         modifier = Modifier.size( 26.dp )
     )

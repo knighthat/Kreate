@@ -55,6 +55,7 @@ import app.kreate.android.themed.common.screens.settings.about.Licenses
 import app.kreate.android.themed.rimusic.screen.artist.ArtistAlbums
 import app.kreate.android.themed.rimusic.screen.playlist.YouTubePlaylist
 import app.kreate.database.models.SearchQuery
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.HomeScreenTabs
 import it.fast4x.rimusic.enums.NavRoutes
@@ -78,7 +79,6 @@ import it.fast4x.rimusic.ui.screens.searchresult.SearchResultScreen
 import it.fast4x.rimusic.ui.screens.settings.SettingsScreen
 import it.fast4x.rimusic.ui.screens.statistics.StatisticsScreen
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.update
 import me.knighthat.updater.ChangelogsDialog
 import me.knighthat.updater.UpdateHandler
 import me.knighthat.utils.Toaster
@@ -121,8 +121,12 @@ fun AppNavigation(
     UpdateHandler()
 
     val startDestination = remember( startPage ) {
-        app.kreate.preferences.Preferences.HOME_TAB_INDEX.value =
-            if( startPage == HomeScreenTabs.Search ) app.kreate.preferences.Preferences.STARTUP_SCREEN.value.index else startPage.index
+        Preferences.HOME_TAB_INDEX.update(
+            if( startPage == HomeScreenTabs.Search )
+                Preferences.STARTUP_SCREEN.value.index
+            else
+                startPage.index
+        )
 
         return@remember if( startPage == HomeScreenTabs.Search )
             NavRoutes.search
@@ -130,12 +134,12 @@ fun AppNavigation(
             NavRoutes.home
     }
 
-    val transitionEffect by app.kreate.preferences.Preferences.TRANSITION_EFFECT.collectAsStateWithLifecycle()
+    val transitionEffect by Preferences.TRANSITION_EFFECT.collectAsStateWithLifecycle()
 
     @Composable
     fun modalBottomSheetPage(content: @Composable () -> Unit) {
         var showSheet by rememberSaveable { mutableStateOf(true) }
-        val thumbnailRoundness by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
+        val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
 
         CustomModalBottomSheet(
             showSheet = showSheet,
@@ -317,7 +321,7 @@ fun AppNavigation(
                         Uri.encode( query )
                     )
 
-                    if ( !app.kreate.preferences.Preferences.PAUSE_SEARCH_HISTORY.value )
+                    if ( !Preferences.PAUSE_SEARCH_HISTORY.value )
                         Database.asyncTransaction {
                             // Must ignore to prevent "UNIQUE constraint" exception
                             searchTable.insertIgnore( SearchQuery(query = query) )
@@ -438,7 +442,7 @@ fun AppNavigation(
     }
     crashReportDialog.Render()
 
-    val seenVersion by app.kreate.preferences.Preferences.SEEN_CHANGELOGS_VERSION.collectAsStateWithLifecycle()
+    val seenVersion by Preferences.SEEN_CHANGELOGS_VERSION.collectAsStateWithLifecycle()
     if( seenVersion != BuildConfig.VERSION_NAME ) {
         val changelogs = remember {
             object: ChangelogsDialog(context) {
@@ -447,7 +451,7 @@ fun AppNavigation(
 
                 override fun hideDialog() {
                     super.hideDialog()
-                    app.kreate.preferences.Preferences.SEEN_CHANGELOGS_VERSION.update { BuildConfig.VERSION_NAME }
+                    Preferences.SEEN_CHANGELOGS_VERSION.update( BuildConfig.VERSION_NAME )
                 }
             }
         }
@@ -470,7 +474,7 @@ fun AppNavigation(
         }
 
         val activity = context as? Activity
-        if( app.kreate.preferences.Preferences.CLOSE_APP_ON_BACK.value ) {
+        if( Preferences.CLOSE_APP_ON_BACK.value ) {
             if( !isWarned ) {
                 Toaster.i( R.string.press_once_again_to_exit )
                 isWarned = true

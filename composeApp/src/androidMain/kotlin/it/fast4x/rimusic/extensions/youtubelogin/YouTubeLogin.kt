@@ -47,15 +47,15 @@ fun YouTubeLogin( onDone: () -> Unit ) {
                         loadUrl("javascript:Android.onRetrieveDataSyncId(window.yt.config_.DATASYNC_ID)")
 
                         if ( url?.startsWith("https://music.youtube.com") == true ) {
-                            Preferences.YOUTUBE_COOKIES.value = CookieManager.getInstance().getCookie( url )
+                            Preferences.YOUTUBE_COOKIES.update( CookieManager.getInstance().getCookie(url) )
 
                             CoroutineScope(Dispatchers.IO ).launch {
                                 Innertube.accountInfo(CURRENT_LOCALE )
                                          .onSuccess {
-                                             Preferences.YOUTUBE_ACCOUNT_NAME.value = it.name
-                                             Preferences.YOUTUBE_ACCOUNT_EMAIL.value = it.email.orEmpty()
-                                             Preferences.YOUTUBE_SELF_CHANNEL_HANDLE.value = it.channelHandle.orEmpty()
-                                             Preferences.YOUTUBE_ACCOUNT_AVATAR.value = it.thumbnailUrl.firstOrNull()?.url.orEmpty()
+                                             Preferences.YOUTUBE_ACCOUNT_NAME.update( it.name )
+                                             Preferences.YOUTUBE_ACCOUNT_EMAIL.update( it.email.orEmpty() )
+                                             Preferences.YOUTUBE_SELF_CHANNEL_HANDLE.update( it.channelHandle.orEmpty() )
+                                             Preferences.YOUTUBE_ACCOUNT_AVATAR.update( it.thumbnailUrl.firstOrNull()?.url.orEmpty() )
                                          }
                                          .onFailure { err ->
                                              Logger.e( "", err, "YouTubeLogin" )
@@ -78,13 +78,13 @@ fun YouTubeLogin( onDone: () -> Unit ) {
                         @Suppress("unused")     // Stop IDE from complaining & prevent accidental deletion
                         @JavascriptInterface
                         fun onRetrieveVisitorData( newVisitorData: String? ) {
-                            Preferences.YOUTUBE_VISITOR_DATA.value = newVisitorData.orEmpty()
+                            Preferences.YOUTUBE_VISITOR_DATA.update( newVisitorData.orEmpty() )
                         }
 
                         @Suppress("unused")     // Stop IDE from complaining & prevent accidental deletion
                         @JavascriptInterface
                         fun onRetrieveDataSyncId( newDataSyncId: String? ) {
-                            Preferences.YOUTUBE_SYNC_ID.value = newDataSyncId.orEmpty().substringBefore("||")
+                            Preferences.YOUTUBE_SYNC_ID.update( newDataSyncId.orEmpty().substringBefore("||") )
                         }
                     },
                     "Android"

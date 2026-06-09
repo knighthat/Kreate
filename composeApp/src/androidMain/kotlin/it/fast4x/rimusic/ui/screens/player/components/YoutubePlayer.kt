@@ -18,13 +18,13 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.R
+import app.kreate.preferences.Preferences
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.ui.styling.collapsedPlayerProgressBar
-import kotlinx.coroutines.flow.update
 
 
 @Composable
@@ -38,14 +38,14 @@ fun YoutubePlayer(
 
     if (!showPlayer) return
 
-    val lastYTVideoId by app.kreate.preferences.Preferences.YOUTUBE_LAST_VIDEO_ID.collectAsStateWithLifecycle()
-    val lastYTVideoSeconds by app.kreate.preferences.Preferences.YOUTUBE_LAST_VIDEO_SECONDS.collectAsStateWithLifecycle()
+    val lastYTVideoId by Preferences.YOUTUBE_LAST_VIDEO_ID.collectAsStateWithLifecycle()
+    val lastYTVideoSeconds by Preferences.YOUTUBE_LAST_VIDEO_SECONDS.collectAsStateWithLifecycle()
 
 //    val currentYTVideoId by remember { mutableStateOf(ytVideoId) }
 //    println("mediaItem youtubePlayer called currentYTVideoId $currentYTVideoId ytVideoId $ytVideoId lastYTVideoId $lastYTVideoId")
 
     if (ytVideoId != lastYTVideoId)
-        app.kreate.preferences.Preferences.YOUTUBE_LAST_VIDEO_SECONDS.update { 0f }
+        Preferences.YOUTUBE_LAST_VIDEO_SECONDS.update( 0f )
 
     Box {
         Box{
@@ -82,8 +82,8 @@ fun YoutubePlayer(
 
                     override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
                         onCurrentSecond(second)
-                        app.kreate.preferences.Preferences.YOUTUBE_LAST_VIDEO_SECONDS.update { second }
-                        app.kreate.preferences.Preferences.YOUTUBE_LAST_VIDEO_ID.update { ytVideoId }
+                        Preferences.YOUTUBE_LAST_VIDEO_SECONDS.update( second )
+                        Preferences.YOUTUBE_LAST_VIDEO_ID.update( ytVideoId )
                     }
 
                 }

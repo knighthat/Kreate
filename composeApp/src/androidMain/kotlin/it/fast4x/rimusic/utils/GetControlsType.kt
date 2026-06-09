@@ -14,11 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import app.kreate.constant.Type
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.enums.PlayerBackgroundColors
 import it.fast4x.rimusic.ui.components.themed.PlaybackParamsDialog
 import it.fast4x.rimusic.ui.screens.player.components.controls.ControlsEssential
 import it.fast4x.rimusic.ui.screens.player.components.controls.ControlsModern
-import kotlinx.coroutines.flow.update
 import kotlin.math.roundToInt
 
 @OptIn(UnstableApi::class)
@@ -28,15 +28,15 @@ fun GetControls(
     mediaId: String,
     onBlurScaleChange: (Float) -> Unit
 ) {
-    val playerControlsType by app.kreate.preferences.Preferences.PLAYER_CONTROLS_TYPE.collectAsStateWithLifecycle()
-    val playerPlayButtonType by app.kreate.preferences.Preferences.PLAYER_PLAY_BUTTON_TYPE.collectAsStateWithLifecycle()
-    val playerBackgroundColors by app.kreate.preferences.Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
+    val playerControlsType by Preferences.PLAYER_CONTROLS_TYPE.collectAsStateWithLifecycle()
+    val playerPlayButtonType by Preferences.PLAYER_PLAY_BUTTON_TYPE.collectAsStateWithLifecycle()
+    val playerBackgroundColors by Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
 
     val isGradientBackgroundEnabled = playerBackgroundColors == PlayerBackgroundColors.ThemeColorGradient ||
             playerBackgroundColors == PlayerBackgroundColors.CoverColorGradient
 
-    val playbackSpeed by app.kreate.preferences.Preferences.AUDIO_SPEED_VALUE.collectAsStateWithLifecycle()
-    val playbackDuration by app.kreate.preferences.Preferences.AUDIO_MEDLEY_DURATION.collectAsStateWithLifecycle()
+    val playbackSpeed by Preferences.AUDIO_SPEED_VALUE.collectAsStateWithLifecycle()
+    val playbackDuration by Preferences.AUDIO_MEDLEY_DURATION.collectAsStateWithLifecycle()
 
     var showSpeedPlayerDialog by rememberSaveable {
         mutableStateOf(false)
@@ -46,11 +46,11 @@ fun GetControls(
         PlaybackParamsDialog(
             onDismiss = { showSpeedPlayerDialog = false },
             speedValue = { newValue ->
-                app.kreate.preferences.Preferences.AUDIO_SPEED_VALUE.update { newValue }
+                Preferences.AUDIO_SPEED_VALUE.update( newValue )
             },
             pitchValue = {},
             durationValue = { newValue ->
-                app.kreate.preferences.Preferences.AUDIO_MEDLEY_DURATION.update { newValue }
+                Preferences.AUDIO_MEDLEY_DURATION.update( newValue )
             },
             scaleValue = onBlurScaleChange
         )

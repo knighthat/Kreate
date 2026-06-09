@@ -26,10 +26,10 @@ import app.kreate.android.themed.common.component.settings.SliderEntry
 import app.kreate.android.themed.common.component.settings.animatedEntry
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.rememberEqualizerLauncher
-import kotlinx.coroutines.flow.update
 import me.knighthat.component.dialog.InputDialogConstraints
 import org.koin.compose.koinInject
 
@@ -40,25 +40,25 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
 
     entry( search, R.string.audio_quality_format ) {
         SettingComponents.EnumEntry(
-            preference = app.kreate.preferences.Preferences.AUDIO_QUALITY,
+            preference = Preferences.AUDIO_QUALITY,
             title = stringResource( R.string.audio_quality_format ),
             action = SettingComponents.Action.RESTART_PLAYER_SERVICE
         )
     }
     entry( search, R.string.enable_connection_metered ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.IS_CONNECTION_METERED,
+            preference = Preferences.IS_CONNECTION_METERED,
             title = stringResource( R.string.enable_connection_metered ),
             subtitleId = R.string.info_enable_connection_metered
         ) {
             if ( it )
-                app.kreate.preferences.Preferences.AUDIO_QUALITY.update { AudioQualityFormat.Auto }
+                Preferences.AUDIO_QUALITY.update( AudioQualityFormat.Auto )
         }
     }
     entry( search, R.string.setting_entry_smart_rewind ) {
-        val smartRewindInt by app.kreate.preferences.Preferences.SMART_REWIND.collectAsStateWithLifecycle()
+        val smartRewindInt by Preferences.SMART_REWIND.collectAsStateWithLifecycle()
         SettingComponents.InputDialogEntry(
-            preference = app.kreate.preferences.Preferences.SMART_REWIND,
+            preference = Preferences.SMART_REWIND,
             title = stringResource( R.string.setting_entry_smart_rewind ),
             constraint = InputDialogConstraints.POSITIVE_DECIMAL,
             keyboardOption = KeyboardOptions.Default.copy( keyboardType = KeyboardType.Number ),
@@ -74,27 +74,27 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     entry( search, R.string.min_listening_time ) {
         SettingComponents.EnumEntry(
-            preference = app.kreate.preferences.Preferences.QUICK_PICKS_MIN_DURATION,
+            preference = Preferences.QUICK_PICKS_MIN_DURATION,
             title = stringResource( R.string.min_listening_time ),
             subtitleId = R.string.is_min_list_time_for_tips_or_quick_pics
         )
     }
     entry( search, R.string.exclude_songs_with_duration_limit ) {
         SettingComponents.EnumEntry(
-            preference = app.kreate.preferences.Preferences.LIMIT_SONGS_WITH_DURATION,
+            preference = Preferences.LIMIT_SONGS_WITH_DURATION,
             title = stringResource( R.string.exclude_songs_with_duration_limit ),
             subtitleId = R.string.exclude_songs_with_duration_limit_description
         )
     }
     entry( search, R.string.pause_between_songs ) {
         SettingComponents.EnumEntry(
-            preference = app.kreate.preferences.Preferences.PAUSE_BETWEEN_SONGS,
+            preference = Preferences.PAUSE_BETWEEN_SONGS,
             title = stringResource( R.string.pause_between_songs )
         )
     }
     entry( search, R.string.player_pause_listen_history ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.PAUSE_HISTORY,
+            preference = Preferences.PAUSE_HISTORY,
             title = stringResource( R.string.player_pause_listen_history ),
             subtitleId = R.string.player_pause_listen_history_info,
             action = SettingComponents.Action.RESTART_PLAYER_SERVICE
@@ -102,35 +102,35 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     entry( search, R.string.player_pause_on_volume_zero ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.PAUSE_WHEN_VOLUME_SET_TO_ZERO,
+            preference = Preferences.PAUSE_WHEN_VOLUME_SET_TO_ZERO,
             title = stringResource( R.string.player_pause_on_volume_zero ),
             subtitleId = R.string.info_pauses_player_when_volume_zero
         )
     }
     entry( search, R.string.effect_fade_audio ) {
         SettingComponents.EnumEntry(
-            preference = app.kreate.preferences.Preferences.AUDIO_FADE_DURATION,
+            preference = Preferences.AUDIO_FADE_DURATION,
             title = stringResource( R.string.effect_fade_audio ),
             subtitleId = R.string.effect_fade_audio_description
         )
     }
     entry( search, R.string.player_keep_minimized ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.PLAYER_KEEP_MINIMIZED,
+            preference = Preferences.PLAYER_KEEP_MINIMIZED,
             title = stringResource( R.string.player_keep_minimized ),
             subtitleId = R.string.when_click_on_a_song_player_start_minimized
         )
     }
     entry( search, R.string.player_collapsed_disable_swiping_down ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.MINI_DISABLE_SWIPE_DOWN_TO_DISMISS,
+            preference = Preferences.MINI_DISABLE_SWIPE_DOWN_TO_DISMISS,
             title = stringResource( R.string.player_collapsed_disable_swiping_down ),
             subtitleId = R.string.avoid_closing_the_player_cleaning_queue_by_swiping_down
         )
     }
     entry( search, R.string.player_auto_load_songs_in_queue ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.QUEUE_AUTO_APPEND,
+            preference = Preferences.QUEUE_AUTO_APPEND,
             title = stringResource( R.string.player_auto_load_songs_in_queue ),
             subtitleId = R.string.player_auto_load_songs_in_queue_description,
             action = SettingComponents.Action.RESTART_PLAYER_SERVICE
@@ -138,33 +138,33 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     entry( search, R.string.max_songs_in_queue ) {
         SettingComponents.EnumEntry(
-            preference = app.kreate.preferences.Preferences.MAX_NUMBER_OF_SONG_IN_QUEUE,
+            preference = Preferences.MAX_NUMBER_OF_SONG_IN_QUEUE,
             title = stringResource( R.string.max_songs_in_queue )
         )
     }
     entry( search, R.string.discover ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.ENABLE_DISCOVER,
+            preference = Preferences.ENABLE_DISCOVER,
             title = stringResource( R.string.discover ),
             subtitleId = R.string.discoverinfo
         )
     }
     entry( search, R.string.playlistindicator ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.SHOW_PLAYLIST_INDICATOR,
+            preference = Preferences.SHOW_PLAYLIST_INDICATOR,
             title = stringResource( R.string.playlistindicator ),
             subtitleId = R.string.playlistindicatorinfo
         )
     }
     entry( search, R.string.now_playing_indicator ) {
         SettingComponents.EnumEntry(
-            preference = app.kreate.preferences.Preferences.NOW_PLAYING_INDICATOR,
+            preference = Preferences.NOW_PLAYING_INDICATOR,
             title = stringResource( R.string.now_playing_indicator )
         )
     }
     entry( search, R.string.resume_playback, isAtLeastAndroid6 ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE,
+            preference = Preferences.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE,
             title = stringResource( R.string.resume_playback ),
             subtitleId = R.string.when_device_is_connected,
             action = SettingComponents.Action.RESTART_PLAYER_SERVICE
@@ -172,7 +172,7 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     entry( search, R.string.persistent_queue ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.ENABLE_PERSISTENT_QUEUE,
+            preference = Preferences.ENABLE_PERSISTENT_QUEUE,
             title = stringResource( R.string.persistent_queue ),
             subtitleId = R.string.save_and_restore_playing_songs,
             action = SettingComponents.Action.RESTART_PLAYER_SERVICE
@@ -180,12 +180,12 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     animatedEntry(
         key = "persistentQueueChildren",
-        visibleState = app.kreate.preferences.Preferences.ENABLE_PERSISTENT_QUEUE,
+        visibleState = Preferences.ENABLE_PERSISTENT_QUEUE,
         modifier = Modifier.padding( start = SettingComponents.CHILDREN_PADDING.dp )
     ) {
         if( search appearsIn R.string.resume_playback_on_start )
             SettingComponents.BooleanEntry(
-                preference = app.kreate.preferences.Preferences.RESUME_PLAYBACK_ON_STARTUP,
+                preference = Preferences.RESUME_PLAYBACK_ON_STARTUP,
                 title = stringResource( R.string.resume_playback_on_start ),
                 subtitleId = R.string.resume_automatically_when_app_opens,
                 action = SettingComponents.Action.RESTART_PLAYER_SERVICE
@@ -193,7 +193,7 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     entry( search, R.string.close_app_with_back_button ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.CLOSE_APP_ON_BACK,
+            preference = Preferences.CLOSE_APP_ON_BACK,
             title = stringResource( R.string.close_app_with_back_button ),
             subtitleId = R.string.when_you_use_the_back_button_from_the_home_page,
             isEnabled = Build.VERSION.SDK_INT >= 33,
@@ -202,7 +202,7 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     entry( search, R.string.skip_media_on_error ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.PLAYBACK_SKIP_ON_ERROR,
+            preference = Preferences.PLAYBACK_SKIP_ON_ERROR,
             title = stringResource( R.string.skip_media_on_error ),
             subtitleId = R.string.skip_media_on_error_description,
             action = SettingComponents.Action.RESTART_PLAYER_SERVICE
@@ -210,26 +210,26 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     entry( search, R.string.skip_silence ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.AUDIO_SKIP_SILENCE,
+            preference = Preferences.AUDIO_SKIP_SILENCE,
             title = stringResource( R.string.skip_silence ),
             subtitleId = R.string.skip_silent_parts_during_playback
         )
     }
     entry( search, R.string.loudness_normalization ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.AUDIO_VOLUME_NORMALIZATION,
+            preference = Preferences.AUDIO_VOLUME_NORMALIZATION,
             title = stringResource( R.string.loudness_normalization ),
             subtitleId = R.string.autoadjust_the_volume
         )
     }
     animatedEntry(
         key = "audioNormalizationChildren",
-        visibleState = app.kreate.preferences.Preferences.AUDIO_VOLUME_NORMALIZATION,
+        visibleState = Preferences.AUDIO_VOLUME_NORMALIZATION,
         modifier = Modifier.padding( start = SettingComponents.CHILDREN_PADDING.dp )
     ) {
         if( search appearsIn R.string.settings_loudness_base_gain )
             SettingComponents.SliderEntry(
-                preference = app.kreate.preferences.Preferences.AUDIO_VOLUME_NORMALIZATION_TARGET,
+                preference = Preferences.AUDIO_VOLUME_NORMALIZATION_TARGET,
                 title = stringResource( R.string.settings_loudness_base_gain ),
                 subtitle = stringResource( R.string.settings_target_gain_loudness_info ),
                 // Matches -20.0 to 20.0, allows empty string and incomplete decimal (i.e. 11.)
@@ -237,35 +237,35 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
                 valueRange = -20f..20f,
                 steps = 79,
                 onTextDisplay = { "%.1f dB".format( it ) },
-                onValueChangeFinished = { p, v -> p.value = v }
+                onValueChangeFinished = { p, v -> p.update(v) }
             )
     }
     entry( search, R.string.settings_audio_bass_boost ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.AUDIO_BASS_BOOSTED,
+            preference = Preferences.AUDIO_BASS_BOOSTED,
             title = stringResource( R.string.settings_audio_bass_boost )
         )
     }
     animatedEntry(
         key = "bassBoostChildren",
-        visibleState = app.kreate.preferences.Preferences.AUDIO_BASS_BOOSTED,
+        visibleState = Preferences.AUDIO_BASS_BOOSTED,
         modifier = Modifier.padding( start = SettingComponents.CHILDREN_PADDING.dp )
     ) {
         if( search appearsIn R.string.settings_bass_boost_level )
             SettingComponents.SliderEntry(
-                preference = app.kreate.preferences.Preferences.AUDIO_BASS_BOOST_LEVEL,
+                preference = Preferences.AUDIO_BASS_BOOST_LEVEL,
                 title = stringResource( R.string.settings_bass_boost_level ),
                 // Accepts 0.0 to 1.0, including empty string and incomplete decimal (i.e. 0.)
                 constraints = "^$|^\\.$|^(0?(\\.\\d)?|1(\\.0)?)$",
                 valueRange = 0f..1f,
                 steps = 9,
                 onTextDisplay = { "%.1f".format( it ) },
-                onValueChangeFinished = { p, v -> p.value = v },
+                onValueChangeFinished = { p, v -> p.update(v) },
                 modifier = Modifier.padding( start = 25.dp )
             )
     }
     entry( search, R.string.settings_audio_reverb ) {
-        val selected = app.kreate.preferences.Preferences.AUDIO_REVERB_PRESET.collectAsStateWithLifecycle()
+        val selected = Preferences.AUDIO_REVERB_PRESET.collectAsStateWithLifecycle()
         SettingComponents.ListEntry(
             entries = (0..6).toList().toTypedArray(),
             selectedState = selected,
@@ -288,14 +288,14 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     entry( search, R.string.settings_audio_focus ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.AUDIO_SMART_PAUSE_DURING_CALLS,
+            preference = Preferences.AUDIO_SMART_PAUSE_DURING_CALLS,
             title = stringResource( R.string.settings_audio_focus ),
             subtitleId = R.string.settings_audio_focus_info
         )
     }
     entry( search, R.string.event_volumekeys ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.AUDIO_VOLUME_BUTTONS_CHANGE_SONG,
+            preference = Preferences.AUDIO_VOLUME_BUTTONS_CHANGE_SONG,
             title = stringResource( R.string.event_volumekeys ),
             subtitleId = R.string.event_volumekeysinfo,
             action = SettingComponents.Action.RESTART_PLAYER_SERVICE
@@ -303,7 +303,7 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     entry( search, R.string.event_shake ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.AUDIO_SHAKE_TO_SKIP,
+            preference = Preferences.AUDIO_SHAKE_TO_SKIP,
             title = stringResource( R.string.event_shake ),
             subtitleId = R.string.shake_to_change_song,
             action = SettingComponents.Action.RESTART_PLAYER_SERVICE
@@ -311,27 +311,27 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     entry( search, R.string.settings_enable_pip ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.IS_PIP_ENABLED,
+            preference = Preferences.IS_PIP_ENABLED,
             title = stringResource( R.string.settings_enable_pip ),
             action = SettingComponents.Action.RESTART_PLAYER_SERVICE
         )
     }
     animatedEntry(
         key = "pipChildren",
-        visibleState = app.kreate.preferences.Preferences.IS_PIP_ENABLED,
+        visibleState = Preferences.IS_PIP_ENABLED,
         modifier = Modifier.padding( start = SettingComponents.CHILDREN_PADDING.dp )
     ) {
         Column {
             if( search appearsIn R.string.settings_pip_module )
                 SettingComponents.EnumEntry(
-                    preference = app.kreate.preferences.Preferences.PIP_MODULE,
+                    preference = Preferences.PIP_MODULE,
                     title = stringResource( R.string.settings_pip_module ),
                     action = SettingComponents.Action.RESTART_PLAYER_SERVICE
                 )
 
             if( search appearsIn R.string.settings_enable_pip_auto )
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.IS_AUTO_PIP_ENABLED,
+                    preference = Preferences.IS_AUTO_PIP_ENABLED,
                     title = stringResource( R.string.settings_enable_pip_auto ),
                     subtitleId = R.string.pip_info_from_android_12_pip_can_be_automatically_enabled,
                     action = SettingComponents.Action.RESTART_PLAYER_SERVICE
@@ -340,25 +340,25 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
     }
     entry( search, R.string.settings_enable_autodownload_song ) {
         SettingComponents.BooleanEntry(
-            preference = app.kreate.preferences.Preferences.AUTO_DOWNLOAD,
+            preference = Preferences.AUTO_DOWNLOAD,
             title = stringResource( R.string.settings_enable_autodownload_song )
         )
     }
     animatedEntry(
         key = "autoDownloadChildren",
-        visibleState = app.kreate.preferences.Preferences.AUTO_DOWNLOAD,
+        visibleState = Preferences.AUTO_DOWNLOAD,
         modifier = Modifier.padding( start = SettingComponents.CHILDREN_PADDING.dp )
     ) {
         Column {
             if( search appearsIn R.string.settings_enable_autodownload_song_when_liked )
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.AUTO_DOWNLOAD_ON_LIKE,
+                    preference = Preferences.AUTO_DOWNLOAD_ON_LIKE,
                     title = stringResource( R.string.settings_enable_autodownload_song_when_liked )
                 )
 
             if( search appearsIn R.string.settings_enable_autodownload_song_when_album_bookmarked )
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED,
+                    preference = Preferences.AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED,
                     title = stringResource( R.string.settings_enable_autodownload_song_when_album_bookmarked )
                 )
         }

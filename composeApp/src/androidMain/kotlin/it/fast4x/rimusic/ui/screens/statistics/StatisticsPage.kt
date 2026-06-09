@@ -51,6 +51,7 @@ import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import it.fast4x.rimusic.colorPalette
@@ -78,7 +79,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 import org.koin.compose.koinInject
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
@@ -102,13 +102,13 @@ fun StatisticsPage(
     val menuState = LocalMenuState.current
     val windowInsets = LocalPlayerAwareWindowInsets.current
 
-    val thumbnailRoundness by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
+    val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
 
-    val showStatsListeningTime by app.kreate.preferences.Preferences.SHOW_LISTENING_STATS.collectAsStateWithLifecycle()
+    val showStatsListeningTime by Preferences.SHOW_LISTENING_STATS.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
 
-    val maxStatisticsItems by app.kreate.preferences.Preferences.MAX_NUMBER_OF_STATISTIC_ITEMS.collectAsStateWithLifecycle()
+    val maxStatisticsItems by Preferences.MAX_NUMBER_OF_STATISTIC_ITEMS.collectAsStateWithLifecycle()
     val from = remember( statisticsType ) { statisticsType.timeStampInMillis() }
 
     val artists by remember {
@@ -153,8 +153,8 @@ fun StatisticsPage(
         mutableStateOf(Download.STATE_STOPPED)
     }
 
-    val navigationBarPosition by app.kreate.preferences.Preferences.NAVIGATION_BAR_POSITION.collectAsStateWithLifecycle()
-    val statisticsCategory by app.kreate.preferences.Preferences.STATISTIC_PAGE_CATEGORY.collectAsStateWithLifecycle()
+    val navigationBarPosition by Preferences.NAVIGATION_BAR_POSITION.collectAsStateWithLifecycle()
+    val statisticsCategory by Preferences.STATISTIC_PAGE_CATEGORY.collectAsStateWithLifecycle()
     val buttonsList = listOf(
         StatisticsCategory.Songs to StatisticsCategory.Songs.text,
         StatisticsCategory.Artists to StatisticsCategory.Artists.text,
@@ -224,7 +224,7 @@ fun StatisticsPage(
                         chips = buttonsList,
                         currentValue = statisticsCategory,
                         onValueUpdate = { newValue ->
-                            app.kreate.preferences.Preferences.STATISTIC_PAGE_CATEGORY.update { newValue }
+                            Preferences.STATISTIC_PAGE_CATEGORY.update( newValue )
                         },
                         modifier = Modifier.padding(horizontal = 12.dp)
                     )

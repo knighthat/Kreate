@@ -29,7 +29,6 @@ import it.fast4x.rimusic.utils.mediaItems
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
@@ -51,7 +50,7 @@ fun Discover(
 
     override fun onShortClick() {
         isFirstColor = !isFirstColor
-        app.kreate.preferences.Preferences.ENABLE_DISCOVER.update { isFirstColor }
+        Preferences.ENABLE_DISCOVER.update( isFirstColor )
         onDiscoverClick( isFirstColor )
     }
 
@@ -59,7 +58,7 @@ fun Discover(
     override fun ToolBarButton() {
         super<MenuIcon>.ToolBarButton()
 
-        val isEnabled by app.kreate.preferences.Preferences.ENABLE_DISCOVER.collectAsStateWithLifecycle()
+        val isEnabled by Preferences.ENABLE_DISCOVER.collectAsStateWithLifecycle()
         LaunchedEffect( isEnabled ) {
             isFirstColor = isEnabled
         }
@@ -166,7 +165,7 @@ fun DeleteFromQueue(
 fun QueueArrow(
     onShortClick: () -> Unit
 ): Icon = object: Icon {
-    override val isEnabled: Boolean by app.kreate.preferences.Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW.collectAsStateWithLifecycle()
+    override val isEnabled: Boolean by Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW.collectAsStateWithLifecycle()
     override val iconId: Int = R.drawable.chevron_down
 
     override fun onShortClick() = onShortClick()

@@ -99,7 +99,6 @@ import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shuffleQueue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.knighthat.component.player.PlaybackSpeed
 import me.knighthat.utils.Toaster
@@ -539,7 +538,7 @@ fun BoxScope.ActionBar(
                         icon = queueLoopType.iconId,
                         color = colorPalette().accent,
                         onClick = {
-                            Preferences.QUEUE_LOOP_TYPE.update { queueLoopType.next() }
+                            Preferences.QUEUE_LOOP_TYPE.update( queueLoopType.next() )
                             if (effectRotationEnabled)
                                 rotateState.value = !rotateState.value
                         },

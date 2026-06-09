@@ -48,6 +48,7 @@ import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.InnertubeUtils
 import app.kreate.database.models.PlaylistPreview
+import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
@@ -74,7 +75,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.knighthat.component.playlist.NewPlaylistDialog
 import me.knighthat.component.tab.ImportSongsFromCSV
@@ -105,7 +105,7 @@ fun HomeLibrary(
     val coroutineScope = rememberCoroutineScope()
 
     // Non-vital
-    val playlistType by app.kreate.preferences.Preferences.HOME_LIBRARY_TYPE.collectAsStateWithLifecycle()
+    val playlistType by Preferences.HOME_LIBRARY_TYPE.collectAsStateWithLifecycle()
 
     var items by persistList<PlaylistPreview>("home/playlists")
     var onlinePlaylists by remember { mutableStateOf( emptyList<InnertubePlaylist>() ) }
@@ -129,9 +129,9 @@ fun HomeLibrary(
     }}
 
     val sort = remember {
-        Sort(menuState, app.kreate.preferences.Preferences.HOME_LIBRARY_SORT_BY, app.kreate.preferences.Preferences.HOME_LIBRARY_SORT_ORDER, coroutineScope)
+        Sort(menuState, Preferences.HOME_LIBRARY_SORT_BY, Preferences.HOME_LIBRARY_SORT_ORDER, coroutineScope)
     }
-    val itemSize = remember { ItemSize(coroutineScope, app.kreate.preferences.Preferences.HOME_LIBRARY_ITEM_SIZE, menuState) }
+    val itemSize = remember { ItemSize(coroutineScope, Preferences.HOME_LIBRARY_ITEM_SIZE, menuState) }
     val sizeDp by remember {derivedStateOf {
         DpSize(itemSize.size.dp, itemSize.size.dp)
     }}
@@ -170,7 +170,7 @@ fun HomeLibrary(
                 .collectLatest { items = it }
     }
     LaunchedEffect( Unit ) {
-        if( !InnertubeUtils.isLoggedIn || !app.kreate.preferences.Preferences.YOUTUBE_PLAYLISTS_SYNC.value )
+        if( !InnertubeUtils.isLoggedIn || !Preferences.YOUTUBE_PLAYLISTS_SYNC.value )
             return@LaunchedEffect
         
         CoroutineScope( Dispatchers.IO ).launch {
@@ -189,8 +189,8 @@ fun HomeLibrary(
     }
 
     // START: Additional playlists
-    val showPinnedPlaylists by app.kreate.preferences.Preferences.SHOW_PINNED_PLAYLISTS.collectAsStateWithLifecycle()
-    val showMonthlyPlaylists by app.kreate.preferences.Preferences.SHOW_MONTHLY_PLAYLISTS.collectAsStateWithLifecycle()
+    val showPinnedPlaylists by Preferences.SHOW_PINNED_PLAYLISTS.collectAsStateWithLifecycle()
+    val showMonthlyPlaylists by Preferences.SHOW_MONTHLY_PLAYLISTS.collectAsStateWithLifecycle()
 
     val buttonsList = mutableListOf(PlaylistsType.Playlist to stringResource(R.string.playlists))
     buttonsList += PlaylistsType.YTPlaylist to stringResource(R.string.yt_playlists)
@@ -206,12 +206,12 @@ fun HomeLibrary(
     // END - New playlist
 
     // START - Monthly playlist
-    val compileMonthlyPlaylist by app.kreate.preferences.Preferences.MONTHLY_PLAYLIST_COMPILATION.collectAsStateWithLifecycle()
+    val compileMonthlyPlaylist by Preferences.MONTHLY_PLAYLIST_COMPILATION.collectAsStateWithLifecycle()
     if ( compileMonthlyPlaylist )
         CheckMonthlyPlaylist()
     // END - Monthly playlist
 
-    val doAutoSync by app.kreate.preferences.Preferences.AUTO_SYNC.collectAsStateWithLifecycle()
+    val doAutoSync by Preferences.AUTO_SYNC.collectAsStateWithLifecycle()
     var justSynced by rememberSaveable { mutableStateOf(!doAutoSync) }
 
     var refreshing by remember { mutableStateOf(false) }
@@ -274,7 +274,7 @@ fun HomeLibrary(
                             chips = buttonsList,
                             currentValue = playlistType,
                             onValueUpdate = { newValue ->
-                                app.kreate.preferences.Preferences.HOME_LIBRARY_TYPE.update { newValue }
+                                Preferences.HOME_LIBRARY_TYPE.update( newValue )
                             },
                             modifier = Modifier.padding(start = 12.dp, end = 12.dp)
                         )
@@ -321,7 +321,7 @@ fun HomeLibrary(
 
             FloatingActionsContainerWithScrollToTop(lazyGridState = lazyGridState)
 
-            val showFloatingIcon by app.kreate.preferences.Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
+            val showFloatingIcon by Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
             if (UiType.ViMusic.isCurrent() && showFloatingIcon)
                 MultiFloatingActionsContainer(
                     iconId = R.drawable.search,

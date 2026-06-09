@@ -88,9 +88,9 @@ class StorageSizeInputDialog(
             return
 
         if( newValue == context.getString( R.string.unlimited ) )
-            preference.value = Long.MAX_VALUE
+            preference.update( Long.MAX_VALUE )
         else if( newValue == context.getString( R.string.vt_disabled ) )
-            preference.value = 0L
+            preference.update( 0L )
         else if( newValue.isDigitsOnly() ) {
             // https://developer.android.com/reference/android/text/format/Formatter#formatFileSize(android.content.Context,%20long)
             val unitSystem = if( isAtLeastAndroid8 ) 1000L else 1024L
@@ -103,7 +103,7 @@ class StorageSizeInputDialog(
                           if( it < BigInteger.ZERO || it > BigInteger.valueOf( Long.MAX_VALUE ) )
                               errorMessage = context.getString( R.string.invalid_input )
                           else
-                              preference.value = it.toLong()
+                              preference.update( it.toLong() )
                       }
         } else
             errorMessage = context.getString( R.string.invalid_input )

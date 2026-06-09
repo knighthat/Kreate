@@ -38,6 +38,7 @@ import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Event
+import app.kreate.preferences.Preferences
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.YtMusic
 import it.fast4x.innertube.requests.HistoryPage
@@ -61,7 +62,6 @@ import it.fast4x.rimusic.utils.forcePlay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import org.koin.compose.koinInject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -83,7 +83,7 @@ fun HistoryList(
     val (colorPalette, typography) = LocalAppearance.current
     val menuState = LocalMenuState.current
 
-    val parentalControlEnabled by app.kreate.preferences.Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
+    val parentalControlEnabled by Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
 
     /**
      * Topology:
@@ -128,7 +128,7 @@ fun HistoryList(
     val buttonsList = mutableListOf(HistoryType.History to stringResource(R.string.history))
     buttonsList += HistoryType.YTMHistory to stringResource(R.string.yt_history)
 
-    val historyType by app.kreate.preferences.Preferences.HISTORY_PAGE_TYPE.collectAsStateWithLifecycle()
+    val historyType by Preferences.HISTORY_PAGE_TYPE.collectAsStateWithLifecycle()
 
     var historyPage by persist<Result<HistoryPage>>("home/historyPage")
     LaunchedEffect(Unit, historyType) {
@@ -179,7 +179,7 @@ fun HistoryList(
                     chips = buttonsList,
                     currentValue = historyType,
                     onValueUpdate = { newValue ->
-                        app.kreate.preferences.Preferences.HISTORY_PAGE_TYPE.update { newValue }
+                        Preferences.HISTORY_PAGE_TYPE.update( newValue )
                     },
                     modifier = Modifier.padding(start = 12.dp, end = 12.dp)
                 )

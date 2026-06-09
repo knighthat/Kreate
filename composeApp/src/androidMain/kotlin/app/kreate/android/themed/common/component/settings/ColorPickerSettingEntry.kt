@@ -22,7 +22,6 @@ import app.kreate.android.utils.scrollingText
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.semiBold
-import kotlinx.coroutines.flow.update
 import me.knighthat.component.dialog.RestartAppDialog
 
 
@@ -39,7 +38,7 @@ fun SettingComponents.ColorPickerEntry(
     val selected by preference.collectAsStateWithLifecycle()
     val dialog = remember( selected ) {
         ColorPickerDialog(selected) { newValue ->
-            preference.update { newValue }
+            preference.update( newValue )
 
             if ( action == Action.RESTART_APP )
                 RestartAppDialog.showDialog()
