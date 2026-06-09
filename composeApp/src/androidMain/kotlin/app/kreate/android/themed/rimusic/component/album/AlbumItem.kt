@@ -29,9 +29,9 @@ import app.kreate.android.themed.rimusic.component.MultiplatformItem
 import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.ItemUtils
 import app.kreate.android.utils.innertube.toAlbum
-import app.kreate.android.utils.scrollingText
 import app.kreate.database.models.Album
 import app.kreate.preferences.Preferences
+import app.kreate.util.scrollingText
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.ui.styling.Appearance

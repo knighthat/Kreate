@@ -33,7 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.kreate.android.R
-import app.kreate.android.utils.scrollingText
+import app.kreate.util.scrollingText
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.styling.LocalAppearance

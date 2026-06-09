@@ -25,7 +25,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import app.kreate.android.utils.scrollingText
+import app.kreate.util.scrollingText
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.ui.components.themed.GridMenuItemHeight
 import me.knighthat.component.menu.MenuConstants.CONTENT_HEIGHT_FRACTION

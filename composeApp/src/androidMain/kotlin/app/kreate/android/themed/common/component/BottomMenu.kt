@@ -71,8 +71,8 @@ import app.kreate.android.constant.MenuPage
 import app.kreate.android.themed.common.component.menu.MenuButton
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
-import app.kreate.android.utils.scrollingText
 import app.kreate.database.models.PlaylistPreview
+import app.kreate.util.scrollingText
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar

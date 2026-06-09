@@ -72,12 +72,12 @@ import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.ItemUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
-import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import app.kreate.preferences.APP_REGION
 import app.kreate.preferences.Preferences
+import app.kreate.util.scrollingText
 import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persist
 import it.fast4x.compose.persist.persistList

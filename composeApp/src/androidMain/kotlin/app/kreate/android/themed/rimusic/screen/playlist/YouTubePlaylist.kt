@@ -57,11 +57,11 @@ import app.kreate.android.themed.common.component.tab.DownloadAllDialog
 import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.renderDescription
-import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
 import app.kreate.android.viewmodel.YouTubePlaylistViewModel
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
+import app.kreate.util.scrollingText
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.YtMusic
 import it.fast4x.rimusic.Database

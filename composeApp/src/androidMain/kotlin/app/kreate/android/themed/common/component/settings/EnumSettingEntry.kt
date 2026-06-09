@@ -19,9 +19,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.themed.common.component.settings.SettingComponents.Action
-import app.kreate.android.utils.scrollingText
 import app.kreate.component.TextView
 import app.kreate.preferences.Preferences
+import app.kreate.util.scrollingText
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.semiBold
 import me.knighthat.component.dialog.Dialog
