@@ -5,14 +5,14 @@ import androidx.compose.ui.text.TextStyle
 
 @Immutable
 actual class Typography actual constructor(
-    xxxs: TextStyle,
-    xxs: TextStyle,
-    xs: TextStyle,
-    s: TextStyle,
-    m: TextStyle,
-    l: TextStyle,
-    xl: TextStyle,
-    xxl: TextStyle,
-    xxxl: TextStyle,
-    xlxl: TextStyle
+    actual val xxxs: TextStyle,
+    actual val xxs: TextStyle,
+    actual val xs: TextStyle,
+    actual val s: TextStyle,
+    actual val m: TextStyle,
+    actual val l: TextStyle,
+    actual val xl: TextStyle,
+    actual val xxl: TextStyle,
+    actual val xxxl: TextStyle,
+    actual val xlxl: TextStyle
 )
