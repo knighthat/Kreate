@@ -24,7 +24,6 @@ import app.kreate.component.TextView
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.semiBold
-import kotlinx.coroutines.flow.update
 import me.knighthat.component.dialog.Dialog
 import me.knighthat.component.dialog.RestartAppDialog
 
@@ -69,7 +68,7 @@ class Selector<E>(
                         onClick = {
                             hideDialog()
 
-                            preferences.update { e }
+                            preferences.update( e )
                             onValueChanged( e )
 
                             if ( action == Action.RESTART_APP )

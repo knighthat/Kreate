@@ -89,7 +89,7 @@ fun GeneralSettings( paddingValues: PaddingValues ) {
                             // Apply it first before really selecting it
                             AppCompatDelegate.setApplicationLocales( locales )
 
-                            app.kreate.preferences.Preferences.APP_LANGUAGE.value = it
+                            app.kreate.preferences.Preferences.APP_LANGUAGE.update( it )
                         } catch (err: Exception) {
                             err.printStackTrace()
                             err.message?.also( Toaster::e )

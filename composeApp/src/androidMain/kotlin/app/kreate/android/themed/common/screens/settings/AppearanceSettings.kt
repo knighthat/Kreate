@@ -134,7 +134,8 @@ fun AppearanceSettings(paddingValues: PaddingValues) {
                         if (pref.value == -1L && value > -1L) {
                             wallpaperResetAlertVisible.value = true
                         }
-                        pref.value = value.toLong() },
+                        pref.update( value.toLong() )
+                    },
                     onTextDisplay = {
                         when (it) {
                             -1f -> stringResource(R.string.word_disabled)

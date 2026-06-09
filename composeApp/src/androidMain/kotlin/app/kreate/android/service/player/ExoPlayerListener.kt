@@ -176,7 +176,7 @@ class ExoPlayerListener(
 
     override fun onRepeatModeChanged( repeatMode: Int ) {
         updateMediaControl( context, this.player )
-        Preferences.QUEUE_LOOP_TYPE.value = QueueLoopType.from( repeatMode )
+        Preferences.QUEUE_LOOP_TYPE.update( QueueLoopType.from(repeatMode) )
     }
 
     override fun onMediaItemTransition( mediaItem: MediaItem?, reason: Int ) {

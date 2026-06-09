@@ -71,7 +71,7 @@ fun DiscordLoginAndGetToken( discord: Discord, onDone: () -> Unit ) {
                         // This function is usually called on worker thread
                         // Enforce writing on main to prevent crashing the app.
                         runBlocking( Dispatchers.Main ) {
-                            Preferences.DISCORD_ACCESS_TOKEN.value = token
+                            Preferences.DISCORD_ACCESS_TOKEN.update( token )
                         }
 
                         discord.login( token )

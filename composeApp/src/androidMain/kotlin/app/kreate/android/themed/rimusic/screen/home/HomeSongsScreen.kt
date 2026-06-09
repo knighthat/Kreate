@@ -57,7 +57,6 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.enqueue
-import kotlinx.coroutines.flow.update
 import me.knighthat.component.ResetCache
 import me.knighthat.component.tab.ImportSongsFromCSV
 import me.knighthat.component.tab.LikeComponent
@@ -81,7 +80,7 @@ fun HomeSongsScreen(
     val menuState = LocalMenuState.current
     val coroutineScope = rememberCoroutineScope()
 
-    val builtInPlaylist by app.kreate.preferences.Preferences.HOME_SONGS_TYPE.collectAsStateWithLifecycle()
+    val builtInPlaylist by Preferences.HOME_SONGS_TYPE.collectAsStateWithLifecycle()
 
     val itemsOnDisplayState = remember { mutableStateListOf<Song>() }
 
@@ -170,11 +169,11 @@ fun HomeSongsScreen(
             ) {
                 Column {
                     //<editor-fold defaultstate="collapsed" desc="Chips">
-                    val showFavoritesPlaylist by app.kreate.preferences.Preferences.HOME_SONGS_SHOW_FAVORITES_CHIP.collectAsStateWithLifecycle()
-                    val showCachedPlaylist by app.kreate.preferences.Preferences.HOME_SONGS_SHOW_CACHED_CHIP.collectAsStateWithLifecycle()
-                    val showDownloadedPlaylist by app.kreate.preferences.Preferences.HOME_SONGS_SHOW_DOWNLOADED_CHIP.collectAsStateWithLifecycle()
-                    val showMyTopPlaylist by app.kreate.preferences.Preferences.HOME_SONGS_SHOW_MOST_PLAYED_CHIP.collectAsStateWithLifecycle()
-                    val showOnDevice by app.kreate.preferences.Preferences.HOME_SONGS_SHOW_ON_DEVICE_CHIP.collectAsStateWithLifecycle()
+                    val showFavoritesPlaylist by Preferences.HOME_SONGS_SHOW_FAVORITES_CHIP.collectAsStateWithLifecycle()
+                    val showCachedPlaylist by Preferences.HOME_SONGS_SHOW_CACHED_CHIP.collectAsStateWithLifecycle()
+                    val showDownloadedPlaylist by Preferences.HOME_SONGS_SHOW_DOWNLOADED_CHIP.collectAsStateWithLifecycle()
+                    val showMyTopPlaylist by Preferences.HOME_SONGS_SHOW_MOST_PLAYED_CHIP.collectAsStateWithLifecycle()
+                    val showOnDevice by Preferences.HOME_SONGS_SHOW_ON_DEVICE_CHIP.collectAsStateWithLifecycle()
                     val chips = remember( showFavoritesPlaylist, showCachedPlaylist, showMyTopPlaylist, showDownloadedPlaylist) {
                         buildList {
                             add( BuiltInPlaylist.All )
@@ -196,7 +195,7 @@ fun HomeSongsScreen(
                         chips = chips,
                         currentValue = builtInPlaylist,
                         onValueUpdate = { newValue ->
-                            app.kreate.preferences.Preferences.HOME_SONGS_TYPE.update { newValue }
+                            Preferences.HOME_SONGS_TYPE.update( newValue )
                         }
                     )
 
@@ -235,7 +234,7 @@ fun HomeSongsScreen(
 
         FloatingActionsContainerWithScrollToTop(lazyListState = lazyListState)
 
-        val showFloatingIcon by app.kreate.preferences.Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
+        val showFloatingIcon by Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
         if( UiType.ViMusic.isCurrent() && showFloatingIcon )
             MultiFloatingActionsContainer(
                 iconId = R.drawable.search,

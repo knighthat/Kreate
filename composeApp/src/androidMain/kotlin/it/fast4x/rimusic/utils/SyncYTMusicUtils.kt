@@ -12,6 +12,7 @@ import app.kreate.android.R
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Playlist
+import app.kreate.preferences.Preferences
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.YtMusic
 import it.fast4x.innertube.utils.completed
@@ -24,7 +25,6 @@ import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -198,8 +198,8 @@ suspend fun removeYTSongFromPlaylist(
 fun autoSyncToolbutton(messageId: Int): MenuIcon = object : MenuIcon, DynamicColor, Descriptive {
 
     override var isFirstColor: Boolean
-        get() = app.kreate.preferences.Preferences.AUTO_SYNC.value
-        set(value) = app.kreate.preferences.Preferences.AUTO_SYNC.update { value }
+        get() = Preferences.AUTO_SYNC.value
+        set(value) = Preferences.AUTO_SYNC.update( value )
     override val iconId: Int = R.drawable.sync
     override val messageId: Int = messageId
     override val menuIconTitle: String
@@ -208,14 +208,14 @@ fun autoSyncToolbutton(messageId: Int): MenuIcon = object : MenuIcon, DynamicCol
 
     override fun onShortClick() {
         isFirstColor = !isFirstColor
-        app.kreate.preferences.Preferences.AUTO_SYNC.update { isFirstColor }
+        Preferences.AUTO_SYNC.update( isFirstColor )
     }
 
     @Composable
     override fun ToolBarButton() {
         super<MenuIcon>.ToolBarButton()
 
-        val isEnabled by app.kreate.preferences.Preferences.AUTO_SYNC.collectAsStateWithLifecycle()
+        val isEnabled by Preferences.AUTO_SYNC.collectAsStateWithLifecycle()
         LaunchedEffect( isEnabled ) {
             isFirstColor = isEnabled
         }

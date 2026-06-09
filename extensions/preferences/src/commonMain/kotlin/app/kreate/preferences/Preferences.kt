@@ -81,17 +81,12 @@ import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.ui.styling.DefaultDarkColorPalette
 import it.fast4x.rimusic.ui.styling.DefaultLightColorPalette
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -105,11 +100,11 @@ sealed class Preferences<K, V>(
     protected val storage: Storage,
     protected val key: DatastoreKey<K>,
     val defaultValue: V
-) : MutableStateFlow<V> {
+) : StateFlow<V> {
 
     companion object : KoinComponent {
 
-        private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        private val scope: CoroutineScope by inject()
 
         private val preferences: Storage by inject(PrefType.DEFAULT)
         private val credentials: Storage by inject(PrefType.CREDENTIALS)
@@ -1050,74 +1045,41 @@ sealed class Preferences<K, V>(
         }
     }
 
-    private val _internalState = MutableStateFlow(defaultValue)
+    private val _internalState: StateFlow<V> =
+        storage.data
+               .map { it[key]?.let( ::deserialize ) ?: defaultValue }
+               .stateIn(
+                   scope = scope,
+                   // Stop emitting changes if no one is subscribing to this
+                   started = SharingStarted.WhileSubscribed( 5_000 ),
+                   initialValue = defaultValue
+               )
 
+    override val value: V get() = _internalState.value
     override val replayCache: List<V> get() = _internalState.replayCache
-    override val subscriptionCount: StateFlow<Int> get() = _internalState.subscriptionCount
-
-    override var value: V
-        get() = _internalState.value
-        set(value) {
-            _internalState.value = value
-            scope.launch { writeToDisk(value) }
-        }
-
-    init {
-        // Sync from Disk to the internal StateFlow
-        scope.launch {
-            storage.data
-                   .mapNotNull {
-                       it[key]?.let( ::deserialize ) ?: defaultValue
-                   }
-                   .distinctUntilChanged()
-                   .collect { _internalState.value = it }
-        }
-    }
 
     protected abstract fun deserialize( key: K ): V?
 
     protected abstract fun serialize( value: V ): K
 
-    protected open suspend fun writeToDisk( value: V ) {
-        storage.edit { it[key] = serialize(value) }
-    }
+    fun reset() = update( defaultValue )
 
-    fun reset() = update { defaultValue }
-
-    override suspend fun emit( value: V ) {
-        _internalState.emit( value )
-        writeToDisk( value )
-    }
-
-    override fun tryEmit( value: V ): Boolean {
-        val success = _internalState.tryEmit( value )
-        if (success) {
-            scope.launch { writeToDisk(value) }
+    fun update( newValue: V ) {
+        scope.launch {
+            storage.edit { it[key] = serialize(newValue) }
         }
-        return success
-    }
-
-    override fun compareAndSet( expect: V, update: V ): Boolean {
-        val success = _internalState.compareAndSet( expect, update )
-        if (success) {
-            scope.launch { writeToDisk(update) }
-        }
-        return success
     }
 
     override suspend fun collect( collector: FlowCollector<V> ): Nothing =
         _internalState.collect( collector )
 
-    @ExperimentalCoroutinesApi
-    override fun resetReplayCache() = _internalState.resetReplayCache()
-
     class BooleanPref(
         storage: Storage,
-        key: Preferences.Key,
+        key: DatastoreKey<Boolean>,
         defaultValue: Boolean
-    ) : Preferences<Boolean, Boolean>(storage, booleanPreferencesKey(key.value), defaultValue) {
+    ) : Preferences<Boolean, Boolean>(storage, key, defaultValue) {
 
-        fun flip() = update { !it }
+        fun flip() = update( !value )
 
         override fun deserialize( key: Boolean ): Boolean = key
 
@@ -1126,10 +1088,10 @@ sealed class Preferences<K, V>(
 
     class EnumPref<E: Enum<E>>(
         storage: Storage,
-        key: Preferences.Key,
+        key: DatastoreKey<String>,
         defaultValue: E,
         val entries: () -> EnumEntries<E>
-    ) : Preferences<String, E>(storage, stringPreferencesKey(key.value), defaultValue) {
+    ) : Preferences<String, E>(storage, key, defaultValue) {
 
         override fun deserialize( key: String ): E? = entries().firstOrNull { it.name == key }
 
@@ -1141,9 +1103,9 @@ sealed class Preferences<K, V>(
     // to get the value back flawlessly
     class ColorPref(
         storage: Storage,
-        key: Preferences.Key,
+        key: DatastoreKey<Long>,
         defaultValue: Color
-    ) : Preferences<Long, Color>(storage, longPreferencesKey(key.value), defaultValue) {
+    ) : Preferences<Long, Color>(storage, key, defaultValue) {
 
         override fun deserialize( key: Long ): Color = Color(key.toULong())
 
@@ -1152,9 +1114,9 @@ sealed class Preferences<K, V>(
 
     class StringPref(
         storage: Storage,
-        key: Preferences.Key,
+        key: DatastoreKey<String>,
         defaultValue: String
-    ) : Preferences<String, String>(storage, stringPreferencesKey(key.value), defaultValue) {
+    ) : Preferences<String, String>(storage, key, defaultValue) {
 
         override fun deserialize( key: String ): String = key
 
@@ -1163,9 +1125,9 @@ sealed class Preferences<K, V>(
 
     class FloatPref(
         storage: Storage,
-        key: Preferences.Key,
+        key: DatastoreKey<Float>,
         defaultValue: Float
-    ) : Preferences<Float, Float>(storage, floatPreferencesKey(key.value), defaultValue) {
+    ) : Preferences<Float, Float>(storage, key, defaultValue) {
 
         override fun deserialize( key: Float ): Float = key
 
@@ -1174,9 +1136,9 @@ sealed class Preferences<K, V>(
 
     class IntPref(
         storage: Storage,
-        key: Preferences.Key,
+        key: DatastoreKey<Int>,
         defaultValue: Int
-    ) : Preferences<Int, Int>(storage, intPreferencesKey(key.value), defaultValue) {
+    ) : Preferences<Int, Int>(storage, key, defaultValue) {
 
         override fun deserialize( key: Int ): Int = key
 
@@ -1185,360 +1147,358 @@ sealed class Preferences<K, V>(
 
     class LongPref(
         storage: Storage,
-        key: Preferences.Key,
+        key: DatastoreKey<Long>,
         defaultValue: Long
-    ) : Preferences<Long, Long>(storage, longPreferencesKey(key.value), defaultValue) {
+    ) : Preferences<Long, Long>(storage, key, defaultValue) {
 
         override fun deserialize( key: Long ): Long = key
 
         override fun serialize( value: Long ): Long = value
     }
 
-    class Key private constructor(val value: String) {
-        companion object {
-            //<editor-fold desc="Item size">
-            val HOME_ARTIST_ITEM_SIZE = Key("home_artist_item_size")
-            val HOME_ALBUM_ITEM_SIZE = Key("home_album_item_size")
-            val HOME_LIBRARY_ITEM_SIZE = Key("home_library_item_size")
-            val SONG_THUMBNAIL_SIZE = Key("song_thumbnail_size")
-            val ALBUM_THUMBNAIL_SIZE = Key("album_thumbnail_size")
-            val ARTIST_THUMBNAIL_SIZE = Key("artist_thumbnail_size")
-            val PLAYLIST_THUMBNAIL_SIZE = Key("playlist_thumbnail_size")
-            //</editor-fold>
-            //<editor-fold desc="Sort by">
-            val HOME_SONGS_SORT_BY = Key("home_songs_sort_by")
-            val HOME_ON_DEVICE_SONGS_SORT_BY = Key("home_on_device_songs_sort_by")
-            val HOME_ARTISTS_SORT_BY = Key("home_artists_sort_by")
-            val HOME_ALBUMS_SORT_BY = Key("home_albums_sort_by")
-            val HOME_LIBRARY_SORT_BY = Key("home_library_sort_by")
-            val PLAYLIST_SONGS_SORT_BY = Key("playlist_songs_sort_by")
-            //</editor-fold>
-            //<editor-fold desc="Sort order">
-            val HOME_SONGS_SORT_ORDER = Key("home_songs_sort_order")
-            val HOME_ARTISTS_SORT_ORDER = Key("home_artists_sort_order")
-            val HOME_ALBUM_SORT_ORDER = Key("home_album_sort_order")
-            val HOME_LIBRARY_SORT_ORDER = Key("home_library_sort_order")
-            val PLAYLIST_SONGS_SORT_ORDER = Key("playlist_songs_sort_order")
-            //</editor-fold>
-            //<editor-fold desc="Max # of ...">
-            val MAX_NUMBER_OF_SMART_RECOMMENDATIONS = Key("max_number_of_smart_recommendations")
-            val MAX_NUMBER_OF_STATISTIC_ITEMS = Key("max_number_of_statistic_items")
-            val MAX_NUMBER_OF_TOP_PLAYED = Key("max_number_of_top_played")
-            val MAX_NUMBER_OF_SONG_IN_QUEUE = Key("max_number_of_song_in_queue")
-            val MAX_NUMBER_OF_NEXT_IN_QUEUE = Key("max_number_of_next_in_queue")
-            //</editor-fold>
-            //<editor-fold desc="Swipe action">
-            val ENABLE_SWIPE_ACTION = Key("enable_swipe_action")
-            val QUEUE_SWIPE_LEFT_ACTION = Key("queue_swipe_left_action")
-            val QUEUE_SWIPE_RIGHT_ACTION = Key("queue_swipe_right_action")
-            val PLAYLIST_SWIPE_LEFT_ACTION = Key("playlist_swipe_left_action")
-            val PLAYLIST_SWIPE_RIGHT_ACTION = Key("playlist_swipe_right_action")
-            val ALBUM_SWIPE_LEFT_ACTION = Key("album_swipe_left_action")
-            val ALBUM_SWIPE_RIGHT_ACTION = Key("album_swipe_right_action")
-            //</editor-fold>
-            //<editor-fold desc="Mini player">
-            val MINI_DISABLE_SWIPE_DOWN_TO_DISMISS = Key("mini_disable_swipe_down_to_dismiss")
-            val MINI_PLAYER_POSITION = Key("mini_player_position")
-            val MINI_PLAYER_TYPE = Key("mini_player_type")
-            val MINI_PLAYER_PROGRESS_BAR = Key("mini_player_progress_bar")
-            //</editor-fold>
-            //<editor-fold desc="Player">
-            val PLAYER_IS_CONTROLS_EXPANDED = Key("player_is_controls_expanded")
-            val PLAYER_SHOW_THUMBNAIL = Key("player_show_thumbnail")
-            val PLAYER_BOTTOM_GRADIENT = Key("player_bottom_gradient")
-            val PLAYER_EXPANDED = Key("player_expanded")
-            val PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED = Key("player_thumbnail_horizontal_swipe_disabled")
-            val PLAYER_VISUALIZER = Key("player_visualizer")
-            val PLAYER_TAP_THUMBNAIL_FOR_LYRICS = Key("player_tap_thumbnail_for_lyrics")
-            val PLAYER_ACTION_ADD_TO_PLAYLIST = Key("player_action_add_to_playlist")
-            val PLAYER_ACTION_OPEN_QUEUE_ARROW = Key("player_action_open_queue_arrow")
-            val PLAYER_ACTION_DOWNLOAD = Key("player_action_download")
-            val PLAYER_ACTION_LOOP = Key("player_action_loop")
-            val PLAYER_ACTION_SHOW_LYRICS = Key("player_action_show_lyrics")
-            val PLAYER_ACTION_TOGGLE_EXPAND = Key("player_action_toggle_expand")
-            val PLAYER_ACTION_SHUFFLE = Key("player_action_shuffle")
-            val PLAYER_ACTION_SLEEP_TIMER = Key("player_action_sleep_timer")
-            val PLAYER_ACTION_SHOW_MENU = Key("player_action_show_menu")
-            val PLAYER_ACTION_START_RADIO = Key("player_action_start_radio")
-            val PLAYER_ACTION_OPEN_EQUALIZER = Key("player_action_open_equalizer")
-            val PLAYER_ACTION_DISCOVER = Key("player_action_discover")
-            val PLAYER_ACTION_TOGGLE_VIDEO = Key("player_action_toggle_video")
-            val PLAYER_ACTION_LYRICS_POPUP_MESSAGE = Key("player_action_lyrics_popup_message")
-            val PLAYER_TRANSPARENT_ACTIONS_BAR = Key("player_transparent_actions_bar")
-            val PLAYER_ACTION_BUTTONS_SPACED_EVENLY = Key("player_action_buttons_spaced_evenly")
-            val PLAYER_ACTIONS_BAR_TAP_TO_OPEN_QUEUE = Key("player_actions_bar_tap_to_open_queue")
-            val PLAYER_ACTIONS_BAR_SWIPE_UP_TO_OPEN_QUEUE = Key("player_actions_bar_swipe_up_to_open_queue")
-            val PLAYER_IS_ACTIONS_BAR_EXPANDED = Key("player_is_actions_bar_expanded")
-            val PLAYER_SHOW_TOTAL_QUEUE_TIME = Key("player_show_total_queue_time")
-            val PLAYER_IS_QUEUE_DURATION_EXPANDED = Key("player_is_queue_duration_expanded")
-            val PLAYER_SHOW_NEXT_IN_QUEUE = Key("player_show_next_in_queue")
-            val PLAYER_IS_NEXT_IN_QUEUE_EXPANDED = Key("player_is_next_in_queue_expanded")
-            val PLAYER_SHOW_NEXT_IN_QUEUE_THUMBNAIL = Key("player_show_next_in_queue_thumbnail")
-            val PLAYER_SHOW_SONGS_REMAINING_TIME = Key("player_show_songs_remaining_time")
-            val PLAYER_SHOW_SEEK_BUTTONS = Key("player_show_seek_buttons")
-            val PLAYER_SHOW_TOP_ACTIONS_BAR = Key("player_show_top_actions_bar")
-            val PLAYER_IS_CONTROL_AND_TIMELINE_SWAPPED = Key("player_is_control_and_timeline_swapped")
-            val PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER = Key("player_show_thumbnail_on_visualizer")
-            val PLAYER_SHRINK_THUMBNAIL_ON_PAUSE = Key("player_shrink_thumbnail_on_pause")
-            val PLAYER_KEEP_MINIMIZED = Key("player_keep_minimized")
-            val PLAYER_BACKGROUND_BLUR = Key("player_background_blur")
-            val PLAYER_BACKGROUND_FADING_EDGE = Key("player_background_fading_edge")
-            val PLAYER_STATS_FOR_NERDS = Key("player_stats_for_nerds")
-            val PLAYER_IS_STATS_FOR_NERDS_EXPANDED = Key("player_is_stats_for_nerds_expanded")
-            val PLAYER_THUMBNAILS_CAROUSEL = Key("player_thumbnails_carousel")
-            val PLAYER_THUMBNAIL_ANIMATION = Key("player_thumbnail_animation")
-            val PLAYER_THUMBNAIL_ROTATION = Key("player_thumbnail_rotation")
-            val PLAYER_IS_TITLE_EXPANDED = Key("player_is_title_expanded")
-            val PLAYER_IS_TIMELINE_EXPANDED = Key("player_is_timeline_expanded")
-            val PLAYER_SONG_INFO_ICON = Key("player_song_info_icon")
-            val PLAYER_TOP_PADDING = Key("player_top_padding")
-            val PLAYER_EXTRA_SPACE = Key("player_extra_space")
-            val PLAYER_ROTATING_ALBUM_COVER = Key("player_rotating_album_cover")
-            val PLAYER_CONTROLS_TYPE = Key("player_controls_type")
-            val PLAYER_INFO_TYPE = Key("player_info_type")
-            val PLAYER_TYPE = Key("player_type")
-            val PLAYER_TIMELINE_TYPE = Key("player_timeline_type")
-            val PLAYER_PORTRAIT_THUMBNAIL_SIZE = Key("player_portrait_thumbnail_size")
-            val PLAYER_LANDSCAPE_THUMBNAIL_SIZE = Key("player_landscape_thumbnail_size")
-            val PLAYER_TIMELINE_SIZE = Key("player_timeline_size")
-            val PLAYER_PLAY_BUTTON_TYPE = Key("player_play_button_type")
-            val PLAYER_BACKGROUND = Key("player_background")
-            val PLAYER_THUMBNAIL_TYPE = Key("player_thumbnail_type")
-            val PLAYER_NO_THUMBNAIL_SWIPE_ANIMATION = Key("player_no_thumbnail_swipe_animation")
-            val PLAYER_THUMBNAIL_VINYL_SIZE = Key("player_thumbnail_vinyl_size")
-            val PLAYER_THUMBNAIL_FADE = Key("player_thumbnail_fade")
-            val PLAYER_THUMBNAIL_FADE_EX = Key("player_thumbnail_fade_ex")
-            val PLAYER_THUMBNAIL_SPACING = Key("player_thumbnail_spacing")
-            val PLAYER_THUMBNAIL_SPACING_LANDSCAPE = Key("player_thumbnail_spacing_landscape")
-            val PLAYER_BACKGROUND_BLUR_STRENGTH = Key("player_background_blur_strength")
-            val PLAYER_BACKGROUND_BACK_DROP = Key("player_background_back_drop")
-            val PLAYER_CURRENT_VISUALIZER = Key("player_current_visualizer")
-            //</editor-fold>
-            //<editor-fold desc="Cache">
-            val EXO_CACHE_LOCATION = Key("exo_cache_location")
-            val IMAGE_CACHE_SIZE = Key("image_cache_size")
-            val EXO_CACHE_SIZE = Key("exo_cache_size")
-            val EXO_DOWNLOAD_SIZE = Key("exo_download_size")
-            //</editor-fold>
-            //<editor-fold desc="Notification">
-            val MEDIA_NOTIFICATION_FIRST_ICON = Key("media_notification_first_icon")
-            val MEDIA_NOTIFICATION_SECOND_ICON = Key("media_notification_second_icon")
-            //</editor-fold>
-            //<editor-fold desc="Lyrics">
-            val LYRICS_SHOW_THUMBNAIL = Key("lyrics_show_thumbnail")
-            val LYRICS_JUMP_ON_TAP = Key("lyrics_jump_on_tap")
-            val LYRICS_SHOW_ACCENT_BACKGROUND = Key("lyrics_show_accent_background")
-            val LYRICS_SYNCHRONIZED = Key("lyrics_synchronized")
-            val LYRICS_SHOW_SECOND_LINE = Key("lyrics_show_second_line")
-            val LYRICS_ANIMATE_SIZE = Key("lyrics_animate_size")
-            val LYRICS_LANDSCAPE_CONTROLS = Key("lyrics_landscape_controls")
-            val LYRICS_COLOR = Key("lyrics_color")
-            val LYRICS_OUTLINE = Key("lyrics_outline")
-            val LYRICS_FONT_SIZE = Key("lyrics_font_size")
-            val LYRICS_ROMANIZATION_TYPE = Key("lyrics_romanization_type")
-            val LYRICS_BACKGROUND = Key("lyrics_background")
-            val LYRICS_HIGHLIGHT = Key("lyrics_highlight")
-            val LYRICS_ALIGNMENT = Key("lyrics_alignment")
-            val LYRICS_SIZE = Key("lyrics_size")
-            val LYRICS_SIZE_LANDSCAPE = Key("lyrics_size_landscape")
-            //</editor-fold>
-            //<editor-fold desc="Page type">
-            val HOME_ARTIST_TYPE = Key("home_artist_type")
-            val HOME_ALBUM_TYPE = Key("home_album_type")
-            val HOME_SONGS_TYPE = Key("home_songs_type")
-            val HISTORY_PAGE_TYPE = Key("history_page_type")
-            val HOME_LIBRARY_TYPE = Key("home_library_type")
-            //</editor-fold>
-            //<editor-fold desc="Audio">
-            val AUDIO_SKIP_SILENCE = Key("audio_skip_silence")
-            val AUDIO_VOLUME_NORMALIZATION = Key("audio_volume_normalization")
-            val AUDIO_SHAKE_TO_SKIP = Key("audio_shake_to_skip")
-            val AUDIO_VOLUME_BUTTONS_CHANGE_SONG = Key("audio_volume_buttons_change_song")
-            val AUDIO_BASS_BOOSTED = Key("audio_bass_boosted")
-            val AUDIO_SMART_PAUSE_DURING_CALLS = Key("audio_smart_pause_during_calls")
-            val AUDIO_SPEED = Key("audio_speed")
-            val AUDIO_FADE_DURATION = Key("audio_fade_duration")
-            val AUDIO_QUALITY = Key("audio_quality")
-            val AUDIO_VOLUME_NORMALIZATION_TARGET = Key("audio_volume_normalization_target")
-            val AUDIO_BASS_BOOST_LEVEL = Key("audio_bass_boost_level")
-            val AUDIO_SPEED_VALUE = Key("audio_speed_value")
-            val AUDIO_PITCH = Key("audio_pitch")
-            val AUDIO_VOLUME = Key("audio_volume")
-            val AUDIO_DEVICE_VOLUME = Key("audio_device_volume")
-            val AUDIO_MEDLEY_DURATION = Key("audio_medley_duration")
-            val AUDIO_REVERB_PRESET = Key("audio_reverb_preset")
-            //</editor-fold>
-            //<editor-fold desc="YouTube">
-            val YOUTUBE_LOGIN = Key("youtube_login")
-            val YOUTUBE_PLAYLISTS_SYNC = Key("youtube_playlists_sync")
-            val YOUTUBE_ARTISTS_SYNC = Key("youtube_artists_sync")
-            val YOUTUBE_ALBUMS_SYNC = Key("youtube_albums_sync")
-            val YOUTUBE_VISITOR_DATA = Key("youtube_visitor_data")
-            val YOUTUBE_SYNC_ID = Key("youtube_sync_id")
-            val YOUTUBE_COOKIES = Key("youtube_cookies")
-            val YOUTUBE_ACCOUNT_NAME = Key("youtube_account_name")
-            val YOUTUBE_ACCOUNT_EMAIL = Key("youtube_account_email")
-            val YOUTUBE_SELF_CHANNEL_HANDLE = Key("youtube_self_channel_handle")
-            val YOUTUBE_ACCOUNT_AVATAR = Key("youtube_account_avatar")
-            val YOUTUBE_LAST_VIDEO_ID = Key("youtube_last_video_id")
-            val YOUTUBE_LAST_VIDEO_SECONDS = Key("youtube_last_video_seconds")
-            //</editor-fold>
-            //<editor-fold desc="Quick picks">
-            val QUICK_PICKS_SHOW_TIPS = Key("quick_picks_show_tips")
-            val QUICK_PICKS_SHOW_RELATED_ALBUMS = Key("quick_picks_show_related_albums")
-            val QUICK_PICKS_SHOW_RELATED_ARTISTS = Key("quick_picks_show_related_artists")
-            val QUICK_PICKS_SHOW_NEW_ALBUMS_ARTISTS = Key("quick_picks_show_new_albums_artists")
-            val QUICK_PICKS_SHOW_NEW_ALBUMS = Key("quick_picks_show_new_albums")
-            val QUICK_PICKS_SHOW_MIGHT_LIKE_PLAYLISTS = Key("quick_picks_show_might_like_playlists")
-            val QUICK_PICKS_SHOW_MOODS_AND_GENRES = Key("quick_picks_show_moods_and_genres")
-            val QUICK_PICKS_SHOW_MONTHLY_PLAYLISTS = Key("quick_picks_show_monthly_playlists")
-            val QUICK_PICKS_SHOW_CHARTS = Key("quick_picks_show_charts")
-            val QUICK_PICKS_PAGE = Key("quick_picks_page")
-            val QUICK_PICKS_TYPE = Key("quick_picks_type")
-            val QUICK_PICKS_MIN_DURATION = Key("quick_picks_min_duration")
-            //</editor-fold>
-            //<editor-fold desc="Discord">
-            val DISCORD_LOGIN = Key("discord_login")
-            val DISCORD_ACCESS_TOKEN = Key("discord_access_token")
-            //</editor-fold>
-            //<editor-fold desc="Proxy">
-            val IS_PROXY_ENABLED = Key("is_proxy_enabled")
-            val PROXY_SCHEME = Key("proxy_scheme")
-            val PROXY_HOST = Key("proxy_host")
-            val PROXY_PORT = Key("proxy_port")
-            //</editor-fold>
-            //<editor-fold desc="Custom light colors">
-            val CUSTOM_LIGHT_THEME_BACKGROUND_0 = Key("custom_light_theme_background_0")
-            val CUSTOM_LIGHT_THEME_BACKGROUND_1 = Key("custom_light_theme_background_1")
-            val CUSTOM_LIGHT_THEME_BACKGROUND_2 = Key("custom_light_theme_background_2")
-            val CUSTOM_LIGHT_THEME_BACKGROUND_3 = Key("custom_light_theme_background_3")
-            val CUSTOM_LIGHT_THEME_BACKGROUND_4 = Key("custom_light_theme_background_4")
-            val CUSTOM_LIGHT_TEXT = Key("custom_light_text")
-            val CUSTOM_LIGHT_TEXT_SECONDARY = Key("custom_light_text_secondary")
-            val CUSTOM_LIGHT_TEXT_DISABLED = Key("custom_light_text_disabled")
-            val CUSTOM_LIGHT_PLAY_BUTTON = Key("custom_light_play_button")
-            val CUSTOM_LIGHT_ACCENT = Key("custom_light_accent")
-            //</editor-fold>
-            //<editor-fold defaultstate="collapsed" desc="Custom dark theme">
-            val CUSTOM_DARK_THEME_BACKGROUND_0 = Key("custom_dark_theme_background_0")
-            val CUSTOM_DARK_THEME_BACKGROUND_1 = Key("custom_dark_theme_background_1")
-            val CUSTOM_DARK_THEME_BACKGROUND_2 = Key("custom_dark_theme_background_2")
-            val CUSTOM_DARK_THEME_BACKGROUND_3 = Key("custom_dark_theme_background_3")
-            val CUSTOM_DARK_THEME_BACKGROUND_4 = Key("custom_dark_theme_background_4")
-            val CUSTOM_DARK_TEXT = Key("custom_dark_text")
-            val CUSTOM_DARK_TEXT_SECONDARY = Key("custom_dark_text_secondary")
-            val CUSTOM_DARK_TEXT_DISABLED = Key("custom_dark_text_disabled")
-            val CUSTOM_DARK_PLAY_BUTTON = Key("custom_dark_play_button")
-            val CUSTOM_DARK_ACCENT = Key("custom_dark_accent")
-            //</editor-fold>
-            //<editor-fold desc="Logging">
-            val RUNTIME_LOG = Key("runtime_log")
-            val RUNTIME_LOG_SHARED = Key("runtime_log_shared")
-            val RUNTIME_LOG_SEVERITY = Key("runtime_log_severity")
-            val RUNTIME_LOG_LEVEL = Key("runtime_log_level")
-            val RUNTIME_LOG_FILE_COUNT = Key("runtime_log_file_count")
-            val RUNTIME_LOG_MAX_SIZE_PER_FILE = Key("runtime_log_max_size_per_file")
-            //</editor-fold>
-            //<editor-fold desc="Thumbnail roundness">
-            val SONG_THUMBNAIL_ROUNDNESS_PERCENT = Key("song_thumbnail_roundness_percent")
-            val ALBUM_THUMBNAIL_ROUNDNESS_PERCENT = Key("album_thumbnail_roundness_percent")
-            val ARTIST_THUMBNAIL_ROUNDNESS_PERCENT = Key("artist_thumbnail_roundness_percent")
-            val PLAYLIST_THUMBNAIL_ROUNDNESS_PERCENT = Key("playlist_thumbnail_roundness_percent")
-            //</editor-fold>
-            //<editor-fold desc="Platform indicator">
-            val ALBUMS_PLATFORM_INDICATOR = Key("albums_platform_indicator")
-            val ARTISTS_PLATFORM_INDICATOR = Key("artists_platform_indicator")
-            val PLAYLISTS_PLATFORM_INDICATOR = Key("playlists_platform_indicator")
-            //</editor-fold>
+    object Key {
+        //<editor-fold desc="Item size">
+        val HOME_ARTIST_ITEM_SIZE = stringPreferencesKey("home_artist_item_size")
+        val HOME_ALBUM_ITEM_SIZE = stringPreferencesKey("home_album_item_size")
+        val HOME_LIBRARY_ITEM_SIZE = stringPreferencesKey("home_library_item_size")
+        val SONG_THUMBNAIL_SIZE = intPreferencesKey("song_thumbnail_size")
+        val ALBUM_THUMBNAIL_SIZE = intPreferencesKey("album_thumbnail_size")
+        val ARTIST_THUMBNAIL_SIZE = intPreferencesKey("artist_thumbnail_size")
+        val PLAYLIST_THUMBNAIL_SIZE = intPreferencesKey("playlist_thumbnail_size")
+        //</editor-fold>
+        //<editor-fold desc="Sort by">
+        val HOME_SONGS_SORT_BY = stringPreferencesKey("home_songs_sort_by")
+        val HOME_ON_DEVICE_SONGS_SORT_BY = stringPreferencesKey("home_on_device_songs_sort_by")
+        val HOME_ARTISTS_SORT_BY = stringPreferencesKey("home_artists_sort_by")
+        val HOME_ALBUMS_SORT_BY = stringPreferencesKey("home_albums_sort_by")
+        val HOME_LIBRARY_SORT_BY = stringPreferencesKey("home_library_sort_by")
+        val PLAYLIST_SONGS_SORT_BY = stringPreferencesKey("playlist_songs_sort_by")
+        //</editor-fold>
+        //<editor-fold desc="Sort order">
+        val HOME_SONGS_SORT_ORDER = stringPreferencesKey("home_songs_sort_order")
+        val HOME_ARTISTS_SORT_ORDER = stringPreferencesKey("home_artists_sort_order")
+        val HOME_ALBUM_SORT_ORDER = stringPreferencesKey("home_album_sort_order")
+        val HOME_LIBRARY_SORT_ORDER = stringPreferencesKey("home_library_sort_order")
+        val PLAYLIST_SONGS_SORT_ORDER = stringPreferencesKey("playlist_songs_sort_order")
+        //</editor-fold>
+        //<editor-fold desc="Max # of ...">
+        val MAX_NUMBER_OF_SMART_RECOMMENDATIONS = stringPreferencesKey("max_number_of_smart_recommendations")
+        val MAX_NUMBER_OF_STATISTIC_ITEMS = stringPreferencesKey("max_number_of_statistic_items")
+        val MAX_NUMBER_OF_TOP_PLAYED = stringPreferencesKey("max_number_of_top_played")
+        val MAX_NUMBER_OF_SONG_IN_QUEUE = stringPreferencesKey("max_number_of_song_in_queue")
+        val MAX_NUMBER_OF_NEXT_IN_QUEUE = stringPreferencesKey("max_number_of_next_in_queue")
+        //</editor-fold>
+        //<editor-fold desc="Swipe action">
+        val ENABLE_SWIPE_ACTION = booleanPreferencesKey("enable_swipe_action")
+        val QUEUE_SWIPE_LEFT_ACTION = stringPreferencesKey("queue_swipe_left_action")
+        val QUEUE_SWIPE_RIGHT_ACTION = stringPreferencesKey("queue_swipe_right_action")
+        val PLAYLIST_SWIPE_LEFT_ACTION = stringPreferencesKey("playlist_swipe_left_action")
+        val PLAYLIST_SWIPE_RIGHT_ACTION = stringPreferencesKey("playlist_swipe_right_action")
+        val ALBUM_SWIPE_LEFT_ACTION = stringPreferencesKey("album_swipe_left_action")
+        val ALBUM_SWIPE_RIGHT_ACTION = stringPreferencesKey("album_swipe_right_action")
+        //</editor-fold>
+        //<editor-fold desc="Mini player">
+        val MINI_DISABLE_SWIPE_DOWN_TO_DISMISS = booleanPreferencesKey("mini_disable_swipe_down_to_dismiss")
+        val MINI_PLAYER_POSITION = stringPreferencesKey("mini_player_position")
+        val MINI_PLAYER_TYPE = stringPreferencesKey("mini_player_type")
+        val MINI_PLAYER_PROGRESS_BAR = stringPreferencesKey("mini_player_progress_bar")
+        //</editor-fold>
+        //<editor-fold desc="Player">
+        val PLAYER_IS_CONTROLS_EXPANDED = booleanPreferencesKey("player_is_controls_expanded")
+        val PLAYER_SHOW_THUMBNAIL = booleanPreferencesKey("player_show_thumbnail")
+        val PLAYER_BOTTOM_GRADIENT = booleanPreferencesKey("player_bottom_gradient")
+        val PLAYER_EXPANDED = booleanPreferencesKey("player_expanded")
+        val PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED = booleanPreferencesKey("player_thumbnail_horizontal_swipe_disabled")
+        val PLAYER_VISUALIZER = booleanPreferencesKey("player_visualizer")
+        val PLAYER_TAP_THUMBNAIL_FOR_LYRICS = booleanPreferencesKey("player_tap_thumbnail_for_lyrics")
+        val PLAYER_ACTION_ADD_TO_PLAYLIST = booleanPreferencesKey("player_action_add_to_playlist")
+        val PLAYER_ACTION_OPEN_QUEUE_ARROW = booleanPreferencesKey("player_action_open_queue_arrow")
+        val PLAYER_ACTION_DOWNLOAD = booleanPreferencesKey("player_action_download")
+        val PLAYER_ACTION_LOOP = booleanPreferencesKey("player_action_loop")
+        val PLAYER_ACTION_SHOW_LYRICS = booleanPreferencesKey("player_action_show_lyrics")
+        val PLAYER_ACTION_TOGGLE_EXPAND = booleanPreferencesKey("player_action_toggle_expand")
+        val PLAYER_ACTION_SHUFFLE = booleanPreferencesKey("player_action_shuffle")
+        val PLAYER_ACTION_SLEEP_TIMER = booleanPreferencesKey("player_action_sleep_timer")
+        val PLAYER_ACTION_SHOW_MENU = booleanPreferencesKey("player_action_show_menu")
+        val PLAYER_ACTION_START_RADIO = booleanPreferencesKey("player_action_start_radio")
+        val PLAYER_ACTION_OPEN_EQUALIZER = booleanPreferencesKey("player_action_open_equalizer")
+        val PLAYER_ACTION_DISCOVER = booleanPreferencesKey("player_action_discover")
+        val PLAYER_ACTION_TOGGLE_VIDEO = booleanPreferencesKey("player_action_toggle_video")
+        val PLAYER_ACTION_LYRICS_POPUP_MESSAGE = booleanPreferencesKey("player_action_lyrics_popup_message")
+        val PLAYER_TRANSPARENT_ACTIONS_BAR = booleanPreferencesKey("player_transparent_actions_bar")
+        val PLAYER_ACTION_BUTTONS_SPACED_EVENLY = booleanPreferencesKey("player_action_buttons_spaced_evenly")
+        val PLAYER_ACTIONS_BAR_TAP_TO_OPEN_QUEUE = booleanPreferencesKey("player_actions_bar_tap_to_open_queue")
+        val PLAYER_ACTIONS_BAR_SWIPE_UP_TO_OPEN_QUEUE = booleanPreferencesKey("player_actions_bar_swipe_up_to_open_queue")
+        val PLAYER_IS_ACTIONS_BAR_EXPANDED = booleanPreferencesKey("player_is_actions_bar_expanded")
+        val PLAYER_SHOW_TOTAL_QUEUE_TIME = booleanPreferencesKey("player_show_total_queue_time")
+        val PLAYER_IS_QUEUE_DURATION_EXPANDED = booleanPreferencesKey("player_is_queue_duration_expanded")
+        val PLAYER_SHOW_NEXT_IN_QUEUE = booleanPreferencesKey("player_show_next_in_queue")
+        val PLAYER_IS_NEXT_IN_QUEUE_EXPANDED = booleanPreferencesKey("player_is_next_in_queue_expanded")
+        val PLAYER_SHOW_NEXT_IN_QUEUE_THUMBNAIL = booleanPreferencesKey("player_show_next_in_queue_thumbnail")
+        val PLAYER_SHOW_SONGS_REMAINING_TIME = booleanPreferencesKey("player_show_songs_remaining_time")
+        val PLAYER_SHOW_SEEK_BUTTONS = booleanPreferencesKey("player_show_seek_buttons")
+        val PLAYER_SHOW_TOP_ACTIONS_BAR = booleanPreferencesKey("player_show_top_actions_bar")
+        val PLAYER_IS_CONTROL_AND_TIMELINE_SWAPPED = booleanPreferencesKey("player_is_control_and_timeline_swapped")
+        val PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER = booleanPreferencesKey("player_show_thumbnail_on_visualizer")
+        val PLAYER_SHRINK_THUMBNAIL_ON_PAUSE = booleanPreferencesKey("player_shrink_thumbnail_on_pause")
+        val PLAYER_KEEP_MINIMIZED = booleanPreferencesKey("player_keep_minimized")
+        val PLAYER_BACKGROUND_BLUR = booleanPreferencesKey("player_background_blur")
+        val PLAYER_BACKGROUND_FADING_EDGE = booleanPreferencesKey("player_background_fading_edge")
+        val PLAYER_STATS_FOR_NERDS = booleanPreferencesKey("player_stats_for_nerds")
+        val PLAYER_IS_STATS_FOR_NERDS_EXPANDED = booleanPreferencesKey("player_is_stats_for_nerds_expanded")
+        val PLAYER_THUMBNAILS_CAROUSEL = booleanPreferencesKey("player_thumbnails_carousel")
+        val PLAYER_THUMBNAIL_ANIMATION = booleanPreferencesKey("player_thumbnail_animation")
+        val PLAYER_THUMBNAIL_ROTATION = booleanPreferencesKey("player_thumbnail_rotation")
+        val PLAYER_IS_TITLE_EXPANDED = booleanPreferencesKey("player_is_title_expanded")
+        val PLAYER_IS_TIMELINE_EXPANDED = booleanPreferencesKey("player_is_timeline_expanded")
+        val PLAYER_SONG_INFO_ICON = booleanPreferencesKey("player_song_info_icon")
+        val PLAYER_TOP_PADDING = booleanPreferencesKey("player_top_padding")
+        val PLAYER_EXTRA_SPACE = booleanPreferencesKey("player_extra_space")
+        val PLAYER_ROTATING_ALBUM_COVER = booleanPreferencesKey("player_rotating_album_cover")
+        val PLAYER_CONTROLS_TYPE = stringPreferencesKey("player_controls_type")
+        val PLAYER_INFO_TYPE = stringPreferencesKey("player_info_type")
+        val PLAYER_TYPE = stringPreferencesKey("player_type")
+        val PLAYER_TIMELINE_TYPE = stringPreferencesKey("player_timeline_type")
+        val PLAYER_PORTRAIT_THUMBNAIL_SIZE = stringPreferencesKey("player_portrait_thumbnail_size")
+        val PLAYER_LANDSCAPE_THUMBNAIL_SIZE = stringPreferencesKey("player_landscape_thumbnail_size")
+        val PLAYER_TIMELINE_SIZE = stringPreferencesKey("player_timeline_size")
+        val PLAYER_PLAY_BUTTON_TYPE = stringPreferencesKey("player_play_button_type")
+        val PLAYER_BACKGROUND = stringPreferencesKey("player_background")
+        val PLAYER_THUMBNAIL_TYPE = stringPreferencesKey("player_thumbnail_type")
+        val PLAYER_NO_THUMBNAIL_SWIPE_ANIMATION = stringPreferencesKey("player_no_thumbnail_swipe_animation")
+        val PLAYER_THUMBNAIL_VINYL_SIZE = floatPreferencesKey("player_thumbnail_vinyl_size")
+        val PLAYER_THUMBNAIL_FADE = floatPreferencesKey("player_thumbnail_fade")
+        val PLAYER_THUMBNAIL_FADE_EX = floatPreferencesKey("player_thumbnail_fade_ex")
+        val PLAYER_THUMBNAIL_SPACING = floatPreferencesKey("player_thumbnail_spacing")
+        val PLAYER_THUMBNAIL_SPACING_LANDSCAPE = floatPreferencesKey("player_thumbnail_spacing_landscape")
+        val PLAYER_BACKGROUND_BLUR_STRENGTH = floatPreferencesKey("player_background_blur_strength")
+        val PLAYER_BACKGROUND_BACK_DROP = floatPreferencesKey("player_background_back_drop")
+        val PLAYER_CURRENT_VISUALIZER = intPreferencesKey("player_current_visualizer")
+        //</editor-fold>
+        //<editor-fold desc="Cache">
+        val EXO_CACHE_LOCATION = stringPreferencesKey("exo_cache_location")
+        val IMAGE_CACHE_SIZE = longPreferencesKey("image_cache_size")
+        val EXO_CACHE_SIZE = longPreferencesKey("exo_cache_size")
+        val EXO_DOWNLOAD_SIZE = longPreferencesKey("exo_download_size")
+        //</editor-fold>
+        //<editor-fold desc="Notification">
+        val MEDIA_NOTIFICATION_FIRST_ICON = stringPreferencesKey("media_notification_first_icon")
+        val MEDIA_NOTIFICATION_SECOND_ICON = stringPreferencesKey("media_notification_second_icon")
+        //</editor-fold>
+        //<editor-fold desc="Lyrics">
+        val LYRICS_SHOW_THUMBNAIL = booleanPreferencesKey("lyrics_show_thumbnail")
+        val LYRICS_JUMP_ON_TAP = booleanPreferencesKey("lyrics_jump_on_tap")
+        val LYRICS_SHOW_ACCENT_BACKGROUND = booleanPreferencesKey("lyrics_show_accent_background")
+        val LYRICS_SYNCHRONIZED = booleanPreferencesKey("lyrics_synchronized")
+        val LYRICS_SHOW_SECOND_LINE = booleanPreferencesKey("lyrics_show_second_line")
+        val LYRICS_ANIMATE_SIZE = booleanPreferencesKey("lyrics_animate_size")
+        val LYRICS_LANDSCAPE_CONTROLS = booleanPreferencesKey("lyrics_landscape_controls")
+        val LYRICS_COLOR = stringPreferencesKey("lyrics_color")
+        val LYRICS_OUTLINE = stringPreferencesKey("lyrics_outline")
+        val LYRICS_FONT_SIZE = stringPreferencesKey("lyrics_font_size")
+        val LYRICS_ROMANIZATION_TYPE = stringPreferencesKey("lyrics_romanization_type")
+        val LYRICS_BACKGROUND = stringPreferencesKey("lyrics_background")
+        val LYRICS_HIGHLIGHT = stringPreferencesKey("lyrics_highlight")
+        val LYRICS_ALIGNMENT = stringPreferencesKey("lyrics_alignment")
+        val LYRICS_SIZE = floatPreferencesKey("lyrics_size")
+        val LYRICS_SIZE_LANDSCAPE = floatPreferencesKey("lyrics_size_landscape")
+        //</editor-fold>
+        //<editor-fold desc="Page type">
+        val HOME_ARTIST_TYPE = stringPreferencesKey("home_artist_type")
+        val HOME_ALBUM_TYPE = stringPreferencesKey("home_album_type")
+        val HOME_SONGS_TYPE = stringPreferencesKey("home_songs_type")
+        val HISTORY_PAGE_TYPE = stringPreferencesKey("history_page_type")
+        val HOME_LIBRARY_TYPE = stringPreferencesKey("home_library_type")
+        //</editor-fold>
+        //<editor-fold desc="Audio">
+        val AUDIO_SKIP_SILENCE = booleanPreferencesKey("audio_skip_silence")
+        val AUDIO_VOLUME_NORMALIZATION = booleanPreferencesKey("audio_volume_normalization")
+        val AUDIO_SHAKE_TO_SKIP = booleanPreferencesKey("audio_shake_to_skip")
+        val AUDIO_VOLUME_BUTTONS_CHANGE_SONG = booleanPreferencesKey("audio_volume_buttons_change_song")
+        val AUDIO_BASS_BOOSTED = booleanPreferencesKey("audio_bass_boosted")
+        val AUDIO_SMART_PAUSE_DURING_CALLS = booleanPreferencesKey("audio_smart_pause_during_calls")
+        val AUDIO_SPEED = booleanPreferencesKey("audio_speed")
+        val AUDIO_FADE_DURATION = stringPreferencesKey("audio_fade_duration")
+        val AUDIO_QUALITY = stringPreferencesKey("audio_quality")
+        val AUDIO_VOLUME_NORMALIZATION_TARGET = floatPreferencesKey("audio_volume_normalization_target")
+        val AUDIO_BASS_BOOST_LEVEL = floatPreferencesKey("audio_bass_boost_level")
+        val AUDIO_SPEED_VALUE = floatPreferencesKey("audio_speed_value")
+        val AUDIO_PITCH = floatPreferencesKey("audio_pitch")
+        val AUDIO_VOLUME = floatPreferencesKey("audio_volume")
+        val AUDIO_DEVICE_VOLUME = floatPreferencesKey("audio_device_volume")
+        val AUDIO_MEDLEY_DURATION = floatPreferencesKey("audio_medley_duration")
+        val AUDIO_REVERB_PRESET = intPreferencesKey("audio_reverb_preset")
+        //</editor-fold>
+        //<editor-fold desc="YouTube">
+        val YOUTUBE_LOGIN = booleanPreferencesKey("youtube_login")
+        val YOUTUBE_PLAYLISTS_SYNC = booleanPreferencesKey("youtube_playlists_sync")
+        val YOUTUBE_ARTISTS_SYNC = booleanPreferencesKey("youtube_artists_sync")
+        val YOUTUBE_ALBUMS_SYNC = booleanPreferencesKey("youtube_albums_sync")
+        val YOUTUBE_VISITOR_DATA = stringPreferencesKey("youtube_visitor_data")
+        val YOUTUBE_SYNC_ID = stringPreferencesKey("youtube_sync_id")
+        val YOUTUBE_COOKIES = stringPreferencesKey("youtube_cookies")
+        val YOUTUBE_ACCOUNT_NAME = stringPreferencesKey("youtube_account_name")
+        val YOUTUBE_ACCOUNT_EMAIL = stringPreferencesKey("youtube_account_email")
+        val YOUTUBE_SELF_CHANNEL_HANDLE = stringPreferencesKey("youtube_self_channel_handle")
+        val YOUTUBE_ACCOUNT_AVATAR = stringPreferencesKey("youtube_account_avatar")
+        val YOUTUBE_LAST_VIDEO_ID = stringPreferencesKey("youtube_last_video_id")
+        val YOUTUBE_LAST_VIDEO_SECONDS = floatPreferencesKey("youtube_last_video_seconds")
+        //</editor-fold>
+        //<editor-fold desc="Quick picks">
+        val QUICK_PICKS_SHOW_TIPS = booleanPreferencesKey("quick_picks_show_tips")
+        val QUICK_PICKS_SHOW_RELATED_ALBUMS = booleanPreferencesKey("quick_picks_show_related_albums")
+        val QUICK_PICKS_SHOW_RELATED_ARTISTS = booleanPreferencesKey("quick_picks_show_related_artists")
+        val QUICK_PICKS_SHOW_NEW_ALBUMS_ARTISTS = booleanPreferencesKey("quick_picks_show_new_albums_artists")
+        val QUICK_PICKS_SHOW_NEW_ALBUMS = booleanPreferencesKey("quick_picks_show_new_albums")
+        val QUICK_PICKS_SHOW_MIGHT_LIKE_PLAYLISTS = booleanPreferencesKey("quick_picks_show_might_like_playlists")
+        val QUICK_PICKS_SHOW_MOODS_AND_GENRES = booleanPreferencesKey("quick_picks_show_moods_and_genres")
+        val QUICK_PICKS_SHOW_MONTHLY_PLAYLISTS = booleanPreferencesKey("quick_picks_show_monthly_playlists")
+        val QUICK_PICKS_SHOW_CHARTS = booleanPreferencesKey("quick_picks_show_charts")
+        val QUICK_PICKS_PAGE = booleanPreferencesKey("quick_picks_page")
+        val QUICK_PICKS_TYPE = stringPreferencesKey("quick_picks_type")
+        val QUICK_PICKS_MIN_DURATION = stringPreferencesKey("quick_picks_min_duration")
+        //</editor-fold>
+        //<editor-fold desc="Discord">
+        val DISCORD_LOGIN = booleanPreferencesKey("discord_login")
+        val DISCORD_ACCESS_TOKEN = stringPreferencesKey("discord_access_token")
+        //</editor-fold>
+        //<editor-fold desc="Proxy">
+        val IS_PROXY_ENABLED = booleanPreferencesKey("is_proxy_enabled")
+        val PROXY_SCHEME = stringPreferencesKey("proxy_scheme")
+        val PROXY_HOST = stringPreferencesKey("proxy_host")
+        val PROXY_PORT = intPreferencesKey("proxy_port")
+        //</editor-fold>
+        //<editor-fold desc="Custom light colors">
+        val CUSTOM_LIGHT_THEME_BACKGROUND_0 = longPreferencesKey("custom_light_theme_background_0")
+        val CUSTOM_LIGHT_THEME_BACKGROUND_1 = longPreferencesKey("custom_light_theme_background_1")
+        val CUSTOM_LIGHT_THEME_BACKGROUND_2 = longPreferencesKey("custom_light_theme_background_2")
+        val CUSTOM_LIGHT_THEME_BACKGROUND_3 = longPreferencesKey("custom_light_theme_background_3")
+        val CUSTOM_LIGHT_THEME_BACKGROUND_4 = longPreferencesKey("custom_light_theme_background_4")
+        val CUSTOM_LIGHT_TEXT = longPreferencesKey("custom_light_text")
+        val CUSTOM_LIGHT_TEXT_SECONDARY = longPreferencesKey("custom_light_text_secondary")
+        val CUSTOM_LIGHT_TEXT_DISABLED = longPreferencesKey("custom_light_text_disabled")
+        val CUSTOM_LIGHT_PLAY_BUTTON = longPreferencesKey("custom_light_play_button")
+        val CUSTOM_LIGHT_ACCENT = longPreferencesKey("custom_light_accent")
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Custom dark theme">
+        val CUSTOM_DARK_THEME_BACKGROUND_0 = longPreferencesKey("custom_dark_theme_background_0")
+        val CUSTOM_DARK_THEME_BACKGROUND_1 = longPreferencesKey("custom_dark_theme_background_1")
+        val CUSTOM_DARK_THEME_BACKGROUND_2 = longPreferencesKey("custom_dark_theme_background_2")
+        val CUSTOM_DARK_THEME_BACKGROUND_3 = longPreferencesKey("custom_dark_theme_background_3")
+        val CUSTOM_DARK_THEME_BACKGROUND_4 = longPreferencesKey("custom_dark_theme_background_4")
+        val CUSTOM_DARK_TEXT = longPreferencesKey("custom_dark_text")
+        val CUSTOM_DARK_TEXT_SECONDARY = longPreferencesKey("custom_dark_text_secondary")
+        val CUSTOM_DARK_TEXT_DISABLED = longPreferencesKey("custom_dark_text_disabled")
+        val CUSTOM_DARK_PLAY_BUTTON = longPreferencesKey("custom_dark_play_button")
+        val CUSTOM_DARK_ACCENT = longPreferencesKey("custom_dark_accent")
+        //</editor-fold>
+        //<editor-fold desc="Logging">
+        val RUNTIME_LOG = booleanPreferencesKey("runtime_log")
+        val RUNTIME_LOG_SHARED = booleanPreferencesKey("runtime_log_shared")
+        val RUNTIME_LOG_SEVERITY = stringPreferencesKey("runtime_log_severity")
+        val RUNTIME_LOG_LEVEL = intPreferencesKey("runtime_log_level")
+        val RUNTIME_LOG_FILE_COUNT = intPreferencesKey("runtime_log_file_count")
+        val RUNTIME_LOG_MAX_SIZE_PER_FILE = longPreferencesKey("runtime_log_max_size_per_file")
+        //</editor-fold>
+        //<editor-fold desc="Thumbnail roundness">
+        val SONG_THUMBNAIL_ROUNDNESS_PERCENT = intPreferencesKey("song_thumbnail_roundness_percent")
+        val ALBUM_THUMBNAIL_ROUNDNESS_PERCENT = intPreferencesKey("album_thumbnail_roundness_percent")
+        val ARTIST_THUMBNAIL_ROUNDNESS_PERCENT = intPreferencesKey("artist_thumbnail_roundness_percent")
+        val PLAYLIST_THUMBNAIL_ROUNDNESS_PERCENT = intPreferencesKey("playlist_thumbnail_roundness_percent")
+        //</editor-fold>
+        //<editor-fold desc="Platform indicator">
+        val ALBUMS_PLATFORM_INDICATOR = stringPreferencesKey("albums_platform_indicator")
+        val ARTISTS_PLATFORM_INDICATOR = stringPreferencesKey("artists_platform_indicator")
+        val PLAYLISTS_PLATFORM_INDICATOR = stringPreferencesKey("playlists_platform_indicator")
+        //</editor-fold>
 
-            val QUEUE_AUTO_APPEND = Key("queue_auto_append")
-            val SHOW_CHECK_UPDATE_STATUS = Key("show_check_update_status")
-            val MARQUEE_TEXT_EFFECT = Key("marquee_text_effect")
-            val PARENTAL_CONTROL = Key("parental_control")
-            val ROTATION_EFFECT = Key("rotation_effect")
-            val TRANSPARENT_TIMELINE = Key("transparent_timeline")
-            val BLACK_GRADIENT = Key("black_gradient")
-            val TEXT_OUTLINE = Key("text_outline")
-            val SHOW_FLOATING_ICON = Key("show_floating_icon")
-            val ZOOM_OUT_ANIMATION = Key("zoom_out_animation")
-            val ENABLE_DISCOVER = Key("enable_discover")
-            val ENABLE_PERSISTENT_QUEUE = Key("enable_persistent_queue")
-            val RESUME_PLAYBACK_ON_STARTUP = Key("resume_playback_on_startup")
-            val RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE = Key("resume_playback_when_connect_to_audio_device")
-            val CLOSE_APP_ON_BACK = Key("close_app_on_back")
-            val PLAYBACK_SKIP_ON_ERROR = Key("playback_skip_on_error")
-            val USE_SYSTEM_FONT = Key("use_system_font")
-            val APPLY_FONT_PADDING = Key("apply_font_padding")
-            val SHOW_SEARCH_IN_NAVIGATION_BAR = Key("show_search_in_navigation_bar")
-            val SHOW_STATS_IN_NAVIGATION_BAR = Key("show_stats_in_navigation_bar")
-            val SHOW_LISTENING_STATS = Key("show_listening_stats")
-            val HOME_SONGS_SHOW_FAVORITES_CHIP = Key("home_songs_show_favorites_chip")
-            val HOME_SONGS_SHOW_CACHED_CHIP = Key("home_songs_show_cached_chip")
-            val HOME_SONGS_SHOW_DOWNLOADED_CHIP = Key("home_songs_show_downloaded_chip")
-            val HOME_SONGS_SHOW_MOST_PLAYED_CHIP = Key("home_songs_show_most_played_chip")
-            val HOME_SONGS_SHOW_ON_DEVICE_CHIP = Key("home_songs_show_on_device_chip")
-            val HOME_SONGS_ON_DEVICE_SHOW_FOLDERS = Key("home_songs_on_device_show_folders")
-            val HOME_SONGS_INCLUDE_ON_DEVICE_IN_ALL = Key("home_songs_include_on_device_in_all")
-            val MONTHLY_PLAYLIST_COMPILATION = Key("monthly_playlist_compilation")
-            val SHOW_MONTHLY_PLAYLISTS = Key("show_monthly_playlists")
-            val SHOW_PINNED_PLAYLISTS = Key("show_pinned_playlists")
-            val SHOW_PLAYLIST_INDICATOR = Key("show_playlist_indicator")
-            val PAUSE_WHEN_VOLUME_SET_TO_ZERO = Key("pause_when_volume_set_to_zero")
-            val PAUSE_HISTORY = Key("pause_history")
-            val IS_PIP_ENABLED = Key("is_pip_enabled")
-            val IS_AUTO_PIP_ENABLED = Key("is_auto_pip_enabled")
-            val AUTO_DOWNLOAD = Key("auto_download")
-            val AUTO_DOWNLOAD_ON_LIKE = Key("auto_download_on_like")
-            val AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED = Key("auto_download_on_album_bookmarked")
-            val KEEP_SCREEN_ON = Key("keep_screen_on")
-            val AUTO_SYNC = Key("auto_sync")
-            val PAUSE_SEARCH_HISTORY = Key("pause_search_history")
-            val IS_DATA_KEY_LOADED = Key("is_data_key_loaded")
-            val LOCAL_PLAYLIST_SMART_RECOMMENDATION = Key("local_playlist_smart_recommendation")
-            val IS_CONNECTION_METERED = Key("is_connection_metered")
-            val SINGLE_BACK_FROM_SEARCH = Key("single_back_from_search")
-            val SONG_EMPTY_DURATION_PLACEHOLDER = Key("song_empty_duration_placeholder")
-            val DOH_SERVER = Key("doh_server")
-            val HOME_SONGS_TOP_PLAYLIST_PERIOD = Key("home_songs_top_playlist_period")
-            val MENU_STYLE = Key("menu_style")
-            val MAIN_THEME = Key("main_theme")
-            val COLOR_PALETTE = Key("color_palette")
-            val THEME_MODE = Key("theme_mode")
-            val STARTUP_SCREEN = Key("startup_screen")
-            val FONT = Key("font")
-            val NAVIGATION_BAR_POSITION = Key("navigation_bar_position")
-            val NAVIGATION_BAR_TYPE = Key("navigation_bar_type")
-            val PAUSE_BETWEEN_SONGS = Key("pause_between_songs")
-            val THUMBNAIL_BORDER_RADIUS = Key("thumbnail_border_radius")
-            val TRANSITION_EFFECT = Key("transition_effect")
-            val LIMIT_SONGS_WITH_DURATION = Key("limit_songs_with_duration")
-            val QUEUE_TYPE = Key("queue_type")
-            val QUEUE_LOOP_TYPE = Key("queue_loop_type")
-            val CAROUSEL_SIZE = Key("carousel_size")
-            val THUMBNAIL_TYPE = Key("thumbnail_type")
-            val LIKE_ICON = Key("like_icon")
-            val LIVE_WALLPAPER = Key("live_wallpaper")
-            val ANIMATED_GRADIENT = Key("animated_gradient")
-            val NOW_PLAYING_INDICATOR = Key("now_playing_indicator")
-            val PIP_MODULE = Key("pip_module")
-            val CHECK_UPDATE = Key("check_update")
-            val APP_LANGUAGE = Key("app_language")
-            val OTHER_APP_LANGUAGE = Key("other_app_language")
-            val HOME_ARTIST_AND_ALBUM_FILTER = Key("home_artist_and_album_filter")
-            val STATISTIC_PAGE_CATEGORY = Key("statistic_page_category")
-            val CUSTOM_COLOR = Key("custom_color")
-            val APP_REGION = Key("app_region")
-            val LOCAL_SONGS_FOLDER = Key("local_songs_folder")
-            val SEEN_CHANGELOGS_VERSION = Key("seen_changelogs_version")
-            val FLOATING_ICON_X_OFFSET = Key("floating_icon_x_offset")
-            val FLOATING_ICON_Y_OFFSET = Key("floating_icon_y_offset")
-            val MULTI_FLOATING_ICON_X_OFFSET = Key("multi_floating_icon_x_offset")
-            val MULTI_FLOATING_ICON_Y_OFFSET = Key("multi_floating_icon_y_offset")
-            val SMART_REWIND = Key("smart_rewind")
-            val SEARCH_RESULTS_TAB_INDEX = Key("search_results_tab_index")
-            val HOME_TAB_INDEX = Key("home_tab_index")
-            val ARTIST_SCREEN_TAB_INDEX = Key("artist_screen_tab_index")
-            val LIVE_WALLPAPER_RESET_DURATION = Key("live_wallpaper_reset_duration")
-        }
+        val QUEUE_AUTO_APPEND = booleanPreferencesKey("queue_auto_append")
+        val SHOW_CHECK_UPDATE_STATUS = booleanPreferencesKey("show_check_update_status")
+        val MARQUEE_TEXT_EFFECT = booleanPreferencesKey("marquee_text_effect")
+        val PARENTAL_CONTROL = booleanPreferencesKey("parental_control")
+        val ROTATION_EFFECT = booleanPreferencesKey("rotation_effect")
+        val TRANSPARENT_TIMELINE = booleanPreferencesKey("transparent_timeline")
+        val BLACK_GRADIENT = booleanPreferencesKey("black_gradient")
+        val TEXT_OUTLINE = booleanPreferencesKey("text_outline")
+        val SHOW_FLOATING_ICON = booleanPreferencesKey("show_floating_icon")
+        val ZOOM_OUT_ANIMATION = booleanPreferencesKey("zoom_out_animation")
+        val ENABLE_DISCOVER = booleanPreferencesKey("enable_discover")
+        val ENABLE_PERSISTENT_QUEUE = booleanPreferencesKey("enable_persistent_queue")
+        val RESUME_PLAYBACK_ON_STARTUP = booleanPreferencesKey("resume_playback_on_startup")
+        val RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE = booleanPreferencesKey("resume_playback_when_connect_to_audio_device")
+        val CLOSE_APP_ON_BACK = booleanPreferencesKey("close_app_on_back")
+        val PLAYBACK_SKIP_ON_ERROR = booleanPreferencesKey("playback_skip_on_error")
+        val USE_SYSTEM_FONT = booleanPreferencesKey("use_system_font")
+        val APPLY_FONT_PADDING = booleanPreferencesKey("apply_font_padding")
+        val SHOW_SEARCH_IN_NAVIGATION_BAR = booleanPreferencesKey("show_search_in_navigation_bar")
+        val SHOW_STATS_IN_NAVIGATION_BAR = booleanPreferencesKey("show_stats_in_navigation_bar")
+        val SHOW_LISTENING_STATS = booleanPreferencesKey("show_listening_stats")
+        val HOME_SONGS_SHOW_FAVORITES_CHIP = booleanPreferencesKey("home_songs_show_favorites_chip")
+        val HOME_SONGS_SHOW_CACHED_CHIP = booleanPreferencesKey("home_songs_show_cached_chip")
+        val HOME_SONGS_SHOW_DOWNLOADED_CHIP = booleanPreferencesKey("home_songs_show_downloaded_chip")
+        val HOME_SONGS_SHOW_MOST_PLAYED_CHIP = booleanPreferencesKey("home_songs_show_most_played_chip")
+        val HOME_SONGS_SHOW_ON_DEVICE_CHIP = booleanPreferencesKey("home_songs_show_on_device_chip")
+        val HOME_SONGS_ON_DEVICE_SHOW_FOLDERS = booleanPreferencesKey("home_songs_on_device_show_folders")
+        val HOME_SONGS_INCLUDE_ON_DEVICE_IN_ALL = booleanPreferencesKey("home_songs_include_on_device_in_all")
+        val MONTHLY_PLAYLIST_COMPILATION = booleanPreferencesKey("monthly_playlist_compilation")
+        val SHOW_MONTHLY_PLAYLISTS = booleanPreferencesKey("show_monthly_playlists")
+        val SHOW_PINNED_PLAYLISTS = booleanPreferencesKey("show_pinned_playlists")
+        val SHOW_PLAYLIST_INDICATOR = booleanPreferencesKey("show_playlist_indicator")
+        val PAUSE_WHEN_VOLUME_SET_TO_ZERO = booleanPreferencesKey("pause_when_volume_set_to_zero")
+        val PAUSE_HISTORY = booleanPreferencesKey("pause_history")
+        val IS_PIP_ENABLED = booleanPreferencesKey("is_pip_enabled")
+        val IS_AUTO_PIP_ENABLED = booleanPreferencesKey("is_auto_pip_enabled")
+        val AUTO_DOWNLOAD = booleanPreferencesKey("auto_download")
+        val AUTO_DOWNLOAD_ON_LIKE = booleanPreferencesKey("auto_download_on_like")
+        val AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED = booleanPreferencesKey("auto_download_on_album_bookmarked")
+        val KEEP_SCREEN_ON = booleanPreferencesKey("keep_screen_on")
+        val AUTO_SYNC = booleanPreferencesKey("auto_sync")
+        val PAUSE_SEARCH_HISTORY = booleanPreferencesKey("pause_search_history")
+        val IS_DATA_KEY_LOADED = booleanPreferencesKey("is_data_key_loaded")
+        val LOCAL_PLAYLIST_SMART_RECOMMENDATION = booleanPreferencesKey("local_playlist_smart_recommendation")
+        val IS_CONNECTION_METERED = booleanPreferencesKey("is_connection_metered")
+        val SINGLE_BACK_FROM_SEARCH = booleanPreferencesKey("single_back_from_search")
+        val SONG_EMPTY_DURATION_PLACEHOLDER = booleanPreferencesKey("song_empty_duration_placeholder")
+        val DOH_SERVER = stringPreferencesKey("doh_server")
+        val HOME_SONGS_TOP_PLAYLIST_PERIOD = stringPreferencesKey("home_songs_top_playlist_period")
+        val MENU_STYLE = stringPreferencesKey("menu_style")
+        val MAIN_THEME = stringPreferencesKey("main_theme")
+        val COLOR_PALETTE = stringPreferencesKey("color_palette")
+        val THEME_MODE = stringPreferencesKey("theme_mode")
+        val STARTUP_SCREEN = stringPreferencesKey("startup_screen")
+        val FONT = stringPreferencesKey("font")
+        val NAVIGATION_BAR_POSITION = stringPreferencesKey("navigation_bar_position")
+        val NAVIGATION_BAR_TYPE = stringPreferencesKey("navigation_bar_type")
+        val PAUSE_BETWEEN_SONGS = stringPreferencesKey("pause_between_songs")
+        val THUMBNAIL_BORDER_RADIUS = stringPreferencesKey("thumbnail_border_radius")
+        val TRANSITION_EFFECT = stringPreferencesKey("transition_effect")
+        val LIMIT_SONGS_WITH_DURATION = stringPreferencesKey("limit_songs_with_duration")
+        val QUEUE_TYPE = stringPreferencesKey("queue_type")
+        val QUEUE_LOOP_TYPE = stringPreferencesKey("queue_loop_type")
+        val CAROUSEL_SIZE = stringPreferencesKey("carousel_size")
+        val THUMBNAIL_TYPE = stringPreferencesKey("thumbnail_type")
+        val LIKE_ICON = stringPreferencesKey("like_icon")
+        val LIVE_WALLPAPER = stringPreferencesKey("live_wallpaper")
+        val ANIMATED_GRADIENT = stringPreferencesKey("animated_gradient")
+        val NOW_PLAYING_INDICATOR = stringPreferencesKey("now_playing_indicator")
+        val PIP_MODULE = stringPreferencesKey("pip_module")
+        val CHECK_UPDATE = stringPreferencesKey("check_update")
+        val APP_LANGUAGE = stringPreferencesKey("app_language")
+        val OTHER_APP_LANGUAGE = stringPreferencesKey("other_app_language")
+        val HOME_ARTIST_AND_ALBUM_FILTER = stringPreferencesKey("home_artist_and_album_filter")
+        val STATISTIC_PAGE_CATEGORY = stringPreferencesKey("statistic_page_category")
+        val CUSTOM_COLOR = longPreferencesKey("custom_color")
+        val APP_REGION = stringPreferencesKey("app_region")
+        val LOCAL_SONGS_FOLDER = stringPreferencesKey("local_songs_folder")
+        val SEEN_CHANGELOGS_VERSION = stringPreferencesKey("seen_changelogs_version")
+        val FLOATING_ICON_X_OFFSET = floatPreferencesKey("floating_icon_x_offset")
+        val FLOATING_ICON_Y_OFFSET = floatPreferencesKey("floating_icon_y_offset")
+        val MULTI_FLOATING_ICON_X_OFFSET = floatPreferencesKey("multi_floating_icon_x_offset")
+        val MULTI_FLOATING_ICON_Y_OFFSET = floatPreferencesKey("multi_floating_icon_y_offset")
+        val SMART_REWIND = floatPreferencesKey("smart_rewind")
+        val SEARCH_RESULTS_TAB_INDEX = intPreferencesKey("search_results_tab_index")
+        val HOME_TAB_INDEX = intPreferencesKey("home_tab_index")
+        val ARTIST_SCREEN_TAB_INDEX = intPreferencesKey("artist_screen_tab_index")
+        val LIVE_WALLPAPER_RESET_DURATION = longPreferencesKey("live_wallpaper_reset_duration")
     }
 }

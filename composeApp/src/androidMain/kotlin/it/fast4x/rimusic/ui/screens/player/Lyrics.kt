@@ -94,6 +94,7 @@ import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.database.models.Lyrics
+import app.kreate.preferences.Preferences
 import app.kreate.util.cleanPrefix
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.Innertube
@@ -142,7 +143,6 @@ import it.fast4x.rimusic.utils.textCopyToClipboard
 import it.fast4x.rimusic.utils.verticalFadingEdge
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -199,16 +199,16 @@ fun Lyrics(
         val currentView = LocalView.current
         val player: StatefulPlayer = koinInject()
 
-        val showlyricsthumbnail by app.kreate.preferences.Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
-        val isShowingSynchronizedLyrics by app.kreate.preferences.Preferences.LYRICS_SYNCHRONIZED.collectAsStateWithLifecycle()
+        val showlyricsthumbnail by Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
+        val isShowingSynchronizedLyrics by Preferences.LYRICS_SYNCHRONIZED.collectAsStateWithLifecycle()
         var invalidLrc by remember(mediaId, isShowingSynchronizedLyrics) { mutableStateOf(false) }
         var isPicking by remember(mediaId, isShowingSynchronizedLyrics) { mutableStateOf(false) }
-        val lyricsColor by app.kreate.preferences.Preferences.LYRICS_COLOR.collectAsStateWithLifecycle()
-        val lyricsOutline by app.kreate.preferences.Preferences.LYRICS_OUTLINE.collectAsStateWithLifecycle()
-        val lyricsFontSize by app.kreate.preferences.Preferences.LYRICS_FONT_SIZE.collectAsStateWithLifecycle()
+        val lyricsColor by Preferences.LYRICS_COLOR.collectAsStateWithLifecycle()
+        val lyricsOutline by Preferences.LYRICS_OUTLINE.collectAsStateWithLifecycle()
+        val lyricsFontSize by Preferences.LYRICS_FONT_SIZE.collectAsStateWithLifecycle()
 
         val thumbnailSize = Dimensions.thumbnails.player.song
-        val colorPaletteMode by app.kreate.preferences.Preferences.THEME_MODE.collectAsStateWithLifecycle()
+        val colorPaletteMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
 
         var isEditing by remember(mediaId, isShowingSynchronizedLyrics) {
             mutableStateOf(false)
@@ -239,11 +239,11 @@ fun Lyrics(
             mutableStateOf(false)
         }
 
-        val romanization by app.kreate.preferences.Preferences.LYRICS_ROMANIZATION_TYPE.collectAsStateWithLifecycle()
-        val showSecondLine by app.kreate.preferences.Preferences.LYRICS_SHOW_SECOND_LINE.collectAsStateWithLifecycle()
+        val romanization by Preferences.LYRICS_ROMANIZATION_TYPE.collectAsStateWithLifecycle()
+        val showSecondLine by Preferences.LYRICS_SHOW_SECOND_LINE.collectAsStateWithLifecycle()
 
-        val otherLanguageApp by app.kreate.preferences.Preferences.OTHER_APP_LANGUAGE.collectAsStateWithLifecycle()
-        val lyricsBackground by app.kreate.preferences.Preferences.LYRICS_BACKGROUND.collectAsStateWithLifecycle()
+        val otherLanguageApp by Preferences.OTHER_APP_LANGUAGE.collectAsStateWithLifecycle()
+        val lyricsBackground by Preferences.LYRICS_BACKGROUND.collectAsStateWithLifecycle()
 
         if (showLanguagesList) {
             translateEnabled = false
@@ -289,7 +289,7 @@ fun Lyrics(
                                 secondaryText = "",
                                 onClick = {
                                     menuState.hide()
-                                    app.kreate.preferences.Preferences.OTHER_APP_LANGUAGE.update { lang }
+                                    Preferences.OTHER_APP_LANGUAGE.update( lang )
                                     showLanguagesList = false
                                     translateEnabled = true
                                 }
@@ -299,7 +299,7 @@ fun Lyrics(
             }
         }
 
-        val languageDestination = app.kreate.preferences.Preferences.OTHER_APP_LANGUAGE.value.toTranslatorLanguage()
+        val languageDestination = Preferences.OTHER_APP_LANGUAGE.value.toTranslatorLanguage()
 
         val translator = Translator(getHttpClient())
 
@@ -311,9 +311,9 @@ fun Lyrics(
             textCopyToClipboard(it, context)
         }
 
-        val fontSize by app.kreate.preferences.Preferences.LYRICS_FONT_SIZE.collectAsStateWithLifecycle()
-        val showBackgroundLyrics by app.kreate.preferences.Preferences.LYRICS_SHOW_ACCENT_BACKGROUND.collectAsStateWithLifecycle()
-        val playerEnableLyricsPopupMessage by app.kreate.preferences.Preferences.PLAYER_ACTION_LYRICS_POPUP_MESSAGE.collectAsStateWithLifecycle()
+        val fontSize by Preferences.LYRICS_FONT_SIZE.collectAsStateWithLifecycle()
+        val showBackgroundLyrics by Preferences.LYRICS_SHOW_ACCENT_BACKGROUND.collectAsStateWithLifecycle()
+        val playerEnableLyricsPopupMessage by Preferences.PLAYER_ACTION_LYRICS_POPUP_MESSAGE.collectAsStateWithLifecycle()
 
         var checkedLyricsLrc by remember {
             mutableStateOf(false)
@@ -327,36 +327,36 @@ fun Lyrics(
         var checkLyrics by remember {
             mutableStateOf(false)
         }
-        val lyricsHighlight by app.kreate.preferences.Preferences.LYRICS_HIGHLIGHT.collectAsStateWithLifecycle()
-        val lyricsAlignment by app.kreate.preferences.Preferences.LYRICS_ALIGNMENT.collectAsStateWithLifecycle()
-        val lyricsSizeAnimate by app.kreate.preferences.Preferences.LYRICS_ANIMATE_SIZE.collectAsStateWithLifecycle()
+        val lyricsHighlight by Preferences.LYRICS_HIGHLIGHT.collectAsStateWithLifecycle()
+        val lyricsAlignment by Preferences.LYRICS_ALIGNMENT.collectAsStateWithLifecycle()
+        val lyricsSizeAnimate by Preferences.LYRICS_ANIMATE_SIZE.collectAsStateWithLifecycle()
         val mediaMetadata = mediaMetadataProvider()
         var artistName by rememberSaveable { mutableStateOf(cleanPrefix(mediaMetadata.artist?.toString().orEmpty()))}
         var title by rememberSaveable { mutableStateOf(cleanPrefix(mediaMetadata.title?.toString().orEmpty()))}
-        val lyricsSize by app.kreate.preferences.Preferences.LYRICS_SIZE.collectAsStateWithLifecycle()
-        val lyricsSizeL by app.kreate.preferences.Preferences.LYRICS_SIZE_LANDSCAPE.collectAsStateWithLifecycle()
+        val lyricsSize by Preferences.LYRICS_SIZE.collectAsStateWithLifecycle()
+        val lyricsSizeL by Preferences.LYRICS_SIZE_LANDSCAPE.collectAsStateWithLifecycle()
         var customSize = if (isLandscape) lyricsSizeL else lyricsSize
         var showLyricsSizeDialog by rememberSaveable {
             mutableStateOf(false)
         }
         val lightTheme = colorPaletteMode == ColorPaletteMode.Light || (colorPaletteMode == ColorPaletteMode.System && (!isSystemInDarkTheme()))
-        val effectRotationEnabled by app.kreate.preferences.Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
-        val landscapeControls by app.kreate.preferences.Preferences.LYRICS_LANDSCAPE_CONTROLS.collectAsStateWithLifecycle()
+        val effectRotationEnabled by Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()
+        val landscapeControls by Preferences.LYRICS_LANDSCAPE_CONTROLS.collectAsStateWithLifecycle()
         var isRotated by rememberSaveable { mutableStateOf(false) }
         val rotationAngle by animateFloatAsState(
             targetValue = if (isRotated) 360F else 0f,
             animationSpec = tween(durationMillis = 200), label = ""
         )
-        val colorPaletteName by app.kreate.preferences.Preferences.COLOR_PALETTE.collectAsStateWithLifecycle()
+        val colorPaletteName by Preferences.COLOR_PALETTE.collectAsStateWithLifecycle()
 
         if (showLyricsSizeDialog) {
             LyricsSizeDialog(
                 onDismiss = { showLyricsSizeDialog = false},
                 sizeValue = { newValue ->
-                    app.kreate.preferences.Preferences.LYRICS_SIZE.update { newValue }
+                    Preferences.LYRICS_SIZE.update( newValue )
                 },
                 sizeValueL = { newValue ->
-                    app.kreate.preferences.Preferences.LYRICS_SIZE_LANDSCAPE.update { newValue }
+                    Preferences.LYRICS_SIZE_LANDSCAPE.update( newValue )
                 }
             )
         }
@@ -1708,7 +1708,7 @@ fun Lyrics(
                                         secondaryText = "",
                                         onClick = {
                                             menuState.hide()
-                                            app.kreate.preferences.Preferences.LYRICS_FONT_SIZE.update { LyricsFontSize.Light }
+                                            Preferences.LYRICS_FONT_SIZE.update( LyricsFontSize.Light )
                                         }
                                     )
                                     MenuEntry(
@@ -1717,7 +1717,7 @@ fun Lyrics(
                                         secondaryText = "",
                                         onClick = {
                                             menuState.hide()
-                                            app.kreate.preferences.Preferences.LYRICS_FONT_SIZE.update { LyricsFontSize.Medium }
+                                            Preferences.LYRICS_FONT_SIZE.update( LyricsFontSize.Medium )
                                         }
                                     )
                                     MenuEntry(
@@ -1726,7 +1726,7 @@ fun Lyrics(
                                         secondaryText = "",
                                         onClick = {
                                             menuState.hide()
-                                            app.kreate.preferences.Preferences.LYRICS_FONT_SIZE.update { LyricsFontSize.Heavy }
+                                            Preferences.LYRICS_FONT_SIZE.update( LyricsFontSize.Heavy )
                                         }
                                     )
                                     MenuEntry(
@@ -1735,7 +1735,7 @@ fun Lyrics(
                                         secondaryText = "",
                                         onClick = {
                                             menuState.hide()
-                                            app.kreate.preferences.Preferences.LYRICS_FONT_SIZE.update { LyricsFontSize.Large }
+                                            Preferences.LYRICS_FONT_SIZE.update( LyricsFontSize.Large )
                                         }
                                     )
                                 }
@@ -1875,7 +1875,7 @@ fun Lyrics(
                                                 enabled = true,
                                                 onClick = {
                                                     menuState.hide()
-                                                    app.kreate.preferences.Preferences.LYRICS_LANDSCAPE_CONTROLS.flip()
+                                                    Preferences.LYRICS_LANDSCAPE_CONTROLS.flip()
                                                 }
                                             )
                                         }
@@ -1892,7 +1892,7 @@ fun Lyrics(
                                                             secondaryText = "",
                                                             onClick = {
                                                                 menuState.hide()
-                                                                app.kreate.preferences.Preferences.LYRICS_ALIGNMENT.update { LyricsAlignment.Left }
+                                                                Preferences.LYRICS_ALIGNMENT.update( LyricsAlignment.Left )
                                                             }
                                                         )
                                                         MenuEntry(
@@ -1901,7 +1901,7 @@ fun Lyrics(
                                                             secondaryText = "",
                                                             onClick = {
                                                                 menuState.hide()
-                                                                app.kreate.preferences.Preferences.LYRICS_ALIGNMENT.update { LyricsAlignment.Center }
+                                                                Preferences.LYRICS_ALIGNMENT.update( LyricsAlignment.Center )
                                                             }
                                                         )
                                                         MenuEntry(
@@ -1910,7 +1910,7 @@ fun Lyrics(
                                                             secondaryText = "",
                                                             onClick = {
                                                                 menuState.hide()
-                                                                app.kreate.preferences.Preferences.LYRICS_ALIGNMENT.update { LyricsAlignment.Right }
+                                                                Preferences.LYRICS_ALIGNMENT.update( LyricsAlignment.Right )
                                                             }
                                                         )
                                                     }
@@ -1932,7 +1932,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_FONT_SIZE.update { LyricsFontSize.Light }
+                                                                    Preferences.LYRICS_FONT_SIZE.update( LyricsFontSize.Light )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -1941,7 +1941,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_FONT_SIZE.update { LyricsFontSize.Medium }
+                                                                    Preferences.LYRICS_FONT_SIZE.update( LyricsFontSize.Medium )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -1950,7 +1950,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_FONT_SIZE.update { LyricsFontSize.Heavy }
+                                                                    Preferences.LYRICS_FONT_SIZE.update( LyricsFontSize.Heavy )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -1959,7 +1959,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_FONT_SIZE.update { LyricsFontSize.Large }
+                                                                    Preferences.LYRICS_FONT_SIZE.update( LyricsFontSize.Large )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -1968,7 +1968,7 @@ fun Lyrics(
                                                                 secondaryText = stringResource(R.string.lyricsSizeSecondary),
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_FONT_SIZE.update { LyricsFontSize.Custom }
+                                                                    Preferences.LYRICS_FONT_SIZE.update( LyricsFontSize.Custom )
                                                                 },
                                                                 onLongClick = {showLyricsSizeDialog = !showLyricsSizeDialog},
                                                             )
@@ -1990,7 +1990,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_COLOR.update { LyricsColor.Thememode }
+                                                                    Preferences.LYRICS_COLOR.update( LyricsColor.Thememode )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -1999,7 +1999,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_COLOR.update { LyricsColor.White }
+                                                                    Preferences.LYRICS_COLOR.update( LyricsColor.White )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -2008,7 +2008,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_COLOR.update { LyricsColor.Black }
+                                                                    Preferences.LYRICS_COLOR.update( LyricsColor.Black )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -2017,7 +2017,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_COLOR.update { LyricsColor.Accent }
+                                                                    Preferences.LYRICS_COLOR.update( LyricsColor.Accent )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -2026,7 +2026,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_COLOR.update { LyricsColor.FluidRainbow }
+                                                                    Preferences.LYRICS_COLOR.update( LyricsColor.FluidRainbow )
                                                                 }
                                                             )
                                                             /*MenuEntry(
@@ -2056,7 +2056,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_OUTLINE.update { LyricsOutline.None }
+                                                                    Preferences.LYRICS_OUTLINE.update( LyricsOutline.None )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -2065,7 +2065,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_OUTLINE.update { LyricsOutline.Thememode }
+                                                                    Preferences.LYRICS_OUTLINE.update( LyricsOutline.Thememode )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -2074,7 +2074,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_OUTLINE.update { LyricsOutline.White }
+                                                                    Preferences.LYRICS_OUTLINE.update( LyricsOutline.White )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -2083,7 +2083,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_OUTLINE.update { LyricsOutline.Black }
+                                                                    Preferences.LYRICS_OUTLINE.update( LyricsOutline.Black )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -2092,7 +2092,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_OUTLINE.update { LyricsOutline.Rainbow }
+                                                                    Preferences.LYRICS_OUTLINE.update( LyricsOutline.Rainbow )
                                                                 }
                                                             )
                                                             if (isShowingSynchronizedLyrics) {
@@ -2102,7 +2102,7 @@ fun Lyrics(
                                                                     secondaryText = "",
                                                                     onClick = {
                                                                         menuState.hide()
-                                                                        app.kreate.preferences.Preferences.LYRICS_OUTLINE.update { LyricsOutline.Glow }
+                                                                        Preferences.LYRICS_OUTLINE.update( LyricsOutline.Glow )
                                                                     }
                                                                 )
                                                             }
@@ -2144,7 +2144,7 @@ fun Lyrics(
                                                             secondaryText = "",
                                                             onClick = {
                                                                 menuState.hide()
-                                                                app.kreate.preferences.Preferences.LYRICS_ROMANIZATION_TYPE.update { Romanization.Off }
+                                                                Preferences.LYRICS_ROMANIZATION_TYPE.update( Romanization.Off )
                                                             }
                                                         )
                                                         MenuEntry(
@@ -2153,7 +2153,7 @@ fun Lyrics(
                                                             secondaryText = "",
                                                             onClick = {
                                                                 menuState.hide()
-                                                                app.kreate.preferences.Preferences.LYRICS_ROMANIZATION_TYPE.update { Romanization.Original }
+                                                                Preferences.LYRICS_ROMANIZATION_TYPE.update( Romanization.Original )
                                                             }
                                                         )
                                                         MenuEntry(
@@ -2162,7 +2162,7 @@ fun Lyrics(
                                                             secondaryText = "",
                                                             onClick = {
                                                                 menuState.hide()
-                                                                app.kreate.preferences.Preferences.LYRICS_ROMANIZATION_TYPE.update { Romanization.Translated }
+                                                                Preferences.LYRICS_ROMANIZATION_TYPE.update( Romanization.Translated )
                                                             }
                                                         )
                                                         if (showSecondLine) {
@@ -2172,7 +2172,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_ROMANIZATION_TYPE.update { Romanization.Both }
+                                                                    Preferences.LYRICS_ROMANIZATION_TYPE.update( Romanization.Both )
                                                                 }
                                                             )
                                                         }
@@ -2186,7 +2186,7 @@ fun Lyrics(
                                             enabled = true,
                                             onClick = {
                                                 menuState.hide()
-                                                app.kreate.preferences.Preferences.LYRICS_SHOW_SECOND_LINE.flip()
+                                                Preferences.LYRICS_SHOW_SECOND_LINE.flip()
                                             }
                                         )
 
@@ -2197,7 +2197,7 @@ fun Lyrics(
                                                 enabled = true,
                                                 onClick = {
                                                     menuState.hide()
-                                                    app.kreate.preferences.Preferences.LYRICS_ANIMATE_SIZE.flip()
+                                                    Preferences.LYRICS_ANIMATE_SIZE.flip()
                                                 }
                                             )
                                         }
@@ -2216,7 +2216,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_HIGHLIGHT.update { LyricsHighlight.None }
+                                                                    Preferences.LYRICS_HIGHLIGHT.update( LyricsHighlight.None )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -2225,7 +2225,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_HIGHLIGHT.update { LyricsHighlight.White }
+                                                                    Preferences.LYRICS_HIGHLIGHT.update( LyricsHighlight.White )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -2234,7 +2234,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_HIGHLIGHT.update { LyricsHighlight.Black }
+                                                                    Preferences.LYRICS_HIGHLIGHT.update( LyricsHighlight.Black )
                                                                 }
                                                             )
                                                         }
@@ -2256,7 +2256,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_BACKGROUND.update { LyricsBackground.None }
+                                                                    Preferences.LYRICS_BACKGROUND.update( LyricsBackground.None )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -2265,7 +2265,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_BACKGROUND.update { LyricsBackground.White }
+                                                                    Preferences.LYRICS_BACKGROUND.update( LyricsBackground.White )
                                                                 }
                                                             )
                                                             MenuEntry(
@@ -2274,7 +2274,7 @@ fun Lyrics(
                                                                 secondaryText = "",
                                                                 onClick = {
                                                                     menuState.hide()
-                                                                    app.kreate.preferences.Preferences.LYRICS_BACKGROUND.update { LyricsBackground.Black }
+                                                                    Preferences.LYRICS_BACKGROUND.update( LyricsBackground.Black )
                                                                 }
                                                             )
                                                         }
@@ -2294,7 +2294,7 @@ fun Lyrics(
                                             ) + " kugou.com and LrcLib.net",
                                             onClick = {
                                                 menuState.hide()
-                                                app.kreate.preferences.Preferences.LYRICS_SYNCHRONIZED.flip()
+                                                Preferences.LYRICS_SYNCHRONIZED.flip()
                                             }
                                         )
 

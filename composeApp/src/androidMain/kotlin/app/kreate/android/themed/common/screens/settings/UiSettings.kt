@@ -43,7 +43,6 @@ import it.fast4x.rimusic.enums.PlayerTimelineSize
 import it.fast4x.rimusic.enums.UiType
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import kotlinx.coroutines.flow.update
 import kreate.resources.generated.resources.Res
 import kreate.resources.generated.resources.setting_description_only_available_in_theme
 import me.knighthat.component.dialog.InputDialogConstraints
@@ -74,7 +73,7 @@ private fun ThumbnailRoundnessSlider( preference: Preferences.IntPref ) =
             }
         },
         onValueChangeFinished = { pref, value ->
-            pref.value = (value / 5).roundToInt() * 5
+            pref.update( (value / 5).roundToInt() * 5 )
         }
     ) {
         val color = LocalAppearance.current.colorPalette.accent
@@ -106,7 +105,7 @@ private fun ThumbnailSizeSlider(
         steps = steps,
         onTextDisplay = { it.roundToInt().toString() },
         onValueChangeFinished = { pref, value ->
-            pref.value = value.roundToInt()
+            pref.update( value.roundToInt() )
         }
     )
 
@@ -145,54 +144,54 @@ fun UiSettings( paddingValues: PaddingValues ) {
                     action = SettingComponents.Action.RESTART_APP
                 ) {
                     if ( it == UiType.ViMusic ) {
-                        Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED.update { true }
+                        Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED.update( true )
                         Preferences.PLAYER_TIMELINE_TYPE.reset()
                         Preferences.PLAYER_VISUALIZER.reset()
-                        Preferences.PLAYER_PORTRAIT_THUMBNAIL_SIZE.update { PlayerThumbnailSize.Medium }
+                        Preferences.PLAYER_PORTRAIT_THUMBNAIL_SIZE.update( PlayerThumbnailSize.Medium )
                         Preferences.PLAYER_TAP_THUMBNAIL_FOR_LYRICS.reset()
                         Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR.reset()
-                        Preferences.SHOW_STATS_IN_NAVIGATION_BAR.update { true }
-                        Preferences.NAVIGATION_BAR_POSITION.update { NavigationBarPosition.Left }
-                        Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.update { false }
-                        Preferences.PLAYER_TYPE.update { Type.MODERN }
-                        Preferences.QUEUE_TYPE.update { Type.MODERN }
+                        Preferences.SHOW_STATS_IN_NAVIGATION_BAR.update( true )
+                        Preferences.NAVIGATION_BAR_POSITION.update( NavigationBarPosition.Left )
+                        Preferences.PLAYER_SHOW_TOP_ACTIONS_BAR.update( false )
+                        Preferences.PLAYER_TYPE.update( Type.MODERN )
+                        Preferences.QUEUE_TYPE.update( Type.MODERN )
                         Preferences.PLAYER_BACKGROUND_FADING_EDGE.reset()
                         Preferences.PLAYER_THUMBNAILS_CAROUSEL.reset()
-                        Preferences.CAROUSEL_SIZE.update { CarouselSize.Medium }
-                        Preferences.THUMBNAIL_TYPE.update { Type.LEGACY }
-                        Preferences.PLAYER_TIMELINE_SIZE.update { PlayerTimelineSize.Medium }
+                        Preferences.CAROUSEL_SIZE.update( CarouselSize.Medium )
+                        Preferences.THUMBNAIL_TYPE.update( Type.LEGACY )
+                        Preferences.PLAYER_TIMELINE_SIZE.update( PlayerTimelineSize.Medium )
                         Preferences.PLAYER_SONG_INFO_ICON.reset()
                         Preferences.MINI_PLAYER_TYPE.reset()
                         Preferences.PLAYER_IS_CONTROL_AND_TIMELINE_SWAPPED.reset()
                         Preferences.PLAYER_CONTROLS_TYPE.reset()
                         Preferences.PLAYER_PLAY_BUTTON_TYPE.reset()
-                        Preferences.ZOOM_OUT_ANIMATION.update { true }
+                        Preferences.ZOOM_OUT_ANIMATION.update( true )
                         Preferences.LIKE_ICON.reset()
-                        Preferences.PLAYER_BACKGROUND.update { PlayerBackgroundColors.CoverColorGradient }
-                        Preferences.BLACK_GRADIENT.update { true }
-                        Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.update { false }
-                        Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME.update { false }
+                        Preferences.PLAYER_BACKGROUND.update( PlayerBackgroundColors.CoverColorGradient )
+                        Preferences.BLACK_GRADIENT.update( true )
+                        Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.update( false )
+                        Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME.update( false )
                         Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.reset()
                         Preferences.MARQUEE_TEXT_EFFECT.reset()
                         Preferences.ROTATION_EFFECT.reset()
                         Preferences.LYRICS_JUMP_ON_TAP.reset()
                         Preferences.PLAYER_ACTION_LYRICS_POPUP_MESSAGE.reset()
                         Preferences.MINI_PLAYER_PROGRESS_BAR.reset()
-                        Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.update { true }
+                        Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.update( true )
                         Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY.reset()
-                        Preferences.PLAYER_ACTIONS_BAR_TAP_TO_OPEN_QUEUE.update { false }
+                        Preferences.PLAYER_ACTIONS_BAR_TAP_TO_OPEN_QUEUE.update( false )
                         Preferences.PLAYER_ACTIONS_BAR_SWIPE_UP_TO_OPEN_QUEUE.reset()
                         Preferences.PLAYER_ACTION_DISCOVER.reset()
-                        Preferences.PLAYER_ACTION_DOWNLOAD.update { false }
-                        Preferences.PLAYER_ACTION_ADD_TO_PLAYLIST.update { false }
-                        Preferences.PLAYER_ACTION_LOOP.update { false }
-                        Preferences.PLAYER_ACTION_SHUFFLE.update { false }
-                        Preferences.PLAYER_ACTION_SHOW_LYRICS.update { false }
-                        Preferences.PLAYER_ACTION_TOGGLE_EXPAND.update { false }
+                        Preferences.PLAYER_ACTION_DOWNLOAD.update( false )
+                        Preferences.PLAYER_ACTION_ADD_TO_PLAYLIST.update( false )
+                        Preferences.PLAYER_ACTION_LOOP.update( false )
+                        Preferences.PLAYER_ACTION_SHUFFLE.update( false )
+                        Preferences.PLAYER_ACTION_SHOW_LYRICS.update( false )
+                        Preferences.PLAYER_ACTION_TOGGLE_EXPAND.update( false )
                         Preferences.PLAYER_ACTION_SLEEP_TIMER.reset()
                         Preferences.PLAYER_ACTION_OPEN_EQUALIZER.reset()
-                        Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW.update { false }
-                        Preferences.PLAYER_ACTION_SHOW_MENU.update { true }
+                        Preferences.PLAYER_ACTION_OPEN_QUEUE_ARROW.update( false )
+                        Preferences.PLAYER_ACTION_SHOW_MENU.update( true )
                         Preferences.PLAYER_SHOW_THUMBNAIL.reset()
                         Preferences.PLAYER_KEEP_MINIMIZED.reset()
                     } else {

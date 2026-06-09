@@ -51,6 +51,7 @@ import app.kreate.android.themed.rimusic.component.tab.ItemSize
 import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.viewmodel.home.HomeArtistsViewModel
 import app.kreate.database.models.Artist
+import app.kreate.preferences.Preferences
 import it.fast4x.compose.persist.persistList
 import it.fast4x.innertube.YtMusic
 import it.fast4x.rimusic.Database
@@ -75,6 +76,7 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.component.tab.SongShuffler
@@ -100,8 +102,8 @@ fun HomeArtists(
     val coroutineScope = rememberCoroutineScope()
 
     // Settings
-    val artistType by app.kreate.preferences.Preferences.HOME_ARTIST_TYPE.collectAsStateWithLifecycle()
-    val filterBy by app.kreate.preferences.Preferences.HOME_ARTIST_AND_ALBUM_FILTER.collectAsStateWithLifecycle()
+    val artistType by Preferences.HOME_ARTIST_TYPE.collectAsStateWithLifecycle()
+    val filterBy by Preferences.HOME_ARTIST_AND_ALBUM_FILTER.collectAsStateWithLifecycle()
 
 
     val items by viewModel.artists.collectAsStateWithLifecycle()
@@ -111,9 +113,9 @@ fun HomeArtists(
     var itemsOnDisplay by persistList<Artist>( "home/artists/on_display" )
 
     val sort = remember {
-        Sort(menuState, app.kreate.preferences.Preferences.HOME_ARTISTS_SORT_BY, app.kreate.preferences.Preferences.HOME_ARTISTS_SORT_ORDER, coroutineScope)
+        Sort(menuState, Preferences.HOME_ARTISTS_SORT_BY, Preferences.HOME_ARTISTS_SORT_ORDER, coroutineScope)
     }
-    val itemSize = remember { ItemSize(coroutineScope, app.kreate.preferences.Preferences.HOME_ARTIST_ITEM_SIZE, menuState) }
+    val itemSize = remember { ItemSize(coroutineScope, Preferences.HOME_ARTIST_ITEM_SIZE, menuState) }
     val sizeDp by remember {derivedStateOf {
         DpSize(itemSize.size.dp, itemSize.size.dp)
     }}
@@ -131,7 +133,7 @@ fun HomeArtists(
     val buttonsList = ArtistsType.entries.map { it to it.text }
 
     if (!isYouTubeSyncEnabled()) {
-        app.kreate.preferences.Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update { FilterBy.All }
+        Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update( FilterBy.All )
     }
 
     LaunchedEffect( items, search.input ) {
@@ -193,7 +195,7 @@ fun HomeArtists(
                             chips = buttonsList,
                             currentValue = artistType,
                             onValueUpdate = { newValue ->
-                                app.kreate.preferences.Preferences.HOME_ARTIST_TYPE.update { newValue }
+                                Preferences.HOME_ARTIST_TYPE.update( newValue )
                             },
                             modifier = Modifier.padding(end = 12.dp)
                         )
@@ -220,13 +222,13 @@ fun HomeArtists(
                                                     title = stringResource(R.string.filter_by),
                                                     onDismiss = menuState::hide,
                                                     onAll = {
-                                                        app.kreate.preferences.Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update { FilterBy.All }
+                                                        Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update( FilterBy.All )
                                                             },
                                                     onYoutubeLibrary = {
-                                                        app.kreate.preferences.Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update { FilterBy.YoutubeLibrary }
+                                                        Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update( FilterBy.YoutubeLibrary )
                                                     },
                                                     onLocal = {
-                                                        app.kreate.preferences.Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update { FilterBy.Local }
+                                                        Preferences.HOME_ARTIST_AND_ALBUM_FILTER.update( FilterBy.Local )
                                                     }
                                                 )
                                             }
@@ -282,7 +284,7 @@ fun HomeArtists(
 
             FloatingActionsContainerWithScrollToTop(lazyGridState = lazyGridState)
 
-            val showFloatingIcon by app.kreate.preferences.Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
+            val showFloatingIcon by Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
             if( UiType.ViMusic.isCurrent() && showFloatingIcon )
                 MultiFloatingActionsContainer(
                     iconId = R.drawable.search,

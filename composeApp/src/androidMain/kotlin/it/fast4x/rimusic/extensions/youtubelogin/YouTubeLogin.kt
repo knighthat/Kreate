@@ -13,7 +13,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import app.kreate.android.R
-import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
 import com.metrolist.innertube.YouTube
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets

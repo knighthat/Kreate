@@ -39,6 +39,7 @@ import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Album
 import app.kreate.database.models.SongAlbumMap
 import app.kreate.di.CacheType
+import app.kreate.preferences.Preferences
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBody
@@ -70,7 +71,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
@@ -96,15 +96,15 @@ fun SearchResultScreen(
     val (colorPalette, typography) = LocalAppearance.current
     val menu = LocalBottomMenu.current
     val saveableStateHolder = rememberSaveableStateHolder()
-    val tabIndex by app.kreate.preferences.Preferences.SEARCH_RESULTS_TAB_INDEX.collectAsStateWithLifecycle()
+    val tabIndex by Preferences.SEARCH_RESULTS_TAB_INDEX.collectAsStateWithLifecycle()
     val onTabIndexChanges: (Int) -> Unit = { index ->
-        app.kreate.preferences.Preferences.SEARCH_RESULTS_TAB_INDEX.update { index }
+        Preferences.SEARCH_RESULTS_TAB_INDEX.update( index )
     }
 
     val hapticFeedback = LocalHapticFeedback.current
 
-    val isVideoEnabled by app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_VIDEO.collectAsStateWithLifecycle()
-    val parentalControlEnabled by app.kreate.preferences.Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
+    val isVideoEnabled by Preferences.PLAYER_ACTION_TOGGLE_VIDEO.collectAsStateWithLifecycle()
+    val parentalControlEnabled by Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
 
     val headerContent: @Composable (textButton: (@Composable () -> Unit)?) -> Unit = {
         Title(

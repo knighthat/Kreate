@@ -83,11 +83,11 @@ fun ThemeSettings( search: SettingEntrySearch ) {
 
     if( search appearsIn R.string.theme  )
         SettingComponents.EnumEntry(
-            preference = app.kreate.preferences.Preferences.COLOR_PALETTE,
+            preference = Preferences.COLOR_PALETTE,
             title = stringResource( R.string.theme )
         ) {
             if( colorPaletteName == ColorPaletteName.ModernBlack )
-                app.kreate.preferences.Preferences.THEME_MODE.value = ColorPaletteMode.System
+                Preferences.THEME_MODE.update( ColorPaletteMode.System )
         }
 
     AnimatedVisibility(visible = colorPaletteName == ColorPaletteName.CustomColor) {
@@ -282,18 +282,18 @@ fun IndividualColorSection( search: SettingEntrySearch ) =
 
 fun LazyListScope.themeSettingsSection( search: SettingEntrySearch ) {
     entry( search, R.string.theme ) {
-        val colorPaletteName by app.kreate.preferences.Preferences.COLOR_PALETTE.collectAsStateWithLifecycle()
+        val colorPaletteName by Preferences.COLOR_PALETTE.collectAsStateWithLifecycle()
 
         SettingComponents.EnumEntry(
-            preference = app.kreate.preferences.Preferences.COLOR_PALETTE,
+            preference = Preferences.COLOR_PALETTE,
             title = stringResource( R.string.theme )
         ) {
             if( colorPaletteName == ColorPaletteName.ModernBlack )
-                app.kreate.preferences.Preferences.THEME_MODE.value = ColorPaletteMode.System
+                Preferences.THEME_MODE.update( ColorPaletteMode.System )
         }
     }
     item {
-        val colorPaletteName by app.kreate.preferences.Preferences.COLOR_PALETTE.collectAsStateWithLifecycle()
+        val colorPaletteName by Preferences.COLOR_PALETTE.collectAsStateWithLifecycle()
 
         AnimatedContent(
             targetState = colorPaletteName,

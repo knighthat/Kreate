@@ -40,6 +40,7 @@ import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.tab.ItemSize
 import app.kreate.android.themed.rimusic.component.tab.Sort
+import app.kreate.preferences.Preferences
 import app.kreate.android.viewmodel.home.HomeLibraryViewModel
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
@@ -84,7 +85,7 @@ fun HomeLibrary(
     val coroutineScope = rememberCoroutineScope()
 
     // Non-vital
-    val playlistType by app.kreate.preferences.Preferences.HOME_LIBRARY_TYPE.collectAsStateWithLifecycle()
+    val playlistType by Preferences.HOME_LIBRARY_TYPE.collectAsStateWithLifecycle()
 
     val items by viewModel.playlists.collectAsStateWithLifecycle()
 
@@ -103,9 +104,9 @@ fun HomeLibrary(
     }}
 
     val sort = remember {
-        Sort(menuState, app.kreate.preferences.Preferences.HOME_LIBRARY_SORT_BY, app.kreate.preferences.Preferences.HOME_LIBRARY_SORT_ORDER, coroutineScope)
+        Sort(menuState, Preferences.HOME_LIBRARY_SORT_BY, Preferences.HOME_LIBRARY_SORT_ORDER, coroutineScope)
     }
-    val itemSize = remember { ItemSize(coroutineScope, app.kreate.preferences.Preferences.HOME_LIBRARY_ITEM_SIZE, menuState) }
+    val itemSize = remember { ItemSize(coroutineScope, Preferences.HOME_LIBRARY_ITEM_SIZE, menuState) }
     val sizeDp by remember {derivedStateOf {
         DpSize(itemSize.size.dp, itemSize.size.dp)
     }}
@@ -136,8 +137,8 @@ fun HomeLibrary(
     val importPlaylistDialog = ImportSongsFromCSV()
 
     // START: Additional playlists
-    val showPinnedPlaylists by app.kreate.preferences.Preferences.SHOW_PINNED_PLAYLISTS.collectAsStateWithLifecycle()
-    val showMonthlyPlaylists by app.kreate.preferences.Preferences.SHOW_MONTHLY_PLAYLISTS.collectAsStateWithLifecycle()
+    val showPinnedPlaylists by Preferences.SHOW_PINNED_PLAYLISTS.collectAsStateWithLifecycle()
+    val showMonthlyPlaylists by Preferences.SHOW_MONTHLY_PLAYLISTS.collectAsStateWithLifecycle()
 
     val buttonsList = mutableListOf(PlaylistsType.Playlist to stringResource(R.string.playlists))
     buttonsList += PlaylistsType.YTPlaylist to stringResource(R.string.yt_playlists)
@@ -153,7 +154,7 @@ fun HomeLibrary(
     // END - New playlist
 
     // START - Monthly playlist
-    val compileMonthlyPlaylist by app.kreate.preferences.Preferences.MONTHLY_PLAYLIST_COMPILATION.collectAsStateWithLifecycle()
+    val compileMonthlyPlaylist by Preferences.MONTHLY_PLAYLIST_COMPILATION.collectAsStateWithLifecycle()
     if ( compileMonthlyPlaylist )
         CheckMonthlyPlaylist()
     // END - Monthly playlist
@@ -206,7 +207,7 @@ fun HomeLibrary(
                             chips = buttonsList,
                             currentValue = playlistType,
                             onValueUpdate = { newValue ->
-                                app.kreate.preferences.Preferences.HOME_LIBRARY_TYPE.update { newValue }
+                                Preferences.HOME_LIBRARY_TYPE.update( newValue )
                             },
                             modifier = Modifier.padding(start = 12.dp, end = 12.dp)
                         )
@@ -235,7 +236,7 @@ fun HomeLibrary(
 
             FloatingActionsContainerWithScrollToTop(lazyGridState = lazyGridState)
 
-            val showFloatingIcon by app.kreate.preferences.Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
+            val showFloatingIcon by Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
             if (UiType.ViMusic.isCurrent() && showFloatingIcon)
                 MultiFloatingActionsContainer(
                     iconId = R.drawable.search,

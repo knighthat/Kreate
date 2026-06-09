@@ -78,6 +78,7 @@ import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import app.kreate.preferences.APP_REGION
+import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persist
 import it.fast4x.compose.persist.persistList
@@ -130,7 +131,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kreate.resources.generated.resources.Res
 import kreate.resources.generated.resources.by_casual_played_song
@@ -168,7 +168,7 @@ fun HomeQuickPicks(
     val menuState = LocalMenuState.current
     val windowInsets = LocalPlayerAwareWindowInsets.current
     val bottomMenu = LocalBottomMenu.current
-    val playEventType by app.kreate.preferences.Preferences.QUICK_PICKS_TYPE.collectAsStateWithLifecycle()
+    val playEventType by Preferences.QUICK_PICKS_TYPE.collectAsStateWithLifecycle()
 
     var trending by persist<Song?>("home/trending")
     val trendingInit by persist<Song?>(tag = "home/trending")
@@ -189,25 +189,25 @@ fun HomeQuickPicks(
     var chartsPageResult by persist<Result<Innertube.ChartsPage?>>("home/chartsPage")
     var chartsPageInit by persist<Innertube.ChartsPage>("home/chartsPage")
 
-    val showRelatedAlbums by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_RELATED_ALBUMS.collectAsStateWithLifecycle()
-    val showSimilarArtists by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_RELATED_ARTISTS.collectAsStateWithLifecycle()
-    val showNewAlbumsArtists by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_NEW_ALBUMS_ARTISTS.collectAsStateWithLifecycle()
-    val showPlaylistMightLike by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_MIGHT_LIKE_PLAYLISTS.collectAsStateWithLifecycle()
-    val showMoodsAndGenres by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_MOODS_AND_GENRES.collectAsStateWithLifecycle()
-    val showNewAlbums by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_NEW_ALBUMS.collectAsStateWithLifecycle()
-    val showMonthlyPlaylistInQuickPicks by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_MONTHLY_PLAYLISTS.collectAsStateWithLifecycle()
-    val showTips by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_TIPS.collectAsStateWithLifecycle()
-    val showCharts by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_CHARTS.collectAsStateWithLifecycle()
+    val showRelatedAlbums by Preferences.QUICK_PICKS_SHOW_RELATED_ALBUMS.collectAsStateWithLifecycle()
+    val showSimilarArtists by Preferences.QUICK_PICKS_SHOW_RELATED_ARTISTS.collectAsStateWithLifecycle()
+    val showNewAlbumsArtists by Preferences.QUICK_PICKS_SHOW_NEW_ALBUMS_ARTISTS.collectAsStateWithLifecycle()
+    val showPlaylistMightLike by Preferences.QUICK_PICKS_SHOW_MIGHT_LIKE_PLAYLISTS.collectAsStateWithLifecycle()
+    val showMoodsAndGenres by Preferences.QUICK_PICKS_SHOW_MOODS_AND_GENRES.collectAsStateWithLifecycle()
+    val showNewAlbums by Preferences.QUICK_PICKS_SHOW_NEW_ALBUMS.collectAsStateWithLifecycle()
+    val showMonthlyPlaylistInQuickPicks by Preferences.QUICK_PICKS_SHOW_MONTHLY_PLAYLISTS.collectAsStateWithLifecycle()
+    val showTips by Preferences.QUICK_PICKS_SHOW_TIPS.collectAsStateWithLifecycle()
+    val showCharts by Preferences.QUICK_PICKS_SHOW_CHARTS.collectAsStateWithLifecycle()
 
     val refreshScope = rememberCoroutineScope()
     val last50Year: Duration = 18250.days
     val from = last50Year.inWholeMilliseconds
 
-    val countryCode by app.kreate.preferences.Preferences.APP_REGION.collectAsStateWithLifecycle()
+    val countryCode by Preferences.APP_REGION.collectAsStateWithLifecycle()
 
-    val parentalControlEnabled by app.kreate.preferences.Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
+    val parentalControlEnabled by Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
 
-    val loadedData by app.kreate.preferences.Preferences.IS_DATA_KEY_LOADED.collectAsStateWithLifecycle()
+    val loadedData by Preferences.IS_DATA_KEY_LOADED.collectAsStateWithLifecycle()
 
     suspend fun loadData() {
 
@@ -278,9 +278,9 @@ fun HomeQuickPicks(
 
         }.onFailure {
             Logger.e( tag = "HomeQuickPicks" ) { "loadData failed!" }
-            app.kreate.preferences.Preferences.IS_DATA_KEY_LOADED.update { false }
+            Preferences.IS_DATA_KEY_LOADED.update( false )
         }.onSuccess {
-            app.kreate.preferences.Preferences.IS_DATA_KEY_LOADED.update { true }
+            Preferences.IS_DATA_KEY_LOADED.update( true )
         }
     }
 
@@ -292,7 +292,7 @@ fun HomeQuickPicks(
 
     fun refresh() {
         if (refreshing) return
-        app.kreate.preferences.Preferences.IS_DATA_KEY_LOADED.update { false }
+        Preferences.IS_DATA_KEY_LOADED.update( false )
         relatedPageResult = null
         relatedInit = null
         trending = null
@@ -317,7 +317,7 @@ fun HomeQuickPicks(
         .padding(top = 24.dp, bottom = 8.dp)
         .padding(endPaddingValues)
 
-    val showSearchTab by app.kreate.preferences.Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR.collectAsStateWithLifecycle()
+    val showSearchTab by Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR.collectAsStateWithLifecycle()
 
     val cache: Cache = koinInject(CacheType.CACHE)
     var cachedSongs by remember { mutableStateOf( emptyList<String>() ) }
@@ -466,7 +466,7 @@ fun HomeQuickPicks(
                                         icon = R.drawable.chevron_up,
                                         text = stringResource( Res.string.by_most_played_song ),
                                         onClick = {
-                                            app.kreate.preferences.Preferences.QUICK_PICKS_TYPE.update { PlayEventsType.MostPlayed }
+                                            Preferences.QUICK_PICKS_TYPE.update( PlayEventsType.MostPlayed )
                                             menuState.hide()
                                         }
                                     )
@@ -474,7 +474,7 @@ fun HomeQuickPicks(
                                         icon = R.drawable.chevron_down,
                                         text = stringResource( Res.string.by_last_played_song ),
                                         onClick = {
-                                            app.kreate.preferences.Preferences.QUICK_PICKS_TYPE.update { PlayEventsType.LastPlayed }
+                                            Preferences.QUICK_PICKS_TYPE.update( PlayEventsType.LastPlayed )
                                             menuState.hide()
                                         }
                                     )
@@ -482,7 +482,7 @@ fun HomeQuickPicks(
                                         icon = R.drawable.random,
                                         text = stringResource( Res.string.by_casual_played_song ),
                                         onClick = {
-                                            app.kreate.preferences.Preferences.QUICK_PICKS_TYPE.update { PlayEventsType.CasualPlayed }
+                                            Preferences.QUICK_PICKS_TYPE.update( PlayEventsType.CasualPlayed )
                                             menuState.hide()
                                         }
                                     )
@@ -799,7 +799,7 @@ fun HomeQuickPicks(
                         }
                     }
 
-                val showCharts by app.kreate.preferences.Preferences.QUICK_PICKS_SHOW_CHARTS.collectAsStateWithLifecycle()
+                val showCharts by Preferences.QUICK_PICKS_SHOW_CHARTS.collectAsStateWithLifecycle()
                 if( showCharts ) {
                     var charts by remember {
                         // Use [referentialEqualityPolicy] to limit update to when it changes
@@ -829,7 +829,7 @@ fun HomeQuickPicks(
                                                 icon = R.drawable.arrow_right,
                                                 text = item.countryDisplayName,
                                                 onClick = {
-                                                    app.kreate.preferences.Preferences.APP_REGION.update { item.countryCode }
+                                                    Preferences.APP_REGION.update( item.countryCode )
                                                     menuState.hide()
                                                 }
                                             )
@@ -1113,7 +1113,7 @@ fun HomeQuickPicks(
             }
 
 
-            val showFloatingIcon by app.kreate.preferences.Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
+            val showFloatingIcon by Preferences.SHOW_FLOATING_ICON.collectAsStateWithLifecycle()
             if (UiType.ViMusic.isCurrent() && showFloatingIcon)
                 MultiFloatingActionsContainer(
                     iconId = R.drawable.search,

@@ -83,7 +83,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.palette.graphics.Palette
 import app.kreate.android.BuildConfig
 import app.kreate.android.LocalBottomMenu
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
@@ -91,6 +90,7 @@ import app.kreate.android.service.updater.UpdatePlugins
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.database.models.PersistentQueue
+import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
 import coil3.imageLoader
 import coil3.request.allowHardware
@@ -113,7 +113,6 @@ import it.fast4x.rimusic.enums.LogType
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.PipModule
 import it.fast4x.rimusic.enums.PlayerBackgroundColors
-import it.fast4x.rimusic.enums.ThumbnailRoundness
 import it.fast4x.rimusic.extensions.pip.PipEventContainer
 import it.fast4x.rimusic.extensions.pip.PipModuleContainer
 import it.fast4x.rimusic.service.MyDownloadHelper
@@ -137,7 +136,6 @@ import it.fast4x.rimusic.ui.styling.typographyOf
 import it.fast4x.rimusic.utils.LocalMonetCompat
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
-import it.fast4x.rimusic.utils.getEnum
 import it.fast4x.rimusic.utils.intent
 import it.fast4x.rimusic.utils.invokeOnReady
 import it.fast4x.rimusic.utils.isAtLeastAndroid6
@@ -152,7 +150,6 @@ import it.fast4x.rimusic.utils.textCopyToClipboard
 import it.fast4x.rimusic.utils.thumbnail
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
@@ -238,7 +235,7 @@ MainActivity :
             startApp()
         }
 
-        if ( app.kreate.preferences.Preferences.AUDIO_SHAKE_TO_SKIP.value ) {
+        if ( Preferences.AUDIO_SHAKE_TO_SKIP.value ) {
             sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
             Objects.requireNonNull(sensorManager)
                 ?.registerListener(
@@ -290,9 +287,9 @@ MainActivity :
     )
     fun startApp() {
         // Used in QuickPics for load data from remote instead of last saved in SharedPreferences
-        app.kreate.preferences.Preferences.IS_DATA_KEY_LOADED.value = false
+        Preferences.IS_DATA_KEY_LOADED.update( false )
 
-        if ( !app.kreate.preferences.Preferences.CLOSE_APP_ON_BACK.value )
+        if ( !Preferences.CLOSE_APP_ON_BACK.value )
             if (Build.VERSION.SDK_INT >= 33) {
                 onBackInvokedDispatcher.registerOnBackInvokedCallback(
                     OnBackInvokedDispatcher.PRIORITY_DEFAULT
@@ -314,16 +311,16 @@ MainActivity :
 
         intentUriData = intent.data ?: intent.getStringExtra(Intent.EXTRA_TEXT)?.toUri()
 
-        if ( app.kreate.preferences.Preferences.KEEP_SCREEN_ON.value )
+        if ( Preferences.KEEP_SCREEN_ON.value )
             window.addFlags( WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON )
 
         setContent {
-            val colorPaletteMode by app.kreate.preferences.Preferences.THEME_MODE.collectAsStateWithLifecycle()
+            val colorPaletteMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
             val isPicthBlack = colorPaletteMode == ColorPaletteMode.PitchBlack
 
             // Valid to get log when app crash
             if (intent.action == action_copy_crash_log) {
-                app.kreate.preferences.Preferences.RUNTIME_LOG.update { true }
+                Preferences.RUNTIME_LOG.update( true )
                 loadAppLog(this@MainActivity, type = LogType.Crash).let {
                     if (it != null) textCopyToClipboard(it, this@MainActivity)
                 }
@@ -338,8 +335,8 @@ MainActivity :
             val navController = rememberNavController()
             var showPlayer by rememberSaveable { mutableStateOf(false) }
             var switchToAudioPlayer by rememberSaveable { mutableStateOf(false) }
-            val animatedGradient by app.kreate.preferences.Preferences.ANIMATED_GRADIENT.collectAsStateWithLifecycle()
-            val customColor by app.kreate.preferences.Preferences.CUSTOM_COLOR.collectAsStateWithLifecycle()
+            val animatedGradient by Preferences.ANIMATED_GRADIENT.collectAsStateWithLifecycle()
+            val customColor by Preferences.CUSTOM_COLOR.collectAsStateWithLifecycle()
             val lightTheme = colorPaletteMode == ColorPaletteMode.Light || (colorPaletteMode == ColorPaletteMode.System && (!isSystemInDarkTheme()))
 
 
@@ -354,12 +351,12 @@ MainActivity :
                 stateSaver = Appearance.Companion
             ) {
                 with(preferences) {
-                    val colorPaletteName = app.kreate.preferences.Preferences.COLOR_PALETTE.value
-                    val colorPaletteMode = app.kreate.preferences.Preferences.THEME_MODE.value
-                    val thumbnailRoundness = app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.value
-                    val useSystemFont = app.kreate.preferences.Preferences.USE_SYSTEM_FONT.value
-                    val applyFontPadding = app.kreate.preferences.Preferences.APPLY_FONT_PADDING.value
-                    val fontType = app.kreate.preferences.Preferences.FONT.value
+                    val colorPaletteName = Preferences.COLOR_PALETTE.value
+                    val colorPaletteMode = Preferences.THEME_MODE.value
+                    val thumbnailRoundness = Preferences.THUMBNAIL_BORDER_RADIUS.value
+                    val useSystemFont = Preferences.USE_SYSTEM_FONT.value
+                    val applyFontPadding = Preferences.APPLY_FONT_PADDING.value
+                    val fontType = Preferences.FONT.value
 
                     var colorPalette =
                         colorPaletteOf(colorPaletteName, colorPaletteMode, !lightTheme)
@@ -398,8 +395,8 @@ MainActivity :
             }
 
             fun setDynamicPalette(url: String) {
-                val playerBackgroundColors = app.kreate.preferences.Preferences.PLAYER_BACKGROUND.value
-                val colorPaletteName = app.kreate.preferences.Preferences.COLOR_PALETTE.value
+                val playerBackgroundColors = Preferences.PLAYER_BACKGROUND.value
+                val colorPaletteName = Preferences.COLOR_PALETTE.value
                 val isDynamicPalette = colorPaletteName == ColorPaletteName.Dynamic
                 val isCoverColor =
                     playerBackgroundColors == PlayerBackgroundColors.CoverColorGradient ||
@@ -408,7 +405,7 @@ MainActivity :
 
                 if (!isDynamicPalette) return
 
-                val colorPaletteMode = app.kreate.preferences.Preferences.THEME_MODE.value
+                val colorPaletteMode = Preferences.THEME_MODE.value
                 coroutineScope.launch(Dispatchers.Main) {
                     val result = ImageFactory.requestBuilder( url ) {
                         allowHardware( false )
@@ -454,144 +451,144 @@ MainActivity :
             DisposableEffect(player, !lightTheme) {
                 val listener =
                     SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
-                        when (key) {
-                            Preferences.Key.MAIN_THEME,
-                            Preferences.Key.NAVIGATION_BAR_POSITION,
-                            Preferences.Key.NAVIGATION_BAR_TYPE,
-                            Preferences.Key.MINI_PLAYER_TYPE -> {
-                                this@MainActivity.recreate()
-                                println("MainActivity.recreate()")
-                            }
-
-                            Preferences.Key.COLOR_PALETTE,
-                            Preferences.Key.THEME_MODE,
-                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_0,
-                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_1,
-                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_2,
-                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_3,
-                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_4,
-                            Preferences.Key.CUSTOM_LIGHT_TEXT,
-                            Preferences.Key.CUSTOM_LIGHT_TEXT_SECONDARY,
-                            Preferences.Key.CUSTOM_LIGHT_TEXT_DISABLED,
-                            Preferences.Key.CUSTOM_LIGHT_PLAY_BUTTON,
-                            Preferences.Key.CUSTOM_LIGHT_ACCENT,
-                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_0,
-                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_1,
-                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_2,
-                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_3,
-                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_4,
-                            Preferences.Key.CUSTOM_DARK_TEXT,
-                            Preferences.Key.CUSTOM_DARK_TEXT_SECONDARY,
-                            Preferences.Key.CUSTOM_DARK_TEXT_DISABLED,
-                            Preferences.Key.CUSTOM_DARK_PLAY_BUTTON,
-                            Preferences.Key.CUSTOM_DARK_ACCENT -> {
-                                val colorPaletteName = sharedPreferences.getEnum( Preferences.Key.COLOR_PALETTE, app.kreate.preferences.Preferences.COLOR_PALETTE.defaultValue )
-                                val colorPaletteMode = sharedPreferences.getEnum( Preferences.Key.THEME_MODE, app.kreate.preferences.Preferences.THEME_MODE.defaultValue )
-
-                                var colorPalette = colorPaletteOf(
-                                    colorPaletteName,
-                                    colorPaletteMode,
-                                    !lightTheme
-                                )
-
-                                if (colorPaletteName == ColorPaletteName.Dynamic) {
-                                    val artworkUri =
-                                        (player.currentMediaItem?.mediaMetadata?.artworkUri.thumbnail(1200)
-                                            ?: "").toString()
-                                    artworkUri.let {
-                                        if (it.isNotEmpty())
-                                            setDynamicPalette(it)
-                                        else {
-
-                                            setSystemBarAppearance(colorPalette.isDark)
-                                            appearance = appearance.copy(
-                                                colorPalette = if (!isPicthBlack) colorPalette else colorPalette.copy(
-                                                    background0 = Color.Black,
-                                                    background1 = Color.Black,
-                                                    background2 = Color.Black,
-                                                    background3 = Color.Black,
-                                                    background4 = Color.Black,
-                                                    // text = Color.White
-                                                ),
-                                                typography = appearance.typography.copy(
-                                                    colorPalette.text
-                                                ),
-                                            )
-                                        }
-
-                                    }
-
-                                } else {
-
-                                    if (colorPaletteName == ColorPaletteName.MaterialYou) {
-                                        colorPalette = dynamicColorPaletteOf(
-                                            Color(monet.getAccentColor(this@MainActivity)),
-                                            !lightTheme
-                                        )
-                                    }
-
-                                    if (colorPaletteName == ColorPaletteName.Customized) {
-                                        colorPalette = customColorPalette(
-                                            colorPalette,
-                                            this@MainActivity,
-                                            isSystemInDarkTheme
-                                        )
-                                    }
-                                    if (colorPaletteName == ColorPaletteName.CustomColor) {
-                                        colorPalette = dynamicColorPaletteOf(
-                                            customColor,
-                                            !lightTheme
-                                        )
-                                    }
-
-                                    setSystemBarAppearance(colorPalette.isDark)
-
-                                    appearance = appearance.copy(
-                                        colorPalette = if (!isPicthBlack) colorPalette else colorPalette.copy(
-                                            background0 = Color.Black,
-                                            background1 = Color.Black,
-                                            background2 = Color.Black,
-                                            background3 = Color.Black,
-                                            background4 = Color.Black,
-                                            text = Color.White
-                                        ),
-                                        typography = appearance.typography.copy(if (!isPicthBlack) colorPalette.text else Color.White),
-                                    )
-                                }
-                            }
-
-                            Preferences.Key.THUMBNAIL_BORDER_RADIUS -> {
-                                val thumbnailRoundness =
-                                    sharedPreferences.getEnum(key, ThumbnailRoundness.Heavy)
-
-                                appearance = appearance.copy(
-                                    thumbnailShape = thumbnailRoundness.shape
-                                )
-                            }
-
-                            Preferences.Key.USE_SYSTEM_FONT,
-                            Preferences.Key.APPLY_FONT_PADDING,
-                            Preferences.Key.FONT -> {
-                                val useSystemFont = sharedPreferences.getBoolean( Preferences.Key.USE_SYSTEM_FONT, app.kreate.preferences.Preferences.USE_SYSTEM_FONT.defaultValue )
-                                val applyFontPadding = sharedPreferences.getBoolean( Preferences.Key.APPLY_FONT_PADDING, app.kreate.preferences.Preferences.APPLY_FONT_PADDING.defaultValue )
-                                val fontType = sharedPreferences.getEnum( Preferences.Key.FONT, app.kreate.preferences.Preferences.FONT.defaultValue )
-
-                                appearance = appearance.copy(
-                                    typography = typographyOf(
-                                        appearance.colorPalette.text,
-                                        useSystemFont,
-                                        applyFontPadding,
-                                        fontType
-                                    ),
-                                )
-                            }
-                        }
+//                        when (key) {
+//                            Preferences.Key.MAIN_THEME,
+//                            Preferences.Key.NAVIGATION_BAR_POSITION,
+//                            Preferences.Key.NAVIGATION_BAR_TYPE,
+//                            Preferences.Key.MINI_PLAYER_TYPE -> {
+//                                this@MainActivity.recreate()
+//                                println("MainActivity.recreate()")
+//                            }
+//
+//                            Preferences.Key.COLOR_PALETTE,
+//                            Preferences.Key.THEME_MODE,
+//                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_0,
+//                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_1,
+//                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_2,
+//                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_3,
+//                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_4,
+//                            Preferences.Key.CUSTOM_LIGHT_TEXT,
+//                            Preferences.Key.CUSTOM_LIGHT_TEXT_SECONDARY,
+//                            Preferences.Key.CUSTOM_LIGHT_TEXT_DISABLED,
+//                            Preferences.Key.CUSTOM_LIGHT_PLAY_BUTTON,
+//                            Preferences.Key.CUSTOM_LIGHT_ACCENT,
+//                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_0,
+//                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_1,
+//                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_2,
+//                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_3,
+//                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_4,
+//                            Preferences.Key.CUSTOM_DARK_TEXT,
+//                            Preferences.Key.CUSTOM_DARK_TEXT_SECONDARY,
+//                            Preferences.Key.CUSTOM_DARK_TEXT_DISABLED,
+//                            Preferences.Key.CUSTOM_DARK_PLAY_BUTTON,
+//                            Preferences.Key.CUSTOM_DARK_ACCENT -> {
+//                                val colorPaletteName = sharedPreferences.getEnum( Preferences.Key.COLOR_PALETTE, Preferences.COLOR_PALETTE.defaultValue )
+//                                val colorPaletteMode = sharedPreferences.getEnum( Preferences.Key.THEME_MODE, Preferences.THEME_MODE.defaultValue )
+//
+//                                var colorPalette = colorPaletteOf(
+//                                    colorPaletteName,
+//                                    colorPaletteMode,
+//                                    !lightTheme
+//                                )
+//
+//                                if (colorPaletteName == ColorPaletteName.Dynamic) {
+//                                    val artworkUri =
+//                                        (player.currentMediaItem?.mediaMetadata?.artworkUri.thumbnail(1200)
+//                                            ?: "").toString()
+//                                    artworkUri.let {
+//                                        if (it.isNotEmpty())
+//                                            setDynamicPalette(it)
+//                                        else {
+//
+//                                            setSystemBarAppearance(colorPalette.isDark)
+//                                            appearance = appearance.copy(
+//                                                colorPalette = if (!isPicthBlack) colorPalette else colorPalette.copy(
+//                                                    background0 = Color.Black,
+//                                                    background1 = Color.Black,
+//                                                    background2 = Color.Black,
+//                                                    background3 = Color.Black,
+//                                                    background4 = Color.Black,
+//                                                    // text = Color.White
+//                                                ),
+//                                                typography = appearance.typography.copy(
+//                                                    colorPalette.text
+//                                                ),
+//                                            )
+//                                        }
+//
+//                                    }
+//
+//                                } else {
+//
+//                                    if (colorPaletteName == ColorPaletteName.MaterialYou) {
+//                                        colorPalette = dynamicColorPaletteOf(
+//                                            Color(monet.getAccentColor(this@MainActivity)),
+//                                            !lightTheme
+//                                        )
+//                                    }
+//
+//                                    if (colorPaletteName == ColorPaletteName.Customized) {
+//                                        colorPalette = customColorPalette(
+//                                            colorPalette,
+//                                            this@MainActivity,
+//                                            isSystemInDarkTheme
+//                                        )
+//                                    }
+//                                    if (colorPaletteName == ColorPaletteName.CustomColor) {
+//                                        colorPalette = dynamicColorPaletteOf(
+//                                            customColor,
+//                                            !lightTheme
+//                                        )
+//                                    }
+//
+//                                    setSystemBarAppearance(colorPalette.isDark)
+//
+//                                    appearance = appearance.copy(
+//                                        colorPalette = if (!isPicthBlack) colorPalette else colorPalette.copy(
+//                                            background0 = Color.Black,
+//                                            background1 = Color.Black,
+//                                            background2 = Color.Black,
+//                                            background3 = Color.Black,
+//                                            background4 = Color.Black,
+//                                            text = Color.White
+//                                        ),
+//                                        typography = appearance.typography.copy(if (!isPicthBlack) colorPalette.text else Color.White),
+//                                    )
+//                                }
+//                            }
+//
+//                            Preferences.Key.THUMBNAIL_BORDER_RADIUS -> {
+//                                val thumbnailRoundness =
+//                                    sharedPreferences.getEnum(key, ThumbnailRoundness.Heavy)
+//
+//                                appearance = appearance.copy(
+//                                    thumbnailShape = thumbnailRoundness.shape
+//                                )
+//                            }
+//
+//                            Preferences.Key.USE_SYSTEM_FONT,
+//                            Preferences.Key.APPLY_FONT_PADDING,
+//                            Preferences.Key.FONT -> {
+//                                val useSystemFont = sharedPreferences.getBoolean( Preferences.Key.USE_SYSTEM_FONT, Preferences.USE_SYSTEM_FONT.defaultValue )
+//                                val applyFontPadding = sharedPreferences.getBoolean( Preferences.Key.APPLY_FONT_PADDING, Preferences.APPLY_FONT_PADDING.defaultValue )
+//                                val fontType = sharedPreferences.getEnum( Preferences.Key.FONT, Preferences.FONT.defaultValue )
+//
+//                                appearance = appearance.copy(
+//                                    typography = typographyOf(
+//                                        appearance.colorPalette.text,
+//                                        useSystemFont,
+//                                        applyFontPadding,
+//                                        fontType
+//                                    ),
+//                                )
+//                            }
+//                        }
                     }
 
                 with(preferences) {
                     registerOnSharedPreferenceChangeListener(listener)
 
-                    val colorPaletteName = app.kreate.preferences.Preferences.COLOR_PALETTE.value
+                    val colorPaletteName = Preferences.COLOR_PALETTE.value
                     if (colorPaletteName == ColorPaletteName.Dynamic) {
                         setDynamicPalette(
                             (player.currentMediaItem?.mediaMetadata?.artworkUri.thumbnail(1200)
@@ -611,7 +608,7 @@ MainActivity :
                 }
 
             LaunchedEffect(Unit) {
-                val colorPaletteName = app.kreate.preferences.Preferences.COLOR_PALETTE.value
+                val colorPaletteName = Preferences.COLOR_PALETTE.value
                 if (colorPaletteName == ColorPaletteName.Customized) {
                     appearance = appearance.copy(
                         colorPalette = customColorPalette(
@@ -671,7 +668,7 @@ MainActivity :
 
                 CrossfadeContainer(state = pipState.value) { isCurrentInPip ->
                     println("MainActivity pipState ${pipState.value} CrossfadeContainer isCurrentInPip $isCurrentInPip ")
-                    val pipModule by app.kreate.preferences.Preferences.PIP_MODULE.collectAsStateWithLifecycle()
+                    val pipModule by Preferences.PIP_MODULE.collectAsStateWithLifecycle()
                     if (isCurrentInPip) {
                         Box(
                             modifier = Modifier
@@ -726,12 +723,12 @@ MainActivity :
                                     action_library  -> HomeScreenTabs.Playlists
                                     action_search   -> HomeScreenTabs.Search
                                     // If not opened from shortcuts, then use default page (from settings)
-                                    else            -> app.kreate.preferences.Preferences.STARTUP_SCREEN.value
+                                    else            -> Preferences.STARTUP_SCREEN.value
                                 }
 
                                 // In case [tabIndex] results to 0 and quick page
                                 // isn't enabled change it to Songs page.
-                                if( !app.kreate.preferences.Preferences.QUICK_PICKS_PAGE.value && tab == HomeScreenTabs.QuickPics )
+                                if( !Preferences.QUICK_PICKS_PAGE.value && tab == HomeScreenTabs.QuickPics )
                                     tab = HomeScreenTabs.Songs
 
                                 // Always set to empty to prevent unwanted outcome
@@ -753,10 +750,10 @@ MainActivity :
                             )
 
 
-                            val thumbnailRoundness by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
+                            val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
 
                             val isVideo = player.currentMediaItem?.isVideo ?: false
-                            val isVideoEnabled by app.kreate.preferences.Preferences.PLAYER_ACTION_TOGGLE_VIDEO.collectAsStateWithLifecycle()
+                            val isVideoEnabled by Preferences.PLAYER_ACTION_TOGGLE_VIDEO.collectAsStateWithLifecycle()
 
                             val youtubePlayer: @Composable () -> Unit = {
                                 player.currentMediaItem?.mediaId?.let {
@@ -855,7 +852,7 @@ MainActivity :
                     } else {
                         if (launchedFromNotification) {
                             intent.replaceExtras(Bundle())
-                            showPlayer = !app.kreate.preferences.Preferences.PLAYER_KEEP_MINIMIZED.value
+                            showPlayer = !Preferences.PLAYER_KEEP_MINIMIZED.value
                         } else {
                             showPlayer = false
                         }
@@ -865,7 +862,7 @@ MainActivity :
                         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                             if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED && mediaItem != null) {
                                 if ( mediaItem.localConfiguration?.tag !== PersistentQueue.Tag )
-                                    showPlayer = !app.kreate.preferences.Preferences.PLAYER_KEEP_MINIMIZED.value
+                                    showPlayer = !Preferences.PLAYER_KEEP_MINIMIZED.value
                             }
 
                             setDynamicPalette(mediaItem?.mediaMetadata?.artworkUri.thumbnail(1200).toString())
@@ -921,7 +918,7 @@ MainActivity :
                         }?.let { videoId ->
                             Innertube.song(videoId)?.getOrNull()?.let { song ->
                                 withContext(Dispatchers.Main) {
-                                    if ( !song.explicit && !app.kreate.preferences.Preferences.PARENTAL_CONTROL.value )
+                                    if ( !song.explicit && !Preferences.PARENTAL_CONTROL.value )
                                         player.forcePlay(song.asMediaItem)
                                     else
                                         Toaster.w( "Parental control is enabled" )
@@ -939,7 +936,7 @@ MainActivity :
     private val sensorListener: SensorEventListener = object : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent) {
 
-            if ( app.kreate.preferences.Preferences.AUDIO_SHAKE_TO_SKIP.value ) {
+            if ( Preferences.AUDIO_SHAKE_TO_SKIP.value ) {
                 // Fetching x,y,z values
                 val x = event.values[0]
                 val y = event.values[1]
@@ -1032,7 +1029,7 @@ MainActivity :
             _monet = null
             logger.d { "Successfully removed MonetColorsChangedListener" }
 
-            Preferences.unload()
+//            Preferences.unload()
             logger.d { "Unloaded preferences" }
         } catch( err: Exception ) {
             logger.e( err ) { "onDestroy failed!" }
@@ -1072,7 +1069,7 @@ MainActivity :
         monetColors: ColorScheme,
         isInitialChange: Boolean
     ) {
-        val colorPaletteName = app.kreate.preferences.Preferences.COLOR_PALETTE.value
+        val colorPaletteName = Preferences.COLOR_PALETTE.value
         if (!isInitialChange && colorPaletteName == ColorPaletteName.MaterialYou) {
             /*
             monet.updateMonetColors()
