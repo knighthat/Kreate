@@ -9,10 +9,10 @@ import androidx.compose.ui.unit.dp
 
 
 @Immutable
-actual data class Appearance actual constructor(
-    val colorPalette: ColorPalette,
-    val typography: Typography,
-    val thumbnailShape: Shape
+actual class Appearance actual constructor(
+    actual val colorPalette: ColorPalette,
+    actual val typography: Typography,
+    actual val thumbnailShape: Shape
 ) {
     companion object : Saver<Appearance, List<Any>> {
         @Suppress("UNCHECKED_CAST")
@@ -38,4 +38,16 @@ actual data class Appearance actual constructor(
             )
         }
     }
+
+    actual operator fun component1(): ColorPalette = colorPalette
+
+    actual operator fun component2(): Typography = typography
+
+    actual operator fun component3(): Shape = thumbnailShape
+
+    actual fun copy(
+        colorPalette: ColorPalette,
+        typography: Typography,
+        thumbnailShape: Shape
+    ) = Appearance(colorPalette, typography, thumbnailShape)
 }

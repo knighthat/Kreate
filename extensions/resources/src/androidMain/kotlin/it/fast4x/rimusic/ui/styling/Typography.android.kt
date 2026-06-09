@@ -14,17 +14,17 @@ import app.kreate.resources.R
 import it.fast4x.rimusic.enums.FontType
 
 @Immutable
-actual data class Typography actual constructor(
-    val xxxs: TextStyle,
-    val xxs: TextStyle,
-    val xs: TextStyle,
-    val s: TextStyle,
-    val m: TextStyle,
-    val l: TextStyle,
-    val xl: TextStyle,
-    val xxl: TextStyle,
-    val xxxl: TextStyle,
-    val xlxl: TextStyle,
+actual class Typography actual constructor(
+    actual val xxxs: TextStyle,
+    actual val xxs: TextStyle,
+    actual val xs: TextStyle,
+    actual val s: TextStyle,
+    actual val m: TextStyle,
+    actual val l: TextStyle,
+    actual val xl: TextStyle,
+    actual val xxl: TextStyle,
+    actual val xxxl: TextStyle,
+    actual val xlxl: TextStyle,
 ) {
     fun copy(color: Color) = Typography(
         xxxs = xxs.copy(color = color),

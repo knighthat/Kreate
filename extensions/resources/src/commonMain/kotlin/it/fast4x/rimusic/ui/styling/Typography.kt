@@ -16,4 +16,16 @@ expect class Typography(
     xxl: TextStyle,
     xxxl: TextStyle,
     xlxl: TextStyle
-)
+) {
+
+    val xxxs: TextStyle
+    val xxs: TextStyle
+    val xs: TextStyle
+    val s: TextStyle
+    val m: TextStyle
+    val l: TextStyle
+    val xl: TextStyle
+    val xxl: TextStyle
+    val xxxl: TextStyle
+    val xlxl: TextStyle
+}
