@@ -65,10 +65,10 @@ import app.kreate.android.utils.ItemUtils
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.innertube.toSong
 import app.kreate.android.utils.renderDescription
-import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
 import app.kreate.android.viewmodel.YoutubeArtistViewModel
 import app.kreate.database.models.Song
+import app.kreate.util.scrollingText
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.typography

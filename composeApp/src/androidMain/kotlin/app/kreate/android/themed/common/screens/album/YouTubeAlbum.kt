@@ -70,12 +70,12 @@ import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.renderDescription
-import app.kreate.android.utils.scrollingText
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.models.Album
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongAlbumMap
 import app.kreate.util.MODIFIED_PREFIX
+import app.kreate.util.scrollingText
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
