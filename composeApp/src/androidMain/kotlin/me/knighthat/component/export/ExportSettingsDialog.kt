@@ -12,18 +12,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.util.fastForEach
 import app.kreate.android.BuildConfig
-import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.di.PrefType
+import app.kreate.di.Storage
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import me.knighthat.component.ExportToFileDialog
-import me.knighthat.utils.csv.PreferenceCSV
+import org.koin.java.KoinJavaComponent.get
 import java.io.OutputStream
-import kotlin.math.exp
 
 class ExportSettingsDialog private constructor(
     valueState: MutableState<TextFieldValue>,
@@ -32,20 +32,28 @@ class ExportSettingsDialog private constructor(
 ): ExportToFileDialog(valueState, activeState, launcher) {
 
     companion object {
-        private fun onExportToCsv( outStream: OutputStream ) {
-            val entries = Preferences.preferences.all.mapNotNull {
-                val value = it.value ?: return@mapNotNull null
-                val type = value::class.simpleName ?: return@mapNotNull null
-
-                PreferenceCSV(type, it.key, value)
-            }
+        private suspend fun onExportToCsv( outStream: OutputStream ) {
+            val preferences = get<Storage>(Storage::class.java, PrefType.DEFAULT)
+            val entries = preferences.data.firstOrNull()?.asMap().orEmpty()
 
             csvWriter().open( outStream ) {
                 writeRow( "Type", "Key", "Value" )
-                flush()
 
-                entries.fastForEach {
-                    it.write( this )
+                entries.forEach { (k, v) ->
+                    val type: String
+                    val value: String
+                    when( v ) {
+                        is Set<*> -> {
+                            type = "string_set"
+                            value = v.joinToString(",") { it.toString() }
+                        }
+                        else -> {
+                            type = v::class.simpleName ?: ""
+                            value = v.toString()
+                        }
+                    }
+
+                    writeRow(type, k.name, value)
                 }
 
                 close()
@@ -70,7 +78,9 @@ class ExportSettingsDialog private constructor(
                     CoroutineScope(Dispatchers.IO).launch {
                         context.contentResolver
                                .openOutputStream( uri )
-                               ?.use( ::onExportToCsv )
+                               ?.use {
+                                   onExportToCsv( it )
+                               }
                     }
                 }
             )
