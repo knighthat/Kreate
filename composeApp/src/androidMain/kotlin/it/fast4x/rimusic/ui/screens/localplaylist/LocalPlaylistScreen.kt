@@ -149,7 +149,6 @@ fun LocalPlaylistScreen(
                             0 -> LocalPlaylistSongs(
                                 navController = navController,
                                 playlistId = playlistId,
-                                onDelete = {} //pop
                             )
                         }
                     }

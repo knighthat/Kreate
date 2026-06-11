@@ -87,6 +87,7 @@ import it.fast4x.rimusic.enums.UiType
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
+import it.fast4x.rimusic.ui.components.MenuState
 import it.fast4x.rimusic.ui.components.SwipeableQueueItem
 import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
 import it.fast4x.rimusic.ui.components.tab.toolbar.Button
@@ -122,7 +123,6 @@ import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.saveImageToInternalStorage
 import it.fast4x.rimusic.utils.semiBold
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import me.knighthat.component.ResetCache
 import me.knighthat.component.playlist.PinPlaylist
@@ -152,8 +152,9 @@ import kotlin.time.Duration
 fun LocalPlaylistSongs(
     navController: NavController,
     playlistId: Long,
-    onDelete: () -> Unit,
-    menu: BottomMenu = LocalBottomMenu.current
+    menu: BottomMenu = LocalBottomMenu.current,
+    menuState: MenuState = LocalMenuState.current,
+    viewModel: LocalPlaylistViewModel = koinViewModel { parametersOf(menuState) }
 ) {
     // Essentials
     val context = LocalContext.current
@@ -162,7 +163,6 @@ fun LocalPlaylistSongs(
     val (colorPalette, typography) = LocalAppearance.current
     val lazyListState = rememberLazyListState()
     val uriHandler = LocalUriHandler.current
-    val menuState = LocalMenuState.current
 
     // Settings
     val parentalControlEnabled by Preferences.PARENTAL_CONTROL
@@ -171,12 +171,7 @@ fun LocalPlaylistSongs(
     // Non-vital
     val thumbnailUrl = remember { mutableStateOf("") }
 
-    val playlist by remember {
-        Database.playlistTable
-                .findById( playlistId )
-    }.collectAsState( null, Dispatchers.IO )
-
-    val viewModel: LocalPlaylistViewModel = koinViewModel { parametersOf(menuState) }
+    val playlist by viewModel.playlist.collectAsStateWithLifecycle()
     val items by viewModel.items.collectAsStateWithLifecycle()
     var itemsOnDisplay by persistList<Song>("localPlaylist/$playlistId/songs/on_display")
 

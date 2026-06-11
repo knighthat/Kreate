@@ -6,7 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.kreate.android.Preferences
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistSongsSort
+import app.kreate.database.models.Playlist
 import app.kreate.database.models.Song
+import co.touchlab.kermit.Logger
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.NextBody
 import it.fast4x.innertube.requests.relatedSongs
@@ -25,7 +27,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 
 
@@ -35,11 +36,20 @@ class LocalPlaylistViewModel(
 ) : ViewModel() {
 
     private val _relatedSongs = MutableStateFlow(emptyMap<Song, Int>())
+    private val _items = MutableStateFlow(emptyList<Song>())
 
     val playlistId: Long = savedStateHandle["id"]!!
     val relatedSongs: StateFlow<Map<Song, Int>> = _relatedSongs.asStateFlow()
-    val items: StateFlow<List<Song>>
+    val items: StateFlow<List<Song>> = _items.asStateFlow()
     val sort: PlaylistSongsSort = PlaylistSongsSort(menuState)
+    val playlist: StateFlow<Playlist?> =
+        Database.playlistTable
+                .findById( playlistId )
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.Eagerly,
+                    initialValue = null
+                )
 
     init {
         viewModelScope.launch {
@@ -96,15 +106,25 @@ class LocalPlaylistViewModel(
                 _relatedSongs.update { songs }
             }
         }
-
-        items = Database.songPlaylistMapTable
+        viewModelScope.launch {
+            try {
+                Database.songPlaylistMapTable
                         .sortSongs( playlistId, sort.sortBy, sort.sortOrder )
-                        .flowOn( Dispatchers.IO )
-                        .distinctUntilChanged()
-                        .stateIn(
-                            scope = viewModelScope + Dispatchers.IO,
-                            started = SharingStarted.Eagerly,
-                            initialValue = emptyList()
-                        )
+            } catch( err: Exception ) {
+                Logger.e( "", err, "LocalPlaylist" )
+
+                // This steps fails mostly because a ghost map lingers
+                // after a failed deletion or failed attempt of insertion
+                Database.songPlaylistMapTable.clearGhostMaps()
+
+                Database.songPlaylistMapTable
+                        .sortSongs( playlistId, sort.sortBy, sort.sortOrder )
+            }
+                .flowOn( Dispatchers.IO )
+                .distinctUntilChanged()
+                .collectLatest { newList ->
+                    _items.update { newList }
+                }
+        }
     }
 }
