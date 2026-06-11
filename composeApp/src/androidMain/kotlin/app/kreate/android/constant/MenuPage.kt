@@ -131,7 +131,7 @@ sealed interface MenuPage {
                                 Database.asyncTransaction {
                                     iconId = R.drawable.checkmark
 
-                                    songPlaylistMapTable.map( song.mediaId, it.playlist.id )
+                                    mapIgnore( it.playlist, item )
                                     Toaster.s( R.string.success_added_song_to_playlist, songName, playlistName )
                                 }
                             }
