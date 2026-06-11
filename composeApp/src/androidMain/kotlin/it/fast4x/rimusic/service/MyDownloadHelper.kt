@@ -5,11 +5,13 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper
 import app.kreate.android.service.DownloadHelper
 import app.kreate.database.models.Song
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 @UnstableApi
-object MyDownloadHelper {
+object MyDownloadHelper : KoinComponent {
 
-    lateinit var instance: DownloadHelper
+    val instance: DownloadHelper by inject()
 
     fun getDownload( songId: String ) = instance.getDownload( songId )
 

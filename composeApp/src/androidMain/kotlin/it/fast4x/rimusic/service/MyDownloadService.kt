@@ -31,8 +31,6 @@ class MyDownloadService : DownloadService(
     private val downloadHelper: DownloadHelper by inject()
 
     override fun getDownloadManager(): DownloadManager {
-        MyDownloadHelper.instance = downloadHelper
-
         // This will only happen once, because getDownloadManager is guaranteed to be called only once
         // in the life cycle of the process.
         val downloadManager = downloadHelper.downloadManager
