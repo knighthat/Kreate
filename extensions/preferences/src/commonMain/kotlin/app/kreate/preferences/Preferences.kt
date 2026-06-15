@@ -3,6 +3,7 @@ package app.kreate.preferences
 import androidx.compose.ui.graphics.Color
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
@@ -17,8 +18,11 @@ import app.kreate.constant.PlaylistSortBy
 import app.kreate.constant.SongSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.constant.Type
+import app.kreate.di.InternalPrefKey
+import app.kreate.di.InternalPreferences
 import app.kreate.di.PrefType
 import app.kreate.di.Storage
+import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import it.fast4x.rimusic.enums.AlbumSwipeAction
 import it.fast4x.rimusic.enums.AlbumsType
@@ -88,7 +92,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.io.IOException
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.component.inject
 import java.net.Proxy
 import kotlin.enums.EnumEntries
@@ -97,17 +103,15 @@ import androidx.datastore.preferences.core.Preferences.Key as DatastoreKey
 
 @OptIn(ExperimentalForInheritanceCoroutinesApi::class)
 sealed class Preferences<K, V>(
-    protected val storage: Storage,
+    private val storage: PrefHelper,
     protected val key: DatastoreKey<K>,
     val defaultValue: V
 ) : StateFlow<V> {
 
     companion object : KoinComponent {
 
-        private val scope: CoroutineScope by inject()
-
-        private val preferences: Storage by inject(PrefType.DEFAULT)
-        private val credentials: Storage by inject(PrefType.CREDENTIALS)
+        internal val preferences = PrefHelper(get(PrefType.DEFAULT))
+        internal val credentials = PrefHelper(get(PrefType.CREDENTIALS))
 
         //<editor-fold desc="Item size">
         val HOME_ARTIST_ITEM_SIZE by lazy {
@@ -1045,36 +1049,24 @@ sealed class Preferences<K, V>(
         }
     }
 
-    private val _internalState: StateFlow<V> =
-        storage.data
-               .map { it[key]?.let( ::deserialize ) ?: defaultValue }
-               .stateIn(
-                   scope = scope,
-                   // Stop emitting changes if no one is subscribing to this
-                   started = SharingStarted.WhileSubscribed( 5_000 ),
-                   initialValue = defaultValue
-               )
+    private val _internalState: StateFlow<V> = storage.state( key, defaultValue, ::deserialize )
 
-    override val value: V get() = _internalState.value
+    override val value: V get() = storage.get( key, serialize(defaultValue) ).let( ::deserialize )
     override val replayCache: List<V> get() = _internalState.replayCache
 
-    protected abstract fun deserialize( key: K ): V?
+    protected abstract fun deserialize( key: K ): V
 
     protected abstract fun serialize( value: V ): K
 
     fun reset() = update( defaultValue )
 
-    fun update( newValue: V ) {
-        scope.launch {
-            storage.edit { it[key] = serialize(newValue) }
-        }
-    }
+    fun update( newValue: V ) = storage.asyncWrite( key, serialize(newValue) )
 
     override suspend fun collect( collector: FlowCollector<V> ): Nothing =
         _internalState.collect( collector )
 
-    class BooleanPref(
-        storage: Storage,
+    class BooleanPref internal constructor(
+        storage: PrefHelper,
         key: DatastoreKey<Boolean>,
         defaultValue: Boolean
     ) : Preferences<Boolean, Boolean>(storage, key, defaultValue) {
@@ -1086,14 +1078,14 @@ sealed class Preferences<K, V>(
         override fun serialize( value: Boolean ): Boolean = value
     }
 
-    class EnumPref<E: Enum<E>>(
-        storage: Storage,
+    class EnumPref<E: Enum<E>> internal constructor(
+        storage: PrefHelper,
         key: DatastoreKey<String>,
         defaultValue: E,
         val entries: () -> EnumEntries<E>
     ) : Preferences<String, E>(storage, key, defaultValue) {
 
-        override fun deserialize( key: String ): E? = entries().firstOrNull { it.name == key }
+        override fun deserialize( key: String ): E = entries().firstOrNull { it.name == key } ?: defaultValue
 
         override fun serialize( value: E ): String = value.name
     }
@@ -1101,8 +1093,8 @@ sealed class Preferences<K, V>(
     // [Color] is just value class of ULong. Similarly to Enum, we can store
     // this value as its primitive value - Long, and use simple reverse lookup
     // to get the value back flawlessly
-    class ColorPref(
-        storage: Storage,
+    class ColorPref internal constructor(
+        storage: PrefHelper,
         key: DatastoreKey<Long>,
         defaultValue: Color
     ) : Preferences<Long, Color>(storage, key, defaultValue) {
@@ -1112,8 +1104,8 @@ sealed class Preferences<K, V>(
         override fun serialize( value: Color ): Long = value.value.toLong()
     }
 
-    class StringPref(
-        storage: Storage,
+    class StringPref internal constructor(
+        storage: PrefHelper,
         key: DatastoreKey<String>,
         defaultValue: String
     ) : Preferences<String, String>(storage, key, defaultValue) {
@@ -1123,8 +1115,8 @@ sealed class Preferences<K, V>(
         override fun serialize( value: String ): String = value
     }
 
-    class FloatPref(
-        storage: Storage,
+    class FloatPref internal constructor(
+        storage: PrefHelper,
         key: DatastoreKey<Float>,
         defaultValue: Float
     ) : Preferences<Float, Float>(storage, key, defaultValue) {
@@ -1134,8 +1126,8 @@ sealed class Preferences<K, V>(
         override fun serialize( value: Float ): Float = value
     }
 
-    class IntPref(
-        storage: Storage,
+    class IntPref internal constructor(
+        storage: PrefHelper,
         key: DatastoreKey<Int>,
         defaultValue: Int
     ) : Preferences<Int, Int>(storage, key, defaultValue) {
@@ -1145,8 +1137,8 @@ sealed class Preferences<K, V>(
         override fun serialize( value: Int ): Int = value
     }
 
-    class LongPref(
-        storage: Storage,
+    class LongPref internal constructor(
+        storage: PrefHelper,
         key: DatastoreKey<Long>,
         defaultValue: Long
     ) : Preferences<Long, Long>(storage, key, defaultValue) {
@@ -1154,6 +1146,44 @@ sealed class Preferences<K, V>(
         override fun deserialize( key: Long ): Long = key
 
         override fun serialize( value: Long ): Long = value
+    }
+
+    internal class PrefHelper(
+        private val storage: Storage
+    ) : KoinComponent {
+
+        private val scope: CoroutineScope by inject()
+        private val data: StateFlow<InternalPreferences> =
+            storage.data.stateIn( scope, SharingStarted.Eagerly, emptyPreferences() )
+
+        fun <T> get( key: InternalPrefKey<T>, default: T ): T = data.value[key] ?: default
+
+        suspend fun <T> write( key: InternalPrefKey<T>, value: T ): Boolean =
+            try {
+                storage.edit { it[key] = value }
+
+                true
+            } catch( err: IOException ) {
+                Logger.e( "Failed to write ${key.name} to disk", err, "PrefHelper" )
+
+                false
+            }
+
+        fun <T> asyncWrite( key: InternalPrefKey<T>, value: T ) {
+            scope.launch {
+                write( key, value )
+            }
+        }
+
+        fun <K, V> state( key: InternalPrefKey<K>, default: V, transform: (K) -> V ): StateFlow<V> =
+            storage.data
+                .map { it[key]?.let( transform ) ?: default }
+                .stateIn(
+                    scope = scope,
+                    // Stop emitting changes if no one is subscribing to this
+                    started = SharingStarted.WhileSubscribed(5_000),
+                    initialValue = default
+                )
     }
 
     object Key {
