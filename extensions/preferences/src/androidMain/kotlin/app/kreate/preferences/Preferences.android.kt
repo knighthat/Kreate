@@ -1,17 +1,13 @@
 package app.kreate.preferences
 
 import app.kreate.android.utils.innertube.getSystemCountryCode
-import app.kreate.di.PrefType
-import app.kreate.di.Storage
+import app.kreate.preferences.Preferences.Companion.preferences
 import app.kreate.preferences.Preferences.EnumPref
 import app.kreate.preferences.Preferences.Key
 import app.kreate.preferences.Preferences.StringPref
 import it.fast4x.rimusic.enums.OnDeviceSongSortBy
 import it.fast4x.rimusic.enums.QueueLoopType
-import org.koin.java.KoinJavaComponent.inject
 
-
-private val preferences: Storage by inject(Storage::class.java, PrefType.DEFAULT)
 
 val Preferences.Companion.HOME_ON_DEVICE_SONGS_SORT_BY by lazy {
     EnumPref(preferences, Key.HOME_ON_DEVICE_SONGS_SORT_BY, OnDeviceSongSortBy.Title, OnDeviceSongSortBy::entries)

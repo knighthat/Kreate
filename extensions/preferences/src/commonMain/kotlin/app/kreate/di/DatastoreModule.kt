@@ -11,6 +11,7 @@ import org.koin.dsl.module
 
 
 typealias InternalPreferences = Preferences
+typealias InternalPrefKey<T> = Preferences.Key<T>
 typealias Storage = DataStore<InternalPreferences>
 
 private const val EXTENSION = "preferences_pb"         // Required by datastore-preferences
