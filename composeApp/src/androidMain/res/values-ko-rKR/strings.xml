@@ -707,7 +707,7 @@
     <string name="word_documentation">문서</string>
     <string name="opens_link_in_web_browser">웹 브라우저에서 링크 열기</string>
     <string name="setting_entry_smart_rewind">자동 되감기</string>
-    <string name="setting_description_smart_rewind">이전 버튼은 %s 이후에 되감기 버튼처럼 작동합니다</string>
+    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %1$d %2$s</string>
     <string name="setting_entry_show_chip">%s개의 칩 표시</string>
     <string name="show_quotes">\"%s\" 표시</string>
     <string name="setting_entry_crash_log">충돌 로그</string>
@@ -873,4 +873,5 @@
     <string name="word_pin">Pin</string>
     <string name="word_unpin">Unpin\n</string>
     <string name="success_playlist_deleted">Deleted %s</string>
+    <string name="button_set_color">Set color</string>
 </resources>

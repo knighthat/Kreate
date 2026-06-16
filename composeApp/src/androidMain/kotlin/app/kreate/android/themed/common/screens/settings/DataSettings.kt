@@ -5,7 +5,6 @@ import android.text.format.Formatter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,16 +27,15 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import app.kreate.android.BuildConfig
 import app.kreate.android.R
-import app.kreate.android.themed.common.component.settings.BooleanEntry
-import app.kreate.android.themed.common.component.settings.EnumEntry
 import app.kreate.android.themed.common.component.settings.RestartPlayerService
-import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.StorageSizeInputDialog
 import app.kreate.android.themed.common.component.settings.data.ExoCacheIndicator
 import app.kreate.android.themed.common.component.settings.data.ImageCacheIndicator
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
+import app.kreate.components.settings.EnumEntry
+import app.kreate.components.settings.SettingComponents
 import app.kreate.di.CacheType
 import app.kreate.preferences.Preferences
 import coil3.imageLoader
@@ -66,7 +64,7 @@ fun SettingComponents.StorageSizeEntry(
     subtitle: String,
     currentValue: Long,
     action: SettingComponents.Action,
-    trailingContent: @Composable RowScope.() -> Unit = {}
+    trailingContent: @Composable () -> Unit = {}
 ) {
     val dialog = remember( context, currentValue ) {
         StorageSizeInputDialog(
@@ -84,7 +82,7 @@ fun SettingComponents.StorageSizeEntry(
     }
     dialog.Render()
 
-    Text(
+    Entry(
         title = title,
         onClick = dialog::showDialog,
         subtitle = subtitle,
@@ -250,9 +248,9 @@ fun DataSettings( paddingValues: PaddingValues ) {
             }
             entry( search, R.string.set_cache_location ) {
                 SettingComponents.EnumEntry(
-                    preference = app.kreate.preferences.Preferences.EXO_CACHE_LOCATION,
+                    preference = Preferences.EXO_CACHE_LOCATION,
                     title = stringResource( R.string.set_cache_location ),
-                    subtitle = stringResource( app.kreate.preferences.Preferences.EXO_CACHE_LOCATION.value.subtitleId ),
+                    subtitle = stringResource( Preferences.EXO_CACHE_LOCATION.value.subtitleId ),
                     action = SettingComponents.Action.RESTART_APP
                 )
             }
@@ -265,7 +263,7 @@ fun DataSettings( paddingValues: PaddingValues ) {
                 val exportDbDialog = ExportDatabaseDialog( context )
                 exportDbDialog.Render()
 
-                SettingComponents.Text(
+                SettingComponents.Entry(
                     title = stringResource( R.string.save_to_backup ),
                     subtitle = stringResource( R.string.export_the_database ),
                     onClick = exportDbDialog::showDialog
@@ -274,7 +272,7 @@ fun DataSettings( paddingValues: PaddingValues ) {
             entry( search, R.string.restore_from_backup ) {
                 val importDatabase = ImportDatabase( context )
 
-                SettingComponents.Text(
+                SettingComponents.Entry(
                     title = stringResource(R.string.restore_from_backup),
                     subtitle = stringResource(R.string.import_the_database),
                     onClick = importDatabase::onShortClick
@@ -284,7 +282,7 @@ fun DataSettings( paddingValues: PaddingValues ) {
                 val exportSettingsDialog = ExportSettingsDialog( context )
                 exportSettingsDialog.Render()
 
-                SettingComponents.Text(
+                SettingComponents.Entry(
                     title = exportSettingsDialog.dialogTitle,
                     subtitle = stringResource( R.string.description_exclude_credentials ),
                     onClick = exportSettingsDialog::showDialog
@@ -293,7 +291,7 @@ fun DataSettings( paddingValues: PaddingValues ) {
             entry( search, R.string.title_import_settings ) {
                 val importSettings = ImportSettings( context )
 
-                SettingComponents.Text(
+                SettingComponents.Entry(
                     title = stringResource( R.string.title_import_settings ),
                     subtitle = stringResource( R.string.restore_settings_from_file, stringResource( R.string.title_export_settings ) ),
                     onClick = importSettings::onShortClick
@@ -303,9 +301,9 @@ fun DataSettings( paddingValues: PaddingValues ) {
             header( R.string.search_history )
             entry( search, R.string.pause_search_history ) {
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.PAUSE_SEARCH_HISTORY,
+                    preference = Preferences.PAUSE_SEARCH_HISTORY,
                     title = stringResource( R.string.pause_search_history ),
-                    subtitleId = R.string.neither_save_new_searched_query,
+                    subtitle = stringResource( R.string.neither_save_new_searched_query ),
                     action = SettingComponents.Action.RESTART_PLAYER_SERVICE
                 )
             }
@@ -329,7 +327,7 @@ fun DataSettings( paddingValues: PaddingValues ) {
                             }
                 }.collectAsState( "", Dispatchers.IO )
 
-                SettingComponents.Text(
+                SettingComponents.Entry(
                     title = stringResource( R.string.clear_search_history ),
                     subtitle = subtitle,
                     onClick = {

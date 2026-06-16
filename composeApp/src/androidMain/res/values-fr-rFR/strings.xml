@@ -876,4 +876,5 @@ Volume BAS : titre précédent</string>
     <string name="word_pin">Épingler</string>
     <string name="word_unpin">Détacher\n</string>
     <string name="success_playlist_deleted">%s a été supprimé</string>
+    <string name="button_set_color">Set color</string>
 </resources>

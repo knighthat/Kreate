@@ -162,6 +162,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+                android:name=".ColorPickerActivity"
+                android:configChanges="orientation|screenSize" />
 
         <receiver android:name=".widget.VerticalWidgetReceiver"
             android:exported="true">

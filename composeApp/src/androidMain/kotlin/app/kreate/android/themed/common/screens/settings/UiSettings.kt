@@ -20,18 +20,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.R
-import app.kreate.android.themed.common.component.settings.BooleanEntry
-import app.kreate.android.themed.common.component.settings.EnumEntry
-import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
-import app.kreate.android.themed.common.component.settings.SliderEntry
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.android.themed.common.screens.settings.ui.SwipeActionSettings
 import app.kreate.android.themed.common.screens.settings.ui.themeSettingsSection
 import app.kreate.android.themed.rimusic.component.Visual
+import app.kreate.components.settings.EnumEntry
+import app.kreate.components.settings.SettingComponents
 import app.kreate.constant.Type
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
@@ -56,7 +53,7 @@ private fun ThumbnailRoundnessSlider( preference: Preferences.IntPref ) =
     SettingComponents.SliderEntry(
         preference = preference,
         title = stringResource( R.string.thumbnail_roundness ),
-        constraints = InputDialogConstraints.THUMBNAIL_ROUNDNESS_PERCENT,
+        constraint = InputDialogConstraints.THUMBNAIL_ROUNDNESS_PERCENT,
         valueRange = 0f..50f,
         steps = 11,
         onTextDisplay = {
@@ -77,10 +74,7 @@ private fun ThumbnailRoundnessSlider( preference: Preferences.IntPref ) =
         }
     ) {
         val color = LocalAppearance.current.colorPalette.accent
-        val percent by preference.collectAsStateWithLifecycle()
-        val shape by remember {derivedStateOf {
-            Visual.getShape( percent )
-        }}
+        val shape = Visual.getShape( it.roundToInt() )
 
         Box(
             Modifier.size( 40.dp )
@@ -100,7 +94,7 @@ private fun ThumbnailSizeSlider(
     SettingComponents.SliderEntry(
         preference = preference,
         title = stringResource( R.string.setting_entry_thumbnail_size ),
-        constraints = constraints,
+        constraint = constraints,
         valueRange = valueRange,
         steps = steps,
         onTextDisplay = { it.roundToInt().toString() },
@@ -213,7 +207,7 @@ fun UiSettings( paddingValues: PaddingValues ) {
                 SettingComponents.EnumEntry(
                     preference = Preferences.NAVIGATION_BAR_POSITION,
                     title = stringResource( R.string.navigation_bar_position ),
-                    isEnabled = UiType.ViMusic.isNotCurrent(),
+                    enabled = UiType.ViMusic.isNotCurrent(),
                     subtitle = stringResource( subtitleId, UiType.RiMusic.text )
                 )
             }
@@ -255,7 +249,7 @@ fun UiSettings( paddingValues: PaddingValues ) {
                 SettingComponents.BooleanEntry(
                     preference = Preferences.SHOW_SEARCH_IN_NAVIGATION_BAR,
                     title = stringResource( R.string.vimusic_show_search_button_in_navigation_bar ),
-                    subtitleId = R.string.vismusic_only_in_left_right_navigation_bar
+                    subtitle = stringResource( R.string.vismusic_only_in_left_right_navigation_bar )
                 )
             }
             entry(
@@ -284,14 +278,14 @@ fun UiSettings( paddingValues: PaddingValues ) {
                 SettingComponents.BooleanEntry(
                     preference = Preferences.USE_SYSTEM_FONT,
                     title = stringResource( R.string.use_system_font ),
-                    subtitleId = R.string.use_font_by_the_system
+                    subtitle = stringResource( R.string.use_font_by_the_system )
                 )
             }
             entry( search, R.string.apply_font_padding ) {
                 SettingComponents.BooleanEntry(
                     preference = Preferences.APPLY_FONT_PADDING,
                     title = stringResource( R.string.apply_font_padding ),
-                    subtitleId = R.string.add_spacing_around_texts
+                    subtitle = stringResource( R.string.add_spacing_around_texts )
                 )
             }
             entry( search, R.string.swipe_to_action ) {
@@ -464,7 +458,7 @@ fun UiSettings( paddingValues: PaddingValues ) {
                 SettingComponents.BooleanEntry(
                     preference = Preferences.SHOW_LISTENING_STATS,
                     title = stringResource( R.string.listening_time ),
-                    subtitleId = R.string.shows_the_number_of_songs_heard_and_their_listening_time
+                    subtitle = stringResource( R.string.shows_the_number_of_songs_heard_and_their_listening_time )
                 )
             }
 

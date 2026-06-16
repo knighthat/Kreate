@@ -13,12 +13,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.BuildConfig
 import app.kreate.android.R
-import app.kreate.android.themed.common.component.settings.BooleanEntry
-import app.kreate.android.themed.common.component.settings.EnumEntry
-import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
+import app.kreate.components.settings.EnumEntry
+import app.kreate.components.settings.SettingComponents
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.enums.CheckUpdateState
 import it.fast4x.rimusic.ui.components.themed.SecondaryTextButton
 import me.knighthat.updater.ChangelogsDialog
@@ -30,14 +30,13 @@ fun LazyListScope.updateSection( search: SettingEntrySearch ) {
     header( R.string.update )
 
     entry( search, R.string.update ) {
-        val checkUpdate by app.kreate.preferences.Preferences.CHECK_UPDATE.collectAsStateWithLifecycle()
+        val checkUpdate by Preferences.CHECK_UPDATE.collectAsStateWithLifecycle()
 
         SettingComponents.EnumEntry(
-            preference = app.kreate.preferences.Preferences.CHECK_UPDATE,
+            preference = Preferences.CHECK_UPDATE,
             title = stringResource( R.string.setting_entry_update_checker ),
             subtitle = stringResource( checkUpdate.subtitleId, BuildConfig.APP_NAME ),
             trailingContent = {
-
                 AnimatedVisibility(
                     visible = checkUpdate === CheckUpdateState.DISABLED,
                     // Slide in from right + fade in effect.
@@ -59,7 +58,7 @@ fun LazyListScope.updateSection( search: SettingEntrySearch ) {
         val changelogs = remember { ChangelogsDialog(context) }
         changelogs.Render()
 
-        SettingComponents.Text(
+        SettingComponents.Entry(
             title = stringResource( R.string.setting_entry_view_changelogs ),
             onClick = changelogs::showDialog,
             subtitle = "v${BuildConfig.VERSION_NAME}"
@@ -71,11 +70,17 @@ fun LazyListScope.updateSection( search: SettingEntrySearch ) {
             stringResource( R.string.info_no_update_available )
         )
         if( search appearsIn updateAvailableTitle ) {
-            val isActive by app.kreate.preferences.Preferences.SHOW_CHECK_UPDATE_STATUS.collectAsStateWithLifecycle()
+            val isActive by Preferences.SHOW_CHECK_UPDATE_STATUS.collectAsStateWithLifecycle()
+
             SettingComponents.BooleanEntry(
-                preference = app.kreate.preferences.Preferences.SHOW_CHECK_UPDATE_STATUS,
+                preference = Preferences.SHOW_CHECK_UPDATE_STATUS,
                 title = updateAvailableTitle,
-                subtitleId = if( isActive ) R.string.setting_description_show_no_update_available_yes else R.string.setting_description_show_no_update_available_no
+                subtitle = stringResource(
+                    if( isActive )
+                        R.string.setting_description_show_no_update_available_yes
+                    else
+                        R.string.setting_description_show_no_update_available_no
+                )
             )
         }
     }

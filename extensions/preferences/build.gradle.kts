@@ -48,6 +48,7 @@ kotlin {
             implementation( libs.compose.kmp.ui )
             implementation( libs.compose.kmp.resources )
             implementation( libs.compose.kmp.foundation )
+            implementation( libs.compose.kmp.material3 )
             // Datastore
             implementation( libs.datastore )
             implementation( libs.datastore.preferences )

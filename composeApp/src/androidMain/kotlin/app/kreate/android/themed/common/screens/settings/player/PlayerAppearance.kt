@@ -17,13 +17,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.R
-import app.kreate.android.themed.common.component.settings.BooleanEntry
-import app.kreate.android.themed.common.component.settings.EnumEntry
-import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
+import app.kreate.components.settings.EnumEntry
+import app.kreate.components.settings.SettingComponents
 import app.kreate.constant.Type
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
@@ -320,11 +319,11 @@ fun LazyListScope.playerAppearanceSection(
                 )
             }
 
-            SettingComponents.Text(
-                    stringResource( R.string.appearancepresets ),
-                    { appearanceChooser = true },
-                    subtitle = stringResource( R.string.appearancepresetssecondary )
-                )
+            SettingComponents.Entry(
+                title = stringResource( R.string.appearancepresets ),
+                onClick = { appearanceChooser = true },
+                subtitle = stringResource( R.string.appearancepresetssecondary )
+            )
         }
         entry( search, R.string.show_player_top_actions_bar ) {
             SettingComponents.BooleanEntry(
@@ -530,7 +529,7 @@ fun LazyListScope.playerAppearanceSection(
         SettingComponents.EnumEntry(
             preference = Preferences.PLAYER_INFO_TYPE,
             title = stringResource( R.string.pinfo_type ),
-            subtitleId = R.string.pinfo_album_and_artist_name
+            subtitle = stringResource( R.string.pinfo_album_and_artist_name )
         )
     }
     animatedEntry(
@@ -715,21 +714,21 @@ fun LazyListScope.playerAppearanceSection(
         SettingComponents.BooleanEntry(
             preference = Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED,
             title = stringResource( titleId ),
-            subtitleId
+            subtitle = stringResource( subtitleId )
         )
     }
     entry( search, R.string.player_rotating_buttons ) {
         SettingComponents.BooleanEntry(
             preference = Preferences.ROTATION_EFFECT,
             title = stringResource( R.string.player_rotating_buttons) ,
-            R.string.player_enable_rotation_buttons
+            subtitle = stringResource( R.string.player_enable_rotation_buttons )
         )
     }
     entry( search, R.string.toggle_lyrics ) {
          SettingComponents.BooleanEntry(
             preference = Preferences.PLAYER_TAP_THUMBNAIL_FOR_LYRICS,
             title = stringResource( R.string.toggle_lyrics) ,
-            R.string.by_tapping_on_the_thumbnail
+            subtitle = stringResource( R.string.by_tapping_on_the_thumbnail )
         )
     }
     entry( search, R.string.click_lyrics_text ) {
@@ -760,7 +759,7 @@ fun LazyListScope.playerAppearanceSection(
         SettingComponents.BooleanEntry(
             preference = Preferences.PLAYER_VISUALIZER,
             title = stringResource( R.string.visualizer ),
-            subtitleId = R.string.visualizer_require_mic_permission
+            subtitle = stringResource( R.string.visualizer_require_mic_permission )
         )
     }
 }

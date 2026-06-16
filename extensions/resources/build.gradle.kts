@@ -54,6 +54,7 @@ kotlin {
             implementation( libs.compose.kmp.ui )
             implementation( libs.compose.kmp.resources )
             implementation( libs.compose.kmp.foundation )
+            implementation( libs.compose.kmp.material3 )
         }
         commonTest.dependencies {
             implementation( libs.kotlin.test )

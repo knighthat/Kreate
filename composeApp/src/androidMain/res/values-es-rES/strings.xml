@@ -873,4 +873,5 @@
     <string name="word_pin">Fijar</string>
     <string name="word_unpin">Desfijar\n</string>
     <string name="success_playlist_deleted">Eliminada %s</string>
+    <string name="button_set_color">Set color</string>
 </resources>

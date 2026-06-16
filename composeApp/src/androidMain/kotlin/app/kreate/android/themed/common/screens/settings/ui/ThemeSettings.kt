@@ -22,12 +22,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.R
-import app.kreate.android.themed.common.component.settings.ColorPickerEntry
-import app.kreate.android.themed.common.component.settings.EnumEntry
-import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
-import app.kreate.android.themed.common.component.settings.SettingHeader
 import app.kreate.android.themed.common.component.settings.entry
+import app.kreate.components.settings.ColorPickerEntry
+import app.kreate.components.settings.EnumEntry
+import app.kreate.components.settings.SettingComponents
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
@@ -36,7 +35,7 @@ import it.fast4x.rimusic.ui.components.themed.ConfirmationDialog
 
 @Composable
 fun ThemeSettings( search: SettingEntrySearch ) {
-    val colorPaletteName by app.kreate.preferences.Preferences.COLOR_PALETTE.collectAsStateWithLifecycle()
+    val colorPaletteName by Preferences.COLOR_PALETTE.collectAsStateWithLifecycle()
 
     var resetCustomLightThemeDialog by rememberSaveable { mutableStateOf(false) }
     var resetCustomDarkThemeDialog by rememberSaveable { mutableStateOf(false) }
@@ -94,7 +93,7 @@ fun ThemeSettings( search: SettingEntrySearch ) {
         SettingComponents.ColorPickerEntry(
             preference = Preferences.CUSTOM_COLOR,
             title = stringResource( R.string.customcolor ),
-            subtitleId = R.string.restarting_rimusic_is_required,
+            subtitle = stringResource( R.string.restarting_rimusic_is_required ),
             modifier = Modifier.padding( start = 25.dp )
         )
     }
@@ -149,10 +148,12 @@ fun IndividualColorSection( search: SettingEntrySearch ) =
             )
         }
 
-        SettingHeader( R.string.title_customized_light_theme_colors )
+        SettingComponents.Header(
+            stringResource( R.string.title_customized_light_theme_colors )
+        )
 
         if( search appearsIn R.string.title_reset_customized_light_colors  )
-            SettingComponents.Text(
+            SettingComponents.Entry(
                 title = stringResource( R.string.title_reset_customized_light_colors ),
                 subtitle = stringResource( R.string.info_click_to_reset_default_light_colors ),
                 onClick = { resetCustomLightThemeDialog = true },
@@ -214,10 +215,12 @@ fun IndividualColorSection( search: SettingEntrySearch ) =
                 title = stringResource( R.string.color_accent )
             )
 
-        SettingHeader( R.string.title_customized_dark_theme_colors )
+        SettingComponents.Header(
+            stringResource( R.string.title_customized_dark_theme_colors )
+        )
 
         if( search appearsIn R.string.title_reset_customized_dark_colors  )
-            SettingComponents.Text(
+            SettingComponents.Entry(
                 title = stringResource( R.string.title_reset_customized_dark_colors ),
                 subtitle = stringResource( R.string.click_to_reset_default_dark_colors ),
                 onClick = { resetCustomDarkThemeDialog = true },
@@ -319,7 +322,7 @@ fun LazyListScope.themeSettingsSection( search: SettingEntrySearch ) {
                         SettingComponents.ColorPickerEntry(
                             preference = Preferences.CUSTOM_COLOR,
                             title = stringResource( R.string.customcolor ),
-                            subtitleId = R.string.restarting_rimusic_is_required
+                            subtitle = stringResource( R.string.restarting_rimusic_is_required )
                         )
 
                 else ->

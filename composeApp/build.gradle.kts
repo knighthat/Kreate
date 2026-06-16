@@ -156,6 +156,8 @@ kotlin {
             // Logging
             implementation( libs.kermit )
             implementation( libs.kermit.io )
+
+            implementation( libs.colorpicker )
         }
         commonTest.dependencies {
             implementation( libs.kotlin.test )

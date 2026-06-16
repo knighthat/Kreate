@@ -25,12 +25,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
 import app.kreate.android.R
-import app.kreate.android.themed.common.component.settings.BooleanEntry
-import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.android.themed.common.screens.settings.other.debugSection
+import app.kreate.components.settings.SettingComponents
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.ui.screens.settings.StringListValueSelectorSettingsEntry
@@ -106,16 +106,16 @@ fun OtherSettings( paddingValues: PaddingValues ) {
             }
             entry( search, R.string.folders ) {
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.HOME_SONGS_ON_DEVICE_SHOW_FOLDERS,
+                    preference = Preferences.HOME_SONGS_ON_DEVICE_SHOW_FOLDERS,
                     title = stringResource( R.string.folders ),
-                    subtitleId = R.string.show_folders_in_on_device_page
+                    subtitle = stringResource( R.string.show_folders_in_on_device_page )
                 )
             }
 
             header( R.string.androidheadunit )
             entry( search, R.string.extra_space ) {
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.PLAYER_EXTRA_SPACE,
+                    preference = Preferences.PLAYER_EXTRA_SPACE,
                     title = stringResource( R.string.extra_space )
                 )
             }
@@ -126,9 +126,9 @@ fun OtherSettings( paddingValues: PaddingValues ) {
             )
             entry( search, R.string.keep_screen_on ) {
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.KEEP_SCREEN_ON,
+                    preference = Preferences.KEEP_SCREEN_ON,
                     title = stringResource( R.string.keep_screen_on ),
-                    subtitleId = R.string.prevents_screen_timeout
+                    subtitle = stringResource( R.string.prevents_screen_timeout )
                 )
             }
             entry(
@@ -152,7 +152,7 @@ fun OtherSettings( paddingValues: PaddingValues ) {
                         context.getString( R.string.disable_background_restrictions )
                 }}
 
-                SettingComponents.Text(
+                SettingComponents.Entry(
                     title = stringResource( R.string.ignore_battery_optimizations ),
                     subtitle = subtitle,
                     onClick = {
@@ -181,9 +181,9 @@ fun OtherSettings( paddingValues: PaddingValues ) {
             header( R.string.parental_control )
             entry( search, R.string.parental_control ) {
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.PARENTAL_CONTROL,
+                    preference = Preferences.PARENTAL_CONTROL,
                     title = stringResource( R.string.parental_control ),
-                    subtitleId = R.string.info_prevent_play_songs_with_age_limitation
+                    subtitle = stringResource( R.string.info_prevent_play_songs_with_age_limitation )
                 )
             }
 

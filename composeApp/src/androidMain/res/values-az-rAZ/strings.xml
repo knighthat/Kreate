@@ -707,7 +707,7 @@
     <string name="word_documentation">Sənədləşdirmə</string>
     <string name="opens_link_in_web_browser">Veb brauzerdə link açılır</string>
     <string name="setting_entry_smart_rewind">Ağıllı geri çevirmə</string>
-    <string name="setting_description_smart_rewind">Əvvəlki düymə %s-dən sonra geri çəkmə düyməsi kimi işləyəcək</string>
+    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %1$d %2$s</string>
     <string name="setting_entry_show_chip">\"%s\" çipin göstər</string>
     <string name="show_quotes">\"%s\" göstər</string>
     <string name="setting_entry_crash_log">Çökmə jurnalı</string>
@@ -873,4 +873,5 @@
     <string name="word_pin">Pin</string>
     <string name="word_unpin">Unpin\n</string>
     <string name="success_playlist_deleted">Deleted %s</string>
+    <string name="button_set_color">Set color</string>
 </resources>

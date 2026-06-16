@@ -707,7 +707,7 @@
     <string name="word_documentation">Documentazione</string>
     <string name="opens_link_in_web_browser">Apri il link nel Browser Esterno</string>
     <string name="setting_entry_smart_rewind">Riavvolgimento Avanzato</string>
-    <string name="setting_description_smart_rewind">Il pulsante \"precedente\" agirà come \"riavvolgi\" dopo %s</string>
+    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %1$d %2$s</string>
     <string name="setting_entry_show_chip">Mostra chip \"%s\"</string>
     <string name="show_quotes">Mostra \"%s\"</string>
     <string name="setting_entry_crash_log">Registro di crash</string>
@@ -873,4 +873,5 @@
     <string name="word_pin">Pin</string>
     <string name="word_unpin">Unpin\n</string>
     <string name="success_playlist_deleted">Deleted %s</string>
+    <string name="button_set_color">Set color</string>
 </resources>

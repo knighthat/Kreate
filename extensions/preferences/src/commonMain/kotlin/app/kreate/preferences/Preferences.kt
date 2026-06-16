@@ -757,7 +757,7 @@ sealed class Preferences<K, V>(
             IntPref(preferences, Key.RUNTIME_LOG_LEVEL, 4)
         }
         val RUNTIME_LOG_FILE_COUNT by lazy {
-            IntPref(preferences, Key.RUNTIME_LOG_FILE_COUNT, 5)
+            IntPref(preferences, Key.RUNTIME_LOG_FILE_COUNT, 5, IntRange(1, 10))
         }
         val RUNTIME_LOG_MAX_SIZE_PER_FILE by lazy {
             LongPref(preferences, Key.RUNTIME_LOG_MAX_SIZE_PER_FILE, 5L * 1024 * 1024)   // 5 Mb
@@ -1033,7 +1033,7 @@ sealed class Preferences<K, V>(
             FloatPref(preferences, Key.MULTI_FLOATING_ICON_Y_OFFSET, 0F)
         }
         val SMART_REWIND by lazy {
-            FloatPref(preferences, Key.SMART_REWIND, 3f)
+            IntPref(preferences, Key.SMART_REWIND, 3, IntRange(0, 60))
         }
         val SEARCH_RESULTS_TAB_INDEX by lazy {
             IntPref(preferences, Key.SEARCH_RESULTS_TAB_INDEX, 0)
@@ -1060,7 +1060,7 @@ sealed class Preferences<K, V>(
 
     fun reset() = update( defaultValue )
 
-    fun update( newValue: V ) = storage.asyncWrite( key, serialize(newValue) )
+    open fun update( newValue: V ) = storage.asyncWrite( key, serialize(newValue) )
 
     override suspend fun collect( collector: FlowCollector<V> ): Nothing =
         _internalState.collect( collector )
@@ -1129,12 +1129,18 @@ sealed class Preferences<K, V>(
     class IntPref internal constructor(
         storage: PrefHelper,
         key: DatastoreKey<Int>,
-        defaultValue: Int
+        defaultValue: Int,
+        val range: IntRange = IntRange(Int.MIN_VALUE, Int.MAX_VALUE)
     ) : Preferences<Int, Int>(storage, key, defaultValue) {
 
         override fun deserialize( key: Int ): Int = key
 
         override fun serialize( value: Int ): Int = value
+
+        override fun update( newValue: Int ) {
+            val newValue = newValue.coerceIn( range )
+            super.update( newValue )
+        }
     }
 
     class LongPref internal constructor(
@@ -1525,7 +1531,7 @@ sealed class Preferences<K, V>(
         val FLOATING_ICON_Y_OFFSET = floatPreferencesKey("floating_icon_y_offset")
         val MULTI_FLOATING_ICON_X_OFFSET = floatPreferencesKey("multi_floating_icon_x_offset")
         val MULTI_FLOATING_ICON_Y_OFFSET = floatPreferencesKey("multi_floating_icon_y_offset")
-        val SMART_REWIND = floatPreferencesKey("smart_rewind")
+        val SMART_REWIND = intPreferencesKey("smart_rewind")
         val SEARCH_RESULTS_TAB_INDEX = intPreferencesKey("search_results_tab_index")
         val HOME_TAB_INDEX = intPreferencesKey("home_tab_index")
         val ARTIST_SCREEN_TAB_INDEX = intPreferencesKey("artist_screen_tab_index")
