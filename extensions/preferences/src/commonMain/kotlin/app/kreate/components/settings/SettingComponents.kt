@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
@@ -20,7 +22,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -37,9 +41,19 @@ import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.ui.styling.ColorPalette
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.Typography
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.autostop
+import kreate.resources.generated.resources.restart_alt
+import kreate.resources.generated.resources.semantic_restart_app
+import kreate.resources.generated.resources.semantic_restart_playback_service
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
-object SettingComponents {
+
+object SettingComponents : KoinComponent{
 
     /**
      * Default indentation, applied to all entries
@@ -64,6 +78,9 @@ object SettingComponents {
     const val VERTICAL_SPACING = 12
 
     const val CHILDREN_PADDING = 25
+
+    var isAppRestartRequired by mutableStateOf( false )
+    var isPlaybackServiceRestartRequired by mutableStateOf( false )
 
     @Composable
     internal fun colors(
@@ -97,8 +114,7 @@ object SettingComponents {
         modifier: Modifier = Modifier,
         subtitle: String? = null,
         colorPalette: ColorPalette = LocalAppearance.current.colorPalette,
-        typography: Typography = LocalAppearance.current.typography,
-        trailingContent: @Composable () -> Unit = {}
+        typography: Typography = LocalAppearance.current.typography
     ) =
         ListItem(
             headlineContent = {
@@ -119,11 +135,37 @@ object SettingComponents {
                     )
                 }
             },
-            trailingContent = trailingContent,
+            trailingContent = {
+                // Only 1 can be active at a time,
+                // restart app overrides the others.
+                if( isAppRestartRequired )
+                    IconButton(
+                        onClick = {
+                            get<ActionHandler>().requestRestartApp()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource( Res.drawable.restart_alt ),
+                            contentDescription = stringResource( Res.string.semantic_restart_app )
+                        )
+                    }
+                else if( isPlaybackServiceRestartRequired )
+                    IconButton(
+                        onClick = {
+                            get<ActionHandler>().requestRestartPlaybackService()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource( Res.drawable.autostop ),
+                            contentDescription = stringResource( Res.string.semantic_restart_playback_service )
+                        )
+                    }
+            },
             colors = colors(
                 containerColor = colorPalette.background0,
                 headlineColor = colorPalette.accent,
-                supportingColor = colorPalette.textSecondary
+                supportingColor = colorPalette.textSecondary,
+                trailingIconColor = colorPalette.accent
             ),
             modifier = modifier.background( colorPalette.background0 )
                                .padding( top = 32.dp )
@@ -228,6 +270,7 @@ object SettingComponents {
                     onCheckedChange = {
                         preference.update(it)
                         onValueChanged(it)
+                        consumeAction( action )
                     },
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = colorPalette.onAccent,
@@ -298,6 +341,7 @@ object SettingComponents {
                         onValueChange = setRealtimeValue,
                         onValueChangeFinished = {
                             onValueChangeFinished( preference, realtimeValue )
+                            consumeAction( action )
                         },
                         colors = SliderColors(
                             thumbColor = colorPalette.onAccent,
@@ -342,6 +386,14 @@ object SettingComponents {
                 },
                 colors = colors()
             )
+        }
+
+    fun consumeAction( action: Action ) =
+        when( action ) {
+            Action.NONE                     -> { /* Does nothing */ }
+            Action.RESTART_APP              -> isAppRestartRequired = true
+            Action.RESTART_PLAYER_SERVICE   -> isPlaybackServiceRestartRequired = true
+            // Do NOT use else here, new action requires new handler
         }
 
     /**

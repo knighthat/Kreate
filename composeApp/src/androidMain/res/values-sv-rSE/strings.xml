@@ -827,4 +827,6 @@
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
     <string name="button_set_color">Set color</string>
+    <string name="dialog_body_restart_app">The app will be closed</string>
+    <string name="dialog_body_restart_playback_service">Playback will be stopped</string>
 </resources>

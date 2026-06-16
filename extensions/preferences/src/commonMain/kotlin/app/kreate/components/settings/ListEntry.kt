@@ -67,6 +67,7 @@ fun <T> SettingComponents.ListEntry(
             onConfirmRequest = {
                 isDialogVisible = false
                 onConfirmRequest( selected )
+                consumeAction( action )
             },
             shape = properties.shape,
             containerColor = properties.containerColor,

@@ -81,6 +81,7 @@ fun SettingComponents.InputDialogEntry(
                     return@ConfirmDialog
 
                 onConfirmRequest( state )
+                consumeAction( action )
             },
             icon = icon,
             text = {

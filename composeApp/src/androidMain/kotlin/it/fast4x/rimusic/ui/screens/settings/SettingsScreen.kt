@@ -1,6 +1,7 @@
 package it.fast4x.rimusic.ui.screens.settings
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
@@ -38,14 +40,19 @@ import app.kreate.android.themed.common.screens.settings.NetworkSettings
 import app.kreate.android.themed.common.screens.settings.OtherSettings
 import app.kreate.android.themed.common.screens.settings.QuickPicksSettings
 import app.kreate.android.themed.common.screens.settings.UiSettings
+import app.kreate.component.ConfirmDialog
+import app.kreate.components.settings.ActionHandlerImpl
+import app.kreate.components.settings.SettingComponents
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.UiType
+import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.Skeleton
 import it.fast4x.rimusic.ui.components.themed.StringListDialog
 import it.fast4x.rimusic.utils.secondary
 import it.fast4x.rimusic.utils.semiBold
 import me.knighthat.component.dialog.RestartAppDialog
+import org.koin.java.KoinJavaComponent.get
 
 @UnstableApi
 @OptIn(
@@ -104,7 +111,39 @@ fun SettingsScreen(
         }
     }
 
-    RestartAppDialog.Render()
+    if( ActionHandlerImpl.RestartApp.isVisible )
+        ConfirmDialog(
+            onDismissRequest = {
+                ActionHandlerImpl.RestartApp.isVisible = false
+            },
+            onConfirmRequest = {
+                ActionHandlerImpl.RestartApp.isVisible = false
+                SettingComponents.isAppRestartRequired = false
+
+                RestartAppDialog.onConfirm()
+            },
+            title = stringResource( R.string.are_you_sure ),
+            text = stringResource( R.string.dialog_body_restart_app ),
+        )
+    // Only allow 1 dialog to appear, restart app has wider
+    // application, so it's prioritized
+    else if( ActionHandlerImpl.RestartPlaybackService.isVisible )
+        ConfirmDialog(
+            onDismissRequest = {
+                ActionHandlerImpl.RestartPlaybackService.isVisible = false
+            },
+            onConfirmRequest = {
+                ActionHandlerImpl.RestartPlaybackService.isVisible = false
+                SettingComponents.isPlaybackServiceRestartRequired = false
+
+                val context = get<Context>(Context::class.java)
+                val intent = Intent(context, PlayerServiceModern::class.java)
+                    .setAction( PlayerServiceModern.ACTION_RESTART )
+                context.startService( intent )
+            },
+            title = stringResource( R.string.are_you_sure ),
+            text = stringResource( R.string.dialog_body_restart_playback_service ),
+        )
 }
 
 @Composable
@@ -192,7 +231,7 @@ fun SettingsEntry(
                 text = titleSecondary,
                 style = typography().xxs.secondary,
                 maxLines = 2,
-                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                overflow = TextOverflow.Ellipsis,
                 //modifier = Modifier
                 //    .padding(vertical = 8.dp, horizontal = 24.dp)
             )
