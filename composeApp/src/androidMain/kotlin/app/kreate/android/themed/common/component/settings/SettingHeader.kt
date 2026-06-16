@@ -11,20 +11,17 @@ import app.kreate.components.settings.SettingComponents
 fun LazyListScope.header(
     title: @Composable () -> String,
     modifier: Modifier = Modifier,
-    subtitle: @Composable () -> String? = { null },
-    trailingContent: @Composable () -> Unit = {}
+    subtitle: @Composable () -> String? = { null }
 ) = stickyHeader {
     SettingComponents.Header(
         title = title(),
         modifier = modifier,
-        subtitle = subtitle(),
-        trailingContent = trailingContent
+        subtitle = subtitle()
     )
 }
 
 fun LazyListScope.header(
     @StringRes titleId: Int,
     modifier: Modifier = Modifier,
-    subtitle: @Composable () -> String? = { null },
-    trailingContent: @Composable () -> Unit = {}
-) = header( { stringResource( titleId ) }, modifier, subtitle, trailingContent )
+    subtitle: @Composable () -> String? = { null }
+) = header( { stringResource( titleId ) }, modifier, subtitle )

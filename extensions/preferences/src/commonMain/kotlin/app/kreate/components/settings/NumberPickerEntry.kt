@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.component.ConfirmDialog
 import app.kreate.component.InfiniteNumberPicker
+import app.kreate.components.settings.SettingComponents.Action
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import org.jetbrains.compose.resources.DrawableResource
@@ -72,6 +73,7 @@ fun SettingComponents.NumberPickerEntry(
     modifier: Modifier = Modifier,
     subtitle: String? = null,
     icon: DrawableResource? = null,
+    action: Action = Action.NONE,
     trailingContent: @Composable () -> Unit = {}
 ) {
     val (colorPalette, typography) = LocalAppearance.current
@@ -102,6 +104,7 @@ fun SettingComponents.NumberPickerEntry(
             onConfirmRequest = {
                 onDismissRequest()
                 preferences.update( realtimeValue )
+                consumeAction( action )
             },
             icon = icon,
             title = title,

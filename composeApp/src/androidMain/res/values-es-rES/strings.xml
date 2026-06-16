@@ -874,4 +874,6 @@
     <string name="word_unpin">Desfijar\n</string>
     <string name="success_playlist_deleted">Eliminada %s</string>
     <string name="button_set_color">Set color</string>
+    <string name="dialog_body_restart_app">The app will be closed</string>
+    <string name="dialog_body_restart_playback_service">Playback will be stopped</string>
 </resources>

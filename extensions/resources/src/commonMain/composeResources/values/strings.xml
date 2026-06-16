@@ -175,4 +175,6 @@
     <string name="semantic_toggle_setting">Toggle setting</string>
     <string name="error_empty_input">Input cannot be empty</string>
     <string name="error_input_invalid">Invalid input</string>
+    <string name="semantic_restart_app">Restart app</string>
+    <string name="semantic_restart_playback_service">Restart playback service</string>
 </resources>
