@@ -441,6 +441,9 @@ licenseReport {
 }
 
 val copyReleaseNote = tasks.register<Copy>("copyReleaseNote" ) {
+    description = "Copy release note that matches current versionCode to raw folder"
+    group = JavaBasePlugin.BUILD_DEPENDENTS_TASK_NAME
+
     from( "$rootDir/fastlane/metadata/android/en-US/changelogs" )
 
     val fileName = "${libs.versions.versionCode.get()}.txt"
