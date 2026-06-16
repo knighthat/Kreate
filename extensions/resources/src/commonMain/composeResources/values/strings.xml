@@ -169,4 +169,10 @@
     <string name="roundness_subtle">Subtle</string>
     <string name="roundness_soft">Soft</string>
     <string name="roundness_squircle">Squircle</string>
+    <string name="semantic_open_selector">Open selector</string>
+    <string name="button_confirm">Confirm</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="semantic_toggle_setting">Toggle setting</string>
+    <string name="error_empty_input">Input cannot be empty</string>
+    <string name="error_input_invalid">Invalid input</string>
 </resources>

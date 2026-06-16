@@ -6,12 +6,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.R
-import app.kreate.android.themed.common.component.settings.BooleanEntry
-import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
 import app.kreate.android.themed.common.component.settings.header
+import app.kreate.components.settings.SettingComponents
 import app.kreate.constant.Type
+import app.kreate.preferences.Preferences
 
 
 fun LazyListScope.playerFullscreenLyrics( search: SettingEntrySearch ) {
@@ -25,25 +25,25 @@ fun LazyListScope.playerFullscreenLyrics( search: SettingEntrySearch ) {
             val showTotalDuration by app.kreate.preferences.Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.collectAsStateWithLifecycle()
             if ( showTotalDuration && search appearsIn R.string.show_total_time_of_queue )
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.PLAYER_IS_QUEUE_DURATION_EXPANDED,
+                    preference = Preferences.PLAYER_IS_QUEUE_DURATION_EXPANDED,
                     title = stringResource( R.string.show_total_time_of_queue )
                 )
 
             if ( search appearsIn R.string.titleartist )
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.PLAYER_IS_TITLE_EXPANDED,
+                    preference = Preferences.PLAYER_IS_TITLE_EXPANDED,
                     title = stringResource( R.string.titleartist )
                 )
 
             if ( search appearsIn R.string.timeline )
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.PLAYER_IS_TIMELINE_EXPANDED,
+                    preference = Preferences.PLAYER_IS_TIMELINE_EXPANDED,
                     title = stringResource( R.string.timeline )
                 )
 
             if ( search appearsIn R.string.controls )
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.PLAYER_IS_CONTROLS_EXPANDED,
+                    preference = Preferences.PLAYER_IS_CONTROLS_EXPANDED,
                     title = stringResource( R.string.controls )
                 )
 
@@ -54,7 +54,7 @@ fun LazyListScope.playerFullscreenLyrics( search: SettingEntrySearch ) {
                 && search appearsIn R.string.statsfornerds
             )
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.PLAYER_IS_STATS_FOR_NERDS_EXPANDED,
+                    preference = Preferences.PLAYER_IS_STATS_FOR_NERDS_EXPANDED,
                     title = stringResource( R.string.statsfornerds )
                 )
 
@@ -86,7 +86,7 @@ fun LazyListScope.playerFullscreenLyrics( search: SettingEntrySearch ) {
                 && search appearsIn R.string.actionbar
             )
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.PLAYER_IS_ACTIONS_BAR_EXPANDED,
+                    preference = Preferences.PLAYER_IS_ACTIONS_BAR_EXPANDED,
                     title = stringResource( R.string.actionbar )
                 )
 
@@ -97,7 +97,7 @@ fun LazyListScope.playerFullscreenLyrics( search: SettingEntrySearch ) {
                 && search appearsIn R.string.miniqueue
             )
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.PLAYER_IS_NEXT_IN_QUEUE_EXPANDED,
+                    preference = Preferences.PLAYER_IS_NEXT_IN_QUEUE_EXPANDED,
                     title = stringResource( R.string.miniqueue )
                 )
         }

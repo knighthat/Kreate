@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
-import app.kreate.android.themed.common.component.settings.SettingComponents
+import app.kreate.components.settings.SettingComponents
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.favoritesIcon
 

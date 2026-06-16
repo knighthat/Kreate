@@ -707,7 +707,7 @@
     <string name="word_documentation">Tài liệu</string>
     <string name="opens_link_in_web_browser">Mở trong trình duyệt</string>
     <string name="setting_entry_smart_rewind">Tua lại thông minh</string>
-    <string name="setting_description_smart_rewind">Nút \"phát bài trước\" sẽ tua nhạc lại từ đầu sau %s</string>
+    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %1$d %2$s</string>
     <string name="setting_entry_show_chip">Hiển thị nút \"%s\"</string>
     <string name="show_quotes">Hiển thị \"%s\"</string>
     <string name="setting_entry_crash_log">Nhật ký sự cố</string>
@@ -873,4 +873,5 @@
     <string name="word_pin">Pin</string>
     <string name="word_unpin">Unpin\n</string>
     <string name="success_playlist_deleted">Deleted %s</string>
+    <string name="button_set_color">Set color</string>
 </resources>

@@ -35,10 +35,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.kreate.android.R
-import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
+import app.kreate.components.settings.SettingComponents
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
@@ -202,7 +202,7 @@ fun About(
 
             header( R.string.troubleshooting )
             entry( search, R.string.view_the_source_code ) {
-                SettingComponents.Text(
+                SettingComponents.Entry(
                     title = stringResource( R.string.view_the_source_code ),
                     subtitle = stringResource( R.string.you_will_be_redirected_to_github ),
                     onClick = {
@@ -211,7 +211,7 @@ fun About(
                 )
             }
             entry( search, R.string.word_documentation ) {
-                SettingComponents.Text(
+                SettingComponents.Entry(
                     title = stringResource( R.string.word_documentation ),
                     subtitle = stringResource( R.string.opens_link_in_web_browser ),
                     onClick = {
@@ -220,7 +220,7 @@ fun About(
                 )
             }
             entry( search, R.string.report_an_issue ) {
-                SettingComponents.Text(
+                SettingComponents.Entry(
                     title = stringResource( R.string.report_an_issue ),
                     subtitle = stringResource( R.string.you_will_be_redirected_to_github ),
                     onClick = {
@@ -233,7 +233,7 @@ fun About(
                 )
             }
             entry( search, R.string.request_a_feature_or_suggest_an_idea ) {
-                SettingComponents.Text(
+                SettingComponents.Entry(
                     title = stringResource( R.string.request_a_feature_or_suggest_an_idea ),
                     subtitle = stringResource( R.string.you_will_be_redirected_to_github ),
                     onClick = {
@@ -246,7 +246,7 @@ fun About(
                 )
             }
             entry( search, R.string.word_licenses ) {
-                SettingComponents.Text(
+                SettingComponents.Entry(
                     title = stringResource( R.string.word_licenses ),
                     onClick = { NavRoutes.LICENSES.navigateHere( navController ) },
                 )

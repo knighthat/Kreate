@@ -27,6 +27,11 @@ files:
         ia: ia
         sr: sr
         sr-CS: b+sr+Latn
+  - source: /extensions/resources/src/commonMain/composeResources/values/plurals.xml
+    translation: /extensions/resources/src/commonMain/composeResources/values-%android_code%/plurals.xml
+    languages_mapping:
+      android_code:
+        ia: ia
   # FDroid fastlane - Full description
   - source: /fastlane/metadata/android/en-US/full_description.txt
     translation: /fastlane/metadata/android/%locale%/full_description.txt

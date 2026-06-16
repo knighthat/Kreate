@@ -706,7 +706,7 @@
     <string name="word_documentation">Documentation</string>
     <string name="opens_link_in_web_browser">Opens link in web browser</string>
     <string name="setting_entry_smart_rewind">Smart rewind</string>
-    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %s</string>
+    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %1$d %2$s</string>
     <string name="setting_entry_show_chip">Show \"%s\" chip</string>
     <string name="show_quotes">Show \"%s\"</string>
     <string name="setting_entry_crash_log">Crash log</string>
@@ -826,4 +826,5 @@
     <string name="doh_libredns">LibreDNS</string>
     <string name="doh_libredns_trackers">LibreDNS (ads &amp; trackers)</string>
     <string name="setting_entry_select_dns_over_https_server">Select DoH server</string>
+    <string name="button_set_color">Set color</string>
 </resources>

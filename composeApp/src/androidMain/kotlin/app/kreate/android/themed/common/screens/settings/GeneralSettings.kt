@@ -11,8 +11,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -20,21 +23,22 @@ import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
-import app.kreate.android.themed.common.component.settings.EnumEntry
-import app.kreate.android.themed.common.component.settings.ListEntry
-import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.android.themed.common.screens.settings.general.playerSettingsSection
 import app.kreate.android.themed.common.screens.settings.general.updateSection
-import app.kreate.android.utils.innertube.HOST_LANGUAGE
+import app.kreate.components.settings.EnumEntry
+import app.kreate.components.settings.ListEntry
+import app.kreate.components.settings.SettingComponents
 import app.kreate.constant.Language
 import app.kreate.preferences.APP_REGION
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.ui.styling.Dimensions
 import me.knighthat.utils.Toaster
+import java.text.Collator
 import java.util.Locale
 
 @ExperimentalMaterial3Api
@@ -76,7 +80,7 @@ fun GeneralSettings( paddingValues: PaddingValues ) {
             )
             entry( search, R.string.app_language ) {
                 SettingComponents.EnumEntry(
-                    preference = app.kreate.preferences.Preferences.APP_LANGUAGE,
+                    preference = Preferences.APP_LANGUAGE,
                     title = stringResource( R.string.app_language ),
                     subtitle = stringResource( R.string.setting_description_app_language ),
                     getName = { it.displayName },
@@ -89,7 +93,7 @@ fun GeneralSettings( paddingValues: PaddingValues ) {
                             // Apply it first before really selecting it
                             AppCompatDelegate.setApplicationLocales( locales )
 
-                            app.kreate.preferences.Preferences.APP_LANGUAGE.update( it )
+                            Preferences.APP_LANGUAGE.update( it )
                         } catch (err: Exception) {
                             err.printStackTrace()
                             err.message?.also( Toaster::e )
@@ -98,18 +102,46 @@ fun GeneralSettings( paddingValues: PaddingValues ) {
                 )
             }
             entry( search, R.string.setting_entry_app_region ) {
-                val selected = app.kreate.preferences.Preferences.APP_REGION.collectAsStateWithLifecycle()
+                val selected by Preferences.APP_REGION.collectAsStateWithLifecycle()
+                var values: Map<String, String> by remember { mutableStateOf(emptyMap()) }
 
                 SettingComponents.ListEntry(
-                    entries = emptyArray<String>(),
-                    selectedState = selected,
+                    entries = values.values.toTypedArray(),
+                    selected = selected,
                     title = stringResource( R.string.setting_entry_app_region ),
-                    getName = {
-                        val locale = Locale(HOST_LANGUAGE, it)
-                        locale.getDisplayCountry( locale )
-                    },
+                    getName = { it },
                     subtitle = stringResource( R.string.setting_description_app_region ),
+                    onConfirmRequest =  { displayName ->
+                        values.entries
+                            // Reverse lookup by displayName
+                            .firstOrNull { (_, v) -> v == displayName }
+                            ?.value
+                            ?.also( Preferences.APP_REGION::update )
+                    }
                 )
+
+                val appLang by Preferences.APP_LANGUAGE.collectAsStateWithLifecycle()
+                LaunchedEffect( appLang ) {
+                    val appLocale = appLang.toLocale()
+
+                    Locale.getISOCountries()
+                          .associateWith {
+                              Locale.Builder()
+                                    .setRegion( it )
+                                    .build()
+                                    .getDisplayCountry( appLocale )
+                          }
+                          .filterValues( CharSequence::isNotBlank )
+                          .toList()
+                          .sortedWith(
+                              compareBy(
+                                  comparator = Collator.getInstance(appLocale),
+                                  selector = { it.second }
+                              )
+                          )
+                          .toMap()
+                          .also { values = it }
+                }
             }
 
             playerSettingsSection( search )

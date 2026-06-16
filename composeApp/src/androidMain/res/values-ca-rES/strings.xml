@@ -707,7 +707,7 @@
     <string name="word_documentation">Documentació</string>
     <string name="opens_link_in_web_browser">Obre els enllaços al navegador web</string>
     <string name="setting_entry_smart_rewind">Retrocés intel·ligent</string>
-    <string name="setting_description_smart_rewind">El botó anterior actuarà com un botó de retrocés després de %s</string>
+    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %1$d %2$s</string>
     <string name="setting_entry_show_chip">Mostrar chip \"%s\"</string>
     <string name="show_quotes">Mostrar \"%s\"</string>
     <string name="setting_entry_crash_log">Registre d\'errors</string>
@@ -873,4 +873,5 @@
     <string name="word_pin">Pin</string>
     <string name="word_unpin">Unpin\n</string>
     <string name="success_playlist_deleted">Deleted %s</string>
+    <string name="button_set_color">Set color</string>
 </resources>

@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <plurals name="second">
+        <item quantity="other">second</item>
+    </plurals>
+    <plurals name="file">
+        <item quantity="other">file</item>
+    </plurals>
+</resources>

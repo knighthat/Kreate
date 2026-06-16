@@ -709,7 +709,7 @@
     <string name="word_documentation">Документация</string>
     <string name="opens_link_in_web_browser">Открыть ссылку в браузере</string>
     <string name="setting_entry_smart_rewind">Умная перемотка</string>
-    <string name="setting_description_smart_rewind">Предыдущая кнопка будет действовать как кнопка перемотки после %s</string>
+    <string name="setting_description_smart_rewind">Previous button will act like rewind button after %1$d %2$s</string>
     <string name="setting_entry_show_chip">Показать чип \"%s\"</string>
     <string name="show_quotes">Показать \"%s\"</string>
     <string name="setting_entry_crash_log">Лог вылета</string>
@@ -875,4 +875,5 @@
     <string name="word_pin">Pin</string>
     <string name="word_unpin">Unpin\n</string>
     <string name="success_playlist_deleted">Deleted %s</string>
+    <string name="button_set_color">Set color</string>
 </resources>

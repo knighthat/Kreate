@@ -29,15 +29,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.R
-import app.kreate.android.themed.common.component.settings.EnumEntry
-import app.kreate.android.themed.common.component.settings.SettingComponents
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
-import app.kreate.android.themed.common.component.settings.SliderEntry
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.android.themed.common.screens.settings.player.playerActionBarSection
 import app.kreate.android.themed.common.screens.settings.player.playerAppearanceSection
 import app.kreate.android.themed.common.screens.settings.player.playerFullscreenLyrics
+import app.kreate.components.settings.EnumEntry
+import app.kreate.components.settings.SettingComponents
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -127,7 +126,7 @@ fun AppearanceSettings(paddingValues: PaddingValues) {
                     preference = Preferences.LIVE_WALLPAPER_RESET_DURATION,
                     title = stringResource(R.string.settings_entry_live_wallpaper_reset_duration),
                     subtitle = stringResource(R.string.settings_description_live_wallpaper_reset_duration),
-                    constraints = "",
+                    constraint = "",
                     valueRange = -1f..60000f,
                     steps = 61,
                     onValueChangeFinished = { pref, value ->

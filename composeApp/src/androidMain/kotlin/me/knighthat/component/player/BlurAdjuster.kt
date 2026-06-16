@@ -22,8 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.R
-import app.kreate.android.themed.common.component.settings.BooleanEntry
-import app.kreate.android.themed.common.component.settings.SettingComponents
+import app.kreate.components.settings.SettingComponents
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.ui.components.themed.IconButton
@@ -138,7 +137,7 @@ class BlurAdjuster private constructor(
                 )
 
                 SettingComponents.BooleanEntry(
-                    preference = app.kreate.preferences.Preferences.PLAYER_ROTATING_ALBUM_COVER,
+                    preference = Preferences.PLAYER_ROTATING_ALBUM_COVER,
                     title = stringResource( R.string.rotating_cover_title )
                 )
             }
