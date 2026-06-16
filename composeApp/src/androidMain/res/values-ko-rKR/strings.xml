@@ -254,7 +254,7 @@
     <string name="ask">물어보기</string>
     <string name="item_select">선택</string>
     <string name="blacklisted_folders">차단된 폴더</string>
-    <string name="edit_blacklist_for_on_device_songs">기기 내 노래에 대한 차단 목록을 수정합니다.</string>
+    <string name="edit_blacklist_for_on_device_songs">Prevent songs from certain locations to be scanned</string>
     <string name="add_folder">폴더 추가</string>
     <string name="this_folder_already_exists">이 폴더는 이미 존재합니다.</string>
     <string name="are_you_sure_you_want_to_remove_this_folder_from_the_blacklist">이 폴더를 차단 목록에서 삭제하시겠나요?</string>
@@ -876,4 +876,6 @@
     <string name="button_set_color">Set color</string>
     <string name="dialog_body_restart_app">The app will be closed</string>
     <string name="dialog_body_restart_playback_service">Playback will be stopped</string>
+    <string name="semantic_add_blacklist_entry">Add blacklist entry</string>
+    <string name="placeholder_unknown_folder">Unknown folder</string>
 </resources>

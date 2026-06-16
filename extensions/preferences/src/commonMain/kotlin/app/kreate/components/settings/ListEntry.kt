@@ -35,6 +35,8 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.stringResource
 
 
+const val SETTING_DIALOG_LIST_HEIGHT = 250
+
 @Composable
 fun <T> SettingComponents.ListEntry(
     entries: Array<T>,
@@ -80,7 +82,7 @@ fun <T> SettingComponents.ListEntry(
             title = title,
             text = {
                 LazyColumn(
-                    Modifier.heightIn( max = 250.dp )
+                    Modifier.heightIn( max = SETTING_DIALOG_LIST_HEIGHT.dp )
                 ) {
                     items( entries ) { item ->
                         val isSelected = selected == item

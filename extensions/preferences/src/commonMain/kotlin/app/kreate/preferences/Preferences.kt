@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import app.kreate.android.enums.DohServer
 import app.kreate.android.enums.PlatformIndicatorType
 import app.kreate.constant.AlbumSortBy
@@ -1047,6 +1048,9 @@ sealed class Preferences<K, V>(
         val LIVE_WALLPAPER_RESET_DURATION by lazy {
             LongPref(preferences, Key.LIVE_WALLPAPER_RESET_DURATION, -1L)
         }
+        val BLACKLISTED_FOLDERS by lazy {
+            StringSetPref(preferences, Key.BLACKLISTED_FOLDERS, emptySet())
+        }
     }
 
     private val _internalState: StateFlow<V> = storage.state( key, defaultValue, ::deserialize )
@@ -1152,6 +1156,17 @@ sealed class Preferences<K, V>(
         override fun deserialize( key: Long ): Long = key
 
         override fun serialize( value: Long ): Long = value
+    }
+
+    class StringSetPref internal constructor(
+        storage: PrefHelper,
+        key: DatastoreKey<Set<String>>,
+        defaultValue: Set<String>
+    ) : Preferences<Set<String>, Set<String>>(storage, key, defaultValue) {
+
+        override fun deserialize( key: Set<String> ): Set<String> = key
+
+        override fun serialize( value: Set<String> ): Set<String> = value
     }
 
     internal class PrefHelper(
@@ -1536,5 +1551,6 @@ sealed class Preferences<K, V>(
         val HOME_TAB_INDEX = intPreferencesKey("home_tab_index")
         val ARTIST_SCREEN_TAB_INDEX = intPreferencesKey("artist_screen_tab_index")
         val LIVE_WALLPAPER_RESET_DURATION = longPreferencesKey("live_wallpaper_reset_duration")
+        val BLACKLISTED_FOLDERS = stringSetPreferencesKey("blacklisted_folders")
     }
 }

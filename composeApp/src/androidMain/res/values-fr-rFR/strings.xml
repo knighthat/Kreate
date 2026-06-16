@@ -254,7 +254,7 @@
     <string name="ask">Demander</string>
     <string name="item_select">Sélectionner</string>
     <string name="blacklisted_folders">Dossiers sur la liste noire</string>
-    <string name="edit_blacklist_for_on_device_songs">Éditer la liste noire pour les titres de l\'appareil.</string>
+    <string name="edit_blacklist_for_on_device_songs">Prevent songs from certain locations to be scanned</string>
     <string name="add_folder">Ajouter un dossier</string>
     <string name="this_folder_already_exists">Ce dossier existe déjà.</string>
     <string name="are_you_sure_you_want_to_remove_this_folder_from_the_blacklist">Êtes-vous sûr de vouloir supprimer ce dossier de la liste noire ?</string>
@@ -879,4 +879,6 @@ Volume BAS : titre précédent</string>
     <string name="button_set_color">Set color</string>
     <string name="dialog_body_restart_app">The app will be closed</string>
     <string name="dialog_body_restart_playback_service">Playback will be stopped</string>
+    <string name="semantic_add_blacklist_entry">Add blacklist entry</string>
+    <string name="placeholder_unknown_folder">Unknown folder</string>
 </resources>

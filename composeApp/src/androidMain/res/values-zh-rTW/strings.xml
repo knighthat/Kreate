@@ -254,7 +254,7 @@
     <string name="ask">詢問</string>
     <string name="item_select">選擇</string>
     <string name="blacklisted_folders">列入黑名單的資料夾</string>
-    <string name="edit_blacklist_for_on_device_songs">編輯\"在裝置上\"的歌曲黑名單</string>
+    <string name="edit_blacklist_for_on_device_songs">Prevent songs from certain locations to be scanned</string>
     <string name="add_folder">新增資料夾</string>
     <string name="this_folder_already_exists">此資料夾已經存在.</string>
     <string name="are_you_sure_you_want_to_remove_this_folder_from_the_blacklist">你確定要從黑名單中移除此資料夾嗎?</string>
@@ -876,4 +876,6 @@
     <string name="button_set_color">Set color</string>
     <string name="dialog_body_restart_app">The app will be closed</string>
     <string name="dialog_body_restart_playback_service">Playback will be stopped</string>
+    <string name="semantic_add_blacklist_entry">Add blacklist entry</string>
+    <string name="placeholder_unknown_folder">Unknown folder</string>
 </resources>
