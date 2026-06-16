@@ -254,7 +254,7 @@
     <string name="ask">שאל</string>
     <string name="item_select">בחר</string>
     <string name="blacklisted_folders">תיקיות ברשימה השחורה</string>
-    <string name="edit_blacklist_for_on_device_songs">ערוך רשימה שחורה עבור שירים במכשיר.</string>
+    <string name="edit_blacklist_for_on_device_songs">Prevent songs from certain locations to be scanned</string>
     <string name="add_folder">הוספת תיקייה</string>
     <string name="this_folder_already_exists">התיקיה הזו כבר קיימת.</string>
     <string name="are_you_sure_you_want_to_remove_this_folder_from_the_blacklist">האם אתה בטוח שברצונך להסיר את התיקיה הזו מהרשימה השחורה?</string>
@@ -876,4 +876,6 @@
     <string name="button_set_color">Set color</string>
     <string name="dialog_body_restart_app">The app will be closed</string>
     <string name="dialog_body_restart_playback_service">Playback will be stopped</string>
+    <string name="semantic_add_blacklist_entry">Add blacklist entry</string>
+    <string name="placeholder_unknown_folder">Unknown folder</string>
 </resources>

@@ -2,11 +2,15 @@ package me.knighthat.utils
 
 import android.content.ContentUris
 import android.content.Context
+import android.os.Environment
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import androidx.core.net.toUri
 import app.kreate.constant.SortOrder
 import app.kreate.database.models.Format
 import app.kreate.database.models.Song
+import app.kreate.preferences.Preferences
+import app.kreate.util.isDocumentTree
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.OnDeviceSongSortBy
 import it.fast4x.rimusic.utils.isAtLeastAndroid10
@@ -18,6 +22,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import java.io.File
+import java.util.StringJoiner
 import kotlin.time.Duration.Companion.milliseconds
 
 val PROJECTION by lazy {
@@ -65,30 +70,57 @@ val PRO = buildList {
 
 val ALBUM_URI = "content://media/external/audio/albumart".toUri()
 
-private fun blacklistedPaths( context: Context ): Set<String> {
-    val file = File(context.filesDir, "Blacklisted_paths.txt")
-    return  if( file.exists() )
-        file.readLines().toSet()
-    else
-        emptySet()
-}
+private fun blacklistedPaths(): Set<String> =
+    Preferences.BLACKLISTED_FOLDERS
+               .value
+               .mapNotNull {
+                   val uri = it.toUri()
+                   val docId = if( uri.isDocumentTree ) DocumentsContract.getTreeDocumentId( uri ) else return@mapNotNull null
+                   val parts = docId.split(":")
+                   if ( parts.size < 2 )
+                       // Skip if not a valid (corrupted) path
+                       return@mapNotNull null
+                   val rootType = parts[0]
+                   val relativePath = parts[1]
+                   val base = if( rootType.equals("primary", ignoreCase = true) ) {
+                       // Map "primary" to the actual internal storage base path
+                       Environment.getExternalStorageDirectory().absolutePath
+                   } else {
+                       // Handle SD Cards (e.g., "/storage/1234-ABCD/Music")
+                       "/storage/$rootType"
+                   }
+                   if( relativePath.isEmpty() ) base else "$base/$relativePath"
+               }
+                .toSet()
 
 fun Context.getLocalSongs(
     sortBy: OnDeviceSongSortBy,
     sortOrder: SortOrder
 ): Flow<Map<Song, String>> = flow {
     val results = linkedMapOf<Song, String>()
-    val blacklistedPaths = blacklistedPaths( this@getLocalSongs )
+
+    //<editor-fold desc="Selection">
+    val selectionBuilder = StringJoiner(" AND ", "(", ")")
+    val selectionArgs = mutableListOf<String>()
+    selectionBuilder.add( "${MediaStore.Audio.Media.IS_MUSIC} > 0" )
+    blacklistedPaths().forEach { path ->
+        selectionBuilder.add( "${MediaStore.MediaColumns.DATA} NOT LIKE ?" )
+
+        // Clean up trailing slashes to ensure the wildcard matches consistently
+        val cleanPath = path.removeSuffix("/")
+        selectionArgs.add( "${cleanPath}%" )
+    }
+    val selection = selectionBuilder.toString()
+    //</editor-fold>
 
     val uri =
         if (isAtLeastAndroid10)
             MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
         else
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-    val selection = "${MediaStore.Audio.Media.IS_MUSIC} > 0"
     val order = "${sortBy.value} COLLATE NOCASE ${sortOrder.asSqlString}"
 
-    contentResolver.query( uri, PROJECTION, selection, null, order )?.use { cursor ->
+    contentResolver.query( uri, PROJECTION, selection, selectionArgs.toTypedArray(), order )?.use { cursor ->
         val idColumn = cursor.getColumnIndex( MediaStore.Audio.Media._ID )
         val nameColumn = cursor.getColumnIndex( MediaStore.Audio.Media.DISPLAY_NAME )
         val durationColumn = cursor.getColumnIndex( MediaStore.Audio.Media.DURATION )
@@ -116,7 +148,6 @@ fun Context.getLocalSongs(
                 else
                     this
             }
-            if( blacklistedPaths.contains( relPath ) ) continue
 
             // Nullable so SongItem can display "--:--"
             // TODO apply some non-null method
