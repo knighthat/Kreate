@@ -6,9 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,12 +25,12 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.kreate.component.ConfirmDialog
 import app.kreate.component.InfiniteNumberPicker
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.PluralStringResource
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
 
 
@@ -99,35 +97,14 @@ fun SettingComponents.NumberPickerEntry(
     )
 
     if( isDialogVisible )
-        AlertDialog(
+        ConfirmDialog(
             onDismissRequest = ::onDismissRequest,
-            confirmButton = {
-                ConfirmButton(
-                    colorPalette = colorPalette,
-                    enabled = !isScrollingState.value
-                ) {
-                    onDismissRequest()
-                    preferences.update( realtimeValue )
-                }
+            onConfirmRequest = {
+                onDismissRequest()
+                preferences.update( realtimeValue )
             },
-            dismissButton = {
-                CancelButton( colorPalette, ::onDismissRequest )
-            },
-            icon = {
-                if( icon == null ) return@AlertDialog
-
-                Icon(
-                    painter = painterResource( icon ),
-                    // Not clickable
-                    contentDescription = null
-                )
-            },
-            title = {
-                Text(
-                    text = title,
-                    fontSize = typography.m.fontSize
-                )
-            },
+            icon = icon,
+            title = title,
             text = {
                 Box(
                     modifier = Modifier.size( 300.dp, 180.dp ),
