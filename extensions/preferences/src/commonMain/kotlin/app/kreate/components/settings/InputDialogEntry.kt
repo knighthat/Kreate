@@ -9,9 +9,7 @@ import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
@@ -34,6 +32,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import app.kreate.component.ConfirmDialog
 import app.kreate.components.settings.SettingComponents.Action
 import app.kreate.util.awaitFrame
 import it.fast4x.rimusic.ui.styling.LocalAppearance
@@ -42,7 +41,6 @@ import kreate.resources.generated.resources.error_empty_input
 import kreate.resources.generated.resources.error_input_invalid
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
@@ -74,30 +72,17 @@ fun SettingComponents.InputDialogEntry(
     )
 
     if( isDialogVisible )
-        AlertDialog(
+        ConfirmDialog(
             onDismissRequest = { isDialogVisible = false },
-            confirmButton = {
-                ConfirmButton {
-                    isDialogVisible = false
+            onConfirmRequest = {
+                isDialogVisible = false
 
-                    if( !errorMessage.isNullOrBlank() || !constraint.matches(state.text) )
-                        return@ConfirmButton
+                if( !errorMessage.isNullOrBlank() || !constraint.matches(state.text) )
+                    return@ConfirmDialog
 
-                    onConfirmRequest( state )
-                }
+                onConfirmRequest( state )
             },
-            dismissButton = {
-                CancelButton { isDialogVisible = false }
-            },
-            icon = {
-                if( icon == null ) return@AlertDialog
-
-                Icon(
-                    painter = painterResource( icon ),
-                    // Not clickable
-                    contentDescription = null
-                )
-            },
+            icon = icon,
             text = {
                 val focusRequester = remember { FocusRequester() }
 

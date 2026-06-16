@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemColors
@@ -19,7 +17,6 @@ import androidx.compose.material3.SliderColors
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -40,11 +37,7 @@ import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.ui.styling.ColorPalette
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.Typography
-import kreate.resources.generated.resources.Res
-import kreate.resources.generated.resources.button_cancel
-import kreate.resources.generated.resources.button_confirm
 import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.stringResource
 
 object SettingComponents {
 
@@ -71,43 +64,6 @@ object SettingComponents {
     const val VERTICAL_SPACING = 12
 
     const val CHILDREN_PADDING = 25
-
-    @Composable
-    internal fun ConfirmButton(
-        colorPalette: ColorPalette = LocalAppearance.current.colorPalette,
-        enabled: Boolean = true,
-        onClick: () -> Unit
-    ) =
-        TextButton(
-            onClick = onClick,
-            shape = RoundedCornerShape(10),
-            enabled = enabled,
-            colors = ButtonDefaults.textButtonColors(
-                containerColor = colorPalette.accent,
-                contentColor = colorPalette.onAccent
-            )
-        ) {
-            Text(
-                text = stringResource( Res.string.button_confirm ),
-                fontWeight = FontWeight.Bold
-            )
-        }
-
-    @Composable
-    internal fun CancelButton(
-        colorPalette: ColorPalette = LocalAppearance.current.colorPalette,
-        onClick: () -> Unit
-    ) =
-        TextButton(
-            onClick = onClick,
-            shape = RoundedCornerShape(10),
-            colors = ButtonDefaults.textButtonColors(
-                containerColor = Color.Transparent,
-                contentColor = colorPalette.red
-            )
-        ) {
-            Text( stringResource(Res.string.button_cancel) )
-        }
 
     @Composable
     internal fun colors(

@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
@@ -26,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import app.kreate.component.ConfirmDialog
 import app.kreate.component.TextView
 import app.kreate.components.settings.SettingComponents.Action
 import app.kreate.preferences.Preferences
@@ -33,7 +32,6 @@ import it.fast4x.rimusic.ui.styling.LocalAppearance
 import kreate.resources.generated.resources.Res
 import kreate.resources.generated.resources.semantic_open_selector
 import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 
@@ -64,8 +62,12 @@ fun <T> SettingComponents.ListEntry(
     )
 
     if( isDialogVisible )
-        AlertDialog(
+        ConfirmDialog(
             onDismissRequest = { isDialogVisible = false },
+            onConfirmRequest = {
+                isDialogVisible = false
+                onConfirmRequest( selected )
+            },
             shape = properties.shape,
             containerColor = properties.containerColor,
             iconContentColor = properties.iconContentColor,
@@ -73,27 +75,8 @@ fun <T> SettingComponents.ListEntry(
             textContentColor = Color.Transparent,
             tonalElevation = properties.tonalElevation,
             properties = properties.properties,
-            confirmButton = {
-                ConfirmButton {
-                    isDialogVisible = false
-                    onConfirmRequest( selected )
-                }
-            },
-            dismissButton = {
-                CancelButton { isDialogVisible = false }
-            },
-            icon = {
-                if( icon == null ) return@AlertDialog
-
-                Icon(
-                    painter = painterResource( icon ),
-                    // Not clickable
-                    contentDescription = null
-                )
-            },
-            title = {
-                Text(title)
-            },
+            icon = icon,
+            title = title,
             text = {
                 LazyColumn(
                     Modifier.heightIn( max = 250.dp )
