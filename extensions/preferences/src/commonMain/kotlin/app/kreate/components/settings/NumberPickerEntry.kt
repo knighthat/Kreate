@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.component.ConfirmDialog
-import app.kreate.component.InfiniteNumberPicker
+import app.kreate.component.InfinitePicker
 import app.kreate.components.settings.SettingComponents.Action
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.ui.styling.LocalAppearance
@@ -126,7 +126,7 @@ fun SettingComponents.NumberPickerEntry(
                             modifier = Modifier.weight( 1f ),
                             contentAlignment = Alignment.CenterEnd
                         ) {
-                            InfiniteNumberPicker(
+                            InfinitePicker(
                                 numbers = preferences.range.toList(),
                                 startIndex = preferences.range.indexOf( selected ),
                                 textStyle = typography.xxxl.copy( color = colorPalette.accent ),

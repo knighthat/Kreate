@@ -59,15 +59,18 @@ import kotlin.math.abs
  * monospace font family via the [textStyle].
  */
 @Composable
-private fun rememberMaxNumberWidth(
-    numbers: List<Int>,
+private fun <T> rememberMaxNumberWidth(
+    numbers: List<T>,
     textStyle: TextStyle,
-    density: Density
+    density: Density,
+    transform: (T) -> String
 ): Dp {
     require( numbers.isNotEmpty() )
 
     val textMeasurer = rememberTextMeasurer()
-    val maxNumber = remember( numbers ) { numbers.maxOrNull()?.toString() ?: "" }
+    val maxNumber = remember( numbers ) {
+        numbers.map( transform ).maxBy( CharSequence::length )
+    }
     val textLayoutResult = remember( maxNumber, textStyle ) {
         textMeasurer.measure(
             text = maxNumber,
@@ -103,13 +106,14 @@ private fun rememberMaxNumberWidth(
  * @param color For unselected values
  */
 @Composable
-fun InfiniteNumberPicker(
-    numbers: List<Int>,
+fun <T> InfinitePicker(
+    numbers: List<T>,
     startIndex: Int,
     textStyle: TextStyle,
-    onValueChange: (Int) -> Unit,
+    onValueChange: (T) -> Unit,
     isScrollingState: MutableState<Boolean>,
     modifier: Modifier = Modifier,
+    transform: (T) -> String = { it.toString() },
     color: Color = Color.Unspecified,
     density: Density = LocalDensity.current
 ) {
@@ -122,7 +126,7 @@ fun InfiniteNumberPicker(
     // Tracks the internal layout center to calculate alpha shifts
     var containerCenterY by rememberSaveable { mutableFloatStateOf(0f) }
     // Keep the rendered width consistent by providing width to render the largest number
-    val maxWidth = rememberMaxNumberWidth( numbers, textStyle, density )
+    val maxWidth = rememberMaxNumberWidth( numbers, textStyle, density, transform )
     // Start at [startIndex] item, but offset it backwards by 1 full item height.
     val listState = rememberLazyListState(
         initialFirstVisibleItemIndex = midPoint - (midPoint % listSize) + startIndex,
@@ -195,7 +199,7 @@ fun InfiniteNumberPicker(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = number.toString(),
+                        text = transform( number ),
                         fontSize = textStyle.fontSize,
                         color = animatedColor,
                         style = textStyle
