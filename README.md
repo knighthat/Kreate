@@ -5,10 +5,11 @@
   </p>
     
   <br>
-  
-  [![Latest version download count](https://api.knighthat.me/kreate/downloads/latest)](https://github.com/knighthat/kreate/releases/latest)
+
+  [![Latest version download count](https://img.shields.io/github/downloads/knighthat/kreate/latest/total?label=latest%20📥&color=2ea44f&cacheSeconds=3600)](https://github.com/knighthat/kreate/releases/latest)
   [![Localization progress](https://badges.crowdin.net/kreate/localized.svg)](https://translate.kreate.knighthat.me/project/kreate)
-  ![Total download count](https://api.knighthat.me/kreate/downloads/total)
+  ![Total download count](https://img.shields.io/github/downloads/knighthat/kreate/total?label=total%20📥&color=2ea44f&cacheSeconds=86400
+)
 
   <br>
 
