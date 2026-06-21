@@ -43,7 +43,7 @@
     <string name="loudness">Volumen</string>
     <string name="clear">Borrar</string>
     <string name="online">En línea</string>
-    <string name="no_results_found">Sin resultados. Prueba cambiando la búsqueda o la categoría</string>
+    <string name="no_results_found">Sin resultados. Prueba a cambiar la búsqueda o la categoría</string>
     <string name="videos">Vídeos</string>
     <string name="featured">Destacado</string>
     <string name="view_the_source_code">Ver el código fuente</string>
@@ -90,7 +90,7 @@
     <string name="left">%1$s restantes</string>
     <string name="confirm">Confirmar</string>
     <string name="show">Mostrar</string>
-    <string name="unsynchronized_lyrics">letra desincronizada</string>
+    <string name="unsynchronized_lyrics">letra no sincronizada</string>
     <string name="synchronized_lyrics">letra sincronizada</string>
     <string name="provided_by">Proporcionado por</string>
     <string name="delete_playback_events">Eliminar %1$s eventos de reproducción</string>
@@ -98,7 +98,7 @@
     <string name="used">" usado"</string>
     <string name="close_background_player">Cerrar reproductor en segundo plano</string>
     <string name="when_app_swipe_out_from_task_manager">Cuando se cierra la aplicación desde el administrador de tareas</string>
-    <string name="opening_url">está cargando…</string>
+    <string name="opening_url">está cargando...</string>
     <string name="an_error_has_occurred_while_fetching_the_lyrics">Ha ocurrido un error al cargar la letra</string>
     <string name="error_a_network_error_has_occurred">Ha ocurrido un error de conexión</string>
     <string name="error_couldn_t_find_a_playable_audio_format">No se pudo encontrar un formato de audio compatible</string>
@@ -580,7 +580,7 @@
     <string name="settings_enable_pip_auto">Habilitar imagen en imagen automático</string>
     <string name="pipmodule_cover">Portada</string>
     <string name="settings_pip_module">Módulo PIP</string>
-    <string name="menu_go_to_picture_in_picture">PIP</string>
+    <string name="menu_go_to_picture_in_picture">Picture in picture</string>
     <string name="pip_info_from_android_12_pip_can_be_automatically_enabled">A partir de Android 12 pip puede habilitarse automáticamente</string>
     <string name="showsecondline">Mostrar traducción en la segunda línea</string>
     <string name="resume_playback_on_start">Reanudar reproducción al iniciar</string>
@@ -707,7 +707,7 @@
     <string name="looking_up_album_from_the_internet">Buscar álbum en Internet</string>
     <string name="failed_to_fetch_original_property">Error al buscar la propiedad original</string>
     <string name="failed_to_fetch_album">Error al buscar el álbum</string>
-    <string name="info_open_reset_dialog">Abrir diálogo de restablecimiento</string>
+    <string name="info_open_reset_dialog">Restablecer...</string>
     <string name="title_reset_title">Restablecer título</string>
     <string name="title_reset_authors">Restablecer autores</string>
     <string name="title_reset_total_play_time">Restablecer tiempo de reproducción total</string>
@@ -908,12 +908,12 @@
     <string name="setting_description_choose_image">Pulsar para escoger imagen</string>
     <string name="setting_description_remove_image">Pulsar para eliminar imagen</string>
     <string name="error_failed_to_update_widget">Fallo en actualizar widget</string>
-    <string name="error_failed_to_export_song">Failed to export song</string>
-    <string name="go_to_artist">Go to artist</string>
-    <string name="info_song_already_in_playlist">%1$s already in playlist %2$s</string>
-    <string name="success_added_song_to_playlist">Added %1$s to playlist %2$s</string>
-    <string name="success_removed_song_from_playlist">Removed %1$s from %2$s</string>
-    <string name="word_pin">Pin</string>
-    <string name="word_unpin">Unpin\n</string>
-    <string name="success_playlist_deleted">Deleted %s</string>
+    <string name="error_failed_to_export_song">No se pudo exportar canción</string>
+    <string name="go_to_artist">Ir al artista</string>
+    <string name="info_song_already_in_playlist">%1$s ya está en la lista %2$s</string>
+    <string name="success_added_song_to_playlist">Se añadió %1$s a la lista %2$s</string>
+    <string name="success_removed_song_from_playlist">Se eliminó %1$s de la lista %2$s</string>
+    <string name="word_pin">Fijar</string>
+    <string name="word_unpin">Desfijar\n</string>
+    <string name="success_playlist_deleted">Eliminada %s</string>
 </resources>

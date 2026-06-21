@@ -1,14 +1,14 @@
 <p>
-  Fork de <a href="https://github.com/fast4x/RiMusic">RiMusic</a>, onde o rendemento é a nosa máxima prioridade.
+  Bifurcación de <a href="https://github.com/fast4x/RiMusic">RiMusic</a>, no que a prioridade principal é o rendemento.
 </p>
 
 <b>Características:</b>
 <ul>
   <li>Compatibilidade con múltiples idiomas</li>
-  <li>Deseños amigábeis</li>
-  <li>Almacenar en caché ou descargar cancións para reprodución sen conexión</li>
+  <li>Deseño amigable</li>
+  <li>Caché ou descarga de cancións para reprodución sen conexión</li>
   <li>Reprodución en segundo plano</li>
-  <li>Estatísticas e informes (almacenados e procesados localmente)</li>
+  <li>Estatísticas e informes (gardados e procesados localmente)</li>
   <li>Varios visualizadores de son (algúns requiren permiso de micrófono, pero están desactivados por defecto)</li>
   <li>Temporizador de apagado</li>
   <li>Control de son: velocidade de reprodución, ton, normalización e omitir silencios</li>
