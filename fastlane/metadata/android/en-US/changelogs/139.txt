@@ -1,0 +1,3 @@
+Fixes:
+- Crash when open playlist
+- Persistent crash log
