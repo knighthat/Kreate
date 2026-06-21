@@ -3,7 +3,7 @@
 # App properties
 versionCode = "138"
 versionName = "2.2.0"
-compileSdk = "36"
+compileSdk = "37"
 minSdk = "23"
 
 agp = "8.13.2"
