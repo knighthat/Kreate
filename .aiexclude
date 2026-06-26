@@ -1,1 +1,3 @@
-*
+.secrets
+.env
+.vars
