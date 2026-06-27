@@ -36,8 +36,6 @@ import it.fast4x.rimusic.enums.CarouselSize
 import it.fast4x.rimusic.enums.CheckUpdateState
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
-import it.fast4x.rimusic.enums.DurationInMilliseconds
-import it.fast4x.rimusic.enums.DurationInMinutes
 import it.fast4x.rimusic.enums.ExoPlayerCacheLocation
 import it.fast4x.rimusic.enums.ExoPlayerMinTimeForEvent
 import it.fast4x.rimusic.enums.FilterBy
@@ -60,7 +58,6 @@ import it.fast4x.rimusic.enums.MusicAnimationType
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.NavigationBarType
 import it.fast4x.rimusic.enums.NotificationButtons
-import it.fast4x.rimusic.enums.PauseBetweenSongs
 import it.fast4x.rimusic.enums.PipModule
 import it.fast4x.rimusic.enums.PlayEventsType
 import it.fast4x.rimusic.enums.PlayerBackgroundColors
@@ -99,6 +96,8 @@ import org.koin.core.component.get
 import org.koin.core.component.inject
 import java.net.Proxy
 import kotlin.enums.EnumEntries
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import androidx.datastore.preferences.core.Preferences.Key as DatastoreKey
 
 
@@ -548,9 +547,6 @@ sealed class Preferences<K, V>(
         val AUDIO_SPEED by lazy {
             BooleanPref(preferences, Key.AUDIO_SPEED, false)
         }
-        val AUDIO_FADE_DURATION by lazy {
-            EnumPref(preferences, Key.AUDIO_FADE_DURATION, DurationInMilliseconds.Disabled, DurationInMilliseconds::entries)
-        }
         val AUDIO_QUALITY by lazy {
             EnumPref(preferences, Key.AUDIO_QUALITY, AudioQualityFormat.Auto, AudioQualityFormat::entries)
         }
@@ -961,17 +957,11 @@ sealed class Preferences<K, V>(
         val NAVIGATION_BAR_TYPE by lazy {
             EnumPref(preferences, Key.NAVIGATION_BAR_TYPE, NavigationBarType.IconAndText, NavigationBarType::entries)
         }
-        val PAUSE_BETWEEN_SONGS by lazy {
-            EnumPref(preferences, Key.PAUSE_BETWEEN_SONGS, PauseBetweenSongs.`0`, PauseBetweenSongs::entries)
-        }
         val THUMBNAIL_BORDER_RADIUS by lazy {
             EnumPref(preferences, Key.THUMBNAIL_BORDER_RADIUS, ThumbnailRoundness.Heavy, ThumbnailRoundness::entries)
         }
         val TRANSITION_EFFECT by lazy {
             EnumPref(preferences, Key.TRANSITION_EFFECT, TransitionEffect.Scale, TransitionEffect::entries)
-        }
-        val LIMIT_SONGS_WITH_DURATION by lazy {
-            EnumPref(preferences, Key.LIMIT_SONGS_WITH_DURATION, DurationInMinutes.Disabled, DurationInMinutes::entries)
         }
         val QUEUE_TYPE by lazy {
             EnumPref(preferences, Key.QUEUE_TYPE, Type.LEGACY, Type::entries)
@@ -1050,6 +1040,15 @@ sealed class Preferences<K, V>(
         }
         val BLACKLISTED_FOLDERS by lazy {
             StringSetPref(preferences, Key.BLACKLISTED_FOLDERS, emptySet())
+        }
+        val PAUSE_BETWEEN_SONGS by lazy {
+            DurationPref(preferences, Key.PAUSE_BETWEEN_SONGS, Duration.ZERO)
+        }
+        val LIMIT_SONGS_WITH_DURATION by lazy {
+            DurationPref(preferences, Key.LIMIT_SONGS_WITH_DURATION, Duration.ZERO)
+        }
+        val AUDIO_FADE_DURATION by lazy {
+            DurationPref(preferences, Key.AUDIO_FADE_DURATION, Duration.ZERO, LongRange(0, 5000))
         }
     }
 
@@ -1167,6 +1166,18 @@ sealed class Preferences<K, V>(
         override fun deserialize( key: Set<String> ): Set<String> = key
 
         override fun serialize( value: Set<String> ): Set<String> = value
+    }
+
+    class DurationPref internal constructor(
+        storage: PrefHelper,
+        key: DatastoreKey<Long>,
+        defaultValue: Duration,
+        val range: LongRange = LongRange(0, Long.MAX_VALUE)
+    ) : Preferences<Long, Duration>(storage, key, defaultValue) {
+
+        override fun deserialize( key: Long ): Duration = key.milliseconds
+
+        override fun serialize( value: Duration ): Long = value.inWholeMilliseconds
     }
 
     internal class PrefHelper(
@@ -1369,7 +1380,6 @@ sealed class Preferences<K, V>(
         val AUDIO_BASS_BOOSTED = booleanPreferencesKey("audio_bass_boosted")
         val AUDIO_SMART_PAUSE_DURING_CALLS = booleanPreferencesKey("audio_smart_pause_during_calls")
         val AUDIO_SPEED = booleanPreferencesKey("audio_speed")
-        val AUDIO_FADE_DURATION = stringPreferencesKey("audio_fade_duration")
         val AUDIO_QUALITY = stringPreferencesKey("audio_quality")
         val AUDIO_VOLUME_NORMALIZATION_TARGET = floatPreferencesKey("audio_volume_normalization_target")
         val AUDIO_BASS_BOOST_LEVEL = floatPreferencesKey("audio_bass_boost_level")
@@ -1520,10 +1530,8 @@ sealed class Preferences<K, V>(
         val FONT = stringPreferencesKey("font")
         val NAVIGATION_BAR_POSITION = stringPreferencesKey("navigation_bar_position")
         val NAVIGATION_BAR_TYPE = stringPreferencesKey("navigation_bar_type")
-        val PAUSE_BETWEEN_SONGS = stringPreferencesKey("pause_between_songs")
         val THUMBNAIL_BORDER_RADIUS = stringPreferencesKey("thumbnail_border_radius")
         val TRANSITION_EFFECT = stringPreferencesKey("transition_effect")
-        val LIMIT_SONGS_WITH_DURATION = stringPreferencesKey("limit_songs_with_duration")
         val QUEUE_TYPE = stringPreferencesKey("queue_type")
         val QUEUE_LOOP_TYPE = stringPreferencesKey("queue_loop_type")
         val CAROUSEL_SIZE = stringPreferencesKey("carousel_size")
@@ -1538,7 +1546,6 @@ sealed class Preferences<K, V>(
         val OTHER_APP_LANGUAGE = stringPreferencesKey("other_app_language")
         val HOME_ARTIST_AND_ALBUM_FILTER = stringPreferencesKey("home_artist_and_album_filter")
         val STATISTIC_PAGE_CATEGORY = stringPreferencesKey("statistic_page_category")
-        val CUSTOM_COLOR = longPreferencesKey("custom_color")
         val APP_REGION = stringPreferencesKey("app_region")
         val LOCAL_SONGS_FOLDER = stringPreferencesKey("local_songs_folder")
         val SEEN_CHANGELOGS_VERSION = stringPreferencesKey("seen_changelogs_version")
@@ -1552,5 +1559,9 @@ sealed class Preferences<K, V>(
         val ARTIST_SCREEN_TAB_INDEX = intPreferencesKey("artist_screen_tab_index")
         val LIVE_WALLPAPER_RESET_DURATION = longPreferencesKey("live_wallpaper_reset_duration")
         val BLACKLISTED_FOLDERS = stringSetPreferencesKey("blacklisted_folders")
+        val CUSTOM_COLOR = longPreferencesKey("custom_color")
+        val PAUSE_BETWEEN_SONGS = longPreferencesKey("pause_duration_between_songs")
+        val LIMIT_SONGS_WITH_DURATION = longPreferencesKey("limit_songs_with_duration")
+        val AUDIO_FADE_DURATION = longPreferencesKey("audio_fade_duration")
     }
 }

@@ -14,4 +14,25 @@
         <item quantity="one">file</item>
         <item quantity="many">file</item>
     </plurals>
+    <plurals name="hour">
+        <item quantity="other">hour</item>
+        <item quantity="many">hour</item>
+        <item quantity="one">hour</item>
+        <item quantity="few">hour</item>
+        <item quantity="two">hour</item>
+    </plurals>
+    <plurals name="minute">
+        <item quantity="other">minute</item>
+        <item quantity="many">minute</item>
+        <item quantity="one">minute</item>
+        <item quantity="few">minute</item>
+        <item quantity="two">minute</item>
+    </plurals>
+    <plurals name="millisecond">
+        <item quantity="two">millisecond</item>
+        <item quantity="one">millisecond</item>
+        <item quantity="many">millisecond</item>
+        <item quantity="other">millisecond</item>
+        <item quantity="few">millisecond</item>
+    </plurals>
 </resources>

@@ -42,7 +42,6 @@ import app.kreate.android.R
 import app.kreate.util.readableText
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
-import it.fast4x.rimusic.enums.PauseBetweenSongs
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.styling.favoritesIcon
 import it.fast4x.rimusic.utils.DURATION_INDICATOR_HEIGHT
@@ -50,6 +49,7 @@ import it.fast4x.rimusic.utils.positionAndDurationState
 import it.fast4x.rimusic.utils.rememberPreference
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.delay
+import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -209,12 +209,12 @@ fun DurationIndicator(
                 var isPaused by remember { mutableStateOf(false) }
 
                 val pauseBetweenSongs by app.kreate.preferences.Preferences.PAUSE_BETWEEN_SONGS.collectAsStateWithLifecycle()
-                if(pauseBetweenSongs != PauseBetweenSongs.`0`)
+                if( pauseBetweenSongs != Duration.ZERO )
                     LaunchedEffect(timeRemaining) {
                         if(timeRemaining < 500) {
                             isPaused = true
                             player.pause()
-                            delay(pauseBetweenSongs.asMillis)
+                            delay( pauseBetweenSongs )
                             player.play()
                             isPaused = false
                         }

@@ -409,7 +409,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
             onIsPlayingChanged( true )
         }
 
-        val duration = Preferences.AUDIO_FADE_DURATION.value.asMillis
+        val duration = Preferences.AUDIO_FADE_DURATION.value.inWholeMilliseconds
         if( duration == 0L ) {
             action()
             return
@@ -427,7 +427,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
     }
 
     override fun pause() {
-        val duration = Preferences.AUDIO_FADE_DURATION.value.asMillis
+        val duration = Preferences.AUDIO_FADE_DURATION.value.inWholeMilliseconds
         if( duration == 0L ) {
             player.pause()
             return

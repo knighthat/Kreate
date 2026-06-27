@@ -69,7 +69,8 @@ private fun <T> rememberMaxNumberWidth(
 
     val textMeasurer = rememberTextMeasurer()
     val maxNumber = remember( numbers ) {
-        numbers.map( transform ).maxBy( CharSequence::length )
+        // Add another character to get more space
+        numbers.map( transform ).maxBy( CharSequence::length ) + "0"
     }
     val textLayoutResult = remember( maxNumber, textStyle ) {
         textMeasurer.measure(

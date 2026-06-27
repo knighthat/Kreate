@@ -10,7 +10,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -66,6 +65,99 @@ private fun VisualGuide(
     )
 
 @Composable
+fun <T: Number> SettingComponents.NumberPickerEntry(
+    numbers: List<T>,
+    selected: T,
+    unit: PluralStringResource,
+    title: String,
+    onValueApplied: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    subtitle: String? = null,
+    icon: DrawableResource? = null,
+    action: Action = Action.NONE,
+    trailingContent: @Composable () -> Unit = {}
+) {
+    val (colorPalette, typography) = LocalAppearance.current
+    var isDialogVisible by rememberSaveable { mutableStateOf(false) }
+
+    Entry(
+        title = title,
+        subtitle = subtitle,
+        trailingContent = trailingContent,
+        modifier = modifier,
+        onClick = { isDialogVisible = true }
+    )
+
+    if( !isDialogVisible ) return
+
+    //<editor-fold desc="Helper functions">
+    fun onDismissRequest() {
+        isDialogVisible = false
+    }
+    //</editor-fold>
+    val (realtimeValue, setRealtimeValue) = rememberSaveable( selected ) {
+        mutableStateOf( selected )
+    }
+
+    ConfirmDialog(
+        onDismissRequest = ::onDismissRequest,
+        onConfirmRequest = {
+            onDismissRequest()
+            onValueApplied( realtimeValue )
+            consumeAction( action )
+        },
+        icon = icon,
+        title = title,
+        text = {
+            Box(
+                modifier = Modifier.size( 300.dp, 180.dp ),
+                contentAlignment = Alignment.Center
+            ) {
+                // Visual guides: Subtle selection lines spanning the middle slot
+                VisualGuide( colorPalette.accent, (-25).dp )
+                VisualGuide( colorPalette.accent, 24.dp )
+
+                // Layout content bundled tight in the middle
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy( 12.dp )
+                ) {
+                    Box(
+                        modifier = Modifier.weight( 1f ),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        InfinitePicker(
+                            numbers = numbers,
+                            startIndex = numbers.indexOf( selected ),
+                            textStyle = typography.xxxl.copy( color = colorPalette.accent ),
+                            onValueChange = setRealtimeValue,
+                            modifier = Modifier.wrapContentWidth(),
+                            color = colorPalette.textDisabled,
+                            isScrollingState = rememberSaveable { mutableStateOf(false) }
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier.weight( 1f ),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Text(
+                            text = pluralStringResource( unit, realtimeValue.toInt() ),
+                            style = typography.s,
+                            color = colorPalette.textDisabled
+                        )
+                    }
+                }
+            }
+        },
+        containerColor = colorPalette.background0,
+        iconContentColor = colorPalette.text,
+        titleContentColor = colorPalette.text,
+        textContentColor = colorPalette.text
+    )
+}
+
+@Composable
 fun SettingComponents.NumberPickerEntry(
     preferences: Preferences.IntPref,
     unit: PluralStringResource,
@@ -76,83 +168,18 @@ fun SettingComponents.NumberPickerEntry(
     action: Action = Action.NONE,
     trailingContent: @Composable () -> Unit = {}
 ) {
-    val (colorPalette, typography) = LocalAppearance.current
-
     val selected by preferences.collectAsStateWithLifecycle()
-    val (realtimeValue, setRealtimeValue) = rememberSaveable( selected ) {
-        mutableIntStateOf( selected )
-    }
-    var isDialogVisible by rememberSaveable { mutableStateOf(false) }
-    val isScrollingState = rememberSaveable { mutableStateOf(false) }
-    //<editor-fold desc="Helper functions">
-    fun onDismissRequest() {
-        isDialogVisible = false
-    }
-    //</editor-fold>
 
-    Entry(
+    NumberPickerEntry(
+        numbers = preferences.range.toList(),
+        selected = selected,
+        unit = unit,
         title = title,
-        subtitle = subtitle,
-        trailingContent = trailingContent,
+        onValueApplied = preferences::update,
         modifier = modifier,
-        onClick = { isDialogVisible = true }
+        subtitle = subtitle,
+        icon = icon,
+        action = action,
+        trailingContent = trailingContent,
     )
-
-    if( isDialogVisible )
-        ConfirmDialog(
-            onDismissRequest = ::onDismissRequest,
-            onConfirmRequest = {
-                onDismissRequest()
-                preferences.update( realtimeValue )
-                consumeAction( action )
-            },
-            icon = icon,
-            title = title,
-            text = {
-                Box(
-                    modifier = Modifier.size( 300.dp, 180.dp ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    // Visual guides: Subtle selection lines spanning the middle slot
-                    VisualGuide( colorPalette.accent, (-25).dp )
-                    VisualGuide( colorPalette.accent, 24.dp )
-
-                    // Layout content bundled tight in the middle
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy( 12.dp )
-                    ) {
-                        Box(
-                            modifier = Modifier.weight( 1f ),
-                            contentAlignment = Alignment.CenterEnd
-                        ) {
-                            InfinitePicker(
-                                numbers = preferences.range.toList(),
-                                startIndex = preferences.range.indexOf( selected ),
-                                textStyle = typography.xxxl.copy( color = colorPalette.accent ),
-                                onValueChange = setRealtimeValue,
-                                modifier = Modifier.wrapContentWidth(),
-                                color = colorPalette.textDisabled,
-                                isScrollingState = isScrollingState
-                            )
-                        }
-
-                        Box(
-                            modifier = Modifier.weight( 1f ),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
-                            Text(
-                                text = pluralStringResource( unit, realtimeValue ),
-                                style = typography.s,
-                                color = colorPalette.textDisabled
-                            )
-                        }
-                    }
-                }
-            },
-            containerColor = colorPalette.background0,
-            iconContentColor = colorPalette.text,
-            titleContentColor = colorPalette.text,
-            textContentColor = colorPalette.text
-        )
 }

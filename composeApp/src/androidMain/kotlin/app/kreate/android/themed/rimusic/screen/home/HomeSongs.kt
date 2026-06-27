@@ -55,7 +55,6 @@ import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BuiltInPlaylist
-import it.fast4x.rimusic.enums.DurationInMinutes
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.thumbnailShape
@@ -85,6 +84,7 @@ import kotlinx.coroutines.flow.onEach
 import me.knighthat.component.tab.ExportSongsToCSVDialog
 import me.knighthat.component.tab.HiddenSongs
 import org.koin.compose.koinInject
+import kotlin.time.Duration
 
 @UnstableApi
 @ExperimentalFoundationApi
@@ -196,8 +196,8 @@ fun HomeSongs(
                                            .map { list ->
                                                // Exclude songs with duration higher than what [excludeSongWithDurationLimit] is
                                                list.fastFilter { song ->
-                                                   excludeSongWithDurationLimit == DurationInMinutes.Disabled
-                                                           || song.durationText.toDuration().inWholeMilliseconds < excludeSongWithDurationLimit.asMillis
+                                                   excludeSongWithDurationLimit == Duration.ZERO
+                                                           || song.durationText.toDuration() < excludeSongWithDurationLimit
                                                }
                                            }
 

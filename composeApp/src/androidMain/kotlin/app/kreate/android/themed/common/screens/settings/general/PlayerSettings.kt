@@ -17,6 +17,7 @@ import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
+import app.kreate.components.settings.DurationEntry
 import app.kreate.components.settings.EnumEntry
 import app.kreate.components.settings.ListEntry
 import app.kreate.components.settings.NumberPickerEntry
@@ -26,9 +27,12 @@ import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.rememberEqualizerLauncher
 import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.millisecond
 import kreate.resources.generated.resources.second
 import org.jetbrains.compose.resources.pluralStringResource
 import org.koin.compose.koinInject
+import kotlin.time.Duration.Companion.milliseconds
+
 
 @ExperimentalMaterial3Api
 @UnstableApi
@@ -74,14 +78,14 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
         )
     }
     entry( search, R.string.exclude_songs_with_duration_limit ) {
-        SettingComponents.EnumEntry(
+        SettingComponents.DurationEntry(
             preference = Preferences.LIMIT_SONGS_WITH_DURATION,
             title = stringResource( R.string.exclude_songs_with_duration_limit ),
             subtitle = stringResource( R.string.exclude_songs_with_duration_limit_description )
         )
     }
     entry( search, R.string.pause_between_songs ) {
-        SettingComponents.EnumEntry(
+        SettingComponents.DurationEntry(
             preference = Preferences.PAUSE_BETWEEN_SONGS,
             title = stringResource( R.string.pause_between_songs )
         )
@@ -102,10 +106,17 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
         )
     }
     entry( search, R.string.effect_fade_audio ) {
-        SettingComponents.EnumEntry(
-            preference = Preferences.AUDIO_FADE_DURATION,
+        val selected by Preferences.AUDIO_FADE_DURATION.collectAsStateWithLifecycle()
+
+        SettingComponents.NumberPickerEntry(
+            numbers = Preferences.AUDIO_FADE_DURATION.range.step(100).toList(),
+            selected = selected.inWholeMilliseconds,
+            unit = Res.plurals.millisecond,
             title = stringResource( R.string.effect_fade_audio ),
-            subtitle = stringResource( R.string.effect_fade_audio_description )
+            subtitle = stringResource( R.string.effect_fade_audio_description ),
+            onValueApplied = {
+                Preferences.AUDIO_FADE_DURATION.update( it.milliseconds )
+            }
         )
     }
     entry( search, R.string.player_keep_minimized ) {

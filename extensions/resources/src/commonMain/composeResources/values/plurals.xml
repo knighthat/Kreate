@@ -8,4 +8,16 @@
         <item quantity="one">file</item>
         <item quantity="other">files</item>
     </plurals>
+    <plurals name="hour">
+        <item quantity="other">hours</item>
+        <item quantity="one">hour</item>
+    </plurals>
+    <plurals name="minute">
+        <item quantity="other">minutes</item>
+        <item quantity="one">minute</item>
+    </plurals>
+    <plurals name="millisecond">
+        <item quantity="one">millisecond</item>
+        <item quantity="other">milliseconds</item>
+    </plurals>
 </resources>

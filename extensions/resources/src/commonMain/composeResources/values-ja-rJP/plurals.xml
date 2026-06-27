@@ -6,4 +6,13 @@
     <plurals name="file">
         <item quantity="other">file</item>
     </plurals>
+    <plurals name="hour">
+        <item quantity="other">hour</item>
+    </plurals>
+    <plurals name="minute">
+        <item quantity="other">minute</item>
+    </plurals>
+    <plurals name="millisecond">
+        <item quantity="other">millisecond</item>
+    </plurals>
 </resources>
