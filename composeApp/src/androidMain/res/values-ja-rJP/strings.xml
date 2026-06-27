@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">デバッグモードが有効</string>
     <string name="info_debug_mode_is_enabled">デバッグモードが有効になっています。設定で無効にしてください。</string>
     <string name="tapqueue">タップしてキューを開く</string>
-    <string name="header_view_top_of">上位%sの…を見る</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">エピソード</string>
     <string name="podcasts">ポッドキャスト</string>
     <string name="playlistindicator">再生リストの指針</string>

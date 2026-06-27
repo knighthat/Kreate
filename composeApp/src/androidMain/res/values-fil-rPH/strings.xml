@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Naka-enable ang debug mode</string>
     <string name="info_debug_mode_is_enabled">Naka-enable ang debug mode, huwag ikalimutang i-disable ito sa settings</string>
     <string name="tapqueue">Mag-tap para ma-buksan ang queue</string>
-    <string name="header_view_top_of">I-view ang top %s of …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Mga episode</string>
     <string name="podcasts">Mga Podcast</string>
     <string name="playlistindicator">Indicator ng playlist</string>

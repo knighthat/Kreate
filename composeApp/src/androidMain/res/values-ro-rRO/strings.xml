@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Modul de depanare activat</string>
     <string name="info_debug_mode_is_enabled">Modul de depanare este activat, nu uita să-l dezactivezi în setări</string>
     <string name="tapqueue">Atinge pentru a deschide coada</string>
-    <string name="header_view_top_of">Top %s din …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Episoade</string>
     <string name="podcasts">Podcasturi</string>
     <string name="playlistindicator">Indicator de „În playlist”</string>

@@ -365,37 +365,35 @@ class PlayerServiceModern:
         playbackStats: PlaybackStats
     ) {
         // if pause listen history is enabled, don't register statistic event
-        if ( app.kreate.preferences.Preferences.PAUSE_HISTORY.value ) return
+        if ( Preferences.PAUSE_HISTORY.value ) return
 
         val mediaItem =
             eventTime.timeline.getWindow(eventTime.windowIndex, Timeline.Window()).mediaItem
 
         val totalPlayTimeMs = playbackStats.totalPlayTimeMs
 
-        if ( totalPlayTimeMs > 5000 )
-            Database.asyncTransaction {
-                songTable.updateTotalPlayTime( mediaItem.mediaId, totalPlayTimeMs, true )
-            }
-
-
-        if ( totalPlayTimeMs <= app.kreate.preferences.Preferences.QUICK_PICKS_MIN_DURATION.value.asMillis )
+        if ( totalPlayTimeMs <= Preferences.QUICK_PICKS_MIN_DURATION.value )
             return
 
-        /*
-            There's a really small chance that at this point, the song
-            is yet to exist in the database, thus, `FOREIGN KEY constraint failed` is thrown.
-
-            To avoid this, a compact suspendable task is added,
-            its job is to wait (maximum 5s) for song to be added,
-            if it isn't by then, cancel the run
-         */
         CoroutineScope(Dispatchers.IO).launch {
+            /*
+                There's a tiny chance that at this point, the song
+                is yet to exist in the database, thus, `FOREIGN KEY constraint failed` is thrown.
+
+                To avoid this, a compact suspendable task is added,
+                its job is to wait (maximum 5s) for song to be added,
+                if it isn't by then, cancel the run
+             */
             withTimeoutOrNull( 5.seconds ) {
                 Database.songTable
                         .findById( mediaItem.mediaId )
                         .filterNotNull()
                         .first()
             } ?: return@launch
+
+            Database.asyncTransaction {
+                songTable.updateTotalPlayTime( mediaItem.mediaId, totalPlayTimeMs, true )
+            }
 
             Database.asyncTransaction {
                 eventTable.insertIgnore(

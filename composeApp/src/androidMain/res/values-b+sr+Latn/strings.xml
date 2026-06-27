@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Debug Mod Omogućen</string>
     <string name="info_debug_mode_is_enabled">Debug mod omogućen, zapamtite da onemogućite u podešavanjima</string>
     <string name="tapqueue">Dodirnite da otvorite Redosled</string>
-    <string name="header_view_top_of">Pogledaj vrh %s od …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Epizode</string>
     <string name="podcasts">Podkasti</string>
     <string name="playlistindicator">Indikator Plejliste</string>

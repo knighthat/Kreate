@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Режим Налагодження Увімкнено</string>
     <string name="info_debug_mode_is_enabled">Увімкнено режим налагодження, не забудьте вимкнути його в налаштуваннях</string>
     <string name="tapqueue">Нажміть щоб відкрити Чергу</string>
-    <string name="header_view_top_of">Переглянути топ %s з …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Епізоди</string>
     <string name="podcasts">Подкасти</string>
     <string name="playlistindicator">Індикатор Плейлиста</string>

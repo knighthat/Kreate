@@ -9,6 +9,7 @@ import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.database.models.Song
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import it.fast4x.rimusic.utils.asMediaItem
@@ -49,10 +50,7 @@ class SongShuffler(
                 return
             }
 
-            val maxSongsInQueue: Int = app.kreate.preferences.Preferences
-                                               .MAX_NUMBER_OF_SONG_IN_QUEUE
-                                               .value
-                                               .toInt()
+            val maxSongsInQueue: Int = Preferences.MAX_NUMBER_OF_SONG_IN_QUEUE.value
 
             /**
              * [take] takes up to this amount of item, if [List.size]

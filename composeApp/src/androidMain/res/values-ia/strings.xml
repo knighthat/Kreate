@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Modo de depuration activate</string>
     <string name="info_debug_mode_is_enabled">Le modo depuration es activate, rememora disactivar lo in le parametros</string>
     <string name="tapqueue">Tocca pro aperir le cauda</string>
-    <string name="header_view_top_of">Vider le top %s de …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Episodes</string>
     <string name="podcasts">Podcasts</string>
     <string name="playlistindicator">Indicator de lista de reproduction</string>

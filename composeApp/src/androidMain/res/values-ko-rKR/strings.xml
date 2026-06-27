@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">디버그 모드 활성화됨</string>
     <string name="info_debug_mode_is_enabled">디버그 모드가 작동합니다, 끄기 위해선 설정으로 가는 걸 잊지 마세요</string>
     <string name="tapqueue">눌러서 대기열 열기</string>
-    <string name="header_view_top_of">상위 %s 보기 …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">에피소드</string>
     <string name="podcasts">팟캐스트</string>
     <string name="playlistindicator">플레이리스트 지표</string>

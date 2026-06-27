@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">啟用除錯模式</string>
     <string name="info_debug_mode_is_enabled">除錯模式已啟用，記得在設定中停用</string>
     <string name="tapqueue">點擊打開播放佇列</string>
-    <string name="header_view_top_of">View top %s of …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">集數</string>
     <string name="podcasts">Podcasts</string>
     <string name="playlistindicator">Playlist Indicator</string>

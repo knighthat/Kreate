@@ -33,6 +33,7 @@ import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
+import app.kreate.preferences.Preferences
 import app.kreate.util.cleanPrefix
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
@@ -304,7 +305,7 @@ class MediaLibrarySessionCallback(
                         browsableMediaItem(
                             "${PlayerServiceModern.PLAYLIST}/$ID_TOP",
                             context.getString(R.string.playlist_top),
-                            app.kreate.preferences.Preferences.MAX_NUMBER_OF_TOP_PLAYED.value.name,
+                            Preferences.MAX_NUMBER_OF_TOP_PLAYED.value.toString(),
                             drawableUri(R.drawable.trending),
                             MediaMetadata.MEDIA_TYPE_PLAYLIST
                         ),
@@ -365,10 +366,7 @@ class MediaLibrarySessionCallback(
                                 database.eventTable
                                         .findSongsMostPlayedBetween(
                                             from = 0,
-                                            limit = app.kreate.preferences.Preferences
-                                                            .MAX_NUMBER_OF_TOP_PLAYED
-                                                            .value
-                                                            .toInt()
+                                            limit = Preferences.MAX_NUMBER_OF_TOP_PLAYED.value
                                         )
                             ID_ONDEVICE -> database.songTable.allOnDevice()
                             ID_DOWNLOADED -> {
@@ -468,10 +466,7 @@ class MediaLibrarySessionCallback(
                                            // Already in DESC order
                                            .findSongsMostPlayedBetween(
                                                from = 0,
-                                               limit = app.kreate.preferences.Preferences
-                                                               .MAX_NUMBER_OF_TOP_PLAYED
-                                                               .value
-                                                               .toInt()
+                                               limit = Preferences.MAX_NUMBER_OF_TOP_PLAYED.value
                                            )
                         ID_ONDEVICE -> database.songTable.allOnDevice()
                         ID_DOWNLOADED -> {

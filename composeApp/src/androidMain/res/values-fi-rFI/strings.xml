@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Vianetsintätila käytössä</string>
     <string name="info_debug_mode_is_enabled">Virheenkorjaustila on käytössä, muista poistaa se käytöstä asetuksista</string>
     <string name="tapqueue">Avaa jono napauttamalla</string>
-    <string name="header_view_top_of">Näytä eniten kuunnellut %s kappaleet ajalta …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Jaksot</string>
     <string name="podcasts">Podcastit</string>
     <string name="playlistindicator">Soittolistailmaisin</string>

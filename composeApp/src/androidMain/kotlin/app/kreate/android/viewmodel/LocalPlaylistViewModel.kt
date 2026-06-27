@@ -84,7 +84,7 @@ class LocalPlaylistViewModel(
                                  items.map( Song::id )
                                      .any{ songItem.info?.endpoint?.videoId == it }
                              }
-                             ?.take( count.toInt() )
+                             ?.take( count )
                              ?.associate { songItem ->
                                  with( songItem ) {
                                      Song(

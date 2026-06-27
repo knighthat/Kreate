@@ -79,7 +79,6 @@ import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
 import it.fast4x.rimusic.enums.PlayerBackgroundColors
-import it.fast4x.rimusic.enums.SongsNumber
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.themed.AddToPlaylistPlayerMenu
@@ -105,12 +104,12 @@ import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 
 private class PagerViewPort(
-    private val showSongsState: State<SongsNumber>,
+    private val showSongsState: State<Int>,
     private val pagerState: PagerState,
 ): PageSize {
 
     override fun Density.calculateMainAxisPageSize( availableSpace: Int, pageSpacing: Int ): Int {
-        val canShow = minOf( showSongsState.value.toInt() , pagerState.pageCount )
+        val canShow = minOf( showSongsState.value , pagerState.pageCount )
         return if( canShow > 1 )
             (availableSpace - 2 * pageSpacing) / canShow
         else
@@ -142,7 +141,7 @@ fun BoxScope.ActionBar(
     val playerBackgroundColors by Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
     val blackGradient by Preferences.BLACK_GRADIENT.collectAsStateWithLifecycle()
     val showLyricsThumbnail by Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
-    val showNextSongsInPlayer by Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.collectAsStateWithLifecycle()
+    val maxNumNextInQueue by Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE.collectAsStateWithLifecycle()
     val miniQueueExpanded by Preferences.PLAYER_IS_NEXT_IN_QUEUE_EXPANDED.collectAsStateWithLifecycle()
     val tapQueue by Preferences.PLAYER_ACTIONS_BAR_TAP_TO_OPEN_QUEUE.collectAsStateWithLifecycle()
     val transparentBackgroundActionBarPlayer by Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.collectAsStateWithLifecycle()
@@ -155,7 +154,7 @@ fun BoxScope.ActionBar(
     Row(
         modifier = Modifier.padding( if( isLandscape ) WindowInsets.navigationBars.asPaddingValues() else PaddingValues() )
                            .align(if (isLandscape) Alignment.BottomEnd else Alignment.BottomCenter)
-                           .requiredHeight(if (showNextSongsInPlayer && (showLyricsThumbnail || (!isShowingLyrics || miniQueueExpanded))) 90.dp else 50.dp)
+                           .requiredHeight(if (maxNumNextInQueue > 0 && (showLyricsThumbnail || (!isShowingLyrics || miniQueueExpanded))) 90.dp else 50.dp)
                            .fillMaxWidth(if (isLandscape) 0.8f else 1f)
                            .clickable( enabled = tapQueue ) {
                                showQueue = true
@@ -188,7 +187,7 @@ fun BoxScope.ActionBar(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
         ) {
-            if ( showNextSongsInPlayer && (showLyricsThumbnail || !isShowingLyrics || miniQueueExpanded) ) {
+            if ( maxNumNextInQueue > 0 && (showLyricsThumbnail || !isShowingLyrics || miniQueueExpanded) ) {
                 Row(
                     verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -271,7 +270,7 @@ fun BoxScope.ActionBar(
                         )
                     }
 
-                    val showSongsState = app.kreate.preferences.Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE.collectAsStateWithLifecycle()
+                    val showSongsState = Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE.collectAsStateWithLifecycle()
                     val viewPort = remember {
                         PagerViewPort( showSongsState, pagerStateQueue )
                     }
@@ -405,7 +404,7 @@ fun BoxScope.ActionBar(
                         }
                     }
 
-                    if ( showSongsState.value == SongsNumber.`1` )
+                    if ( showSongsState.value == 1 )
                         IconButton(
                             icon = R.drawable.trash,
                             color = Color.White,

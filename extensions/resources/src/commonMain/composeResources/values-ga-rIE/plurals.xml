@@ -35,4 +35,25 @@
         <item quantity="other">millisecond</item>
         <item quantity="few">millisecond</item>
     </plurals>
+    <plurals name="song">
+        <item quantity="other">song</item>
+        <item quantity="few">song</item>
+        <item quantity="many">song</item>
+        <item quantity="one">song</item>
+        <item quantity="two">song</item>
+    </plurals>
+    <plurals name="item">
+        <item quantity="few">item</item>
+        <item quantity="two">item</item>
+        <item quantity="other">item</item>
+        <item quantity="one">item</item>
+        <item quantity="many">item</item>
+    </plurals>
+    <plurals name="song_count">
+        <item quantity="two">%1$d song</item>
+        <item quantity="many">%1$d song</item>
+        <item quantity="one">%1$d song</item>
+        <item quantity="other">%1$d song</item>
+        <item quantity="few">%1$d song</item>
+    </plurals>
 </resources>

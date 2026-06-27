@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Hata ayıklama modu etkinleştirildi</string>
     <string name="info_debug_mode_is_enabled">Hata ayıklama modu etkin, ayarlardan devre dışı bırakmayı unutmayın</string>
     <string name="tapqueue">Kuyruğu açmak için dokunun</string>
-    <string name="header_view_top_of">... öğelerinin En İyi %s</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Bölümler</string>
     <string name="podcasts">Podcast\'ler</string>
     <string name="playlistindicator">Çalma listesi göstergesi</string>

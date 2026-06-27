@@ -466,7 +466,7 @@
     <string name="info_debug_mode_enabled">Mode debug activé</string>
     <string name="info_debug_mode_is_enabled">Le mode débogage est activé, n\'oubliez pas de le désactiver dans les paramètres</string>
     <string name="tapqueue">Appuyer pour ouvrir la file d\'attente</string>
-    <string name="header_view_top_of">Voir le top %s de …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Épisodes</string>
     <string name="podcasts">Podcasts</string>
     <string name="playlistindicator">Indicateur de la playlist</string>

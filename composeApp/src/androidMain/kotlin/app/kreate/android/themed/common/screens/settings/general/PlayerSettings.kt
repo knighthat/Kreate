@@ -29,6 +29,7 @@ import it.fast4x.rimusic.utils.rememberEqualizerLauncher
 import kreate.resources.generated.resources.Res
 import kreate.resources.generated.resources.millisecond
 import kreate.resources.generated.resources.second
+import kreate.resources.generated.resources.song
 import org.jetbrains.compose.resources.pluralStringResource
 import org.koin.compose.koinInject
 import kotlin.time.Duration.Companion.milliseconds
@@ -71,10 +72,11 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
         )
     }
     entry( search, R.string.min_listening_time ) {
-        SettingComponents.EnumEntry(
-            preference = Preferences.QUICK_PICKS_MIN_DURATION,
+        SettingComponents.NumberPickerEntry(
+            preferences = Preferences.QUICK_PICKS_MIN_DURATION,
             title = stringResource( R.string.min_listening_time ),
-            subtitle = stringResource( R.string.is_min_list_time_for_tips_or_quick_pics )
+            subtitle = stringResource( R.string.is_min_list_time_for_tips_or_quick_pics ),
+            unit = Res.plurals.second
         )
     }
     entry( search, R.string.exclude_songs_with_duration_limit ) {
@@ -142,8 +144,13 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
         )
     }
     entry( search, R.string.max_songs_in_queue ) {
-        SettingComponents.EnumEntry(
-            preference = Preferences.MAX_NUMBER_OF_SONG_IN_QUEUE,
+        val selected by Preferences.MAX_NUMBER_OF_SONG_IN_QUEUE.collectAsStateWithLifecycle()
+
+        SettingComponents.NumberPickerEntry(
+            numbers = Preferences.MAX_NUMBER_OF_SONG_IN_QUEUE.range.step(50).toList(),
+            selected = selected,
+            unit = Res.plurals.song,
+            onValueApplied = Preferences.MAX_NUMBER_OF_SONG_IN_QUEUE::update,
             title = stringResource( R.string.max_songs_in_queue )
         )
     }

@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Debug Mode Enabled</string>
     <string name="info_debug_mode_is_enabled">Debug mode is enabled, remember to disable it in settings</string>
     <string name="tapqueue">הקש כדי לפתוח את התור</string>
-    <string name="header_view_top_of">View top %s of …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">פרקים</string>
     <string name="podcasts">פודקאסטים</string>
     <string name="playlistindicator">Playlist Indicator</string>

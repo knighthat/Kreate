@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">已打开调试模式。</string>
     <string name="info_debug_mode_is_enabled">调试模式已启用，请记得在设置中禁用它</string>
     <string name="tapqueue">点击以打开队列</string>
-    <string name="header_view_top_of">查看 … 的排行榜的前 %s</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">单集</string>
     <string name="podcasts">播客</string>
     <string name="playlistindicator">播放列表指示器</string>

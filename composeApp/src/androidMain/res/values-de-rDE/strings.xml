@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Debug-Modus aktiviert</string>
     <string name="info_debug_mode_is_enabled">Der Debug-Modus ist aktiviert, denke daran, diesen in den Einstellungen zu deaktivieren</string>
     <string name="tapqueue">Zum Öffnen der Warteschlange tippen</string>
-    <string name="header_view_top_of">Zeige Top %s …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Episoden</string>
     <string name="podcasts">Podcasts</string>
     <string name="playlistindicator">Wiedergabelisten-Indikator</string>

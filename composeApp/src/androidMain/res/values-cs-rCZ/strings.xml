@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Režim ladění povolen</string>
     <string name="info_debug_mode_is_enabled">Ladící režim je povolen, nezapomeňte jej vypnout v nastavení</string>
     <string name="tapqueue">Klepnutím otevřete frontu</string>
-    <string name="header_view_top_of">Top %s z …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Epizody</string>
     <string name="podcasts">Podcasty</string>
     <string name="playlistindicator">Indikátor playlistu</string>

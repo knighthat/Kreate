@@ -22,6 +22,7 @@ import app.kreate.android.themed.common.component.settings.animatedEntry
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.components.settings.EnumEntry
+import app.kreate.components.settings.NumberPickerEntry
 import app.kreate.components.settings.SettingComponents
 import app.kreate.constant.Type
 import app.kreate.preferences.Preferences
@@ -37,6 +38,12 @@ import it.fast4x.rimusic.enums.PlayerTimelineSize
 import it.fast4x.rimusic.enums.PlayerTimelineType
 import it.fast4x.rimusic.enums.ThumbnailRoundness
 import it.fast4x.rimusic.ui.components.themed.AppearancePresetDialog
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.song
+import kreate.resources.generated.resources.song_count
+import kreate.resources.generated.resources.word_disabled
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 
 fun LazyListScope.playerAppearanceSection(
     search: SettingEntrySearch,
@@ -44,7 +51,8 @@ fun LazyListScope.playerAppearanceSection(
     showthumbnail: Boolean,
     playerBackgroundColors: PlayerBackgroundColors,
     playerInfoType: Type,
-    playerType: Type
+    playerType: Type,
+    maxNumNextInQueue: Int
 ) {
     header( R.string.player )
 
@@ -74,7 +82,7 @@ fun LazyListScope.playerAppearanceSection(
                         Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.update( false )
                         Preferences.PLAYER_BOTTOM_GRADIENT.update( true )
                         Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME.update( true )
-                        Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.update( false )
+                        Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE.update( 0 )
                         Preferences.COLOR_PALETTE.update( ColorPaletteName.Dynamic )
                         Preferences.THEME_MODE.update( ColorPaletteMode.System )
                         ///////ACTION BAR BUTTONS////////////////
@@ -119,7 +127,7 @@ fun LazyListScope.playerAppearanceSection(
                         Preferences.PLAYER_BOTTOM_GRADIENT.update( true )
                         Preferences.LYRICS_SHOW_THUMBNAIL.update( false )
                         Preferences.THUMBNAIL_BORDER_RADIUS.update( ThumbnailRoundness.Medium )
-                        Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.update( true )
+                        Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE.update( 1 )
                         Preferences.COLOR_PALETTE.update( ColorPaletteName.Dynamic )
                         Preferences.THEME_MODE.update( ColorPaletteMode.System )
                         ///////ACTION BAR BUTTONS////////////////
@@ -160,7 +168,7 @@ fun LazyListScope.playerAppearanceSection(
                         Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME.update( true )
                         Preferences.PLAYER_BOTTOM_GRADIENT.update( true )
                         Preferences.LYRICS_SHOW_THUMBNAIL.update( false )
-                        Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.update( false )
+                        Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE.update( 0 )
                         Preferences.COLOR_PALETTE.update( ColorPaletteName.Dynamic )
                         Preferences.THEME_MODE.update( ColorPaletteMode.System )
                         ///////ACTION BAR BUTTONS////////////////
@@ -207,7 +215,7 @@ fun LazyListScope.playerAppearanceSection(
                         Preferences.PLAYER_TYPE.update( Type.MODERN )
                         Preferences.PLAYER_BACKGROUND_FADING_EDGE.update( true )
                         Preferences.PLAYER_THUMBNAIL_FADE.update( 5f )
-                        Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.update( false )
+                        Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE.update( 0 )
                         ///////ACTION BAR BUTTONS////////////////
                         Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.update( true )
                         Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY.update( true )
@@ -254,7 +262,7 @@ fun LazyListScope.playerAppearanceSection(
                         Preferences.PLAYER_THUMBNAIL_FADE.update( 0f )
                         Preferences.PLAYER_THUMBNAIL_FADE_EX.update( 5f )
                         Preferences.PLAYER_THUMBNAIL_SPACING.update( -32f )
-                        Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.update( false )
+                        Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE.update( 0 )
                         ///////ACTION BAR BUTTONS////////////////
                         Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.update( true )
                         Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY.update( true )
@@ -295,7 +303,7 @@ fun LazyListScope.playerAppearanceSection(
                         Preferences.LYRICS_SHOW_THUMBNAIL.update( false )
                         Preferences.THUMBNAIL_TYPE.update( Type.MODERN )
                         Preferences.THUMBNAIL_BORDER_RADIUS.update( ThumbnailRoundness.Heavy )
-                        Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.update( false )
+                        Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE.update( 0 )
                         ///////ACTION BAR BUTTONS////////////////
                         Preferences.PLAYER_TRANSPARENT_ACTIONS_BAR.update( true )
                         Preferences.PLAYER_ACTION_BUTTONS_SPACED_EVENLY.update( true )
@@ -675,23 +683,24 @@ fun LazyListScope.playerAppearanceSection(
         )
     }
     entry( search, R.string.show_next_songs_in_player ) {
-        SettingComponents.BooleanEntry(
-            preference = Preferences.PLAYER_SHOW_NEXT_IN_QUEUE,
-            title =   stringResource( R.string.show_next_songs_in_player )
+        SettingComponents.NumberPickerEntry(
+            numbers = Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE.range.toList(),
+            selected = maxNumNextInQueue,
+            unit = Res.plurals.song,
+            onValueApplied = Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE::update,
+            title = stringResource( R.string.show_next_songs_in_player ),
+            subtitle = when( maxNumNextInQueue ) {
+                0       -> stringResource( Res.string.word_disabled )
+                else    -> pluralStringResource( Res.plurals.song_count, maxNumNextInQueue, maxNumNextInQueue )
+            }
         )
     }
     animatedEntry(
         key = "showNextSongsInPlayerChildren",
-        visibleState = Preferences.PLAYER_SHOW_NEXT_IN_QUEUE,
+        visible = maxNumNextInQueue > 0,
         modifier = Modifier.padding( start = 25.dp )
     ) {
         Column {
-            if( search appearsIn R.string.showtwosongs )
-                SettingComponents.EnumEntry(
-                    preference = Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE,
-                    title = stringResource( R.string.songs_number_to_show )
-                )
-
             if ( search appearsIn R.string.showalbumcover )
                 SettingComponents.BooleanEntry(
                     preference = Preferences.PLAYER_SHOW_NEXT_IN_QUEUE_THUMBNAIL,

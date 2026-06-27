@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
@@ -28,6 +29,7 @@ import app.kreate.android.themed.common.screens.settings.ui.SwipeActionSettings
 import app.kreate.android.themed.common.screens.settings.ui.themeSettingsSection
 import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.components.settings.EnumEntry
+import app.kreate.components.settings.NumberPickerEntry
 import app.kreate.components.settings.SettingComponents
 import app.kreate.constant.Type
 import app.kreate.preferences.Preferences
@@ -41,7 +43,9 @@ import it.fast4x.rimusic.enums.UiType
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.item
 import kreate.resources.generated.resources.setting_description_only_available_in_theme
+import kreate.resources.generated.resources.song
 import me.knighthat.component.dialog.InputDialogConstraints
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
@@ -165,7 +169,7 @@ fun UiSettings( paddingValues: PaddingValues ) {
                         Preferences.BLACK_GRADIENT.update( true )
                         Preferences.PLAYER_SHOW_TOTAL_QUEUE_TIME.update( false )
                         Preferences.PLAYER_SHOW_SONGS_REMAINING_TIME.update( false )
-                        Preferences.PLAYER_SHOW_NEXT_IN_QUEUE.reset()
+                        Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE.reset()
                         Preferences.MARQUEE_TEXT_EFFECT.reset()
                         Preferences.ROTATION_EFFECT.reset()
                         Preferences.LYRICS_JUMP_ON_TAP.reset()
@@ -437,8 +441,13 @@ fun UiSettings( paddingValues: PaddingValues ) {
 
             header( R.string.smart_recommendations )
             entry( search, R.string.statistics_max_number_of_items ) {
-                SettingComponents.EnumEntry(
-                    preference = Preferences.MAX_NUMBER_OF_SMART_RECOMMENDATIONS,
+                val selected by Preferences.MAX_NUMBER_OF_SMART_RECOMMENDATIONS.collectAsStateWithLifecycle()
+
+                SettingComponents.NumberPickerEntry(
+                    numbers = Preferences.MAX_NUMBER_OF_SMART_RECOMMENDATIONS.range.toList(),
+                    selected = selected,
+                    onValueApplied = Preferences.MAX_NUMBER_OF_SMART_RECOMMENDATIONS::update,
+                    unit = Res.plurals.song,
                     title = stringResource( R.string.statistics_max_number_of_items )
                 )
             }
@@ -449,8 +458,13 @@ fun UiSettings( paddingValues: PaddingValues ) {
                 titleId = R.string.statistics_max_number_of_items,
                 key = "maxNumOfItemsInStatistics"
             ) {
-                SettingComponents.EnumEntry(
-                    preference = Preferences.MAX_NUMBER_OF_STATISTIC_ITEMS,
+                val selected by Preferences.MAX_NUMBER_OF_STATISTIC_ITEMS.collectAsStateWithLifecycle()
+
+                SettingComponents.NumberPickerEntry(
+                    numbers = Preferences.MAX_NUMBER_OF_STATISTIC_ITEMS.range.step(5).toList(),
+                    selected = selected,
+                    onValueApplied = Preferences.MAX_NUMBER_OF_STATISTIC_ITEMS::update,
+                    unit = Res.plurals.item,
                     title = stringResource( R.string.statistics_max_number_of_items )
                 )
             }
@@ -468,8 +482,13 @@ fun UiSettings( paddingValues: PaddingValues ) {
                 titleId = R.string.statistics_max_number_of_items,
                 key = "maxNumOfItemsInTopPlaylist"
             ) {
-                SettingComponents.EnumEntry(
-                    preference = Preferences.MAX_NUMBER_OF_TOP_PLAYED,
+                val selected by Preferences.MAX_NUMBER_OF_TOP_PLAYED.collectAsStateWithLifecycle()
+
+                SettingComponents.NumberPickerEntry(
+                    numbers = Preferences.MAX_NUMBER_OF_TOP_PLAYED.range.step(10).toList(),
+                    selected = selected,
+                    onValueApplied = Preferences.MAX_NUMBER_OF_TOP_PLAYED::update,
+                    unit = Res.plurals.item,
                     title = stringResource( R.string.statistics_max_number_of_items )
                 )
             }

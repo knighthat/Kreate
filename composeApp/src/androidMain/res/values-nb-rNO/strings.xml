@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Debug modus aktivert</string>
     <string name="info_debug_mode_is_enabled">Debugsmodus er aktivert, husk å deaktivere den i innstillinger</string>
     <string name="tapqueue">Trykk for å åpne Køen</string>
-    <string name="header_view_top_of">Vis topp %s av …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Episoder</string>
     <string name="podcasts">Podkaster</string>
     <string name="playlistindicator">Spilleliste indikator</string>

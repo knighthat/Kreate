@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Debug Mode Enabled</string>
     <string name="info_debug_mode_is_enabled">Debug mode is enabled, remember to disable it in settings</string>
     <string name="tapqueue">Tap to open Queue</string>
-    <string name="header_view_top_of">View top %s of …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Episodes</string>
     <string name="podcasts">Podcasts</string>
     <string name="playlistindicator">Playlist Indicator</string>

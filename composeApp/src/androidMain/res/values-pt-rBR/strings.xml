@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Modo de depuração habilitado</string>
     <string name="info_debug_mode_is_enabled">Modo de depuração ativado, lembre-se de desativá-lo nas configurações</string>
     <string name="tapqueue">Toque para abrir a Fila</string>
-    <string name="header_view_top_of">Ver principais %s de…</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Episódios</string>
     <string name="podcasts">Programas de áudio</string>
     <string name="playlistindicator">Indicador de playlist</string>

@@ -77,15 +77,16 @@ fun AppearanceSettings(paddingValues: PaddingValues) {
         val playerBackgroundColors by Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
         val playerInfoType by Preferences.PLAYER_INFO_TYPE.collectAsStateWithLifecycle()
         val playerType by Preferences.PLAYER_TYPE.collectAsStateWithLifecycle()
+        val maxNumNextInQueue by Preferences.MAX_NUMBER_OF_NEXT_IN_QUEUE.collectAsStateWithLifecycle()
 
         LazyColumn(
             state = scrollState,
             contentPadding = PaddingValues(bottom = Dimensions.bottomSpacer)
         ) {
-            playerAppearanceSection( search, isLandscapeMode, showThumbnail, playerBackgroundColors, playerInfoType, playerType )
+            playerAppearanceSection( search, isLandscapeMode, showThumbnail, playerBackgroundColors, playerInfoType, playerType, maxNumNextInQueue )
             playerActionBarSection( search, isLandscapeMode )
             if( lyricsShowThumbnail )
-                playerFullscreenLyrics( search )
+                playerFullscreenLyrics( search, maxNumNextInQueue )
 
             header( R.string.notification_player )
             entry( search, R.string.notificationPlayerFirstIcon ) {

@@ -191,7 +191,7 @@ fun HomeSongs(
             BuiltInPlaylist.Top -> Database.eventTable
                                            .findSongsMostPlayedBetween(
                                                from = topPlaylists.period.timeStampInMillis(),
-                                               limit = maxTopPlaylistItems.toInt()
+                                               limit = maxTopPlaylistItems
                                            )
                                            .map { list ->
                                                // Exclude songs with duration higher than what [excludeSongWithDurationLimit] is

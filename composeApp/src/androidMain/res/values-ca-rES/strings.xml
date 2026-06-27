@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Mode de depuració activat</string>
     <string name="info_debug_mode_is_enabled">El mode de depuració està habilitat, recordeu desactivar-lo a la configuració</string>
     <string name="tapqueue">Toqueu per obrir la cua</string>
-    <string name="header_view_top_of">Mostra els %s principals de…</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Episodis</string>
     <string name="podcasts">Pòdcasts</string>
     <string name="playlistindicator">Indicador de llista de reproducció</string>

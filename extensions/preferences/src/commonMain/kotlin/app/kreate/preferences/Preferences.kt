@@ -37,7 +37,6 @@ import it.fast4x.rimusic.enums.CheckUpdateState
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
 import it.fast4x.rimusic.enums.ExoPlayerCacheLocation
-import it.fast4x.rimusic.enums.ExoPlayerMinTimeForEvent
 import it.fast4x.rimusic.enums.FilterBy
 import it.fast4x.rimusic.enums.FontType
 import it.fast4x.rimusic.enums.HistoryType
@@ -50,9 +49,6 @@ import it.fast4x.rimusic.enums.LyricsColor
 import it.fast4x.rimusic.enums.LyricsFontSize
 import it.fast4x.rimusic.enums.LyricsHighlight
 import it.fast4x.rimusic.enums.LyricsOutline
-import it.fast4x.rimusic.enums.MaxSongs
-import it.fast4x.rimusic.enums.MaxStatisticsItems
-import it.fast4x.rimusic.enums.MaxTopPlaylistItems
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.enums.MusicAnimationType
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -69,9 +65,7 @@ import it.fast4x.rimusic.enums.PlayerTimelineType
 import it.fast4x.rimusic.enums.PlaylistSwipeAction
 import it.fast4x.rimusic.enums.PlaylistsType
 import it.fast4x.rimusic.enums.QueueSwipeAction
-import it.fast4x.rimusic.enums.RecommendationsNumber
 import it.fast4x.rimusic.enums.Romanization
-import it.fast4x.rimusic.enums.SongsNumber
 import it.fast4x.rimusic.enums.StatisticsCategory
 import it.fast4x.rimusic.enums.StatisticsType
 import it.fast4x.rimusic.enums.SwipeAnimationNoThumbnail
@@ -172,19 +166,19 @@ sealed class Preferences<K, V>(
         //</editor-fold>
         //<editor-fold desc="Max # of ...">
         val MAX_NUMBER_OF_SMART_RECOMMENDATIONS by lazy {
-            EnumPref(preferences, Key.MAX_NUMBER_OF_SMART_RECOMMENDATIONS, RecommendationsNumber.`5`, RecommendationsNumber::entries)
+            IntPref(preferences, Key.MAX_NUMBER_OF_SMART_RECOMMENDATIONS, 5, IntRange(5, 20))
         }
         val MAX_NUMBER_OF_STATISTIC_ITEMS by lazy {
-            EnumPref(preferences, Key.MAX_NUMBER_OF_STATISTIC_ITEMS, MaxStatisticsItems.`10`, MaxStatisticsItems::entries)
+            IntPref(preferences, Key.MAX_NUMBER_OF_STATISTIC_ITEMS, 10, IntRange(10, 50))
         }
         val MAX_NUMBER_OF_TOP_PLAYED by lazy {
-            EnumPref(preferences, Key.MAX_NUMBER_OF_TOP_PLAYED, MaxTopPlaylistItems.`10`, MaxTopPlaylistItems::entries)
+            IntPref(preferences, Key.MAX_NUMBER_OF_TOP_PLAYED, 10, IntRange(10, 200))
         }
         val MAX_NUMBER_OF_SONG_IN_QUEUE by lazy {
-            EnumPref(preferences, Key.MAX_NUMBER_OF_SONG_IN_QUEUE, MaxSongs.Unlimited, MaxSongs::entries)
+            IntPref(preferences, Key.MAX_NUMBER_OF_SONG_IN_QUEUE, 3000, IntRange(50, 3000))
         }
         val MAX_NUMBER_OF_NEXT_IN_QUEUE by lazy {
-            EnumPref(preferences, Key.MAX_NUMBER_OF_NEXT_IN_QUEUE, SongsNumber.`2`, SongsNumber::entries)
+            IntPref(preferences, Key.MAX_NUMBER_OF_NEXT_IN_QUEUE, 2, IntRange(0, 9))
         }
         //</editor-fold>
         //<editor-fold desc="Swipe action">
@@ -308,9 +302,6 @@ sealed class Preferences<K, V>(
         }
         val PLAYER_IS_QUEUE_DURATION_EXPANDED by lazy {
             BooleanPref(preferences, Key.PLAYER_IS_QUEUE_DURATION_EXPANDED, true)
-        }
-        val PLAYER_SHOW_NEXT_IN_QUEUE by lazy {
-            BooleanPref(preferences, Key.PLAYER_SHOW_NEXT_IN_QUEUE, false)
         }
         val PLAYER_IS_NEXT_IN_QUEUE_EXPANDED by lazy {
             BooleanPref(preferences, Key.PLAYER_IS_NEXT_IN_QUEUE_EXPANDED, true)
@@ -651,7 +642,7 @@ sealed class Preferences<K, V>(
             EnumPref(preferences, Key.QUICK_PICKS_TYPE, PlayEventsType.MostPlayed, PlayEventsType::entries)
         }
         val QUICK_PICKS_MIN_DURATION by lazy {
-            EnumPref(preferences, Key.QUICK_PICKS_MIN_DURATION, ExoPlayerMinTimeForEvent.`20s`, ExoPlayerMinTimeForEvent::entries)
+            IntPref(preferences, Key.QUICK_PICKS_MIN_DURATION, 20, IntRange(0, 60))
         }
         //</editor-fold>
         //<editor-fold desc="Discord">
@@ -1244,11 +1235,11 @@ sealed class Preferences<K, V>(
         val PLAYLIST_SONGS_SORT_ORDER = stringPreferencesKey("playlist_songs_sort_order")
         //</editor-fold>
         //<editor-fold desc="Max # of ...">
-        val MAX_NUMBER_OF_SMART_RECOMMENDATIONS = stringPreferencesKey("max_number_of_smart_recommendations")
-        val MAX_NUMBER_OF_STATISTIC_ITEMS = stringPreferencesKey("max_number_of_statistic_items")
-        val MAX_NUMBER_OF_TOP_PLAYED = stringPreferencesKey("max_number_of_top_played")
-        val MAX_NUMBER_OF_SONG_IN_QUEUE = stringPreferencesKey("max_number_of_song_in_queue")
-        val MAX_NUMBER_OF_NEXT_IN_QUEUE = stringPreferencesKey("max_number_of_next_in_queue")
+        val MAX_NUMBER_OF_SMART_RECOMMENDATIONS = intPreferencesKey("max_number_of_smart_recommendations")
+        val MAX_NUMBER_OF_STATISTIC_ITEMS = intPreferencesKey("max_number_of_statistic_items")
+        val MAX_NUMBER_OF_TOP_PLAYED = intPreferencesKey("max_number_of_top_played")
+        val MAX_NUMBER_OF_SONG_IN_QUEUE = intPreferencesKey("max_number_of_song_in_queue")
+        val MAX_NUMBER_OF_NEXT_IN_QUEUE = intPreferencesKey("max_number_of_next_in_queue")
         //</editor-fold>
         //<editor-fold desc="Swipe action">
         val ENABLE_SWIPE_ACTION = booleanPreferencesKey("enable_swipe_action")
@@ -1294,7 +1285,6 @@ sealed class Preferences<K, V>(
         val PLAYER_IS_ACTIONS_BAR_EXPANDED = booleanPreferencesKey("player_is_actions_bar_expanded")
         val PLAYER_SHOW_TOTAL_QUEUE_TIME = booleanPreferencesKey("player_show_total_queue_time")
         val PLAYER_IS_QUEUE_DURATION_EXPANDED = booleanPreferencesKey("player_is_queue_duration_expanded")
-        val PLAYER_SHOW_NEXT_IN_QUEUE = booleanPreferencesKey("player_show_next_in_queue")
         val PLAYER_IS_NEXT_IN_QUEUE_EXPANDED = booleanPreferencesKey("player_is_next_in_queue_expanded")
         val PLAYER_SHOW_NEXT_IN_QUEUE_THUMBNAIL = booleanPreferencesKey("player_show_next_in_queue_thumbnail")
         val PLAYER_SHOW_SONGS_REMAINING_TIME = booleanPreferencesKey("player_show_songs_remaining_time")
@@ -1417,7 +1407,7 @@ sealed class Preferences<K, V>(
         val QUICK_PICKS_SHOW_CHARTS = booleanPreferencesKey("quick_picks_show_charts")
         val QUICK_PICKS_PAGE = booleanPreferencesKey("quick_picks_page")
         val QUICK_PICKS_TYPE = stringPreferencesKey("quick_picks_type")
-        val QUICK_PICKS_MIN_DURATION = stringPreferencesKey("quick_picks_min_duration")
+        val QUICK_PICKS_MIN_DURATION = intPreferencesKey("quick_picks_min_duration")
         //</editor-fold>
         //<editor-fold desc="Discord">
         val DISCORD_LOGIN = booleanPreferencesKey("discord_login")

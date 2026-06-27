@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Modalità Debug Attivata</string>
     <string name="info_debug_mode_is_enabled">La modalità debug è abilitata, ricorda di disabilitarla nelle impostazioni</string>
     <string name="tapqueue">Tocca per aprire la coda</string>
-    <string name="header_view_top_of">Visualizza top %s di …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Episodi</string>
     <string name="podcasts">Podcast</string>
     <string name="playlistindicator">Indicatore Playlist</string>

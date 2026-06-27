@@ -15,4 +15,13 @@
     <plurals name="millisecond">
         <item quantity="other">millisecond</item>
     </plurals>
+    <plurals name="song">
+        <item quantity="other">song</item>
+    </plurals>
+    <plurals name="item">
+        <item quantity="other">item</item>
+    </plurals>
+    <plurals name="song_count">
+        <item quantity="other">%1$d song</item>
+    </plurals>
 </resources>

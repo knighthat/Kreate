@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Режим за отклањање грешака је омогућен</string>
     <string name="info_debug_mode_is_enabled">Режим за отклањање грешака је омогућен, не заборавите да онемогућите у подешавањима</string>
     <string name="tapqueue">Додирните да бисте отворили Редослед</string>
-    <string name="header_view_top_of">Погледајте Најбоље %s oд …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Епизоде</string>
     <string name="podcasts">Подкасти</string>
     <string name="playlistindicator">Индикатор плејлисте</string>

@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Hibakeresési mód engedélyezve</string>
     <string name="info_debug_mode_is_enabled">A hibakeresési mód engedélyezve van, ne felejtsd el letiltani a beállításokban</string>
     <string name="tapqueue">Koppintson a Várólista megnyitásához</string>
-    <string name="header_view_top_of">Legjobb %s megtekintése…</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Epizódok</string>
     <string name="podcasts">Podcastok</string>
     <string name="playlistindicator">Lejátszási lista jelzője</string>

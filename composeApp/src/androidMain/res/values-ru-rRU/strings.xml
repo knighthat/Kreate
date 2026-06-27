@@ -465,7 +465,7 @@
     <string name="info_debug_mode_enabled">Режим отладки включен</string>
     <string name="info_debug_mode_is_enabled">Режим отладки включен, не забудьте отключить его в настройках</string>
     <string name="tapqueue">Нажмите, чтобы открыть очередь</string>
-    <string name="header_view_top_of">Посмотреть топ %s из …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Эпизоды</string>
     <string name="podcasts">Подкасты</string>
     <string name="playlistindicator">Индикатор плейлиста</string>

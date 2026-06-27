@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Sınaq Rejimi Aktivdir</string>
     <string name="info_debug_mode_is_enabled">Sınaq rejimi aktivdir, seçimlərdə onu qapatmağı unutma</string>
     <string name="tapqueue">Növbəni açmaq üçün toxun</string>
-    <string name="header_view_top_of">... içindəki ən yaxşı %s baxın</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Bölümlər</string>
     <string name="podcasts">Podcasts-lər</string>
     <string name="playlistindicator">Səsləndirmə Siyahısı Göstəricisi</string>

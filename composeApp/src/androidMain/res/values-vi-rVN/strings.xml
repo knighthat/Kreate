@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Debug Mode Enabled</string>
     <string name="info_debug_mode_is_enabled">Debug mode is enabled, remember to disable it in settings</string>
     <string name="tapqueue">Nhấn để mở danh sách chờ</string>
-    <string name="header_view_top_of">View top %s of …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Tập</string>
     <string name="podcasts">Phát thanh</string>
     <string name="playlistindicator">Ký hiệu danh sách phát</string>

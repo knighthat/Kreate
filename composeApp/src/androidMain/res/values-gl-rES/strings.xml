@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Modo de depuración activado</string>
     <string name="info_debug_mode_is_enabled">O modo de depuración está activado, recorda desactivalo na configuración</string>
     <string name="tapqueue">Toca para abrir a cola</string>
-    <string name="header_view_top_of">Ver os %s principais de …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Episodios</string>
     <string name="podcasts">Podcasts</string>
     <string name="playlistindicator">Indicador da lista de reprodución</string>

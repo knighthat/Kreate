@@ -464,7 +464,7 @@
     <string name="info_debug_mode_enabled">Tryb debugowania włączony</string>
     <string name="info_debug_mode_is_enabled">Tryb debugowania jest włączony, pamiętaj, aby wyłączyć go w ustawieniach</string>
     <string name="tapqueue">Dotknij, aby otworzyć kolejkę</string>
-    <string name="header_view_top_of">Zobacz górne %s z …</string>
+    <string name="header_view_top_of">Top %d of …</string>
     <string name="podcast_episodes">Odcinki</string>
     <string name="podcasts">Podcasty</string>
     <string name="playlistindicator">Wskaźnik playlisty</string>

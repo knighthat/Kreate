@@ -20,4 +20,16 @@
         <item quantity="one">millisecond</item>
         <item quantity="other">milliseconds</item>
     </plurals>
+    <plurals name="song">
+        <item quantity="other">songs</item>
+        <item quantity="one">song</item>
+    </plurals>
+    <plurals name="item">
+        <item quantity="other">items</item>
+        <item quantity="one">item</item>
+    </plurals>
+    <plurals name="song_count">
+        <item quantity="one">%1$d song</item>
+        <item quantity="other">%1$d songs</item>
+    </plurals>
 </resources>

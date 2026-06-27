@@ -115,7 +115,7 @@ fun StatisticsPage(
         Database.eventTable
                 .findArtistsMostPlayedBetween(
                     from = from,
-                    limit = maxStatisticsItems.toInt()
+                    limit = maxStatisticsItems
                 )
                 .distinctUntilChanged()
     }.collectAsState( emptyList(), Dispatchers.IO )
@@ -123,7 +123,7 @@ fun StatisticsPage(
         Database.eventTable
                 .findAlbumsMostPlayedBetween(
                     from = from,
-                    limit = maxStatisticsItems.toInt()
+                    limit = maxStatisticsItems
                 )
                 .distinctUntilChanged()
     }.collectAsState( emptyList(), Dispatchers.IO )
@@ -131,7 +131,7 @@ fun StatisticsPage(
         Database.eventTable
                 .findPlaylistMostPlayedBetweenAsPreview(
                     from = from,
-                    limit = maxStatisticsItems.toInt()
+                    limit = maxStatisticsItems
                 )
                 .distinctUntilChanged()
     }.collectAsState( emptyList(), Dispatchers.IO )
@@ -140,13 +140,13 @@ fun StatisticsPage(
         Database.eventTable
                 .findSongsMostPlayedBetween(
                     from = from,
-                    limit = maxStatisticsItems.toInt()
+                    limit = maxStatisticsItems
                 )
                 .distinctUntilChanged()
                 .onEach {
                     totalDuration = it.sumOf( Song::totalPlayTimeMs ).toDuration( DurationUnit.MILLISECONDS )
                 }
-                .map { it.take( maxStatisticsItems.toInt() ) }
+                .map { it.take( maxStatisticsItems ) }
     }.collectAsState( emptyList(), Dispatchers.IO )
 
     var downloadState by remember {
