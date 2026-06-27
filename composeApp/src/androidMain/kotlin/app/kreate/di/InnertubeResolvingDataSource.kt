@@ -20,6 +20,7 @@ import co.touchlab.kermit.Logger
 import com.grack.nanojson.JsonWriter
 import com.metrolist.innertube.YouTube
 import com.metrolist.music.utils.YTPlayerUtils
+import com.metrolist.music.utils.cipher.CipherDeobfuscator
 import io.ktor.client.HttpClient
 import io.ktor.client.request.head
 import io.ktor.http.URLBuilder
@@ -296,6 +297,9 @@ private suspend fun makeStreamCache(
 
 private fun getPlayableUrl( songId: String ): YTPlayerUtils.PlaybackData = runBlocking( Dispatchers.IO ) {
     logger.v { "Processing $songId" }
+
+    if( !CipherDeobfuscator.isInitialized() )
+        CipherDeobfuscator.initialize( get(Context::class.java) )
 
     val cache: YTPlayerUtils.PlaybackData
     if( cachedStreamUrl.contains(songId) ) {
