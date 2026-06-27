@@ -1,0 +1,33 @@
+name: Distribution error
+description: >-
+  Template reserved for distributors (ie. FDroid, IzzyOnDroid, etc.). If you're
+  having trouble wit hthe app, please use bug report template instead.
+assignees:
+  - knighthat
+body:
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: Please tell us who are you with
+      options:
+        - FDroid
+        - IzzyOnDroid
+        - OpenAPK
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: the-issue
+    attributes:
+      label: Issue description
+      description: >-
+        Please describe the problem. More details equals faster resolve time. If
+        you know potential solution, please feel free to share it with us.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: >-
+        This template was generated with [Issue Forms
+        Creator](https://issue-forms-creator.netlify.app)
