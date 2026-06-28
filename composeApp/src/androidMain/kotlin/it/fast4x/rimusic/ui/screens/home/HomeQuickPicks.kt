@@ -51,6 +51,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastDistinctBy
 import androidx.compose.ui.util.fastFilter
@@ -956,7 +957,8 @@ fun HomeQuickPicks(
                                                     ArtistItem.Thumbnail(
                                                         artistId = artist.id,
                                                         thumbnailUrl = artist.thumbnails.firstOrNull()?.url,
-                                                        showPlatformIcon = false
+                                                        showPlatformIcon = false,
+                                                        sizeDp = DpSize(Dimensions.thumbnails.song, Dimensions.thumbnails.song)
                                                     )
 
                                                     Column(
