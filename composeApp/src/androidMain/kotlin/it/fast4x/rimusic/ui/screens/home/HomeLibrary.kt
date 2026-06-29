@@ -20,21 +20,16 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
-import androidx.compose.ui.util.fastMapNotNull
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
@@ -45,14 +40,9 @@ import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.tab.ItemSize
 import app.kreate.android.themed.rimusic.component.tab.Sort
-import app.kreate.android.utils.innertube.CURRENT_LOCALE
-import app.kreate.android.utils.innertube.InnertubeUtils
-import app.kreate.database.models.PlaylistPreview
-import co.touchlab.kermit.Logger
-import it.fast4x.compose.persist.persistList
+import app.kreate.android.viewmodel.home.HomeLibraryViewModel
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.PlaylistsType
 import it.fast4x.rimusic.enums.UiType
@@ -66,21 +56,11 @@ import it.fast4x.rimusic.ui.components.themed.MultiFloatingActionsContainer
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.CheckMonthlyPlaylist
-import it.fast4x.rimusic.utils.autoSyncToolbutton
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.launch
 import me.knighthat.component.playlist.NewPlaylistDialog
 import me.knighthat.component.tab.ImportSongsFromCSV
 import me.knighthat.component.tab.SongShuffler
-import me.knighthat.innertube.Innertube
-import me.knighthat.innertube.model.InnertubePlaylist
-import me.knighthat.utils.Toaster
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -93,10 +73,10 @@ import me.knighthat.utils.Toaster
 fun HomeLibrary(
     navController: NavController,
     onSearchClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    viewModel: HomeLibraryViewModel = koinViewModel()
 ) {
     // Essentials
-    val context = LocalContext.current
     val lazyGridState = rememberLazyGridState()
     val menuState = LocalMenuState.current
     val appearance = LocalAppearance.current
@@ -105,8 +85,7 @@ fun HomeLibrary(
     // Non-vital
     var playlistType by Preferences.HOME_LIBRARY_TYPE
 
-    var items by persistList<PlaylistPreview>("home/playlists")
-    var onlinePlaylists by remember { mutableStateOf( emptyList<InnertubePlaylist>() ) }
+    val items by viewModel.playlists.collectAsStateWithLifecycle()
 
     val search = remember { Search(lazyGridState) }
 
@@ -120,10 +99,6 @@ fun HomeLibrary(
                  }
              }
              .fastFilter { search appearsIn it.playlist.cleanName() }
-    }}
-    val onlineOnDisplay by remember {derivedStateOf {
-        onlinePlaylists.fastFilter { playlistType === PlaylistsType.Playlist }
-                       .fastFilter { search appearsIn it.name }
     }}
 
     val sort = remember {
@@ -158,33 +133,6 @@ fun HomeLibrary(
     val newPlaylistDialog = NewPlaylistDialog()
     //</editor-fold>
     val importPlaylistDialog = ImportSongsFromCSV()
-    val sync = autoSyncToolbutton(R.string.autosync)
-
-    LaunchedEffect( sort.sortBy, sort.sortOrder ) {
-        Database.playlistTable
-                .sortPreviews( sort.sortBy, sort.sortOrder )
-                .distinctUntilChanged()
-                .flowOn(Dispatchers.Default )
-                .collectLatest { items = it }
-    }
-    LaunchedEffect( Unit ) {
-        if( !InnertubeUtils.isLoggedIn || !Preferences.YOUTUBE_PLAYLISTS_SYNC.value )
-            return@LaunchedEffect
-        
-        CoroutineScope( Dispatchers.IO ).launch {
-            Innertube.library( CURRENT_LOCALE )
-                     .onSuccess { results ->
-                         onlinePlaylists = results.fastMapNotNull { it as? InnertubePlaylist }
-                     }
-                     .onFailure { err ->
-                         Logger.e( "", err, "HomePlaylist" )
-                         Toaster.e(
-                             R.string.error_failed_to_sync_tab,
-                             context.getString( R.string.playlists ).lowercase()
-                         )
-                     }
-        }
-    }
 
     // START: Additional playlists
     val showPinnedPlaylists by Preferences.SHOW_PINNED_PLAYLISTS
@@ -208,29 +156,14 @@ fun HomeLibrary(
         CheckMonthlyPlaylist()
     // END - Monthly playlist
 
-    val doAutoSync by Preferences.AUTO_SYNC
-    var justSynced by rememberSaveable { mutableStateOf(!doAutoSync) }
-
-    var refreshing by remember { mutableStateOf(false) }
-    val refreshScope = rememberCoroutineScope()
-
-    fun refresh() {
-        if (refreshing) return
-        refreshScope.launch(Dispatchers.IO) {
-            refreshing = true
-            justSynced = false
-            delay(500)
-            refreshing = false
-        }
-    }
-
     val playlistItemValues = remember( appearance ) {
         PlaylistItem.Values.from( appearance )
     }
 
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     PullToRefreshBox(
-        isRefreshing = refreshing,
-        onRefresh = ::refresh
+        isRefreshing = isRefreshing,
+        onRefresh = viewModel::onRefresh
     ) {
         Box(
             modifier = Modifier
@@ -247,11 +180,11 @@ fun HomeLibrary(
             Column( Modifier.fillMaxSize() ) {
                 // Sticky tab's title
                 TabHeader( R.string.playlists ) {
-                    HeaderInfo( items.size.toString(), R.drawable.playlist )
+                    HeaderInfo( itemsOnDisplay.size.toString(), R.drawable.playlist )
                 }
 
                 // Sticky tab's tool bar
-                TabToolBar.Buttons( sort, sync, search, shuffle, newPlaylistDialog, importPlaylistDialog, itemSize )
+                TabToolBar.Buttons( sort, search, shuffle, newPlaylistDialog, importPlaylistDialog, itemSize )
 
                 // Sticky search bar
                 search.SearchBar()
@@ -276,25 +209,6 @@ fun HomeLibrary(
                     }
 
                     items(
-                        items = onlineOnDisplay,
-                        key = InnertubePlaylist::id
-                    ) { playlist ->
-                        PlaylistItem.Vertical(
-                            innertubePlaylist = playlist,
-                            values = playlistItemValues,
-                            navController = null,
-                            sizeDp = sizeDp,
-                            onClick = {
-                                search.hideIfEmpty()
-
-                                NavRoutes.YT_PLAYLIST.navigateHere(
-                                    navController = navController,
-                                    path = "${playlist.id}?useLogin=true"
-                                )
-                            }
-                        )
-                    }
-                    items(
                         items = itemsOnDisplay,
                         key = System::identityHashCode
                     ) { preview ->
@@ -304,6 +218,7 @@ fun HomeLibrary(
                             songCount = preview.songCount,
                             navController = navController,
                             sizeDp = sizeDp,
+                            thumbnailUrl = preview.thumbnailUrl,
                             onClick = search::hideIfEmpty,
                             onLongClick = {
                                 val page = MenuPage.LocalPlaylist(preview)

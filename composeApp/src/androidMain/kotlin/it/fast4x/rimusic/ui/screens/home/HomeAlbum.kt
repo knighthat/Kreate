@@ -31,8 +31,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,9 +40,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastFilter
-import androidx.compose.ui.util.fastMap
-import androidx.compose.ui.util.fastMapNotNull
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.Preferences
@@ -54,13 +50,11 @@ import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.tab.ItemSize
 import app.kreate.android.themed.rimusic.component.tab.Sort
-import app.kreate.android.utils.innertube.CURRENT_LOCALE
-import app.kreate.android.utils.innertube.InnertubeUtils
+import app.kreate.android.viewmodel.home.HomeAlbumsViewModel
 import app.kreate.database.AlbumTable
 import app.kreate.database.models.Album
 import app.kreate.database.models.Song
 import app.kreate.util.MODIFIED_PREFIX
-import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persistList
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
@@ -87,22 +81,17 @@ import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.addToYtPlaylist
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.autoSyncToolbutton
 import it.fast4x.rimusic.utils.enqueue
-import it.fast4x.rimusic.utils.importYTMLikedAlbums
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.knighthat.component.tab.SongShuffler
-import me.knighthat.innertube.Innertube
-import me.knighthat.innertube.model.InnertubeAlbum
-import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @ExperimentalTextApi
@@ -114,7 +103,8 @@ import org.koin.compose.koinInject
 fun HomeAlbums(
     navController: NavController,
     onSearchClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    viewModel: HomeAlbumsViewModel = koinViewModel()
 ) {
     // Essentials
     val menuState = LocalMenuState.current
@@ -128,21 +118,11 @@ fun HomeAlbums(
     var filterBy by Preferences.HOME_ARTIST_AND_ALBUM_FILTER
 
 
-    var items by persistList<Album>( "home/albums" )
-    var itemsToFilter by persistList<Album>( "home/artists" )
-    var onlineAlbums by remember {
-        mutableStateOf( emptyList<InnertubeAlbum>() )
-    }
+    val items by viewModel.albums.collectAsStateWithLifecycle()
 
     val search = remember { Search(lazyGridState) }
 
     var itemsOnDisplay by persistList<Album>( "home/albums/on_display" )
-    val onlineOnDisplay by remember {derivedStateOf {
-        val localIds = itemsOnDisplay.fastMap( Album::id )
-        onlineAlbums.fastFilter { it.id !in localIds }
-                    .fastFilter { filterBy === FilterBy.All || filterBy === FilterBy.YoutubeLibrary }
-                    .fastFilter { search appearsIn it.name }
-    }}
 
     val sort = remember {
         Sort(menuState, Preferences.HOME_ALBUMS_SORT_BY, Preferences.HOME_ALBUM_SORT_ORDER)
@@ -167,20 +147,6 @@ fun HomeAlbums(
         filterBy = FilterBy.All
     }
 
-    LaunchedEffect( sort.sortBy, sort.sortOrder, albumType ) {
-        when ( albumType ) {
-            AlbumsType.Favorites -> Database.albumTable.sortBookmarked( sort.sortBy, sort.sortOrder )
-            AlbumsType.Library -> Database.albumTable.sortInLibrary( sort.sortBy, sort.sortOrder )
-        }.collect { itemsToFilter = it }
-    }
-    LaunchedEffect( Unit, itemsToFilter, filterBy ) {
-        items = when(filterBy) {
-            FilterBy.All -> itemsToFilter
-            FilterBy.YoutubeLibrary -> itemsToFilter.filter { it.isYoutubeAlbum }
-            FilterBy.Local -> itemsToFilter.filterNot { it.isYoutubeAlbum }
-        }
-
-    }
     LaunchedEffect( items, search.input ) {
         itemsOnDisplay = items.filter {
             it.title?.let( search::appearsIn ) ?: false
@@ -222,52 +188,11 @@ fun HomeAlbums(
                  }
         }
     }
-    LaunchedEffect( Unit ) {
-        if( !InnertubeUtils.isLoggedIn || !Preferences.YOUTUBE_ALBUMS_SYNC.value )
-            return@LaunchedEffect
 
-        CoroutineScope( Dispatchers.IO ).launch {
-            Innertube.library( CURRENT_LOCALE )
-                     .onSuccess { results ->
-                         onlineAlbums = results.fastMapNotNull { it as? InnertubeAlbum }
-                     }
-                     .onFailure { err ->
-                         Logger.e( "", err, "HomeAlbum" )
-                         Toaster.e(
-                             R.string.error_failed_to_sync_tab,
-                             context.getString( R.string.albums ).lowercase()
-                         )
-                     }
-        }
-    }
-
-    val sync = autoSyncToolbutton(R.string.autosync_albums)
-
-    val doAutoSync by Preferences.AUTO_SYNC
-    var justSynced by rememberSaveable { mutableStateOf(!doAutoSync) }
-
-    var refreshing by remember { mutableStateOf(false) }
-    val refreshScope = rememberCoroutineScope()
-
-    fun refresh() {
-        if (refreshing) return
-        refreshScope.launch(Dispatchers.IO) {
-            refreshing = true
-            justSynced = false
-            delay(500)
-            refreshing = false
-        }
-    }
-
-    // START: Import YTM subscribed channels
-    LaunchedEffect(justSynced, doAutoSync) {
-        if (!justSynced && importYTMLikedAlbums())
-            justSynced = true
-    }
-
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     PullToRefreshBox(
-        isRefreshing = refreshing,
-        onRefresh = ::refresh
+        isRefreshing = isRefreshing,
+        onRefresh = viewModel::onRefresh
     ) {
         Box(
             modifier = Modifier
@@ -287,7 +212,7 @@ fun HomeAlbums(
                 }
 
                 // Sticky tab's tool bar
-                TabToolBar.Buttons( sort, sync, search, randomizer, shuffle, itemSize )
+                TabToolBar.Buttons( sort, search, randomizer, shuffle, itemSize )
 
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -370,19 +295,6 @@ fun HomeAlbums(
                     contentPadding = PaddingValues( bottom = Dimensions.bottomSpacer ),
                     verticalArrangement = Arrangement.spacedBy(AlbumItem.ROW_SPACING.dp )
                 ) {
-                    items(
-                        items = onlineOnDisplay,
-                        key = InnertubeAlbum::id
-                    ) { album ->
-                        AlbumItem.Vertical(
-                            innertubeAlbum = album,
-                            values = albumItemValues,
-                            navController = navController,
-                            sizeDp = sizeDp,
-                            onClick = search::hideIfEmpty
-                        )
-                    }
-
                     items(
                         items = itemsOnDisplay,
                         key = Album::id

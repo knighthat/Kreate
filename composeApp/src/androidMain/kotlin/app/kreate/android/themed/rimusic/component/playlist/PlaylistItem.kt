@@ -364,6 +364,7 @@ object PlaylistItem: Visual(), MultiplatformItem {
         songCount: Int = 0,
         showSongCount: Boolean = true,
         showPlatformIcon: Boolean = true,
+        thumbnailUrl: String? = null,
         onClick: () -> Unit = {},
         onLongClick: () -> Unit = {}
     ) =
@@ -371,21 +372,24 @@ object PlaylistItem: Visual(), MultiplatformItem {
             widthDp = sizeDp.width,
             modifier = modifier,
             thumbnail = {
-                Thumbnail(
-                    playlist = playlist,
-                    sizeDp = sizeDp,
-                    showPlatformIcon = showPlatformIcon,
-                    modifier = Modifier.padding( bottom = VERTICAL_SPACING.dp )
-                ) thumb@ {
-                    if( songCount < 0 || !showSongCount ) return@thumb
+                if( thumbnailUrl != null )
+                    Thumbnail( playlist.browseId, thumbnailUrl, Modifier, sizeDp, showPlatformIcon )
+                else
+                    Thumbnail(
+                        playlist = playlist,
+                        sizeDp = sizeDp,
+                        showPlatformIcon = showPlatformIcon,
+                        modifier = Modifier.padding( bottom = VERTICAL_SPACING.dp )
+                    ) thumb@ {
+                        if( songCount < 0 || !showSongCount ) return@thumb
 
-                    SongCount(
-                        count = songCount,
-                        values = values,
-                        modifier = Modifier.padding( all = 4.dp )
-                                           .align( Alignment.BottomEnd )
-                    )
-                }
+                        SongCount(
+                            count = songCount,
+                            values = values,
+                            modifier = Modifier.padding( all = 4.dp )
+                                               .align( Alignment.BottomEnd )
+                        )
+                    }
             },
             firstLine = {
                 Title( playlist.cleanName(), values, TextAlign.Center )
