@@ -1,0 +1,4 @@
+Fixes:
+- YT login (finally)
+- YT sync (albums, artists, playlists)
+- Get chart error in Quick Picks
