@@ -1,14 +1,13 @@
 package app.kreate.android.viewmodel.home
 
 import android.content.Context
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.utils.innertube.InnertubeUtils
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
+import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
 import com.metrolist.innertube.YouTube
 import com.metrolist.innertube.models.PlaylistItem
@@ -42,10 +41,7 @@ class HomeLibraryViewModel : ViewModel(), KoinComponent {
 
     init {
         viewModelScope.launch( Dispatchers.IO ) {
-            val sortByFlow = snapshotFlow { Preferences.HOME_LIBRARY_SORT_BY.value }
-            val sortOrderFlow = snapshotFlow { Preferences.HOME_LIBRARY_SORT_ORDER.value }
-
-            combine(sortByFlow, sortOrderFlow) { a, b -> a to b }
+            combine( Preferences.HOME_LIBRARY_SORT_BY, Preferences.HOME_LIBRARY_SORT_ORDER ) { a, b -> a to b }
                 .flatMapLatest { (sortBy, sortOrder) ->
                     Database.playlistTable.sortPreviews( sortBy, sortOrder )
                 }

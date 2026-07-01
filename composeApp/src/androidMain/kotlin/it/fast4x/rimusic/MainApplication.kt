@@ -15,6 +15,7 @@ import app.kreate.di.initKoin
 import app.kreate.logging.CoilLogger
 import app.kreate.logging.KoinBufferedLogger
 import app.kreate.logging.setupLogging
+import app.kreate.preferences.Preferences
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader

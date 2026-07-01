@@ -13,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import app.kreate.android.R
+import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
 import com.metrolist.innertube.YouTube
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
@@ -49,15 +50,18 @@ fun YouTubeLogin( onDone: () -> Unit ) {
                             // Only extract credentials when user is redirected back to YTM page
                             return
 
-                        Preferences.YOUTUBE_COOKIES.value = CookieManager.getInstance().getCookie( url )
-                        YouTube.cookie = Preferences.YOUTUBE_COOKIES.value
+                        val cookies = CookieManager.getInstance().getCookie( url )
+                        Preferences.YOUTUBE_COOKIES.update( cookies )
+                        YouTube.cookie = cookies
                         evaluateJavascript( "window.yt.config_.VISITOR_DATA" ) { result ->
-                            Preferences.YOUTUBE_VISITOR_DATA.value = if( result != "null" ) result.removeSurrounding("\"") else ""
-                            YouTube.visitorData = Preferences.YOUTUBE_VISITOR_DATA.value
+                            val visitorData = if( result != "null" ) result.removeSurrounding("\"") else ""
+                            Preferences.YOUTUBE_VISITOR_DATA.update( visitorData )
+                            YouTube.visitorData = visitorData
                         }
                         evaluateJavascript( "window.yt.config_.DATASYNC_ID" ) { result ->
-                            Preferences.YOUTUBE_SYNC_ID.value = if( result != "null" ) result.removeSurrounding("\"").substringBefore("||") else ""
-                            YouTube.dataSyncId = Preferences.YOUTUBE_SYNC_ID.value
+                            val datasyncId = if( result != "null" ) result.removeSurrounding("\"").substringBefore("||") else ""
+                            Preferences.YOUTUBE_SYNC_ID.update( datasyncId )
+                            YouTube.dataSyncId = datasyncId
                         }
                         CoroutineScope(Dispatchers.IO).launch {
                             YouTube.accountInfo()
@@ -67,10 +71,10 @@ fun YouTubeLogin( onDone: () -> Unit ) {
                                    }
                                    .onSuccess {
                                        withContext( Dispatchers.Main ) {
-                                           Preferences.YOUTUBE_ACCOUNT_NAME.value = it.name
-                                           Preferences.YOUTUBE_ACCOUNT_EMAIL.value = it.email.orEmpty()
-                                           Preferences.YOUTUBE_SELF_CHANNEL_HANDLE.value = it.channelHandle.orEmpty()
-                                           Preferences.YOUTUBE_ACCOUNT_AVATAR.value = it.thumbnailUrl.orEmpty()
+                                           Preferences.YOUTUBE_ACCOUNT_NAME.update( it.name )
+                                           Preferences.YOUTUBE_ACCOUNT_EMAIL.update( it.email.orEmpty() )
+                                           Preferences.YOUTUBE_SELF_CHANNEL_HANDLE.update( it.channelHandle.orEmpty() )
+                                           Preferences.YOUTUBE_ACCOUNT_AVATAR.update( it.thumbnailUrl.orEmpty() )
                                        }
                                    }
                         }

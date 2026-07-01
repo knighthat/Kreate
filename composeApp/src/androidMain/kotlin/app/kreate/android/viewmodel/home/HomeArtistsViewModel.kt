@@ -1,13 +1,12 @@
 package app.kreate.android.viewmodel.home
 
 import android.content.Context
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.kreate.android.Preferences
 import app.kreate.android.R
 import app.kreate.android.utils.innertube.InnertubeUtils
 import app.kreate.database.models.Artist
+import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
 import com.metrolist.innertube.YouTube
 import com.metrolist.innertube.models.ArtistItem
@@ -44,11 +43,7 @@ class HomeArtistsViewModel : ViewModel(), KoinComponent {
 
     init {
         viewModelScope.launch( Dispatchers.IO ) {
-            val typeFlow = snapshotFlow { Preferences.HOME_ARTIST_TYPE.value }
-            val sortByFlow = snapshotFlow { Preferences.HOME_ARTISTS_SORT_BY.value }
-            val sortOrderFlow = snapshotFlow { Preferences.HOME_ARTISTS_SORT_ORDER.value }
-
-            combine( typeFlow, sortByFlow, sortOrderFlow, ::Triple )
+            combine( Preferences.HOME_ARTIST_TYPE, Preferences.HOME_ARTISTS_SORT_BY, Preferences.HOME_ARTISTS_SORT_ORDER, ::Triple )
                 .flatMapLatest { (type, sortBy, sortOrder) ->
                     when( type ) {
                         ArtistsType.Favorites -> Database.artistTable.sortFollowing( sortBy, sortOrder )
@@ -61,9 +56,7 @@ class HomeArtistsViewModel : ViewModel(), KoinComponent {
                 }
         }
         viewModelScope.launch( Dispatchers.Default ) {
-            val filterByFlow = snapshotFlow { Preferences.HOME_ARTIST_AND_ALBUM_FILTER.value }
-
-            combine( _syncedArtists, _localArtists, filterByFlow ) { online, local, filterBy ->
+            combine( _syncedArtists, _localArtists, Preferences.HOME_ARTIST_AND_ALBUM_FILTER ) { online, local, filterBy ->
                 val combined = online + local
 
                 when( filterBy ) {
