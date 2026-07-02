@@ -17,7 +17,6 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -46,7 +45,6 @@ import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.styling.favoritesIcon
 import it.fast4x.rimusic.utils.DURATION_INDICATOR_HEIGHT
 import it.fast4x.rimusic.utils.positionAndDurationState
-import it.fast4x.rimusic.utils.rememberPreference
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.delay
 import kotlin.time.Duration
@@ -168,13 +166,6 @@ fun DurationIndicator(
 
         Spacer( Modifier.width( 5.dp ) )
 
-        /**
-         * Current implement of [rememberPreference] creates new [MutableState]
-         * each time the function is called. To prevent creation of multiple instances,
-         * this variable is placed in parent class and passed to each [OutlinedText].
-         *
-         * When it's updated, all [OutlinedText] are updated as well.
-         */
         val outlineColor by outlineColorState()
 
         // Scrubbing position

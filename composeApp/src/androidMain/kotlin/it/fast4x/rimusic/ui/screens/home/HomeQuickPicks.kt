@@ -86,7 +86,6 @@ import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.YtMusic
 import it.fast4x.innertube.models.bodies.NextBody
 import it.fast4x.innertube.requests.HomePage
-import it.fast4x.innertube.requests.chartsPageComplete
 import it.fast4x.innertube.requests.discoverPage
 import it.fast4x.innertube.requests.relatedPage
 import it.fast4x.rimusic.Database
@@ -117,11 +116,6 @@ import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.isLandscape
-import it.fast4x.rimusic.utils.quickPicsDiscoverPageKey
-import it.fast4x.rimusic.utils.quickPicsHomePageKey
-import it.fast4x.rimusic.utils.quickPicsRelatedPageKey
-import it.fast4x.rimusic.utils.quickPicsTrendingSongKey
-import it.fast4x.rimusic.utils.rememberPreference
 import it.fast4x.rimusic.utils.secondary
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shimmerEffect
@@ -171,23 +165,9 @@ fun HomeQuickPicks(
     val playEventType by Preferences.QUICK_PICKS_TYPE.collectAsStateWithLifecycle()
 
     var trending by persist<Song?>("home/trending")
-    val trendingInit by persist<Song?>(tag = "home/trending")
-    var trendingPreference by rememberPreference(quickPicsTrendingSongKey, trendingInit)
-
-    var relatedPageResult by persist<Result<Innertube.RelatedPage?>?>(tag = "home/relatedPageResult")
-    var relatedInit by persist<Innertube.RelatedPage?>(tag = "home/relatedPage")
-    var relatedPreference by rememberPreference(quickPicsRelatedPageKey, relatedInit)
-
-    var discoverPageResult by persist<Result<Innertube.DiscoverPage?>>("home/discoveryAlbums")
-    var discoverPageInit by persist<Innertube.DiscoverPage>("home/discoveryAlbums")
-    var discoverPagePreference by rememberPreference(quickPicsDiscoverPageKey, discoverPageInit)
-
-    var homePageResult by persist<Result<HomePage?>>("home/homePage")
-    var homePageInit by persist<HomePage?>("home/homePage")
-    var homePagePreference by rememberPreference(quickPicsHomePageKey, homePageInit)
-
-    var chartsPageResult by persist<Result<Innertube.ChartsPage?>>("home/chartsPage")
-    var chartsPageInit by persist<Innertube.ChartsPage>("home/chartsPage")
+    var relatedPage by persist<Innertube.RelatedPage?>(tag = "home/relatedPage")
+    var discoverPage by persist<Innertube.DiscoverPage>("home/discoveryAlbums")
+    var homePage by persist<HomePage?>("home/homePage")
 
     val showRelatedAlbums by Preferences.QUICK_PICKS_SHOW_RELATED_ALBUMS.collectAsStateWithLifecycle()
     val showSimilarArtists by Preferences.QUICK_PICKS_SHOW_RELATED_ARTISTS.collectAsStateWithLifecycle()
@@ -197,7 +177,6 @@ fun HomeQuickPicks(
     val showNewAlbums by Preferences.QUICK_PICKS_SHOW_NEW_ALBUMS.collectAsStateWithLifecycle()
     val showMonthlyPlaylistInQuickPicks by Preferences.QUICK_PICKS_SHOW_MONTHLY_PLAYLISTS.collectAsStateWithLifecycle()
     val showTips by Preferences.QUICK_PICKS_SHOW_TIPS.collectAsStateWithLifecycle()
-    val showCharts by Preferences.QUICK_PICKS_SHOW_CHARTS.collectAsStateWithLifecycle()
 
     val refreshScope = rememberCoroutineScope()
     val last50Year: Duration = 18250.days
@@ -207,17 +186,7 @@ fun HomeQuickPicks(
 
     val parentalControlEnabled by Preferences.PARENTAL_CONTROL.collectAsStateWithLifecycle()
 
-    val loadedData by Preferences.IS_DATA_KEY_LOADED.collectAsStateWithLifecycle()
-
     suspend fun loadData() {
-
-        //Used to refresh chart when country change
-        if (showCharts)
-            chartsPageResult =
-                Innertube.chartsPageComplete( countryCode )
-
-        if (loadedData) return
-
         runCatching {
             refreshScope.launch(Dispatchers.IO) {
                 when (playEventType) {
@@ -230,12 +199,12 @@ fun HomeQuickPicks(
                                 .distinctUntilChanged()
                                 .collect { songs ->
                                     val song = songs.firstOrNull()
-                                    if (relatedPageResult == null || trending?.id != song?.id) {
-                                        relatedPageResult = Innertube.relatedPage(
+                                    if (relatedPage == null || trending?.id != song?.id) {
+                                        relatedPage = Innertube.relatedPage(
                                             NextBody(
                                                 videoId = (song?.id ?: "HZnNt9nnEhw")
                                             )
-                                        )
+                                        )?.getOrNull()
                                     }
                                     trending = song
                                 }
@@ -254,27 +223,26 @@ fun HomeQuickPicks(
                                             songs.firstOrNull()
                                         else
                                             songs.shuffled().firstOrNull()
-                                    if (relatedPageResult == null || trending?.id != song?.id) {
-                                        relatedPageResult =
+                                    if (relatedPage == null || trending?.id != song?.id) {
+                                        relatedPage =
                                             Innertube.relatedPage(
                                                 NextBody(
                                                     videoId = (song?.id ?: "HZnNt9nnEhw")
                                                 )
-                                            )
+                                            )?.getOrNull()
                                     }
                                     trending = song
                                 }
                     }
-
                 }
             }
 
             if (showNewAlbums || showNewAlbumsArtists || showMoodsAndGenres) {
-                discoverPageResult = Innertube.discoverPage()
+                discoverPage = Innertube.discoverPage().getOrNull()
             }
 
             if (isYouTubeLoggedIn())
-                homePageResult = YtMusic.getHomePage()
+                homePage = YtMusic.getHomePage().getOrNull()
 
         }.onFailure {
             Logger.e( tag = "HomeQuickPicks" ) { "loadData failed!" }
@@ -293,8 +261,7 @@ fun HomeQuickPicks(
     fun refresh() {
         if (refreshing) return
         Preferences.IS_DATA_KEY_LOADED.update( false )
-        relatedPageResult = null
-        relatedInit = null
+        relatedPage = null
         trending = null
         refreshScope.launch(Dispatchers.IO) {
             refreshing = true
@@ -378,71 +345,6 @@ fun HomeQuickPicks(
                     .fillMaxHeight()
                     .verticalScroll(scrollState)
             ) {
-
-                /*   Load data from url or from saved preference   */
-                if (trendingPreference != null) {
-                    when (loadedData) {
-                        true -> trending = trendingPreference
-                        else -> trendingPreference = trending
-                    }
-                } else trendingPreference = trending
-
-                if (relatedPreference != null) {
-                    when (loadedData) {
-                        true -> {
-                            relatedPageResult = Result.success(relatedPreference)
-                            relatedInit = relatedPageResult?.getOrNull()
-                        }
-                        else -> {
-                            relatedInit = relatedPageResult?.getOrNull()
-                            relatedPreference = relatedInit
-                        }
-                    }
-                } else {
-                    relatedInit = relatedPageResult?.getOrNull()
-                    relatedPreference = relatedInit
-                }
-
-                if (discoverPagePreference != null) {
-                    when (loadedData) {
-                        true -> {
-                            discoverPageResult = Result.success(discoverPagePreference)
-                            discoverPageInit = discoverPageResult?.getOrNull()
-                        }
-                        else -> {
-                            discoverPageInit = discoverPageResult?.getOrNull()
-                            discoverPagePreference = discoverPageInit
-                        }
-
-                    }
-                } else {
-                    discoverPageInit = discoverPageResult?.getOrNull()
-                    discoverPagePreference = discoverPageInit
-                }
-
-                // Not saved/cached to preference
-                chartsPageInit = chartsPageResult?.getOrNull()
-
-                if (homePagePreference != null) {
-                    when (loadedData) {
-                        true -> {
-                            homePageResult = Result.success(homePagePreference)
-                            homePageInit = homePageResult?.getOrNull()
-                        }
-                        else -> {
-                            homePageInit = homePageResult?.getOrNull()
-                            homePagePreference = homePageInit
-                        }
-
-                    }
-                } else {
-                    homePageInit = homePageResult?.getOrNull()
-                    homePagePreference = homePageInit
-                }
-
-                /*   Load data from url or from saved preference   */
-
-
                 if (UiType.ViMusic.isCurrent())
                     HeaderWithIcon(
                         title = if (!isYouTubeLoggedIn()) stringResource(R.string.quick_picks)
@@ -493,7 +395,7 @@ fun HomeQuickPicks(
                         onClick2 = {
                             player.stopRadio()
                             trending?.let { player.forcePlay(it.asMediaItem) }
-                            player.addMediaItems(relatedInit?.songs?.map { it.asMediaItem }
+                            player.addMediaItems(relatedPage?.songs?.map { it.asMediaItem }
                                 ?: emptyList())
                         }
 
@@ -515,12 +417,12 @@ fun HomeQuickPicks(
 
                     LazyHorizontalGrid(
                         state = quickPicksLazyGridState,
-                        rows = GridCells.Fixed(if (relatedInit != null) 3 else 1),
+                        rows = GridCells.Fixed(if (relatedPage != null) 3 else 1),
                         flingBehavior = ScrollableDefaults.flingBehavior(),
                         contentPadding = endPaddingValues,
                         modifier = Modifier.fillMaxWidth()
                                            .height(
-                                               if ( relatedInit != null)
+                                               if ( relatedPage != null)
                                                    Dimensions.itemsVerticalPadding * 3 * 9
                                                else
                                                    Dimensions.itemsVerticalPadding * 9
@@ -544,7 +446,7 @@ fun HomeQuickPicks(
                             }
                         }
 
-                        relatedInit?.let { relatedPage ->
+                        relatedPage?.let { relatedPage ->
                             items(
                                 items = relatedPage.songs
                                                    ?.distinctBy( Innertube.SongItem::key )
@@ -573,7 +475,7 @@ fun HomeQuickPicks(
                         }
                     }
 
-                    if (relatedInit == null) Loader()
+                    if (relatedPage == null) Loader()
                 }
 
                 val albumItemValues = remember(  colorPalette, typography  ) {
@@ -586,7 +488,7 @@ fun HomeQuickPicks(
                     PlaylistItem.Values.from( colorPalette, typography )
                 }
 
-                discoverPageInit?.let { page ->
+                discoverPage?.let { page ->
                     val artists by remember {
                         Database.artistTable
                                 .sortFollowingByName()
@@ -647,7 +549,7 @@ fun HomeQuickPicks(
                 }
 
                 if (showRelatedAlbums)
-                    relatedInit?.albums?.let { albums ->
+                    relatedPage?.albums?.let { albums ->
                         BasicText(
                             text = stringResource(R.string.related_albums),
                             style = typography().l.semiBold,
@@ -668,7 +570,7 @@ fun HomeQuickPicks(
                     }
 
                 if (showSimilarArtists)
-                    relatedInit?.artists?.let { artists ->
+                    relatedPage?.artists?.let { artists ->
                         BasicText(
                             text = stringResource(R.string.similar_artists),
                             style = typography().l.semiBold,
@@ -693,7 +595,7 @@ fun HomeQuickPicks(
                     }
 
                 if (showPlaylistMightLike)
-                    relatedInit?.playlists?.let { playlists ->
+                    relatedPage?.playlists?.let { playlists ->
                         BasicText(
                             text = stringResource(R.string.playlists_you_might_like),
                             style = typography().l.semiBold,
@@ -722,7 +624,7 @@ fun HomeQuickPicks(
 
 
                 if (showMoodsAndGenres)
-                    discoverPageInit?.let { page ->
+                    discoverPage?.let { page ->
 
                         if (page.moods.isNotEmpty()) {
 
@@ -1000,7 +902,7 @@ fun HomeQuickPicks(
 
                 }
 
-                homePageInit?.let { page ->
+                homePage?.let { page ->
 
                     page.sections.forEach {
                         if (it.items.isEmpty() || it.items.firstOrNull()?.key == null) return@forEach
@@ -1055,7 +957,7 @@ fun HomeQuickPicks(
 
                 //} ?:
 
-                relatedPageResult?.exceptionOrNull()?.let {
+                relatedPage?.let {
                     BasicText(
                         text = stringResource(R.string.page_not_been_loaded),
                         style = typography().s.secondary.center,
