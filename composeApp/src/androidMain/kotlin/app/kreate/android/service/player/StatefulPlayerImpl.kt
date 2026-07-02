@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.app.NotificationManager
 import android.content.Context
-import android.content.SharedPreferences
 import android.media.audiofx.BassBoost
 import android.media.audiofx.LoudnessEnhancer
 import android.media.audiofx.PresetReverb
@@ -34,6 +33,8 @@ import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
+import app.kreate.di.InternalPrefKey
+import app.kreate.di.Storage
 import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
 import co.touchlab.kermit.Logger
@@ -66,6 +67,7 @@ import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.component.inject
 import org.koin.java.KoinJavaComponent.inject
 import kotlin.math.max
@@ -85,7 +87,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
     StatefulPlayer,
     Player.Listener,
     KoinComponent,
-    SharedPreferences.OnSharedPreferenceChangeListener
+    Preferences.Listener
 {
 
     companion object {
@@ -120,8 +122,9 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
         this.addListener( this )
         this.addListener( PlayerEventUpdateDiscord() )
 
-//        val preferences: SharedPreferences by inject(PrefType.DEFAULT)
-//        preferences.registerOnSharedPreferenceChangeListener( this )
+        get<CoroutineScope>().launch {
+            Preferences.addListener( this@StatefulPlayerImpl )
+        }
 
         skipSilenceEnabled = Preferences.AUDIO_SKIP_SILENCE.value
         repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
@@ -485,8 +488,9 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
 
         player.release()
 
-//        val preferences: SharedPreferences by inject(PrefType.DEFAULT)
-//        preferences.registerOnSharedPreferenceChangeListener( this )
+        get<CoroutineScope>().launch {
+            Preferences.removeListener( this@StatefulPlayerImpl )
+        }
     }
 
     /*
@@ -633,25 +637,25 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
             SharedPreferences listener
      */
 
-    override fun onSharedPreferenceChanged( pref: SharedPreferences, key: String? ) {
-//        when( key ) {
-//            Preferences.Key.AUDIO_VOLUME_NORMALIZATION -> {
-//                if( ::loudnessEnhancer.isInitialized )
-//                    loudnessEnhancer.enabled = pref.getBoolean(key, false)
-//                normalizeLoudness()
-//            }
-//            Preferences.Key.AUDIO_VOLUME_NORMALIZATION_TARGET -> normalizeLoudness()
-//
-//            Preferences.Key.AUDIO_SKIP_SILENCE ->  skipSilenceEnabled = pref.getBoolean( key, false )
-//
-//            Preferences.Key.AUDIO_BASS_BOOSTED -> {
-//                if( ::bassBoost.isInitialized )
-//                    bassBoost.enabled = pref.getBoolean(key, false)
-//                boostLowFrequencies()
-//            }
-//            Preferences.Key.AUDIO_BASS_BOOST_LEVEL -> boostLowFrequencies()
-//
-//            Preferences.Key.AUDIO_REVERB_PRESET -> updateReverb()
-//        }
+    override suspend fun onChange( storage: Storage, key: InternalPrefKey<*> ) = withContext( Dispatchers.Main ) {
+        when( key ) {
+            Preferences.Key.AUDIO_VOLUME_NORMALIZATION -> {
+                if( ::loudnessEnhancer.isInitialized )
+                    loudnessEnhancer.enabled = Preferences.AUDIO_VOLUME_NORMALIZATION.value
+                normalizeLoudness()
+            }
+            Preferences.Key.AUDIO_VOLUME_NORMALIZATION_TARGET -> normalizeLoudness()
+
+            Preferences.Key.AUDIO_SKIP_SILENCE ->  skipSilenceEnabled = Preferences.AUDIO_SKIP_SILENCE.value
+
+            Preferences.Key.AUDIO_BASS_BOOSTED -> {
+                if( ::bassBoost.isInitialized )
+                    bassBoost.enabled = Preferences.AUDIO_BASS_BOOSTED.value
+                boostLowFrequencies()
+            }
+            Preferences.Key.AUDIO_BASS_BOOST_LEVEL -> boostLowFrequencies()
+
+            Preferences.Key.AUDIO_REVERB_PRESET -> updateReverb()
+        }
     }
 }

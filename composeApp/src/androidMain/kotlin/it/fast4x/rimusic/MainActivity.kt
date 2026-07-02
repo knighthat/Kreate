@@ -6,7 +6,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -91,6 +90,7 @@ import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.database.models.PersistentQueue
 import app.kreate.preferences.Preferences
+import app.kreate.util.thumbnail
 import co.touchlab.kermit.Logger
 import coil3.imageLoader
 import coil3.request.allowHardware
@@ -143,11 +143,9 @@ import it.fast4x.rimusic.utils.isAtLeastAndroid8
 import it.fast4x.rimusic.utils.isVideo
 import it.fast4x.rimusic.utils.loadAppLog
 import it.fast4x.rimusic.utils.playNext
-import it.fast4x.rimusic.utils.preferences
 import it.fast4x.rimusic.utils.resize
 import it.fast4x.rimusic.utils.setDefaultPalette
 import it.fast4x.rimusic.utils.textCopyToClipboard
-import it.fast4x.rimusic.utils.thumbnail
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -350,48 +348,41 @@ MainActivity :
                 !lightTheme,
                 stateSaver = Appearance.Companion
             ) {
-                with(preferences) {
-                    val colorPaletteName = Preferences.COLOR_PALETTE.value
-                    val colorPaletteMode = Preferences.THEME_MODE.value
-                    val thumbnailRoundness = Preferences.THUMBNAIL_BORDER_RADIUS.value
-                    val useSystemFont = Preferences.USE_SYSTEM_FONT.value
-                    val applyFontPadding = Preferences.APPLY_FONT_PADDING.value
-                    val fontType = Preferences.FONT.value
+                val colorPaletteName = Preferences.COLOR_PALETTE.value
+                val colorPaletteMode = Preferences.THEME_MODE.value
+                val thumbnailRoundness = Preferences.THUMBNAIL_BORDER_RADIUS.value
+                val useSystemFont = Preferences.USE_SYSTEM_FONT.value
+                val applyFontPadding = Preferences.APPLY_FONT_PADDING.value
+                val fontType = Preferences.FONT.value
+                var colorPalette = colorPaletteOf(colorPaletteName, colorPaletteMode, !lightTheme)
 
-                    var colorPalette =
-                        colorPaletteOf(colorPaletteName, colorPaletteMode, !lightTheme)
-
-
-                    if (colorPaletteName == ColorPaletteName.MaterialYou) {
-                        colorPalette = dynamicColorPaletteOf(
-                            Color(monet.getAccentColor(this@MainActivity)),
-                            !lightTheme
-                        )
-                    }
-                    if (colorPaletteName == ColorPaletteName.CustomColor) {
-                        colorPalette = dynamicColorPaletteOf(
-                            customColor,
-                            !lightTheme
-                        )
-                    }
-
-                    setSystemBarAppearance(colorPalette.isDark)
-
-                    mutableStateOf(
-                        Appearance(
-                            colorPalette = colorPalette,
-                            typography = typographyOf(
-                                colorPalette.text,
-                                useSystemFont,
-                                applyFontPadding,
-                                fontType
-                            ),
-                            thumbnailShape = thumbnailRoundness.shape
-                        )
+                if (colorPaletteName == ColorPaletteName.MaterialYou) {
+                    colorPalette = dynamicColorPaletteOf(
+                        Color(monet.getAccentColor(this@MainActivity)),
+                        !lightTheme
+                    )
+                }
+                if (colorPaletteName == ColorPaletteName.CustomColor) {
+                    colorPalette = dynamicColorPaletteOf(
+                        customColor,
+                        !lightTheme
                     )
                 }
 
+                setSystemBarAppearance(colorPalette.isDark)
 
+                mutableStateOf(
+                    Appearance(
+                        colorPalette = colorPalette,
+                        typography = typographyOf(
+                            colorPalette.text,
+                            useSystemFont,
+                            applyFontPadding,
+                            fontType
+                        ),
+                        thumbnailShape = thumbnailRoundness.shape
+                    )
+                )
             }
 
             fun setDynamicPalette(url: String) {
@@ -449,155 +440,150 @@ MainActivity :
 
             val player: StatefulPlayer = koinInject()
             DisposableEffect(player, !lightTheme) {
-                val listener =
-                    SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
-//                        when (key) {
-//                            Preferences.Key.MAIN_THEME,
-//                            Preferences.Key.NAVIGATION_BAR_POSITION,
-//                            Preferences.Key.NAVIGATION_BAR_TYPE,
-//                            Preferences.Key.MINI_PLAYER_TYPE -> {
-//                                this@MainActivity.recreate()
-//                                println("MainActivity.recreate()")
-//                            }
-//
-//                            Preferences.Key.COLOR_PALETTE,
-//                            Preferences.Key.THEME_MODE,
-//                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_0,
-//                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_1,
-//                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_2,
-//                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_3,
-//                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_4,
-//                            Preferences.Key.CUSTOM_LIGHT_TEXT,
-//                            Preferences.Key.CUSTOM_LIGHT_TEXT_SECONDARY,
-//                            Preferences.Key.CUSTOM_LIGHT_TEXT_DISABLED,
-//                            Preferences.Key.CUSTOM_LIGHT_PLAY_BUTTON,
-//                            Preferences.Key.CUSTOM_LIGHT_ACCENT,
-//                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_0,
-//                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_1,
-//                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_2,
-//                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_3,
-//                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_4,
-//                            Preferences.Key.CUSTOM_DARK_TEXT,
-//                            Preferences.Key.CUSTOM_DARK_TEXT_SECONDARY,
-//                            Preferences.Key.CUSTOM_DARK_TEXT_DISABLED,
-//                            Preferences.Key.CUSTOM_DARK_PLAY_BUTTON,
-//                            Preferences.Key.CUSTOM_DARK_ACCENT -> {
-//                                val colorPaletteName = sharedPreferences.getEnum( Preferences.Key.COLOR_PALETTE, Preferences.COLOR_PALETTE.defaultValue )
-//                                val colorPaletteMode = sharedPreferences.getEnum( Preferences.Key.THEME_MODE, Preferences.THEME_MODE.defaultValue )
-//
-//                                var colorPalette = colorPaletteOf(
-//                                    colorPaletteName,
-//                                    colorPaletteMode,
-//                                    !lightTheme
-//                                )
-//
-//                                if (colorPaletteName == ColorPaletteName.Dynamic) {
-//                                    val artworkUri =
-//                                        (player.currentMediaItem?.mediaMetadata?.artworkUri.thumbnail(1200)
-//                                            ?: "").toString()
-//                                    artworkUri.let {
-//                                        if (it.isNotEmpty())
-//                                            setDynamicPalette(it)
-//                                        else {
-//
-//                                            setSystemBarAppearance(colorPalette.isDark)
-//                                            appearance = appearance.copy(
-//                                                colorPalette = if (!isPicthBlack) colorPalette else colorPalette.copy(
-//                                                    background0 = Color.Black,
-//                                                    background1 = Color.Black,
-//                                                    background2 = Color.Black,
-//                                                    background3 = Color.Black,
-//                                                    background4 = Color.Black,
-//                                                    // text = Color.White
-//                                                ),
-//                                                typography = appearance.typography.copy(
-//                                                    colorPalette.text
-//                                                ),
-//                                            )
-//                                        }
-//
-//                                    }
-//
-//                                } else {
-//
-//                                    if (colorPaletteName == ColorPaletteName.MaterialYou) {
-//                                        colorPalette = dynamicColorPaletteOf(
-//                                            Color(monet.getAccentColor(this@MainActivity)),
-//                                            !lightTheme
-//                                        )
-//                                    }
-//
-//                                    if (colorPaletteName == ColorPaletteName.Customized) {
-//                                        colorPalette = customColorPalette(
-//                                            colorPalette,
-//                                            this@MainActivity,
-//                                            isSystemInDarkTheme
-//                                        )
-//                                    }
-//                                    if (colorPaletteName == ColorPaletteName.CustomColor) {
-//                                        colorPalette = dynamicColorPaletteOf(
-//                                            customColor,
-//                                            !lightTheme
-//                                        )
-//                                    }
-//
-//                                    setSystemBarAppearance(colorPalette.isDark)
-//
-//                                    appearance = appearance.copy(
-//                                        colorPalette = if (!isPicthBlack) colorPalette else colorPalette.copy(
-//                                            background0 = Color.Black,
-//                                            background1 = Color.Black,
-//                                            background2 = Color.Black,
-//                                            background3 = Color.Black,
-//                                            background4 = Color.Black,
-//                                            text = Color.White
-//                                        ),
-//                                        typography = appearance.typography.copy(if (!isPicthBlack) colorPalette.text else Color.White),
-//                                    )
-//                                }
-//                            }
-//
-//                            Preferences.Key.THUMBNAIL_BORDER_RADIUS -> {
-//                                val thumbnailRoundness =
-//                                    sharedPreferences.getEnum(key, ThumbnailRoundness.Heavy)
-//
-//                                appearance = appearance.copy(
-//                                    thumbnailShape = thumbnailRoundness.shape
-//                                )
-//                            }
-//
-//                            Preferences.Key.USE_SYSTEM_FONT,
-//                            Preferences.Key.APPLY_FONT_PADDING,
-//                            Preferences.Key.FONT -> {
-//                                val useSystemFont = sharedPreferences.getBoolean( Preferences.Key.USE_SYSTEM_FONT, Preferences.USE_SYSTEM_FONT.defaultValue )
-//                                val applyFontPadding = sharedPreferences.getBoolean( Preferences.Key.APPLY_FONT_PADDING, Preferences.APPLY_FONT_PADDING.defaultValue )
-//                                val fontType = sharedPreferences.getEnum( Preferences.Key.FONT, Preferences.FONT.defaultValue )
-//
-//                                appearance = appearance.copy(
-//                                    typography = typographyOf(
-//                                        appearance.colorPalette.text,
-//                                        useSystemFont,
-//                                        applyFontPadding,
-//                                        fontType
-//                                    ),
-//                                )
-//                            }
-//                        }
+                val listener = Preferences.Listener { _, key ->
+                    withContext( Dispatchers.Main ) {
+                        when (key) {
+                            Preferences.Key.MAIN_THEME,
+                            Preferences.Key.NAVIGATION_BAR_POSITION,
+                            Preferences.Key.NAVIGATION_BAR_TYPE,
+                            Preferences.Key.MINI_PLAYER_TYPE -> this@MainActivity.recreate()
+
+                            Preferences.Key.COLOR_PALETTE,
+                            Preferences.Key.THEME_MODE,
+                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_0,
+                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_1,
+                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_2,
+                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_3,
+                            Preferences.Key.CUSTOM_LIGHT_THEME_BACKGROUND_4,
+                            Preferences.Key.CUSTOM_LIGHT_TEXT,
+                            Preferences.Key.CUSTOM_LIGHT_TEXT_SECONDARY,
+                            Preferences.Key.CUSTOM_LIGHT_TEXT_DISABLED,
+                            Preferences.Key.CUSTOM_LIGHT_PLAY_BUTTON,
+                            Preferences.Key.CUSTOM_LIGHT_ACCENT,
+                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_0,
+                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_1,
+                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_2,
+                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_3,
+                            Preferences.Key.CUSTOM_DARK_THEME_BACKGROUND_4,
+                            Preferences.Key.CUSTOM_DARK_TEXT,
+                            Preferences.Key.CUSTOM_DARK_TEXT_SECONDARY,
+                            Preferences.Key.CUSTOM_DARK_TEXT_DISABLED,
+                            Preferences.Key.CUSTOM_DARK_PLAY_BUTTON,
+                            Preferences.Key.CUSTOM_DARK_ACCENT -> {
+                                val colorPaletteName = Preferences.COLOR_PALETTE.value
+                                val colorPaletteMode = Preferences.THEME_MODE.value
+
+                                var colorPalette = colorPaletteOf(
+                                    colorPaletteName,
+                                    colorPaletteMode,
+                                    !lightTheme
+                                )
+
+                                if (colorPaletteName == ColorPaletteName.Dynamic) {
+                                    val artworkUri = player.currentMediaItem?.mediaMetadata?.artworkUri?.thumbnail(1200)?.toString().orEmpty()
+                                    artworkUri.let {
+                                        if (it.isNotEmpty())
+                                            setDynamicPalette(it)
+                                        else {
+
+                                            setSystemBarAppearance(colorPalette.isDark)
+                                            appearance = appearance.copy(
+                                                colorPalette = if (!isPicthBlack) colorPalette else colorPalette.copy(
+                                                    background0 = Color.Black,
+                                                    background1 = Color.Black,
+                                                    background2 = Color.Black,
+                                                    background3 = Color.Black,
+                                                    background4 = Color.Black,
+                                                    // text = Color.White
+                                                ),
+                                                typography = appearance.typography.copy(
+                                                    colorPalette.text
+                                                ),
+                                            )
+                                        }
+
+                                    }
+
+                                } else {
+
+                                    if (colorPaletteName == ColorPaletteName.MaterialYou) {
+                                        colorPalette = dynamicColorPaletteOf(
+                                            Color(monet.getAccentColor(this@MainActivity)),
+                                            !lightTheme
+                                        )
+                                    }
+
+                                    if (colorPaletteName == ColorPaletteName.Customized) {
+                                        colorPalette = customColorPalette(
+                                            colorPalette,
+                                            this@MainActivity,
+                                            isSystemInDarkTheme
+                                        )
+                                    }
+                                    if (colorPaletteName == ColorPaletteName.CustomColor) {
+                                        colorPalette = dynamicColorPaletteOf(
+                                            customColor,
+                                            !lightTheme
+                                        )
+                                    }
+
+                                    setSystemBarAppearance(colorPalette.isDark)
+
+                                    appearance = appearance.copy(
+                                        colorPalette = if (!isPicthBlack) colorPalette else colorPalette.copy(
+                                            background0 = Color.Black,
+                                            background1 = Color.Black,
+                                            background2 = Color.Black,
+                                            background3 = Color.Black,
+                                            background4 = Color.Black,
+                                            text = Color.White
+                                        ),
+                                        typography = appearance.typography.copy(if (!isPicthBlack) colorPalette.text else Color.White),
+                                    )
+                                }
+                            }
+
+                            Preferences.Key.THUMBNAIL_BORDER_RADIUS -> {
+                                appearance = appearance.copy(
+                                    thumbnailShape = Preferences.THUMBNAIL_BORDER_RADIUS.value.shape
+                                )
+                            }
+
+                            Preferences.Key.USE_SYSTEM_FONT,
+                            Preferences.Key.APPLY_FONT_PADDING,
+                            Preferences.Key.FONT -> {
+                                val useSystemFont = Preferences.USE_SYSTEM_FONT.value
+                                val applyFontPadding = Preferences.APPLY_FONT_PADDING.value
+                                val fontType = Preferences.FONT.value
+
+                                appearance = appearance.copy(
+                                    typography = typographyOf(
+                                        appearance.colorPalette.text,
+                                        useSystemFont,
+                                        applyFontPadding,
+                                        fontType
+                                    ),
+                                )
+                            }
+                        }
+
                     }
+                }
 
-                with(preferences) {
-                    registerOnSharedPreferenceChangeListener(listener)
+                val colorPaletteName = Preferences.COLOR_PALETTE.value
+                if (colorPaletteName == ColorPaletteName.Dynamic) {
+                    setDynamicPalette(
+                        (player.currentMediaItem?.mediaMetadata?.artworkUri.thumbnail(1200)
+                            ?: "").toString()
+                    )
+                }
 
-                    val colorPaletteName = Preferences.COLOR_PALETTE.value
-                    if (colorPaletteName == ColorPaletteName.Dynamic) {
-                        setDynamicPalette(
-                            (player.currentMediaItem?.mediaMetadata?.artworkUri.thumbnail(1200)
-                                ?: "").toString()
-                        )
-                    }
-
-                    onDispose {
-                        unregisterOnSharedPreferenceChangeListener(listener)
+                coroutineScope.launch {
+                    Preferences.addListener( listener )
+                }
+                onDispose {
+                    coroutineScope.launch {
+                        Preferences.removeListener( listener )
                     }
                 }
             }

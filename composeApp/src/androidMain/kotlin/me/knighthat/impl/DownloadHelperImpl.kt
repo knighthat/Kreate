@@ -17,6 +17,7 @@ import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.DownloadHelper
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
+import app.kreate.util.thumbnail
 import co.touchlab.kermit.Logger
 import coil3.request.allowHardware
 import coil3.request.bitmapConfig
@@ -29,7 +30,6 @@ import it.fast4x.rimusic.utils.download
 import it.fast4x.rimusic.utils.downloadSyncedLyrics
 import it.fast4x.rimusic.utils.isNetworkConnected
 import it.fast4x.rimusic.utils.removeDownload
-import it.fast4x.rimusic.utils.thumbnail
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope

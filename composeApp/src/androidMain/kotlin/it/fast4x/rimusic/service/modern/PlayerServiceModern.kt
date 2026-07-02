@@ -10,7 +10,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.media.AudioDeviceCallback
@@ -48,7 +47,10 @@ import app.kreate.android.utils.isLocalFile
 import app.kreate.android.widget.Widget
 import app.kreate.database.models.Event
 import app.kreate.di.CacheType
+import app.kreate.di.InternalPrefKey
+import app.kreate.di.Storage
 import app.kreate.preferences.Preferences
+import app.kreate.preferences.QUEUE_LOOP_TYPE
 import co.touchlab.kermit.Logger
 import com.google.common.util.concurrent.MoreExecutors
 import io.ktor.client.HttpClient
@@ -68,7 +70,6 @@ import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isAtLeastAndroid7
 import it.fast4x.rimusic.utils.playNext
 import it.fast4x.rimusic.utils.playPrevious
-import it.fast4x.rimusic.utils.preferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -108,7 +109,7 @@ val MediaItem.isLocal get() = localConfiguration?.uri?.isLocalFile() ?: false
 class PlayerServiceModern:
     MediaLibraryService(),
     PlaybackStatsListener.Callback,
-    SharedPreferences.OnSharedPreferenceChangeListener,
+    Preferences.Listener,
     Player.Listener,
     KoinComponent
 {
@@ -220,12 +221,12 @@ class PlayerServiceModern:
             logger.e( it ) { "Failed init bitmap provider" }
         }
 
-        val preferences = preferences
-
         PlaybackStatsListener(false, this@PlayerServiceModern)
             .also( player::addAnalyticsListener )
 
-        preferences.registerOnSharedPreferenceChangeListener(this)
+        coroutineScope.launch {
+            Preferences.addListener( this@PlayerServiceModern )
+        }
 
         // Build the media library session
         mediaSession =
@@ -440,27 +441,27 @@ class PlayerServiceModern:
 
             coroutineScope.cancel()
 
-            runBlocking { discord.logout() }
+            runBlocking {
+                discord.logout()
 
-            preferences.unregisterOnSharedPreferenceChangeListener(this)
+                Preferences.removeListener( this@PlayerServiceModern )
+            }
         }.onFailure {
             logger.e( it ) { "onDestroy failed!" }
         }
         super.onDestroy()
     }
 
+    override suspend fun onChange( storage: Storage, key: InternalPrefKey<*> ) = withContext( Dispatchers.Main ) {
+        when (key) {
+            Preferences.Key.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE -> maybeResumePlaybackWhenDeviceConnected()
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
-//        when (key) {
-//
-//            Preferences.Key.RESUME_PLAYBACK_WHEN_CONNECT_TO_AUDIO_DEVICE -> maybeResumePlaybackWhenDeviceConnected()
-//
-//            Preferences.Key.AUDIO_SKIP_SILENCE ->
-//                player.skipSilenceEnabled = sharedPreferences.getBoolean( key, app.kreate.preferences.Preferences.AUDIO_SKIP_SILENCE.defaultValue )
-//
-//            Preferences.Key.QUEUE_LOOP_TYPE ->
-//                player.repeatMode = sharedPreferences.getEnum( key, app.kreate.preferences.Preferences.QUEUE_LOOP_TYPE.defaultValue ).type
-//        }
+            Preferences.Key.AUDIO_SKIP_SILENCE ->
+                player.skipSilenceEnabled = Preferences.AUDIO_SKIP_SILENCE.value
+
+            Preferences.Key.QUEUE_LOOP_TYPE ->
+                player.repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
+        }
     }
 
     private var audioManager: AudioManager? = null

@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.text.format.DateUtils
@@ -256,9 +255,6 @@ fun String?.thumbnail(size: Int): String? {
 }
 fun String?.thumbnail(): String? {
     return this
-}
-fun Uri?.thumbnail(size: Int): Uri? {
-    return toString().thumbnail(size)?.toUri()
 }
 
 @JvmName("ResultInnertubeItemsPageCompleted")

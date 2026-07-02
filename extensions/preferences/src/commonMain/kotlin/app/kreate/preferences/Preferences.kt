@@ -23,6 +23,9 @@ import app.kreate.di.InternalPrefKey
 import app.kreate.di.InternalPreferences
 import app.kreate.di.PrefType
 import app.kreate.di.Storage
+import app.kreate.util.priomap.Priority
+import app.kreate.util.priomap.PriorityKey
+import app.kreate.util.priomap.createPrioritySortedMap
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import it.fast4x.rimusic.enums.AlbumSwipeAction
@@ -84,18 +87,23 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.io.IOException
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.component.inject
 import java.net.Proxy
+import kotlin.concurrent.atomics.AtomicLong
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.enums.EnumEntries
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import androidx.datastore.preferences.core.Preferences.Key as DatastoreKey
 
 
-@OptIn(ExperimentalForInheritanceCoroutinesApi::class)
+@OptIn(ExperimentalForInheritanceCoroutinesApi::class, ExperimentalAtomicApi::class)
 sealed class Preferences<K, V>(
     private val storage: PrefHelper,
     protected val key: DatastoreKey<K>,
@@ -106,6 +114,11 @@ sealed class Preferences<K, V>(
 
         internal val preferences = PrefHelper(get(PrefType.DEFAULT))
         internal val credentials = PrefHelper(get(PrefType.CREDENTIALS))
+        //<editor-fold desc="Priority-sorted map">
+        internal val listeners = createPrioritySortedMap<Listener>()
+        internal val sequenceCounter = AtomicLong(0)
+        internal val mutex = Mutex()
+        //</editor-fold>
 
         //<editor-fold desc="Item size">
         val HOME_ARTIST_ITEM_SIZE by lazy {
@@ -1041,6 +1054,42 @@ sealed class Preferences<K, V>(
         val AUDIO_FADE_DURATION by lazy {
             DurationPref(preferences, Key.AUDIO_FADE_DURATION, Duration.ZERO, LongRange(0, 5000))
         }
+
+        /**
+         * Inserts a value into the map tied to a specific priority in a thread-safe manner.
+         *
+         * This function secures a mutual exclusion lock before mutating the collection, ensuring
+         * that concurrent calls from multiple coroutines or background threads do not cause race
+         * conditions or structural corruption.
+         *
+         * **Order Preservation:** The item is guaranteed to be appended as the last element of its matching [Priority] group.
+         * **Concurrency:** Safe to call while other threads or coroutines are actively reading or writing.
+         *
+         * @param listener The actual data payload to store.
+         * @param priority The importance level determining which section the value belongs to.
+         */
+        suspend fun addListener( listener: Listener, priority: Priority = Priority.NORMAL ) =
+            mutex.withLock {
+                val sequence = sequenceCounter.incrementAndFetch()
+                val key = PriorityKey(priority, sequence)
+                listeners[key] = listener
+            }
+
+        /**
+         * Removes first entry from the map that match the specified value in a thread-safe manner.
+         *
+         * This function secures a mutual exclusion lock before mutating the collection.
+         * It performs a linear scan over the entry set to find and purge matching values.
+         *
+         * **Concurrency:** Safe to call while other threads or coroutines are actively reading or writing.
+         *
+         * @param listener The value payload to search for and delete.
+         */
+        suspend fun removeListener( listener: Listener ) =
+            mutex.withLock {
+                // Apply reverse lookup to get the key (if exists) and delete entry from the map
+                listeners.entries.firstOrNull { it.value == listener }?.key?.also( listeners::remove )
+            }
     }
 
     private val _internalState: StateFlow<V> = storage.state( key, defaultValue, ::deserialize )
@@ -1184,6 +1233,8 @@ sealed class Preferences<K, V>(
         suspend fun <T> write( key: InternalPrefKey<T>, value: T ): Boolean =
             try {
                 storage.edit { it[key] = value }
+                // Trigger event to all listeners
+                listeners.values.forEach { it.onChange(storage, key) }
 
                 true
             } catch( err: IOException ) {
@@ -1207,6 +1258,11 @@ sealed class Preferences<K, V>(
                     started = SharingStarted.WhileSubscribed(5_000),
                     initialValue = default
                 )
+    }
+
+    fun interface Listener {
+
+        suspend fun onChange( storage: Storage, key: InternalPrefKey<*> )
     }
 
     object Key {
