@@ -8,7 +8,6 @@ import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.MenuState
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
-import me.knighthat.utils.Toaster
 
 @SuppressLint("ComposableNaming")
 @Composable
@@ -45,26 +44,6 @@ fun Enqueue(
     override fun onShortClick() {
         onClick()
         menuState.hide()
-    }
-}
-
-@SuppressLint("ComposableNaming")
-@Composable
-fun Synchronize(
-    onClick: () -> Unit
-): MenuIcon = object: MenuIcon, Descriptive {
-
-    val menuState: MenuState = LocalMenuState.current
-    override val iconId: Int = R.drawable.sync
-    override val messageId: Int = R.string.sync
-    override val menuIconTitle: String
-        @Composable
-        get() = stringResource( messageId )
-
-    override fun onShortClick() {
-        onClick()
-        menuState.hide()
-        Toaster.done()
     }
 }
 

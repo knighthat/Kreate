@@ -910,14 +910,8 @@ sealed class Preferences<K, V>(
         val KEEP_SCREEN_ON by lazy {
             BooleanPref(preferences, Key.KEEP_SCREEN_ON, false)
         }
-        val AUTO_SYNC by lazy {
-            BooleanPref(preferences, Key.AUTO_SYNC, false)
-        }
         val PAUSE_SEARCH_HISTORY by lazy {
             BooleanPref(preferences, Key.PAUSE_SEARCH_HISTORY, false)
-        }
-        val IS_DATA_KEY_LOADED by lazy {
-            BooleanPref(preferences, Key.IS_DATA_KEY_LOADED, false)
         }
         val LOCAL_PLAYLIST_SMART_RECOMMENDATION by lazy {
             BooleanPref(preferences, Key.LOCAL_PLAYLIST_SMART_RECOMMENDATION, false)
@@ -1559,9 +1553,7 @@ sealed class Preferences<K, V>(
         val AUTO_DOWNLOAD_ON_LIKE = booleanPreferencesKey("auto_download_on_like")
         val AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED = booleanPreferencesKey("auto_download_on_album_bookmarked")
         val KEEP_SCREEN_ON = booleanPreferencesKey("keep_screen_on")
-        val AUTO_SYNC = booleanPreferencesKey("auto_sync")
         val PAUSE_SEARCH_HISTORY = booleanPreferencesKey("pause_search_history")
-        val IS_DATA_KEY_LOADED = booleanPreferencesKey("is_data_key_loaded")
         val LOCAL_PLAYLIST_SMART_RECOMMENDATION = booleanPreferencesKey("local_playlist_smart_recommendation")
         val IS_CONNECTION_METERED = booleanPreferencesKey("is_connection_metered")
         val SINGLE_BACK_FROM_SEARCH = booleanPreferencesKey("single_back_from_search")

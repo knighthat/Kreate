@@ -103,7 +103,6 @@ import it.fast4x.rimusic.ui.components.themed.ListenOnYouTube
 import it.fast4x.rimusic.ui.components.themed.PlayNext
 import it.fast4x.rimusic.ui.components.themed.PlaylistsMenu
 import it.fast4x.rimusic.ui.components.themed.ResetThumbnail
-import it.fast4x.rimusic.ui.components.themed.Synchronize
 import it.fast4x.rimusic.ui.components.themed.ThumbnailPicker
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
@@ -267,10 +266,6 @@ fun LocalPlaylistSongs(
         }
     )
 
-    // TODO: Rework
-    fun sync() {
-    }
-    val syncComponent = Synchronize { sync() }
     val listenOnYT = ListenOnYouTube {
         val browseId = playlist?.browseId?.removePrefix( "VL" )
 
@@ -347,8 +342,6 @@ fun LocalPlaylistSongs(
             thumbnailUrl.value = presentThumbnailUrl
         }
     }
-
-    val autosync by Preferences.AUTO_SYNC.collectAsStateWithLifecycle()
 
     val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
 
@@ -534,7 +527,6 @@ fun LocalPlaylistSongs(
                         this.add( addToFavorite )
                         this.add( addToPlaylist )
                         if( !playlist?.browseId.isNullOrBlank() ) {
-                            this.add( syncComponent )
                             this.add( listenOnYT )
                         }
                         this.add( renameDialog )
@@ -546,10 +538,6 @@ fun LocalPlaylistSongs(
                         this.add( resetCache )
                     }
                 )
-
-                if ( autosync && playlist?.browseId.isNullOrBlank() ) {
-                    sync()
-                }
 
                 Spacer(modifier = Modifier.height(10.dp))
 

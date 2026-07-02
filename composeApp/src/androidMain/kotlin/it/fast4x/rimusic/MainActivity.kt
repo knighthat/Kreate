@@ -284,9 +284,6 @@ MainActivity :
         ExperimentalMaterial3Api::class
     )
     fun startApp() {
-        // Used in QuickPics for load data from remote instead of last saved in SharedPreferences
-        Preferences.IS_DATA_KEY_LOADED.update( false )
-
         if ( !Preferences.CLOSE_APP_ON_BACK.value )
             if (Build.VERSION.SDK_INT >= 33) {
                 onBackInvokedDispatcher.registerOnBackInvokedCallback(

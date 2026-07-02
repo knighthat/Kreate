@@ -25,8 +25,5 @@ fun ytAccountName() = Preferences.YOUTUBE_ACCOUNT_NAME.value
 fun ytAccountThumbnail() = Preferences.YOUTUBE_ACCOUNT_AVATAR.value
 fun isVideoEnabled() = Preferences.PLAYER_ACTION_TOGGLE_VIDEO.value
 
-fun isConnectionMeteredEnabled() = Preferences.IS_CONNECTION_METERED.value
-fun isAutoSyncEnabled() = Preferences.AUTO_SYNC.value
-fun isHandleAudioFocusEnabled() = Preferences.AUDIO_SMART_PAUSE_DURING_CALLS.value
 fun isBassBoostEnabled() = Preferences.AUDIO_BASS_BOOSTED.value
 fun isDebugModeEnabled() = Preferences.RUNTIME_LOG.value

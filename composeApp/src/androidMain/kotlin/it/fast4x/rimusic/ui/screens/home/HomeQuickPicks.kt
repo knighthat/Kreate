@@ -246,9 +246,6 @@ fun HomeQuickPicks(
 
         }.onFailure {
             Logger.e( tag = "HomeQuickPicks" ) { "loadData failed!" }
-            Preferences.IS_DATA_KEY_LOADED.update( false )
-        }.onSuccess {
-            Preferences.IS_DATA_KEY_LOADED.update( true )
         }
     }
 
@@ -260,7 +257,6 @@ fun HomeQuickPicks(
 
     fun refresh() {
         if (refreshing) return
-        Preferences.IS_DATA_KEY_LOADED.update( false )
         relatedPage = null
         trending = null
         refreshScope.launch(Dispatchers.IO) {
