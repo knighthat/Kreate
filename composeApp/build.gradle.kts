@@ -112,6 +112,7 @@ kotlin {
             implementation( projects.resources )
             implementation( projects.preferences )
             implementation( projects.widgets )
+            implementation( projects.database )
 
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)

@@ -34,6 +34,8 @@ include(":preferences")
 project(":preferences").projectDir = file("extensions/preferences")
 include(":widgets")
 project(":widgets").projectDir = file("extensions/widgets")
+include(":database")
+project(":database").projectDir = file("extensions/database")
 // Submodules
 include(":innertube")
 project(":innertube").projectDir = file("modules/innertube")
