@@ -80,7 +80,6 @@ kotlin {
             implementation(libs.nanojson)
             implementation(libs.androidx.webkit)
 
-            implementation( libs.androidx.glance.widgets )
             implementation( libs.androidx.constraintlayout )
 
             implementation( libs.androidx.appcompat )

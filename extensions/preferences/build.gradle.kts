@@ -50,8 +50,8 @@ kotlin {
             implementation( libs.compose.kmp.foundation )
             implementation( libs.compose.kmp.material3 )
             // Datastore
-            implementation( libs.datastore )
-            implementation( libs.datastore.preferences )
+            api( libs.datastore )
+            api( libs.datastore.preferences )
         }
         commonTest.dependencies {
             implementation( libs.kotlin.test )

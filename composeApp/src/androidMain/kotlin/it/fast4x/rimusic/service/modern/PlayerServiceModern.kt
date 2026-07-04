@@ -45,7 +45,6 @@ import app.kreate.android.service.player.WidgetListener
 import app.kreate.android.utils.centerCropBitmap
 import app.kreate.android.utils.centerCropToMatchScreenSize
 import app.kreate.android.utils.isLocalFile
-import app.kreate.android.widget.Widget
 import app.kreate.database.models.Event
 import app.kreate.di.CacheType
 import app.kreate.di.InternalPrefKey
@@ -95,8 +94,6 @@ import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.java.KoinJavaComponent.inject
-import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -159,7 +156,6 @@ class PlayerServiceModern:
         if( mediaItem != null ) {
             updateBitmap()
             updateDownloadedState()
-            updateWidgets()
 
             if( !isLoggedInToDiscord() )
                 return
@@ -310,10 +306,6 @@ class PlayerServiceModern:
             println("PlayerServiceModern onCreate currentSong $song")
             updateDownloadedState()
             println("PlayerServiceModern onCreate currentSongIsDownloaded ${currentSongStateDownload.value}")
-
-            withContext(Dispatchers.Main) {
-                updateWidgets()
-            }
         }
 
         maybeResumePlaybackWhenDeviceConnected()
@@ -545,36 +537,7 @@ class PlayerServiceModern:
             }
 
             load(newUriForLoad) {
-                updateWidgets()
                 updateWallpaper( it )
-            }
-        }
-    }
-
-    @MainThread
-    fun updateWidgets() {
-        val status = Triple(
-            player.mediaMetadata.title.toString(),
-            player.mediaMetadata.artist.toString(),
-            player.isPlaying
-        )
-
-        val actions = Triple(
-            if( status.third ) player::pause else player::play,
-            player::seekToPrevious,
-            player::seekToNext
-        )
-
-        CoroutineScope( Dispatchers.IO ).launch {
-            // Save bitmap to file
-            val file = File( cacheDir, "widget_thumbnail.png" )
-            FileOutputStream(file).use { outStream ->
-                bitmapProvider.bitmap.compress( Bitmap.CompressFormat.PNG, 50, outStream )
-            }
-
-            withContext( Dispatchers.Default ) {
-                Widget.Vertical.update( applicationContext, actions, status, file )
-                Widget.Horizontal.update( applicationContext, actions, status, file )
             }
         }
     }
