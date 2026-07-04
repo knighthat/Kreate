@@ -278,7 +278,7 @@ object AlbumItem: Visual(), MultiplatformItem {
                 if( !showYear || album.year == null ) return@rd
 
                 Year(
-                    year = album.year,
+                    year = album.year!!,
                     values = values,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth( .9f )
@@ -336,7 +336,7 @@ object AlbumItem: Visual(), MultiplatformItem {
                 if( !showYear || album.year == null ) return@rd
 
                 Year(
-                    year = album.year,
+                    year = album.year!!,
                     values = values,
                     textAlign = TextAlign.Start,
                     modifier = Modifier.fillMaxWidth()

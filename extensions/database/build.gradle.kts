@@ -14,7 +14,7 @@ kotlin {
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
     androidLibrary {
-        namespace = "app.kreate.widgets"
+        namespace = "app.kreate.database"
         compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
         androidResources.enable = true
@@ -36,10 +36,17 @@ kotlin {
     // See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
     sourceSets {
         commonMain.dependencies {
+            implementation( projects.resources )
+            implementation( projects.preferences )
+
             implementation( libs.kotlin.stdlib )
+            implementation( libs.koin.core )
+            implementation( libs.kermit )
             // Room
             implementation( libs.room.runtime )
             implementation( libs.sqlite.bundled )
+            // Compose
+            implementation( libs.compose.kmp.runtime )
         }
         commonTest.dependencies {
             implementation( libs.kotlin.test )

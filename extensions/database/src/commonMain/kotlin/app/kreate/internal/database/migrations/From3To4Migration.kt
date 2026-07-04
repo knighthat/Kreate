@@ -1,7 +1,8 @@
-package app.kreate.database.migration
+package app.kreate.internal.database.migrations
 
 import androidx.room.DeleteTable
 import androidx.room.migration.AutoMigrationSpec
 
+
 @DeleteTable.Entries(DeleteTable(tableName = "QueuedMediaItem"))
-class From3To4Migration : AutoMigrationSpec
+internal class From3To4Migration : AutoMigrationSpec

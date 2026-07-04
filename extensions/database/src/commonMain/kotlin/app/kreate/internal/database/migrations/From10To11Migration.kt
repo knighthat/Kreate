@@ -1,10 +1,11 @@
-package app.kreate.database.migration
+package app.kreate.internal.database.migrations
 
 import androidx.room.migration.Migration
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 
-class From10To11Migration : Migration(10, 11) {
+
+internal class From10To11Migration : Migration(10, 11) {
 
     override fun migrate(connection: SQLiteConnection) {
         connection.execSQL("""

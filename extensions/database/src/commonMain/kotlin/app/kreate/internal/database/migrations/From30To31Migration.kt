@@ -1,4 +1,4 @@
-package app.kreate.database.migration
+package app.kreate.internal.database.migrations
 
 import androidx.room.migration.Migration
 import androidx.room.util.foreignKeyCheck
@@ -17,7 +17,7 @@ import androidx.sqlite.execSQL
  * - QueuedMediaItem -> persistent_queue
  * - Song -> songs
  */
-class From30To31Migration : Migration(30, 31) {
+internal class From30To31Migration : Migration(30, 31) {
 
     override fun migrate(connection: SQLiteConnection) {
         connection.execSQL("DROP VIEW SortedSongPlaylistMap")

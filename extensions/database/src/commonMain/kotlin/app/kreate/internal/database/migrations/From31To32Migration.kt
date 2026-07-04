@@ -1,4 +1,4 @@
-package app.kreate.database.migration
+package app.kreate.internal.database.migrations
 
 import androidx.room.RenameColumn
 import androidx.room.migration.AutoMigrationSpec
@@ -73,4 +73,4 @@ import androidx.room.migration.AutoMigrationSpec
     RenameColumn("song_playlist_map", "playlistId", "playlist_id"),
     RenameColumn("song_playlist_map", "setVideoId", "set_video_id")
 )
-class From31To32Migration : AutoMigrationSpec
+internal class From31To32Migration : AutoMigrationSpec

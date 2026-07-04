@@ -1,10 +1,11 @@
-package app.kreate.database.migration
+package app.kreate.internal.database.migrations
 
 import androidx.room.migration.Migration
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 
-class From8To9Migration : Migration(8, 9) {
+
+internal class From8To9Migration : Migration(8, 9) {
 
     override fun migrate(connection: SQLiteConnection) {
         // 1. Migrate Albums

@@ -6,13 +6,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import app.kreate.util.cleanPrefix
 import app.kreate.util.toDuration
-import kotlinx.serialization.Serializable
-import org.jetbrains.annotations.Contract
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 
-@Serializable
 @Immutable
 @Entity(tableName = "songs")
 data class Song(
@@ -56,7 +53,6 @@ data class Song(
             }
         }
 
-    @Contract("->new")
     fun toggleLike(): Song = copy(
         likedAt = when (likedAt) {
             -1L -> null

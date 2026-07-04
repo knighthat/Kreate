@@ -1,4 +1,4 @@
-package app.kreate.database.migration
+package app.kreate.internal.database.migrations
 
 import androidx.room.migration.Migration
 import androidx.sqlite.SQLiteConnection
@@ -9,7 +9,7 @@ import androidx.sqlite.execSQL
  * This migration aims to remove `pinned:` and `monthly:`
  * prefixes from Playlists
  */
-class From29To30Migration : Migration(29, 30) {
+internal class From29To30Migration : Migration(29, 30) {
 
     override fun migrate( connection: SQLiteConnection ) {
         // Adding column `is_pinned` and set it to `true` if Playlist has prefix

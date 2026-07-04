@@ -373,7 +373,7 @@ fun StatisticsPage(
 
                                 if( !playlist.browseId.isNullOrBlank() ) {
                                     route = NavRoutes.YT_PLAYLIST
-                                    path = playlist.browseId
+                                    path = playlist.browseId!!
                                 } else {
                                     route = NavRoutes.localPlaylist
                                     path = playlist.id.toString()

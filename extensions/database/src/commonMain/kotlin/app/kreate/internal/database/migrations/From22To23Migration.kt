@@ -1,10 +1,11 @@
-package app.kreate.database.migration
+package app.kreate.internal.database.migrations
 
 import androidx.room.migration.Migration
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 
-class From22To23Migration : Migration(22, 23) {
+
+internal class From22To23Migration : Migration(22, 23) {
 
     override fun migrate(connection: SQLiteConnection) {
         connection.execSQL("CREATE TABLE IF NOT EXISTS Lyrics (`songId` TEXT NOT NULL, `fixed` TEXT, `synced` TEXT, PRIMARY KEY(`songId`), FOREIGN KEY(`songId`) REFERENCES `Song`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE)")

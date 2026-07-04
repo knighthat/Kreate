@@ -1,4 +1,4 @@
-package app.kreate.database.migration
+package app.kreate.internal.database.migrations
 
 import androidx.room.migration.Migration
 import androidx.sqlite.SQLiteConnection
@@ -8,7 +8,7 @@ import androidx.sqlite.execSQL
 /**
  * This migration aims to remove explicit prefix from Song's name.
  */
-class From28To29Migration : Migration(28, 29) {
+internal class From28To29Migration : Migration(28, 29) {
 
     override fun migrate( connection: SQLiteConnection ) {
         connection.execSQL( "ALTER TABLE Song ADD COLUMN is_explicit INTEGER NOT NULL DEFAULT 0;" )

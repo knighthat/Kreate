@@ -1,7 +1,8 @@
-package app.kreate.database.migration
+package app.kreate.internal.database.migrations
 
 import androidx.room.DeleteColumn
 import androidx.room.migration.AutoMigrationSpec
+
 
 @DeleteColumn.Entries(
     DeleteColumn("Artist", "shuffleVideoId"),
@@ -9,4 +10,4 @@ import androidx.room.migration.AutoMigrationSpec
     DeleteColumn("Artist", "radioVideoId"),
     DeleteColumn("Artist", "radioPlaylistId"),
 )
-class From20To21Migration : AutoMigrationSpec
+internal class From20To21Migration : AutoMigrationSpec

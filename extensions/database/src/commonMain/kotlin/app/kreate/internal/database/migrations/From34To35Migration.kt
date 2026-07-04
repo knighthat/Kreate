@@ -1,4 +1,4 @@
-package app.kreate.database.migration
+package app.kreate.internal.database.migrations
 
 import androidx.room.migration.Migration
 import androidx.sqlite.SQLiteConnection
@@ -10,12 +10,12 @@ import androidx.sqlite.execSQL
  * This process includes removing `id`, and `song` (which is blob
  * stores [androidx.media3.common.MediaItem] instance).
  *
- * Song is now `song_id` which is foreign key linked to [app.kreate.database.models.Song.id].
+ * Song is now `song_id` which is foreign key linked to [me.knighthat.database.models.Song.id].
  *
  * To simplify the process, old table is dropped and new table
  * gets created from scratch.
  */
-class From34To35Migration : Migration(34, 35) {
+internal class From34To35Migration : Migration(34, 35) {
 
     override fun migrate( connection: SQLiteConnection ) {
         connection.execSQL( "DROP TABLE persistent_queue" )

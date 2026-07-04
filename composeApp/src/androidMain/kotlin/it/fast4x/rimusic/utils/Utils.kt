@@ -177,7 +177,7 @@ val Song.asMediaItem: MediaItem
                 )
                 .setDurationMs( durationText.toDuration().inWholeMilliseconds )
                 .setMediaType( MediaMetadata.MEDIA_TYPE_MUSIC )
-                .setUserRating( ThumbRating(likedAt != null && likedAt > 0) )
+                .setUserRating( ThumbRating(likedAt != null && likedAt!! > 0) )
                 .setIsBrowsable( false )
                 .setIsPlayable( true )
                 .setExtras(
