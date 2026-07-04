@@ -91,6 +91,8 @@ import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.database.models.PersistentQueue
 import app.kreate.preferences.Preferences
 import app.kreate.util.thumbnail
+import app.kreate.widgets.WidgetBroadcastReceiver
+import app.kreate.widgets.state.WidgetColorState
 import co.touchlab.kermit.Logger
 import coil3.imageLoader
 import coil3.request.allowHardware
@@ -380,6 +382,18 @@ MainActivity :
                         thumbnailShape = thumbnailRoundness.shape
                     )
                 )
+            }
+
+            // Update widgets' color when appearance changes
+            LaunchedEffect( appearance ) {
+                val color = with( appearance.colorPalette ) {
+                    WidgetColorState(background0.value.toLong(), accent.value.toLong(), onAccent.value.toLong())
+                }
+
+                Intent(this@MainActivity, WidgetBroadcastReceiver::class.java)
+                    .setAction( WidgetBroadcastReceiver.ACTION_SYNC )
+                    .putExtra( WidgetBroadcastReceiver.EXTRA_COLOR_STATE, color.toBundle() )
+                    .also( ::sendBroadcast )
             }
 
             fun setDynamicPalette(url: String) {

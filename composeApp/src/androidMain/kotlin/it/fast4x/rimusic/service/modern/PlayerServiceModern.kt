@@ -41,6 +41,7 @@ import app.kreate.android.R
 import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.player.VolumeObserver
+import app.kreate.android.service.player.WidgetListener
 import app.kreate.android.utils.centerCropBitmap
 import app.kreate.android.utils.centerCropToMatchScreenSize
 import app.kreate.android.utils.isLocalFile
@@ -120,6 +121,7 @@ class PlayerServiceModern:
     private val logger = Logger.withTag( this::class.java.simpleName )
 
     private lateinit var listener: ExoPlayerListener
+    private val widgetListener = WidgetListener()
     private val coroutineScope = CoroutineScope(Dispatchers.IO) + Job()
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var mediaSession: MediaLibrarySession
@@ -254,6 +256,7 @@ class PlayerServiceModern:
 
         player.addListener( listener )
         player.addListener( this )
+        player.addListener( widgetListener )
         player.addAnalyticsListener(PlaybackStatsListener(false, this@PlayerServiceModern))
 
         mediaLibrarySessionCallback.apply {
@@ -418,6 +421,7 @@ class PlayerServiceModern:
             stopService(intent<PlayerServiceModern>())
 
             player.removeListener( listener )
+            player.removeListener( widgetListener )
             player.stop()
             player.release()
 

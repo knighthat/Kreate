@@ -5,6 +5,7 @@ package app.kreate.di
 import android.content.Context
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
+import androidx.media3.common.Player
 import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.ResolvingDataSource
@@ -154,7 +155,7 @@ val playerModule = module {
                 .setUsePlatformDiagnostics( false )
                 .build()
         )
-    }
+    } bind Player::class
 
     singleOf( ::VolumeObserver )
     singleOf( ::DownloadHelperImpl ) bind DownloadHelper::class

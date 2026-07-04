@@ -113,6 +113,7 @@ okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-
 okhttp3-dns-over-https = { group = "com.squareup.okhttp3", name = "okhttp-dnsoverhttps", version.ref = "okhttp3" }
 
 # Coil
+coil3 = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
 coil3-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil3" }
 coil3-network-ktor = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil3" }
 

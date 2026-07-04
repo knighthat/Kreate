@@ -9,6 +9,9 @@ plugins {
     // Compose
     alias( libs.plugins.jetbrains.compose )
     alias( libs.plugins.kotlin.compose )
+
+    // Other
+    alias( libs.plugins.kotlin.serialization )
 }
 
 kotlin {
@@ -39,12 +42,21 @@ kotlin {
     // See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
     sourceSets {
         commonMain.dependencies {
+            implementation( projects.resources )
+
             implementation( libs.kotlin.stdlib )
+            implementation( libs.kermit )
+            implementation( libs.kotlinx.serialization.json )
+            implementation( libs.kotlinx.coroutines )
+            implementation( libs.koin.core )
+            implementation( libs.coil3 )
         }
         commonTest.dependencies {
             implementation( libs.kotlin.test )
         }
         androidMain.dependencies {
+            implementation( libs.androidx.glance.widgets )
+            implementation( libs.media3.ktx )
         }
         getByName( "androidDeviceTest" ).dependencies {
             implementation( libs.androidx.junit )
