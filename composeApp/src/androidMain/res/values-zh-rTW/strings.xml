@@ -612,7 +612,7 @@
     <string name="cover_type_vinyl">Vinyl</string>
     <string name="cover_type_cd">CD</string>
     <string name="cover_type_cd_with_cover">CD with Cover</string>
-    <string name="wallpaper">Wallpaper</string>
+    <string name="wallpaper">壁紙</string>
     <string name="enable_wallpaper">開啟壁紙</string>
     <string name="set_cover_thumbnail_as_wallpaper">Set cover thumbnail as wallpaper</string>
     <string name="notification_type">通知類型</string>
@@ -648,13 +648,13 @@
     <string name="icereflection">Ice Reflection</string>
     <string name="blackcherrycosmos">Black Cherry Cosmos</string>
     <string name="gradienttype">Gradient Type</string>
-    <string name="random">Random</string>
+    <string name="random">隨機</string>
     <string name="colorpalette">Color Palette</string>
-    <string name="customcolor">Custom Color</string>
+    <string name="customcolor">自訂顏色</string>
     <string name="lyricsanimate">Animate Lyrics Size</string>
     <string name="yt_playlists">YT/YTM</string>
     <string name="lyricsSizeSecondary">Long Press to change the size</string>
-    <string name="home">Home</string>
+    <string name="home">首頁</string>
     <string name="appearancepresets">Appearance Presets</string>
     <string name="appearancepresetssecondary">Previews will be in low quality</string>
     <string name="yt_history">YTM History</string>
@@ -668,10 +668,10 @@
     <string name="match_song">Rematch this Song</string>
     <string name="match_song_grid">Rematch Song</string>
     <string name="swipe_Animation_No_Thumbnail">Swipe Animation</string>
-    <string name="online_songs">Online Songs</string>
+    <string name="online_songs">線上歌曲</string>
     <string name="explicit">Explicit</string>
     <string name="filter_by">Filter By</string>
-    <string name="syncing">Syncing...</string>
+    <string name="syncing">同步中…</string>
     <string name="autosync_channels">Auto Sync Subscribed Channels</string>
     <string name="autosync_albums">Auto Sync Saved Albums</string>
     <string name="ytm_library">YTM Library</string>
@@ -720,7 +720,7 @@
     <string name="title_export_settings">Export settings</string>
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
-    <string name="title_import_settings">Import settings</string>
+    <string name="title_import_settings">匯入設定</string>
     <string name="restore_settings_from_file">Restore your settings from file created by \"%s\"</string>
     <string name="relative_listening_time">Relative Listening Time</string>
     <string name="added_to_dislikes">Disliked %s</string>
