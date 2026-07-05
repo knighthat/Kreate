@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-abstract class AbstractEventTable: EventTable {
+internal abstract class AbstractEventTable: EventTable {
 
     override val tableName: String
         get() = "playback_history"

@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.take
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-abstract class AbstractSongTable: SongTable {
+internal abstract class AbstractSongTable: SongTable {
 
     override val tableName: String
         get() = "songs"

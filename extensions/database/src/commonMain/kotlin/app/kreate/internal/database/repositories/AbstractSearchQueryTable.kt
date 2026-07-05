@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-abstract class AbstractSearchQueryTable: SearchQueryTable {
+internal abstract class AbstractSearchQueryTable: SearchQueryTable {
 
     override val tableName: String
         get() = "search_history"

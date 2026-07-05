@@ -1,10 +1,23 @@
 package app.kreate.di
 
+import androidx.annotation.VisibleForTesting
 import androidx.room.RoomDatabase
-import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import androidx.sqlite.execSQL
-import app.kreate.database.AppDatabase
+import app.kreate.database.repositories.AlbumTable
+import app.kreate.database.repositories.ArtistTable
+import app.kreate.database.repositories.EventTable
+import app.kreate.database.repositories.FormatTable
+import app.kreate.database.repositories.LyricsTable
+import app.kreate.database.repositories.PlaylistTable
+import app.kreate.database.repositories.QueuedMediaItemTable
+import app.kreate.database.repositories.SearchQueryTable
+import app.kreate.database.repositories.SongAlbumMapTable
+import app.kreate.database.repositories.SongArtistMapTable
+import app.kreate.database.repositories.SongPlaylistMapTable
+import app.kreate.database.repositories.SongTable
+import app.kreate.internal.database.AbstractRoomDatabase
+import app.kreate.internal.database.callbacks.ClearGhostMaps
+import app.kreate.internal.database.callbacks.EnableFeatures
 import app.kreate.internal.database.migrations.From10To11Migration
 import app.kreate.internal.database.migrations.From14To15Migration
 import app.kreate.internal.database.migrations.From22To23Migration
@@ -19,97 +32,58 @@ import app.kreate.internal.database.migrations.From30To31Migration
 import app.kreate.internal.database.migrations.From34To35Migration
 import app.kreate.internal.database.migrations.From35To36Migration
 import app.kreate.internal.database.migrations.From8To9Migration
-import co.touchlab.kermit.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.koin.core.scope.Scope
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 
-expect fun getDatabaseBuilder( scope: Scope ): RoomDatabase.Builder<AppDatabase>
+expect val FILE_NAME: String
+
+internal expect fun Scope.getDatabaseBuilder(): RoomDatabase.Builder<AbstractRoomDatabase>
+
+@VisibleForTesting
+internal fun RoomDatabase.Builder<AbstractRoomDatabase>.loadConfig(): RoomDatabase.Builder<AbstractRoomDatabase> =
+    this.setDriver( BundledSQLiteDriver() )
+        .setQueryCoroutineContext( Dispatchers.IO )
+        .addMigrations(
+            From8To9Migration(),
+            From10To11Migration(),
+            From14To15Migration(),
+            From22To23Migration(),
+            From23To24Migration(),
+            From24To25Migration(),
+            From25To26Migration(),
+            From26To27Migration(),
+            From27To28Migration(),
+            From28To29Migration(),
+            From29To30Migration(),
+            From30To31Migration(),
+            From34To35Migration(),
+            From35To36Migration()
+        )
 
 val databaseModule = module {
+    // RoomDatabase is the source of truth, so only one instance can be created at a time
     single {
-        getDatabaseBuilder( this@single )
-            .setDriver( BundledSQLiteDriver() )
-            .setQueryCoroutineContext( Dispatchers.IO )
-            .addCallback( DatabaseInitCallback() )
-            .addMigrations(
-                From8To9Migration(),
-                From10To11Migration(),
-                From14To15Migration(),
-                From22To23Migration(),
-                From23To24Migration(),
-                From24To25Migration(),
-                From25To26Migration(),
-                From26To27Migration(),
-                From27To28Migration(),
-                From28To29Migration(),
-                From29To30Migration(),
-                From30To31Migration(),
-                From34To35Migration(),
-                From35To36Migration()
-            )
+        getDatabaseBuilder()
+            .loadConfig()
+            .addCallback( ClearGhostMaps() )
+            .addCallback( EnableFeatures() )
             .build()
-    }
-}
+    } bind RoomDatabase::class
 
-private class DatabaseInitCallback : RoomDatabase.Callback() {
-
-    override fun onOpen( connection: SQLiteConnection ) {
-        super.onOpen( connection )
-
-        // Clear ghost maps on open
-        try {
-            connection.execSQL("""
-                DELETE FROM formats 
-                WHERE song_id NOT IN (SELECT id FROM songs);
-            """.trimIndent())
-                connection.execSQL("""
-                DELETE FROM lyrics 
-                WHERE song_id NOT IN (SELECT id FROM songs);
-            """.trimIndent())
-                connection.execSQL("""
-                DELETE FROM persistent_queue 
-                WHERE song_id NOT IN (SELECT id FROM songs);
-            """.trimIndent())
-                connection.execSQL("""
-                DELETE FROM playback_history 
-                WHERE song_id NOT IN (SELECT id FROM songs);
-            """.trimIndent())
-                connection.execSQL("""
-                DELETE FROM song_album_map 
-                WHERE song_id NOT IN (SELECT id FROM songs)
-                OR album_id NOT IN (SELECT id FROM albums);
-            """.trimIndent())
-                connection.execSQL("""
-                DELETE FROM song_artist_map 
-                WHERE song_id NOT IN (SELECT id FROM songs)
-                OR artist_id NOT IN (SELECT id FROM artists);
-            """.trimIndent())
-                connection.execSQL("""
-                DELETE FROM song_playlist_map 
-                WHERE song_id NOT IN (SELECT id FROM songs)
-                OR playlist_id NOT IN (SELECT id FROM playlists);
-            """.trimIndent())
-        } catch( err: Exception ) {
-            Logger.e( err, "DatabaseInitCallback" ) { "failed to clear ghost maps" }
-        }
-
-
-        // Enables foreign key constraint enforcement.
-        // Enforces @ForeignKey annotations, operations such as
-        // onUpdate and onDelete will be enacted with this enabled.
-        connection.execSQL( "PRAGMA foreign_keys = ON;" )
-        // WAL allows simultaneous reads and writes.
-        // It significantly boosts performance for concurrent database operations.
-        // SQLite driver is included with build so this feature is safe to use.
-        connection.execSQL( "PRAGMA journal_mode = WAL;" )
-        // NORMAL is much faster and completely safe when combined with WAL mode,
-        // as it still guarantees database integrity in the event of an application crash.
-        connection.execSQL( "PRAGMA synchronous = NORMAL;" )
-        // Sets a timeout (in milliseconds) for how long SQLite will wait for
-        // a locked table to clear before throwing a [SQLiteDatabaseLockedException].
-        connection.execSQL( "PRAGMA busy_timeout = 3000;" )
-    }
+    factory<AlbumTable> { get<AbstractRoomDatabase>().albumTable }
+    factory<ArtistTable> { get<AbstractRoomDatabase>().artistTable }
+    factory<EventTable> { get<AbstractRoomDatabase>().eventTable }
+    factory<FormatTable> { get<AbstractRoomDatabase>().formatTable }
+    factory<LyricsTable> { get<AbstractRoomDatabase>().lyricsTable }
+    factory<PlaylistTable> { get<AbstractRoomDatabase>().playlistTable }
+    factory<QueuedMediaItemTable> { get<AbstractRoomDatabase>().queueTable }
+    factory<SearchQueryTable> { get<AbstractRoomDatabase>().searchQueryTable }
+    factory<SongAlbumMapTable> { get<AbstractRoomDatabase>().songAlbumMapTable }
+    factory<SongArtistMapTable> { get<AbstractRoomDatabase>().songArtistMapTable }
+    factory<SongPlaylistMapTable> { get<AbstractRoomDatabase>().songPlaylistMapTable }
+    factory<SongTable> { get<AbstractRoomDatabase>().songTable }
 }

@@ -8,7 +8,7 @@ import app.kreate.database.repositories.QueuedMediaItemTable
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-abstract class AbstractQueuedMediaItemTable: QueuedMediaItemTable {
+internal abstract class AbstractQueuedMediaItemTable: QueuedMediaItemTable {
 
     override val tableName: String
         get() = "persistent_queue"

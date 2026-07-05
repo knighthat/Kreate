@@ -1,9 +1,8 @@
-package app.kreate.database
+package app.kreate.internal.database
 
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Event
@@ -38,6 +37,8 @@ import app.kreate.internal.database.repositories.AbstractSongTable
 
 
 @Database(
+    version = 36,
+    exportSchema = true,
     entities = [
         Song::class,
         SongPlaylistMap::class,
@@ -52,8 +53,6 @@ import app.kreate.internal.database.repositories.AbstractSongTable
         Event::class,
         Lyrics::class,
     ],
-    version = 36,
-    exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
@@ -78,14 +77,7 @@ import app.kreate.internal.database.repositories.AbstractSongTable
         AutoMigration(from = 33, to = 34),       // Adding `onUpdate = ForeignKey.CASCADE` to several tables
     ],
 )
-@TypeConverters(Converters::class)
-abstract class AppDatabase : RoomDatabase() {
-
-    companion object {
-
-        // TODO: Implement profile-specific file name
-        const val FILENAME = "data.db"
-    }
+internal abstract class AbstractRoomDatabase : RoomDatabase() {
 
     abstract val albumTable: AbstractAlbumTable
     abstract val artistTable: AbstractArtistTable

@@ -1,10 +1,15 @@
 package app.kreate.di
 
+import androidx.room.Room
 import androidx.room.RoomDatabase
-import app.kreate.database.AppDatabase
+import app.kreate.internal.database.AbstractRoomDatabase
+import app.kreate.util.getConfigDir
 import org.koin.core.scope.Scope
 
 
-actual fun getDatabaseBuilder(scope: Scope): RoomDatabase.Builder<AppDatabase> {
-    TODO("Not yet implemented")
-}
+actual val FILE_NAME: String = "data.db"
+
+internal actual fun Scope.getDatabaseBuilder(): RoomDatabase.Builder<AbstractRoomDatabase> =
+    Room.databaseBuilder(
+        getConfigDir().resolve( FILE_NAME ).toFile().absolutePath
+    )

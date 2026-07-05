@@ -3,9 +3,9 @@ package it.fast4x.rimusic
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastZip
 import androidx.media3.common.MediaItem
+import androidx.room.RoomDatabase
 import androidx.room.Transaction
 import androidx.room.useWriterConnection
-import app.kreate.database.AppDatabase
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Playlist
@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.first
 import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.PropUtils
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.component.inject
 
 object Database : KoinComponent {
@@ -45,32 +46,18 @@ object Database : KoinComponent {
                 "data_$profile.db"
         }
 
-    private val _internal by inject<AppDatabase>()
-
-    val songTable: SongTable
-        get() = _internal.songTable
-    val albumTable: AlbumTable
-        get() = _internal.albumTable
-    val artistTable: ArtistTable
-        get() = _internal.artistTable
-    val eventTable: EventTable
-        get() = _internal.eventTable
-    val formatTable: FormatTable
-        get() = _internal.formatTable
-    val lyricsTable: LyricsTable
-        get() = _internal.lyricsTable
-    val playlistTable: PlaylistTable
-        get() = _internal.playlistTable
-    val queueTable: QueuedMediaItemTable
-        get() = _internal.queueTable
-    val searchTable: SearchQueryTable
-        get() = _internal.searchQueryTable
-    val songAlbumMapTable: SongAlbumMapTable
-        get() = _internal.songAlbumMapTable
-    val songArtistMapTable: SongArtistMapTable
-        get() = _internal.songArtistMapTable
-    val songPlaylistMapTable: SongPlaylistMapTable
-        get() = _internal.songPlaylistMapTable
+    val songTable: SongTable by inject()
+    val albumTable: AlbumTable by inject()
+    val artistTable: ArtistTable by inject()
+    val eventTable: EventTable by inject()
+    val formatTable: FormatTable by inject()
+    val lyricsTable: LyricsTable by inject()
+    val playlistTable: PlaylistTable by inject()
+    val queueTable: QueuedMediaItemTable by inject()
+    val searchTable: SearchQueryTable by inject()
+    val songAlbumMapTable: SongAlbumMapTable by inject()
+    val songArtistMapTable: SongArtistMapTable by inject()
+    val songPlaylistMapTable: SongPlaylistMapTable by inject()
 
     //**********************************************
 
@@ -286,7 +273,7 @@ object Database : KoinComponent {
      * @param block of statements to write to database
      */
     fun asyncTransaction( block: Database.() -> Unit ) =
-        _internal.transactionExecutor.execute {
+        get<RoomDatabase>().transactionExecutor.execute {
             this.block()
         }
 
@@ -308,11 +295,11 @@ object Database : KoinComponent {
      * @param block of statements to retrieve data from database
      */
     fun asyncQuery( block: Database.() -> Unit ) =
-        _internal.queryExecutor.execute {
+        get<RoomDatabase>().queryExecutor.execute {
             this.block()
         }
 
-    suspend fun checkpoint() = _internal.useWriterConnection { connection ->
+    suspend fun checkpoint() = get<RoomDatabase>().useWriterConnection { connection ->
         connection.usePrepared("PRAGMA wal_checkpoint(FULL)") { statement ->
             if (statement.step()) {
                 val isBusy = statement.getLong(0) // 0 if not busy, 1 if busy
@@ -326,5 +313,5 @@ object Database : KoinComponent {
         }
     }
 
-    fun close() = _internal.close()
+    fun close() = get<RoomDatabase>().close()
 }

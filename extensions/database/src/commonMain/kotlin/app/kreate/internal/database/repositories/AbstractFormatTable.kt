@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.map
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-abstract class AbstractFormatTable: FormatTable {
+internal abstract class AbstractFormatTable: FormatTable {
 
     override val tableName: String
         get() = "formats"
