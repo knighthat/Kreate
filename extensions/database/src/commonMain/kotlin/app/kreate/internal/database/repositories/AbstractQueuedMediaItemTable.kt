@@ -1,15 +1,14 @@
-package app.kreate.database
+package app.kreate.internal.database.repositories
 
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import app.kreate.database.ext.PersistentQueueItem
-import app.kreate.database.models.PersistentQueue
-import app.kreate.database.table.DatabaseTable
+import app.kreate.database.repositories.QueuedMediaItemTable
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface QueuedMediaItemTable: DatabaseTable<PersistentQueue> {
+abstract class AbstractQueuedMediaItemTable: QueuedMediaItemTable {
 
     override val tableName: String
         get() = "persistent_queue"
@@ -20,8 +19,8 @@ interface QueuedMediaItemTable: DatabaseTable<PersistentQueue> {
         JOIN songs ON song_id = id
         LIMIT :limit
     """)
-    fun blockingItems( limit: Int = Int.MAX_VALUE ): List<PersistentQueueItem>
+    abstract override fun blockingItems( limit: Int ): List<PersistentQueueItem>
 
     @Query("DELETE FROM persistent_queue")
-    fun deleteAll(): Int
+    abstract override fun deleteAll(): Int
 }

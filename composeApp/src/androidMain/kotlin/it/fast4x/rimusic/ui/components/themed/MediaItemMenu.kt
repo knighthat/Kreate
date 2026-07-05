@@ -69,6 +69,8 @@ import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
+import app.kreate.constant.PlaylistSortBy
+import app.kreate.constant.SortOrder
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
@@ -750,7 +752,7 @@ fun MediaItemMenu(
     ) { currentIsViewingPlaylists ->
         if (currentIsViewingPlaylists) {
             val playlistPreviews by remember {
-                Database.playlistTable.sortPreviewsByName()
+                Database.playlistTable.sortPreviews( PlaylistSortBy.TITLE, SortOrder.ASCENDING )
             }.collectAsState( emptyList(), Dispatchers.IO )
 
             val playlistIds by remember {
@@ -1592,7 +1594,7 @@ fun AddToPlaylistItemMenu(
         )
     }
     val playlistPreviews by remember {
-        Database.playlistTable.sortPreviewsByName()
+        Database.playlistTable.sortPreviews( PlaylistSortBy.TITLE, SortOrder.ASCENDING )
     }.collectAsState( emptyList(), Dispatchers.IO )
 
     val playlistIds by remember {
@@ -1810,7 +1812,7 @@ fun AddToPlaylistArtistSongsMenu(
         )
     }
     val playlistPreviews by remember {
-        Database.playlistTable.sortPreviewsByName()
+        Database.playlistTable.sortPreviews( PlaylistSortBy.TITLE, SortOrder.ASCENDING )
     }.collectAsState( emptyList(), Dispatchers.IO )
 
     val pinnedPlaylists = playlistPreviews.filter {

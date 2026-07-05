@@ -7,7 +7,6 @@ import androidx.room.TypeConverters
 object Converters {
 
     @TypeConverter
-    @JvmStatic
     fun toString(stringList: List<String>): String {
         return stringList.joinToString(separator = ",")
     }

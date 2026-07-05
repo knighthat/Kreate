@@ -29,6 +29,8 @@ import androidx.media3.session.SessionResult
 import app.kreate.android.R
 import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.constant.PlaylistSortBy
+import app.kreate.constant.SortOrder
 import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
@@ -279,7 +281,7 @@ class MediaLibrarySessionCallback(
                     val cachedSongCount = getCountCachedSongs().first()
                     val downloadedSongCount = getCountDownloadedSongs().first()
                     val onDeviceSongCount = database.songTable.allOnDevice().first().size
-                    val playlists = database.playlistTable.sortPreviewsBySongCount().first()
+                    val playlists = database.playlistTable.sortPreviews( PlaylistSortBy.SONG_COUNT, SortOrder.ASCENDING ).first()
                     listOf(
                         browsableMediaItem(
                             "${PlayerServiceModern.PLAYLIST}/${ID_FAVORITES}",

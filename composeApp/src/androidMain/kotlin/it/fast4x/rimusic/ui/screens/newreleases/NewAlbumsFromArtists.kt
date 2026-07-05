@@ -32,6 +32,8 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
+import app.kreate.constant.ArtistSortBy
+import app.kreate.constant.SortOrder
 import it.fast4x.compose.persist.persist
 import it.fast4x.compose.persist.persistList
 import it.fast4x.innertube.Innertube
@@ -85,7 +87,7 @@ fun NewAlbumsFromArtists(
         discoverPage?.getOrNull()?.let { page ->
             val artists by remember {
                 Database.artistTable
-                        .sortFollowingByName()
+                        .sortFollowing( ArtistSortBy.TITLE, SortOrder.ASCENDING )
                         .distinctUntilChanged()
             }.collectAsState( emptyList(), Dispatchers.IO )
 

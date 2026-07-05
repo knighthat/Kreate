@@ -1,4 +1,4 @@
-package app.kreate.database
+package app.kreate.internal.database.repositories
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -7,23 +7,20 @@ import app.kreate.constant.SongSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.Format
-import app.kreate.database.models.Song
-import app.kreate.database.table.DatabaseTable
+import app.kreate.database.repositories.FormatTable
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.toDuration
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface FormatTable: DatabaseTable<Format> {
+abstract class AbstractFormatTable: FormatTable {
 
     override val tableName: String
         get() = "formats"
 
-    /**
-     * @return formats & songs of this table
-     */
     @Query("""
         SELECT DISTINCT F.*, S.* 
         FROM formats F
@@ -32,14 +29,8 @@ interface FormatTable: DatabaseTable<Format> {
         ORDER BY S.ROWID 
         LIMIT :limit
     """)
-    fun allWithSongs(
-        limit: Int = Int.MAX_VALUE,
-        excludeHidden: Boolean = false
-    ): Flow<List<FormatWithSong>>
+    abstract override fun allWithSongs( limit: Int, excludeHidden: Boolean ): Flow<List<FormatWithSong>>
 
-    /**
-     * @return formats & songs of this table in randomized order
-     */
     @Query("""
         SELECT DISTINCT F.*, S.* 
         FROM formats F
@@ -48,31 +39,16 @@ interface FormatTable: DatabaseTable<Format> {
         ORDER BY RANDOM()
         LIMIT :limit
     """)
-    fun allWithSongsRandomized(
-        limit: Int = Int.MAX_VALUE,
-        excludeHidden: Boolean = false
-    ): Flow<List<FormatWithSong>>
+    abstract override fun allWithSongsRandomized( limit: Int, excludeHidden: Boolean ): Flow<List<FormatWithSong>>
 
-    /**
-     * [Format] with [Format.songId] inside [songIds] will be removed.
-     *
-     * @return number of rows affected by this operation
-     */
     @Query("DELETE FROM formats WHERE song_id IN (:songIds)")
-    fun deleteBySongId( songIds: List<String> ): Int
+    abstract override fun deleteBySongId( songIds: List<String> ): Int
 
-    fun deleteBySongId( vararg songIds: String ): Int = deleteBySongId( songIds.toList() )
+    override fun deleteBySongId( vararg songIds: String ): Int = deleteBySongId( songIds.toList() )
 
-    /**
-     * @param songId of song to look for
-     * @return [Format] that has [Format.songId] matches [songId]
-     */
     @Query("SELECT DISTINCT * FROM formats WHERE song_id = :songId")
-    fun findBySongId( songId: String ): Flow<Format?>
+    abstract override fun findBySongId( songId: String ): Flow<Format?>
 
-    /**
-     * @return stored [Format.contentLength] of song with id [songId], `0` otherwise
-     */
     @Query("""
         SELECT COALESCE(
             (
@@ -83,15 +59,10 @@ interface FormatTable: DatabaseTable<Format> {
             0
         )
     """)
-    fun findContentLengthOf( songId: String ): Flow<Long>
+    abstract override fun findContentLengthOf( songId: String ): Flow<Long>
 
-    /**
-     * Set [Format.contentLength] of song with id [songId] to [contentLength]
-     *
-     * @return number of rows affected by this operation
-     */
     @Query("UPDATE formats SET length = :contentLength WHERE song_id = :songId")
-    fun updateContentLengthOf( songId: String, contentLength: Long = 0L ): Int
+    abstract override fun updateContentLengthOf( songId: String, contentLength: Long ): Int
 
     //<editor-fold defaultstate="collapsed" desc="Sort all with songs">
     fun sortAllWithSongsByPlayTime( limit: Int = Int.MAX_VALUE, excludeHidden: Boolean = false ): Flow<List<FormatWithSong>> =
@@ -118,7 +89,7 @@ interface FormatTable: DatabaseTable<Format> {
         ORDER BY E.created_at
         LIMIT :limit
     """)
-    fun sortAllWithSongsByDatePlayed( limit: Int = Int.MAX_VALUE, excludeHidden: Boolean = false ): Flow<List<FormatWithSong>>
+    abstract fun sortAllWithSongsByDatePlayed( limit: Int = Int.MAX_VALUE, excludeHidden: Boolean = false ): Flow<List<FormatWithSong>>
 
     fun sortAllWithSongsByLikedAt( limit: Int = Int.MAX_VALUE, excludeHidden: Boolean = false ): Flow<List<FormatWithSong>> =
         allWithSongs( limit, excludeHidden ).map { list ->
@@ -149,38 +120,13 @@ interface FormatTable: DatabaseTable<Format> {
             END
         LIMIT :limit
     """)
-    fun sortAllWithSongsByAlbumName( limit: Int = Int.MAX_VALUE, excludeHidden: Boolean = false ): Flow<List<FormatWithSong>>
+    abstract fun sortAllWithSongsByAlbumName( limit: Int = Int.MAX_VALUE, excludeHidden: Boolean = false ): Flow<List<FormatWithSong>>
 
-    /**
-     * Fetch all formats & songs from the database and sort them
-     * according to [sortBy] and [sortOrder] based on Song's properties.
-     * It also excludes songs if condition of [excludeHidden] is met.
-     *
-     * [sortBy] sorts all based on each song's property
-     * such as [SongSortBy.Title], [SongSortBy.PlayTime], etc.
-     * While [sortOrder] arranges order of sorted songs
-     * to follow alphabetical order A to Z, or numerical order 0 to 9, etc.
-     *
-     * [excludeHidden] is an optional parameter that indicates
-     * whether the final results contain songs that are hidden
-     * (in)directly by the user.
-     * `-1` shows hidden while `0` does not.
-     *
-     * @param sortBy which song's property is used to sort
-     * @param sortOrder what order should results be in
-     * @param excludeHidden whether to include hidden songs in final results or not
-     *
-     * @return a **SORTED** list of [Song]s that are continuously
-     * updated to reflect changes within the database - wrapped by [Flow]
-     *
-     * @see SongSortBy
-     * @see SortOrder
-     */
-    fun sortAllWithSongs(
+    override fun sortAllWithSongs(
         sortBy: SongSortBy,
         sortOrder: SortOrder,
-        limit: Int = Int.MAX_VALUE,
-        excludeHidden: Boolean = false
+        limit: Int,
+        excludeHidden: Boolean
     ): Flow<List<FormatWithSong>> = when( sortBy ){
         SongSortBy.TOTAL_PLAY_TIME      -> sortAllWithSongsByPlayTime( limit, excludeHidden )
         SongSortBy.RELATIVE_PLAY_TIME   -> sortAllWithSongsByRelativePlayTime( limit, excludeHidden )

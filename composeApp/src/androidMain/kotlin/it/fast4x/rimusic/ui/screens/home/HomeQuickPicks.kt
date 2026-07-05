@@ -74,6 +74,8 @@ import app.kreate.android.utils.ItemUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.shallowCompare
+import app.kreate.constant.ArtistSortBy
+import app.kreate.constant.SortOrder
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import app.kreate.preferences.APP_REGION
@@ -487,7 +489,7 @@ fun HomeQuickPicks(
                 discoverPage?.let { page ->
                     val artists by remember {
                         Database.artistTable
-                                .sortFollowingByName()
+                                .sortFollowing( ArtistSortBy.TITLE, SortOrder.ASCENDING )
                                 .distinctUntilChanged()
                     }.collectAsState( emptyList(), Dispatchers.IO )
 

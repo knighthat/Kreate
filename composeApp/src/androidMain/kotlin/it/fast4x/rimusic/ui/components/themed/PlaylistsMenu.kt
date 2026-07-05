@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.navigation.NavController
 import app.kreate.android.R
+import app.kreate.constant.PlaylistSortBy
+import app.kreate.constant.SortOrder
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.Database
@@ -134,7 +136,7 @@ class PlaylistsMenu private constructor(
     @Composable
     override fun MenuComponent() {
         val playlistPreviews by remember {
-            Database.playlistTable.sortPreviewsByName()
+            Database.playlistTable.sortPreviews( PlaylistSortBy.TITLE, SortOrder.ASCENDING )
         }.collectAsState( emptyList(), Dispatchers.IO )
 
         val pinnedPlaylists = playlistPreviews.filter {

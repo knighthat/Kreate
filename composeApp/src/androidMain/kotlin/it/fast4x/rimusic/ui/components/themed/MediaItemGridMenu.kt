@@ -50,6 +50,8 @@ import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
+import app.kreate.constant.PlaylistSortBy
+import app.kreate.constant.SortOrder
 import app.kreate.database.models.Playlist
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.readableText
@@ -534,7 +536,7 @@ fun MediaItemGridMenu (
     ) { currentIsViewingPlaylists ->
         if (currentIsViewingPlaylists) {
             val playlistPreviews by remember {
-                Database.playlistTable.sortPreviewsByName()
+                Database.playlistTable.sortPreviews( PlaylistSortBy.TITLE, SortOrder.ASCENDING )
             }.collectAsState( emptyList(), Dispatchers.IO )
 
             val playlistIds by remember {

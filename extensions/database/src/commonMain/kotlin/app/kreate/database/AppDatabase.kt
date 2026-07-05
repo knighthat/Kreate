@@ -1,15 +1,9 @@
 package app.kreate.database
 
 import androidx.room.AutoMigration
+import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import app.kreate.database.migration.From11To12Migration
-import app.kreate.database.migration.From20To21Migration
-import app.kreate.database.migration.From21To22Migration
-import app.kreate.database.migration.From31To32Migration
-import app.kreate.database.migration.From32To33Migration
-import app.kreate.database.migration.From3To4Migration
-import app.kreate.database.migration.From7To8Migration
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Event
@@ -22,9 +16,28 @@ import app.kreate.database.models.Song
 import app.kreate.database.models.SongAlbumMap
 import app.kreate.database.models.SongArtistMap
 import app.kreate.database.models.SongPlaylistMap
+import app.kreate.internal.database.migrations.From11To12Migration
+import app.kreate.internal.database.migrations.From20To21Migration
+import app.kreate.internal.database.migrations.From21To22Migration
+import app.kreate.internal.database.migrations.From31To32Migration
+import app.kreate.internal.database.migrations.From32To33Migration
+import app.kreate.internal.database.migrations.From3To4Migration
+import app.kreate.internal.database.migrations.From7To8Migration
+import app.kreate.internal.database.repositories.AbstractAlbumTable
+import app.kreate.internal.database.repositories.AbstractArtistTable
+import app.kreate.internal.database.repositories.AbstractEventTable
+import app.kreate.internal.database.repositories.AbstractFormatTable
+import app.kreate.internal.database.repositories.AbstractLyricsTable
+import app.kreate.internal.database.repositories.AbstractPlaylistTable
+import app.kreate.internal.database.repositories.AbstractQueuedMediaItemTable
+import app.kreate.internal.database.repositories.AbstractSearchQueryTable
+import app.kreate.internal.database.repositories.AbstractSongAlbumMapTable
+import app.kreate.internal.database.repositories.AbstractSongArtistMapTable
+import app.kreate.internal.database.repositories.AbstractSongPlaylistMapTable
+import app.kreate.internal.database.repositories.AbstractSongTable
 
 
-@androidx.room.Database(
+@Database(
     entities = [
         Song::class,
         SongPlaylistMap::class,
@@ -74,16 +87,16 @@ abstract class AppDatabase : RoomDatabase() {
         const val FILENAME = "data.db"
     }
 
-    abstract val albumTable: AlbumTable
-    abstract val artistTable: ArtistTable
-    abstract val eventTable: EventTable
-    abstract val formatTable: FormatTable
-    abstract val lyricsTable: LyricsTable
-    abstract val playlistTable: PlaylistTable
-    abstract val queueTable: QueuedMediaItemTable
-    abstract val searchQueryTable: SearchQueryTable
-    abstract val songAlbumMapTable: SongAlbumMapTable
-    abstract val songArtistMapTable: SongArtistMapTable
-    abstract val songPlaylistMapTable: SongPlaylistMapTable
-    abstract val songTable: SongTable
+    abstract val albumTable: AbstractAlbumTable
+    abstract val artistTable: AbstractArtistTable
+    abstract val eventTable: AbstractEventTable
+    abstract val formatTable: AbstractFormatTable
+    abstract val lyricsTable: AbstractLyricsTable
+    abstract val playlistTable: AbstractPlaylistTable
+    abstract val queueTable: AbstractQueuedMediaItemTable
+    abstract val searchQueryTable: AbstractSearchQueryTable
+    abstract val songAlbumMapTable: AbstractSongAlbumMapTable
+    abstract val songArtistMapTable: AbstractSongArtistMapTable
+    abstract val songPlaylistMapTable: AbstractSongPlaylistMapTable
+    abstract val songTable: AbstractSongTable
 }

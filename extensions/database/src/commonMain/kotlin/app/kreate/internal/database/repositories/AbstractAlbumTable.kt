@@ -1,4 +1,4 @@
-package app.kreate.database
+package app.kreate.internal.database.repositories
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -7,21 +7,19 @@ import app.kreate.constant.AlbumSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.database.models.Album
 import app.kreate.database.models.Song
-import app.kreate.database.table.DatabaseTable
+import app.kreate.database.repositories.AlbumTable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 
+
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface AlbumTable: DatabaseTable<Album> {
+abstract class AbstractAlbumTable: AlbumTable {
 
     override val tableName: String
         get() = "albums"
 
-    /**
-     * @return all albums from this table that are bookmarked by user
-     */
     @Query("""
         SELECT DISTINCT *
         FROM albums
@@ -29,11 +27,8 @@ interface AlbumTable: DatabaseTable<Album> {
         ORDER BY ROWID
         LIMIT :limit
     """)
-    fun allBookmarked( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
+    abstract override fun allBookmarked( limit: Int ): Flow<List<Album>>
 
-    /**
-     * @return all albums from this table that are bookmarked by user in randomized order
-     */
     @Query("""
         SELECT DISTINCT *
         FROM albums
@@ -41,11 +36,8 @@ interface AlbumTable: DatabaseTable<Album> {
         ORDER BY RANDOM()
         LIMIT :limit
     """)
-    fun allBookmarkedRandomized( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
+    abstract override fun allBookmarkedRandomized( limit: Int ): Flow<List<Album>>
 
-    /**
-     * @return albums that have their songs mapped to at least 1 playlist
-     */
     @Query("""
         SELECT DISTINCT A.*
         FROM albums A
@@ -54,11 +46,8 @@ interface AlbumTable: DatabaseTable<Album> {
         ORDER BY A.ROWID
         LIMIT :limit
     """)
-    fun allInLibrary( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
+    abstract override fun allInLibrary( limit: Int ): Flow<List<Album>>
 
-    /**
-     * @return albums that have their songs mapped to at least 1 playlist in randomized order
-     */
     @Query("""
         SELECT DISTINCT A.*
         FROM albums A
@@ -67,11 +56,8 @@ interface AlbumTable: DatabaseTable<Album> {
         ORDER BY RANDOM()
         LIMIT :limit
     """)
-    fun allInLibraryRandomized( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
+    abstract override fun allInLibraryRandomized( limit: Int ): Flow<List<Album>>
 
-    /**
-     * @return all songs of bookmarked albums
-     */
     @Query("""
         SELECT DISTINCT S.*
         FROM song_album_map sam
@@ -81,30 +67,19 @@ interface AlbumTable: DatabaseTable<Album> {
         ORDER BY S.ROWID
         LIMIT :limit
     """)
-    fun allSongsInBookmarked( limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+    abstract override fun allSongsInBookmarked( limit: Int ): Flow<List<Song>>
 
-    /**
-     * @param albumId of album to look for
-     * @return [Album] that has [Album.id] matches [albumId]
-     */
     @Query("SELECT DISTINCT * FROM albums WHERE id = :albumId")
-    fun findById( albumId: String ): Flow<Album?>
+    abstract override fun findById( albumId: String ): Flow<Album?>
 
-    /**
-     * @return [Album] that has song with id [songId]
-     */
     @Query("""
         SELECT albums.*
         FROM song_album_map 
         JOIN albums ON id = album_id
         WHERE song_id = :songId
     """)
-    fun findBySongId( songId: String ): Flow<Album?>
+    abstract override fun findBySongId( songId: String ): Flow<Album?>
 
-    /**
-     * @return whether [Album] with id [albumId] is bookmarked,
-     * if album doesn't exist, return default value - `false`
-     */
     @Query("""
         SELECT 
             CASE
@@ -114,23 +89,8 @@ interface AlbumTable: DatabaseTable<Album> {
         FROM albums
         WHERE id = :albumId 
     """)
-    fun isBookmarked( albumId: String ): Flow<Boolean>
+    abstract override fun isBookmarked( albumId: String ): Flow<Boolean>
 
-    /**
-     * There are 2 possible actions.
-     *
-     * ### If album IS bookmarked
-     *
-     * This will remove [Album.bookmarkedAt] timestamp (replace with NULL)
-     *
-     * ## If album IS NOT bookmarked
-     *
-     * It will assign [Album.bookmarkedAt] with current time in millis
-     *
-     * @param albumId album identifier to update its [Album.bookmarkedAt]
-     *
-     * @return number of albums updated by this operation
-     */
     @Query("""
         UPDATE albums
         SET bookmarked_at = 
@@ -140,34 +100,16 @@ interface AlbumTable: DatabaseTable<Album> {
             END
         WHERE id = :albumId
     """)
-    fun toggleBookmark( albumId: String ): Int
+    abstract override fun toggleBookmark( albumId: String ): Int
 
-    /**
-     * @param albumId identifier of [Album]
-     * @param thumbnailUrl new url to thumbnail
-     *
-     * @return number of albums affected by this operation
-     */
     @Query("UPDATE albums SET thumbnail_url = :thumbnailUrl WHERE id = :albumId")
-    fun updateCover( albumId: String, thumbnailUrl: String ): Int
+    abstract override fun updateCover( albumId: String, thumbnailUrl: String ): Int
 
-    /**
-     * @param albumId identifier of [Album]
-     * @param authors name(s) of people who made this song
-     *
-     * @return number of albums affected by this operation
-     */
     @Query("UPDATE albums SET artists = :authors WHERE id = :albumId")
-    fun updateAuthors( albumId: String, authors: String ): Int
+    abstract override fun updateAuthors( albumId: String, authors: String ): Int
 
-    /**
-     * @param albumId identifier of [Album]
-     * @param title new name of this album
-     *
-     * @return number of albums affected by this operation
-     */
     @Query("UPDATE albums SET title = :title WHERE id = :albumId")
-    fun updateTitle( albumId: String, title: String ): Int
+    abstract override fun updateTitle( albumId: String, title: String ): Int
 
     //<editor-fold defaultstate="collapsed" desc="Sort bookmarked">
     fun sortBookmarkedByTitle( limit: Int = Int.MAX_VALUE ): Flow<List<Album>> =
@@ -194,7 +136,7 @@ interface AlbumTable: DatabaseTable<Album> {
         ORDER BY COUNT(sam.song_id)
         LIMIT :limit
     """)
-    fun sortBookmarkedBySongsCount( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
+    abstract fun sortBookmarkedBySongsCount( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
 
     @Query("""
         SELECT DISTINCT A.*
@@ -220,31 +162,12 @@ interface AlbumTable: DatabaseTable<Album> {
     """)
     // Duration conversion is baked into SQL syntax to reduce code complexity
     // at the cost of unfriendly syntax, potentially makes it harder to maintain or reuse.
-    fun sortBookmarkedByDuration( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
+    abstract fun sortBookmarkedByDuration( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
 
-    /**
-     * Fetch all bookmarked albums and sort
-     * them according to [sortBy] and [sortOrder].
-     *
-     * [sortBy] sorts all based on each album's property
-     * such as [AlbumSortBy.Title], [AlbumSortBy.Year], etc.
-     * While [sortOrder] arranges order of sorted songs
-     * to follow alphabetical order A to Z, or numerical order 0 to 9, etc.
-     *
-     * @param sortBy which album's property is used to sort
-     * @param sortOrder what order should results be in
-     * @param limit stop query once number of results reaches this number
-     *
-     * @return a **SORTED** list of [Album]'s that are continuously
-     * updated to reflect changes within the database - wrapped by [Flow]
-     *
-     * @see AlbumSortBy
-     * @see SortOrder
-     */
-    fun sortBookmarked(
+    override fun sortBookmarked(
         sortBy: AlbumSortBy,
         sortOrder: SortOrder,
-        limit: Int = Int.MAX_VALUE
+        limit: Int
     ): Flow<List<Album>> = when( sortBy ) {
         AlbumSortBy.TITLE           -> sortBookmarkedByTitle()
         AlbumSortBy.YEAR            -> sortBookmarkedByYear()
@@ -281,7 +204,7 @@ interface AlbumTable: DatabaseTable<Album> {
         ORDER BY COUNT(sam.song_id)
         LIMIT :limit
     """)
-    fun sortInLibraryBySongsCount( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
+    abstract fun sortInLibraryBySongsCount( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
 
     @Query("""
         SELECT DISTINCT A.*
@@ -305,32 +228,12 @@ interface AlbumTable: DatabaseTable<Album> {
         )
         LIMIT :limit
     """)
-    fun sortInLibraryByDuration( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
+    abstract fun sortInLibraryByDuration( limit: Int = Int.MAX_VALUE ): Flow<List<Album>>
 
-    /**
-     * Fetch all albums that have their songs mapped to
-     * at least 1 playlist in library and sort
-     * them according to [sortBy] and [sortOrder].
-     *
-     * [sortBy] sorts all based on each album's property
-     * such as [AlbumSortBy.Title], [AlbumSortBy.Year], etc.
-     * While [sortOrder] arranges order of sorted songs
-     * to follow alphabetical order A to Z, or numerical order 0 to 9, etc.
-     *
-     * @param sortBy which album's property is used to sort
-     * @param sortOrder what order should results be in
-     * @param limit stop query once number of results reaches this number
-     *
-     * @return a **SORTED** list of [Album]'s that are continuously
-     * updated to reflect changes within the database - wrapped by [Flow]
-     *
-     * @see AlbumSortBy
-     * @see SortOrder
-     */
-    fun sortInLibrary(
+    override fun sortInLibrary(
         sortBy: AlbumSortBy,
         sortOrder: SortOrder,
-        limit: Int = Int.MAX_VALUE
+        limit: Int
     ): Flow<List<Album>> = when( sortBy ) {
         AlbumSortBy.TITLE           -> sortInLibraryByTitle()
         AlbumSortBy.YEAR            -> sortInLibraryByYear()

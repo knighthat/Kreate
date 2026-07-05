@@ -8,7 +8,6 @@ import androidx.room.RawQuery
 import androidx.room.RoomRawQuery
 import androidx.room.Update
 import androidx.room.Upsert
-import org.jetbrains.annotations.Blocking
 
 
 @Dao
@@ -25,7 +24,6 @@ interface DatabaseTable<T> {
      * This will block current thread in till it's finished.
      */
     @RawQuery
-    @Blocking
     fun blockingGet( statement: RoomRawQuery ): List<T>
 
     /**
@@ -33,7 +31,6 @@ interface DatabaseTable<T> {
      *
      * This will block current thread in till it's finished.
      */
-    @Blocking
     fun blockingAll( limit: Int = Int.MAX_VALUE ): List<T> {
         val statement = RoomRawQuery("SELECT DISTINCT * FROM $tableName LIMIT $limit")
         return blockingGet( statement )
@@ -157,7 +154,7 @@ interface DatabaseTable<T> {
      *
      * @param records list of [T] to delete from database
      *
-     * @return number of rows affected by the this operation
+     * @return number of rows affected by this operation
      */
     @Delete
     fun delete( records: List<T> ): Int

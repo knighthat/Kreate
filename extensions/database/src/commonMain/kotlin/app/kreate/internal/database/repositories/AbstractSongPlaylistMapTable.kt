@@ -1,14 +1,13 @@
-package app.kreate.database
+package app.kreate.internal.database.repositories
 
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import app.kreate.constant.PlaylistSongSortBy
 import app.kreate.constant.SortOrder
-import app.kreate.database.models.Playlist
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongPlaylistMap
-import app.kreate.database.table.DatabaseTable
+import app.kreate.database.repositories.SongPlaylistMapTable
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.toDuration
 import kotlinx.coroutines.Dispatchers
@@ -17,44 +16,23 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 
+
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
+abstract class AbstractSongPlaylistMapTable: SongPlaylistMapTable {
 
     override val tableName: String
         get() = "song_playlist_map"
 
-    /**
-     * Song with [songId] will be removed from all playlists
-     *
-     * @return number of rows affected by this operation
-     */
     @Query("DELETE FROM  song_playlist_map WHERE song_id = :songId")
-    fun deleteBySongId( songId: String ): Int
+    abstract override fun deleteBySongId( songId: String ): Int
 
-    /**
-     * Remove song with [songId] from playlist with id [playlistId]
-     *
-     * @return number of rows affected by this operation
-     */
     @Query("DELETE FROM  song_playlist_map WHERE song_id = :songId AND playlist_id = :playlistId")
-    fun deleteBySongId( songId: String, playlistId: Long ): Int
+    abstract override fun deleteBySongId( songId: String, playlistId: Long ): Int
 
-    /**
-     * Remove all songs belong to playlist with id [playlistId]
-     *
-     * @param playlistId playlist to have its songs wiped
-     *
-     * @return number of rows affected by this operation
-     */
     @Query("DELETE FROM  song_playlist_map WHERE playlist_id = :playlistId")
-    fun clear( playlistId: Long ): Int
+    abstract override fun clear( playlistId: Long ): Int
 
-    /**
-     * Delete all mappings where songs aren't exist in `Song` table
-     *
-     * @return number of rows affected by this operation
-     */
     @Query("""
         DELETE FROM  song_playlist_map 
         WHERE song_id NOT IN (
@@ -62,12 +40,8 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
             FROM songs
         )
     """)
-    fun clearGhostMaps(): Int
+    abstract override fun clearGhostMaps(): Int
 
-    /**
-     * @param playlistId of playlist to look for
-     * @return all [Song]s that were mapped to playlist has [Playlist.id] matches [playlistId]
-     */
     @Query("""
         SELECT DISTINCT S.*
         FROM  song_playlist_map SPM
@@ -76,12 +50,8 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
         ORDER BY SPM.ROWID
         LIMIT :limit
     """)
-    fun allSongsOf( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+    abstract override fun allSongsOf( playlistId: Long, limit: Int ): Flow<List<Song>>
 
-    /**
-     * @param playlistId of playlist to look for
-     * @return all [Song]s that were mapped to playlist has [Playlist.id] matches [playlistId] in randomized order
-     */
     @Query("""
         SELECT DISTINCT S.*
         FROM  song_playlist_map SPM
@@ -90,20 +60,11 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
         ORDER BY RANDOM()
         LIMIT :limit
     """)
-    fun allSongsOfRandomized( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+    abstract override fun allSongsOfRandomized( playlistId: Long, limit: Int ): Flow<List<Song>>
 
-    /**
-     * @param songId of playlist to look for
-     * @param playlistId playlist to look into
-     *
-     * @return [SongPlaylistMap] that has [Song.id] matches [songId] and [Playlist.id] matches [playlistId]
-     */
     @Query("SELECT * FROM  song_playlist_map WHERE playlist_id = :playlistId AND song_id = :songId")
-    fun findById( songId: String, playlistId: Long ): Flow<SongPlaylistMap?>
+    abstract override fun findById( songId: String, playlistId: Long ): Flow<SongPlaylistMap?>
 
-    /**
-     * @return position of [songId] in [playlistId], `-1` otherwise
-     */
     @Query("""
         SELECT COALESCE(
             (
@@ -114,23 +75,17 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
             ),
             -1
         ) 
-        """)
-    fun findPositionOf( songId: String, playlistId: Long ): Int
+    """)
+    abstract override fun findPositionOf( songId: String, playlistId: Long ): Int
 
-    /**
-     * @return whether [songId] is mapped to any playlist
-     */
     @Query("""
         SELECT COUNT(s.id) > 0
         FROM songs s
         JOIN  song_playlist_map spm ON spm.song_id = s.id 
         WHERE s.id = :songId
     """)
-    fun isMapped( songId: String ): Flow<Boolean>
+    abstract override fun isMapped( songId: String ): Flow<Boolean>
 
-    /**
-     * @return whether [songId] is mapped to [playlistId]
-     */
     @Query("""
         SELECT EXISTS(
             SELECT 1 
@@ -139,24 +94,15 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
                 AND playlist_id = :playlistId
         );
     """)
-    fun isMapped( songId: String, playlistId: Long ): Flow<Boolean>
+    abstract override fun isMapped( songId: String, playlistId: Long ): Flow<Boolean>
 
-    /**
-     * @return list of [Playlist.id] that [songId] is mapped to
-     */
     @Query("""
         SELECT playlist_id
         FROM song_playlist_map
         WHERE song_id = :songId
     """)
-    fun mappedTo( songId: String ): Flow<List<Long>>
+    abstract override fun mappedTo( songId: String ): Flow<List<Long>>
 
-    /**
-     * Randomly assign new [SongPlaylistMap.position] to
-     * each song mapped to playlist with id [playlistId].
-     *
-     * @return number of rows affected by this operation
-     */
     @Query("""
         UPDATE  song_playlist_map 
         SET position = shuffled.new_position
@@ -170,15 +116,8 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
     """)
     // You'll get complain from IDE that "shuffled" and "FROM"
     // aren't exist, that's OK - IGNORE it.
-    fun shufflePositions( playlistId: Long ): Int
+    abstract override fun shufflePositions( playlistId: Long ): Int
 
-    /**
-     * Move song from [from] to [to].
-     *
-     * Other songs' positions are updated accordingly
-     *
-     * @return number of rows affected by this operation
-     */
     @Query("""
         UPDATE song_playlist_map
         SET position = updated.new_position
@@ -200,18 +139,8 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
     """)
     // You'll get complain from IDE that "updated" and "FROM"
     // aren't exist, that's OK - IGNORE it.
-    fun move( playlistId: Long, from: Int, to: Int ): Int
+    abstract override fun move( playlistId: Long, from: Int, to: Int ): Int
 
-    /**
-     * Insert provided song into indicated playlist
-     * at the next available position.
-     *
-     * If record exists in the database (determined by [songId] and [playlistId])
-     * then this operation is skipped.
-     *
-     * @param songId     song to add
-     * @param playlistId playlist to add song into
-     */
     @Query("""
         INSERT OR IGNORE INTO  song_playlist_map ( song_id, playlist_id, position )
         VALUES( 
@@ -227,14 +156,8 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
             )
         )
     """)
-    fun map( songId: String, playlistId: Long )
+    abstract override fun map( songId: String, playlistId: Long )
 
-    /**
-     * Compile a list of songs that are most listened to in **descending** order.
-     *
-     * @param playlistId playlist to query
-     * @param limit number of items to include
-     */
     @Query("""
         SELECT DISTINCT s.*
         FROM  song_playlist_map spm
@@ -243,19 +166,9 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
         ORDER BY s.total_playtime DESC
         LIMIT :limit
     """)
-    fun findMostPlayedSongsOf(playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+    abstract override fun findMostPlayedSongsOf(playlistId: Long, limit: Int ): Flow<List<Song>>
 
-    /**
-     * Compile a list of thumbnail url from songs that are
-     * most listened to in **descending** order.
-     *
-     * @param playlistId playlist to query
-     * @param limit number of items to include
-     */
-    fun findThumbnailsOfMostPlayedSongIn(
-        playlistId: Long,
-        limit: Int = Int.MAX_VALUE
-    ): Flow<List<String>> =
+    override fun findThumbnailsOfMostPlayedSongIn( playlistId: Long, limit: Int ): Flow<List<String>> =
         findMostPlayedSongsOf( playlistId )
             .map { list ->
                 list.asSequence()
@@ -283,7 +196,7 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
             END
         LIMIT :limit
     """)
-    fun sortSongsByAlbum( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+    abstract fun sortSongsByAlbum( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
 
     @Query("""
         SELECT DISTINCT S.*
@@ -295,7 +208,7 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
         ORDER BY A.year IS NULL, A.year
         LIMIT :limit
     """)
-    fun sortSongsByAlbumYear( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+    abstract fun sortSongsByAlbumYear( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
 
     fun sortSongsByArtist( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>> =
         allSongsOf( playlistId, limit ).map { list ->
@@ -322,7 +235,7 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
             END
         LIMIT :limit
     """)
-    fun sortSongsByAlbumAndArtist( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+    abstract fun sortSongsByAlbumAndArtist( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
 
     @Query("""
         SELECT S.*
@@ -333,7 +246,7 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
         ORDER BY E.created_at
         LIMIT :limit
     """)
-    fun sortSongsByDatePlayed( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+    abstract fun sortSongsByDatePlayed( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
 
     fun sortSongsByPlayTime( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>> =
         allSongsOf( playlistId, limit ).map { list ->
@@ -353,7 +266,7 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
         ORDER BY spm.position
         LIMIT :limit
     """)
-    fun sortSongsByPosition( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+    abstract fun sortSongsByPosition( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
 
     fun sortSongsByTitle( playlistId: Long, limit: Int = Int.MAX_VALUE ): Flow<List<Song>> =
         allSongsOf( playlistId, limit ).map { list ->
@@ -370,30 +283,11 @@ interface SongPlaylistMapTable: DatabaseTable<SongPlaylistMap> {
             list.sortedBy( Song::likedAt )
         }
 
-    /**
-     * Fetch all songs that were mapped to [playlistId] and sort
-     * them according to [sortBy] and [sortOrder].
-     *
-     * [sortBy] sorts all based on each song's property
-     * such as [PlaylistSongSortBy.Artist], [PlaylistSongSortBy.Duration], etc.
-     * While [sortOrder] arranges order of sorted songs
-     * to follow alphabetical order A to Z, or numerical order 0 to 9, etc.
-     *
-     * @param sortBy which song's property is used to sort
-     * @param sortOrder what order should results be in
-     * @param limit stop query once number of results reaches this number
-     *
-     * @return a **SORTED** list of [Song]'s that are continuously
-     * updated to reflect changes within the database - wrapped by [Flow]
-     *
-     * @see PlaylistSongSortBy
-     * @see SortOrder
-     */
-    fun sortSongs(
+    override fun sortSongs(
         playlistId: Long,
         sortBy: PlaylistSongSortBy,
         sortOrder: SortOrder,
-        limit: Int = Int.MAX_VALUE
+        limit: Int
     ): Flow<List<Song>> = when( sortBy ) {
         PlaylistSongSortBy.ALBUM                -> sortSongsByAlbum( playlistId )
         PlaylistSongSortBy.ALBUM_YEAR           -> sortSongsByAlbumYear( playlistId )

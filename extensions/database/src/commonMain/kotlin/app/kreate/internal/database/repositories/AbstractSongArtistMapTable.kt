@@ -1,27 +1,21 @@
-package app.kreate.database
+package app.kreate.internal.database.repositories
 
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Song
-import app.kreate.database.models.SongArtistMap
-import app.kreate.database.table.DatabaseTable
+import app.kreate.database.repositories.SongArtistMapTable
 import kotlinx.coroutines.flow.Flow
+
 
 @Dao
 @RewriteQueriesToDropUnusedColumns
-interface SongArtistMapTable: DatabaseTable<SongArtistMap> {
+abstract class AbstractSongArtistMapTable: SongArtistMapTable {
 
     override val tableName: String
         get() = "song_artist_map"
 
-    /**
-     * @param artistId of artist to look for
-     * @param limit number of results cannot go over this value
-     *
-     * @return all [Song]s that were mapped to artist has [Artist.id] matches [artistId]
-     */
     @Query("""
         SELECT DISTINCT songs.*
         FROM song_artist_map sam 
@@ -30,11 +24,8 @@ interface SongArtistMapTable: DatabaseTable<SongArtistMap> {
         ORDER BY songs.ROWID
         LIMIT :limit
     """)
-    fun allSongsBy( artistId: String, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+    abstract override fun allSongsBy( artistId: String, limit: Int ): Flow<List<Song>>
 
-    /**
-     * @return all [Artist]s featured in this song
-     */
     @Query("""
         SELECT DISTINCT A.*
         FROM artists A
@@ -43,7 +34,7 @@ interface SongArtistMapTable: DatabaseTable<SongArtistMap> {
         ORDER BY A.ROWID
         LIMIT :limit
     """)
-    fun findArtistsOf( songId: String, limit: Int = Int.MAX_VALUE ): Flow<List<Artist>>
+    abstract override fun findArtistsOf( songId: String, limit: Int ): Flow<List<Artist>>
 
     @Query("""
         SELECT DISTINCT S.*
@@ -54,13 +45,8 @@ interface SongArtistMapTable: DatabaseTable<SongArtistMap> {
         ORDER BY S.total_playtime DESC
         LIMIT :limit
     """)
-    fun findArtistMostPlayedSongs( artistId: String, limit: Int = Int.MAX_VALUE ): Flow<List<Song>>
+    abstract override fun findArtistMostPlayedSongs( artistId: String, limit: Int ): Flow<List<Song>>
 
-    /**
-     * Delete all mappings where songs aren't exist in `Song` table
-     *
-     * @return number of rows affected by this operation
-     */
     @Query("""
         DELETE FROM song_artist_map 
         WHERE song_id NOT IN (
@@ -68,5 +54,5 @@ interface SongArtistMapTable: DatabaseTable<SongArtistMap> {
             FROM songs
         )
     """)
-    fun clearGhostMaps(): Int
+    abstract override fun clearGhostMaps(): Int
 }

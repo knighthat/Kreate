@@ -1,18 +1,11 @@
-package app.kreate.database
+package app.kreate.database.repositories
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.RewriteQueriesToDropUnusedColumns
 import app.kreate.database.models.SearchQuery
 import app.kreate.database.table.DatabaseTable
 import kotlinx.coroutines.flow.Flow
 
-@Dao
-@RewriteQueriesToDropUnusedColumns
-interface SearchQueryTable: DatabaseTable<SearchQuery> {
 
-    override val tableName: String
-        get() = "search_history"
+interface SearchQueryTable: DatabaseTable<SearchQuery> {
 
     /**
      * [searchTerm] appears in [SearchQuery.query].
@@ -23,13 +16,7 @@ interface SearchQueryTable: DatabaseTable<SearchQuery> {
      * @param searchTerm what to look for
      * @return all [SearchQuery]s that have [SearchQuery.query] contain [searchTerm]
      */
-    @Query("""
-        SELECT DISTINCT * 
-        FROM search_history 
-        WHERE `query` LIKE '%' || :searchTerm || '%' COLLATE NOCASE
-        """)
     fun findAllContain( searchTerm: String ): Flow<List<SearchQuery>>
 
-    @Query("DELETE FROM search_history")
     fun deleteAll(): Int
 }

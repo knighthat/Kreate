@@ -32,7 +32,6 @@ plugins {
 
     // Android
     alias(libs.plugins.android.application)
-    alias(libs.plugins.room)
 
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
@@ -125,7 +124,6 @@ kotlin {
 
             // Room KMP
             implementation( libs.room.runtime )
-            implementation( libs.sqlite.bundled )
 
             implementation(libs.navigation.kmp)
 
@@ -408,15 +406,7 @@ compose.resources {
     generateResClass = always
 }
 
-room {
-    schemaDirectory("$projectDir/schemas")
-}
-
 dependencies {
-    // Room
-    add( "kspAndroid", libs.room.compiler )
-    add( "kspJvm", libs.room.compiler )
-
     coreLibraryDesugaring(libs.desugaring.nio)
 }
 

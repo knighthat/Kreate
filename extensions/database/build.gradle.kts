@@ -6,6 +6,9 @@ plugins {
     // Android
     alias( libs.plugins.android.kotlin.multiplatform.library )
     alias( libs.plugins.android.lint )
+
+    // Others
+    alias( libs.plugins.kotlin.ksp )
 }
 
 kotlin {
@@ -63,4 +66,10 @@ kotlin {
 
 room {
     schemaDirectory( "$projectDir/schemas" )
+}
+
+dependencies {
+    // Room
+    add( "kspAndroid", libs.room.compiler )
+    add( "kspJvm", libs.room.compiler )
 }

@@ -43,6 +43,8 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
+import app.kreate.constant.PlaylistSortBy
+import app.kreate.constant.SortOrder
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.util.cleanPrefix
@@ -112,7 +114,7 @@ fun PlaylistsItemGridMenu(
         if (currentIsViewingPlaylists) {
             val context = LocalContext.current
             val playlistPreviews by remember {
-                Database.playlistTable.sortPreviewsByName()
+                Database.playlistTable.sortPreviews( PlaylistSortBy.TITLE, SortOrder.ASCENDING )
             }.collectAsState( emptyList(), Dispatchers.IO )
 
             val pinnedPlaylists = playlistPreviews.filter {

@@ -44,6 +44,8 @@ import androidx.navigation.NavController
 import app.kreate.android.R
 import app.kreate.android.themed.common.ChangeAlbumThumbnail
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
+import app.kreate.constant.PlaylistSortBy
+import app.kreate.constant.SortOrder
 import app.kreate.database.models.Album
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
@@ -125,7 +127,7 @@ fun AlbumsItemMenu(
             if (currentIsViewingPlaylists) {
                 val context = LocalContext.current
                 val playlistPreviews by remember {
-                    Database.playlistTable.sortPreviewsByName()
+                    Database.playlistTable.sortPreviews( PlaylistSortBy.TITLE, SortOrder.ASCENDING )
                 }.collectAsState( emptyList(), Dispatchers.IO )
 
                 val pinnedPlaylists = playlistPreviews.filter {
