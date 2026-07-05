@@ -696,12 +696,12 @@
     <string name="adding_yt_to_pl_failed">Error occurred for the next 50 songs. Adding songs to the playlist one by one</string>
     <string name="songs_add_yt_success">Added the song in the YouTube Playlist</string>
     <string name="songs_add_yt_failed">Failed to add the song in the YouTube Playlist</string>
-    <string name="are_you_sure">Are you sure?</string>
+    <string name="are_you_sure">你確定？</string>
     <string name="title_reset_cache">Reset cache</string>
     <string name="playing_song_not_found_on_current_list">Could not find playing song on current list</string>
     <string name="no_songs_playing">No song is playing at the moment</string>
     <string name="invalid_input">Invalid input!</string>
-    <string name="rename_playlist">Rename playlist</string>
+    <string name="rename_playlist">重新命名播放清單</string>
     <string name="no_song_to_shuffle">No song to shuffle</string>
     <string name="looking_up_artist_online">Looking up %s online...</string>
     <string name="looking_up_album_from_the_internet">Looking up album from the internet</string>
@@ -717,7 +717,7 @@
     <string name="song_must_be_cached_or_downloaded_to_export">Song must be cached or downloaded to export</string>
     <string name="title_restart_required">Restart required</string>
     <string name="restart_dialog_body">Please open %s again after!</string>
-    <string name="title_export_settings">Export settings</string>
+    <string name="title_export_settings">匯出設定</string>
     <string name="store_settings_in_a_file">Store your settings in a single file</string>
     <string name="description_exclude_credentials">Credentials such as YouTube login are excluded for security reasons</string>
     <string name="title_import_settings">匯入設定</string>
