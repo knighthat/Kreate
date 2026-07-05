@@ -76,6 +76,7 @@ import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.constant.ArtistSortBy
 import app.kreate.constant.SortOrder
+import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import app.kreate.preferences.APP_REGION
@@ -90,7 +91,6 @@ import it.fast4x.innertube.models.bodies.NextBody
 import it.fast4x.innertube.requests.HomePage
 import it.fast4x.innertube.requests.discoverPage
 import it.fast4x.innertube.requests.relatedPage
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes

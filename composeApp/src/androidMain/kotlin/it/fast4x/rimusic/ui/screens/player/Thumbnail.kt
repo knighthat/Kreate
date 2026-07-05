@@ -45,8 +45,9 @@ import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.constant.Type
+import app.kreate.database.Database
+import app.kreate.database.insertIgnore
 import co.touchlab.kermit.Logger
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.service.LoginRequiredException
 import it.fast4x.rimusic.service.NoInternetException

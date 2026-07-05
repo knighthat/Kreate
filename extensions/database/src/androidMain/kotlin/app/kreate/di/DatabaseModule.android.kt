@@ -7,7 +7,7 @@ import app.kreate.internal.database.AbstractRoomDatabase
 import org.koin.core.scope.Scope
 
 
-actual val FILE_NAME: String
+actual val DATABASE_FILENAME: String
     get() {
         val profile = getActiveProfile()
         return if ( profile == "default" )
@@ -18,5 +18,5 @@ actual val FILE_NAME: String
 
 internal actual fun Scope.getDatabaseBuilder(): RoomDatabase.Builder<AbstractRoomDatabase> {
     val context: Context = get()
-    return Room.databaseBuilder( context, FILE_NAME )
+    return Room.databaseBuilder( context, DATABASE_FILENAME )
 }

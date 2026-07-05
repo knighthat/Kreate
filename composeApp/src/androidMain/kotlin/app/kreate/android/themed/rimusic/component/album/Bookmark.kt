@@ -12,8 +12,9 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
+import app.kreate.database.Database
 import app.kreate.database.models.Song
-import it.fast4x.rimusic.Database
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
@@ -75,7 +76,7 @@ class Bookmark(
 
                         if( isInit )
                             isInit = false
-                        else if( app.kreate.preferences.Preferences.AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED.value )
+                        else if( Preferences.AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED.value )
                             downloadOnBookmark()
                     }
         }

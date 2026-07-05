@@ -122,9 +122,6 @@ kotlin {
             implementation(projects.lrclib)
             implementation( projects.discord )
 
-            // Room KMP
-            implementation( libs.room.runtime )
-
             implementation(libs.navigation.kmp)
 
             //coil3 mp

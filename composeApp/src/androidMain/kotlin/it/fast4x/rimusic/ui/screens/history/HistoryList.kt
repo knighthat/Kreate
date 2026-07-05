@@ -37,12 +37,12 @@ import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
+import app.kreate.database.Database
 import app.kreate.database.models.Event
 import app.kreate.preferences.Preferences
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.YtMusic
 import it.fast4x.innertube.requests.HistoryPage
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.HistoryType

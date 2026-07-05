@@ -2,7 +2,8 @@ package app.kreate.android
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import it.fast4x.rimusic.Database
+import app.kreate.database.Database
+import app.kreate.di.DATABASE_FILENAME
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -13,10 +14,10 @@ class DeleteDatabasesActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         Database.close()
-        applicationContext.deleteDatabase( Database.FILE_NAME )
+        applicationContext.deleteDatabase( DATABASE_FILENAME )
 
         val dbLck = File(
-            applicationContext.getDatabasePath( Database.FILE_NAME ).path + ".lck"
+            applicationContext.getDatabasePath( DATABASE_FILENAME ).path + ".lck"
         )
         if( dbLck.exists() )
             dbLck.delete()

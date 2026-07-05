@@ -45,6 +45,7 @@ import app.kreate.android.service.player.WidgetListener
 import app.kreate.android.utils.centerCropBitmap
 import app.kreate.android.utils.centerCropToMatchScreenSize
 import app.kreate.android.utils.isLocalFile
+import app.kreate.database.Database
 import app.kreate.database.models.Event
 import app.kreate.di.CacheType
 import app.kreate.di.InternalPrefKey
@@ -55,7 +56,6 @@ import co.touchlab.kermit.Logger
 import com.google.common.util.concurrent.MoreExecutors
 import io.ktor.client.HttpClient
 import it.fast4x.innertube.Innertube
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy

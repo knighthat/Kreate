@@ -30,10 +30,10 @@ import androidx.media3.datasource.cache.Cache
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
+import app.kreate.database.Database
 import app.kreate.di.CacheType
 import app.kreate.di.clearCachedStreamUrlOf
 import co.touchlab.kermit.Logger
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon

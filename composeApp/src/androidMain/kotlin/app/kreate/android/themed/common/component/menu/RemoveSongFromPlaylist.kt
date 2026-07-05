@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.media3.common.MediaItem
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.BottomMenu
+import app.kreate.database.Database
 import app.kreate.database.models.Playlist
 import app.kreate.util.cleanPrefix
-import it.fast4x.rimusic.Database
 import org.koin.java.KoinJavaComponent.get
 
 

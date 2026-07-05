@@ -11,13 +11,14 @@ import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
 import app.kreate.android.R
 import app.kreate.android.exception.InvalidHeaderException
+import app.kreate.database.Database
+import app.kreate.database.mapIgnore
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.Song
 import app.kreate.util.DURATION_FORMAT_REGEX
 import app.kreate.util.readableText
 import app.kreate.util.toDuration
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import kotlinx.coroutines.CoroutineScope

@@ -6,7 +6,8 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import it.fast4x.rimusic.Database
+import app.kreate.database.Database
+import app.kreate.di.DATABASE_FILENAME
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,7 +42,7 @@ class ImportDatabase private constructor(
                                .contentResolver
                                .openInputStream(uri)
                                ?.use { inStream ->
-                                   val dbFile = context.getDatabasePath( Database.FILE_NAME )
+                                   val dbFile = context.getDatabasePath( DATABASE_FILENAME )
                                    FileOutputStream( dbFile ).use { outStream ->
                                        inStream.copyTo(outStream)
                                    }

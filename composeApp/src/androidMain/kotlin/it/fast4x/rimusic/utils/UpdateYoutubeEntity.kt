@@ -8,6 +8,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.media3.common.util.UnstableApi
+import app.kreate.database.Database
+import app.kreate.database.insertIgnore
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.SongAlbumMap
@@ -17,7 +19,6 @@ import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBody
 import it.fast4x.innertube.requests.albumPage
 import it.fast4x.innertube.requests.artistPage
-import it.fast4x.rimusic.Database
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged

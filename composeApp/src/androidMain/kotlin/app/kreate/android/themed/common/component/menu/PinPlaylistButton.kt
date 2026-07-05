@@ -8,8 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.BottomMenu
+import app.kreate.database.Database
 import app.kreate.database.models.PlaylistPreview
-import it.fast4x.rimusic.Database
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 

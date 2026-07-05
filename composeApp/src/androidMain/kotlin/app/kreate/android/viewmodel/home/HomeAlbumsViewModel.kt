@@ -5,13 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.kreate.android.R
 import app.kreate.android.utils.innertube.InnertubeUtils
+import app.kreate.database.Database
 import app.kreate.database.models.Album
 import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
 import com.metrolist.innertube.YouTube
 import com.metrolist.innertube.models.AlbumItem
 import com.metrolist.innertube.pages.BrowseResult
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.AlbumsType
 import it.fast4x.rimusic.enums.FilterBy
 import kotlinx.coroutines.Dispatchers

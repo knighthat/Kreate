@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
+import app.kreate.database.Database
 import app.kreate.database.repositories.AlbumTable
-import it.fast4x.rimusic.Database
 import me.knighthat.component.RenameDialog
 
 class AlbumModifier private constructor(

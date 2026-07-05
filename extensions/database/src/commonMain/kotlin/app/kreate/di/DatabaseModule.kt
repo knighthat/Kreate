@@ -39,7 +39,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 
-expect val FILE_NAME: String
+expect val DATABASE_FILENAME: String
 
 internal expect fun Scope.getDatabaseBuilder(): RoomDatabase.Builder<AbstractRoomDatabase>
 

@@ -15,13 +15,14 @@ import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.scheduler.Requirements
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.DownloadHelper
+import app.kreate.database.Database
+import app.kreate.database.insertIgnore
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import app.kreate.util.thumbnail
 import co.touchlab.kermit.Logger
 import coil3.request.allowHardware
 import coil3.request.bitmapConfig
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.utils.asMediaItem

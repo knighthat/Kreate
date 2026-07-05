@@ -1,7 +1,7 @@
 package it.fast4x.rimusic.utils
 
+import app.kreate.database.Database
 import it.fast4x.innertube.YtMusic
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import kotlinx.coroutines.flow.first
 

@@ -5,9 +5,9 @@ import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
+import app.kreate.database.Database
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import kotlinx.coroutines.CoroutineScope

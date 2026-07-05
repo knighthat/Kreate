@@ -5,9 +5,10 @@ import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
+import app.kreate.database.Database
+import app.kreate.database.insertIgnore
 import it.fast4x.innertube.YtMusic.likeVideoOrSong
 import it.fast4x.innertube.YtMusic.removelikeVideoOrSong
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.utils.isNetworkConnected

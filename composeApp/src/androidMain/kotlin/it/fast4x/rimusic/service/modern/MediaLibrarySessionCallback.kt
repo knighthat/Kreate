@@ -31,6 +31,7 @@ import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.constant.PlaylistSortBy
 import app.kreate.constant.SortOrder
+import app.kreate.database.Database
 import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
@@ -45,7 +46,6 @@ import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.SearchBody
 import it.fast4x.innertube.requests.searchPage
 import it.fast4x.innertube.utils.from
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.enums.StatisticsType
 import it.fast4x.rimusic.service.MyDownloadHelper

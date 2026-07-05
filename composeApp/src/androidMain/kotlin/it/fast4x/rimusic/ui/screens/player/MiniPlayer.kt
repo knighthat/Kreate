@@ -64,10 +64,10 @@ import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.constant.Type
+import app.kreate.database.Database
 import app.kreate.preferences.Preferences
 import app.kreate.util.cleanPrefix
 import app.kreate.util.scrollingText
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BackgroundProgress
 import it.fast4x.rimusic.service.modern.PlayerServiceModern

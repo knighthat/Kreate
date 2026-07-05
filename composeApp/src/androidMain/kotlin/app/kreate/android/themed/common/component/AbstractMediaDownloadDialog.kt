@@ -8,9 +8,9 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
+import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
-import it.fast4x.rimusic.Database
 import me.knighthat.component.dialog.ConfirmDialog
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

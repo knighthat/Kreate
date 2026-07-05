@@ -7,9 +7,9 @@ import app.kreate.util.getConfigDir
 import org.koin.core.scope.Scope
 
 
-actual val FILE_NAME: String = "data.db"
+actual val DATABASE_FILENAME: String = "data.db"
 
 internal actual fun Scope.getDatabaseBuilder(): RoomDatabase.Builder<AbstractRoomDatabase> =
     Room.databaseBuilder(
-        getConfigDir().resolve( FILE_NAME ).toFile().absolutePath
+        getConfigDir().resolve( DATABASE_FILENAME ).toFile().absolutePath
     )

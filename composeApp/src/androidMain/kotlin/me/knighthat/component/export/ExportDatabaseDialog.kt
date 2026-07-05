@@ -14,7 +14,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import app.kreate.android.BuildConfig
 import app.kreate.android.R
-import it.fast4x.rimusic.Database
+import app.kreate.database.Database
+import app.kreate.di.DATABASE_FILENAME
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -54,7 +55,7 @@ class ExportDatabaseDialog private constructor(
                                .contentResolver
                                .openOutputStream(uri)
                                ?.use { outStream ->
-                                   val dbFile = context.getDatabasePath( Database.FILE_NAME )
+                                   val dbFile = context.getDatabasePath( DATABASE_FILENAME )
                                    FileInputStream(dbFile).use { inStream ->
                                        inStream.copyTo(outStream)
                                    }

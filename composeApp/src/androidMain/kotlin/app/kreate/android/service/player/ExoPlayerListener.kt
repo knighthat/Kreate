@@ -17,10 +17,11 @@ import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
 import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
 import app.kreate.android.R
+import app.kreate.database.Database
+import app.kreate.database.insertIgnore
 import app.kreate.database.models.PersistentQueue
 import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.NotificationButtons
 import it.fast4x.rimusic.enums.QueueLoopType
 import it.fast4x.rimusic.service.LoginRequiredException

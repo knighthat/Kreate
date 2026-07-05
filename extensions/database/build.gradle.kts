@@ -46,7 +46,7 @@ kotlin {
             implementation( libs.koin.core )
             implementation( libs.kermit )
             // Room
-            implementation( libs.room.runtime )
+            api( libs.room.runtime )
             implementation( libs.sqlite.bundled )
             // Compose
             implementation( libs.compose.kmp.runtime )

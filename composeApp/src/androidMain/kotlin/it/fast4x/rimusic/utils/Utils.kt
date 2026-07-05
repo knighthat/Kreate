@@ -21,6 +21,9 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.ThumbRating
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
+import app.kreate.database.Database
+import app.kreate.database.insertIgnore
+import app.kreate.database.mapIgnore
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Lyrics
@@ -42,7 +45,6 @@ import it.fast4x.innertube.utils.ProxyPreferences
 import it.fast4x.innertube.utils.getProxy
 import it.fast4x.kugou.KuGou
 import it.fast4x.lrclib.LrcLib
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import kotlinx.coroutines.delay

@@ -49,12 +49,12 @@ import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.innertube.toSong
+import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import app.kreate.preferences.Preferences
 import app.kreate.util.scrollingText
 import it.fast4x.innertube.Innertube
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.DownloadedStateMedia
 import it.fast4x.rimusic.service.MyDownloadHelper

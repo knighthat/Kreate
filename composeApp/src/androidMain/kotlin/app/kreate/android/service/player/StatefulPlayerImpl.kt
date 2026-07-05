@@ -31,15 +31,16 @@ import app.kreate.android.R
 import app.kreate.android.service.PlayerEventUpdateDiscord
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
+import app.kreate.database.Database
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
+import app.kreate.database.upsert
 import app.kreate.di.InternalPrefKey
 import app.kreate.di.Storage
 import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.models.NavigationEndpoint
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.PlayerServiceModern.Companion.SleepTimerNotificationId
 import it.fast4x.rimusic.utils.TimerJob

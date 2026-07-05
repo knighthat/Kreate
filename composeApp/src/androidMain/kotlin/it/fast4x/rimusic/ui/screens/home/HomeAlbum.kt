@@ -51,13 +51,14 @@ import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.tab.ItemSize
 import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.viewmodel.home.HomeAlbumsViewModel
+import app.kreate.database.Database
+import app.kreate.database.mapIgnore
 import app.kreate.database.models.Album
 import app.kreate.database.models.Song
 import app.kreate.database.repositories.AlbumTable
 import app.kreate.preferences.Preferences
 import app.kreate.util.MODIFIED_PREFIX
 import it.fast4x.compose.persist.persistList
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.AlbumsType
 import it.fast4x.rimusic.enums.FilterBy

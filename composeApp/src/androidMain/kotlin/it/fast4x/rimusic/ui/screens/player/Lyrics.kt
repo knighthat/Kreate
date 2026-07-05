@@ -93,6 +93,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.database.Database
 import app.kreate.database.models.Lyrics
 import app.kreate.preferences.Preferences
 import app.kreate.util.cleanPrefix
@@ -103,7 +104,6 @@ import it.fast4x.innertube.requests.lyrics
 import it.fast4x.kugou.KuGou
 import it.fast4x.lrclib.LrcLib
 import it.fast4x.lrclib.models.Track
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
@@ -445,7 +445,7 @@ fun Lyrics(
                                 }
                             }
 
-                            kotlin.runCatching {
+                            runCatching {
                                 LrcLib.lyrics(
                                     artist = artistName ?: "",
                                     title = title ?: "",
@@ -496,7 +496,7 @@ fun Lyrics(
 
                                     checkedLyricsLrc = true
 
-                                    kotlin.runCatching {
+                                    runCatching {
                                         KuGou.lyrics(
                                             artist = mediaMetadata.artist?.toString() ?: "",
                                             title = cleanPrefix(mediaMetadata.title?.toString() ?: ""),
@@ -555,7 +555,7 @@ fun Lyrics(
                         } else if (!isShowingSynchronizedLyrics && currentLyrics?.fixed == null) {
                             isError = false
                             lyrics = null
-                            kotlin.runCatching {
+                            runCatching {
                                 Innertube.lyrics(NextBody(videoId = mediaId))
                                     ?.onSuccess { fixedLyrics ->
                                         Database.asyncTransaction {

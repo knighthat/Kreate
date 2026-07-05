@@ -32,10 +32,10 @@ import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.ChangeSongThumbnail
 import app.kreate.android.themed.rimusic.component.song.SongItem
+import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.ui.components.MenuState

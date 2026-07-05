@@ -7,11 +7,11 @@ import android.provider.DocumentsContract
 import android.provider.MediaStore
 import androidx.core.net.toUri
 import app.kreate.constant.SortOrder
+import app.kreate.database.Database
 import app.kreate.database.models.Format
 import app.kreate.database.models.Song
 import app.kreate.preferences.Preferences
 import app.kreate.util.isDocumentTree
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.OnDeviceSongSortBy
 import it.fast4x.rimusic.utils.isAtLeastAndroid10
 import it.fast4x.rimusic.utils.isAtLeastAndroid11

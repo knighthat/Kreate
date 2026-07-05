@@ -22,11 +22,12 @@ import app.kreate.android.R
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.innertube.toSong
+import app.kreate.database.Database
+import app.kreate.database.insertIgnore
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongArtistMap
 import co.touchlab.kermit.Logger
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.isNetworkConnected
 import kotlinx.coroutines.Dispatchers

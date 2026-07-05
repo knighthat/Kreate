@@ -71,6 +71,9 @@ import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.constant.PlaylistSortBy
 import app.kreate.constant.SortOrder
+import app.kreate.database.Database
+import app.kreate.database.insertIgnore
+import app.kreate.database.mapIgnore
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
@@ -78,7 +81,6 @@ import app.kreate.di.CacheType
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.cleanPrefix
 import app.kreate.util.readableText
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.enums.NavRoutes

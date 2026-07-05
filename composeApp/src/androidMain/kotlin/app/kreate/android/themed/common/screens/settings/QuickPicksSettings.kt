@@ -28,8 +28,8 @@ import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.components.settings.EnumEntry
 import app.kreate.components.settings.SettingComponents
+import app.kreate.database.Database
 import app.kreate.preferences.Preferences
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.ui.components.themed.ConfirmationDialog

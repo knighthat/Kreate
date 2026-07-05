@@ -8,11 +8,11 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.database.Database
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.util.cleanPrefix
 import co.touchlab.kermit.Logger
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.utils.resize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

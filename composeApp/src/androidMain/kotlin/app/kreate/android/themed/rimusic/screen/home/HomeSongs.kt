@@ -47,12 +47,12 @@ import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.utils.shallowCompare
 import app.kreate.constant.SongSortBy
+import app.kreate.database.Database
 import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import app.kreate.util.toDuration
 import it.fast4x.compose.persist.persistList
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BuiltInPlaylist
 import it.fast4x.rimusic.service.MyDownloadHelper

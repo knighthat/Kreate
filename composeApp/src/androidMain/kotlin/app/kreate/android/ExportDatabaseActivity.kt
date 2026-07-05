@@ -5,7 +5,8 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import it.fast4x.rimusic.Database
+import app.kreate.database.Database
+import app.kreate.di.DATABASE_FILENAME
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.utils.TimeDateUtils
@@ -25,7 +26,7 @@ class ExportDatabaseActivity : AppCompatActivity() {
             try {
                 // Perform the copy operation in the background
                 applicationContext.contentResolver.openOutputStream(uri)?.use { outStream ->
-                    val dbFile = applicationContext.getDatabasePath(Database.FILE_NAME)
+                    val dbFile = applicationContext.getDatabasePath( DATABASE_FILENAME )
                     FileInputStream(dbFile).use { inStream ->
                         inStream.copyTo(outStream)
                     }

@@ -36,10 +36,10 @@ import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.components.settings.EnumEntry
 import app.kreate.components.settings.SettingComponents
+import app.kreate.database.Database
 import app.kreate.di.CacheType
 import app.kreate.preferences.Preferences
 import coil3.imageLoader
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.ui.styling.Dimensions

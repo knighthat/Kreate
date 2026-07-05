@@ -54,9 +54,9 @@ import app.kreate.android.themed.common.screens.details.SongDetailsScreen
 import app.kreate.android.themed.common.screens.settings.about.Licenses
 import app.kreate.android.themed.rimusic.screen.artist.ArtistAlbums
 import app.kreate.android.themed.rimusic.screen.playlist.YouTubePlaylist
+import app.kreate.database.Database
 import app.kreate.database.models.SearchQuery
 import app.kreate.preferences.Preferences
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.HomeScreenTabs
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.StatisticsType

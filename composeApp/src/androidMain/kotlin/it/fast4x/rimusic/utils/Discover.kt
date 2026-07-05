@@ -11,7 +11,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
-import it.fast4x.rimusic.Database
+import app.kreate.database.Database
 import kotlinx.coroutines.flow.first
 import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject

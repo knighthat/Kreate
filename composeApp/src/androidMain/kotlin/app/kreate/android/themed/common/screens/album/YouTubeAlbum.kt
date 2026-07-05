@@ -71,13 +71,14 @@ import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.renderDescription
 import app.kreate.android.utils.shallowCompare
+import app.kreate.database.Database
+import app.kreate.database.insertIgnore
 import app.kreate.database.models.Album
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongAlbumMap
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.scrollingText
 import co.touchlab.kermit.Logger
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState

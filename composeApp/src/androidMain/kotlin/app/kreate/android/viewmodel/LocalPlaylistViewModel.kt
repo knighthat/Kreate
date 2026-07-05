@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistSongsSort
+import app.kreate.database.Database
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.Song
 import app.kreate.preferences.Preferences
@@ -11,7 +12,6 @@ import co.touchlab.kermit.Logger
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.NextBody
 import it.fast4x.innertube.requests.relatedSongs
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.ui.components.MenuState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

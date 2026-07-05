@@ -46,11 +46,11 @@ import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.constant.PlaylistSortBy
 import app.kreate.constant.SortOrder
+import app.kreate.database.Database
 import app.kreate.database.models.Album
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.util.cleanPrefix
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.typography

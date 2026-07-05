@@ -16,9 +16,9 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheSpan
 import app.kreate.android.R
+import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import kotlinx.coroutines.CoroutineScope

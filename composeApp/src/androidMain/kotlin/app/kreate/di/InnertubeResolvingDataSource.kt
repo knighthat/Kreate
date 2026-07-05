@@ -13,7 +13,9 @@ import app.kreate.android.R
 import app.kreate.android.utils.CharUtils
 import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
+import app.kreate.database.Database
 import app.kreate.database.models.Format
+import app.kreate.database.upsert
 import co.touchlab.kermit.Logger
 import com.grack.nanojson.JsonWriter
 import com.metrolist.innertube.YouTube
@@ -25,7 +27,6 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.isSuccess
 import io.ktor.http.parseQueryString
 import io.ktor.util.network.UnresolvedAddressException
-import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.service.LoginRequiredException
 import it.fast4x.rimusic.service.MissingDecipherKeyException
