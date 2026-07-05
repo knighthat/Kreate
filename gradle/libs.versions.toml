@@ -37,7 +37,6 @@ jetbrains-annotations = "26.1.0"
 lombok = "1.18.46"
 junit5 = "6.1.0"
 webkit = "1.15.0"
-newpipe-extractor = "v0.26.0"
 compose-kmp = "1.11.1"
 license-report = "3.1.4"
 material3-kmp = "1.9.0"
@@ -48,8 +47,6 @@ lifecycle = "2.10.0"
 kotlinx-serialization = "1.11.0"
 koin = "4.2.2"
 kermit = "2.1.0"
-javax = "1"
-kotlinStdlib = "2.3.10"
 runner = "1.7.0"
 junit = "1.1.5"
 okio = "3.16.2"
@@ -174,7 +171,6 @@ vlcj = {  group = "uk.co.caprica", name = "vlcj", version.ref = "vlcj" }
 desugaring-nio = { group = "com.android.tools", name = "desugar_jdk_libs_nio", version.ref = "desugaring" }
 # This lib isn't used by the project, but it provides @Inject for discord module.
 # Doing this is easier than removing unsused files every update with the upstream
-javax = { module = "javax.inject:javax.inject", version.ref = "javax" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 colorpicker = { module = "com.github.skydoves:colorpicker-compose", version.ref = "colorpicker" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlibVersion" }
