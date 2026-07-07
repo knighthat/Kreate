@@ -72,35 +72,54 @@ kotlin {
             implementation(libs.material.icons.desktop.ext)
             implementation(libs.vlcj)
         }
-        androidMain.dependencies {
-            implementation( projects.metrolistInnertube )
+        androidMain {
+            dependencies {
+                implementation(libs.kotlinx.coroutines.guava)
+                implementation(libs.nanojson)
+                implementation(libs.androidx.webkit)
 
-            implementation(libs.kotlinx.coroutines.guava)
-            implementation(libs.nanojson)
-            implementation(libs.androidx.webkit)
+                implementation( libs.androidx.constraintlayout )
 
-            implementation( libs.androidx.constraintlayout )
+                implementation( libs.androidx.appcompat )
+                implementation( libs.androidx.appcompat.resources )
+                implementation( libs.androidx.palette )
 
-            implementation( libs.androidx.appcompat )
-            implementation( libs.androidx.appcompat.resources )
-            implementation( libs.androidx.palette )
+                implementation( libs.monetcompat )
+                implementation(libs.androidmaterial)
 
-            implementation( libs.monetcompat )
-            implementation(libs.androidmaterial)
+                // Player implementations
+                implementation( libs.media3.exoplayer )
+                implementation(libs.media3.session)
+                implementation( libs.media3.datasource.okhttp )
+                implementation( libs.androidyoutubeplayer )
 
-            // Player implementations
-            implementation( libs.media3.exoplayer )
-            implementation(libs.media3.session)
-            implementation( libs.media3.datasource.okhttp )
-            implementation( libs.androidyoutubeplayer )
+                implementation( libs.toasty )
 
-            implementation( libs.toasty )
+                // Dependency injection
+                implementation( libs.koin.android )
 
-            // Dependency injection
-            implementation( libs.koin.android )
+                implementation(libs.androidx.lifecycle.runtime)
+                implementation(libs.androidx.lifecycle.process)
 
-            implementation(libs.androidx.lifecycle.runtime)
-            implementation(libs.androidx.lifecycle.process)
+                implementation( libs.metrolist.extractor )
+            }
+            kotlin {
+                val metrolistDir = "$rootDir/modules/metrolist"
+                srcDirs(
+                    "$projectDir/composeApp/src/androidMain/kotlin",
+                    "$metrolistDir/app/src/main/kotlin",
+                    "$metrolistDir/innertube/src/main/kotlin/"
+                )
+                include(
+                    "app/kreate/**",
+                    "me/knighthat/**",
+                    "it/fast4x/**",
+                    "com/metrolist/music/utils/cipher/**",
+                    "com/metrolist/music/utils/potoken/**",
+                    "com/metrolist/music/utils/YTPlayerUtils.kt",
+                    "com/metrolist/innertube/**",
+                )
+            }
         }
         androidUnitTest.dependencies {
             implementation( libs.junit4 )
@@ -367,6 +386,10 @@ android {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
+    }
+
+    sourceSets["main"].apply {
+        assets.srcDirs("$rootDir/modules/metrolist/app/src/main/assets")
     }
 }
 

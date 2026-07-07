@@ -39,5 +39,3 @@ project(":database").projectDir = file("extensions/database")
 // Submodules
 include(":innertube")
 project(":innertube").projectDir = file("modules/innertube")
-include(":metrolistInnertube")
-project(":metrolistInnertube").projectDir = file("modules/metrolist/innertube")
