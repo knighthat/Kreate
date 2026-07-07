@@ -594,7 +594,7 @@ sealed class Preferences<K, V>(
             BooleanPref(preferences, Key.YOUTUBE_ALBUMS_SYNC, false)
         }
         val YOUTUBE_VISITOR_DATA by lazy {
-            StringPref(credentials, Key.YOUTUBE_VISITOR_DATA, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36")
+            StringPref(credentials, Key.YOUTUBE_VISITOR_DATA, "")
         }
         val YOUTUBE_SYNC_ID by lazy {
             StringPref(credentials, Key.YOUTUBE_SYNC_ID, "")
