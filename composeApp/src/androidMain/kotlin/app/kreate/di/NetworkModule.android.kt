@@ -1,10 +1,13 @@
 package app.kreate.di
 
+import android.content.Context
 import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import app.kreate.android.enums.DohServer
 import app.kreate.logging.OkHttpLogger
 import co.touchlab.kermit.Logger
+import io.github.siddharthjaswal.logpose.LogPoseConfig
+import io.github.siddharthjaswal.logpose.LogPoseInterceptor
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.compression.ContentEncoding
@@ -23,9 +26,12 @@ import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
 import me.knighthat.innertube.Constants
 import me.knighthat.utils.Toaster
+import okhttp3.Cache
+import okhttp3.ConnectionPool
 import okhttp3.Dns
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.dnsoverhttps.DnsOverHttps
@@ -130,6 +136,20 @@ actual val networkModule: Module = module {
                     .dns( get() )
                     .addInterceptor( requestLogger )
                     .addInterceptor( logpose )
+                    .connectionPool(
+                        ConnectionPool(10, 5, TimeUnit.MINUTES)
+                    )
+                    .connectTimeout( 30, TimeUnit.SECONDS )
+                    .readTimeout( 60, TimeUnit.SECONDS )
+                    .writeTimeout( 60, TimeUnit.SECONDS )
+                    .protocols( listOf(Protocol.HTTP_2, Protocol.HTTP_1_1) )
+                    .retryOnConnectionFailure( true )
+                    .cache(
+                        Cache(
+                            directory = get<Context>().cacheDir.resolve( "http_cache" ),
+                            maxSize = 50L * 1024L * 1024L // 50 MB
+                        )
+                    )
                     .build()
     }
     single {
