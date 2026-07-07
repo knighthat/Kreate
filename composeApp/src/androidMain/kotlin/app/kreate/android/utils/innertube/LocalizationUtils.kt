@@ -1,8 +1,8 @@
 package app.kreate.android.utils.innertube
 
 import app.kreate.constant.Language
-import app.kreate.preferences.APP_REGION
 import app.kreate.preferences.Preferences
+import app.kreate.util.getSystemCountryCode
 import me.knighthat.innertube.request.Localization
 import java.util.Locale
 

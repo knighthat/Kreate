@@ -23,6 +23,7 @@ import app.kreate.di.InternalPrefKey
 import app.kreate.di.InternalPreferences
 import app.kreate.di.PrefType
 import app.kreate.di.Storage
+import app.kreate.util.getSystemCountryCode
 import app.kreate.util.priomap.Priority
 import app.kreate.util.priomap.PriorityKey
 import app.kreate.util.priomap.createPrioritySortedMap
@@ -1008,6 +1009,9 @@ sealed class Preferences<K, V>(
         }
         val SEEN_CHANGELOGS_VERSION by lazy {
             StringPref(preferences, Key.SEEN_CHANGELOGS_VERSION, "")
+        }
+        val APP_REGION by lazy {
+            StringPref(preferences, Key.APP_REGION,  getSystemCountryCode())
         }
         val FLOATING_ICON_X_OFFSET by lazy {
             FloatPref(preferences, Key.FLOATING_ICON_X_OFFSET, 0F)

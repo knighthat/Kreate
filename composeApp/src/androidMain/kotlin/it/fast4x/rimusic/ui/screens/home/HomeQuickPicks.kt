@@ -79,7 +79,6 @@ import app.kreate.constant.SortOrder
 import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
-import app.kreate.preferences.APP_REGION
 import app.kreate.preferences.Preferences
 import app.kreate.util.scrollingText
 import co.touchlab.kermit.Logger

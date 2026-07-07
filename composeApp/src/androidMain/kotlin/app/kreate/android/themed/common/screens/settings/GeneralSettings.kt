@@ -32,7 +32,6 @@ import app.kreate.components.settings.EnumEntry
 import app.kreate.components.settings.ListEntry
 import app.kreate.components.settings.SettingComponents
 import app.kreate.constant.Language
-import app.kreate.preferences.APP_REGION
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
