@@ -14,6 +14,7 @@ import app.kreate.di.THUMBNAIL_SIZE
 import app.kreate.di.initKoin
 import app.kreate.logging.CoilLogger
 import app.kreate.logging.KoinBufferedLogger
+import app.kreate.logging.TimberToKermitLogger
 import app.kreate.logging.setupLogging
 import app.kreate.preferences.Preferences
 import coil3.ImageLoader
@@ -31,6 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import me.knighthat.innertube.Innertube
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
+import timber.log.Timber
 
 
 class MainApplication : Application(), SingletonImageLoader.Factory {
@@ -48,6 +50,8 @@ class MainApplication : Application(), SingletonImageLoader.Factory {
         }
 
         setupLogging( koinLogger )
+        Timber.uprootAll()      // Clear all
+        Timber.plant( TimberToKermitLogger() )
 
         Innertube.setProvider( InnertubeProvider() )
         YouTube.cookie = Preferences.YOUTUBE_COOKIES.value

@@ -101,7 +101,9 @@ kotlin {
                 implementation(libs.androidx.lifecycle.runtime)
                 implementation(libs.androidx.lifecycle.process)
 
+                // Metrolist
                 implementation( libs.metrolist.extractor )
+                implementation( libs.timber )
             }
             kotlin {
                 val metrolistDir = "$rootDir/modules/metrolist"

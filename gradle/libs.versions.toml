@@ -54,6 +54,7 @@ core-ktx = "1.13.1"
 datastore = "1.2.1"
 colorpicker = "1.2.0"
 kotlinStdlibVersion = "2.4.0"
+timber = "5.0.1"
 
 
 [libraries]
@@ -155,6 +156,7 @@ koin-navigation = { module = "io.insert-koin:koin-compose-viewmodel-navigation",
 # Logging
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kermit-io = { module = "co.touchlab:kermit-io", version.ref = "kermit" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 # Preferences
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
