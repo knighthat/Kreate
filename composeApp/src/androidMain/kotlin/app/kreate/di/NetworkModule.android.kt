@@ -121,21 +121,15 @@ actual val networkModule: Module = module {
     }
 
     single {
-        val interceptor = HttpLoggingInterceptor(OkHttpLogger())
-        interceptor.setLevel(
-            if( BuildConfig.DEBUG )
-                HttpLoggingInterceptor.Level.BODY
-            else
-                // Production doesn't need full body to be logged because
-                // it may contain user's credential(s).
-                // Basic request's destination and response code is enough
-                HttpLoggingInterceptor.Level.BASIC
-        )
+        val requestLogger = HttpLoggingInterceptor(OkHttpLogger())
+        requestLogger.setLevel( HttpLoggingInterceptor.Level.BASIC )
+        val logpose = LogPoseInterceptor(LogPoseConfig(enabled = BuildConfig.DEBUG))
 
         OkHttpClient.Builder()
                     .proxy( get() )
                     .dns( get() )
-                    .addInterceptor( interceptor )
+                    .addInterceptor( requestLogger )
+                    .addInterceptor( logpose )
                     .build()
     }
     single {

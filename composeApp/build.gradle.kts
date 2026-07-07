@@ -393,6 +393,14 @@ android {
     sourceSets["main"].apply {
         assets.srcDirs("$rootDir/modules/metrolist/app/src/main/assets")
     }
+
+    dependencies {
+        // Logging
+        // Install LogPose on Android Studio and ADB on system
+        // to use this dependency
+        debugImplementation( libs.logpose.android )
+        releaseImplementation( libs.logpose.noop )
+    }
 }
 
 java {

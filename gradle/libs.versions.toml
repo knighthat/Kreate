@@ -55,6 +55,7 @@ datastore = "1.2.1"
 colorpicker = "1.2.0"
 kotlinStdlibVersion = "2.4.0"
 timber = "5.0.1"
+logpose = "0.9.11"
 
 
 [libraries]
@@ -157,6 +158,8 @@ koin-navigation = { module = "io.insert-koin:koin-compose-viewmodel-navigation",
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kermit-io = { module = "co.touchlab:kermit-io", version.ref = "kermit" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+logpose-android = { module = "com.github.siddharthjaswal.logpose:logpose-android", version.ref = "logpose" }
+logpose-noop = { module = "com.github.siddharthjaswal.logpose:logpose-no-op", version.ref = "logpose" }
 
 # Preferences
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
