@@ -9,7 +9,9 @@
   [![Latest version download count](https://img.shields.io/github/downloads/knighthat/kreate/latest/total?label=latest%20📥&color=2ea44f&cacheSeconds=3600)](https://github.com/knighthat/kreate/releases/latest)
   [![Localization progress](https://badges.crowdin.net/kreate/localized.svg)](https://translate.kreate.knighthat.me/project/kreate)
   ![Total download count](https://img.shields.io/github/downloads/knighthat/kreate/total?label=total%20📥&color=2ea44f&cacheSeconds=86400
-)
+)\
+![Downloads last month](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fkitswas%2Ffdroid-metrics-dashboard%2Fraw%2Frefs%2Fheads%2Fmain%2Fprocessed%2Fmonthly%2Fme.knighthat.kreate.json&query=%24.total_downloads&logo=fdroid&label=Downloads%20last%20month)
+![Downloads (all time)](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fkitswas%2Ffdroid-metrics-dashboard%2Fraw%2Frefs%2Fheads%2Fmain%2Fprocessed%2Ftotal%2Fme.knighthat.kreate.json&query=%24.total_downloads&logo=fdroid&label=Downloads%20(all%20time))
 
   <br>
 
