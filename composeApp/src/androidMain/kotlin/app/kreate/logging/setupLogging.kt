@@ -1,8 +1,8 @@
 package app.kreate.logging
 
 
-import app.kreate.android.BuildConfig
 import app.kreate.preferences.Preferences
+import app.kreate.util.IS_DEBUG
 import app.kreate.util.getRuntimeLogDir
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
@@ -33,7 +33,7 @@ fun setupLogging( vararg bufferedLoggers: BufferedLogger ) {
     Logger.setLogWriters( platformLogWriter(), fileWriter )
     Logger.setMinSeverity(
         // Override severity when in debug mode
-        if( BuildConfig.DEBUG ) Severity.Verbose else severity
+        if( IS_DEBUG ) Severity.Verbose else severity
     )
 
     if( Logger.config.minSeverity == Severity.Verbose )

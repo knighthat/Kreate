@@ -1,6 +1,6 @@
 package app.kreate.logging
 
-import app.kreate.android.BuildConfig
+import app.kreate.util.IS_DEBUG
 import co.touchlab.kermit.Severity
 import coil3.request.NullRequestDataException
 import coil3.util.Logger
@@ -13,14 +13,14 @@ class CoilLogger : Logger {
     /**
      * The minimum level for this logger to log.
      *
-     * Defaults to [Logger.Level.Verbose] if [BuildConfig.DEBUG] is `true`.
+     * Defaults to [Logger.Level.Verbose] if [IS_DEBUG] is `true`.
      * Otherwise, use whatever current value of [Preferences.RUNTIME_LOG_SEVERITY]
      *
      * **ATTENTION**: Setter has no effect
      */
     override var minLevel: Logger.Level
         get() =
-            if ( BuildConfig.DEBUG )
+            if( IS_DEBUG )
                 Logger.Level.Verbose
             else
                 when ( app.kreate.preferences.Preferences.RUNTIME_LOG_SEVERITY.value ) {
@@ -37,7 +37,7 @@ class CoilLogger : Logger {
         if( message.isNullOrBlank() && throwable == null ) return
         // Ignore successful retrieval messages (unless in debug or lower)
         val containsSuccessful = message?.contains("Successful", true) ?: false
-        if( level === Logger.Level.Info && containsSuccessful && !BuildConfig.DEBUG ) return
+        if( level === Logger.Level.Info && containsSuccessful && !IS_DEBUG ) return
         // Message and stacktrace from these exception is usually useless
         if( throwable is NullRequestDataException || throwable is IllegalStateException ) return
 

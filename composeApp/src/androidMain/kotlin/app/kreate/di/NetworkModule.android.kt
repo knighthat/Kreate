@@ -1,10 +1,10 @@
 package app.kreate.di
 
 import android.content.Context
-import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import app.kreate.android.enums.DohServer
 import app.kreate.logging.OkHttpLogger
+import app.kreate.util.IS_DEBUG
 import co.touchlab.kermit.Logger
 import io.github.siddharthjaswal.logpose.LogPoseConfig
 import io.github.siddharthjaswal.logpose.LogPoseInterceptor
@@ -129,7 +129,7 @@ actual val networkModule: Module = module {
     single {
         val requestLogger = HttpLoggingInterceptor(OkHttpLogger())
         requestLogger.setLevel( HttpLoggingInterceptor.Level.BASIC )
-        val logpose = LogPoseInterceptor(LogPoseConfig(enabled = BuildConfig.DEBUG))
+        val logpose = LogPoseInterceptor(LogPoseConfig(enabled = IS_DEBUG))
 
         OkHttpClient.Builder()
                     .proxy( get() )

@@ -16,9 +16,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import app.kreate.preferences.Preferences
+import app.kreate.util.IS_DEBUG
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import kotlinx.coroutines.Dispatchers
@@ -63,7 +63,7 @@ fun DiscordLoginAndGetToken( discord: Discord, onDone: () -> Unit ) {
                     @JavascriptInterface
                     @Suppress("unused")     // To stop IDE from complaining
                     fun onRetrieveToken( token: String ) {
-                        if( token.isNotBlank() && BuildConfig.DEBUG )
+                        if( token.isNotBlank() && IS_DEBUG )
                             // This is intentional, using logcat bypasses Kermit,
                             // Which bypasses logging to file
                             Log.v( "Discord", token )

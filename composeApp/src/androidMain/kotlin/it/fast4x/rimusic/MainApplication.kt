@@ -6,6 +6,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import androidx.core.content.getSystemService
 import androidx.lifecycle.ProcessLifecycleOwner
+import app.kreate.android.BuildConfig
 import app.kreate.android.drawable.AppIcon
 import app.kreate.android.service.innertube.InnertubeProvider
 import app.kreate.android.utils.ConnectivityUtils
@@ -16,6 +17,7 @@ import app.kreate.logging.CoilLogger
 import app.kreate.logging.KoinBufferedLogger
 import app.kreate.logging.TimberToKermitLogger
 import app.kreate.logging.setupLogging
+import app.kreate.util.setDebugMode
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
@@ -37,6 +39,9 @@ class MainApplication : Application(), SingletonImageLoader.Factory {
 
     override fun onCreate() {
         super.onCreate()
+
+        // Set this at the earliest to lock the setter
+        setDebugMode( BuildConfig.DEBUG )
 
         Thread.setDefaultUncaughtExceptionHandler( CrashHandler(this) )
 

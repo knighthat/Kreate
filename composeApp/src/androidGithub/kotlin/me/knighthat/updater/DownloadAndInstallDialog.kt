@@ -34,8 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
-import app.kreate.android.BuildConfig
 import app.kreate.android.R
+import app.kreate.util.IS_DEBUG
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.utils.isAtLeastAndroid7
@@ -105,7 +105,7 @@ object DownloadAndInstallDialog: Dialog {
 
         // Create a download simulation instead of hitting CDN server multiple times
         // during development. But also allows download if file doesn't exist
-        if( BuildConfig.DEBUG && apkFile.exists() ) {
+        if( IS_DEBUG && apkFile.exists() ) {
             var bytesDownloaded = UInt.MIN_VALUE
             val tenPercent = Updater.build.size * 10u / 100u
 

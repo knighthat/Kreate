@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.dialog.Dialog
+import app.kreate.util.IS_DEBUG
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.bold
 import kotlinx.coroutines.launch
@@ -79,7 +80,7 @@ open class ChangelogsDialog(context: Context): Dialog() {
 
     @Composable
     override fun Render() {
-        if( BuildConfig.DEBUG ) return
+        if( IS_DEBUG ) return
 
         // Initialize this ASAP
         if( !::pagerState.isInitialized )

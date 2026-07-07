@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import androidx.core.net.toUri
 import app.kreate.android.BuildConfig
+import app.kreate.util.IS_DEBUG
 import me.knighthat.utils.TimeDateUtils
 import java.io.File
 import java.io.PrintWriter
@@ -40,7 +41,7 @@ class CrashHandler(
      */
     override fun uncaughtException( t: Thread, e: Throwable ) {
         // Make sure error still prints to [System.err]
-        if( BuildConfig.DEBUG ) e.printStackTrace()
+        if( IS_DEBUG ) e.printStackTrace()
 
         val crashlogsDir = getDir( context )
         if( !crashlogsDir.exists() )
