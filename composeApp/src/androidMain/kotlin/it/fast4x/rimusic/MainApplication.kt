@@ -16,7 +16,6 @@ import app.kreate.logging.CoilLogger
 import app.kreate.logging.KoinBufferedLogger
 import app.kreate.logging.TimberToKermitLogger
 import app.kreate.logging.setupLogging
-import app.kreate.preferences.Preferences
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
@@ -25,7 +24,6 @@ import coil3.disk.DiskCache
 import coil3.memory.MemoryCache
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.request.crossfade
-import com.metrolist.innertube.YouTube
 import io.ktor.client.HttpClient
 import it.fast4x.rimusic.utils.AppLifecycleTracker
 import kotlinx.coroutines.Dispatchers
@@ -54,9 +52,6 @@ class MainApplication : Application(), SingletonImageLoader.Factory {
         Timber.plant( TimberToKermitLogger() )
 
         Innertube.setProvider( InnertubeProvider() )
-        YouTube.cookie = Preferences.YOUTUBE_COOKIES.value
-        YouTube.visitorData = Preferences.YOUTUBE_VISITOR_DATA.value
-        YouTube.dataSyncId = Preferences.YOUTUBE_SYNC_ID.value
 
         // Register network callback
         getSystemService<ConnectivityManager>()?.run {

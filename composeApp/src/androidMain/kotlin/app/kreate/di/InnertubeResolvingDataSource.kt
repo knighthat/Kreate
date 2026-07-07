@@ -313,15 +313,7 @@ private fun getPlayableUrl( songId: String ): YTPlayerUtils.PlaybackData = runBl
         } else
             logger.d { "Stream url of $songId is cached" }
     } else {
-        if( YouTube.visitorData == null )
-            YouTube.visitorData()
-                   .onFailure { err ->
-                       logger.e( "", err )
-                   }
-                   .onSuccess {
-                       YouTube.visitorData = it
-                       logger.d { "Fetched visitorData: $it" }
-                   }
+        YouTube.acquireVisitorData()
 
         val connManager = get<Context>(Context::class.java).getSystemService<ConnectivityManager>()!!
         val audioQuality = app.kreate.preferences.Preferences.AUDIO_QUALITY.value

@@ -52,16 +52,13 @@ fun YouTubeLogin( onDone: () -> Unit ) {
 
                         val cookies = CookieManager.getInstance().getCookie( url )
                         Preferences.YOUTUBE_COOKIES.update( cookies )
-                        YouTube.cookie = cookies
                         evaluateJavascript( "window.yt.config_.VISITOR_DATA" ) { result ->
                             val visitorData = if( result != "null" ) result.removeSurrounding("\"") else ""
                             Preferences.YOUTUBE_VISITOR_DATA.update( visitorData )
-                            YouTube.visitorData = visitorData
                         }
                         evaluateJavascript( "window.yt.config_.DATASYNC_ID" ) { result ->
                             val datasyncId = if( result != "null" ) result.removeSurrounding("\"").substringBefore("||") else ""
                             Preferences.YOUTUBE_SYNC_ID.update( datasyncId )
-                            YouTube.dataSyncId = datasyncId
                         }
                         CoroutineScope(Dispatchers.IO).launch {
                             YouTube.accountInfo()
