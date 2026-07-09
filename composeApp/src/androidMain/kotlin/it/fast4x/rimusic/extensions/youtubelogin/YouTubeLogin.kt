@@ -17,10 +17,10 @@ import androidx.room.concurrent.AtomicBoolean
 import app.kreate.android.R
 import app.kreate.di.PrefType
 import app.kreate.di.Storage
+import app.kreate.gateway.innertube.YouTube
 import app.kreate.preferences.Preferences
 import app.kreate.util.IS_DEBUG
 import co.touchlab.kermit.Logger
-import com.metrolist.innertube.YouTube
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -129,19 +129,21 @@ fun YouTubeLogin( onDone: () -> Unit ) {
                                 }
 
                                 withContext( Dispatchers.IO ) {
-                                    YouTube.accountInfo()
-                                           .onFailure { err ->
-                                               logger.e( "", err )
-                                               Toaster.e( R.string.error_failed_to_acquire_account_info )
-                                           }
-                                           .onSuccess {
-                                               credentials.edit { prefs ->
-                                                   prefs[Preferences.Key.YOUTUBE_ACCOUNT_NAME] = it.name
-                                                   prefs[Preferences.Key.YOUTUBE_ACCOUNT_EMAIL] = it.email.orEmpty()
-                                                   prefs[Preferences.Key.YOUTUBE_SELF_CHANNEL_HANDLE] = it.channelHandle.orEmpty()
-                                                   prefs[Preferences.Key.YOUTUBE_ACCOUNT_AVATAR] = it.thumbnailUrl.orEmpty()
-                                               }
-                                           }
+                                    get<YouTube>(YouTube::class.java)
+                                        .account
+                                        .getAccountDetails()
+                                        .onFailure { err ->
+                                            logger.e( "", err )
+                                            Toaster.e( R.string.error_failed_to_acquire_account_info )
+                                        }
+                                        .onSuccess {
+                                            credentials.edit { prefs ->
+                                                prefs[Preferences.Key.YOUTUBE_ACCOUNT_NAME] = it.name
+                                                prefs[Preferences.Key.YOUTUBE_ACCOUNT_EMAIL] = it.email.orEmpty()
+                                                prefs[Preferences.Key.YOUTUBE_SELF_CHANNEL_HANDLE] = it.channelHandle.orEmpty()
+                                                prefs[Preferences.Key.YOUTUBE_ACCOUNT_AVATAR] = it.thumbnailUrl.lastOrNull()?.url.orEmpty()
+                                            }
+                                        }
                                 }
                             }
                         }

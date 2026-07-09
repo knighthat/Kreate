@@ -7,11 +7,9 @@ import app.kreate.android.R
 import app.kreate.android.utils.innertube.InnertubeUtils
 import app.kreate.database.Database
 import app.kreate.database.models.Album
+import app.kreate.gateway.innertube.YouTube
 import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
-import com.metrolist.innertube.YouTube
-import com.metrolist.innertube.models.AlbumItem
-import com.metrolist.innertube.pages.BrowseResult
 import it.fast4x.rimusic.enums.AlbumsType
 import it.fast4x.rimusic.enums.FilterBy
 import kotlinx.coroutines.Dispatchers
@@ -77,33 +75,32 @@ class HomeAlbumsViewModel : ViewModel(), KoinComponent {
         }
         if( !isEnabled ) return
 
-        YouTube.browse( "FEmusic_library_landing", null )
-               .onFailure { err ->
-                   Logger.e( "", err, "HomeAlbum" )
-                   Toaster.e(
-                       R.string.error_failed_to_sync_tab,
-                       get<Context>().getString( R.string.albums ).lowercase()
-                   )
-               }
-               .onSuccess { result ->
-                   result.items
-                         .flatMap( BrowseResult.Item::items )
-                         .mapNotNull { it as? AlbumItem }
-                         .map { item ->
-                             Album(
-                                 id = item.id,
-                                 title = item.title,
-                                 thumbnailUrl = item.thumbnail,
-                                 year = item.year?.toString(),
-                                 authorsText = item.artists?.joinToString { it.name },
-                                 shareUrl = item.shareLink,
-                                 isYoutubeAlbum = true
-                             )
-                         }
-                         .also { albums ->
-                             _syncedAlbums.update { albums }
-                         }
-               }
+        get<YouTube>()
+            .account
+            .getLikedAlbums()
+            .onFailure { err ->
+               Logger.e( "", err, "HomeAlbum" )
+               Toaster.e(
+                   R.string.error_failed_to_sync_tab,
+                   get<Context>().getString( R.string.albums ).lowercase()
+               )
+            }
+            .onSuccess { result ->
+               result.map { item ->
+                         Album(
+                             id = item.id,
+                             title = item.name,
+                             thumbnailUrl = item.thumbnails.lastOrNull()?.url,
+                             year = item.year.toString(),
+                             authorsText = item.artists.joinToString { it.text },
+                             shareUrl = item.urlCanonical,
+                             isYoutubeAlbum = true
+                         )
+                     }
+                     .also { albums ->
+                         _syncedAlbums.update { albums }
+                     }
+            }
     }
 
     fun onRefresh() {

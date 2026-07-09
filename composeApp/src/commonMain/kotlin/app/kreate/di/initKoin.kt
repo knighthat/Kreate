@@ -30,6 +30,7 @@ fun initKoin( config: KoinAppDeclaration? = null ) {
             networkModule,
             imageModule,
             externalServicesModule,
+            gatewayModule,
             *platformModules
         )
     }

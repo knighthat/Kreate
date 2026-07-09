@@ -7,11 +7,9 @@ import app.kreate.android.R
 import app.kreate.android.utils.innertube.InnertubeUtils
 import app.kreate.database.Database
 import app.kreate.database.models.Artist
+import app.kreate.gateway.innertube.YouTube
 import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
-import com.metrolist.innertube.YouTube
-import com.metrolist.innertube.models.ArtistItem
-import com.metrolist.innertube.pages.BrowseResult
 import it.fast4x.rimusic.enums.ArtistsType
 import it.fast4x.rimusic.enums.FilterBy
 import kotlinx.coroutines.Dispatchers
@@ -77,30 +75,29 @@ class HomeArtistsViewModel : ViewModel(), KoinComponent {
         }
         if( !isEnabled ) return
 
-        YouTube.browse( "FEmusic_library_landing", null )
-               .onFailure { err ->
-                   Logger.e( "", err, "HomeArtists" )
-                   Toaster.e(
-                       R.string.error_failed_to_sync_tab,
-                       get<Context>().getString( R.string.artists ).lowercase()
-                   )
-               }
-               .onSuccess { result ->
-                   result.items
-                         .flatMap( BrowseResult.Item::items )
-                         .mapNotNull { it as? ArtistItem }
-                         .map { item ->
-                             Artist(
-                                 id = item.id,
-                                 name = item.title,
-                                 thumbnailUrl = item.thumbnail,
-                                 isYoutubeArtist = true
-                             )
-                         }
-                         .also { artists ->
-                             _syncedArtists.update { artists }
-                         }
-               }
+        get<YouTube>()
+            .account
+            .getLikedArtists()
+            .onFailure { err ->
+               Logger.e( "", err, "HomeArtists" )
+               Toaster.e(
+                   R.string.error_failed_to_sync_tab,
+                   get<Context>().getString( R.string.artists ).lowercase()
+               )
+            }
+            .onSuccess { result ->
+               result.map { item ->
+                         Artist(
+                             id = item.id,
+                             name = item.name,
+                             thumbnailUrl = item.thumbnails.lastOrNull()?.url,
+                             isYoutubeArtist = true
+                         )
+                     }
+                     .also { artists ->
+                         _syncedArtists.update { artists }
+                     }
+            }
     }
 
     fun onRefresh() {

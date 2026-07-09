@@ -8,11 +8,9 @@ import app.kreate.android.utils.innertube.InnertubeUtils
 import app.kreate.database.Database
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
+import app.kreate.gateway.innertube.YouTube
 import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
-import com.metrolist.innertube.YouTube
-import com.metrolist.innertube.models.PlaylistItem
-import com.metrolist.innertube.pages.BrowseResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,36 +65,35 @@ class HomeLibraryViewModel : ViewModel(), KoinComponent {
         }
         if( !isEnabled ) return
 
-        YouTube.browse( "FEmusic_library_landing", null )
-               .onFailure { err ->
-                   Logger.e( "", err, "HomePlaylist" )
-                   Toaster.e(
-                       R.string.error_failed_to_sync_tab,
-                       get<Context>().getString( R.string.playlists ).lowercase()
-                   )
-               }
-               .onSuccess { result ->
-                   result.items
-                         .flatMap( BrowseResult.Item::items )
-                         .mapNotNull { it as? PlaylistItem }
-                         .map { item ->
-                             PlaylistPreview(
-                                 playlist = Playlist(
-                                     name = item.title,
-                                     browseId = item.id,
-                                     isEditable = false,
-                                     isYoutubePlaylist = true,
-                                     isPinned = false,
-                                     isMonthly = false
-                                 ),
-                                 songCount = item.songCountText?.toIntOrNull() ?: -1,
-                                 thumbnailUrl = item.thumbnail
-                             )
-                         }
-                         .also { playlists ->
-                             _syncedPlaylists.update { playlists }
-                         }
-               }
+        get<YouTube>()
+            .account
+            .getLikedPlaylists()
+            .onFailure { err ->
+               Logger.e( "", err, "HomePlaylist" )
+               Toaster.e(
+                   R.string.error_failed_to_sync_tab,
+                   get<Context>().getString( R.string.playlists ).lowercase()
+               )
+            }
+            .onSuccess { result ->
+               result.map { item ->
+                         PlaylistPreview(
+                             playlist = Playlist(
+                                 name = item.name,
+                                 browseId = item.id,
+                                 isEditable = false,
+                                 isYoutubePlaylist = true,
+                                 isPinned = false,
+                                 isMonthly = false
+                             ),
+                             songCount = -1,
+                             thumbnailUrl = item.thumbnails.lastOrNull()?.url
+                         )
+                     }
+                     .also { playlists ->
+                         _syncedPlaylists.update { playlists }
+                     }
+            }
     }
 
     fun onRefresh() {
