@@ -44,7 +44,8 @@ class CoilBitmapLoader(
             }
             val result = imageLoader.execute( request )
 
-            return@future result.image?.toBitmap() ?: throw IllegalStateException( "failed to load bitmap from $uri" )
+            return@future result.image?.toBitmap()?.copy( Bitmap.Config.ARGB_8888, false )
+                ?: throw IllegalStateException( "failed to load bitmap from $uri" )
         }
 
     // Prioritize loadBitmap (uses coil3) to get image rather than
