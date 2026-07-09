@@ -44,7 +44,8 @@ class CoilBitmapLoader(
             }
             val result = imageLoader.execute( request )
 
-            return@future result.image?.toBitmap().copyForMediaSession( uri )
+            return@future result.image?.toBitmap()?.copy( Bitmap.Config.ARGB_8888, false )
+                ?: throw IllegalStateException( "failed to load bitmap from $uri" )
         }
 
     // Prioritize loadBitmap (uses coil3) to get image rather than
@@ -56,27 +57,4 @@ class CoilBitmapLoader(
             decodeBitmap( metadata.artworkData!! )
         else
             null
-}
-
-internal fun Bitmap?.copyForMediaSession(
-    uri: Uri,
-    copyBitmap: Bitmap.() -> Bitmap? = { copy( Bitmap.Config.ARGB_8888, false ) }
-): Bitmap {
-    val source = this ?: throw IllegalStateException( "failed to load bitmap from $uri" )
-
-    if( source.isRecycled )
-        throw IllegalStateException( "failed to load bitmap from $uri because source bitmap is recycled" )
-
-    // MediaSession may scale artwork after Coil cache holders have moved on.
-    // Return an owned bitmap when possible so another holder cannot recycle it.
-    val mediaSessionBitmap = try {
-        source.copyBitmap()
-    } catch( _: OutOfMemoryError ) {
-        null
-    } ?: source
-
-    if( mediaSessionBitmap.isRecycled )
-        throw IllegalStateException( "failed to load bitmap from $uri because bitmap is recycled" )
-
-    return mediaSessionBitmap
 }
