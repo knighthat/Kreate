@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="second">
-        <item quantity="one">%d second</item>
+        <item quantity="one">%d segundo</item>
         <item quantity="other">%d segundos</item>
     </plurals>
     <plurals name="query">
