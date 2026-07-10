@@ -131,6 +131,7 @@ UI/UX designers are welcome!
 | [HypnoticCanvas](https://github.com/mikepenz/HypnoticCanvas/) | [mikepenz](https://github.com/mikepenz)                                                                                                | A shader modifier for Compose Multiplatform / Jetpack Compose |
 | App logo                                                      | [Nicouschulas](https://github.com/Nicouschulas)                                                                                        | Previous logos from [MedieroAF](https://github.com/MedieroAF) |
 | Badges                                                        | [Shields.IO](https://shields.io/), [dcbadge](https://github.com/gitlimes/dcbadge)                                                      |                                                               |
+| Innertube implementation | [Metrolist](https://github.com/MetrolistGroup/Metrolist/releases) | |
 
 # 💸 Donation
 
