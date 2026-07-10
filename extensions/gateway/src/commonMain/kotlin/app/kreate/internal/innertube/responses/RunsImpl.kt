@@ -10,6 +10,8 @@ internal data class RunsImpl(
     override val accessibility: AccessibilityImpl?
 ): Runs {
 
+    override fun iterator(): Iterator<String> = runs.map( Runs.Run::text ).iterator()
+
     @Serializable
     internal data class RunImpl(
         override val bold: Boolean?,

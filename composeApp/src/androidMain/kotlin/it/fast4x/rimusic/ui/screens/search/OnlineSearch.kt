@@ -1,5 +1,6 @@
 package it.fast4x.rimusic.ui.screens.search
 
+import androidx.annotation.OptIn
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -25,6 +26,8 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,34 +42,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
+import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
-import app.kreate.android.utils.shallowCompare
+import app.kreate.android.viewmodel.OnlineSearchViewModel
 import app.kreate.database.Database
 import app.kreate.database.models.SearchQuery
-import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.models.bodies.SearchSuggestionsBody
-import it.fast4x.innertube.requests.searchSuggestionsWithItems
+import app.kreate.gateway.innertube.PageType
+import app.kreate.gateway.innertube.models.InnertubeAlbum
+import app.kreate.gateway.innertube.models.InnertubeArtist
+import app.kreate.gateway.innertube.models.InnertubeItem
+import app.kreate.gateway.innertube.models.InnertubePlaylist
+import app.kreate.gateway.innertube.models.InnertubeSearchSuggestion
+import app.kreate.gateway.innertube.models.InnertubeSong
+import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import it.fast4x.rimusic.colorPalette
+import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
@@ -77,7 +90,6 @@ import it.fast4x.rimusic.ui.components.themed.TitleMiniSection
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.align
-import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.secondary
@@ -88,6 +100,33 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
+
+
+@OptIn(UnstableApi::class)
+private fun InnertubeSearchSuggestion.Item.toMediaItem(): MediaItem {
+    val metadata = MediaMetadata.Builder()
+        .setMediaType( MediaMetadata.MEDIA_TYPE_MUSIC )
+        .setTitle( name )
+        .setArtworkUri( thumbnails.lastOrNull()?.url?.toUri() )
+
+    subtitle?.runs
+            ?.firstOrNull {
+                it.navigationEndpoint
+                    ?.browseEndpoint
+                    ?.browseEndpointContextSupportedConfigs
+                    ?.browseEndpointContextMusicConfig
+                    ?.pageType == PageType.ARTIST
+            }
+            ?.also { metadata.setArtist(it.text) }
+
+    return MediaItem.Builder()
+        .setMediaId( id )
+        .setMediaMetadata( metadata.build() )
+        .setUri( id.toUri() )
+        .setCustomCacheKey( id )
+        .build()
+}
 
 @UnstableApi
 @ExperimentalFoundationApi
@@ -100,10 +139,10 @@ fun OnlineSearch(
     onTextFieldValueChanged: (TextFieldValue) -> Unit,
     onSearch: (String) -> Unit,
     decorationBox: @Composable (@Composable () -> Unit) -> Unit,
+    viewModel: OnlineSearchViewModel = koinViewModel()
 ) {
-    val appearance = LocalAppearance.current
     // Settings
-    val isHistoryPaused by app.kreate.preferences.Preferences.PAUSE_SEARCH_HISTORY.collectAsStateWithLifecycle()
+    val isHistoryPaused by Preferences.PAUSE_SEARCH_HISTORY.collectAsStateWithLifecycle()
 
     var reloadHistory by remember {
         mutableStateOf(false)
@@ -118,33 +157,11 @@ fun OnlineSearch(
                 .map{ list -> list.reversed() }
     }.collectAsState( emptyList(), Dispatchers.IO )
 
-    //var suggestionsResult by persist<Result<List<String>?>?>("search/online/suggestionsResult")
-    var suggestionsResult by remember {
-        mutableStateOf<Result<Innertube.SearchSuggestions>?>(null)
-    }
-
+    val suggestion by viewModel.suggestion.collectAsStateWithLifecycle()
+    val isFetchingSuggestions by viewModel.isFetchingSuggestions.collectAsStateWithLifecycle()
     LaunchedEffect(textFieldValue.text) {
-        if (textFieldValue.text.isNotEmpty()) {
-            delay(200)
-            //suggestionsResult =
-            //    Innertube.searchSuggestions(SearchSuggestionsBody(input = textFieldValue.text))
-            suggestionsResult =
-                Innertube.searchSuggestionsWithItems(SearchSuggestionsBody(input = textFieldValue.text))
-        }
+        viewModel.onQueryChanged( textFieldValue.text )
     }
-
-    /*
-    val playlistId = remember(textFieldValue.text) {
-        val isPlaylistUrl = listOf(
-            "https://www.youtube.com/playlist?",
-            "https://youtube.com/playlist?",
-            "https://music.youtube.com/playlist?",
-            "https://m.youtube.com/playlist?"
-        ).any(textFieldValue.text::startsWith)
-
-        if (isPlaylistUrl) textFieldValue.text.toUri().getQueryParameter("list") else null
-    }
-    */
 
     val rippleIndication = ripple(bounded = false)
     val timeIconPainter = painterResource(R.drawable.search_circle)
@@ -156,12 +173,11 @@ fun OnlineSearch(
         FocusRequester()
     }
 
-    val thumbnailRoundness by app.kreate.preferences.Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
+    val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
 
     val lazyListState = rememberLazyListState()
 
     val menuState = LocalMenuState.current
-    val hapticFeedback = LocalHapticFeedback.current
     val player: StatefulPlayer = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
 
@@ -177,7 +193,6 @@ fun OnlineSearch(
                     1f
             )
     ) {
-        val currentMediaItem by player.currentMediaItemState.collectAsState()
         val songItemValues = remember( colorPalette, typography ) {
             SongItem.Values.from( colorPalette, typography )
         }
@@ -193,25 +208,6 @@ fun OnlineSearch(
                 key = "header",
                 contentType = 0
             ) {
-                /*
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    HeaderWithIcon(
-                        title = "${stringResource(R.string.search)} ${stringResource(R.string.online)}",
-                        iconId = R.drawable.globe,
-                        enabled = true,
-                        showIcon = true,
-                        modifier = Modifier
-                            .padding(bottom = 8.dp),
-                        onClick = {}
-                    )
-
-                }
-                 */
                 Header(
                     titleContent = {
                         BasicTextField(
@@ -240,156 +236,103 @@ fun OnlineSearch(
                                 .fillMaxWidth()
                         )
                     },
-                    actionsContent = {
-                        /*
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(horizontal = 40.dp)
-                                .fillMaxWidth()
-                        ) {
-                            IconButton(
-                                onClick = onAction1,
-                                icon = R.drawable.globe,
-                                color = colorPalette().favoritesIcon,
-                                modifier = Modifier
-                                    .size(24.dp)
-                            )
-                            IconButton(
-                                onClick = onAction2,
-                                icon = R.drawable.library,
-                                color = colorPalette().favoritesIcon,
-                                modifier = Modifier
-                                    .size(24.dp)
-                            )
-                            IconButton(
-                                onClick = onAction3,
-                                icon = R.drawable.link,
-                                color = colorPalette().favoritesIcon,
-                                modifier = Modifier
-                                    .size(24.dp)
-                            )
-
-                            /*
-                            IconButton(
-                                onClick = onAction4,
-                                icon = R.drawable.chevron_back,
-                                color = colorPalette().favoritesIcon,
-                                modifier = Modifier
-                                    .size(24.dp)
-                            )
-                             */
-                        }
-                        /*
-                        if (playlistId != null) {
-                            val isAlbum = playlistId.startsWith("OLAK5uy_")
-
-                            SecondaryTextButton(
-                                text = "View ${if (isAlbum) "album" else "playlist"}",
-                                onClick = { onViewPlaylist(textFieldValue.text) }
-                            )
-                        }
-
-                        Spacer(
-                            modifier = Modifier
-                                .weight(1f)
-                        )
-
-                         */
-                        /*
-                        if (textFieldValue.text.isNotEmpty()) {
-                            SecondaryTextButton(
-                                text = stringResource(R.string.clear),
-                                onClick = { onTextFieldValueChanged(TextFieldValue()) }
-                            )
-                        }
-                         */
-
-                         */
-                    },
-                    /*
-                    modifier = Modifier
-                        .drawBehind {
-
-                            val strokeWidth = 1 * density
-                            val y = size.height - strokeWidth / 2
-
-                            drawLine(
-                                color = colorPalette().textDisabled,
-                                start = Offset(x = 0f, y = y/2),
-                                end = Offset(x = size.maxDimension, y = y/2),
-                                strokeWidth = 2.dp.toPx()
-                            )
-                        }
-                     */
+                    actionsContent = {}
                 )
             }
 
-            suggestionsResult?.getOrNull()?.let { suggestions ->
+            suggestion?.also { suggestion ->
+                if( suggestion.items.isNotEmpty() )
+                    item {
+                        TitleMiniSection(title = stringResource(R.string.searches_suggestions),
+                            modifier = Modifier.padding(start = 12.dp).padding(vertical = 10.dp)
+                        )
+                    }
 
-                item {
-                    TitleMiniSection(title = stringResource(R.string.searches_suggestions),
-                        modifier = Modifier.padding(start = 12.dp).padding(vertical = 10.dp)
-                    )
-                }
+                items(
+                    items = suggestion.items.distinctBy( InnertubeItem::id ),
+                    key = InnertubeItem::id
+                ) { item ->
+                    ListItem(
+                        headlineContent = {
+                            SongItem.Title( item.name, songItemValues )
+                        },
+                        supportingContent = {
+                            // Only render subtitle if there's something to render
+                            val subtitle = item.subtitle?.joinToString( "" ) ?: return@ListItem
+                            SongItem.Artists( subtitle, songItemValues )
+                        },
+                        leadingContent = {
+                            val thumbnailUrl = item.thumbnails.lastOrNull()?.url
 
-                suggestions.recommendedSong?.let { song ->
-                    item{
-                        SongItem.Render(
-                            innertubeSong = song,
-                            hapticFeedback = hapticFeedback,
-                            values = songItemValues,
-                            isPlaying = song.shallowCompare( currentMediaItem ),
+                            when( item.type ) {
+                                InnertubeSong::class -> SongItem.Thumbnail(
+                                    thumbnailUrl = thumbnailUrl,
+                                    values = songItemValues,
+                                    sizeDp = SongItem.thumbnailSize()
+                                )
+
+                                InnertubeAlbum::class -> AlbumItem.Thumbnail(
+                                    item.id,
+                                    thumbnailUrl = thumbnailUrl,
+                                    sizeDp = SongItem.thumbnailSize() ,
+                                    showPlatformIcon = false
+                                )
+
+                                InnertubeArtist::class -> ArtistItem.Thumbnail(
+                                    item.id,
+                                    thumbnailUrl = thumbnailUrl,
+                                    sizeDp = SongItem.thumbnailSize() ,
+                                    showPlatformIcon = false
+                                )
+
+                                InnertubePlaylist::class -> PlaylistItem.Thumbnail(
+                                    item.id,
+                                    thumbnailUrl = thumbnailUrl,
+                                    sizeDp = SongItem.thumbnailSize() ,
+                                    showPlatformIcon = false
+                                )
+                            }
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent
+                        ),
+                        modifier = Modifier.combinedClickable(
+                            role = Role.Button,
+                            onClick = {
+                                when( item.type ) {
+                                    InnertubeSong::class -> player.forcePlay( item.toMediaItem() )
+                                    InnertubeAlbum::class -> NavRoutes.YT_ALBUM.navigateHere( navController, item.id )
+                                    InnertubeArtist::class -> NavRoutes.YT_ARTIST.navigateHere( navController, item.id )
+                                    InnertubePlaylist::class -> NavRoutes.YT_PLAYLIST.navigateHere( navController, item.id )
+                                }
+                            },
                             onLongClick = {
+                                if( item.type != InnertubeSong::class ) return@combinedClickable
+
                                 menuState.display {
                                     NonQueuedMediaItemMenu(
                                         navController = navController,
                                         onDismiss = menuState::hide,
-                                        mediaItem = song.asMediaItem
+                                        mediaItem = item.toMediaItem()
                                     )
-                                };
-                                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                            },
-                            onClick = {
-                                player.forcePlay(song.asMediaItem)
+                                }
                             }
                         )
-                    }
-                }
-                suggestions.recommendedAlbum?.let { album ->
-                    item{
-                        val albumItemValues = remember( appearance ) {
-                            AlbumItem.Values.from( appearance )
-                        }
-
-                        AlbumItem.Horizontal( album, albumItemValues, navController )
-                    }
-                }
-                suggestions.recommendedArtist?.let { artist ->
-                    item{
-                        val artistItemValues = remember( appearance ) {
-                            ArtistItem.Values.from( appearance )
-                        }
-
-                        ArtistItem.Render( artist, artistItemValues, navController )
-                    }
+                    )
                 }
 
-                items(items = suggestions.queries) { query ->
+                items(
+                    items = suggestion.suggestions.distinctBy( InnertubeSearchSuggestion.Suggestion::query ),
+                    key = InnertubeSearchSuggestion.Suggestion::query
+                ) { suggestion ->
+                    val query = suggestion.query
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .clickable (
                                 onClick = {
                                     onSearch(query.replace("/", "", true))
-                                    /*
-                                    onTextFieldValueChanged(
-                                        TextFieldValue(
-                                            cleanString(query)
-                                        )
-                                    )
-                                     */
                                 }
                             )
                             .fillMaxWidth()
@@ -435,26 +378,15 @@ fun OnlineSearch(
                         )
                     }
                 }
-            } ?: suggestionsResult?.exceptionOrNull()?.let {
+            }
+            if( suggestion == null && !isFetchingSuggestions && textFieldValue.text.isNotBlank() )
                 item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) {
+                    Box( Modifier.fillMaxSize() ) {
                         TitleMiniSection(title = stringResource(R.string.searches_no_suggestions),
                             modifier = Modifier.padding(start = 12.dp).padding(vertical = 10.dp)
                         )
-                        /*
-                        BasicText(
-                            text = stringResource(R.string.error),
-                            style = typography().s.secondary.center,
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                        )
-                         */
                     }
                 }
-            }
 
             if(history.isNotEmpty())
                 item {
@@ -470,13 +402,6 @@ fun OnlineSearch(
                     modifier = Modifier
                         .clickable(onClick = {
                             onSearch(searchQuery.query.replace("/", "", true))
-                            /*
-                            onTextFieldValueChanged(
-                                TextFieldValue(
-                                    cleanString(searchQuery.query)
-                                )
-                            )
-                             */
                         })
                         .fillMaxWidth()
                         .padding(all = 16.dp)

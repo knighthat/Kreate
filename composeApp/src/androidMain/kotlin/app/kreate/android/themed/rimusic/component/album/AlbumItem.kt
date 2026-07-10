@@ -141,7 +141,8 @@ object AlbumItem: Visual(), MultiplatformItem {
         albumId: String,
         thumbnailUrl: String?,
         modifier: Modifier = Modifier,
-        sizeDp: DpSize = thumbnailSize()
+        sizeDp: DpSize = thumbnailSize(),
+        showPlatformIcon: Boolean = true
     ) =
         Thumbnail(
             url = thumbnailUrl,
@@ -149,7 +150,7 @@ object AlbumItem: Visual(), MultiplatformItem {
             modifier = modifier.padding( bottom = VERTICAL_SPACING.dp ),
             sizeDp = sizeDp
         ) {
-            if( albumId.startsWith( "MPREb_" ) )
+            if( showPlatformIcon && albumId.startsWith( "MPREb_" ) )
                 PlatformIndicator()
         }
 
