@@ -1,6 +1,7 @@
 package app.kreate.internal.innertube
 
 import app.kreate.gateway.innertube.responses.BrowseResponse
+import app.kreate.gateway.innertube.responses.NextResponse
 import app.kreate.gateway.innertube.responses.SearchResponse
 import app.kreate.gateway.innertube.responses.SearchSuggestionsResponse
 import kotlinx.serialization.json.JsonObject
@@ -20,3 +21,10 @@ actual suspend fun searchSuggestions(query: String): SearchSuggestionsResponse =
 
 actual suspend fun searchResults( query: String?, params: String?, continuation: String? ): SearchResponse =
     TODO("Not yet implemented")
+
+actual suspend fun getNext(
+    videoId: String?,
+    playlistId: String?,
+    params: String?,
+    continuation: String?
+): NextResponse = TODO("Not yet implemented")

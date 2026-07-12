@@ -7,16 +7,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import app.kreate.android.R
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
+import app.kreate.gateway.innertube.YouTube
+import app.kreate.gateway.innertube.models.InnertubeSong
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.innertube.Innertube
-import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.innertube.model.InnertubeSongDetails
 import me.knighthat.utils.Toaster
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
-class SongDetailsViewModel(private val songId: String): ViewModel() {
+class SongDetailsViewModel(private val songId: String): ViewModel(), KoinComponent {
 
     var songDetails: InnertubeSongDetails? by mutableStateOf(null)
         private set
@@ -38,7 +41,7 @@ class SongDetailsViewModel(private val songId: String): ViewModel() {
     }
 
     private fun fetchBasicInfo() = CoroutineScope(Dispatchers.IO).launch {
-        Innertube.songBasicInfo( songId, CURRENT_LOCALE)
+        get<YouTube>().getSongBasicInfo( songId )
                  .onSuccess { songBasicInfo = it }
                  .onFailure { err ->
                      Logger.e( "", err, "SongDetails" )

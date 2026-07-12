@@ -9,11 +9,11 @@ import androidx.compose.ui.util.fastAny
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import app.kreate.android.R
-import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import app.kreate.di.clearCachedStreamUrlOf
+import app.kreate.gateway.innertube.YouTube
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
@@ -21,11 +21,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.component.dialog.CheckboxDialog
-import me.knighthat.innertube.Innertube
-import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Contract
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.component.inject
 import java.util.Optional
 
@@ -119,13 +118,12 @@ class ResetSongDialog private constructor(
 
             val fetchIds = arrayOf(TITLE_CHECKBOX_ID, AUTHORS_CHECKBOX_ID, THUMBNAIL_CHECKBOX_ID)
             if( items.fastAny { it.id in fetchIds && it.selected } ) {
-                var innertubeSong: InnertubeSong? = null
-                Innertube.songBasicInfo( song.id, CURRENT_LOCALE )
-                         .onSuccess { innertubeSong = it }
-                         .onFailure { err ->
-                             Logger.e( "", err, "ResetSongDialog" )
-                             Toaster.e( R.string.error_failed_to_fetch_songs_info )
-                         }
+                val innertubeSong = get<YouTube>().getSongBasicInfo( song.id )
+                    .onFailure { err ->
+                        Logger.e( "", err, "ResetSongDialog" )
+                        Toaster.e( R.string.error_failed_to_fetch_songs_info )
+                    }
+                    .getOrNull()
 
                 @Contract("_,null->null")
                 fun <T> getProperty( itemId: String, result: T? ): T? =

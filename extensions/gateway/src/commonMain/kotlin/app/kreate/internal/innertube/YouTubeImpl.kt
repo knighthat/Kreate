@@ -10,9 +10,11 @@ import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeSearch
 import app.kreate.gateway.innertube.models.InnertubeSearchSuggestion
+import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.gateway.innertube.responses.BrowseResponse
 import app.kreate.gateway.innertube.responses.Continuation
 import app.kreate.gateway.innertube.responses.MusicShelfRenderer
+import app.kreate.gateway.innertube.responses.PlaylistPanelRenderer
 import app.kreate.gateway.innertube.responses.Runs
 import app.kreate.gateway.innertube.responses.SectionListRenderer
 import app.kreate.gateway.innertube.responses.Tabs
@@ -24,6 +26,8 @@ import app.kreate.internal.innertube.models.createInnertubePlaylistFrom
 import app.kreate.internal.innertube.models.createInnertubeSearchSuggestionItemFrom
 import app.kreate.internal.innertube.responses.RunsImpl
 import app.kreate.internal.innertube.responses.ThumbnailsImpl
+import app.kreate.internal.innertube.utils.containsExplicitBadge
+import app.kreate.internal.innertube.utils.extractArtistAndAlbum
 import app.kreate.internal.innertube.utils.firstText
 import app.kreate.preferences.Preferences
 import kotlinx.coroutines.async
@@ -95,6 +99,44 @@ internal class YouTubeImpl : YouTube, Account {
                     override val visitorData: String? = null
                 }
             }
+    }
+
+    override suspend fun getSongBasicInfo( songId: String ): Result<InnertubeSong> = runCatching {
+        val renderer = requireNotNull(
+            getNext( songId, null, null, null )
+                .contents
+                .singleColumnMusicWatchNextResultsRenderer
+                ?.tabbedRenderer
+                ?.watchNextTabbedResultsRenderer
+                ?.tabs
+                ?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
+                ?.content
+                ?.musicQueueRenderer
+                ?.content
+                ?.playlistPanelRenderer
+                ?.contents
+                ?.firstNotNullOfOrNull( PlaylistPanelRenderer.Content::playlistPanelVideoRenderer )
+        ) { "NextResponse doesn't have song's info" }
+        val id = renderer.videoId
+        val name = renderer.title.firstText
+        val thumbnails = renderer.thumbnail.thumbnails
+        val isExplicit = renderer.badges.containsExplicitBadge
+        val (album, artists) = renderer.longBylineText.extractArtistAndAlbum()
+        val artistsText = renderer.shortBylineText.firstText
+        val duration = renderer.lengthText.firstText
+
+        object : InnertubeSong {
+
+            override val durationText: String = duration
+            override val album: Runs.Run? = album
+            override val artists: List<Runs.Run> = artists
+            override val artistsText: String = artistsText
+            override val subtitle: Runs = renderer.longBylineText
+            override val id: String = id
+            override val name: String = name
+            override val thumbnails: List<Thumbnails.Thumbnail> = thumbnails
+            override val isExplicit: Boolean = isExplicit
+        }
     }
 
     /*

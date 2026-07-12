@@ -12,7 +12,6 @@ import androidx.media3.datasource.DataSpec
 import app.kreate.android.R
 import app.kreate.android.utils.CharUtils
 import app.kreate.android.utils.ConnectivityUtils
-import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.database.Database
 import app.kreate.database.models.Format
 import app.kreate.database.upsert
@@ -44,7 +43,6 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.json.Json
 import me.knighthat.innertube.Endpoints
-import me.knighthat.innertube.Innertube
 import me.knighthat.innertube.response.PlayerResponse
 import me.knighthat.utils.Toaster
 import org.koin.core.scope.Scope
@@ -108,7 +106,8 @@ private fun upsertSongInfo( context: Context, videoId: String ) {       // Use t
     logger.v { "fetching and upserting $videoId's information to the database" }
 
     databaseWorker = CoroutineScope(Dispatchers.IO ).launch {
-        Innertube.songBasicInfo( videoId, CURRENT_LOCALE )
+        get<app.kreate.gateway.innertube.YouTube>(app.kreate.gateway.innertube.YouTube::class.java)
+            .getSongBasicInfo( videoId )
             .onSuccess{
                 logger.v { "$videoId's information successfully found and parsed" }
 

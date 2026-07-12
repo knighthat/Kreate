@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import app.kreate.android.R
-import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.database.Database
 import app.kreate.database.models.Song
+import app.kreate.gateway.innertube.YouTube
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
@@ -15,14 +15,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import me.knighthat.innertube.Innertube
 import me.knighthat.utils.Toaster
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import java.util.Optional
 
 class GoToAlbum(
     private val navController: NavController,
     private val song: Song
-): MenuIcon, Descriptive {
+): MenuIcon, Descriptive, KoinComponent {
 
     override val iconId: Int = R.drawable.album
     override val messageId: Int = R.string.go_to_album
@@ -50,24 +51,23 @@ class GoToAlbum(
                 Toaster.n( R.string.looking_up_album_from_the_internet )
 
                 CoroutineScope( Dispatchers.IO ).launch {
-                    Innertube.songBasicInfo( song.id, CURRENT_LOCALE )
-                             .fold(
-                                 onSuccess = { song ->
-                                     song.album
-                                         ?.navigationEndpoint
-                                         ?.browseEndpoint
-                                         ?.also {
-                                             NavRoutes.YT_ALBUM.navigateHere(
-                                                 navController,
-                                                 "${it.browseId}?params=${it.params}"
-                                             )
-                                         }
-                                 },
-                                 onFailure = { err ->
-                                     Logger.e( "", err, "GoToAlbum" )
-                                     Toaster.e( R.string.error_failed_to_load_album )
-                                 }
-                             )
+                    get<YouTube>()
+                        .getSongBasicInfo( song.id )
+                        .onFailure { err ->
+                            Logger.e( "", err, "GoToAlbum" )
+                            Toaster.e( R.string.error_failed_to_load_album )
+                        }
+                        .onSuccess { song ->
+                            song.album
+                                ?.navigationEndpoint
+                                ?.browseEndpoint
+                                ?.also {
+                                    NavRoutes.YT_ALBUM.navigateHere(
+                                        navController,
+                                        "${it.browseId}?params=${it.params}"
+                                    )
+                                }
+                        }
                 }
             }
         )

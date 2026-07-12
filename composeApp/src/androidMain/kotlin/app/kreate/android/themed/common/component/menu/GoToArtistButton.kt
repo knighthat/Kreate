@@ -4,19 +4,20 @@ import androidx.media3.common.MediaItem
 import app.kreate.android.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.themed.common.component.BottomMenu
-import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.database.Database
+import app.kreate.gateway.innertube.YouTube
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.enums.NavRoutes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import me.knighthat.innertube.Innertube
 import me.knighthat.utils.Toaster
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 
-class GoToArtistButton : MenuButton<MediaItem>() {
+class GoToArtistButton : MenuButton<MediaItem>(), KoinComponent {
 
     override val iconId: Int = R.drawable.people
     override val tooltipMessageId: Int = R.string.go_to_artist
@@ -32,18 +33,19 @@ class GoToArtistButton : MenuButton<MediaItem>() {
                         ?.let {
                             MenuPage.NavRedirect(NavRoutes.YT_ARTIST, it)
                         } ?:
-                Innertube.songBasicInfo( item.mediaId, CURRENT_LOCALE )
-                         .onFailure { err ->
-                             Logger.e( "", err, "GoToArtist" )
-                         }
-                         .getOrNull()
-                         ?.artists
-                         ?.firstOrNull()
-                         ?.navigationEndpoint
-                         ?.browseEndpoint
-                         ?.let {
-                             MenuPage.NavRedirect(NavRoutes.YT_ARTIST, "${it.browseId}?params=${it.params}")
-                         }
+                get<YouTube>()
+                    .getSongBasicInfo( item.mediaId )
+                    .onFailure { err ->
+                        Logger.e( "", err, "GoToArtist" )
+                    }
+                    .getOrNull()
+                    ?.artists
+                    ?.firstOrNull()
+                    ?.navigationEndpoint
+                    ?.browseEndpoint
+                    ?.let {
+                        MenuPage.NavRedirect(NavRoutes.YT_ARTIST, "${it.browseId}?params=${it.params}")
+                    }
 
             if( page != null )
                 menu.show( page )

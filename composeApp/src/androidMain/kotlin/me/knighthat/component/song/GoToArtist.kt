@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import app.kreate.android.R
-import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.database.Database
 import app.kreate.database.models.Song
+import app.kreate.gateway.innertube.YouTube
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
@@ -15,9 +15,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import me.knighthat.innertube.Innertube
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.component.inject
 import java.util.Optional
 
@@ -55,23 +55,24 @@ class GoToArtist(
                 Toaster.n( R.string.looking_up_artist_online, song.cleanArtistsText() )
 
                 CoroutineScope( Dispatchers.IO ).launch {
-                    Innertube.songBasicInfo( song.id, CURRENT_LOCALE)
-                             .onSuccess { song ->
-                                 song.artists
-                                     .firstOrNull()
-                                     ?.navigationEndpoint
-                                     ?.browseEndpoint
-                                     ?.also {
-                                         NavRoutes.YT_ARTIST.navigateHere(
-                                             navController,
-                                             "${it.browseId}?params=${it.params}"
-                                         )
-                                     }
-                             }
-                             .onFailure { err ->
-                                 Logger.e( "", err, "GoToArtist" )
-                                 Toaster.e( R.string.error_failed_to_load_artist )
-                             }
+                    get<YouTube>()
+                        .getSongBasicInfo( song.id )
+                        .onSuccess { song ->
+                            song.artists
+                                .firstOrNull()
+                                ?.navigationEndpoint
+                                ?.browseEndpoint
+                                ?.also {
+                                    NavRoutes.YT_ARTIST.navigateHere(
+                                        navController,
+                                        "${it.browseId}?params=${it.params}"
+                                    )
+                                }
+                        }
+                        .onFailure { err ->
+                            Logger.e( "", err, "GoToArtist" )
+                            Toaster.e( R.string.error_failed_to_load_artist )
+                        }
                 }
             }
         )

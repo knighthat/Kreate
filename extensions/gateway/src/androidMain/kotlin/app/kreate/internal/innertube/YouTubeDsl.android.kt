@@ -1,9 +1,11 @@
 package app.kreate.internal.innertube
 
 import app.kreate.gateway.innertube.responses.BrowseResponse
+import app.kreate.gateway.innertube.responses.NextResponse
 import app.kreate.gateway.innertube.responses.SearchResponse
 import app.kreate.gateway.innertube.responses.SearchSuggestionsResponse
 import app.kreate.internal.innertube.responses.BrowseResponseImpl
+import app.kreate.internal.innertube.responses.NextResponseImpl
 import app.kreate.internal.innertube.responses.SearchResponseImpl
 import app.kreate.internal.innertube.responses.SearchSuggestionsResponseImpl
 import com.metrolist.innertube.InnerTube
@@ -60,3 +62,12 @@ actual suspend fun searchResults( query: String?, params: String?, continuation:
     return innertube.search( YouTubeClient.WEB_REMIX, query, params, continuation )
                     .body<SearchResponseImpl>()
 }
+
+internal actual suspend fun getNext(
+    videoId: String?,
+    playlistId: String?,
+    params: String?,
+    continuation: String?
+): NextResponse =
+    innertube.next( YouTubeClient.WEB_REMIX, videoId, playlistId, null, null, params, continuation )
+             .body<NextResponseImpl>()
