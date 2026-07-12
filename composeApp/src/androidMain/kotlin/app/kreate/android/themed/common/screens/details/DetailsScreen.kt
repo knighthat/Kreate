@@ -35,12 +35,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.gateway.innertube.models.InnertubeSongDetails
 import it.fast4x.rimusic.ui.components.Skeleton
 import it.fast4x.rimusic.ui.styling.ColorPalette
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.Typography
-import me.knighthat.innertube.model.InnertubeSongDetails
 
 
 @Composable

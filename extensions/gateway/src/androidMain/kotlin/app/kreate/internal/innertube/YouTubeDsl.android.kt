@@ -71,3 +71,7 @@ internal actual suspend fun getNext(
 ): NextResponse =
     innertube.next( YouTubeClient.WEB_REMIX, videoId, playlistId, null, null, params, continuation )
              .body<NextResponseImpl>()
+
+internal actual suspend fun getYouTubeNext( videoId: String?, params: String? ): NextResponse =
+    innertube.next( YouTubeClient.WEB, videoId, null, null, null, params, null )
+             .body<NextResponseImpl>()

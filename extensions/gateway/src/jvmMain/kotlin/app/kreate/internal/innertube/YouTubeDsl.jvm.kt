@@ -28,3 +28,6 @@ actual suspend fun getNext(
     params: String?,
     continuation: String?
 ): NextResponse = TODO("Not yet implemented")
+
+actual suspend fun getYouTubeNext( videoId: String?, params: String? ): NextResponse =
+    TODO("Not yet implemented")

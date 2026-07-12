@@ -11,10 +11,12 @@ import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeSearch
 import app.kreate.gateway.innertube.models.InnertubeSearchSuggestion
 import app.kreate.gateway.innertube.models.InnertubeSong
+import app.kreate.gateway.innertube.models.InnertubeSongDetails
 import app.kreate.gateway.innertube.responses.BrowseResponse
 import app.kreate.gateway.innertube.responses.Continuation
 import app.kreate.gateway.innertube.responses.MusicShelfRenderer
 import app.kreate.gateway.innertube.responses.PlaylistPanelRenderer
+import app.kreate.gateway.innertube.responses.PrimaryResults
 import app.kreate.gateway.innertube.responses.Runs
 import app.kreate.gateway.innertube.responses.SectionListRenderer
 import app.kreate.gateway.innertube.responses.Tabs
@@ -136,6 +138,46 @@ internal class YouTubeImpl : YouTube, Account {
             override val name: String = name
             override val thumbnails: List<Thumbnails.Thumbnail> = thumbnails
             override val isExplicit: Boolean = isExplicit
+        }
+    }
+
+    override suspend fun getSongDetails( songId: String ): Result<InnertubeSongDetails> = runCatching {
+        val content = requireNotNull(
+            getYouTubeNext( songId, null )
+                .contents
+                .twoColumnWatchNextResults
+                ?.results
+                ?.results
+                ?.contents
+        ) { "NextResponse doesn't contain any content" }
+        //<editor-fold defaultstate="collapsed" desc="Primary renderer">
+        val primaryRenderer = content.firstNotNullOfOrNull( PrimaryResults.Results.Content::videoPrimaryInfoRenderer )
+        requireNotNull( primaryRenderer ) { "NextResponse has no primary renderer" }
+        val name = primaryRenderer.title.firstText
+        val releaseDate = primaryRenderer.dateText.simpleText
+        val relativeReleaseDate = primaryRenderer.relativeDateText.simpleText
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Secondary renderer">
+        val secondaryRenderer = content.firstNotNullOfOrNull( PrimaryResults.Results.Content::videoSecondaryInfoRenderer )
+        requireNotNull( secondaryRenderer ) { "NextResponse has no secondary renderer" }
+        val description = secondaryRenderer.attributedDescription.content
+        val artist = secondaryRenderer.owner.videoOwnerRenderer.let( ::createInnertubeArtistFrom )
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="View count">
+        val viewCountRenderer = primaryRenderer.viewCount.videoViewCountRenderer
+        val viewCount = object : InnertubeSongDetails.ViewCount {
+            override val short: String = viewCountRenderer.shortViewCount.simpleText
+            override val long: String = viewCountRenderer.viewCount.simpleText
+        }
+        //</editor-fold>
+
+        object : InnertubeSongDetails {
+            override val title: String = name
+            override val viewCount: InnertubeSongDetails.ViewCount = viewCount
+            override val releaseDate: String = releaseDate
+            override val relativeReleaseDate: String = relativeReleaseDate
+            override val description: String = description
+            override val artist: InnertubeArtist = artist
         }
     }
 

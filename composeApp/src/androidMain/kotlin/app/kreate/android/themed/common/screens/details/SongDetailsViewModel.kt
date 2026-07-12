@@ -6,15 +6,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import app.kreate.android.R
-import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.gateway.innertube.models.InnertubeSong
+import app.kreate.gateway.innertube.models.InnertubeSongDetails
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.knighthat.innertube.Innertube
-import me.knighthat.innertube.model.InnertubeSongDetails
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -32,12 +30,13 @@ class SongDetailsViewModel(private val songId: String): ViewModel(), KoinCompone
     }
 
     private fun fetchDetails() = CoroutineScope(Dispatchers.IO).launch {
-        Innertube.songInfo( songId, CURRENT_LOCALE)
-                 .onSuccess { songDetails = it }
-                 .onFailure { err ->
-                     Logger.e( "", err, "SongDetails" )
-                     Toaster.e(  R.string.error_failed_to_fetch_songs_info )
-                 }
+        get<YouTube>()
+            .getSongDetails( songId )
+            .onSuccess { songDetails = it }
+            .onFailure { err ->
+                Logger.e( "", err, "SongDetails" )
+                Toaster.e(  R.string.error_failed_to_fetch_songs_info )
+            }
     }
 
     private fun fetchBasicInfo() = CoroutineScope(Dispatchers.IO).launch {

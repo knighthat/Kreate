@@ -3,6 +3,7 @@ package app.kreate.gateway.innertube
 import app.kreate.gateway.innertube.models.InnertubeSearch
 import app.kreate.gateway.innertube.models.InnertubeSearchSuggestion
 import app.kreate.gateway.innertube.models.InnertubeSong
+import app.kreate.gateway.innertube.models.InnertubeSongDetails
 
 
 interface YouTube {
@@ -20,4 +21,6 @@ interface YouTube {
     ): Result<InnertubeSearch>
 
     suspend fun getSongBasicInfo( songId: String ): Result<InnertubeSong>
+
+    suspend fun getSongDetails( songId: String ): Result<InnertubeSongDetails>
 }

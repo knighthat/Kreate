@@ -3,6 +3,7 @@ package app.kreate.internal.innertube.models
 import app.kreate.gateway.innertube.models.InnertubeArtist
 import app.kreate.gateway.innertube.models.Section
 import app.kreate.gateway.innertube.responses.MusicResponsiveListItemRenderer
+import app.kreate.gateway.innertube.responses.PrimaryResults
 import app.kreate.gateway.innertube.responses.Runs
 import app.kreate.gateway.innertube.responses.Thumbnails
 import app.kreate.internal.innertube.utils.firstText
@@ -30,5 +31,26 @@ internal fun createInnertubeArtistFrom( renderer: MusicResponsiveListItemRendere
         override val description: String? = null
         override val sections: List<Section> = emptyList()
         override val subtitle: Runs? = subtitle
+    }
+}
+
+internal fun createInnertubeArtistFrom( renderer: PrimaryResults.Results.Content.VideoSecondaryInfoRenderer.Owner.Renderer ): InnertubeArtist {
+    val id = requireNotNull(
+        renderer.navigationEndpoint.browseEndpoint?.browseId
+    ) { "Owner doesn't contain browseId" }
+    val name = renderer.title.firstText
+    val thumbnails = renderer.thumbnail.thumbnails
+    val longNumSubscribers = renderer.subscriberCountText?.simpleText
+
+    return object : InnertubeArtist {
+        override val shortNumSubscribers: String? = null
+        override val longNumSubscribers: String? = longNumSubscribers
+        override val shortNumMonthlyAudience: String? = null
+        override val subtitle: Runs? = null
+        override val id: String = id
+        override val name: String = name
+        override val thumbnails: List<Thumbnails.Thumbnail> = thumbnails
+        override val description: String? = null
+        override val sections: List<Section> = emptyList()
     }
 }

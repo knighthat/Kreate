@@ -26,3 +26,5 @@ internal expect suspend fun getNext(
     params: String?,
     continuation: String?
 ): NextResponse
+
+internal expect suspend fun getYouTubeNext( videoId: String?, params: String? ): NextResponse
