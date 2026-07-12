@@ -179,4 +179,6 @@
     <string name="semantic_restart_playback_service">Restart playback service</string>
     <string name="semantic_remove_path">Remove path</string>
     <string name="error_failed_to_get_search_suggestions">Failed to get search suggestions</string>
+    <string name="error_failed_to_get_search_results">Failed to get results</string>
+    <string name="error_failed_to_get_more">Failed to get more results</string>
 </resources>

@@ -1,16 +1,25 @@
 package app.kreate.internal.innertube
 
 import app.kreate.gateway.innertube.responses.BrowseResponse
+import app.kreate.gateway.innertube.responses.SearchResponse
 import app.kreate.gateway.innertube.responses.SearchSuggestionsResponse
 import app.kreate.internal.innertube.responses.BrowseResponseImpl
+import app.kreate.internal.innertube.responses.SearchResponseImpl
 import app.kreate.internal.innertube.responses.SearchSuggestionsResponseImpl
 import com.metrolist.innertube.InnerTube
 import com.metrolist.innertube.models.YouTubeClient
 import io.ktor.client.call.body
+import io.ktor.client.statement.bodyAsText
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonPrimitive
 
 
 private val innertube = InnerTube()
+private val VISITOR_DATA_REGEX = Regex("^Cg[t|s]")
 
 internal actual suspend fun browse(
     browseId: String,
@@ -28,3 +37,26 @@ internal actual suspend fun accountMenu(): JsonObject =
 internal actual suspend fun searchSuggestions( query: String ): SearchSuggestionsResponse =
     innertube.getSearchSuggestions( YouTubeClient.WEB_REMIX, query )
              .body<SearchSuggestionsResponseImpl>()
+
+actual suspend fun searchResults( query: String?, params: String?, continuation: String? ): SearchResponse {
+    if( innertube.visitorData.isNullOrBlank() ) {
+        val swjs = innertube.getSwJsData().bodyAsText().substring(5)
+
+        Json.parseToJsonElement( swjs )
+            .jsonArray[0]
+            .jsonArray[2]
+            .jsonArray
+            .first {
+                (it as? JsonPrimitive)?.contentOrNull
+                                      ?.let( VISITOR_DATA_REGEX::containsMatchIn )?: false
+            }
+            .jsonPrimitive
+            .content
+            .also { visitorData ->
+                innertube.visitorData = visitorData
+            }
+    }
+
+    return innertube.search( YouTubeClient.WEB_REMIX, query, params, continuation )
+                    .body<SearchResponseImpl>()
+}

@@ -344,8 +344,7 @@ fun AppNavigation(
             SearchResultScreen(
                 navController = navController,
                 miniPlayer = miniPlayer,
-                query = query,
-                onSearchAgain = {}
+                query = query
             )
         }
 

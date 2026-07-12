@@ -29,6 +29,7 @@ import app.kreate.database.models.Artist
 import app.kreate.database.models.Lyrics
 import app.kreate.database.models.Song
 import app.kreate.di.THUMBNAIL_SIZE
+import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.util.toDuration
 import com.zionhuang.innertube.pages.LibraryPage
 import io.ktor.client.HttpClient
@@ -61,6 +62,19 @@ val Innertube.AlbumItem.asAlbum: Album
         year = year,
         authorsText = authors?.joinToString(", ") { it.name ?: "" },
         //shareUrl =
+    )
+
+val InnertubeAlbum.toAlbum: Album
+    get() = Album(
+        id = id,
+        title = name,
+        thumbnailUrl = thumbnails.lastOrNull()?.url,
+        year = year.toString(),
+        authorsText = artists.joinToString(),
+        shareUrl = urlCanonical,
+        timestamp = System.currentTimeMillis(),
+        bookmarkedAt = null,
+        isYoutubeAlbum = true
     )
 
 val Innertube.Podcast.EpisodeItem.asMediaItem: MediaItem

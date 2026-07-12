@@ -19,6 +19,13 @@ interface StatefulPlayer : ExoPlayer {
 
     fun startRadio()
 
+    fun startRadio(
+        mediaItem: MediaItem,
+        append: Boolean = false,
+        playlistId: String = "RDAMVM${mediaItem.mediaId}",
+        params: String? = null
+    )
+
     /**
      * Start a new queue with [mediaItem] the first to play.
      * Other songs follow [mediaItem]'s genre or mood

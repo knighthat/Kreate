@@ -261,7 +261,8 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
     override fun startRadio(
         mediaItem: MediaItem,
         append: Boolean,
-        endpoint: NavigationEndpoint.Endpoint.Watch?
+        playlistId: String,
+        params: String?
     ) {
         this.stopRadio()
 
@@ -274,8 +275,8 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
             Innertube.radio(
                 mediaItem.mediaId,
                 CURRENT_LOCALE,
-                endpoint?.playlistId ?: "RDAMVM${mediaItem.mediaId}",
-                endpoint?.params
+                playlistId,
+                params
             ).onSuccess { relatedSongs ->
                 // Launch another coroutine to make it run
                 // in parallel with the rest of of block.
@@ -325,6 +326,12 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
             }
         }
     }
+
+    override fun startRadio(
+        mediaItem: MediaItem,
+        append: Boolean,
+        endpoint: NavigationEndpoint.Endpoint.Watch?
+    ) = startRadio( mediaItem, append, endpoint?.playlistId ?: "RDAMVM${mediaItem.mediaId}", endpoint?.params )
 
     override fun startRadio(
         song: Song,

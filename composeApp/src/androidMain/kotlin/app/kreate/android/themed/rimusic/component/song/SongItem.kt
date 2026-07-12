@@ -367,8 +367,8 @@ object SongItem: Visual() {
 
     @Composable
     fun Placeholder(
-        thumbnailSize: DpSize = DpSize(Dimensions.thumbnails.song, Dimensions.thumbnails.song),
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
+        thumbnailSize: DpSize = DpSize(Dimensions.thumbnails.song, Dimensions.thumbnails.song)
     ) =
         Structure(
             modifier = modifier,

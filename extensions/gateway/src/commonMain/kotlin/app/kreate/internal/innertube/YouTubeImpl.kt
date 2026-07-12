@@ -8,8 +8,10 @@ import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.gateway.innertube.models.InnertubeArtist
 import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.InnertubePlaylist
+import app.kreate.gateway.innertube.models.InnertubeSearch
 import app.kreate.gateway.innertube.models.InnertubeSearchSuggestion
 import app.kreate.gateway.innertube.responses.BrowseResponse
+import app.kreate.gateway.innertube.responses.Continuation
 import app.kreate.gateway.innertube.responses.MusicShelfRenderer
 import app.kreate.gateway.innertube.responses.Runs
 import app.kreate.gateway.innertube.responses.SectionListRenderer
@@ -17,6 +19,7 @@ import app.kreate.gateway.innertube.responses.Tabs
 import app.kreate.gateway.innertube.responses.Thumbnails
 import app.kreate.internal.innertube.models.createInnertubeAlbumFrom
 import app.kreate.internal.innertube.models.createInnertubeArtistFrom
+import app.kreate.internal.innertube.models.createInnertubeItemFrom
 import app.kreate.internal.innertube.models.createInnertubePlaylistFrom
 import app.kreate.internal.innertube.models.createInnertubeSearchSuggestionItemFrom
 import app.kreate.internal.innertube.responses.RunsImpl
@@ -56,6 +59,43 @@ internal class YouTubeImpl : YouTube, Account {
             throw NotLoggedInException("YouTube credentials not found")
     }
     //endregion
+
+    override suspend fun getSearchResults(
+        query: String?,
+        continuation: String?,
+        params: String?
+    ): Result<InnertubeSearch> = runCatching {
+        // Throw error if both are provided
+        require( !(!query.isNullOrBlank() && !continuation.isNullOrBlank()) ) {
+            "Can't fetch results with both query and continuation provided"
+        }
+        // Also throw when neither provided
+        require( !(query.isNullOrBlank() && continuation.isNullOrBlank()) ) {
+            "Can't fetch results with both query and continuation are null"
+        }
+
+        searchResults( query, params, continuation )
+            .let { response ->
+                val renderer = response.contents
+                    ?.tabbedSearchResultsRenderer
+                    ?.tabs
+                    ?.firstOrNull()
+                    ?.tabRenderer
+                    ?.content
+                    ?.sectionListRenderer
+                    ?.contents
+                    ?.firstNotNullOfOrNull { it.musicShelfRenderer }
+                    ?: response.continuationContents?.musicShelfContinuation
+                val continuations = renderer?.continuations.orEmpty()
+                val items = renderer?.contents?.mapNotNull { it.musicResponsiveListItemRenderer }?.mapNotNull( ::createInnertubeItemFrom ).orEmpty()
+
+                object : InnertubeSearch {
+                    override val items: List<InnertubeItem> = items
+                    override val continuations: List<Continuation> = continuations
+                    override val visitorData: String? = null
+                }
+            }
+    }
 
     /*
 

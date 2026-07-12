@@ -147,7 +147,7 @@ fun SearchYoutubeEntity (
                 },
                 itemPlaceholderContent = {
                     SongItem.Placeholder(
-                        DpSize(thumbnailWidthDp, thumbnailHeightDp)
+                        thumbnailSize = DpSize(thumbnailWidthDp, thumbnailHeightDp)
                     )
                 }
             )

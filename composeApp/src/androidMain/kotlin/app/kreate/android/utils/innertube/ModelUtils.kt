@@ -53,6 +53,28 @@ val InnertubeSong.toMediaItem: MediaItem
                      .setUri( id.toUri() )
                      .build()
 
+val app.kreate.gateway.innertube.models.InnertubeSong.toMediaItem: MediaItem
+    get() = MediaItem.Builder()
+                     .setMediaMetadata(
+                         MediaMetadata.Builder()
+                                      .setTitle( name )
+                                      .setArtist( artistsText )
+                                      .setAlbumTitle( album?.text )
+                                      .setArtworkUri( thumbnails.firstOrNull()?.url?.toUri() )
+                                      .setExtras(
+                                          bundleOf(
+                                              "albumId" to album?.navigationEndpoint?.browseEndpoint?.browseId,
+                                              EXPLICIT_BUNDLE_TAG to isExplicit,
+                                              "artistNames" to artists.fastMap { it.text },
+                                              "artistIds" to artists.fastMapNotNull { it.navigationEndpoint?.browseEndpoint?.browseId }
+                                          )
+                                      )
+                                      .build()
+                     )
+                     .setMediaId( id )
+                     .setUri( id.toUri() )
+                     .build()
+
 val InnertubeAlbum.toAlbum: Album
     get() = Album (
         id = id,
