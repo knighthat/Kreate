@@ -1,5 +1,6 @@
 package app.kreate.gateway.innertube.models
 
+import app.kreate.annotations.Localized
 import app.kreate.gateway.innertube.responses.Runs
 
 
@@ -20,6 +21,8 @@ interface InnertubeAlbum: InnertubeItem, ContentRating, Descriptive, MultiConten
      */
     val urlCanonical: String?
 
+    val songs: List<InnertubeSong>
+
     /**
      * Usually contains:
      *
@@ -27,7 +30,6 @@ interface InnertubeAlbum: InnertubeItem, ContentRating, Descriptive, MultiConten
      * - Total duration
      * - Or both
      */
-    val subtitle: Runs?
-
-    val songs: List<InnertubeSong>
+    @get:Localized
+    override val subtitle: Runs?
 }

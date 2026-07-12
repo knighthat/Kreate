@@ -1,5 +1,6 @@
 package app.kreate.gateway.innertube.models
 
+import app.kreate.annotations.Localized
 import app.kreate.gateway.innertube.responses.Runs
 
 
@@ -24,4 +25,15 @@ interface InnertubeSong: InnertubeItem, ContentRating {
      * All authors listed in 1 line, with delimiter in between
      */
     val artistsText: String
+
+    /**
+     * Usually contains:
+     *
+     * - Album
+     * - Artist(s)
+     * - Views
+     * - Or all of the above
+     */
+    @get:Localized
+    override val subtitle: Runs?
 }

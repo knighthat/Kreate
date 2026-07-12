@@ -1,6 +1,7 @@
 package app.kreate.gateway.innertube.models
 
 import app.kreate.annotations.Localized
+import app.kreate.gateway.innertube.responses.Runs
 
 
 interface InnertubeArtist: InnertubeItem, Descriptive, MultiContent {
@@ -35,4 +36,13 @@ interface InnertubeArtist: InnertubeItem, Descriptive, MultiContent {
      */
     @get:Localized
     val shortNumMonthlyAudience: String?
+
+    /**
+     * Usually contains:
+     *
+     * - Subscribers
+     * - Monthly views
+     */
+    @get:Localized
+    override val subtitle: Runs?
 }

@@ -1,5 +1,6 @@
 package app.kreate.gateway.innertube.models
 
+import app.kreate.annotations.Localized
 import app.kreate.gateway.innertube.responses.Runs
 import kotlin.reflect.KClass
 
@@ -16,6 +17,9 @@ interface InnertubeSearchSuggestion {
      *
      * These shortcuts allow users to bypass full search results and navigate
      * directly to frequent or highly relevant destinations associated with the query.
+     *
+     * To improve performance, items are loosely captured. Meaning, they won't be
+     * converted into [InnertubeSong], [InnertubeAlbum] or similar types.
      */
     val items: List<Item>
 
@@ -54,17 +58,18 @@ interface InnertubeSearchSuggestion {
     interface Item : InnertubeItem, ContentRating {
 
         /**
-         * Provides details about the item. In most cases, it tells
-         * whether this item is a song, album, artist, or a playlist.
-         */
-        val subtitle: Runs?
-
-        /**
          * What type this item is representing.
          *
          * [InnertubeItem] is type is unknown
          */
         val type: KClass<out InnertubeItem>
+
+        /**
+         * Provides details about the item. In most cases, it tells
+         * whether this item is a song, album, artist, or a playlist.
+         */
+        @get:Localized
+        override val subtitle: Runs?
 
         /**
          * Whether the content of this item is appropriate for all audience.

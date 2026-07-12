@@ -5,6 +5,12 @@ import app.kreate.gateway.innertube.responses.Runs
 
 interface InnertubePlaylist: InnertubeItem, Descriptive, Continued {
 
+    val subtitleText: String?
+
+    val songs: List<InnertubeSong>
+
+    val songContinuation: String?
+
     /**
      * Usually contains:
      *
@@ -13,11 +19,5 @@ interface InnertubePlaylist: InnertubeItem, Descriptive, Continued {
      * - Total duration
      * - Or all above
      */
-    val subtitle: Runs?
-
-    val subtitleText: String?
-
-    val songs: List<InnertubeSong>
-
-    val songContinuation: String?
+    override val subtitle: Runs?
 }

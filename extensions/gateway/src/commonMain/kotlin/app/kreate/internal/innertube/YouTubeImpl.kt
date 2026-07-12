@@ -6,9 +6,11 @@ import app.kreate.gateway.innertube.YouTube
 import app.kreate.gateway.innertube.models.AccountInfo
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.gateway.innertube.models.InnertubeArtist
+import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeSearchSuggestion
 import app.kreate.gateway.innertube.responses.BrowseResponse
+import app.kreate.gateway.innertube.responses.MusicShelfRenderer
 import app.kreate.gateway.innertube.responses.Runs
 import app.kreate.gateway.innertube.responses.SectionListRenderer
 import app.kreate.gateway.innertube.responses.Tabs
@@ -21,6 +23,8 @@ import app.kreate.internal.innertube.responses.RunsImpl
 import app.kreate.internal.innertube.responses.ThumbnailsImpl
 import app.kreate.internal.innertube.utils.firstText
 import app.kreate.preferences.Preferences
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonArray
@@ -63,7 +67,7 @@ internal class YouTubeImpl : YouTube, Account {
         Preferences.YOUTUBE_LOGIN.value
             && Preferences.YOUTUBE_COOKIES.value.isNotBlank()
             && Preferences.YOUTUBE_VISITOR_DATA.value.isNotBlank()
-            && Preferences.YOUTUBE_SYNC_ID.value.isBlank()
+            && Preferences.YOUTUBE_SYNC_ID.value.isNotBlank()
 
     override suspend fun getSearchSuggestions( query: String ): Result<InnertubeSearchSuggestion> =
         runCatching {
@@ -130,20 +134,39 @@ internal class YouTubeImpl : YouTube, Account {
     ): Result<List<InnertubeArtist>> = runCatching {
         checkLoginStatus()
 
-        val response = browse(
-            browseId = "FEmusic_library_corpus_track_artists",
-            params = params,
-            continuation = null,
-            setLogin = true
-        )
-        val tabRenderer = extractSingleColumnFirstTabRenderer( response )
+        val artists = mutableListOf<InnertubeArtist>()
 
-        extractListContent( tabRenderer )
-            .musicShelfRenderer
-            ?.contents
-            ?.mapNotNull { it.musicResponsiveListItemRenderer }
-            ?.map( ::createInnertubeArtistFrom )
-            .orEmpty()
+        // This CoroutineScope allows us to make 2 requests concurrently
+        coroutineScope {
+            // Get artists (YTM-created artists)
+            val getFollowingArtists = async {
+                browse( "FEmusic_library_corpus_track_artists", params, null, true )
+                    .let( ::extractSingleColumnFirstTabRenderer )
+                    .let( ::extractListContent )
+                    .musicShelfRenderer
+                    ?.contents
+                    ?.mapNotNull( MusicShelfRenderer.Content::musicResponsiveListItemRenderer )
+                    ?.map( ::createInnertubeArtistFrom )
+                    .orEmpty()
+            }
+            // Get subscribed channels (artist self-made channels, can be viewed on YT)
+            val getSubscribedChannels = async {
+                browse( "FEmusic_library_corpus_artists", params, null, true )
+                    .let( ::extractSingleColumnFirstTabRenderer )
+                    .let( ::extractListContent )
+                    .musicShelfRenderer
+                    ?.contents
+                    ?.mapNotNull( MusicShelfRenderer.Content::musicResponsiveListItemRenderer )
+                    ?.map( ::createInnertubeArtistFrom )
+                    .orEmpty()
+            }
+
+            val onlineArtists = getFollowingArtists.await() + getSubscribedChannels.await()
+            artists.addAll( onlineArtists.distinctBy(InnertubeItem::id) )
+        }
+
+        // Must return immutable list to prevent modification
+        artists.toList()
     }
 
     override suspend fun getLikedPlaylists(
