@@ -8,7 +8,6 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.ProcessLifecycleOwner
 import app.kreate.android.BuildConfig
 import app.kreate.android.drawable.AppIcon
-import app.kreate.android.service.innertube.InnertubeProvider
 import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.CrashHandler
 import app.kreate.di.THUMBNAIL_SIZE
@@ -29,7 +28,6 @@ import coil3.request.crossfade
 import io.ktor.client.HttpClient
 import it.fast4x.rimusic.utils.AppLifecycleTracker
 import kotlinx.coroutines.Dispatchers
-import me.knighthat.innertube.Innertube
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import timber.log.Timber
@@ -55,8 +53,6 @@ class MainApplication : Application(), SingletonImageLoader.Factory {
         setupLogging( koinLogger )
         Timber.uprootAll()      // Clear all
         Timber.plant( TimberToKermitLogger() )
-
-        Innertube.setProvider( InnertubeProvider() )
 
         // Register network callback
         getSystemService<ConnectivityManager>()?.run {

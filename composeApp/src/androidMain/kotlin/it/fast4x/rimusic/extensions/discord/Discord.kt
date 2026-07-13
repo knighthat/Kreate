@@ -16,6 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import app.kreate.UserAgents
 import app.kreate.android.R
 import app.kreate.preferences.Preferences
 import app.kreate.util.IS_DEBUG
@@ -24,7 +25,6 @@ import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import me.knighthat.discord.Discord
-import me.knighthat.innertube.UserAgents
 import me.knighthat.utils.Toaster
 
 @SuppressLint("SetJavaScriptEnabled")

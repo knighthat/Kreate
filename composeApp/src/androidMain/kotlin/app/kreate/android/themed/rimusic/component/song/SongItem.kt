@@ -52,6 +52,7 @@ import app.kreate.android.utils.innertube.toSong
 import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
+import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.preferences.Preferences
 import app.kreate.util.scrollingText
 import it.fast4x.innertube.Innertube
@@ -79,10 +80,10 @@ import kotlinx.coroutines.Dispatchers
 import kreate.resources.generated.resources.Res
 import kreate.resources.generated.resources.download
 import kreate.resources.generated.resources.download_progress
-import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.jetbrains.compose.resources.painterResource
 import org.koin.java.KoinJavaComponent.inject
+
 
 object SongItem: Visual() {
 
@@ -554,39 +555,6 @@ object SongItem: Visual() {
     @Composable
     fun Render(
         innertubeSong: InnertubeSong,
-        hapticFeedback: HapticFeedback,
-        isPlaying: Boolean,
-        values: Values,
-        onLongClick: () -> Unit,
-        modifier: Modifier = Modifier,
-        isInPlaylistScreen: Boolean = false,
-        itemSelector: ItemSelector<Song>? = null,
-        isRecommended: Boolean = false,
-        showThumbnail: Boolean = true,
-        trailingContent: @Composable RowScope.() -> Unit = {},
-        thumbnailOverlay: @Composable BoxScope.() -> Unit = {},
-        onClick: () -> Unit = {}
-    ) =
-        Render(
-            song = innertubeSong.toSong,
-            hapticFeedback = hapticFeedback,
-            isPlaying = isPlaying,
-            values = values,
-            modifier = modifier,
-            isInPlaylistScreen = isInPlaylistScreen,
-            itemSelector = itemSelector,
-            isRecommended = isRecommended,
-            showThumbnail = showThumbnail,
-            onLongClick = onLongClick,
-            trailingContent = trailingContent,
-            thumbnailOverlay = thumbnailOverlay,
-            onClick = onClick
-        )
-
-        @OptIn(UnstableApi::class)
-    @Composable
-    fun Render(
-        innertubeSong: app.kreate.gateway.innertube.models.InnertubeSong,
         hapticFeedback: HapticFeedback,
         isPlaying: Boolean,
         values: Values,

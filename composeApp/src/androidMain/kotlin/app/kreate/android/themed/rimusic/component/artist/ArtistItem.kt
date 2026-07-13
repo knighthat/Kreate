@@ -25,6 +25,7 @@ import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.utils.ItemUtils
 import app.kreate.android.utils.innertube.toArtist
 import app.kreate.database.models.Artist
+import app.kreate.gateway.innertube.models.InnertubeArtist
 import app.kreate.preferences.Preferences
 import app.kreate.util.scrollingText
 import it.fast4x.innertube.Innertube
@@ -35,7 +36,7 @@ import it.fast4x.rimusic.ui.styling.Typography
 import it.fast4x.rimusic.utils.asArtist
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shimmerEffect
-import me.knighthat.innertube.model.InnertubeArtist
+
 
 object ArtistItem: Visual(), MultiplatformItem {
 
@@ -195,18 +196,6 @@ object ArtistItem: Visual(), MultiplatformItem {
     @Composable
     fun Render(
         innertubeArtist: InnertubeArtist,
-        values: Values,
-        navController: NavController?,
-        modifier: Modifier = Modifier,
-        sizeDp: DpSize = thumbnailSize(),
-        showTitle: Boolean = true,
-        onClick: () -> Unit = {},
-        onLongClick: () -> Unit = {}
-    ) = Render( innertubeArtist.toArtist, values, navController, modifier, sizeDp, showTitle, onClick, onLongClick )
-
-    @Composable
-    fun Render(
-        innertubeArtist: app.kreate.gateway.innertube.models.InnertubeArtist,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,

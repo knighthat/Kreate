@@ -15,6 +15,7 @@ import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.database.Database
 import app.kreate.database.models.Format
 import app.kreate.database.upsert
+import app.kreate.gateway.innertube.responses.PlayerResponse
 import co.touchlab.kermit.Logger
 import com.grack.nanojson.JsonWriter
 import com.metrolist.innertube.YouTube
@@ -42,8 +43,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.json.Json
-import me.knighthat.innertube.Endpoints
-import me.knighthat.innertube.response.PlayerResponse
 import me.knighthat.utils.Toaster
 import org.koin.core.scope.Scope
 import org.koin.java.KoinJavaComponent.get
@@ -245,9 +244,7 @@ private suspend fun makeStreamCache(
         ) as PlayerResponse
         //</editor-fold>
         //<editor-fold desc="Verify playability">
-        val playabilityStatus = requireNotNull( response.playabilityStatus ) {
-            "playabilityStatus is null!"
-        }
+        val playabilityStatus = response.playabilityStatus
         when( playabilityStatus.status ) {
             "OK"                -> logger.d { "playabilityStatus is OK" }
             "LOGIN_REQUIRED"    -> throw LoginRequiredException(playabilityStatus.reason)

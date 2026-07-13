@@ -2,8 +2,8 @@ package app.kreate.android.utils
 
 import androidx.media3.common.MediaItem
 import app.kreate.database.models.Song
+import app.kreate.gateway.innertube.models.InnertubeSong
 import it.fast4x.innertube.Innertube
-import me.knighthat.innertube.model.InnertubeSong
 import org.jetbrains.annotations.Contract
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -29,21 +29,7 @@ fun MediaItem.shallowCompare( other: MediaItem? ): Boolean {
  */
 @OptIn(ExperimentalContracts::class)
 @Contract("null->false")
-fun InnertubeSong.shallowCompare( other: MediaItem? ): Boolean {
-    contract {
-        returns( true ) implies( other != null )
-    }
-
-    return other != null && other.mediaId == this.id
-}
-
-/**
- * @return `true` when their ids ([MediaItem.mediaId] & [InnertubeSong.id])
- * are equal. `false` if [other] is null.
- */
-@OptIn(ExperimentalContracts::class)
-@Contract("null->false")
-fun app.kreate.gateway.innertube.models.InnertubeSong.shallowCompare( other: MediaItem? ): Boolean {
+fun InnertubeSong.shallowCompare(other: MediaItem? ): Boolean {
     contract {
         returns( true ) implies( other != null )
     }

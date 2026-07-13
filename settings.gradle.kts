@@ -38,6 +38,3 @@ include(":database")
 project(":database").projectDir = file("extensions/database")
 include(":gateway")
 project(":gateway").projectDir = file("extensions/gateway")
-// Submodules
-include(":innertube")
-project(":innertube").projectDir = file("modules/innertube")

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.bold
 import it.fast4x.rimusic.utils.isLandscape
-import me.knighthat.innertube.Localized
+
 
 abstract class Dialog {
 
@@ -75,7 +75,6 @@ abstract class Dialog {
     }
 
     @get:Composable
-    @get:Localized
     abstract val dialogTitle: String
 
     /**

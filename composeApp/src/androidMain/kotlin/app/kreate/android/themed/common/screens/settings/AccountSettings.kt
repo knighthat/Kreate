@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
-import app.kreate.android.service.innertube.InnertubeProvider
 import app.kreate.android.themed.common.component.settings.RestartPlayerService
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
@@ -113,7 +112,7 @@ fun AccountSettings(
             ) {
                 var loginYouTube by remember { mutableStateOf(false) }
                 val isLoggedIn by remember {derivedStateOf {
-                    "SAPISID" in InnertubeProvider.COOKIE_MAP
+                    "SAPISID" in Preferences.YOUTUBE_COOKIES.value
                 }}
 
                 Column {

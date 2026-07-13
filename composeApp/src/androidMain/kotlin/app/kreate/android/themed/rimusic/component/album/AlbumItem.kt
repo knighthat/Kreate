@@ -28,7 +28,6 @@ import androidx.navigation.NavController
 import app.kreate.android.themed.rimusic.component.MultiplatformItem
 import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.ItemUtils
-import app.kreate.android.utils.innertube.toAlbum
 import app.kreate.database.models.Album
 import app.kreate.preferences.Preferences
 import app.kreate.util.scrollingText
@@ -41,7 +40,7 @@ import it.fast4x.rimusic.utils.asAlbum
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shimmerEffect
 import it.fast4x.rimusic.utils.toAlbum
-import me.knighthat.innertube.model.InnertubeAlbum
+
 
 object AlbumItem: Visual(), MultiplatformItem {
 
@@ -379,20 +378,6 @@ object AlbumItem: Visual(), MultiplatformItem {
         onLongClick: () -> Unit = {}
     ) =
         Vertical( innertubeAlbum.asAlbum, values, navController, modifier, sizeDp, showYear, showArtists, onClick, onLongClick )
-
-    @Composable
-    fun Vertical(
-        innertubeAlbum: InnertubeAlbum,
-        values: Values,
-        navController: NavController?,
-        modifier: Modifier = Modifier,
-        sizeDp: DpSize = thumbnailSize(),
-        showYear: Boolean = true,
-        showArtists: Boolean = true,
-        onClick: () -> Unit = {},
-        onLongClick: () -> Unit = {}
-    ) =
-        Vertical( innertubeAlbum.toAlbum, values, navController, modifier, sizeDp, showYear, showArtists, onClick, onLongClick )
 
     @Composable
     fun Vertical(

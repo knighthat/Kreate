@@ -19,6 +19,7 @@ import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import app.kreate.UserAgents
 import app.kreate.android.service.DownloadHelper
 import app.kreate.android.service.player.ErrorHandlingPolicy
 import app.kreate.android.service.player.StatefulPlayer
@@ -28,7 +29,6 @@ import app.kreate.android.utils.isLocalFile
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.enums.ExoPlayerCacheLocation
 import me.knighthat.impl.DownloadHelperImpl
-import me.knighthat.innertube.UserAgents
 import okhttp3.OkHttpClient
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.Qualifier

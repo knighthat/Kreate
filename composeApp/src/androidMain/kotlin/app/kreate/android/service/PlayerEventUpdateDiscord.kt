@@ -11,6 +11,7 @@ import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.database.Database
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
+import app.kreate.gateway.innertube.YouTubeConstants
 import app.kreate.util.cleanPrefix
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.utils.resize
@@ -21,7 +22,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import me.knighthat.discord.Discord
 import me.knighthat.discord.ListeningActivity
-import me.knighthat.innertube.Constants
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -46,7 +46,7 @@ class PlayerEventUpdateDiscord : Player.Listener, KoinComponent {
                                        ?.firstOrNull()
         val artistsText = artists?.cleanName() ?: metadata?.artist?.toString()?.let( ::cleanPrefix )
         // https://music.youtube.com/channel/[channelId]
-        val artistUrl = artists?.let { "${Constants.YOUTUBE_MUSIC_URL}/channel/${it.id}" }
+        val artistUrl = artists?.let { "${YouTubeConstants.YOUTUBE_MUSIC_URL}/channel/${it.id}" }
         val artistThumbnailUrl = artists?.thumbnailUrl?.resize( 64, 64 )?.toUri()
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Album">

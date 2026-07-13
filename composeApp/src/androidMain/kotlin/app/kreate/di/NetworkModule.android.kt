@@ -3,6 +3,7 @@ package app.kreate.di
 import android.content.Context
 import app.kreate.android.R
 import app.kreate.android.enums.DohServer
+import app.kreate.gateway.innertube.YouTubeConstants
 import app.kreate.logging.OkHttpLogger
 import app.kreate.util.IS_DEBUG
 import co.touchlab.kermit.Logger
@@ -24,7 +25,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
-import me.knighthat.innertube.Constants
 import me.knighthat.utils.Toaster
 import okhttp3.Cache
 import okhttp3.ConnectionPool
@@ -177,7 +177,7 @@ actual val networkModule: Module = module {
             }
 
             defaultRequest {
-                url( Constants.YOUTUBE_MUSIC_URL )
+                url( YouTubeConstants.YOUTUBE_MUSIC_URL )
                 contentType( ContentType.Application.Json )
 
                 url {

@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.util.fastJoinToString
 import androidx.compose.ui.util.fastZip
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -61,8 +60,7 @@ import it.fast4x.rimusic.utils.shimmerEffect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.mapLatest
-import me.knighthat.innertube.model.InnertubePlaylist
-import me.knighthat.innertube.response.Runs
+
 
 object PlaylistItem: Visual(), MultiplatformItem {
 
@@ -443,63 +441,6 @@ object PlaylistItem: Visual(), MultiplatformItem {
 
                 if( navController == null ) return@click
                     NavRoutes.YT_PLAYLIST.navigateHere( navController, innertubePlaylist.key )
-            },
-            onLongClick = onLongClick
-        )
-
-    @Composable
-    fun Vertical(
-        innertubePlaylist: InnertubePlaylist,
-        values: Values,
-        navController: NavController?,
-        modifier: Modifier = Modifier,
-        sizeDp: DpSize = thumbnailSize(),
-        showSubtitle: Boolean = true,
-        showPlatformIcon: Boolean = true,
-        onClick: () -> Unit = {},
-        onLongClick: () -> Unit = {}
-    ) =
-        VerticalStructure(
-            widthDp = sizeDp.width,
-            modifier = modifier,
-            thumbnail = {
-                Thumbnail(
-                    browseId = innertubePlaylist.id,
-                    thumbnailUrl = innertubePlaylist.thumbnails.firstOrNull()?.url,
-                    sizeDp = sizeDp,
-                    showPlatformIcon = showPlatformIcon
-                )
-            },
-            firstLine = {
-                Title(
-                    title = innertubePlaylist.name,
-                    values = values,
-                    textAlign = TextAlign.Center
-                )
-            },
-            secondLine = nd@ {
-                val subtitle = remember {
-                    innertubePlaylist.subtitle
-                                     ?.runs
-                                     ?.fastJoinToString(
-                                         separator = "",
-                                         transform = Runs.Run::text
-                                     )
-                                     .orEmpty()
-                }
-                if( !showSubtitle || subtitle.isBlank() ) return@nd
-
-                Subtitle(
-                    text = subtitle,
-                    values = values,
-                    textAlign = TextAlign.Center
-                )
-            },
-            onClick = click@ {
-                onClick.invoke()
-
-                if( navController == null ) return@click
-                    NavRoutes.YT_PLAYLIST.navigateHere( navController, innertubePlaylist.id )
             },
             onLongClick = onLongClick
         )
