@@ -29,7 +29,6 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.offline.Download
 import app.kreate.android.R
 import app.kreate.android.service.PlayerEventUpdateDiscord
-import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.database.Database
 import app.kreate.database.models.PersistentQueue
@@ -37,6 +36,8 @@ import app.kreate.database.models.Song
 import app.kreate.database.upsert
 import app.kreate.di.InternalPrefKey
 import app.kreate.di.Storage
+import app.kreate.gateway.innertube.YouTube
+import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
 import co.touchlab.kermit.Logger
@@ -64,8 +65,6 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.knighthat.innertube.Innertube
-import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -272,58 +271,55 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
 
         // Prevent UI from freezing up while data is being fetched
         radioJob = coroutineScope.launch {
-            Innertube.radio(
-                mediaItem.mediaId,
-                CURRENT_LOCALE,
-                playlistId,
-                params
-            ).onSuccess { relatedSongs ->
-                // Launch another coroutine to make it run
-                // in parallel with the rest of of block.
-                launch( Dispatchers.IO ) {
-                    relatedSongs.fastForEach {
-                        Database.upsert( it )
+            get<YouTube>()
+                .getRadio( mediaItem.mediaId, playlistId, params )
+                .onSuccess { relatedSongs ->
+                    // Launch another coroutine to make it run
+                    // in parallel with the rest of of block.
+                    launch( Dispatchers.IO ) {
+                        relatedSongs.fastForEach {
+                            Database.upsert( it )
+                        }
                     }
-                }
 
-                // Any call to [player] must happen on Main thread
-                val currentQueue = withContext( Dispatchers.Main ) {
-                    player.mediaItems.fastMap( MediaItem::mediaId )
-                }
+                    // Any call to [player] must happen on Main thread
+                    val currentQueue = withContext( Dispatchers.Main ) {
+                        player.mediaItems.fastMap( MediaItem::mediaId )
+                    }
 
-                // Songs with the same id as provided [Song] should be removed.
-                // The song usually lives at the the first index, but this
-                // way is safer to implement, as it can live through changes in position.
-                relatedSongs.dropWhile { it.id == mediaItem.mediaId || it.id in currentQueue }
-                            .fastMap( InnertubeSong::toMediaItem )
-                            .also {
-                                // Any call to [player] must happen on Main thread
-                                withContext( Dispatchers.Main ) {
-                                    /*
-                                        There are 2 possible outcomes when append is not enabled.
-                                        User starts radio on currently playing song,
-                                        or on a completely different song.
+                    // Songs with the same id as provided [Song] should be removed.
+                    // The song usually lives at the the first index, but this
+                    // way is safer to implement, as it can live through changes in position.
+                    relatedSongs.dropWhile { it.id == mediaItem.mediaId || it.id in currentQueue }
+                                .fastMap( InnertubeSong::toMediaItem )
+                                .also {
+                                    // Any call to [player] must happen on Main thread
+                                    withContext( Dispatchers.Main ) {
+                                        /*
+                                            There are 2 possible outcomes when append is not enabled.
+                                            User starts radio on currently playing song,
+                                            or on a completely different song.
 
-                                        When radio is activated on the same song, remain position
-                                        of currently playing song, delete next songs, and append
-                                        it with new songs.
+                                            When radio is activated on the same song, remain position
+                                            of currently playing song, delete next songs, and append
+                                            it with new songs.
 
-                                        When new song is used for radio, replace entire queue with new songs.
-                                      */
-                                    val curIndex = player.currentMediaItemIndex
-                                    val endIndex = player.mediaItemCount
-                                    if( !append && player.mediaItemCount > 1 ) {
-                                        player.moveMediaItem( curIndex, 0 )
-                                        player.removeMediaItems( curIndex + 1, endIndex )
+                                            When new song is used for radio, replace entire queue with new songs.
+                                          */
+                                        val curIndex = player.currentMediaItemIndex
+                                        val endIndex = player.mediaItemCount
+                                        if( !append && player.mediaItemCount > 1 ) {
+                                            player.moveMediaItem( curIndex, 0 )
+                                            player.removeMediaItems( curIndex + 1, endIndex )
+                                        }
+
+                                        player.addMediaItems(it)
                                     }
-
-                                    player.addMediaItems(it)
                                 }
-                            }
-            }.onFailure { err ->
-                logger.e( "", err )
-                Toaster.e( R.string.error_song_radio_failed )
-            }
+                }.onFailure { err ->
+                    logger.e( "", err )
+                    Toaster.e( R.string.error_song_radio_failed )
+                }
         }
     }
 

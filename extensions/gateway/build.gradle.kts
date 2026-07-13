@@ -27,6 +27,10 @@ kotlin {
         }.configure {
             instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
+
+        compilerOptions {
+            enableCoreLibraryDesugaring = true
+        }
     }
     jvm()
 
@@ -78,4 +82,8 @@ kotlin {
             implementation( libs.androidx.test )
         }
     }
+}
+
+dependencies {
+    coreLibraryDesugaring( libs.desugaring.nio )
 }

@@ -3,9 +3,13 @@ package app.kreate.internal.innertube.models
 import app.kreate.gateway.innertube.PageType
 import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.gateway.innertube.responses.MusicResponsiveListItemRenderer
+import app.kreate.gateway.innertube.responses.NextResponse
 import app.kreate.gateway.innertube.responses.Runs
+import app.kreate.gateway.innertube.responses.Tabs
 import app.kreate.gateway.innertube.responses.Thumbnails
 import app.kreate.internal.innertube.utils.containsExplicitBadge
+import app.kreate.internal.innertube.utils.extractArtistAndAlbum
+import app.kreate.internal.innertube.utils.firstText
 import app.kreate.internal.innertube.utils.pageType
 import app.kreate.internal.innertube.utils.toThumbnailList
 
@@ -61,5 +65,46 @@ internal fun createInnertubeSongFrom( renderer: MusicResponsiveListItemRenderer 
         override val thumbnails: List<Thumbnails.Thumbnail> = thumbnails
         override val isExplicit: Boolean = isExplicit
         override val subtitle: Runs? = secondColumn
+    }
+}
+
+internal fun createInnertubeSongsFrom( response: NextResponse ): List<InnertubeSong> {
+    val contents = response.contents
+        .singleColumnMusicWatchNextResultsRenderer
+        ?.tabbedRenderer
+        ?.watchNextTabbedResultsRenderer
+        ?.tabs
+        ?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
+        ?.content
+        ?.musicQueueRenderer
+        ?.content
+        ?.playlistPanelRenderer
+        ?.contents
+    require( !contents.isNullOrEmpty() ) { "NextResponse doesn't have any contents" }
+
+    return contents.map {
+        val renderer = it.playlistPanelVideoRenderer
+        requireNotNull( renderer ) { "PlaylistPanelRenderer.Content doesn't contain song's info" }
+
+        val id = renderer.videoId
+        val name = renderer.title.firstText
+        val thumbnails = renderer.thumbnail.thumbnails
+        val isExplicit = renderer.badges.containsExplicitBadge
+        val (album, artists) = renderer.longBylineText.extractArtistAndAlbum()
+        val artistsText = renderer.shortBylineText.firstText
+        val duration = renderer.lengthText.firstText
+
+        object : InnertubeSong {
+
+            override val durationText: String = duration
+            override val album: Runs.Run? = album
+            override val artists: List<Runs.Run> = artists
+            override val artistsText: String = artistsText
+            override val subtitle: Runs = renderer.longBylineText
+            override val id: String = id
+            override val name: String = name
+            override val thumbnails: List<Thumbnails.Thumbnail> = thumbnails
+            override val isExplicit: Boolean = isExplicit
+        }
     }
 }

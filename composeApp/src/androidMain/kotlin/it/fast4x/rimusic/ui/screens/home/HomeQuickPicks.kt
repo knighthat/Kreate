@@ -39,7 +39,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.referentialEqualityPolicy
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -71,14 +70,17 @@ import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.ItemUtils
-import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.shallowCompare
+import app.kreate.android.viewmodel.home.HomeQuickPicksViewModel
 import app.kreate.constant.ArtistSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
+import app.kreate.gateway.innertube.models.InnertubePlaylist
+import app.kreate.gateway.innertube.models.InnertubeRankedArtist
+import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.preferences.Preferences
 import app.kreate.util.scrollingText
 import co.touchlab.kermit.Logger
@@ -120,7 +122,6 @@ import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.secondary
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shimmerEffect
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -131,13 +132,9 @@ import kreate.resources.generated.resources.Res
 import kreate.resources.generated.resources.by_casual_played_song
 import kreate.resources.generated.resources.by_last_played_song
 import kreate.resources.generated.resources.by_most_played_song
-import me.knighthat.innertube.model.InnertubeCharts
-import me.knighthat.innertube.model.InnertubePlaylist
-import me.knighthat.innertube.model.InnertubeRankedArtist
-import me.knighthat.innertube.model.InnertubeSong
-import me.knighthat.utils.Toaster
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
@@ -155,7 +152,8 @@ fun HomeQuickPicks(
     navController: NavController,
     onSearchClick: () -> Unit,
     onMoodClick: (mood: Innertube.Mood.Item) -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    viewModel: HomeQuickPicksViewModel = koinViewModel()
 ) {
     val hapticFeedback = LocalHapticFeedback.current
     val player: StatefulPlayer = koinInject()
@@ -700,21 +698,9 @@ fun HomeQuickPicks(
 
                 val showCharts by Preferences.QUICK_PICKS_SHOW_CHARTS.collectAsStateWithLifecycle()
                 if( showCharts ) {
-                    var charts by remember {
-                        // Use [referentialEqualityPolicy] to limit update to when it changes
-                        // object, not the state of contents
-                        mutableStateOf<InnertubeCharts?>( null, referentialEqualityPolicy() )
-                    }
+                    val charts by viewModel.charts.collectAsStateWithLifecycle()
                     LaunchedEffect( refreshing, countryCode ) {
-                        CoroutineScope( Dispatchers.IO ).launch {
-                            me.knighthat.innertube.Innertube.charts( CURRENT_LOCALE, countryCode, null )
-                                .onFailure { err ->
-                                    Logger.e( "", err, "HomeQuickPicks" )
-                                    Toaster.e( R.string.error_failed_to_get_charts )
-                                }
-                                .getOrNull()
-                                .also { charts = it }
-                        }
+                        viewModel.loadCharts()
                     }
 
                     charts?.run {

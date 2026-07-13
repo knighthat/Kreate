@@ -38,6 +38,20 @@ fun InnertubeSong.shallowCompare( other: MediaItem? ): Boolean {
 }
 
 /**
+ * @return `true` when their ids ([MediaItem.mediaId] & [InnertubeSong.id])
+ * are equal. `false` if [other] is null.
+ */
+@OptIn(ExperimentalContracts::class)
+@Contract("null->false")
+fun app.kreate.gateway.innertube.models.InnertubeSong.shallowCompare( other: MediaItem? ): Boolean {
+    contract {
+        returns( true ) implies( other != null )
+    }
+
+    return other != null && other.mediaId == this.id
+}
+
+/**
  * @return `true` when their ids ([MediaItem.mediaId] & [Song.id])
  * are equal. `false` if [other] is null.
  */

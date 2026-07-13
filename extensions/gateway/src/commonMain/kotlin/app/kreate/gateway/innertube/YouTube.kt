@@ -2,6 +2,7 @@ package app.kreate.gateway.innertube
 
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.gateway.innertube.models.InnertubeArtist
+import app.kreate.gateway.innertube.models.InnertubeCharts
 import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeSearch
 import app.kreate.gateway.innertube.models.InnertubeSearchSuggestion
@@ -37,4 +38,12 @@ interface YouTube {
         params: String? = null,
         useLogin: Boolean = false
     ): Result<InnertubePlaylist>
+
+    suspend fun getRadio(
+        videoId: String,
+        playlistId: String?,
+        params: String?
+    ): Result<List<InnertubeSong>>
+
+    suspend fun getCharts(): Result<InnertubeCharts>
 }

@@ -7,6 +7,7 @@ import app.kreate.gateway.innertube.models.AccountInfo
 import app.kreate.gateway.innertube.models.ContinuedPlaylist
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.gateway.innertube.models.InnertubeArtist
+import app.kreate.gateway.innertube.models.InnertubeCharts
 import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeSearch
@@ -18,7 +19,6 @@ import app.kreate.gateway.innertube.responses.BrowseResponse
 import app.kreate.gateway.innertube.responses.Continuation
 import app.kreate.gateway.innertube.responses.MusicPlaylistShelfRenderer
 import app.kreate.gateway.innertube.responses.MusicShelfRenderer
-import app.kreate.gateway.innertube.responses.PlaylistPanelRenderer
 import app.kreate.gateway.innertube.responses.PrimaryResults
 import app.kreate.gateway.innertube.responses.Runs
 import app.kreate.gateway.innertube.responses.SectionListRenderer
@@ -26,10 +26,12 @@ import app.kreate.gateway.innertube.responses.Tabs
 import app.kreate.gateway.innertube.responses.Thumbnails
 import app.kreate.internal.innertube.models.createInnertubeAlbumFrom
 import app.kreate.internal.innertube.models.createInnertubeArtistFrom
+import app.kreate.internal.innertube.models.createInnertubeCharsFrom
 import app.kreate.internal.innertube.models.createInnertubeItemFrom
 import app.kreate.internal.innertube.models.createInnertubePlaylistFrom
 import app.kreate.internal.innertube.models.createInnertubeSearchSuggestionItemFrom
 import app.kreate.internal.innertube.models.createInnertubeSongFrom
+import app.kreate.internal.innertube.models.createInnertubeSongsFrom
 import app.kreate.internal.innertube.models.createSectionFrom
 import app.kreate.internal.innertube.models.year
 import app.kreate.internal.innertube.responses.RunsImpl
@@ -112,41 +114,9 @@ internal class YouTubeImpl : YouTube, Account {
     }
 
     override suspend fun getSongBasicInfo( songId: String ): Result<InnertubeSong> = runCatching {
-        val renderer = requireNotNull(
-            getNext( songId, null, null, null )
-                .contents
-                .singleColumnMusicWatchNextResultsRenderer
-                ?.tabbedRenderer
-                ?.watchNextTabbedResultsRenderer
-                ?.tabs
-                ?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
-                ?.content
-                ?.musicQueueRenderer
-                ?.content
-                ?.playlistPanelRenderer
-                ?.contents
-                ?.firstNotNullOfOrNull( PlaylistPanelRenderer.Content::playlistPanelVideoRenderer )
-        ) { "NextResponse doesn't have song's info" }
-        val id = renderer.videoId
-        val name = renderer.title.firstText
-        val thumbnails = renderer.thumbnail.thumbnails
-        val isExplicit = renderer.badges.containsExplicitBadge
-        val (album, artists) = renderer.longBylineText.extractArtistAndAlbum()
-        val artistsText = renderer.shortBylineText.firstText
-        val duration = renderer.lengthText.firstText
-
-        object : InnertubeSong {
-
-            override val durationText: String = duration
-            override val album: Runs.Run? = album
-            override val artists: List<Runs.Run> = artists
-            override val artistsText: String = artistsText
-            override val subtitle: Runs = renderer.longBylineText
-            override val id: String = id
-            override val name: String = name
-            override val thumbnails: List<Thumbnails.Thumbnail> = thumbnails
-            override val isExplicit: Boolean = isExplicit
-        }
+        getNext( songId, null, null, null )
+            .let( ::createInnertubeSongsFrom )
+            .first()        // createInnertubeSongsFrom already checked whether response contain anything or not
     }
 
     override suspend fun getSongDetails( songId: String ): Result<InnertubeSongDetails> = runCatching {
@@ -407,6 +377,28 @@ internal class YouTubeImpl : YouTube, Account {
             override val continuations: List<Continuation> = playlistContinuation
             override val visitorData: String? = null
         }
+    }
+
+    override suspend fun getRadio(
+        videoId: String,
+        playlistId: String?,
+        params: String?
+    ): Result<List<InnertubeSong>> = runCatching {
+        getNext( videoId, playlistId, params, null ).let( ::createInnertubeSongsFrom )
+    }
+
+    override suspend fun getCharts(): Result<InnertubeCharts> = runCatching {
+        val renderer = requireNotNull(
+            browse( "FEmusic_charts" )
+                .contents
+                ?.singleColumnBrowseResultsRenderer
+                ?.tabs
+                ?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
+                ?.content
+                ?.sectionListRenderer
+        ) { "BrowseResponse doesn't contain any chart information" }
+
+        renderer.let( ::createInnertubeCharsFrom )
     }
 
     /*

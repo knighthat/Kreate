@@ -1,12 +1,10 @@
 package app.kreate.internal.innertube.models
 
-import app.kreate.gateway.innertube.PageType
 import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.Section
 import app.kreate.gateway.innertube.responses.MusicCarouselShelfRenderer
 import app.kreate.gateway.innertube.responses.MusicShelfRenderer
 import app.kreate.internal.innertube.utils.firstText
-import app.kreate.internal.innertube.utils.pageType
 
 
 internal fun createSectionFrom( renderer: MusicCarouselShelfRenderer ): Section {
@@ -19,23 +17,13 @@ internal fun createSectionFrom( renderer: MusicCarouselShelfRenderer ): Section 
     //<editor-fold defaultstate="collapsed" desc="Contents">
     val mutableContents = mutableListOf<InnertubeItem>()
     for( item in renderer.contents ) {
-        val mrlir = item.musicResponsiveListItemRenderer
-        if( mrlir != null ) {
-            val song = createInnertubeSongFrom( mrlir )
-            mutableContents.add( song )
+        item.musicResponsiveListItemRenderer
+            ?.let( ::createInnertubeSongFrom )
+            ?.also( mutableContents::add )
 
-            continue
-        }
-
-        val mtwir = item.musicTwoRowItemRenderer ?: continue
-        val item: InnertubeItem = when( mtwir.navigationEndpoint.pageType ) {
-            PageType.ARTIST     -> createInnertubeArtistFrom( mtwir )
-            PageType.ALBUM      -> createInnertubeAlbumFrom( mtwir )
-            PageType.PLAYLIST   -> createInnertubePlaylistFrom( mtwir )
-            // Ignore items with unknown page type (have no parser for it)
-            else                -> continue
-        }
-        mutableContents.add( item )
+        item.musicTwoRowItemRenderer
+            ?.let( ::createInnertubeItemFrom )
+            ?.also( mutableContents::add )
     }
     val contents = mutableContents.toList()
     //</editor-fold>
