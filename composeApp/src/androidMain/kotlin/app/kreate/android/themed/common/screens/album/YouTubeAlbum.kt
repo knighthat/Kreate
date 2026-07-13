@@ -1,6 +1,5 @@
 package app.kreate.android.themed.common.screens.album
 
-import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -33,10 +32,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -53,6 +50,7 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastJoinToString
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapNotNull
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
@@ -67,15 +65,14 @@ import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.album.Bookmark
 import app.kreate.android.themed.rimusic.component.song.SongItem
-import app.kreate.android.utils.innertube.CURRENT_LOCALE
-import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.renderDescription
 import app.kreate.android.utils.shallowCompare
-import app.kreate.database.Database
-import app.kreate.database.insertIgnore
-import app.kreate.database.models.Album
+import app.kreate.android.viewmodel.YoutubeAlbumViewModel
 import app.kreate.database.models.Song
-import app.kreate.database.models.SongAlbumMap
+import app.kreate.gateway.innertube.models.InnertubeAlbum
+import app.kreate.gateway.innertube.models.InnertubeSong
+import app.kreate.gateway.innertube.models.Section
+import app.kreate.internal.innertube.models.share
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.scrollingText
 import co.touchlab.kermit.Logger
@@ -103,59 +100,14 @@ import it.fast4x.rimusic.utils.forcePlayAtIndex
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.semiBold
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import me.knighthat.component.album.AlbumModifier
 import me.knighthat.component.tab.Locator
 import me.knighthat.component.tab.Radio
 import me.knighthat.component.tab.SongShuffler
 import me.knighthat.component.ui.screens.DynamicOrientationLayout
-import me.knighthat.innertube.Constants
-import me.knighthat.innertube.Innertube
-import me.knighthat.innertube.model.InnertubeAlbum
-import me.knighthat.innertube.model.InnertubeSong
-import me.knighthat.innertube.model.Section
-import me.knighthat.utils.PropUtils
-import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
-private fun updateAlbumInDatabase(dbAlbum: Album?, innertubeAlbum: InnertubeAlbum ) = Database.asyncTransaction {
-    val onlineAlbum = Album(
-        id = innertubeAlbum.id,
-        title = PropUtils.retainIfModified( dbAlbum?.title, innertubeAlbum.name ),
-        thumbnailUrl = PropUtils.retainIfModified(
-            dbAlbum?.thumbnailUrl,
-            innertubeAlbum.thumbnails.firstOrNull()?.url
-        ),
-        year = innertubeAlbum.year,
-        authorsText = PropUtils.retainIfModified(
-            dbAlbum?.authorsText,
-            innertubeAlbum.artists.fastJoinToString { it.text }
-        ),
-        shareUrl = dbAlbum?.shareUrl,
-        timestamp = dbAlbum?.timestamp ?: System.currentTimeMillis(),
-        bookmarkedAt = dbAlbum?.bookmarkedAt,
-        isYoutubeAlbum = true
-    )
-
-    // Upsert to override/update default values
-    albumTable.upsert( onlineAlbum )
-
-    // Map ignore to make sure only positions
-    // are overridden, not the songs themselves
-    innertubeAlbum.songs
-                 .fastMap( InnertubeSong::toMediaItem )
-                 .onEach( ::insertIgnore )
-                 .mapIndexed { position, mediaItem ->
-                     SongAlbumMap(
-                         songId = mediaItem.mediaId,
-                         albumId = innertubeAlbum.id,
-                         position = position
-                     )
-                 }
-                 .also( songAlbumMapTable::upsert )
-}
 
 @ExperimentalFoundationApi
 @UnstableApi
@@ -204,9 +156,8 @@ private fun LazyListScope.renderSection(
 @Composable
 fun YouTubeAlbum(
     navController: NavController,
-    browseId: String,
-    params: String?,
-    miniPlayer: @Composable () -> Unit = {}
+    miniPlayer: @Composable () -> Unit = {},
+    viewModel: YoutubeAlbumViewModel = koinViewModel()
 ) {
     Skeleton(
         navController = navController,
@@ -226,16 +177,10 @@ fun YouTubeAlbum(
         val coroutineScope = rememberCoroutineScope()
         //</editor-fold>
 
-        var albumPage: InnertubeAlbum? by remember { mutableStateOf( null ) }
-        val dbAlbum: Album? by remember {
-            Database.albumTable
-                    .findById( browseId )
-        }.collectAsState( null, Dispatchers.IO )
-        val items by remember {
-            Database.songAlbumMapTable
-                    .allSongsOf( browseId )
-        }.collectAsState( emptyList(), Dispatchers.IO )
-        var isRefreshing by remember { mutableStateOf( false ) }
+        val albumPage by viewModel.albumPage.collectAsStateWithLifecycle()
+        val dbAlbum by viewModel.dbAlbum.collectAsStateWithLifecycle()
+        val items by viewModel.librarySongs().collectAsStateWithLifecycle()
+        val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
         val sectionTextModifier = remember {
             Modifier.padding( 16.dp, 24.dp, 16.dp, 8.dp )
         }
@@ -248,7 +193,7 @@ fun YouTubeAlbum(
         fun getSongs() = itemSelector.ifEmpty { items }
         fun getMediaItems() = getSongs().map( Song::asMediaItem )
 
-        val bookmark = remember { Bookmark(browseId) }
+        val bookmark = remember { Bookmark(viewModel.browseId) }
         val deleteAllDownloadsDialog = remember {
             DeleteAllDownloadedDialog(::getSongs)
         }
@@ -297,21 +242,21 @@ fun YouTubeAlbum(
             messageId = R.string.update_title,
             getDefaultValue = { dbAlbum?.cleanTitle() ?: "" },
         ) {
-            updateTitle( browseId, "$MODIFIED_PREFIX$it" )
+            updateTitle( viewModel.browseId, "$MODIFIED_PREFIX$it" )
         }
         val changeAuthors = AlbumModifier(
             iconId = R.drawable.artists_edit,
             messageId = R.string.update_authors,
             getDefaultValue = { dbAlbum?.cleanAuthorsText() ?: "" },
         ) {
-            updateAuthors( browseId, "$MODIFIED_PREFIX$it" )
+            updateAuthors( viewModel.browseId, "$MODIFIED_PREFIX$it" )
         }
         val changeCover = AlbumModifier(
             iconId = R.drawable.cover_edit,
             messageId = R.string.update_cover,
             getDefaultValue = { dbAlbum?.cleanThumbnailUrl() ?: "" },
         ) {
-            updateCover( browseId, "$MODIFIED_PREFIX$it" )
+            updateCover( viewModel.browseId, "$MODIFIED_PREFIX$it" )
         }
         //</editor-fold>
 
@@ -322,20 +267,7 @@ fun YouTubeAlbum(
         changeCover.Render()
         //</editor-fold>
 
-        fun onRefresh() = CoroutineScope( Dispatchers.IO ).launch {
-            Innertube.browseAlbum( browseId, CURRENT_LOCALE, params )
-                     .onSuccess {
-                         albumPage = it
-                         updateAlbumInDatabase( dbAlbum, it )
-                     }
-                     .onFailure { err ->
-                         Logger.e( "", err, "YouTubeAlbum" )
-                         Toaster.e( R.string.error_failed_to_load_album )
-                     }
-
-            isRefreshing = false
-        }
-        LaunchedEffect( Unit ) { onRefresh() }
+        LaunchedEffect( Unit ) { viewModel.onRefresh() }
 
         val currentMediaItem by player.currentMediaItemState.collectAsState()
         val songItemValues = remember( colorPalette, typography ) {
@@ -346,10 +278,7 @@ fun YouTubeAlbum(
         DynamicOrientationLayout( thumbnailPainter ) {
             PullToRefreshBox(
                 isRefreshing = isRefreshing,
-                onRefresh = {
-                    isRefreshing = true
-                    onRefresh()
-                },
+                onRefresh = viewModel::onRefresh,
                 modifier = Modifier.fillMaxSize()
             ) {
                 LazyColumn(
@@ -386,17 +315,7 @@ fun YouTubeAlbum(
                                                    .size( 40.dp )
                                                    .align( Alignment.TopEnd )
                                                    .clickable {
-                                                       albumPage?.shareUrl( Constants.YOUTUBE_MUSIC_URL )?.also { url ->
-                                                           val sendIntent = Intent().apply {
-                                                               action = Intent.ACTION_SEND
-                                                               type = "text/plain"
-                                                               putExtra(Intent.EXTRA_TEXT, url)
-                                                           }
-
-                                                           context.startActivity(
-                                                               Intent.createChooser( sendIntent, null )
-                                                           )
-                                                       }
+                                                       albumPage?.share( context )
                                                    }
                             )
 
@@ -420,7 +339,7 @@ fun YouTubeAlbum(
                     item( "artists" ) {
                         val text = remember( albumPage ) {
                             val artistsText = albumPage?.artists?.fastJoinToString( " • " ) { it.text }.orEmpty()
-                            val yearText = if( albumPage?.year.isNullOrBlank() ) "" else " • ${albumPage?.year}"
+                            val yearText = if( albumPage?.year == -1 ) "" else " • ${albumPage?.year}"
 
                             "$artistsText%s".format(yearText)
                         }

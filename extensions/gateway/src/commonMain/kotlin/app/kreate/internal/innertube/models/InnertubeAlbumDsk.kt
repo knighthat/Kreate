@@ -15,7 +15,7 @@ import app.kreate.internal.innertube.utils.toThumbnailList
 
 private val YEAR_REGEX = Regex("\\d{4}")
 
-private val Runs.year: Int
+internal val Runs.year: Int
     get() = runs.firstOrNull { it.text.matches(YEAR_REGEX) }?.text?.toInt() ?: -1
 
 internal fun createInnertubeAlbumFrom( renderer: MusicTwoRowItemRenderer ): InnertubeAlbum {

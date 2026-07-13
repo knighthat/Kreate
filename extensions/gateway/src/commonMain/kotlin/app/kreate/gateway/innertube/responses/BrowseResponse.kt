@@ -42,6 +42,7 @@ interface BrowseResponse : InnertubeResponse {
             val thumbnail: Thumbnail
             val shareEndpoint: Endpoint?
             val monthlyListenerCount: Runs?
+            val subscriptionButton: Button
         }
 
         interface MusicHeaderRenderer {

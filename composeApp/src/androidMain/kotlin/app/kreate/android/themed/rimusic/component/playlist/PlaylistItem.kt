@@ -504,6 +504,57 @@ object PlaylistItem: Visual(), MultiplatformItem {
             onLongClick = onLongClick
         )
 
+    @Composable
+    fun Vertical(
+        innertubePlaylist: app.kreate.gateway.innertube.models.InnertubePlaylist,
+        values: Values,
+        navController: NavController?,
+        modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
+        showSubtitle: Boolean = true,
+        showPlatformIcon: Boolean = true,
+        onClick: () -> Unit = {},
+        onLongClick: () -> Unit = {}
+    ) =
+        VerticalStructure(
+            widthDp = sizeDp.width,
+            modifier = modifier,
+            thumbnail = {
+                Thumbnail(
+                    browseId = innertubePlaylist.id,
+                    thumbnailUrl = innertubePlaylist.thumbnails.firstOrNull()?.url,
+                    sizeDp = sizeDp,
+                    showPlatformIcon = showPlatformIcon
+                )
+            },
+            firstLine = {
+                Title(
+                    title = innertubePlaylist.name,
+                    values = values,
+                    textAlign = TextAlign.Center
+                )
+            },
+            secondLine = nd@ {
+                val subtitle = remember {
+                    innertubePlaylist.subtitle?.joinToString( "" ).orEmpty()
+                }
+                if( !showSubtitle || subtitle.isBlank() ) return@nd
+
+                Subtitle(
+                    text = subtitle,
+                    values = values,
+                    textAlign = TextAlign.Center
+                )
+            },
+            onClick = click@ {
+                onClick.invoke()
+
+                if( navController == null ) return@click
+                    NavRoutes.YT_PLAYLIST.navigateHere( navController, innertubePlaylist.id )
+            },
+            onLongClick = onLongClick
+        )
+
     @ExperimentalCoroutinesApi
     @Composable
     fun Horizontal(

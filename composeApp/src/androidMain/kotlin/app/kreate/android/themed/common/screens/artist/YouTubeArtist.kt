@@ -1,6 +1,5 @@
 package app.kreate.android.themed.common.screens.artist
 
-import android.content.Intent
 import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -68,6 +67,10 @@ import app.kreate.android.utils.renderDescription
 import app.kreate.android.utils.shallowCompare
 import app.kreate.android.viewmodel.YoutubeArtistViewModel
 import app.kreate.database.models.Song
+import app.kreate.gateway.innertube.models.InnertubeAlbum
+import app.kreate.gateway.innertube.models.InnertubeArtist
+import app.kreate.gateway.innertube.models.InnertubeSong
+import app.kreate.internal.innertube.models.share
 import app.kreate.util.scrollingText
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
@@ -94,10 +97,6 @@ import me.knighthat.component.artist.FollowButton
 import me.knighthat.component.tab.Radio
 import me.knighthat.component.tab.SongShuffler
 import me.knighthat.component.ui.screens.DynamicOrientationLayout
-import me.knighthat.innertube.Constants
-import me.knighthat.innertube.model.InnertubeAlbum
-import me.knighthat.innertube.model.InnertubeArtist
-import me.knighthat.innertube.model.InnertubeSong
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -128,7 +127,7 @@ private fun LazyListScope.renderSections(
             )
 
             // TODO: Add support for playlists
-            if( section.browseId != null && section.contents.fastAll { it is InnertubeSong || it is InnertubeAlbum} )
+            if( section.browseId != null && section.contents.fastAll { it is InnertubeSong || it is InnertubeAlbum } )
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = null,
@@ -174,7 +173,7 @@ private fun LazyListScope.renderSections(
                        SongItem.Render(
                            song = song.toSong,
                            hapticFeedback = hapticFeedback,
-                           isPlaying = song.shallowCompare( currentMedia ),
+                           isPlaying = mediaItem.shallowCompare( currentMedia ),
                            values = songItemValues,
                            showThumbnail = true,
                            onClick = {
@@ -362,29 +361,19 @@ fun YouTubeArtist(
                                             )
                                     )
 
-                                artistPage?.shareUrl( Constants.YOUTUBE_MUSIC_URL )?.also { shareUrl ->
-                                    Icon(
-                                        painter = painterResource( R.drawable.share_social ),
-                                        // TODO: Make a separate string for this (i.e. Share to...)
-                                        contentDescription = stringResource( R.string.listen_on_youtube_music ),
-                                        tint = colorPalette.text.copy( .5f ),
-                                        modifier = Modifier
-                                            .padding(all = 5.dp)
-                                            .size(40.dp)
-                                            .align(Alignment.TopEnd)
-                                            .clickable {
-                                                val sendIntent = Intent().apply {
-                                                    action = Intent.ACTION_SEND
-                                                    type = "text/plain"
-                                                    putExtra(Intent.EXTRA_TEXT, shareUrl)
-                                                }
-
-                                                context.startActivity(
-                                                    Intent.createChooser(sendIntent, null)
-                                                )
-                                            }
-                                    )
-                                }
+                                Icon(
+                                    painter = painterResource( R.drawable.share_social ),
+                                    // TODO: Make a separate string for this (i.e. Share to...)
+                                    contentDescription = stringResource( R.string.listen_on_youtube_music ),
+                                    tint = colorPalette.text.copy( .5f ),
+                                    modifier = Modifier
+                                        .padding(all = 5.dp)
+                                        .size(40.dp)
+                                        .align(Alignment.TopEnd)
+                                        .clickable {
+                                            artistPage?.share( context )
+                                        }
+                                )
 
                                 AutoResizeText(
                                     // Use local artist name (custom name), otherwise, use online name

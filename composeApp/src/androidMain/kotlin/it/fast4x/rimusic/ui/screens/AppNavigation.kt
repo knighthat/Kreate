@@ -239,11 +239,7 @@ fun AppNavigation(
             route = "${NavRoutes.YT_ALBUM}/{browseId}?params={params}",
             arguments = listOf( BROWSE_ID_ARG, PARAM_ARG )
         ) {
-            // browseId must not be empty or null in any case
-            val browseId = it.arguments!!.getString( "browseId" )!!
-            val params = it.arguments!!.getString( "params" )
-
-            YouTubeAlbum( navController, browseId, params, miniPlayer )
+            YouTubeAlbum( navController, miniPlayer )
         }
 
         composable(

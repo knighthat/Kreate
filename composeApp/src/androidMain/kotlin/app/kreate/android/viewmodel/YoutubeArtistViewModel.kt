@@ -19,7 +19,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.R
-import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.innertube.toSong
 import app.kreate.database.Database
@@ -27,6 +26,9 @@ import app.kreate.database.insertIgnore
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongArtistMap
+import app.kreate.gateway.innertube.YouTube
+import app.kreate.gateway.innertube.models.InnertubeArtist
+import app.kreate.gateway.innertube.models.InnertubeSong
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.isNetworkConnected
@@ -38,17 +40,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import me.knighthat.innertube.Innertube
-import me.knighthat.innertube.model.InnertubeArtist
-import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.PropUtils
 import me.knighthat.utils.Toaster
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 
 class YoutubeArtistViewModel(
     savedStateHandle: SavedStateHandle,
     private val context: Context,
-) : ViewModel() {
+) : ViewModel(), KoinComponent {
 
     private val _artistPage = MutableStateFlow<InnertubeArtist?>(null)
 
@@ -128,21 +129,22 @@ class YoutubeArtistViewModel(
         }
 
         viewModelScope.launch( Dispatchers.IO ) {
-            Innertube.browseArtist( browseId, CURRENT_LOCALE, params )
-                     .onSuccess { page ->
-                         _artistPage.update { page }
+            get<YouTube>()
+                .getArtist( browseId, params )
+                .onSuccess { page ->
+                    _artistPage.update { page }
 
-                         // Prevent artist from being inserted
-                         // into the database. Limit to following
-                         // artists in most cases
-                         dbArtist.value?.also {
-                             updateArtistInDatabase( it, page )
-                         }
-                     }
-                     .onFailure { err ->
-                         Logger.e( "", err, "YouTubeArtist" )
-                         Toaster.e( R.string.error_failed_to_load_artist )
-                     }
+                    // Prevent artist from being inserted
+                    // into the database. Limit to following
+                    // artists in most cases
+                    dbArtist.value?.also {
+                        updateArtistInDatabase( it, page )
+                    }
+                }
+                .onFailure { err ->
+                    Logger.e( "", err, "YouTubeArtist" )
+                    Toaster.e( R.string.error_failed_to_load_artist )
+                 }
 
             isRefreshing = false
         }

@@ -24,6 +24,11 @@ import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.innertube.toMediaItem
+import app.kreate.gateway.innertube.models.InnertubeAlbum
+import app.kreate.gateway.innertube.models.InnertubeArtist
+import app.kreate.gateway.innertube.models.InnertubeItem
+import app.kreate.gateway.innertube.models.InnertubePlaylist
+import app.kreate.gateway.innertube.models.InnertubeSong
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.isVideoEnabled
 import it.fast4x.rimusic.thumbnailShape
@@ -32,11 +37,6 @@ import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.playVideo
 import it.fast4x.rimusic.utils.shimmerEffect
-import me.knighthat.innertube.model.InnertubeAlbum
-import me.knighthat.innertube.model.InnertubeArtist
-import me.knighthat.innertube.model.InnertubeItem
-import me.knighthat.innertube.model.InnertubePlaylist
-import me.knighthat.innertube.model.InnertubeSong
 import org.koin.compose.koinInject
 
 

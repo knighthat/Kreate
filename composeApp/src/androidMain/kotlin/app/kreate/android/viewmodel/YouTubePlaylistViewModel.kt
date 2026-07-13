@@ -13,9 +13,11 @@ import androidx.lifecycle.viewModelScope
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.LoadMoreContentType
 import app.kreate.android.themed.rimusic.component.Search
-import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.android.utils.innertube.toSong
 import app.kreate.database.models.Song
+import app.kreate.gateway.innertube.YouTube
+import app.kreate.gateway.innertube.models.InnertubePlaylist
+import app.kreate.gateway.innertube.models.InnertubeSong
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.utils.isNetworkConnected
 import kotlinx.coroutines.Dispatchers
@@ -32,16 +34,15 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import me.knighthat.innertube.Innertube
-import me.knighthat.innertube.model.InnertubePlaylist
-import me.knighthat.innertube.model.InnertubeSong
 import me.knighthat.utils.Toaster
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 
 class YouTubePlaylistViewModel(
     savedStateHandle: SavedStateHandle,
     private val context: Context
-) : ViewModel() {
+) : ViewModel(), KoinComponent {
 
     private val _playlistPage = MutableStateFlow<InnertubePlaylist?>(null)
     private val _continued = MutableStateFlow(emptyList<InnertubeSong>())
@@ -107,15 +108,16 @@ class YouTubePlaylistViewModel(
             return@launch
         }
 
-        Innertube.browsePlaylist( browseId, CURRENT_LOCALE, useLogin )
-                 .onSuccess { page ->
-                     _playlistPage.update { page }
-                     _continuation.update { page.songContinuation }
-                 }
-                 .onFailure { err ->
-                     Logger.e( "", err, "YouTubePlaylist" )
-                     Toaster.e( R.string.error_failed_to_load_playlist )
-                 }
+        get<YouTube>()
+            .getPlaylist( browseId, null, useLogin = useLogin )
+            .onSuccess { page ->
+                _playlistPage.update { page }
+                _continuation.update { page.songContinuation }
+            }
+            .onFailure { err ->
+                Logger.e( "", err, "YouTubePlaylist" )
+                Toaster.e( R.string.error_failed_to_load_playlist )
+            }
     }
 
     @AnyThread
@@ -125,26 +127,15 @@ class YouTubePlaylistViewModel(
             return@launch
         }
 
-        // Capture values here to guarantee no race-condition can happen after this
-        val continuation = _continuation.value
-        val visitorData = _playlistPage.value?.visitorData
-        if( continuation == null || (visitorData == null && !useLogin) ) {
-            Toaster.w( R.string.warning_end_of_list )
-            return@launch
-        }
-
-        Innertube.playlistContinued(
-            _playlistPage.value?.visitorData,
-            continuation,
-            CURRENT_LOCALE,
-            params,
-            useLogin
-        ).onSuccess { continued ->
-            _continued.update { it + continued.songs }
-            _continuation.update { continued.continuation }
-        }.onFailure { err ->
-            Logger.e( "", err, "YouTubePlaylist" )
-            Toaster.e( R.string.error_failed_to_get_playlists_next_songs )
-        }
+        get<YouTube>()
+            .getPlaylist(null, continuation.value, params, useLogin)
+            .onFailure { err ->
+                Logger.e( "", err, "YouTubePlaylist" )
+                Toaster.e( R.string.error_failed_to_get_playlists_next_songs )
+            }
+            .onSuccess { continued ->
+                _continued.update { it + continued.songs }
+                _continuation.update { continued.songContinuation }
+            }
     }
 }

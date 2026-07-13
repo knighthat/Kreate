@@ -1,6 +1,5 @@
 package app.kreate.android.themed.rimusic.screen.playlist
 
-import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -62,6 +61,7 @@ import app.kreate.android.viewmodel.YouTubePlaylistViewModel
 import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
+import app.kreate.internal.innertube.models.share
 import app.kreate.util.scrollingText
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.YtMusic
@@ -103,7 +103,6 @@ import me.knighthat.component.tab.LikeComponent
 import me.knighthat.component.tab.Radio
 import me.knighthat.component.tab.SongShuffler
 import me.knighthat.component.ui.screens.DynamicOrientationLayout
-import me.knighthat.innertube.Constants
 import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -265,20 +264,7 @@ fun YouTubePlaylist(
                                                        .size( 40.dp )
                                                        .align( Alignment.TopEnd )
                                                        .clickable {
-                                                           playlistPage?.shareUrl( Constants.YOUTUBE_MUSIC_URL )?.also { url ->
-                                                               val sendIntent = Intent().apply {
-                                                                   action = Intent.ACTION_SEND
-                                                                   type = "text/plain"
-                                                                   putExtra(Intent.EXTRA_TEXT, url)
-                                                               }
-
-                                                               context.startActivity(
-                                                                   Intent.createChooser(
-                                                                       sendIntent,
-                                                                       null
-                                                                   )
-                                                               )
-                                                           }
+                                                           playlistPage?.share( context )
                                                        }
                                 )
                             }

@@ -1,5 +1,8 @@
 package app.kreate.gateway.innertube
 
+import app.kreate.gateway.innertube.models.InnertubeAlbum
+import app.kreate.gateway.innertube.models.InnertubeArtist
+import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeSearch
 import app.kreate.gateway.innertube.models.InnertubeSearchSuggestion
 import app.kreate.gateway.innertube.models.InnertubeSong
@@ -23,4 +26,15 @@ interface YouTube {
     suspend fun getSongBasicInfo( songId: String ): Result<InnertubeSong>
 
     suspend fun getSongDetails( songId: String ): Result<InnertubeSongDetails>
+
+    suspend fun getAlbum( albumId: String, params: String?, useLogin: Boolean = false ): Result<InnertubeAlbum>
+
+    suspend fun getArtist( artistId: String, params: String?, useLogin: Boolean = false ): Result<InnertubeArtist>
+
+    suspend fun getPlaylist(
+        playlistId: String?,
+        continuation: String?,
+        params: String? = null,
+        useLogin: Boolean = false
+    ): Result<InnertubePlaylist>
 }

@@ -8,7 +8,7 @@ import kotlinx.serialization.json.JsonObject
 
 
 internal actual suspend fun browse(
-    browseId: String,
+    browseId: String?,
     params: String?,
     continuation: String?,
     setLogin: Boolean

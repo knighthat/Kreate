@@ -31,6 +31,18 @@ val InnertubeSong.toSong: Song
         isExplicit = isExplicit
     )
 
+val app.kreate.gateway.innertube.models.InnertubeSong.toSong: Song
+    get() = Song(
+        id = this.id,
+        title = name,
+        artistsText = this.artistsText,
+        durationText = this.durationText,
+        thumbnailUrl = this.thumbnails.firstOrNull()?.url,
+        likedAt = null,
+        totalPlayTimeMs = 0,
+        isExplicit = isExplicit
+    )
+
 val InnertubeSong.toMediaItem: MediaItem
     get() = MediaItem.Builder()
                      .setMediaMetadata(
@@ -85,6 +97,14 @@ val InnertubeAlbum.toAlbum: Album
     )
 
 val InnertubeArtist.toArtist: Artist
+    get() = Artist(
+        id = id,
+        name = name,
+        thumbnailUrl = thumbnails.firstOrNull()?.url,
+        isYoutubeArtist = true
+    )
+
+val app.kreate.gateway.innertube.models.InnertubeArtist.toArtist: Artist
     get() = Artist(
         id = id,
         name = name,

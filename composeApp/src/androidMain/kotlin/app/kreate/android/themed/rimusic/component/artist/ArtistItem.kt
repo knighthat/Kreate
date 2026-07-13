@@ -204,6 +204,18 @@ object ArtistItem: Visual(), MultiplatformItem {
         onLongClick: () -> Unit = {}
     ) = Render( innertubeArtist.toArtist, values, navController, modifier, sizeDp, showTitle, onClick, onLongClick )
 
+    @Composable
+    fun Render(
+        innertubeArtist: app.kreate.gateway.innertube.models.InnertubeArtist,
+        values: Values,
+        navController: NavController?,
+        modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
+        showTitle: Boolean = true,
+        onClick: () -> Unit = {},
+        onLongClick: () -> Unit = {}
+    ) = Render( innertubeArtist.toArtist, values, navController, modifier, sizeDp, showTitle, onClick, onLongClick )
+
     data class Values(
         val titleTextStyle: TextStyle,
         val titleColor: Color,

@@ -583,6 +583,39 @@ object SongItem: Visual() {
             onClick = onClick
         )
 
+        @OptIn(UnstableApi::class)
+    @Composable
+    fun Render(
+        innertubeSong: app.kreate.gateway.innertube.models.InnertubeSong,
+        hapticFeedback: HapticFeedback,
+        isPlaying: Boolean,
+        values: Values,
+        onLongClick: () -> Unit,
+        modifier: Modifier = Modifier,
+        isInPlaylistScreen: Boolean = false,
+        itemSelector: ItemSelector<Song>? = null,
+        isRecommended: Boolean = false,
+        showThumbnail: Boolean = true,
+        trailingContent: @Composable RowScope.() -> Unit = {},
+        thumbnailOverlay: @Composable BoxScope.() -> Unit = {},
+        onClick: () -> Unit = {}
+    ) =
+        Render(
+            song = innertubeSong.toSong,
+            hapticFeedback = hapticFeedback,
+            isPlaying = isPlaying,
+            values = values,
+            modifier = modifier,
+            isInPlaylistScreen = isInPlaylistScreen,
+            itemSelector = itemSelector,
+            isRecommended = isRecommended,
+            showThumbnail = showThumbnail,
+            onLongClick = onLongClick,
+            trailingContent = trailingContent,
+            thumbnailOverlay = thumbnailOverlay,
+            onClick = onClick
+        )
+
     @OptIn(UnstableApi::class)
     @Composable
     fun Render(

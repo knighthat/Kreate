@@ -4,6 +4,7 @@ import app.kreate.exceptions.NotLoggedInException
 import app.kreate.gateway.innertube.Account
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.gateway.innertube.models.AccountInfo
+import app.kreate.gateway.innertube.models.ContinuedPlaylist
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.gateway.innertube.models.InnertubeArtist
 import app.kreate.gateway.innertube.models.InnertubeItem
@@ -12,8 +13,10 @@ import app.kreate.gateway.innertube.models.InnertubeSearch
 import app.kreate.gateway.innertube.models.InnertubeSearchSuggestion
 import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.gateway.innertube.models.InnertubeSongDetails
+import app.kreate.gateway.innertube.models.Section
 import app.kreate.gateway.innertube.responses.BrowseResponse
 import app.kreate.gateway.innertube.responses.Continuation
+import app.kreate.gateway.innertube.responses.MusicPlaylistShelfRenderer
 import app.kreate.gateway.innertube.responses.MusicShelfRenderer
 import app.kreate.gateway.innertube.responses.PlaylistPanelRenderer
 import app.kreate.gateway.innertube.responses.PrimaryResults
@@ -26,11 +29,15 @@ import app.kreate.internal.innertube.models.createInnertubeArtistFrom
 import app.kreate.internal.innertube.models.createInnertubeItemFrom
 import app.kreate.internal.innertube.models.createInnertubePlaylistFrom
 import app.kreate.internal.innertube.models.createInnertubeSearchSuggestionItemFrom
+import app.kreate.internal.innertube.models.createInnertubeSongFrom
+import app.kreate.internal.innertube.models.createSectionFrom
+import app.kreate.internal.innertube.models.year
 import app.kreate.internal.innertube.responses.RunsImpl
 import app.kreate.internal.innertube.responses.ThumbnailsImpl
 import app.kreate.internal.innertube.utils.containsExplicitBadge
 import app.kreate.internal.innertube.utils.extractArtistAndAlbum
 import app.kreate.internal.innertube.utils.firstText
+import app.kreate.internal.innertube.utils.toThumbnailList
 import app.kreate.preferences.Preferences
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -38,6 +45,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
+
 
 internal class YouTubeImpl : YouTube, Account {
 
@@ -178,6 +186,226 @@ internal class YouTubeImpl : YouTube, Account {
             override val relativeReleaseDate: String = relativeReleaseDate
             override val description: String = description
             override val artist: InnertubeArtist = artist
+        }
+    }
+
+    override suspend fun getAlbum(
+        albumId: String,
+        params: String?,
+        useLogin: Boolean
+    ): Result<InnertubeAlbum> = runCatching {
+        val response = browse( albumId, params, setLogin = useLogin )
+        val urlCanonical = response.microformat?.microformatDataRenderer?.urlCanonical
+        val sections = response.contents
+            ?.twoColumnBrowseResultsRenderer
+            ?.secondaryContents
+            ?.sectionListRenderer
+            ?.contents
+            ?.mapNotNull { it.musicCarouselShelfRenderer }
+            ?.map( ::createSectionFrom )
+            .orEmpty()
+        //<editor-fold desc="Renderer">
+        val renderer = requireNotNull(
+            response.contents
+                ?.twoColumnBrowseResultsRenderer
+                ?.tabs
+                ?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
+                ?.content
+                ?.sectionListRenderer
+                ?.contents
+                ?.firstNotNullOfOrNull( SectionListRenderer.Content::musicResponsiveHeaderRenderer )
+        ) { "BrowseResponse doesn't contain any contents" }
+        val thumbnails = renderer.thumbnail.toThumbnailList()
+        val artists = renderer.straplineTextOne?.extractArtistAndAlbum()?.artists.orEmpty()
+        val description = renderer.description?.musicDescriptionShelfRenderer?.description?.joinToString( "" )
+        val isExplicit = renderer.subtitleBadge.containsExplicitBadge
+        val name = renderer.title.firstText
+        val subtitle = renderer.secondSubtitle
+        val year = renderer.subtitle.year
+        //</editor-fold>
+        val songs = response.contents
+            ?.twoColumnBrowseResultsRenderer
+            ?.secondaryContents
+            ?.sectionListRenderer
+            ?.contents
+            ?.firstOrNull()
+            ?.musicShelfRenderer
+            ?.contents
+            ?.mapNotNull { it.musicResponsiveListItemRenderer }
+            ?.map( ::createInnertubeSongFrom )
+        require( !songs.isNullOrEmpty() ) { "BrowseResponse doesn't contain any songs" }
+
+        object : InnertubeAlbum {
+            override val artists: List<Runs.Run> = artists
+            override val year: Int = year
+            override val urlCanonical: String? = urlCanonical
+            override val songs: List<InnertubeSong> = songs
+            override val subtitle: Runs? = subtitle
+            override val id: String = albumId
+            override val name: String = name
+            override val thumbnails: List<Thumbnails.Thumbnail> = thumbnails
+            override val isExplicit: Boolean = isExplicit
+            override val description: String? = description
+            override val sections: List<Section> = sections
+        }
+    }
+
+    override suspend fun getArtist(
+        artistId: String,
+        params: String?,
+        useLogin: Boolean
+    ): Result<InnertubeArtist> = runCatching {
+        val response = browse( artistId, null, null, useLogin )
+        //<editor-fold desc="Header">
+        val header = response.header?.musicImmersiveHeaderRenderer ?: response.header?.musicVisualHeaderRenderer
+        requireNotNull( header ) { "BrowseResponse doesn't contain header" }
+        val name = requireNotNull(
+            (response.header?.musicImmersiveHeaderRenderer?.title ?: response.header?.musicVisualHeaderRenderer?.title)?.firstText
+        ) { "Header doesn't contain title" }
+        val thumbnails = (response.header?.musicImmersiveHeaderRenderer?.thumbnail ?: response.header?.musicVisualHeaderRenderer?.thumbnail)?.toThumbnailList().orEmpty()
+        //</editor-fold>
+        val immersiveHeader = response.header?.musicImmersiveHeaderRenderer
+        val shortNumMonthlyAudience = immersiveHeader?.monthlyListenerCount?.firstText
+        var description = immersiveHeader?.description?.firstText
+        //<editor-fold desc="Subscribe button">
+        val subscribeButton = immersiveHeader?.subscriptionButton?.subscribeButtonRenderer
+        val shortNumSubscribers = subscribeButton?.shortSubscriberCountText?.firstText
+        val longNumSubscribers = subscribeButton?.longSubscriberCountText?.firstText
+        //</editor-fold>
+        val contents = requireNotNull(
+            response.contents
+                ?.singleColumnBrowseResultsRenderer
+                ?.tabs
+                ?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
+                ?.content
+                ?.sectionListRenderer
+                ?.contents
+        ) { "BrowseResponse doesn't contain any contents" }
+        val sections = ArrayList<Section>(7)
+        for( content in contents ) {
+            content.musicShelfRenderer
+                   ?.let( ::createSectionFrom )
+                   ?.also( sections::add )
+
+            content.musicDescriptionShelfRenderer
+                   ?.description
+                   ?.firstText
+                   ?.also {
+                       if( description == null )
+                           description = it
+                   }
+
+            // This section contains Albums, Single & EPs, related Artists, and Playlists.
+            content.musicCarouselShelfRenderer
+                   ?.let( ::createSectionFrom )
+                   ?.also( sections::add )
+        }
+
+        val immutableSections = sections.toList()
+        object : InnertubeArtist {
+            override val shortNumSubscribers: String? = shortNumSubscribers
+            override val longNumSubscribers: String? = longNumSubscribers
+            override val shortNumMonthlyAudience: String? = shortNumMonthlyAudience
+            override val subtitle: Runs? = null
+            override val id: String = artistId
+            override val name: String = name
+            override val thumbnails: List<Thumbnails.Thumbnail> = thumbnails
+            override val description: String? = description
+            override val sections: List<Section> = immutableSections
+        }
+    }
+
+    override suspend fun getPlaylist(
+        playlistId: String?,
+        continuation: String?,
+        params: String?,
+        useLogin: Boolean
+    ): Result<InnertubePlaylist> = runCatching {
+        // Helper function to create ContinuedPlaylist
+        fun createContinuedPlaylistFrom( items: List<MusicPlaylistShelfRenderer.Content> ): ContinuedPlaylist {
+            var continuation: String? = null
+            val songs = ArrayList<InnertubeSong>(items.size)
+
+            for( item in items ) {
+                item.continuationItemRenderer
+                    ?.continuationEndpoint
+                    ?.continuationCommand
+                    ?.token
+                    ?.also { continuation = it }
+
+                item.musicResponsiveListItemRenderer
+                    ?.let( ::createInnertubeSongFrom )
+                    ?.also( songs::add )
+            }
+
+            val immutableSongs = songs.toList()
+            return object : ContinuedPlaylist {
+
+                override val continuation: String? = continuation
+                override val songs: List<InnertubeSong> = immutableSongs
+            }
+        }
+
+        require( !(playlistId.isNullOrBlank() && continuation.isNullOrBlank()) ) {
+            "Can't get playlist with either playlistId or continuation provided"
+        }
+        require( !(!playlistId.isNullOrBlank() && !continuation.isNullOrBlank()) ) {
+            "Can't get playlist with both playlistId and continuation provided"
+        }
+
+        val subtitle: Runs?
+        val id: String
+        val name: String
+        val thumbnails: List<Thumbnails.Thumbnail>
+        val description: String?
+        val continuedPlaylist: ContinuedPlaylist?
+        val playlistContinuation: List<Continuation>
+
+        if( playlistId != null ) {
+            id = if( playlistId.startsWith("VL") ) playlistId else "VL$playlistId"
+            val renderer = browse( id, params, null, useLogin ).contents?.twoColumnBrowseResultsRenderer
+            val content = renderer?.tabs?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )?.content?.sectionListRenderer?.contents?.firstOrNull()
+            //<editor-fold defaultstate="collapsed" desc="Header">
+            val headerRenderer = requireNotNull(
+                content?.musicResponsiveHeaderRenderer
+                    ?: content?.musicEditablePlaylistDetailHeaderRenderer?.header?.musicResponsiveHeaderRenderer
+            ) { "BrowseResponse doesn't have any headers" }
+            name = headerRenderer.title.firstText
+            description = headerRenderer.description?.musicDescriptionShelfRenderer?.description?.firstText
+            thumbnails = headerRenderer.thumbnail.toThumbnailList()
+            subtitle = headerRenderer.secondSubtitle
+            //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="Contents">
+            val sectionListRenderer = renderer?.secondaryContents?.sectionListRenderer
+            requireNotNull( sectionListRenderer ) { "BrowseResponse doesn't have any contents" }
+            continuedPlaylist = sectionListRenderer.contents.firstOrNull()?.musicPlaylistShelfRenderer?.contents?.let( ::createContinuedPlaylistFrom )
+            playlistContinuation = sectionListRenderer.continuations
+            //</editor-fold>
+        } else {
+            val response = browse( null, params, continuation, useLogin )
+
+            subtitle = null
+            id = requireNotNull(
+                response.responseContext.serviceTrackingParams.firstOrNull()?.params["browse_id"]
+            ) { "BrowseResponse doesn't contain browse_id in serviceTrackingParams" }
+            name = ""
+            thumbnails = emptyList()
+            description = null
+            continuedPlaylist = response.onResponseReceivedActions.firstOrNull()?.appendContinuationItemsAction?.continuationItems?.let( ::createContinuedPlaylistFrom )
+            playlistContinuation = emptyList()
+        }
+
+        object : InnertubePlaylist {
+            override val subtitleText: String? = subtitle?.joinToString( "" )
+            override val songs: List<InnertubeSong> = continuedPlaylist?.songs.orEmpty()
+            override val songContinuation: String? = continuedPlaylist?.continuation
+            override val subtitle: Runs? = subtitle
+            override val id: String = id
+            override val name: String = name
+            override val thumbnails: List<Thumbnails.Thumbnail> = thumbnails
+            override val description: String? = description
+            override val continuations: List<Continuation> = playlistContinuation
+            override val visitorData: String? = null
         }
     }
 

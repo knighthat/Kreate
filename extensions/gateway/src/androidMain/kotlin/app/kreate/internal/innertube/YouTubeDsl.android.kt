@@ -23,14 +23,37 @@ import kotlinx.serialization.json.jsonPrimitive
 private val innertube = InnerTube()
 private val VISITOR_DATA_REGEX = Regex("^Cg[t|s]")
 
+private suspend fun verifyVisitorData() {
+    if( innertube.visitorData.isNullOrBlank() ) {
+        val swjs = innertube.getSwJsData().bodyAsText().substring(5)
+
+        Json.parseToJsonElement( swjs )
+            .jsonArray[0]
+            .jsonArray[2]
+            .jsonArray
+            .first {
+                (it as? JsonPrimitive)?.contentOrNull
+                    ?.let( VISITOR_DATA_REGEX::containsMatchIn )?: false
+            }
+            .jsonPrimitive
+            .content
+            .also { visitorData ->
+                innertube.visitorData = visitorData
+            }
+    }
+}
+
 internal actual suspend fun browse(
-    browseId: String,
+    browseId: String?,
     params: String?,
     continuation: String?,
     setLogin: Boolean
-): BrowseResponse =
-    innertube.browse( YouTubeClient.WEB_REMIX, browseId, params, continuation, setLogin )
-             .body<BrowseResponseImpl>()
+): BrowseResponse {
+    verifyVisitorData()
+
+    return innertube.browse( YouTubeClient.WEB_REMIX, browseId, params, continuation, setLogin )
+                    .body<BrowseResponseImpl>()
+}
 
 internal actual suspend fun accountMenu(): JsonObject =
     innertube.accountMenu( YouTubeClient.WEB_REMIX )
@@ -41,24 +64,7 @@ internal actual suspend fun searchSuggestions( query: String ): SearchSuggestion
              .body<SearchSuggestionsResponseImpl>()
 
 actual suspend fun searchResults( query: String?, params: String?, continuation: String? ): SearchResponse {
-    if( innertube.visitorData.isNullOrBlank() ) {
-        val swjs = innertube.getSwJsData().bodyAsText().substring(5)
-
-        Json.parseToJsonElement( swjs )
-            .jsonArray[0]
-            .jsonArray[2]
-            .jsonArray
-            .first {
-                (it as? JsonPrimitive)?.contentOrNull
-                                      ?.let( VISITOR_DATA_REGEX::containsMatchIn )?: false
-            }
-            .jsonPrimitive
-            .content
-            .also { visitorData ->
-                innertube.visitorData = visitorData
-            }
-    }
-
+    verifyVisitorData()
     return innertube.search( YouTubeClient.WEB_REMIX, query, params, continuation )
                     .body<SearchResponseImpl>()
 }

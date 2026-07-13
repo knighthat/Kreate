@@ -40,6 +40,7 @@ import it.fast4x.rimusic.ui.styling.Typography
 import it.fast4x.rimusic.utils.asAlbum
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shimmerEffect
+import it.fast4x.rimusic.utils.toAlbum
 import me.knighthat.innertube.model.InnertubeAlbum
 
 object AlbumItem: Visual(), MultiplatformItem {
@@ -382,6 +383,20 @@ object AlbumItem: Visual(), MultiplatformItem {
     @Composable
     fun Vertical(
         innertubeAlbum: InnertubeAlbum,
+        values: Values,
+        navController: NavController?,
+        modifier: Modifier = Modifier,
+        sizeDp: DpSize = thumbnailSize(),
+        showYear: Boolean = true,
+        showArtists: Boolean = true,
+        onClick: () -> Unit = {},
+        onLongClick: () -> Unit = {}
+    ) =
+        Vertical( innertubeAlbum.toAlbum, values, navController, modifier, sizeDp, showYear, showArtists, onClick, onLongClick )
+
+    @Composable
+    fun Vertical(
+        innertubeAlbum: app.kreate.gateway.innertube.models.InnertubeAlbum,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,
