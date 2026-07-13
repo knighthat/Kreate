@@ -46,6 +46,7 @@ internal fun createInnertubeSongFrom( renderer: MusicResponsiveListItemRenderer 
     val secondColumn = renderer.flexColumns.getOrNull( 1 )?.musicResponsiveListItemFlexColumnRenderer?.text
     val album = secondColumn?.runs?.firstOrNull { it.navigationEndpoint?.pageType == PageType.ALBUM }
     val artists = secondColumn?.runs?.filter { it.navigationEndpoint?.pageType == PageType.ARTIST }.orEmpty()
+    val artistsText = artists.joinToString { it.text }
     val duration = extractDuration( renderer )
     val thumbnails = renderer.thumbnail?.toThumbnailList().orEmpty()
     val isExplicit = renderer.badges.containsExplicitBadge
@@ -54,7 +55,7 @@ internal fun createInnertubeSongFrom( renderer: MusicResponsiveListItemRenderer 
         override val durationText: String? = duration
         override val album: Runs.Run? = album
         override val artists: List<Runs.Run> = artists
-        override val artistsText: String = artists.joinToString()
+        override val artistsText: String = artistsText
         override val id: String = id
         override val name: String = title
         override val thumbnails: List<Thumbnails.Thumbnail> = thumbnails
