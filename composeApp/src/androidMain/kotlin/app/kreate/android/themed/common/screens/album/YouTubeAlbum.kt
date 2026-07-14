@@ -339,7 +339,7 @@ fun YouTubeAlbum(
                     item( "artists" ) {
                         val text = remember( albumPage ) {
                             val artistsText = albumPage?.artists?.fastJoinToString( " • " ) { it.text }.orEmpty()
-                            val yearText = if( albumPage?.year == -1 ) "" else " • ${albumPage?.year}"
+                            val yearText = if( albumPage?.year == null ) "" else " • ${albumPage?.year}"
 
                             "$artistsText%s".format(yearText)
                         }

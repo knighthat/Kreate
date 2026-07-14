@@ -220,7 +220,7 @@ internal class YouTubeImpl : YouTube, Account {
 
         object : InnertubeAlbum {
             override val artists: List<Runs.Run> = artists
-            override val year: Int = year
+            override val year: Int? = year
             override val urlCanonical: String? = urlCanonical
             override val songs: List<InnertubeSong> = songs
             override val subtitle: Runs? = subtitle

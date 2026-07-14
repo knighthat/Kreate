@@ -12,9 +12,9 @@ interface InnertubeAlbum: InnertubeItem, ContentRating, Descriptive, MultiConten
     val artists: List<Runs.Run>
 
     /**
-     * The year in which this album was released, -1 if unknown
+     * The year in which this album was released, `null` if unknown
      */
-    val year: Int
+    val year: Int?
 
     /**
      * This is sharable url of album

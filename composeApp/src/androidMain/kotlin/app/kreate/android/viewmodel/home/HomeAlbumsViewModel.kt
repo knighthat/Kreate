@@ -91,7 +91,7 @@ class HomeAlbumsViewModel : ViewModel(), KoinComponent {
                              id = item.id,
                              title = item.name,
                              thumbnailUrl = item.thumbnails.lastOrNull()?.url,
-                             year = item.year.toString(),
+                             year = item.year?.toString(),
                              authorsText = item.artists.joinToString { it.text },
                              shareUrl = item.urlCanonical,
                              isYoutubeAlbum = true

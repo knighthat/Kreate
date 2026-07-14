@@ -15,8 +15,8 @@ import app.kreate.internal.innertube.utils.toThumbnailList
 
 private val YEAR_REGEX = Regex("\\d{4}")
 
-internal val Runs.year: Int
-    get() = runs.firstOrNull { it.text.matches(YEAR_REGEX) }?.text?.toInt() ?: -1
+internal val Runs.year: Int?
+    get() = runs.firstOrNull { it.text.matches(YEAR_REGEX) }?.text?.toInt()
 
 internal fun createInnertubeAlbumFrom( renderer: MusicTwoRowItemRenderer ): InnertubeAlbum {
     val run = renderer.title.runs.firstOrNull()
@@ -28,7 +28,7 @@ internal fun createInnertubeAlbumFrom( renderer: MusicTwoRowItemRenderer ): Inne
 
     return object : InnertubeAlbum {
         override val artists: List<Runs.Run> = subtitle.extractArtistAndAlbum().artists
-        override val year: Int = subtitle.year
+        override val year: Int? = subtitle.year
         override val urlCanonical: String? = null
         override val subtitle: Runs = subtitle
         override val songs: List<InnertubeSong> = emptyList()
@@ -54,13 +54,13 @@ internal fun createInnertubeAlbumFrom( renderer: MusicResponsiveListItemRenderer
     val name = firstColumn.text?.firstText.orEmpty()
     val thumbnails = renderer.thumbnail?.toThumbnailList().orEmpty()
     val artists = secondColumn.text?.extractArtistAndAlbum()?.artists.orEmpty()
-    val year = secondColumn.text?.year ?: -1
+    val year = secondColumn.text?.year
     val isExplicit = renderer.badges.containsExplicitBadge
     val subtitle = secondColumn.text
 
     return object : InnertubeAlbum {
         override val artists: List<Runs.Run> = artists
-        override val year: Int = year
+        override val year: Int? = year
         override val urlCanonical: String? = null
         override val subtitle: Runs? = subtitle
         override val songs: List<InnertubeSong> = emptyList()

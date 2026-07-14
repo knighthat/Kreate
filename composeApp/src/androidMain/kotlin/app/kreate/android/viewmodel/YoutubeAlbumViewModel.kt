@@ -75,7 +75,7 @@ class YoutubeAlbumViewModel(savedStateHandle: SavedStateHandle) : ViewModel(), K
                                 dbAlbum?.thumbnailUrl,
                                 page.thumbnails.firstOrNull()?.url
                             ),
-                            year = page.year.toString(),
+                            year = page.year?.toString(),
                             authorsText = PropUtils.retainIfModified(
                                 dbAlbum?.authorsText,
                                 page.artists.fastJoinToString { it.text }
