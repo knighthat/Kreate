@@ -84,7 +84,7 @@ internal data class SectionListRendererImpl(
 
             @Serializable
             internal data class ItemImpl(
-                override val musicTwoRowItemRenderer: MusicTwoRowItemRendererImpl
+                override val musicTwoRowItemRenderer: MusicTwoRowItemRendererImpl?
             ): SectionListRenderer.Content.GridRenderer.Item
         }
     }

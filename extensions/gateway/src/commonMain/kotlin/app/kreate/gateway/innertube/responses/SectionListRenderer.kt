@@ -75,7 +75,7 @@ interface SectionListRenderer {
 
             interface Item {
 
-                val musicTwoRowItemRenderer: MusicTwoRowItemRenderer
+                val musicTwoRowItemRenderer: MusicTwoRowItemRenderer?
             }
         }
     }

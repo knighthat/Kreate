@@ -470,7 +470,7 @@ internal class YouTubeImpl : YouTube, Account {
         extractListContent( tabRenderer )
             .gridRenderer
             ?.items
-            ?.map { it.musicTwoRowItemRenderer }
+            ?.mapNotNull { it.musicTwoRowItemRenderer }
             ?.map( ::createInnertubeAlbumFrom )
             .orEmpty()
     }
@@ -531,7 +531,7 @@ internal class YouTubeImpl : YouTube, Account {
         extractListContent( tabRenderer )
             .gridRenderer
             ?.items
-            ?.map { it.musicTwoRowItemRenderer }
+            ?.mapNotNull { it.musicTwoRowItemRenderer }
             ?.map( ::createInnertubePlaylistFrom )
             .orEmpty()
     }
