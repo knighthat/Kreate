@@ -19,7 +19,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -36,13 +35,13 @@ import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.rimusic.component.song.SongItem
+import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.shallowCompare
+import app.kreate.android.viewmodel.home.HistoryScreenViewModel
 import app.kreate.database.Database
 import app.kreate.database.models.Event
+import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.preferences.Preferences
-import it.fast4x.compose.persist.persist
-import it.fast4x.innertube.YtMusic
-import it.fast4x.innertube.requests.HistoryPage
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.HistoryType
@@ -53,16 +52,15 @@ import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
 import it.fast4x.rimusic.ui.components.themed.NonQueuedMediaItemMenuLibrary
 import it.fast4x.rimusic.ui.components.themed.Title
-import it.fast4x.rimusic.ui.screens.settings.isYouTubeLoggedIn
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.forcePlay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -76,7 +74,8 @@ import java.util.concurrent.TimeUnit
 fun HistoryList(
     navController: NavController,
     player: StatefulPlayer = koinInject(),
-    menu: BottomMenu = LocalBottomMenu.current
+    menu: BottomMenu = LocalBottomMenu.current,
+    viewModel: HistoryScreenViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
     val hapticFeedback = LocalHapticFeedback.current
@@ -130,10 +129,9 @@ fun HistoryList(
 
     val historyType by Preferences.HISTORY_PAGE_TYPE.collectAsStateWithLifecycle()
 
-    var historyPage by persist<Result<HistoryPage>>("home/historyPage")
-    LaunchedEffect(Unit, historyType) {
-        if (isYouTubeLoggedIn())
-            historyPage = YtMusic.getHistory()
+    val historyPage by viewModel.history.collectAsStateWithLifecycle()
+    LaunchedEffect( Unit ) {
+        viewModel.loadHistory()
     }
 
     Column (
@@ -219,43 +217,45 @@ fun HistoryList(
                 }
 
             if ( historyType == HistoryType.YTMHistory )
-                historyPage?.getOrNull()?.sections?.forEach { section ->
-                    stickyHeader {
-                        Title(
-                            title = section.title,
-                            modifier = Modifier.background(
-                                color = colorPalette().background3,
-                                shape = thumbnailShape()
+                historyPage?.sections
+                    ?.forEach { section ->
+                        stickyHeader {
+                            Title(
+                                title = section.title.orEmpty(),
+                                modifier = Modifier.background(
+                                    color = colorPalette().background3,
+                                    shape = thumbnailShape()
+                                )
                             )
-                        )
-                    }
+                        }
 
-                    items(
-                        items = section.songs
-                                       .map { it.asMediaItem }
-                                       .filter { it.mediaId.isNotEmpty() },
-                        key = { it.mediaId }
-                    ) { mediaItem ->
-                        SongItem.Render(
-                            song = mediaItem.asSong,
-                            hapticFeedback = hapticFeedback,
-                            isPlaying = mediaItem.shallowCompare( currentMediaItem ),
-                            values = songItemValues,
-                            onClick = {
-                                player.forcePlay( mediaItem )
-                            },
-                            onLongClick = {
-                                menuState.display {
-                                    NonQueuedMediaItemMenuLibrary(
-                                        navController = navController,
-                                        mediaItem = mediaItem,
-                                        onDismiss = menuState::hide
-                                    )
+                        val songs = section.contents.mapNotNull { it as? InnertubeSong }
+                        items(
+                            items = songs,
+                            key = System::identityHashCode
+                        ) { song ->
+                            SongItem.Render(
+                                innertubeSong = song,
+                                hapticFeedback = hapticFeedback,
+                                isPlaying = song.shallowCompare( currentMediaItem ),
+                                values = songItemValues,
+                                onClick = {
+                                    val mediaItem = song.toMediaItem
+                                    player.forcePlay( mediaItem )
+                                },
+                                onLongClick = {
+                                    val mediaItem = song.toMediaItem
+                                    menuState.display {
+                                        NonQueuedMediaItemMenuLibrary(
+                                            navController = navController,
+                                            mediaItem = mediaItem,
+                                            onDismiss = menuState::hide
+                                        )
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
-                }
         }
     }
 }

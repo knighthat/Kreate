@@ -8,6 +8,7 @@ import app.kreate.gateway.innertube.models.ContinuedPlaylist
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.gateway.innertube.models.InnertubeArtist
 import app.kreate.gateway.innertube.models.InnertubeCharts
+import app.kreate.gateway.innertube.models.InnertubeHistory
 import app.kreate.gateway.innertube.models.InnertubeHomePage
 import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.InnertubePlaylist
@@ -588,6 +589,28 @@ internal class YouTubeImpl : YouTube, Account {
             override val thumbnails: List<Thumbnails.Thumbnail> = thumbnails
             override val continuations: List<Continuation> = continuations
             override val visitorData: String? = null
+            override val sections: List<Section> = sections
+        }
+    }
+
+    override suspend fun getHistory(): Result<InnertubeHistory> = runCatching {
+        checkLoginStatus()
+
+        val sections = browse( "FEmusic_history", null, null, true )
+            .contents
+            ?.singleColumnBrowseResultsRenderer
+            ?.tabs
+            ?.firstOrNull()
+            ?.tabRenderer
+            ?.content
+            ?.sectionListRenderer
+            ?.contents
+            ?.mapNotNull { it.musicShelfRenderer }
+            ?.map( ::createSectionFrom )
+        requireNotNull( sections ) { "BrowseResponse doesn't have any sections" }
+
+        object : InnertubeHistory {
+
             override val sections: List<Section> = sections
         }
     }

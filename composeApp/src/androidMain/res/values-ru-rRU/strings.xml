@@ -881,4 +881,5 @@
     <string name="semantic_add_blacklist_entry">Add blacklist entry</string>
     <string name="placeholder_unknown_folder">Unknown folder</string>
     <string name="error_failed_to_get_home_page">Failed to get home page</string>
+    <string name="error_failed_to_get_history">Failed to load history</string>
 </resources>
