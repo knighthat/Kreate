@@ -29,6 +29,7 @@ import app.kreate.android.themed.rimusic.component.MultiplatformItem
 import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.ItemUtils
 import app.kreate.database.models.Album
+import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.preferences.Preferences
 import app.kreate.util.scrollingText
 import it.fast4x.innertube.Innertube
@@ -381,7 +382,7 @@ object AlbumItem: Visual(), MultiplatformItem {
 
     @Composable
     fun Vertical(
-        innertubeAlbum: app.kreate.gateway.innertube.models.InnertubeAlbum,
+        innertubeAlbum: InnertubeAlbum,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,

@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -18,9 +17,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,9 +26,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
@@ -100,50 +94,33 @@ import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.database.Database
-import app.kreate.database.mapIgnore
-import app.kreate.database.models.Album
-import app.kreate.database.models.Artist
-import app.kreate.database.models.Playlist
-import app.kreate.database.models.Song
+import app.kreate.gateway.innertube.YouTube
 import app.kreate.preferences.Preferences
 import app.kreate.util.cleanPrefix
-import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.YtMusic
-import it.fast4x.innertube.models.bodies.SearchBody
-import it.fast4x.innertube.requests.searchPage
-import it.fast4x.innertube.utils.from
+import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ValidationType
 import it.fast4x.rimusic.isBassBoostEnabled
 import it.fast4x.rimusic.models.Info
 import it.fast4x.rimusic.typography
-import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.ui.styling.ColorPalette
 import it.fast4x.rimusic.ui.styling.favoritesIcon
-import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.bold
 import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.drawCircle
 import it.fast4x.rimusic.utils.getDeviceVolume
-import it.fast4x.rimusic.utils.getLikeState
-import it.fast4x.rimusic.utils.isExplicit
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.isValidIP
 import it.fast4x.rimusic.utils.medium
-import it.fast4x.rimusic.utils.removeYTSongFromPlaylist
 import it.fast4x.rimusic.utils.secondary
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.setDeviceVolume
 import it.fast4x.rimusic.utils.setGlobalVolume
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
+import org.koin.java.KoinJavaComponent.get
 
 @Composable
 fun textFieldColors( colorPalette: ColorPalette, errorText: String ) =
@@ -551,17 +528,18 @@ inline fun SelectorArtistsDialog(
                             Database.artistTable.findById( browseId )
                         }.collectAsState( null, Dispatchers.IO )
 
-                        LaunchedEffect(Unit) {
-                            if (artist?.thumbnailUrl == null) {
-                                withContext(Dispatchers.IO) {
-                                    YtMusic.getArtistPage(browseId = browseId)
-                                           .onSuccess { currentArtistPage ->
-                                               artist?.copy(
-                                                   thumbnailUrl = currentArtistPage.artist.thumbnail?.url
-                                               )?.let( Database.artistTable::updateIgnore )
-                                           }
+                        LaunchedEffect( artist?.thumbnailUrl ) {
+                            if( artist?.thumbnailUrl != null ) return@LaunchedEffect
+
+                            get<YouTube>(YouTube::class.java)
+                                .getArtist( artist!!.id, null )
+                                .onFailure { err ->
+                                    Logger.w( err, "SelectorArtistsDialog" ) { "Failed to fetch thumbnail for: ${artist!!.name} (${artist!!.id})" }
                                 }
-                            }
+                                .onSuccess { onlineArtist ->
+                                    val thumbnailUrl = onlineArtist.thumbnails.lastOrNull()?.url
+                                    Database.artistTable.updateIgnore( artist!!.copy(thumbnailUrl = thumbnailUrl) )
+                                }
                         }
 
                         Box {
@@ -1724,307 +1702,6 @@ fun InProgressDialog(
             ),
             overflow = TextOverflow.Ellipsis,
         )
-    }
-}
-
-@androidx.annotation.OptIn(UnstableApi::class)
-@Composable
-fun SongMatchingDialog(
-    songToRematch : Song,
-    playlistId : Long,
-    position : Int,
-    playlist : Playlist?,
-    onDismiss: (() -> Unit)
-) {
-    Dialog(
-        onDismissRequest = { onDismiss() },
-        properties = DialogProperties(usePlatformDefaultWidth = false)
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth(if (isLandscape) 0.5f else 0.9f)
-                .fillMaxHeight(if (isLandscape) 0.9f else 0.7f)
-                .background(color = colorPalette().background1,shape = RoundedCornerShape(8.dp))
-        ) {
-            fun filteredText(text : String): String{
-                val filteredText = text
-                    .lowercase()
-                    .replace("(", " ")
-                    .replace(")", " ")
-                    .replace("-", " ")
-                    .replace("lyrics", "")
-                    .replace("vevo", "")
-                    .replace(" hd", "")
-                    .replace("official video", "")
-                    .filter {it.isLetterOrDigit() || it.isWhitespace() || it == '\'' || it == ',' }
-                    .replace(Regex("\\s+"), " ")
-                return filteredText
-            }
-            var songsList by remember { mutableStateOf<List<Innertube.SongItem?>>(emptyList()) }
-            var searchText by remember {mutableStateOf(filteredText("${cleanPrefix(songToRematch.cleanTitle())} ${songToRematch.cleanArtistsText()}"))}
-            var startSearch by remember { mutableStateOf(false) }
-
-            LaunchedEffect(Unit,startSearch) {
-                runBlocking(Dispatchers.IO) {
-                    val searchQuery = Innertube.searchPage(
-                        body = SearchBody(
-                            query = searchText,
-                            params = Innertube.SearchFilter.Song.value
-                        ),
-                        fromMusicShelfRendererContent = Innertube.SongItem.Companion::from
-                    )
-
-                    songsList = searchQuery?.getOrNull()?.items ?: emptyList()
-                    startSearch = false
-                }
-            }
-            Row(
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(1.dp, colorPalette().text, shape = RoundedCornerShape(8.dp))
-                    .padding(horizontal = 5.dp)
-                    .padding(vertical = 10.dp)
-            ) {
-                Box {
-                    ImageFactory.AsyncImage(
-                        thumbnailUrl = songToRematch.asMediaItem.mediaMetadata.artworkUri.toString(),
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.padding( end = 5.dp )
-                                           .clip( RoundedCornerShape(5.dp) )
-                                           .size( 40.dp )
-                    )
-                    if (songToRematch.likedAt != null) {
-                        HeaderIconButton(
-                            onClick = {},
-                            icon = getLikeState(songToRematch.asMediaItem.mediaId),
-                            color = colorPalette().favoritesIcon,
-                            iconSize = 12.dp,
-                            modifier = Modifier
-                                .align(Alignment.BottomStart)
-                                .absoluteOffset((-8).dp, 0.dp)
-                        )
-                    }
-                }
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .basicMarquee(iterations = Int.MAX_VALUE)
-                    ) {
-                        if (songToRematch.asMediaItem.isExplicit) {
-                            IconButton(
-                                icon = R.drawable.explicit,
-                                color = colorPalette().text,
-                                enabled = true,
-                                onClick = {},
-                                modifier = Modifier
-                                    .size(18.dp)
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .width(5.dp)
-                            )
-                        }
-                        BasicText(
-                            text = cleanPrefix(songToRematch.title),
-                            style = typography().xs.semiBold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        BasicText(
-                            text = songToRematch.cleanArtistsText(),
-                            style = typography().s.semiBold.secondary,
-                            maxLines = 1,
-                            overflow = TextOverflow.Clip,
-                            modifier = Modifier
-                                .weight(1f)
-                                .basicMarquee(iterations = Int.MAX_VALUE)
-                        )
-                        BasicText(
-                            text = songToRematch.durationText ?: "",
-                            style = typography().xs.secondary.medium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .padding(end = 5.dp)
-                        )
-                    }
-                }
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextField(
-                    value = searchText,
-                    onValueChange = { it ->
-                        searchText = it
-                    },
-                    singleLine = true,
-                    colors = textFieldColors( colorPalette(), "" ),
-                    modifier = Modifier
-                        .padding(horizontal = 6.dp)
-                        .weight(1f)
-                )
-                IconButton(
-                    icon = R.drawable.search,
-                    color = Color.Black,
-                    onClick = {
-                        startSearch = true
-                    },
-                    modifier = Modifier
-                        .background(shape = RoundedCornerShape(4.dp),color = Color.White)
-                        .padding(all = 4.dp)
-                        .size(24.dp)
-                        .align(Alignment.CenterVertically)
-                        .weight(0.1f)
-                )
-            }
-            if (songsList.isNotEmpty()) {
-                LazyColumn {
-                    itemsIndexed(songsList) { _, song ->
-                        val artistNameString = song?.asMediaItem?.mediaMetadata?.artist?.toString() ?: ""
-                        if (song != null) {
-                            Row(horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 10.dp)
-                                    .padding(vertical = 10.dp)
-                                    .clickable(onClick = {
-                                        Database.asyncTransaction {
-                                            if (isYouTubeSyncEnabled() && playlist?.isYoutubePlaylist == true && playlist.isEditable){
-                                                CoroutineScope(Dispatchers.IO).launch {
-                                                    if (removeYTSongFromPlaylist(songToRematch.id, playlist.browseId ?: "", playlistId))
-                                                        songPlaylistMapTable.deleteBySongId( songToRematch.id, playlistId )
-                                                }
-                                            } else
-                                                songPlaylistMapTable.deleteBySongId( songToRematch.id, playlistId )
-
-                                            val asMediaItem = song.asMediaItem
-
-                                            playlist?.let { mapIgnore( it, asMediaItem ) }
-                                            song.album
-                                                ?.endpoint
-                                                ?.browseId
-                                                ?.let {
-                                                    Album(
-                                                        id = it,
-                                                        title = asMediaItem.mediaMetadata.albumTitle.toString(),
-                                                        thumbnailUrl = song.thumbnail?.url
-                                                    )
-                                                }
-                                                ?.let { mapIgnore( it, asMediaItem ) }
-                                            song.authors
-                                                ?.mapNotNull {
-                                                    if( it.name == null || it.endpoint?.browseId == null )
-                                                        return@mapNotNull null
-
-                                                    Artist(
-                                                        id = it.endpoint!!.browseId!!,
-                                                        name = it.name!!
-                                                    )
-                                                }
-                                                ?.forEach { mapIgnore( it, asMediaItem ) }
-                                            songTable.updateArtists( song.asMediaItem.mediaId, artistNameString )
-
-                                            CoroutineScope(Dispatchers.IO).launch {
-                                                if (isYouTubeSyncEnabled() && playlist?.isYoutubePlaylist == true && playlist.isEditable){
-                                                    YtMusic.addToPlaylist(playlist.browseId ?: "", song.asMediaItem.mediaId)
-                                                }
-                                            }
-                                        }
-                                        onDismiss()
-                                    }
-                                    )
-                            ) {
-                                Box {
-                                    ImageFactory.AsyncImage(
-                                        thumbnailUrl = song.asMediaItem.mediaMetadata.artworkUri.toString(),
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier.padding( end = 5.dp )
-                                                          .clip( RoundedCornerShape(5.dp) )
-                                                          .size( 30.dp )
-                                    )
-                                    if (song.asSong.likedAt != null) {
-                                        HeaderIconButton(
-                                            onClick = {},
-                                            icon = getLikeState(song.asMediaItem.mediaId),
-                                            color = colorPalette().favoritesIcon,
-                                            iconSize = 9.dp,
-                                            modifier = Modifier
-                                                .align(Alignment.BottomStart)
-                                                .absoluteOffset((-6.75).dp, 0.dp)
-                                        )
-                                    }
-                                }
-                                Column {
-                                    Row(
-                                        modifier = Modifier
-                                            .basicMarquee(iterations = Int.MAX_VALUE)
-                                    ) {
-                                        if (song.asMediaItem.isExplicit) {
-                                            IconButton(
-                                                icon = R.drawable.explicit,
-                                                color = colorPalette().text,
-                                                enabled = true,
-                                                onClick = {},
-                                                modifier = Modifier
-                                                    .size(18.dp)
-                                            )
-                                            Spacer(
-                                                modifier = Modifier
-                                                    .width(5.dp)
-                                            )
-                                        }
-                                        BasicText(
-                                            text = cleanPrefix(song.title ?: ""),
-                                            style = typography().xs.semiBold,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                        )
-                                    }
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                    ) {
-                                        BasicText(
-                                            text = song.asSong.cleanArtistsText(),
-                                            style = typography().xs.semiBold.secondary,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Clip,
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .basicMarquee(iterations = Int.MAX_VALUE)
-                                        )
-                                        BasicText(
-                                            text = song.durationText ?: "",
-                                            style = typography().xxs.secondary.medium,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                            modifier = Modifier
-                                                .padding(end = 5.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 }
 

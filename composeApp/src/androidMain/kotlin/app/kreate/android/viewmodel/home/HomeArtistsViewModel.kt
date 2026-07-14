@@ -14,6 +14,8 @@ import it.fast4x.rimusic.enums.ArtistsType
 import it.fast4x.rimusic.enums.FilterBy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -29,7 +31,9 @@ import org.koin.core.component.get
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class HomeArtistsViewModel : ViewModel(), KoinComponent {
+class HomeArtistsViewModel(
+    private val youtube: YouTube
+) : ViewModel(), KoinComponent {
 
     private val _syncedArtists = MutableStateFlow(emptyList<Artist>())
     private val _localArtists = MutableStateFlow(emptyList<Artist>())
@@ -64,6 +68,11 @@ class HomeArtistsViewModel : ViewModel(), KoinComponent {
                 }
             }.collectLatest { artists -> _artists.update { artists } }
         }
+        viewModelScope.launch( Dispatchers.Default ) {
+            artists.collectLatest { items ->
+                updateNullThumbnails( items )
+            }
+        }
 
         // Trigger sync on first run
         onRefresh()
@@ -75,7 +84,7 @@ class HomeArtistsViewModel : ViewModel(), KoinComponent {
         }
         if( !isEnabled ) return
 
-        get<YouTube>()
+        youtube
             .account
             .getLikedArtists()
             .onFailure { err ->
@@ -98,6 +107,25 @@ class HomeArtistsViewModel : ViewModel(), KoinComponent {
                          _syncedArtists.update { artists }
                      }
             }
+    }
+
+    private suspend fun updateNullThumbnails( artists: List<Artist> ) = coroutineScope {
+        artists.filter { it.thumbnailUrl.isNullOrEmpty() }
+               // Fetch all artist at concurrently. Ktor has rate limit, so only
+               // a certain amount of requests can go out at the same time
+               .map { artist ->
+                   async {
+                       youtube.getArtist( artist.id, null )
+                              .onFailure { err ->
+                                  Logger.w( err, "HomeArtistsViewModel" ) { "Failed to fetch thumbnail for: ${artist.name} (${artist.id})" }
+                              }
+                              .onSuccess { onlineArtist ->
+                                  val thumbnailUrl = onlineArtist.thumbnails.lastOrNull()?.url
+                                  Database.artistTable.updateIgnore( artist.copy(thumbnailUrl = thumbnailUrl) )
+                              }
+                   }
+               }
+               .forEach { it.await() }
     }
 
     fun onRefresh() {

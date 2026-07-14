@@ -29,6 +29,21 @@ internal data class MusicCarouselShelfRendererImpl(
     @Serializable
     internal data class ContentImpl(
         override val musicResponsiveListItemRenderer: MusicResponsiveListItemRendererImpl?,
-        override val musicTwoRowItemRenderer: MusicTwoRowItemRendererImpl?
-    ): MusicCarouselShelfRenderer.Content
+        override val musicTwoRowItemRenderer: MusicTwoRowItemRendererImpl?,
+        override val musicNavigationButtonRenderer: MusicNavigationButtonRendererImpl?
+    ): MusicCarouselShelfRenderer.Content {
+
+        @Serializable
+        internal data class MusicNavigationButtonRendererImpl(
+            override val buttonText: RunsImpl,
+            override val solid: SolidImpl,
+            override val clickCommand: EndpointImpl
+        ) : MusicCarouselShelfRenderer.Content.MusicNavigationButtonRenderer {
+
+            @Serializable
+            internal data class SolidImpl(
+                override val leftStripeColor: Long
+            ) : MusicCarouselShelfRenderer.Content.MusicNavigationButtonRenderer.Solid
+        }
+    }
 }

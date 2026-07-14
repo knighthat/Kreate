@@ -3,11 +3,13 @@ package app.kreate.gateway.innertube
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.gateway.innertube.models.InnertubeArtist
 import app.kreate.gateway.innertube.models.InnertubeCharts
+import app.kreate.gateway.innertube.models.InnertubeExplore
 import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeSearch
 import app.kreate.gateway.innertube.models.InnertubeSearchSuggestion
 import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.gateway.innertube.models.InnertubeSongDetails
+import app.kreate.gateway.innertube.models.MultiContent
 
 
 interface YouTube {
@@ -41,9 +43,13 @@ interface YouTube {
 
     suspend fun getRadio(
         videoId: String,
-        playlistId: String?,
-        params: String?
+        playlistId: String? = "RDAMVM$videoId",
+        params: String? = null
     ): Result<List<InnertubeSong>>
 
     suspend fun getCharts(): Result<InnertubeCharts>
+
+    suspend fun getRelated( videoId: String ): Result<MultiContent>
+
+    suspend fun explore(): Result<InnertubeExplore>
 }

@@ -41,7 +41,6 @@ import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
 import co.touchlab.kermit.Logger
-import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.PlayerServiceModern.Companion.SleepTimerNotificationId
 import it.fast4x.rimusic.utils.TimerJob
@@ -325,15 +324,13 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
 
     override fun startRadio(
         mediaItem: MediaItem,
-        append: Boolean,
-        endpoint: NavigationEndpoint.Endpoint.Watch?
-    ) = startRadio( mediaItem, append, endpoint?.playlistId ?: "RDAMVM${mediaItem.mediaId}", endpoint?.params )
+        append: Boolean
+    ) = startRadio( mediaItem, append, "RDAMVM${mediaItem.mediaId}" )
 
     override fun startRadio(
         song: Song,
-        append: Boolean,
-        endpoint: NavigationEndpoint.Endpoint.Watch?
-    ) = startRadio( song.asMediaItem, append, endpoint )
+        append: Boolean
+    ) = startRadio( song.asMediaItem, append )
 
     override fun stopRadio() {
         radioJob?.cancel()

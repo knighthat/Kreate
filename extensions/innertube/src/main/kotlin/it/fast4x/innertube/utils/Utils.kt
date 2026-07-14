@@ -2,61 +2,9 @@ package it.fast4x.innertube.utils
 
 import io.ktor.utils.io.CancellationException
 import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.YtMusic
 import it.fast4x.innertube.models.SectionListRenderer
-import it.fast4x.innertube.requests.ArtistItemsPage
-import it.fast4x.innertube.requests.PlaylistPage
-import java.io.File
 import java.security.MessageDigest
 
-@JvmName("getPlaylistCompleted")
-suspend fun Result<PlaylistPage>.completed(): Result<PlaylistPage> = runCatching {
-    val page = getOrThrow()
-    val songs = page.songs.toMutableList()
-    var continuation = page.songsContinuation
-
-
-    println("getPlaylist complete PlaylistPage songs: ${songs.size} continuation: ${continuation}")
-
-    while (continuation != null) {
-        val continuationPage = YtMusic.getPlaylistContinuation(continuation).getOrNull()
-        if (continuationPage != null) {
-            songs += continuationPage.songs
-        }
-        continuation = continuationPage?.continuation
-    }
-    PlaylistPage(
-        playlist = page.playlist,
-        songs = songs,
-        songsContinuation = null,
-        continuation = page.continuation,
-        description = page.description,
-        isEditable = page.isEditable,
-    )
-}
-
-@JvmName("getArtistItemsPageCompleted")
-suspend fun Result<ArtistItemsPage>.completed(): Result<ArtistItemsPage> = runCatching {
-    val page = getOrThrow()
-    var items = page.items
-    var continuation = page.continuation
-
-
-    println("getArtistItemsPage complete ArtistItemsPage items: ${items.size} continuation: ${continuation}")
-
-    while (continuation != null) {
-        val continuationPage = YtMusic.getArtistItemsContinuation(continuation).getOrNull()
-        if (continuationPage != null) {
-            items += continuationPage.items
-        }
-        continuation = continuationPage?.continuation
-    }
-    ArtistItemsPage(
-        title = page.title,
-        items = items,
-        continuation = page.continuation
-    )
-}
 
 internal fun SectionListRenderer.findSectionByTitle(text: String): SectionListRenderer.Content? {
     return contents?.find { content ->

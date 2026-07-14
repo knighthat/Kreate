@@ -4,7 +4,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
 import app.kreate.database.models.Song
-import it.fast4x.innertube.models.NavigationEndpoint
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration
@@ -32,8 +31,7 @@ interface StatefulPlayer : ExoPlayer {
      */
     fun startRadio(
         mediaItem: MediaItem,
-        append: Boolean = false,
-        endpoint: NavigationEndpoint.Endpoint.Watch? = null
+        append: Boolean = false
     )
 
     /**
@@ -42,8 +40,7 @@ interface StatefulPlayer : ExoPlayer {
      */
     fun startRadio(
         song: Song,
-        append: Boolean = false,
-        endpoint: NavigationEndpoint.Endpoint.Watch? = null
+        append: Boolean = false
     )
 
     fun stopRadio()

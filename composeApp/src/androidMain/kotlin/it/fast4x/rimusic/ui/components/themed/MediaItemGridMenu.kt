@@ -68,16 +68,13 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.addNext
-import it.fast4x.rimusic.utils.addSongToYtPlaylist
 import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.getDownloadState
 import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.positionAndDurationState
 import it.fast4x.rimusic.utils.semiBold
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -155,10 +152,6 @@ fun BaseMediaItemGridMenu(
                     insertIgnore( mediaItem )
                     mapIgnore( playlist, mediaItem.asSong )
                 }
-            } else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    addSongToYtPlaylist(playlist.id, position, playlist.browseId ?: "", mediaItem)
-                }
             }
         },
         onHideFromDatabase = onHideFromDatabase,
@@ -219,10 +212,6 @@ fun MiniMediaItemGridMenu(
                 Database.asyncTransaction {
                     insertIgnore( mediaItem )
                     mapIgnore( playlist, mediaItem.asSong )
-                }
-            } else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    addSongToYtPlaylist(playlist.id, position, playlist.browseId ?: "", mediaItem)
                 }
             }
 

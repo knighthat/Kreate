@@ -94,8 +94,6 @@ import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.favoritesIcon
 import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.addNext
-import it.fast4x.rimusic.utils.addSongToYtPlaylist
-import it.fast4x.rimusic.utils.addToYtLikedSong
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.enqueue
@@ -105,7 +103,6 @@ import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isNetworkConnected
 import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.positionAndDurationState
-import it.fast4x.rimusic.utils.removeYTSongFromPlaylist
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -147,11 +144,6 @@ fun InHistoryMediaItemMenu(
                     MyDownloadHelper.autoDownloadWhenLiked(song.asMediaItem)
                 }
             }
-            else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    addToYtLikedSong(song.asMediaItem)
-                }
-            }
         },
         modifier = modifier
     )
@@ -186,10 +178,7 @@ fun InPlaylistMediaItemMenu(
                         playlist.playlist.browseId.let {
                             println("InPlaylistMediaItemMenu isYoutubePlaylist ${playlist.playlist.isYoutubePlaylist} isEditable ${playlist.playlist.isEditable} songId ${song.id} browseId ${playlist.playlist.browseId} playlistId $playlistId")
                             if (isYouTubeSyncEnabled() && playlist.playlist.isYoutubePlaylist && playlist.playlist.isEditable) {
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    if (removeYTSongFromPlaylist(song.id,playlist.playlist.browseId ?: "",playlistId))
-                                        songPlaylistMapTable.deleteBySongId( song.id, playlistId )
-                                }
+                                return@launch
                             } else {
                                 songPlaylistMapTable.deleteBySongId( song.id, playlistId )
                             }
@@ -207,11 +196,6 @@ fun InPlaylistMediaItemMenu(
                 Database.asyncTransaction {
                     songTable.likeState( song.id, true )
                     MyDownloadHelper.autoDownloadWhenLiked(song.asMediaItem)
-                }
-            }
-            else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    addToYtLikedSong(song.asMediaItem)
                 }
             }
         },
@@ -287,11 +271,6 @@ fun NonQueuedMediaItemMenuLibrary(
                         MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
-                else {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addToYtLikedSong(mediaItem)
-                    }
-                }
             },
             modifier = modifier
         )
@@ -317,11 +296,6 @@ fun NonQueuedMediaItemMenuLibrary(
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
                         MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
-                    }
-                }
-                else {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addToYtLikedSong(mediaItem)
                     }
                 }
             },
@@ -440,11 +414,6 @@ fun QueuedMediaItemMenu(
                         MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
-                else {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addToYtLikedSong(mediaItem)
-                    }
-                }
             }
         )
     } else {
@@ -471,11 +440,6 @@ fun QueuedMediaItemMenu(
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
                         MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
-                    }
-                }
-                else {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addToYtLikedSong(mediaItem)
                     }
                 }
             },
@@ -528,10 +492,6 @@ fun BaseMediaItemMenu(
                 Database.asyncTransaction {
                     insertIgnore( mediaItem )
                     mapIgnore( playlist, mediaItem.asSong )
-                }
-            } else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    addSongToYtPlaylist(playlist.id, position, playlist.browseId ?: "", mediaItem)
                 }
             }
         },
@@ -595,10 +555,6 @@ fun MiniMediaItemMenu(
                 Database.asyncTransaction {
                     insertIgnore( mediaItem )
                     mapIgnore( playlist, mediaItem.asSong )
-                }
-            } else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    addSongToYtPlaylist(playlist.id, position, playlist.browseId ?: "", mediaItem)
                 }
             }
             onDismiss()

@@ -105,7 +105,6 @@ import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.favoritesIcon
 import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.addNext
-import it.fast4x.rimusic.utils.addToYtPlaylist
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.fadingEdge
@@ -531,18 +530,6 @@ fun Podcast(
                                                                                                      .orEmpty()
                                                             Database.asyncTransaction {
                                                                 mapIgnore( playlistPreview.playlist, *songs.toTypedArray() )
-                                                            }
-                                                        } else {
-                                                            CoroutineScope(Dispatchers.IO).launch {
-                                                                playlistPreview.playlist.browseId?.let { id ->
-                                                                    addToYtPlaylist(
-                                                                        context,
-                                                                        playlistPreview.playlist.id,
-                                                                        position,
-                                                                        id,
-                                                                        podcastPage?.listEpisode?.map { it.asMediaItem } ?: emptyList()
-                                                                    )
-                                                                }
                                                             }
                                                         }
 

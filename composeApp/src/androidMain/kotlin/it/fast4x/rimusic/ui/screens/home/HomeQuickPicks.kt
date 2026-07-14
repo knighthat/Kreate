@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,11 +15,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
@@ -37,6 +40,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +49,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -73,11 +79,12 @@ import app.kreate.android.utils.ItemUtils
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.android.viewmodel.home.HomeQuickPicksViewModel
-import app.kreate.constant.ArtistSortBy
-import app.kreate.constant.SortOrder
 import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
+import app.kreate.gateway.innertube.models.InnertubeAlbum
+import app.kreate.gateway.innertube.models.InnertubeArtist
+import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeRankedArtist
 import app.kreate.gateway.innertube.models.InnertubeSong
@@ -85,17 +92,14 @@ import app.kreate.preferences.Preferences
 import app.kreate.util.scrollingText
 import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persist
-import it.fast4x.compose.persist.persistList
 import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.models.bodies.NextBody
-import it.fast4x.innertube.requests.discoverPage
-import it.fast4x.innertube.requests.relatedPage
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.PlayEventsType
 import it.fast4x.rimusic.enums.UiType
+import it.fast4x.rimusic.models.Mood
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
@@ -111,7 +115,6 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.WelcomeMessage
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.bold
 import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.color
@@ -138,6 +141,52 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
 
+@Composable
+private fun MoodCard(
+    title: String,
+    color: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
+    val (colorPalette, typography) = LocalAppearance.current
+
+    Column (
+        verticalArrangement = Arrangement.SpaceAround,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxWidth()
+                           .padding( 5.dp )
+                           .clip( thumbnailRoundness.shape )
+                           .clickable { onClick() }
+
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.background( color = color )
+                               .padding( start = 10.dp )
+                               .fillMaxHeight( 0.9f )
+        ) {
+            Box(
+                Modifier.requiredWidth( 150.dp )
+                        .background( color = colorPalette.background4 )
+                        .fillMaxSize()
+            ) {
+
+                Text(
+                    text = title,
+                    maxLines = 2,
+                    color = colorPalette.text,
+                    fontWeight = typography.xs.semiBold.fontWeight,
+                    fontStyle = typography.xs.semiBold.fontStyle,
+                    modifier = Modifier.padding( horizontal = 10.dp )
+                                       .align( Alignment.CenterStart )
+                )
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @ExperimentalTextApi
 @SuppressLint("SuspiciousIndentation")
@@ -162,8 +211,8 @@ fun HomeQuickPicks(
     val playEventType by Preferences.QUICK_PICKS_TYPE.collectAsStateWithLifecycle()
 
     var trending by persist<Song?>("home/trending")
-    var relatedPage by persist<Innertube.RelatedPage?>(tag = "home/relatedPage")
-    var discoverPage by persist<Innertube.DiscoverPage>("home/discoveryAlbums")
+    val relatedPage by viewModel.relatedPage.collectAsStateWithLifecycle()
+    val explorePage by viewModel.explorePage.collectAsStateWithLifecycle()
     val homePage by viewModel.homePage.collectAsStateWithLifecycle()
 
     val showRelatedAlbums by Preferences.QUICK_PICKS_SHOW_RELATED_ALBUMS.collectAsStateWithLifecycle()
@@ -195,14 +244,8 @@ fun HomeQuickPicks(
                                 )
                                 .distinctUntilChanged()
                                 .collect { songs ->
-                                    val song = songs.firstOrNull()
-                                    if (relatedPage == null || trending?.id != song?.id) {
-                                        relatedPage = Innertube.relatedPage(
-                                            NextBody(
-                                                videoId = (song?.id ?: "HZnNt9nnEhw")
-                                            )
-                                        )?.getOrNull()
-                                    }
+                                    val song = songs.firstOrNull() ?: return@collect
+                                    viewModel.loadRelatedSong( song.id )
                                     trending = song
                                 }
 
@@ -220,23 +263,16 @@ fun HomeQuickPicks(
                                             songs.firstOrNull()
                                         else
                                             songs.shuffled().firstOrNull()
-                                    if (relatedPage == null || trending?.id != song?.id) {
-                                        relatedPage =
-                                            Innertube.relatedPage(
-                                                NextBody(
-                                                    videoId = (song?.id ?: "HZnNt9nnEhw")
-                                                )
-                                            )?.getOrNull()
-                                    }
+                                    song ?: return@collect
+                                    viewModel.loadRelatedSong( song.id )
                                     trending = song
                                 }
                     }
                 }
             }
 
-            if (showNewAlbums || showNewAlbumsArtists || showMoodsAndGenres) {
-                discoverPage = Innertube.discoverPage().getOrNull()
-            }
+            if (showNewAlbums || showNewAlbumsArtists || showMoodsAndGenres)
+                viewModel.loadExplorePage()
 
             if ( isYouTubeLoggedIn() )
                 viewModel.loadHomePage()
@@ -254,7 +290,6 @@ fun HomeQuickPicks(
 
     fun refresh() {
         if (refreshing) return
-        relatedPage = null
         trending = null
         refreshScope.launch(Dispatchers.IO) {
             refreshing = true
@@ -266,7 +301,6 @@ fun HomeQuickPicks(
 
     val scrollState = rememberScrollState()
     val quickPicksLazyGridState = rememberLazyGridState()
-    val moodAngGenresLazyGridState = rememberLazyGridState()
     val chartsPageSongLazyGridState = rememberLazyGridState()
     val chartsPageArtistLazyGridState = rememberLazyGridState()
 
@@ -386,10 +420,8 @@ fun HomeQuickPicks(
                         },
                         icon2 = R.drawable.play,
                         onClick2 = {
-                            player.stopRadio()
-                            trending?.let { player.forcePlay(it.asMediaItem) }
-                            player.addMediaItems(relatedPage?.songs?.map { it.asMediaItem }
-                                ?: emptyList())
+                            trending ?: return@Title2Actions
+                            viewModel.playAll( trending!! )
                         }
 
                         //modifier = Modifier.fillMaxWidth(0.7f)
@@ -408,18 +440,29 @@ fun HomeQuickPicks(
                         SongItem.Values.from( colorPalette, typography )
                     }
 
+                    var relatedSongs by remember { mutableStateOf(emptyList<InnertubeSong>()) }
+                    LaunchedEffect( relatedPage ) {
+                        relatedPage
+                            ?.sections
+                            ?.flatMap { it.contents }
+                            ?.filterIsInstance<InnertubeSong>()
+                            ?.filterNot { cachedSongs.contains(it.id) }
+                            ?.also { relatedSongs = it }
+                    }
+
                     LazyHorizontalGrid(
                         state = quickPicksLazyGridState,
                         rows = GridCells.Fixed(if (relatedPage != null) 3 else 1),
                         flingBehavior = ScrollableDefaults.flingBehavior(),
                         contentPadding = endPaddingValues,
-                        modifier = Modifier.fillMaxWidth()
-                                           .height(
-                                               if ( relatedPage != null)
-                                                   Dimensions.itemsVerticalPadding * 3 * 9
-                                               else
-                                                   Dimensions.itemsVerticalPadding * 9
-                                           )
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(
+                                if (relatedPage != null)
+                                    Dimensions.itemsVerticalPadding * 3 * 9
+                                else
+                                    Dimensions.itemsVerticalPadding * 9
+                            )
                     ) {
                         trending?.let { song ->
                             item {
@@ -439,31 +482,24 @@ fun HomeQuickPicks(
                             }
                         }
 
-                        relatedPage?.let { relatedPage ->
-                            items(
-                                items = relatedPage.songs
-                                                   ?.distinctBy( Innertube.SongItem::key )
-                                                   ?.filter {
-                                                       cachedSongs == null || cachedSongs.indexOf( it.key ) < 0
-                                                   }
-                                                   ?.dropLast( if( trending == null) 0 else 1 )
-                                                   ?.map( Innertube.SongItem::asSong )
-                                                   .orEmpty(),
-                                key = Song::id
-                            ) { song ->
-                                SongItem.Render(
-                                    song = song,
-                                    hapticFeedback = hapticFeedback,
-                                    isPlaying = song.shallowCompare( currentMediaItem ),
-                                    values = songItemValues,
-                                    modifier = Modifier.width( itemInHorizontalGridWidth ),
-                                    onLongClick = {
-                                        val page = MenuPage.Song(song.asMediaItem)
-                                        bottomMenu.show( page, true )
-                                    }
-                                ) {
-                                    player.startRadio( song, true )
+                        items(
+                            items = relatedSongs,
+                            key = InnertubeSong::id
+                        ) { song ->
+                            val mediaItem = song.toMediaItem
+
+                            SongItem.Render(
+                                innertubeSong = song,
+                                hapticFeedback = hapticFeedback,
+                                isPlaying = song.shallowCompare( currentMediaItem ),
+                                values = songItemValues,
+                                modifier = Modifier.width( itemInHorizontalGridWidth ),
+                                onLongClick = {
+                                    val page = MenuPage.Song(mediaItem)
+                                    bottomMenu.show( page, true )
                                 }
+                            ) {
+                                player.startRadio( mediaItem, true )
                             }
                         }
                     }
@@ -481,59 +517,22 @@ fun HomeQuickPicks(
                     PlaylistItem.Values.from( colorPalette, typography )
                 }
 
-                discoverPage?.let { page ->
-                    val artists by remember {
-                        Database.artistTable
-                                .sortFollowing( ArtistSortBy.TITLE, SortOrder.ASCENDING )
-                                .distinctUntilChanged()
-                    }.collectAsState( emptyList(), Dispatchers.IO )
-
-                    var newReleaseAlbumsFiltered by persistList<Innertube.AlbumItem>("discovery/newalbumsartist")
-                    page.newReleaseAlbums.forEach { album ->
-                        artists.forEach { artist ->
-                            if (artist.name == album.authors?.first()?.name) {
-                                newReleaseAlbumsFiltered += album
-                            }
-                        }
-                    }
-
-                    if (showNewAlbumsArtists)
-                        if (newReleaseAlbumsFiltered.isNotEmpty() && artists.isNotEmpty()) {
-
-                            BasicText(
-                                text = stringResource(R.string.new_albums_of_your_artists),
-                                style = typography().l.semiBold,
-                                modifier = sectionTextModifier
-                            )
-
-                            LazyRow(
-                                contentPadding = endPaddingValues,
-                                horizontalArrangement = Arrangement.spacedBy(AlbumItem.COLUMN_SPACING.dp )
-                            ) {
-                                items(
-                                    items = newReleaseAlbumsFiltered.distinctBy { it.key },
-                                    key = System::identityHashCode
-                                ) { album ->
-                                    AlbumItem.Vertical( album, albumItemValues, navController )
-                                }
-                            }
-
-                        }
-
-                    if (showNewAlbums) {
-                        Title(
-                            title = stringResource(R.string.new_albums),
-                            onClick = { NavRoutes.newAlbums.navigateHere( navController ) },
-                            //modifier = Modifier.fillMaxWidth(0.7f)
+                if( showNewAlbumsArtists ) {
+                    val newAlbumsFromFollowingArtists by viewModel.albumsFromArtists.collectAsStateWithLifecycle()
+                    if( newAlbumsFromFollowingArtists.isNotEmpty() ) {
+                        BasicText(
+                            text = stringResource( R.string.new_albums_of_your_artists ),
+                            style = typography().l.semiBold,
+                            modifier = sectionTextModifier
                         )
 
                         LazyRow(
                             contentPadding = endPaddingValues,
-                            horizontalArrangement = Arrangement.spacedBy(AlbumItem.COLUMN_SPACING.dp )
+                            horizontalArrangement = Arrangement.spacedBy( AlbumItem.COLUMN_SPACING.dp )
                         ) {
                             items(
-                                items = page.newReleaseAlbums.distinctBy { it.key },
-                                key = System::identityHashCode
+                                items = newAlbumsFromFollowingArtists,
+                                key = InnertubeItem::id
                             ) { album ->
                                 AlbumItem.Vertical( album, albumItemValues, navController )
                             }
@@ -541,119 +540,112 @@ fun HomeQuickPicks(
                     }
                 }
 
-                if (showRelatedAlbums)
-                    relatedPage?.albums?.let { albums ->
-                        BasicText(
-                            text = stringResource(R.string.related_albums),
-                            style = typography().l.semiBold,
-                            modifier = sectionTextModifier
-                        )
+                if( explorePage?.newAlbumsAndSingles != null && showNewAlbums ) {
+                    val section = explorePage?.newAlbumsAndSingles!!
 
-                        LazyRow(
-                            contentPadding = endPaddingValues,
-                            horizontalArrangement = Arrangement.spacedBy(AlbumItem.COLUMN_SPACING.dp )
-                        ) {
-                            items(
-                                items = albums.distinctBy { it.key },
-                                key = System::identityHashCode
-                            ) { album ->
-                                AlbumItem.Vertical( album, albumItemValues, navController )
-                            }
+                    Title(
+                        title = section.title.orEmpty(),
+                        onClick = { NavRoutes.newAlbums.navigateHere( navController ) }
+                    )
+
+                    val albums by remember { derivedStateOf {
+                        section.contents.mapNotNull { it as? InnertubeAlbum }
+                    } }
+                    LazyRow(
+                        contentPadding = endPaddingValues,
+                        horizontalArrangement = Arrangement.spacedBy(AlbumItem.COLUMN_SPACING.dp )
+                    ) {
+                        items(
+                            items = albums,
+                            key = InnertubeItem::id
+                        ) { album ->
+                            AlbumItem.Vertical( album, albumItemValues, navController )
                         }
                     }
+                }
 
-                if (showSimilarArtists)
-                    relatedPage?.artists?.let { artists ->
-                        BasicText(
-                            text = stringResource(R.string.similar_artists),
-                            style = typography().l.semiBold,
-                            modifier = sectionTextModifier
-                        )
+                relatedPage?.sections?.forEach { section ->
+                    val canBeShown =
+                        section.contents.all { it is InnertubeAlbum } && showRelatedAlbums
+                                || section.contents.all { it is InnertubeArtist } && showSimilarArtists
+                                || section.contents.all { it is InnertubePlaylist } && showPlaylistMightLike
+                    if( !canBeShown ) return@forEach
 
-                        LazyRow(
-                            contentPadding = endPaddingValues,
-                            horizontalArrangement = Arrangement.spacedBy( ArtistItem.COLUMN_SPACING.dp )
-                        ) {
-                            items(
-                                items = artists.distinctBy { it.key },
-                                key = Innertube.ArtistItem::key,
-                            ) { artist ->
-                                ArtistItem.Render(
-                                    innertubeArtist = artist,
-                                    values = artistItemValues,
-                                    navController = navController
-                                )
-                            }
-                        }
-                    }
+                    BasicText(
+                        text = section.title.orEmpty(),
+                        style = typography().l.semiBold,
+                        modifier = Modifier.padding( 16.dp, 24.dp, 16.dp, 8.dp )
+                    )
 
-                if (showPlaylistMightLike)
-                    relatedPage?.playlists?.let { playlists ->
-                        BasicText(
-                            text = stringResource(R.string.playlists_you_might_like),
-                            style = typography().l.semiBold,
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .padding(top = 24.dp, bottom = 8.dp)
-                        )
+                    LazyRow(
+                        contentPadding = endPaddingValues,
+                        horizontalArrangement = Arrangement.spacedBy( PlaylistItem.COLUMN_SPACING.dp )
+                    ) {
+                        items(
+                            items = section.contents,
+                            key = InnertubeItem::id,
+                        ) { item ->
+                            when( item ) {
+                                is InnertubeAlbum -> {
+                                    AlbumItem.Vertical(
+                                        innertubeAlbum = item,
+                                        values = albumItemValues,
+                                        navController = navController
+                                    )
+                                }
 
-                        LazyRow(
-                            contentPadding = endPaddingValues,
-                            horizontalArrangement = Arrangement.spacedBy( PlaylistItem.COLUMN_SPACING.dp )
-                        ) {
-                            items(
-                                items = playlists.distinctBy { it.key },
-                                key = Innertube.PlaylistItem::key,
-                            ) { playlist ->
-                                PlaylistItem.Vertical(
-                                    innertubePlaylist = playlist,
-                                    values = playlistItemValues,
-                                    navController = navController
-                                )
-                            }
-                        }
-                    }
+                                is InnertubeArtist -> {
+                                    ArtistItem.Render(
+                                        innertubeArtist = item,
+                                        values = artistItemValues,
+                                        navController = navController
+                                    )
+                                }
 
-
-
-                if (showMoodsAndGenres)
-                    discoverPage?.let { page ->
-
-                        if (page.moods.isNotEmpty()) {
-
-                            Title(
-                                title = stringResource(R.string.moods_and_genres),
-                                onClick = { NavRoutes.moodsPage.navigateHere( navController ) },
-                                //modifier = Modifier.fillMaxWidth(0.7f)
-                            )
-
-                            LazyHorizontalGrid(
-                                state = moodAngGenresLazyGridState,
-                                rows = GridCells.Fixed(4),
-                                flingBehavior = ScrollableDefaults.flingBehavior(),
-                                //flingBehavior = rememberSnapFlingBehavior(snapLayoutInfoProvider),
-                                contentPadding = endPaddingValues,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    //.height((thumbnailSizeDp + Dimensions.itemsVerticalPadding * 8) * 8)
-                                    .height(Dimensions.itemsVerticalPadding * 4 * 8)
-                            ) {
-                                items(
-                                    items = page.moods.sortedBy { it.title },
-                                    key = { it.endpoint.params ?: it.title }
-                                ) {
-                                    MoodItemColored(
-                                        mood = it,
-                                        onClick = { it.endpoint.browseId?.let { _ -> onMoodClick(it) } },
-                                        modifier = Modifier
-                                            //.width(itemWidth)
-                                            .padding(4.dp)
+                                is InnertubePlaylist -> {
+                                    PlaylistItem.Vertical(
+                                        innertubePlaylist = item,
+                                        values = playlistItemValues,
+                                        navController = navController
                                     )
                                 }
                             }
-
                         }
                     }
+                }
+
+                if( explorePage?.moodsAndGenres != null && showMoodsAndGenres ) {
+                    val section = explorePage?.moodsAndGenres!!
+
+                    Title(
+                        title = section.title.orEmpty(),
+                        onClick = { NavRoutes.moodsPage.navigateHere( navController ) }
+                    )
+
+                    LazyHorizontalGrid(
+                        rows = GridCells.Fixed(4),
+                        contentPadding = endPaddingValues,
+                        modifier = Modifier.fillMaxWidth().height( Dimensions.itemsVerticalPadding * 4 * 8 )
+                    ) {
+                        items(
+                            items = section.contents
+                        ) { card ->
+                            val name = card.title.joinToString()
+                            val stripeColor = Color(card.color)
+
+                            MoodCard(
+                                title = name,
+                                color = stripeColor,
+                                modifier = Modifier.padding(4.dp),
+                                onClick = {
+                                    val uiMood = Mood(name, stripeColor, card.endpoint.browseId, card.endpoint.params)
+                                    navController.currentBackStackEntry?.savedStateHandle?.set("mood", uiMood)
+                                    NavRoutes.mood.navigateHere( navController )
+                                }
+                            )
+                        }
+                    }
+                }
 
                 val monthlyPlaylists by remember {
                     Database.playlistTable

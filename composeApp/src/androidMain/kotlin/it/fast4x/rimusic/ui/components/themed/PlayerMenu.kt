@@ -5,7 +5,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -27,16 +26,9 @@ import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
-import it.fast4x.rimusic.utils.addSongToYtPlaylist
-import it.fast4x.rimusic.utils.addToYtLikedSong
-import it.fast4x.rimusic.utils.addToYtPlaylist
 import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.isNetworkConnected
 import it.fast4x.rimusic.utils.rememberEqualizerLauncher
-import it.fast4x.rimusic.utils.removeYTSongFromPlaylist
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
@@ -139,11 +131,6 @@ fun PlayerMenu(
                         MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
-                else {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addToYtLikedSong(mediaItem)
-                    }
-                }
             },
             onClosePlayer = onClosePlayer,
             onMatchingSong = onMatchingSong
@@ -182,11 +169,6 @@ fun MiniPlayerMenu(
                         MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
-                else {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addToYtLikedSong(mediaItem)
-                    }
-                }
             },
             onDismiss = onDismiss
         )
@@ -204,11 +186,6 @@ fun MiniPlayerMenu(
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
                         MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
-                    }
-                }
-                else {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addToYtLikedSong(mediaItem)
                     }
                 }
             },
@@ -240,26 +217,11 @@ fun AddToPlaylistPlayerMenu(
                     insertIgnore( mediaItem )
                     mapIgnore( playlist, mediaItem.asSong )
                 }
-            } else {
-                CoroutineScope(Dispatchers.IO).launch {
-                    addSongToYtPlaylist(playlist.id, position, playlist.browseId ?: "", mediaItem)
-                }
             }
         },
         onRemoveFromPlaylist = { playlist ->
             if(isYouTubeSyncEnabled() && playlist.isYoutubePlaylist && playlist.isEditable) {
-                Database.asyncTransaction {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        if (removeYTSongFromPlaylist(
-                                mediaItem.mediaId,
-                                playlist.browseId ?: "",
-                                playlist.id
-                            )
-                        )
-                            songPlaylistMapTable.deleteBySongId( mediaItem.mediaId, playlist.id )
-
-                    }
-                }
+                return@AddToPlaylistItemMenu
             } else
                 Database.asyncTransaction {
                     songPlaylistMapTable.deleteBySongId( mediaItem.mediaId, playlist.id )
@@ -279,26 +241,15 @@ fun AddToPlaylistArtistSongs(
     onDismiss: () -> Unit,
     onClosePlayer: () -> Unit,
 ) {
-    val context = LocalContext.current
-    var position by remember {
-        mutableIntStateOf(0)
-    }
     AddToPlaylistArtistSongsMenu(
         navController = navController,
         onGoToPlaylist = {
             onClosePlayer()
         },
         onAddToPlaylist = { playlistPreview ->
-            position = playlistPreview.songCount.minus(1)
-            if (position > 0) position++ else position = 0
-
             Database.asyncTransaction {
                 if ( !isYouTubeSyncEnabled() || !playlistPreview.playlist.isYoutubePlaylist )
                     mapIgnore( playlistPreview.playlist, *mediaItems.toTypedArray() )
-                else
-                    CoroutineScope(Dispatchers.IO).launch {
-                        addToYtPlaylist(context, playlistPreview.playlist.id, position, playlistPreview.playlist.browseId ?: "", mediaItems)
-                    }
             }
 
             onDismiss()

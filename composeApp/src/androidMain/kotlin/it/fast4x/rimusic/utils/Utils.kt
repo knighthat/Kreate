@@ -9,7 +9,6 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.provider.MediaStore
 import android.text.format.DateUtils
-import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,10 +19,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.ThumbRating
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.R
 import app.kreate.database.Database
-import app.kreate.database.insertIgnore
-import app.kreate.database.mapIgnore
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Lyrics
@@ -31,15 +27,9 @@ import app.kreate.database.models.Song
 import app.kreate.di.THUMBNAIL_SIZE
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.util.toDuration
-import com.zionhuang.innertube.pages.LibraryPage
 import io.ktor.client.HttpClient
-import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.UserAgent
-import io.ktor.http.HttpStatusCode
 import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.YtMusic.addToPlaylist
-import it.fast4x.innertube.YtMusic.likeVideoOrSong
-import it.fast4x.innertube.YtMusic.removelikeVideoOrSong
 import it.fast4x.innertube.models.bodies.ContinuationBody
 import it.fast4x.innertube.requests.playlistPage
 import it.fast4x.innertube.utils.ProxyPreferences
@@ -47,10 +37,7 @@ import it.fast4x.innertube.utils.getProxy
 import it.fast4x.kugou.KuGou
 import it.fast4x.lrclib.LrcLib
 import it.fast4x.rimusic.service.modern.isLocal
-import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
-import me.knighthat.utils.Toaster
 
 const val EXPLICIT_BUNDLE_TAG = "is_explicit"
 
@@ -324,26 +311,6 @@ suspend fun Result<Innertube.PlaylistOrAlbumPage>.completed(
     println("Innertube PlaylistOrAlbumPage>.completed ${it.stackTraceToString()}")
 }
 
-//@JvmName("completedPlaylist")
-suspend fun Result<LibraryPage?>.completed(): Result<LibraryPage> = runCatching {
-    val page = getOrThrow()
-    val items = page?.items?.toMutableList()
-    var continuation = page?.continuation
-    while (continuation != null) {
-        val continuationPage = Innertube.libraryContinuation(continuation).getOrNull()
-        if (continuationPage != null)
-            if (items != null) {
-                items += continuationPage.items
-            }
-
-        continuation = continuationPage?.continuation
-    }
-    LibraryPage(
-        items = items ?: emptyList(),
-        continuation = page?.continuation
-    )
-}
-
 fun isNetworkConnected(context: Context): Boolean {
     val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     if (isAtLeastAndroid6) {
@@ -530,99 +497,3 @@ suspend fun downloadSyncedLyrics( song: Song ) {
         }
 }
 
-suspend fun addToYtPlaylist(context: Context, localPlaylistId: Long, position: Int, ytplaylistId: String, mediaItems: List<MediaItem>){
-    val mediaItemsChunks = mediaItems.chunked(50)
-    mediaItemsChunks.forEachIndexed { index, items ->
-        if (mediaItems.size <= 50) {}
-        else if (index == 0) {
-            Toaster.i(
-                "${mediaItems.size} " + context.resources.getString(R.string.songs_adding_in_yt)
-            )
-        } else {
-            delay(2000)
-        }
-        addToPlaylist(ytplaylistId, items.map { it.mediaId })
-            .onSuccess {
-                Database.playlistTable
-                        .findById( localPlaylistId )
-                        .first()
-                        ?.let {
-                            Database.mapIgnore( it, *items.toTypedArray() )
-                        }
-                if (items.size == 50)
-                    Toaster.i( "${mediaItems.size - (index + 1) * 50} Songs Remaining" )
-            }
-            .onFailure {
-                println("YtMusic addToPlaylist (list of size ${items.size}) error: ${it.stackTraceToString()}")
-                if(it is ClientRequestException && it.response.status == HttpStatusCode.BadRequest) {
-                    Toaster.w( R.string.adding_yt_to_pl_failed )
-                    items.forEach { item ->
-                        delay(500)
-                        addToPlaylist(ytplaylistId, item.mediaId).onFailure {
-                            println("YtMusic addToPlaylist (list insert backup) error: ${it.stackTraceToString()}")
-                                Toaster.e(
-                                    context.resources.getString(R.string.songs_add_yt_failed)+"${item.mediaMetadata.title} - ${item.mediaMetadata.artist}"
-                                )
-                        }.onSuccess {
-                            Database.playlistTable
-                                    .findById( localPlaylistId )
-                                    .first()
-                                    ?.let { playlist ->
-                                        Database.mapIgnore( playlist, *items.toTypedArray() )
-                                    }
-                            Toaster.n( "${items.size - (index + 1)} Songs Remaining" )
-                        }
-                    }
-                }
-            }
-    }
-
-    Toaster.n(
-        "${mediaItems.size} " + context.resources.getString(R.string.songs_added_in_yt)
-    )
-}
-
-suspend fun addSongToYtPlaylist(localPlaylistId: Long, position: Int, ytplaylistId: String, mediaItem: MediaItem){
-    if (isYouTubeSyncEnabled()) {
-        addToPlaylist(ytplaylistId,mediaItem.mediaId)
-            .onSuccess {
-                Database.playlistTable.findById( localPlaylistId ).first()?.let {
-                    Database.mapIgnore( it, mediaItem )
-                }
-                Toaster.s( R.string.songs_add_yt_success )
-            }
-            .onFailure {
-                Toaster.e( R.string.songs_add_yt_failed )
-            }
-
-    }
-}
-
-
-@OptIn(UnstableApi::class)
-suspend fun addToYtLikedSong(mediaItem: MediaItem) {
-    if( !isYouTubeSyncEnabled() ) return
-
-    Database.asyncTransaction {
-        insertIgnore( mediaItem )
-    }
-
-    val isSongLiked = Database.songTable.isLiked( mediaItem.mediaId ).first()
-
-    val isSuccess: Boolean =
-        (if( isSongLiked ) likeVideoOrSong( mediaItem.mediaId ) else removelikeVideoOrSong( mediaItem.mediaId )).isSuccess
-
-    val messageId = when {
-        isSongLiked && isSuccess -> R.string.songs_liked_yt
-        isSongLiked && !isSuccess -> R.string.songs_liked_yt_failed
-        !isSongLiked && isSuccess -> R.string.song_unliked_yt
-        !isSongLiked && !isSuccess -> R.string.songs_unliked_yt_failed
-        else -> throw RuntimeException()
-    }
-
-    if( isSuccess ) {
-        Database.songTable.toggleLike(mediaItem.mediaId)
-        Toaster.s( messageId )
-    } else
-        Toaster.e( messageId)
-}

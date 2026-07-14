@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import app.kreate.android.R
 import app.kreate.database.Database
 import app.kreate.database.models.Artist
-import it.fast4x.innertube.YtMusic
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
@@ -28,9 +27,7 @@ import it.fast4x.rimusic.ui.components.tab.toolbar.Button
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.utils.isNetworkConnected
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import me.knighthat.utils.Toaster
 import org.koin.java.KoinJavaComponent.inject
 
@@ -55,15 +52,6 @@ class FollowButton private constructor(
 
             Database.asyncTransaction {
                 artistTable.toggleFollow( artist.id )
-            }
-
-            CoroutineScope( Dispatchers.IO ).launch {
-                if( !isYouTubeSyncEnabled() ) return@launch
-
-                if ( artist.bookmarkedAt != null )
-                    YtMusic.unsubscribeChannel( artist.id )
-                else
-                    YtMusic.subscribeChannel( artist.id )
             }
         }
     }

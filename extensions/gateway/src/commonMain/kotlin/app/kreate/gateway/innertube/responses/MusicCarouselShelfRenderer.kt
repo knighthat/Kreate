@@ -25,5 +25,18 @@ interface MusicCarouselShelfRenderer {
 
         val musicResponsiveListItemRenderer: MusicResponsiveListItemRenderer?
         val musicTwoRowItemRenderer: MusicTwoRowItemRenderer?
+        val musicNavigationButtonRenderer: MusicNavigationButtonRenderer?
+
+        interface MusicNavigationButtonRenderer {
+
+            val buttonText: Runs
+            val solid: Solid
+            val clickCommand: Endpoint
+
+            interface Solid {
+
+                val leftStripeColor: Long
+            }
+        }
     }
 }

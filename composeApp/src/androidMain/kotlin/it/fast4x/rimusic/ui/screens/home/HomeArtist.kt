@@ -51,7 +51,6 @@ import app.kreate.database.Database
 import app.kreate.database.models.Artist
 import app.kreate.preferences.Preferences
 import it.fast4x.compose.persist.persistList
-import it.fast4x.innertube.YtMusic
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ArtistsType
 import it.fast4x.rimusic.enums.FilterBy
@@ -72,9 +71,6 @@ import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.semiBold
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import me.knighthat.component.tab.SongShuffler
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -135,20 +131,6 @@ fun HomeArtists(
     LaunchedEffect( items, search.input ) {
         itemsOnDisplay = items.filter {
             it.name?.let( search::appearsIn ) ?: false
-        }
-    }
-    if (items.any{it.thumbnailUrl == null}) {
-        LaunchedEffect(Unit) {
-            withContext(Dispatchers.IO) {
-                items.filter { it.thumbnailUrl == null }.forEach { artist ->
-                    coroutineScope.launch(Dispatchers.IO) {
-                        val artistThumbnail = YtMusic.getArtistPage(artist.id).getOrNull()?.artist?.thumbnail?.url
-                        Database.asyncTransaction {
-                            artistTable.updateIgnore( artist.copy(thumbnailUrl = artistThumbnail) )
-                        }
-                    }
-                }
-            }
         }
     }
 

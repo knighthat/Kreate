@@ -1,35 +1,24 @@
 package it.fast4x.innertube
 
-import com.zionhuang.innertube.pages.LibraryContinuationPage
-import com.zionhuang.innertube.pages.LibraryPage
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.headers
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.userAgent
 import it.fast4x.innertube.clients.YouTubeLocale
-import it.fast4x.innertube.models.AccountInfo
-import it.fast4x.innertube.models.AccountMenuResponse
-import it.fast4x.innertube.models.BrowseResponse
 import it.fast4x.innertube.models.Context
 import it.fast4x.innertube.models.Context.Client
 import it.fast4x.innertube.models.Context.Companion.DefaultWeb
-import it.fast4x.innertube.models.GridRenderer
 import it.fast4x.innertube.models.MusicNavigationButtonRenderer
-import it.fast4x.innertube.models.MusicShelfRenderer
 import it.fast4x.innertube.models.NavigationEndpoint
 import it.fast4x.innertube.models.PlaylistPanelVideoRenderer
 import it.fast4x.innertube.models.Runs
 import it.fast4x.innertube.models.Thumbnail
-import it.fast4x.innertube.models.bodies.AccountMenuBody
 import it.fast4x.innertube.models.bodies.Action
 import it.fast4x.innertube.models.bodies.BrowseBody
 import it.fast4x.innertube.models.bodies.CreatePlaylistBody
@@ -386,26 +375,6 @@ object Innertube {
     fun List<Thumbnail>.getBestQuality() =
         maxByOrNull { (it.width ?: 0) * (it.height ?: 0) }
 
-    suspend fun accountInfo(): Result<AccountInfo?> = runCatching {
-        accountMenu()
-            .body<AccountMenuResponse>()
-            .actions?.get(0)?.openPopupAction?.popup?.multiPageMenuRenderer
-            ?.header?.activeAccountHeaderRenderer
-            ?.toAccountInfo()
-    }
-
-    suspend fun accountMenu(): HttpResponse {
-        val response =
-            client.post(accountMenu) {
-                setLogin(setLogin = true)
-                setBody(AccountMenuBody())
-            }
-
-        println("YoutubeLogin Innertube accountMenuBody: ${AccountMenuBody()}")
-        println("YoutubeLogin Innertube accountMenu RESPONSE: ${response.bodyAsText()}")
-
-        return response
-    }
 
     fun HttpRequestBuilder.setLogin(clientType: Client = DefaultWeb.client, setLogin: Boolean = false) {
         contentType(ContentType.Application.Json)
@@ -645,114 +614,4 @@ object Innertube {
             parameter("type", "next")
         }
     }
-
-    private fun HttpRequestBuilder.poHeader() {
-        headers {
-            header("accept", "*/*")
-            header("origin", "https://www.youtube.com")
-            header("content-type", "application/json+protobuf")
-            header("priority", "u=1, i")
-            header("referer", "https://www.youtube.com/")
-            header("sec-ch-ua", "\"Microsoft Edge\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\"")
-            header("sec-ch-ua-mobile", "?0")
-            header("sec-ch-ua-platform", "\"macOS\"")
-            header("sec-fetch-dest", "empty")
-            header("sec-fetch-mode", "cors")
-            header("sec-fetch-site", "cross-site")
-            header(
-                "user-agent",
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0",
-            )
-            header("x-goog-api-key", "AIzaSyDyT5W0Jh49F30Pqqtyfdf7pDLFKLJoAnw")
-            header("x-user-agent", "grpc-web-javascript/0.1")
-        }
-    }
-
-    suspend fun createPoTokenChallenge() =
-        client.post(
-            "https://jnn-pa.googleapis.com/\$rpc/google.internal.waa.v1.Waa/Create",
-        ) {
-            poHeader()
-            setBody("[\"$poTokenChallengeRequestKey\"]")
-        }
-
-    suspend fun generatePoToken(challenge: String) =
-        client.post(
-            "https://jnn-pa.googleapis.com/\$rpc/google.internal.waa.v1.Waa/GenerateIT",
-        ) {
-            poHeader()
-            setBody("[\"$poTokenChallengeRequestKey\", \"$challenge\"]")
-        }
-
-    suspend fun library(browseId: String, tabIndex: Int = 0) = runCatching {
-        val response = browse(
-            browseId = browseId,
-            setLogin = true
-        ).body<BrowseResponse>()
-
-        val tabs = response.contents?.singleColumnBrowseResultsRenderer?.tabs
-
-        val contents = if (tabs != null && tabs.size >= tabIndex) {
-            tabs[tabIndex].tabRenderer?.content?.sectionListRenderer?.contents?.firstOrNull()
-        }
-        else {
-            null
-        }
-
-        when {
-            contents?.gridRenderer != null -> {
-                contents.gridRenderer.items
-                    ?.mapNotNull (GridRenderer.Item::musicTwoRowItemRenderer)
-                    ?.mapNotNull { LibraryPage.fromMusicTwoRowItemRenderer(it) }?.let {
-                        LibraryPage(
-                            items = it,
-                            continuation = contents.gridRenderer.continuations?.firstOrNull()?.nextContinuationData?.continuation
-                        )
-                    }
-            }
-
-            else -> {
-                LibraryPage(
-                    items = contents?.musicShelfRenderer?.contents!!
-                        .mapNotNull (MusicShelfRenderer.Content::musicResponsiveListItemRenderer)
-                        .mapNotNull { LibraryPage.fromMusicResponsiveListItemRenderer(it) },
-                    continuation = contents.musicShelfRenderer.continuations?.firstOrNull()?.
-                    nextContinuationData?.continuation
-                )
-            }
-        }
-    }
-
-    suspend fun libraryContinuation(continuation: String) = runCatching {
-        val response = browse(
-            continuation = continuation,
-            setLogin = true
-        ).body<BrowseResponse>()
-
-        val contents = response.continuationContents
-
-        when {
-            contents?.gridContinuation != null -> {
-                contents.gridContinuation.items
-                    ?.mapNotNull (GridRenderer.Item::musicTwoRowItemRenderer)
-                    ?.mapNotNull { LibraryPage.fromMusicTwoRowItemRenderer(it) }?.let {
-                        LibraryContinuationPage(
-                            items = it,
-                            continuation = contents.gridContinuation.continuations?.firstOrNull()?.nextContinuationData?.continuation
-                        )
-                    }
-            }
-
-            else -> {
-                LibraryContinuationPage(
-                    items = contents?.musicShelfContinuation?.contents!!
-                        .mapNotNull (MusicShelfRenderer.Content::musicResponsiveListItemRenderer)
-                        .mapNotNull { LibraryPage.fromMusicResponsiveListItemRenderer(it) },
-                    continuation = contents.musicShelfContinuation.continuations?.firstOrNull()?.
-                    nextContinuationData?.continuation
-                )
-            }
-        }
-    }
-
 }

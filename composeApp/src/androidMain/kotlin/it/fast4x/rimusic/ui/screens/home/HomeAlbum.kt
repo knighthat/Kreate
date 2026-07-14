@@ -81,15 +81,12 @@ import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.addNext
-import it.fast4x.rimusic.utils.addToYtPlaylist
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.semiBold
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.knighthat.component.tab.SongShuffler
 import org.koin.compose.koinInject
@@ -414,19 +411,7 @@ fun HomeAlbums(
                                                         mapIgnore( playlistPreview.playlist, song )
                                                     }
                                                 }
-                                            } else {
-                                                CoroutineScope(Dispatchers.IO).launch {
-                                                    addToYtPlaylist(
-                                                        context,
-                                                        playlistPreview.playlist.id,
-                                                        position,
-                                                        playlistPreview.playlist.browseId ?: "",
-                                                        songs.map{it.asMediaItem}
-                                                    )
-                                                }
                                             }
-
-
                                         },
                                         onGoToPlaylist = {
                                             NavRoutes.localPlaylist.navigateHere( navController, it.toString() )

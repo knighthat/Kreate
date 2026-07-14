@@ -2,23 +2,28 @@ package app.kreate.internal.innertube
 
 import app.kreate.exceptions.NotLoggedInException
 import app.kreate.gateway.innertube.Account
+import app.kreate.gateway.innertube.PageType
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.gateway.innertube.models.AccountInfo
 import app.kreate.gateway.innertube.models.ContinuedPlaylist
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.gateway.innertube.models.InnertubeArtist
 import app.kreate.gateway.innertube.models.InnertubeCharts
+import app.kreate.gateway.innertube.models.InnertubeExplore
 import app.kreate.gateway.innertube.models.InnertubeHistory
 import app.kreate.gateway.innertube.models.InnertubeHomePage
 import app.kreate.gateway.innertube.models.InnertubeItem
+import app.kreate.gateway.innertube.models.InnertubeMoodSection
 import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeSearch
 import app.kreate.gateway.innertube.models.InnertubeSearchSuggestion
 import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.gateway.innertube.models.InnertubeSongDetails
+import app.kreate.gateway.innertube.models.MultiContent
 import app.kreate.gateway.innertube.models.Section
 import app.kreate.gateway.innertube.responses.BrowseResponse
 import app.kreate.gateway.innertube.responses.Continuation
+import app.kreate.gateway.innertube.responses.MusicCarouselShelfRenderer
 import app.kreate.gateway.innertube.responses.MusicPlaylistShelfRenderer
 import app.kreate.gateway.innertube.responses.MusicShelfRenderer
 import app.kreate.gateway.innertube.responses.PrimaryResults
@@ -30,6 +35,7 @@ import app.kreate.internal.innertube.models.createInnertubeAlbumFrom
 import app.kreate.internal.innertube.models.createInnertubeArtistFrom
 import app.kreate.internal.innertube.models.createInnertubeCharsFrom
 import app.kreate.internal.innertube.models.createInnertubeItemFrom
+import app.kreate.internal.innertube.models.createInnertubeMoodSectionFrom
 import app.kreate.internal.innertube.models.createInnertubePlaylistFrom
 import app.kreate.internal.innertube.models.createInnertubeSearchSuggestionItemFrom
 import app.kreate.internal.innertube.models.createInnertubeSongFrom
@@ -67,9 +73,14 @@ internal class YouTubeImpl : YouTube, Account {
             response.contents?.singleColumnBrowseResultsRenderer?.tabs?.firstOrNull()?.tabRenderer
         ) { "BrowseResponse.content.singleColumnBrowseResultsRenderer doesn't have any tabs" }
 
+    private fun extractSectionListRenderer( tab: Tabs.Tab.Renderer ): List<SectionListRenderer.Content> =
+        requireNotNull(
+            tab.content?.sectionListRenderer?.contents
+        ) { "Tabs.Tab.Renderer doesn't have any sectionListRenderer" }
+
     private fun extractListContent( tab: Tabs.Tab.Renderer ): SectionListRenderer.Content =
         requireNotNull(
-            tab.content?.sectionListRenderer?.contents?.firstOrNull()
+            extractSectionListRenderer( tab ).firstOrNull()
         ) { "Tabs.Tab.Renderer doesn't have any sectionListRenderer contents" }
 
     private fun checkLoginStatus() {
@@ -401,6 +412,76 @@ internal class YouTubeImpl : YouTube, Account {
         ) { "BrowseResponse doesn't contain any chart information" }
 
         renderer.let( ::createInnertubeCharsFrom )
+    }
+
+    override suspend fun getRelated( videoId: String ): Result<MultiContent> = runCatching {
+        val browseId = requireNotNull(
+            getNext( videoId, null, null, null )
+                .contents
+                .singleColumnMusicWatchNextResultsRenderer
+                ?.tabbedRenderer
+                ?.watchNextTabbedResultsRenderer
+                ?.tabs
+                ?.getOrNull( 2 )
+                ?.tabRenderer
+                ?.endpoint
+                ?.browseEndpoint
+                ?.browseId
+        ) { "NextResponse doesn't contain related tab" }
+        val sections = browse( browseId, null, null, false )
+            .contents
+            ?.sectionListRenderer
+            ?.contents
+            ?.mapNotNull { it.musicCarouselShelfRenderer }
+            ?.map( ::createSectionFrom )
+            .orEmpty()
+
+        object : MultiContent {
+
+            override val sections: List<Section> = sections
+        }
+    }
+
+    override suspend fun explore(): Result<InnertubeExplore> = runCatching {
+        fun List<MusicCarouselShelfRenderer>.findSection( browseId: String ): MusicCarouselShelfRenderer? =
+            find { renderer ->
+                renderer.header
+                        .musicCarouselShelfBasicHeaderRenderer
+                        .title
+                        .runs
+                        .any { it.navigationEndpoint?.browseEndpoint?.browseId == browseId }
+            }
+
+        val contents = browse( "FEmusic_explore", null, null, false )
+            .let( ::extractSingleColumnFirstTabRenderer )
+            .let( ::extractSectionListRenderer )
+            .mapNotNull { it.musicCarouselShelfRenderer }
+        val newAlbumsAndSingles = contents.findSection( "FEmusic_new_releases_albums" )?.let( ::createSectionFrom )
+        val moodsAndGenres = contents.findSection( "FEmusic_moods_and_genres" )?.let( ::createInnertubeMoodSectionFrom )
+        val popularEpisodes = contents.findSection( "FEmusic_top_non_music_audio_episodes" )?.let( ::createSectionFrom )
+        val trending = contents.find { renderer ->
+            renderer.header
+                    .musicCarouselShelfBasicHeaderRenderer
+                    .title
+                    .runs
+                    .any {
+                        it.navigationEndpoint
+                            ?.browseEndpoint
+                            ?.browseEndpointContextSupportedConfigs
+                            ?.browseEndpointContextMusicConfig
+                            ?.pageType == PageType.PLAYLIST
+                    }
+        }?.let( ::createSectionFrom )
+        val newMusicVideos = contents.findSection( "FEmusic_new_releases_videos" )?.let( ::createSectionFrom )
+
+        object : InnertubeExplore {
+
+            override val newAlbumsAndSingles: Section? = newAlbumsAndSingles
+            override val moodsAndGenres: InnertubeMoodSection? = moodsAndGenres
+            override val popularEpisodes: Section? = popularEpisodes
+            override val trending: Section? = trending
+            override val newMusicVideos: Section? = newMusicVideos
+        }
     }
 
     /*

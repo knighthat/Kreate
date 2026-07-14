@@ -64,7 +64,6 @@ import app.kreate.di.CacheType
 import app.kreate.internal.innertube.models.share
 import app.kreate.util.scrollingText
 import co.touchlab.kermit.Logger
-import it.fast4x.innertube.YtMusic
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.UiType
 import it.fast4x.rimusic.typography
@@ -193,10 +192,6 @@ fun YouTubePlaylist(
                     }
 
                     CoroutineScope( Dispatchers.IO ).launch {
-                        YtMusic.removelikePlaylistOrAlbum(
-                            viewModel.browseId.substringAfter("VL")
-                        )
-
                         Database.playlistTable
                                 .findByBrowseId( viewModel.browseId.substringAfter("VL") )
                                 .first()
