@@ -882,4 +882,5 @@
     <string name="error_failed_to_get_history">Failed to load history</string>
     <string name="error_failed_to_get_related_songs">Failed to get related songs</string>
     <string name="error_failed_to_get_explore_page">Failed to get explore page</string>
+    <string name="error_generic_failed_to_load_page">Failed to load page</string>
 </resources>

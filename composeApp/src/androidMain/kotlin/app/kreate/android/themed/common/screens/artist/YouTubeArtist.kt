@@ -138,7 +138,7 @@ private fun LazyListScope.renderSections(
                         val route: NavRoutes = if( section.contents.fastAll { it is InnertubeSong } )
                             NavRoutes.YT_PLAYLIST
                         else if( section.contents.fastAll { it is InnertubeAlbum } )
-                            NavRoutes.artistAlbums
+                            NavRoutes.YT_SEE_MORE
                         else
                             return@clickable
 

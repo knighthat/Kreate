@@ -48,11 +48,11 @@ import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.android.themed.common.component.dialog.Dialog
+import app.kreate.android.themed.common.screens.SeeMoreScreen
 import app.kreate.android.themed.common.screens.album.YouTubeAlbum
 import app.kreate.android.themed.common.screens.artist.YouTubeArtist
 import app.kreate.android.themed.common.screens.details.SongDetailsScreen
 import app.kreate.android.themed.common.screens.settings.about.Licenses
-import app.kreate.android.themed.rimusic.screen.artist.ArtistAlbums
 import app.kreate.android.themed.rimusic.screen.playlist.YouTubePlaylist
 import app.kreate.database.Database
 import app.kreate.database.models.SearchQuery
@@ -69,8 +69,6 @@ import it.fast4x.rimusic.ui.screens.history.HistoryScreen
 import it.fast4x.rimusic.ui.screens.home.HomeScreen
 import it.fast4x.rimusic.ui.screens.localplaylist.LocalPlaylistScreen
 import it.fast4x.rimusic.ui.screens.mood.MoodScreen
-import it.fast4x.rimusic.ui.screens.mood.MoodsPageScreen
-import it.fast4x.rimusic.ui.screens.newreleases.NewreleasesScreen
 import it.fast4x.rimusic.ui.screens.player.Queue
 import it.fast4x.rimusic.ui.screens.podcast.PodcastScreen
 import it.fast4x.rimusic.ui.screens.profiles.ProfileScreen
@@ -250,6 +248,13 @@ fun AppNavigation(
         }
 
         composable(
+            route = "${NavRoutes.YT_SEE_MORE}/{browseId}?params={params}",
+            arguments = listOf( BROWSE_ID_ARG, PARAM_ARG )
+        ) {
+            SeeMoreScreen( navController, miniPlayer )
+        }
+
+        composable(
             route = "${NavRoutes.podcast.name}/{id}",
             arguments = listOf(
                 navArgument(
@@ -373,45 +378,6 @@ fun AppNavigation(
                     miniPlayer = miniPlayer,
                 )
             }
-        }
-
-        composable(
-            route = NavRoutes.moodsPage.name
-        ) { navBackStackEntry ->
-            MoodsPageScreen(
-                navController = navController
-            )
-        }
-
-        composable(
-            route = NavRoutes.newAlbums.name
-        ) { navBackStackEntry ->
-            NewreleasesScreen(
-                navController = navController,
-                miniPlayer = miniPlayer,
-            )
-        }
-
-        composable(
-            route = "${NavRoutes.artistAlbums.name}/{id}?params={params}",
-            arguments = listOf(
-                navArgument(
-                    name = "id",
-                    builder = { type = NavType.StringType }
-                ),
-                navArgument(
-                    name = "params",
-                    builder = {
-                        type = NavType.StringType
-                        defaultValue = ""
-                    }
-                )
-            )
-        ) { navBackStackEntry ->
-            val id = navBackStackEntry.arguments?.getString("id").orEmpty()
-            val params = navBackStackEntry.arguments?.getString("params").orEmpty()
-
-            ArtistAlbums( navController, id, params, miniPlayer )
         }
 
         composable( NavRoutes.LICENSES.name ) {

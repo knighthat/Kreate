@@ -4,6 +4,7 @@ import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.Section
 import app.kreate.gateway.innertube.responses.MusicCarouselShelfRenderer
 import app.kreate.gateway.innertube.responses.MusicShelfRenderer
+import app.kreate.gateway.innertube.responses.SectionListRenderer
 import app.kreate.internal.innertube.utils.firstText
 
 
@@ -50,5 +51,18 @@ internal fun createSectionFrom( renderer: MusicShelfRenderer ): Section {
         override val browseId: String? = browseId
         override val params: String? = params
         override val contents: List<InnertubeItem> = content
+    }
+}
+
+internal fun createSectionFrom( renderer: SectionListRenderer.Content.GridRenderer ): Section {
+    val title = renderer.header?.gridHeaderRenderer?.title
+    val contents = renderer.items.mapNotNull { it.musicTwoRowItemRenderer }.mapNotNull( ::createInnertubeItemFrom )
+
+    return object : Section {
+        override val title: String? = title?.firstText
+        override val accessibilityLabel: String? = title?.accessibility?.accessibilityData?.label
+        override val browseId: String? = null
+        override val params: String? = null
+        override val contents: List<InnertubeItem> = contents
     }
 }

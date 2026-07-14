@@ -72,10 +72,21 @@ interface SectionListRenderer {
         interface GridRenderer {
 
             val items: List<Item>
+            val header: Header?
 
             interface Item {
 
                 val musicTwoRowItemRenderer: MusicTwoRowItemRenderer?
+            }
+
+            interface Header {
+
+                val gridHeaderRenderer: Renderer
+
+                interface Renderer {
+
+                    val title: Runs
+                }
             }
         }
     }

@@ -484,6 +484,27 @@ internal class YouTubeImpl : YouTube, Account {
         }
     }
 
+    override suspend fun getSeeMorePage(
+        browseId: String,
+        params: String?
+    ): Result<List<Section>> = runCatching {
+        val mutableSections = mutableListOf<Section>()
+        val contents = browse( browseId, params, null, false )
+            .let( ::extractSingleColumnFirstTabRenderer )
+            .let( ::extractSectionListRenderer )
+        for( content in contents ) {
+            content.musicCarouselShelfRenderer
+                   ?.let( ::createSectionFrom )
+                   ?.also( mutableSections::add )
+
+            content.gridRenderer
+                   ?.let( ::createSectionFrom )
+                   ?.also( mutableSections::add )
+        }
+
+        mutableSections.toList()
+    }
+
     /*
 
             YouTube

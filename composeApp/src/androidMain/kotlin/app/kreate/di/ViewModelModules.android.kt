@@ -3,6 +3,7 @@ package app.kreate.di
 import app.kreate.android.viewmodel.LocalPlaylistViewModel
 import app.kreate.android.viewmodel.OnlineSearchViewModel
 import app.kreate.android.viewmodel.SearchResultViewModel
+import app.kreate.android.viewmodel.SeeMorePageViewModel
 import app.kreate.android.viewmodel.YouTubePlaylistViewModel
 import app.kreate.android.viewmodel.YoutubeAlbumViewModel
 import app.kreate.android.viewmodel.YoutubeArtistViewModel
@@ -28,4 +29,5 @@ actual val viewModelModule: Module = module {
     viewModelOf( ::OnlineSearchViewModel )
     viewModelOf( ::SearchResultViewModel )
     viewModelOf( ::HistoryScreenViewModel )
+    viewModelOf( ::SeeMorePageViewModel )
 }

@@ -79,13 +79,25 @@ internal data class SectionListRendererImpl(
 
         @Serializable
         internal data class GridRendererImpl(
-            override val items: List<ItemImpl> = emptyList()
+            override val items: List<ItemImpl> = emptyList(),
+            override val header: HeaderImpl?
         ): SectionListRenderer.Content.GridRenderer {
 
             @Serializable
             internal data class ItemImpl(
                 override val musicTwoRowItemRenderer: MusicTwoRowItemRendererImpl?
             ): SectionListRenderer.Content.GridRenderer.Item
+
+            @Serializable
+            internal data class HeaderImpl(
+                override val gridHeaderRenderer: RendererImpl
+            ) : SectionListRenderer.Content.GridRenderer.Header {
+
+                @Serializable
+                internal data class RendererImpl(
+                    override val title: RunsImpl
+                ) : SectionListRenderer.Content.GridRenderer.Header.Renderer
+            }
         }
     }
 }

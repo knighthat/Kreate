@@ -10,6 +10,7 @@ import app.kreate.gateway.innertube.models.InnertubeSearchSuggestion
 import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.gateway.innertube.models.InnertubeSongDetails
 import app.kreate.gateway.innertube.models.MultiContent
+import app.kreate.gateway.innertube.models.Section
 
 
 interface YouTube {
@@ -52,4 +53,6 @@ interface YouTube {
     suspend fun getRelated( videoId: String ): Result<MultiContent>
 
     suspend fun explore(): Result<InnertubeExplore>
+
+    suspend fun getSeeMorePage( browseId: String, params: String? = null ): Result<List<Section>>
 }

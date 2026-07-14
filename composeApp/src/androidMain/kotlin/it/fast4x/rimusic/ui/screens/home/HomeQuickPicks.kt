@@ -99,7 +99,6 @@ import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.enums.PlayEventsType
 import it.fast4x.rimusic.enums.UiType
-import it.fast4x.rimusic.models.Mood
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.LocalMenuState
@@ -545,7 +544,10 @@ fun HomeQuickPicks(
 
                     Title(
                         title = section.title.orEmpty(),
-                        onClick = { NavRoutes.newAlbums.navigateHere( navController ) }
+                        onClick = section.browseId?.let { browseId -> {
+                            val path = "${browseId}?params=${section.params}"
+                            NavRoutes.YT_SEE_MORE.navigateHere( navController, path )
+                        } }
                     )
 
                     val albums by remember { derivedStateOf {
@@ -571,10 +573,12 @@ fun HomeQuickPicks(
                                 || section.contents.all { it is InnertubePlaylist } && showPlaylistMightLike
                     if( !canBeShown ) return@forEach
 
-                    BasicText(
-                        text = section.title.orEmpty(),
-                        style = typography().l.semiBold,
-                        modifier = Modifier.padding( 16.dp, 24.dp, 16.dp, 8.dp )
+                    Title(
+                        title = section.title.orEmpty(),
+                        onClick = section.browseId?.let { browseId -> {
+                            val path = "${browseId}?params=${section.params}"
+                            NavRoutes.YT_SEE_MORE.navigateHere( navController, path )
+                        } }
                     )
 
                     LazyRow(
@@ -618,8 +622,7 @@ fun HomeQuickPicks(
                     val section = explorePage?.moodsAndGenres!!
 
                     Title(
-                        title = section.title.orEmpty(),
-                        onClick = { NavRoutes.moodsPage.navigateHere( navController ) }
+                        title = section.title.orEmpty()
                     )
 
                     LazyHorizontalGrid(
@@ -638,9 +641,8 @@ fun HomeQuickPicks(
                                 color = stripeColor,
                                 modifier = Modifier.padding(4.dp),
                                 onClick = {
-                                    val uiMood = Mood(name, stripeColor, card.endpoint.browseId, card.endpoint.params)
-                                    navController.currentBackStackEntry?.savedStateHandle?.set("mood", uiMood)
-                                    NavRoutes.mood.navigateHere( navController )
+                                    val path = "${card.endpoint.browseId}?params=${card.endpoint.params}"
+                                    NavRoutes.YT_SEE_MORE.navigateHere( navController, path )
                                 }
                             )
                         }
