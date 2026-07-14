@@ -8,6 +8,7 @@ import app.kreate.gateway.innertube.models.ContinuedPlaylist
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.gateway.innertube.models.InnertubeArtist
 import app.kreate.gateway.innertube.models.InnertubeCharts
+import app.kreate.gateway.innertube.models.InnertubeHomePage
 import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeSearch
@@ -563,6 +564,31 @@ internal class YouTubeImpl : YouTube, Account {
             override val email: String? = accountEmail?.firstText
             override val channelHandle: String? = accountChannel?.firstText
             override val thumbnailUrl: List<Thumbnails.Thumbnail> = accountThumbnails.thumbnails
+        }
+    }
+
+    override suspend fun getHomePage(): Result<InnertubeHomePage> = runCatching {
+        checkLoginStatus()
+
+        val response = browse( "FEmusic_home", null, null, true )
+        val renderer = requireNotNull(
+            response.contents
+                ?.singleColumnBrowseResultsRenderer
+                ?.tabs
+                ?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )
+                ?.content
+                ?.sectionListRenderer
+        ) { "BrowseResponse doesn't contain content" }
+        val sections = renderer.contents.mapNotNull( SectionListRenderer.Content::musicCarouselShelfRenderer ).map( ::createSectionFrom )
+        val continuations = renderer.continuations
+        val thumbnails = response.background?.toThumbnailList().orEmpty()
+
+        object : InnertubeHomePage {
+
+            override val thumbnails: List<Thumbnails.Thumbnail> = thumbnails
+            override val continuations: List<Continuation> = continuations
+            override val visitorData: String? = null
+            override val sections: List<Section> = sections
         }
     }
 }

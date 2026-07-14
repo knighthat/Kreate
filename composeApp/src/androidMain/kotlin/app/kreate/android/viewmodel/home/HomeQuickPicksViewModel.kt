@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import app.kreate.android.R
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.gateway.innertube.models.InnertubeCharts
+import app.kreate.gateway.innertube.models.InnertubeHomePage
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,19 +14,22 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 
 
-class HomeQuickPicksViewModel : ViewModel(), KoinComponent {
+class HomeQuickPicksViewModel(
+    private val youtube: YouTube
+) : ViewModel(), KoinComponent {
 
     private val _charts = MutableStateFlow<InnertubeCharts?>(null)
+    private val _homePage = MutableStateFlow<InnertubeHomePage?>(null)
 
     val charts = _charts.asStateFlow()
+    val homePage = _homePage.asStateFlow()
 
     fun loadCharts() {
         viewModelScope.launch( Dispatchers.IO ) {
 
-            get<YouTube>().getCharts()
+            youtube.getCharts()
                 .onFailure { err ->
                     Logger.e( "", err, "HomeQuickPicks" )
                     Toaster.e( R.string.error_failed_to_get_charts )
@@ -33,6 +37,21 @@ class HomeQuickPicksViewModel : ViewModel(), KoinComponent {
                 .onSuccess { charts ->
                     _charts.update { charts }
                 }
+        }
+    }
+
+    fun loadHomePage() {
+        viewModelScope.launch( Dispatchers.IO ) {
+
+            youtube.account
+                   .getHomePage()
+                   .onFailure { err ->
+                       Logger.e( "", err, "HomeQuickPicks" )
+                       Toaster.e( R.string.error_failed_to_get_home_page )
+                   }
+                   .onSuccess { charts ->
+                       _homePage.update { charts }
+                   }
         }
     }
 }

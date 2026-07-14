@@ -879,4 +879,5 @@ CC-BY-SA 3.0</string>
     <string name="dialog_body_restart_playback_service">Playback will be stopped</string>
     <string name="semantic_add_blacklist_entry">Add blacklist entry</string>
     <string name="placeholder_unknown_folder">Unknown folder</string>
+    <string name="error_failed_to_get_home_page">Failed to get home page</string>
 </resources>

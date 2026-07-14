@@ -87,9 +87,7 @@ import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persist
 import it.fast4x.compose.persist.persistList
 import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.YtMusic
 import it.fast4x.innertube.models.bodies.NextBody
-import it.fast4x.innertube.requests.HomePage
 import it.fast4x.innertube.requests.discoverPage
 import it.fast4x.innertube.requests.relatedPage
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
@@ -166,7 +164,7 @@ fun HomeQuickPicks(
     var trending by persist<Song?>("home/trending")
     var relatedPage by persist<Innertube.RelatedPage?>(tag = "home/relatedPage")
     var discoverPage by persist<Innertube.DiscoverPage>("home/discoveryAlbums")
-    var homePage by persist<HomePage?>("home/homePage")
+    val homePage by viewModel.homePage.collectAsStateWithLifecycle()
 
     val showRelatedAlbums by Preferences.QUICK_PICKS_SHOW_RELATED_ALBUMS.collectAsStateWithLifecycle()
     val showSimilarArtists by Preferences.QUICK_PICKS_SHOW_RELATED_ARTISTS.collectAsStateWithLifecycle()
@@ -240,8 +238,8 @@ fun HomeQuickPicks(
                 discoverPage = Innertube.discoverPage().getOrNull()
             }
 
-            if (isYouTubeLoggedIn())
-                homePage = YtMusic.getHomePage().getOrNull()
+            if ( isYouTubeLoggedIn() )
+                viewModel.loadHomePage()
 
         }.onFailure {
             Logger.e( tag = "HomeQuickPicks" ) { "loadData failed!" }
@@ -888,12 +886,10 @@ fun HomeQuickPicks(
                 homePage?.let { page ->
 
                     page.sections.forEach {
-                        if (it.items.isEmpty() || it.items.firstOrNull()?.key == null) return@forEach
-                        println("homePage() in HomeYouTubeMusic sections: ${it.title} ${it.items.size}")
-                        println("homePage() in HomeYouTubeMusic sections items: ${it.items}")
+                        if (it.contents.isEmpty() || it.contents.firstOrNull()?.id == null) return@forEach
 
                         BasicText(
-                            text = it.title,
+                            text = it.title.orEmpty(),
                             style = typography().l.semiBold.color(colorPalette().text),
                             modifier = Modifier.padding(horizontal = 16.dp).padding(vertical = 4.dp)
                         )
@@ -901,7 +897,7 @@ fun HomeQuickPicks(
                         val currentMediaItem by player.currentMediaItemState.collectAsState()
                         ItemUtils.LazyRowItem(
                             navController = navController,
-                            innertubeItems = it.items.fastFilterNotNull(),
+                            innertubeItems = it.contents.fastFilterNotNull(),
                             currentlyPlaying = currentMediaItem?.mediaId
                         )
                     }
