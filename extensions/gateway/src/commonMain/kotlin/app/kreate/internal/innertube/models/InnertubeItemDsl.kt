@@ -10,12 +10,28 @@ import app.kreate.internal.innertube.utils.pageType
 internal fun createInnertubeItemFrom( renderer: MusicResponsiveListItemRenderer ): InnertubeItem? {
     if( renderer.navigationEndpoint?.watchEndpoint != null
         || renderer.playlistItemData?.videoId != null )
-        return createInnertubeSongFrom( renderer )
+        return if(
+            renderer.flexColumns
+                .firstOrNull()
+                ?.musicResponsiveListItemFlexColumnRenderer
+                ?.text
+                ?.runs
+                ?.firstOrNull()
+                ?.navigationEndpoint
+                ?.watchEndpoint
+                ?.watchEndpointMusicSupportedConfigs
+                ?.watchEndpointMusicConfig
+                ?.musicVideoType == PageType.VIDEO
+            )
+            createInnertubeVideoFrom( renderer )
+        else
+            createInnertubeSongFrom( renderer )
 
     return when( renderer.navigationEndpoint.pageType ) {
         PageType.ARTIST     -> createInnertubeArtistFrom( renderer )
         PageType.ALBUM      -> createInnertubeAlbumFrom( renderer )
         PageType.PLAYLIST   -> createInnertubePlaylistFrom( renderer )
+        PageType.PODCAST    -> createInnertubePodcastFrom( renderer )
         // Ignore items with unknown page type (have no parser for it)
         else                -> null
     }
