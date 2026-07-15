@@ -49,6 +49,7 @@ import app.kreate.internal.innertube.utils.extractArtistAndAlbum
 import app.kreate.internal.innertube.utils.firstText
 import app.kreate.internal.innertube.utils.toThumbnailList
 import app.kreate.preferences.Preferences
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
@@ -480,6 +481,13 @@ internal class YouTubeImpl : YouTube, Account {
         }
 
         mutableSections.toList()
+    }
+
+    override suspend fun reverseAlbumIdFrom( playlistId: String ): Result<String> = runCatching {
+        getPlaylist( playlistId, null, null, false )
+            .getOrThrow()
+            .songs
+            .firstNotNullOf { it.album?.navigationEndpoint?.browseEndpoint?.browseId }
     }
 
     /*

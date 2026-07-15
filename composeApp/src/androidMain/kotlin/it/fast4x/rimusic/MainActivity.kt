@@ -89,6 +89,7 @@ import app.kreate.android.service.updater.UpdatePlugins
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.database.models.PersistentQueue
+import app.kreate.gateway.innertube.YouTube
 import app.kreate.preferences.Preferences
 import app.kreate.util.thumbnail
 import app.kreate.widgets.WidgetBroadcastReceiver
@@ -154,6 +155,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
+import org.koin.java.KoinJavaComponent
 import org.koin.java.KoinJavaComponent.inject
 import java.util.Locale
 import java.util.Objects
@@ -889,12 +891,16 @@ MainActivity :
                             val browseId = "VL$playlistId"
 
                             if (playlistId.startsWith("OLAK5uy_")) {
-                                Innertube.playlistPage(BrowseBody(browseId = browseId))
-                                    ?.getOrNull()?.let {
-                                        it.songsPage?.items?.firstOrNull()?.album?.endpoint?.browseId?.let { browseId ->
-                                            NavRoutes.YT_ALBUM.navigateHere( navController, browseId )
-                                        }
+                                val browseId = KoinJavaComponent.get<YouTube>(YouTube::class.java)
+                                    .reverseAlbumIdFrom( playlistId )
+                                    .onFailure { err ->
+                                        Logger.e( "Failed to fetch playlist for albumId", err, "GoToLink" )
                                     }
+                                    .getOrNull()
+                                if( browseId == null ) {
+                                    Toaster.e( R.string.error_failed_to_get_album )
+                                    return@launch
+                                }
                             } else {
                                 NavRoutes.YT_PLAYLIST.navigateHere( navController, browseId )
                             }
