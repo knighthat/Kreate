@@ -14,6 +14,28 @@ interface MusicShelfRenderer {
     interface Content {
 
         val musicResponsiveListItemRenderer: MusicResponsiveListItemRenderer?
+        val musicMultiRowListItemRenderer: MusicMultiRowListItemRenderer?
+        val continuations: List<Continuation>
+
+        interface MusicMultiRowListItemRenderer {
+
+            val thumbnail: Thumbnail
+            val subtitle: Runs
+            val title: Runs
+            val description: Runs
+            val onTap: Endpoint
+            val playbackProgress: PlaybackProgress
+
+            interface PlaybackProgress {
+
+                val musicPlaybackProgressRenderer: Renderer
+
+                interface Renderer {
+
+                    val playbackProgressText: Runs
+                }
+            }
+        }
     }
 
     interface Subheader {

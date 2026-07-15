@@ -2,6 +2,7 @@ package app.kreate.internal.innertube.responses
 
 import app.kreate.gateway.innertube.responses.Runs
 import kotlinx.serialization.Serializable
+import java.util.StringJoiner
 
 
 @Serializable
@@ -11,6 +12,21 @@ internal data class RunsImpl(
 ): Runs {
 
     override fun iterator(): Iterator<String> = runs.map( Runs.Run::text ).iterator()
+
+    override fun plus( runs: Runs ): Runs {
+        check( runs is RunsImpl ) { "Incompatible type" }
+
+        val accessibilityLabel = StringJoiner(", ").apply {
+            add( accessibility?.accessibilityData?.label )
+            add( runs.accessibility?.accessibilityData?.label )
+        }
+        val accessibility = AccessibilityImpl(
+            accessibilityData = AccessibilityImpl.DataImpl(accessibilityLabel.toString())
+        )
+        val runs = this.runs + runs.runs
+
+        return RunsImpl(runs, accessibility)
+    }
 
     @Serializable
     internal data class RunImpl(

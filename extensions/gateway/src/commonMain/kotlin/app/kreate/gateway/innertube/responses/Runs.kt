@@ -6,6 +6,8 @@ interface Runs : Iterable<String> {
     val runs: List<Run>
     val accessibility: Accessibility?
 
+    operator fun plus( runs: Runs ): Runs
+
     interface Run {
 
         val bold: Boolean?

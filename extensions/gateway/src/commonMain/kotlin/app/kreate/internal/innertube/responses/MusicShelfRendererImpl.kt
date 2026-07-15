@@ -1,5 +1,6 @@
 package app.kreate.internal.innertube.responses
 
+import app.kreate.gateway.innertube.responses.Continuation
 import app.kreate.gateway.innertube.responses.MusicShelfRenderer
 import kotlinx.serialization.Serializable
 
@@ -17,8 +18,33 @@ internal data class MusicShelfRendererImpl(
 
     @Serializable
     internal data class ContentImpl(
-        override val musicResponsiveListItemRenderer: MusicResponsiveListItemRendererImpl?
-    ): MusicShelfRenderer.Content
+        override val musicResponsiveListItemRenderer: MusicResponsiveListItemRendererImpl?,
+        override val musicMultiRowListItemRenderer: MusicMultiRowListItemRendererImpl?,
+        override val continuations: List<Continuation> = emptyList()
+    ): MusicShelfRenderer.Content {
+
+        @Serializable
+        internal data class MusicMultiRowListItemRendererImpl(
+            override val thumbnail: ThumbnailImpl,
+            override val subtitle: RunsImpl,
+            override val title: RunsImpl,
+            override val description: RunsImpl,
+            override val onTap: EndpointImpl,
+            override val playbackProgress: PlaybackProgressImpl
+        ) : MusicShelfRenderer.Content.MusicMultiRowListItemRenderer {
+
+            @Serializable
+            internal data class PlaybackProgressImpl(
+                override val musicPlaybackProgressRenderer: RendererImpl
+            ): MusicShelfRenderer.Content.MusicMultiRowListItemRenderer.PlaybackProgress {
+
+                @Serializable
+                internal data class RendererImpl(
+                    override val playbackProgressText: RunsImpl
+                ) : MusicShelfRenderer.Content.MusicMultiRowListItemRenderer.PlaybackProgress.Renderer
+            }
+        }
+    }
 
     @Serializable
     internal data class SubheaderImpl(

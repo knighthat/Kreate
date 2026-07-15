@@ -24,13 +24,13 @@ import app.kreate.gateway.innertube.models.Section
 import app.kreate.gateway.innertube.responses.BrowseResponse
 import app.kreate.gateway.innertube.responses.Continuation
 import app.kreate.gateway.innertube.responses.MusicCarouselShelfRenderer
-import app.kreate.gateway.innertube.responses.MusicPlaylistShelfRenderer
 import app.kreate.gateway.innertube.responses.MusicShelfRenderer
 import app.kreate.gateway.innertube.responses.PrimaryResults
 import app.kreate.gateway.innertube.responses.Runs
 import app.kreate.gateway.innertube.responses.SectionListRenderer
 import app.kreate.gateway.innertube.responses.Tabs
 import app.kreate.gateway.innertube.responses.Thumbnails
+import app.kreate.internal.innertube.models.createContinuedPlaylistFrom
 import app.kreate.internal.innertube.models.createInnertubeAlbumFrom
 import app.kreate.internal.innertube.models.createInnertubeArtistFrom
 import app.kreate.internal.innertube.models.createInnertubeCharsFrom
@@ -304,31 +304,6 @@ internal class YouTubeImpl : YouTube, Account {
         params: String?,
         useLogin: Boolean
     ): Result<InnertubePlaylist> = runCatching {
-        // Helper function to create ContinuedPlaylist
-        fun createContinuedPlaylistFrom( items: List<MusicPlaylistShelfRenderer.Content> ): ContinuedPlaylist {
-            var continuation: String? = null
-            val songs = ArrayList<InnertubeSong>(items.size)
-
-            for( item in items ) {
-                item.continuationItemRenderer
-                    ?.continuationEndpoint
-                    ?.continuationCommand
-                    ?.token
-                    ?.also { continuation = it }
-
-                item.musicResponsiveListItemRenderer
-                    ?.let( ::createInnertubeSongFrom )
-                    ?.also( songs::add )
-            }
-
-            val immutableSongs = songs.toList()
-            return object : ContinuedPlaylist {
-
-                override val continuation: String? = continuation
-                override val songs: List<InnertubeSong> = immutableSongs
-            }
-        }
-
         require( !(playlistId.isNullOrBlank() && continuation.isNullOrBlank()) ) {
             "Can't get playlist with either playlistId or continuation provided"
         }
@@ -345,9 +320,9 @@ internal class YouTubeImpl : YouTube, Account {
         val playlistContinuation: List<Continuation>
 
         if( playlistId != null ) {
-            id = if( playlistId.startsWith("VL") ) playlistId else "VL$playlistId"
+            id = if( playlistId.startsWith("VL") || playlistId.startsWith("MPSP") ) playlistId else "VL$playlistId"
             val renderer = browse( id, params, null, useLogin ).contents?.twoColumnBrowseResultsRenderer
-            val content = renderer?.tabs?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )?.content?.sectionListRenderer?.contents?.firstOrNull()
+            val content = renderer?.tabs?.firstNotNullOfOrNull( Tabs.Tab::tabRenderer )?.let( ::extractListContent )
             //<editor-fold defaultstate="collapsed" desc="Header">
             val headerRenderer = requireNotNull(
                 content?.musicResponsiveHeaderRenderer
@@ -361,7 +336,9 @@ internal class YouTubeImpl : YouTube, Account {
             //<editor-fold defaultstate="collapsed" desc="Contents">
             val sectionListRenderer = renderer?.secondaryContents?.sectionListRenderer
             requireNotNull( sectionListRenderer ) { "BrowseResponse doesn't have any contents" }
-            continuedPlaylist = sectionListRenderer.contents.firstOrNull()?.musicPlaylistShelfRenderer?.contents?.let( ::createContinuedPlaylistFrom )
+            val listContents = sectionListRenderer.contents.firstOrNull()
+            continuedPlaylist = listContents?.musicPlaylistShelfRenderer?.contents?.let( ::createContinuedPlaylistFrom )
+                ?: listContents?.musicShelfRenderer?.let( ::createContinuedPlaylistFrom )
             playlistContinuation = sectionListRenderer.continuations
             //</editor-fold>
         } else {
