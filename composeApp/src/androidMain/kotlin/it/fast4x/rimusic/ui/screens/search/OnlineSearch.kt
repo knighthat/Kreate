@@ -60,6 +60,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import app.kreate.android.LocalPlayerAwareWindowInsets
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
@@ -77,7 +78,6 @@ import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeSearchSuggestion
 import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.preferences.Preferences
-import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition

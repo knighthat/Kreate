@@ -53,7 +53,6 @@ import app.kreate.android.utils.shallowCompare
 import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.preferences.Preferences
-import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -100,7 +99,6 @@ fun StatisticsPage(
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
     val menuState = LocalMenuState.current
-    val windowInsets = LocalPlayerAwareWindowInsets.current
 
     val thumbnailRoundness by Preferences.THUMBNAIL_BORDER_RADIUS.collectAsStateWithLifecycle()
 

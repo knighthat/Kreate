@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
+import app.kreate.android.LocalPlayerAwareWindowInsets
 import app.kreate.android.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
@@ -42,7 +43,6 @@ import app.kreate.database.Database
 import app.kreate.database.models.Event
 import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.preferences.Preferences
-import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.HistoryType
 import it.fast4x.rimusic.enums.NavigationBarPosition

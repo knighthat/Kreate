@@ -32,15 +32,13 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import app.kreate.android.LocalPlayerAwareWindowInsets
 import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.gateway.innertube.YouTube
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.models.bodies.BrowseBody
-import it.fast4x.innertube.requests.playlistPage
 import it.fast4x.innertube.requests.song
-import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition

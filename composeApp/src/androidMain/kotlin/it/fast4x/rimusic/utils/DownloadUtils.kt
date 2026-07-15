@@ -11,11 +11,11 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
+import app.kreate.android.LocalDownloadHelper
 import app.kreate.android.R
 import app.kreate.database.Database
 import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger
-import it.fast4x.rimusic.LocalDownloadHelper
 import it.fast4x.rimusic.enums.DownloadedStateMedia
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.isLocal

@@ -31,9 +31,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
+import app.kreate.android.LocalPlayerAwareWindowInsets
+import app.kreate.android.LocalPlayerSheetState
 import app.kreate.android.R
-import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
-import it.fast4x.rimusic.LocalPlayerSheetState
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.ui.components.FabItem
 import it.fast4x.rimusic.ui.components.MultiFloatingActionsButton

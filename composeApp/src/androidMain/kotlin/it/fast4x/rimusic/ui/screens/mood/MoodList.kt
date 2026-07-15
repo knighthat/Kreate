@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFilter
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
+import app.kreate.android.LocalPlayerAwareWindowInsets
 import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.utils.ItemUtils
@@ -37,7 +38,6 @@ import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.BrowseBodyWithLocale
 import it.fast4x.innertube.requests.BrowseResult
 import it.fast4x.innertube.requests.browse
-import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.models.Mood

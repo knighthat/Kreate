@@ -27,6 +27,7 @@ import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import app.kreate.android.R
+import app.kreate.android.action_search
 import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.constant.PlaylistSortBy
@@ -96,7 +97,7 @@ class MediaLibrarySessionCallback(
 
     fun onSearch() {
         val intent = Intent(context.applicationContext, MainActivity::class.java)
-                .setAction( MainActivity.action_search )
+                .setAction( action_search )
                .setFlags(FLAG_ACTIVITY_NEW_TASK + FLAG_ACTIVITY_CLEAR_TASK)
         context.startActivity(  intent )
     }

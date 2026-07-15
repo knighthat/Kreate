@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.datastore.preferences.core.edit
 import androidx.room.concurrent.AtomicBoolean
+import app.kreate.android.LocalPlayerAwareWindowInsets
 import app.kreate.android.R
 import app.kreate.di.PrefType
 import app.kreate.di.Storage
@@ -21,7 +22,6 @@ import app.kreate.gateway.innertube.YouTube
 import app.kreate.preferences.Preferences
 import app.kreate.util.IS_DEBUG
 import co.touchlab.kermit.Logger
-import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
