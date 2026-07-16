@@ -6,7 +6,7 @@ versionName = "2.2.2"
 compileSdk = "36"
 minSdk = "23"
 
-agp = "8.13.2"
+agp = "9.2.1"
 kotlin = "2.4.0"
 kotlin-ksp = "2.3.9"
 coil3 = "3.5.0"

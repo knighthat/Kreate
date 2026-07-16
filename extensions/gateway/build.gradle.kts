@@ -62,18 +62,8 @@ kotlin {
             }
             kotlin {
                 val metrolistDir = "$rootDir/modules/metrolist"
-                srcDirs(
-                    "$projectDir/composeApp/src/androidMain/kotlin",
-                    "$metrolistDir/app/src/main/kotlin",
-                    "$metrolistDir/innertube/src/main/kotlin/"
-                )
-                include(
-                    "app/kreate/**",
-                    "com/metrolist/music/utils/cipher/**",
-                    "com/metrolist/music/utils/potoken/**",
-                    "com/metrolist/music/utils/YTPlayerUtils.kt",
-                    "com/metrolist/innertube/**",
-                )
+                srcDir( "$metrolistDir/innertube/src/main/kotlin/com/metrolist/innertube" )
+                srcDir( "$metrolistDir/app/src/main/kotlin/com/metrolist/music/utils" )
             }
         }
         getByName( "androidDeviceTest" ).dependencies {
