@@ -51,7 +51,7 @@ class CrashReportDialog(private val context: Context): Dialog() {
     init {
         val dateFormat = TimeDateUtils.logFileName()
         val dateFileMapping = CrashHandler.getDir( context ).listFiles()?.associateBy {
-            val matchResult = CrashHandler.fileNameRegex.find( it.name )
+            val matchResult = CrashHandler.getFileNameRegex( context ).find( it.name )
 
             if( matchResult == null || matchResult.groups.isEmpty() )
                 null

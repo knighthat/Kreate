@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
@@ -19,6 +18,7 @@ import app.kreate.android.themed.common.component.settings.header
 import app.kreate.components.settings.EnumEntry
 import app.kreate.components.settings.SettingComponents
 import app.kreate.preferences.Preferences
+import app.kreate.util.VERSION_NAME
 import it.fast4x.rimusic.enums.CheckUpdateState
 import it.fast4x.rimusic.ui.components.themed.SecondaryTextButton
 import me.knighthat.updater.ChangelogsDialog
@@ -35,7 +35,7 @@ fun LazyListScope.updateSection( search: SettingEntrySearch ) {
         SettingComponents.EnumEntry(
             preference = Preferences.CHECK_UPDATE,
             title = stringResource( R.string.setting_entry_update_checker ),
-            subtitle = stringResource( checkUpdate.subtitleId, BuildConfig.APP_NAME ),
+            subtitle = stringResource( checkUpdate.subtitleId, stringResource(app.kreate.resources.R.string.app_name) ),
             trailingContent = {
                 AnimatedVisibility(
                     visible = checkUpdate === CheckUpdateState.DISABLED,
@@ -61,7 +61,7 @@ fun LazyListScope.updateSection( search: SettingEntrySearch ) {
         SettingComponents.Entry(
             title = stringResource( R.string.setting_entry_view_changelogs ),
             onClick = changelogs::showDialog,
-            subtitle = "v${BuildConfig.VERSION_NAME}"
+            subtitle = "v$VERSION_NAME"
         )
     }
     item( "showNoUpdateAvailableToaster" ) {

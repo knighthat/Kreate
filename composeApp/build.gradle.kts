@@ -183,11 +183,6 @@ android {
         applicationId = "me.knighthat.kreate"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.compileSdk.get().toInt()
-
-        /*
-                UNIVERSAL VARIABLES
-         */
-        buildConfigField( "String", "APP_NAME", "\"$APP_NAME\"" )
     }
 
     namespace = "app.kreate.android"

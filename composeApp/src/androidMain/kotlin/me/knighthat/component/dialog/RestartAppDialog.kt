@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.service.MyDownloadService
@@ -75,7 +74,7 @@ object RestartAppDialog: ConfirmDialog {
     @Composable
     override fun DialogBody() {
         BasicText(
-            text = stringResource( R.string.restart_dialog_body, BuildConfig.APP_NAME ),
+            text = stringResource( R.string.restart_dialog_body, stringResource(app.kreate.resources.R.string.app_name) ),
             style = typography().xs.copy( color = colorPalette().text ),
             modifier = Modifier.padding( vertical = 20.dp )
         )

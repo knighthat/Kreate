@@ -3,8 +3,10 @@ package me.knighthat.updater
 import android.content.Context
 import android.os.Looper
 import androidx.compose.ui.util.fastFirstOrNull
-import app.kreate.android.BuildConfig
 import app.kreate.android.R
+import app.kreate.util.FLAVOR_ARCH
+import app.kreate.util.FLAVOR_ENV
+import app.kreate.util.VERSION_NAME
 import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -20,6 +22,7 @@ import me.knighthat.updater.Updater.build
 import me.knighthat.utils.Repository
 import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.component.inject
 import java.nio.file.NoSuchFileException
 import kotlin.time.ExperimentalTime
@@ -94,9 +97,9 @@ object Updater : KoinComponent {
             "Cannot run fetch update on main thread"
         }
 
-        // Ignore the warning `BuildConfig.FLAVOR_env == "nightly"` either `true` or `false`
+        // Ignore the warning `FLAVOR_ENV == "nightly"` either `true` or `false`
         // This condition is different based on the build
-        val release = if( BuildConfig.FLAVOR_env == "nightly" ) getPrerelease() else getLatestRelease()
+        val release = if( FLAVOR_ENV == "nightly" ) getPrerelease() else getLatestRelease()
         build = extractBuild( release.builds )
         tagName = release.tagName
     }
@@ -117,7 +120,7 @@ object Updater : KoinComponent {
         try {
             fetchUpdate()
 
-            val isNewUpdateAvailable = trimVersion( BuildConfig.VERSION_NAME ) != trimVersion( tagName )
+            val isNewUpdateAvailable = trimVersion( VERSION_NAME ) != trimVersion( tagName )
             if( !isNewUpdateAvailable && (showStatus || isForced) ) {
                 Toaster.i( R.string.info_no_update_available )
                 return@launch
@@ -149,19 +152,20 @@ object Updater : KoinComponent {
     }
 
     fun getFileName(): String {
-        // Ignore the warning `BuildConfig.FLAVOR_env == "nightly"` either `true` or `false`
+        // Ignore the warning `FLAVOR_ENV == "nightly"` either `true` or `false`
         // This condition is different based on the build
-        val suffix = if( BuildConfig.FLAVOR_env == "nightly" )
-            BuildConfig.FLAVOR_env
-        else when( BuildConfig.FLAVOR_arch ) {
+        val suffix = if( FLAVOR_ENV == "nightly" )
+            FLAVOR_ENV
+        else when( FLAVOR_ARCH ) {
             "universal" -> "release"
             "arm32"     -> "armeabi-v7a"
             "arm64"     -> "arm64-v8a"
             "x86"       -> "x86"
             "x86_64"    -> "x86_64"
-            else -> throw IllegalStateException("Unknown architecture ${BuildConfig.FLAVOR_arch}")
+            else -> error( "Unknown architecture $FLAVOR_ARCH" )
         }
         // e.g. Release version will have name 'Kreate-release.apk'
-        return "%s-%s.apk".format(BuildConfig.APP_NAME, suffix)
+        val appName = get<Context>().getString(app.kreate.resources.R.string.app_name)
+        return "$appName-$suffix.apk"
     }
 }

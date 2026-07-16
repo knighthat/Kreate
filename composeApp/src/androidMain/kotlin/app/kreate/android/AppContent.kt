@@ -712,7 +712,7 @@ fun AppCompatActivity.AppContent(
         val uri = intentUriData ?: return@LaunchedEffect
 
         Toaster.n(
-            "${BuildConfig.APP_NAME} ${this@AppContent.resources.getString( R.string.opening_url )}",
+            "${resources.getString(app.kreate.resources.R.string.app_name)} ${this@AppContent.resources.getString( R.string.opening_url )}",
             duration = Toast.LENGTH_LONG
         )
 

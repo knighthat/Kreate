@@ -44,7 +44,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.android.themed.common.component.dialog.Dialog
@@ -57,6 +56,7 @@ import app.kreate.android.themed.rimusic.screen.playlist.YouTubePlaylist
 import app.kreate.database.Database
 import app.kreate.database.models.SearchQuery
 import app.kreate.preferences.Preferences
+import app.kreate.util.VERSION_NAME
 import it.fast4x.rimusic.enums.HomeScreenTabs
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.StatisticsType
@@ -404,7 +404,7 @@ fun AppNavigation(
     crashReportDialog.Render()
 
     val seenVersion by Preferences.SEEN_CHANGELOGS_VERSION.collectAsStateWithLifecycle()
-    if( seenVersion != BuildConfig.VERSION_NAME ) {
+    if( seenVersion != VERSION_NAME ) {
         val changelogs = remember {
             object: ChangelogsDialog(context) {
                 // Automatically enable dialog when this class is init
@@ -412,7 +412,7 @@ fun AppNavigation(
 
                 override fun hideDialog() {
                     super.hideDialog()
-                    Preferences.SEEN_CHANGELOGS_VERSION.update( BuildConfig.VERSION_NAME )
+                    Preferences.SEEN_CHANGELOGS_VERSION.update( VERSION_NAME )
                 }
             }
         }

@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
-import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.RestartPlayerService
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
@@ -257,7 +256,7 @@ fun DataSettings( paddingValues: PaddingValues ) {
 
             header(
                 titleId = R.string.title_backup_and_restore,
-                subtitle = { stringResource( R.string.existing_data_will_be_overwritten, BuildConfig.APP_NAME ) }
+                subtitle = { stringResource( R.string.existing_data_will_be_overwritten, stringResource(app.kreate.resources.R.string.app_name) ) }
             )
             entry( search, R.string.save_to_backup ) {
                 val exportDbDialog = ExportDatabaseDialog( context )

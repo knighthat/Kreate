@@ -26,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.dialog.Dialog
 import app.kreate.util.IS_DEBUG
@@ -38,7 +37,7 @@ open class ChangelogsDialog(context: Context): Dialog() {
 
     override val dialogTitle: String
         @Composable
-        get() = stringResource( R.string.update_changelogs, BuildConfig.VERSION_NAME )
+        get() = stringResource( R.string.update_changelogs, stringResource(app.kreate.resources.R.string.app_name) )
 
     private lateinit var pagerState: PagerState
     private var sections: SnapshotStateList<Section> = mutableStateListOf()

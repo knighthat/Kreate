@@ -13,7 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import app.kreate.database.models.Song
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
@@ -25,6 +24,8 @@ import kotlinx.coroutines.launch
 import me.knighthat.component.ExportToFileDialog
 import me.knighthat.utils.TimeDateUtils
 import me.knighthat.utils.csv.SongCSV
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.java.KoinJavaComponent.inject
 import java.io.OutputStream
 
@@ -44,7 +45,7 @@ class ExportSongsToCSVDialog private constructor(
     valueState: MutableState<TextFieldValue>,
     activeState: MutableState<Boolean>,
     launcher: ManagedActivityResultLauncher<String, Uri?>
-): ExportToFileDialog(valueState, activeState, launcher), MenuIcon, Descriptive {
+): ExportToFileDialog(valueState, activeState, launcher), MenuIcon, Descriptive, KoinComponent {
 
     companion object {
         private fun writeToCsvFile( outputStream: OutputStream, songs: List<SongCSV> ): Unit =
@@ -134,5 +135,5 @@ class ExportSongsToCSVDialog private constructor(
     override fun onShortClick() = showDialog()
 
     override fun defaultFileName(): String =
-        "${BuildConfig.APP_NAME}_playlist_${TimeDateUtils.localizedDateNoDelimiter()}_${TimeDateUtils.timeNoDelimiter()}"
+        "${get<Context>().getString(app.kreate.resources.R.string.app_name)}_playlist_${TimeDateUtils.localizedDateNoDelimiter()}_${TimeDateUtils.timeNoDelimiter()}"
 }

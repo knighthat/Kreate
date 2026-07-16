@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import app.kreate.database.Database
 import app.kreate.di.DATABASE_FILENAME
@@ -21,13 +20,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.component.ExportToFileDialog
 import me.knighthat.utils.TimeDateUtils
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import java.io.FileInputStream
 
 class ExportDatabaseDialog private constructor(
     valueState: MutableState<TextFieldValue>,
     activeState: MutableState<Boolean>,
     launcher: ManagedActivityResultLauncher<String, Uri?>
-): ExportToFileDialog(valueState, activeState, launcher) {
+): ExportToFileDialog(valueState, activeState, launcher), KoinComponent {
 
     companion object {
         @Composable
@@ -71,5 +72,5 @@ class ExportDatabaseDialog private constructor(
         get() = stringResource( R.string.title_name_your_export )
 
     override fun defaultFileName(): String =
-        "${BuildConfig.APP_NAME}_database_${TimeDateUtils.localizedDateNoDelimiter()}_${TimeDateUtils.timeNoDelimiter()}"
+        "${get<Context>().getString(app.kreate.resources.R.string.app_name)}_database_${TimeDateUtils.localizedDateNoDelimiter()}_${TimeDateUtils.timeNoDelimiter()}"
 }

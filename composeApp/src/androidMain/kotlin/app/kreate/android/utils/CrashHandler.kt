@@ -4,8 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.os.Build
 import androidx.core.net.toUri
-import app.kreate.android.BuildConfig
+import app.kreate.resources.R
+import app.kreate.util.FLAVOR_ARCH
 import app.kreate.util.IS_DEBUG
+import app.kreate.util.VERSION_NAME
 import me.knighthat.utils.TimeDateUtils
 import java.io.File
 import java.io.PrintWriter
@@ -22,7 +24,8 @@ class CrashHandler(
     companion object {
         // Kreate_crashlog_2025-8-21_00-00-00.log
         // Also captures the date & time
-        val fileNameRegex = Regex("^${BuildConfig.APP_NAME}_crashlog_(\\d{4}-\\d{2}-\\d{2}_[0-2]\\d-[0-5]\\d-[0-5]\\d).log$")
+        fun getFileNameRegex( context: Context ) =
+            Regex("^${context.getString(R.string.app_name)}_crashlog_(\\d{4}-\\d{2}-\\d{2}_[0-2]\\d-[0-5]\\d-[0-5]\\d).log$")
 
         fun getDir( context: Context ): File {
             val dir = requireNotNull(
@@ -49,7 +52,7 @@ class CrashHandler(
 
         val datetime = TimeDateUtils.logFileName().format( Date() )
         val logFile = crashlogsDir.resolve(
-            "${BuildConfig.APP_NAME}_crashlog_$datetime.log"
+            "${context.getString(R.string.app_name)}_crashlog_$datetime.log"
         )
         if( !logFile.exists() )
             logFile.createNewFile()
@@ -57,8 +60,8 @@ class CrashHandler(
         context.contentResolver.openOutputStream( logFile.toUri() )?.use { outStream ->
             val writer = PrintWriter(outStream)
 
-            writer.println( "Version: ${BuildConfig.VERSION_NAME}" )
-            writer.println( "Architect: ${BuildConfig.FLAVOR_arch}" )
+            writer.println( "Version: $VERSION_NAME" )
+            writer.println( "Architect: $FLAVOR_ARCH" )
             writer.println( "Manufacturer: ${Build.MANUFACTURER}" )
             writer.println( "Model: ${Build.MODEL}" )
             writer.println( "Brand: ${Build.BRAND}" )

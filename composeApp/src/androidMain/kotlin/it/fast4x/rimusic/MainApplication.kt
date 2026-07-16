@@ -17,6 +17,9 @@ import app.kreate.logging.KoinBufferedLogger
 import app.kreate.logging.TimberToKermitLogger
 import app.kreate.logging.setupLogging
 import app.kreate.util.setDebugMode
+import app.kreate.util.setFlavorArch
+import app.kreate.util.setFlavorEnv
+import app.kreate.util.setVersionName
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
@@ -40,6 +43,9 @@ class MainApplication : Application(), SingletonImageLoader.Factory {
 
         // Set this at the earliest to lock the setter
         setDebugMode( BuildConfig.DEBUG )
+        setVersionName( BuildConfig.VERSION_NAME )
+        setFlavorArch( BuildConfig.FLAVOR_arch )
+        setFlavorEnv( BuildConfig.FLAVOR_env )
 
         Thread.setDefaultUncaughtExceptionHandler( CrashHandler(this) )
 

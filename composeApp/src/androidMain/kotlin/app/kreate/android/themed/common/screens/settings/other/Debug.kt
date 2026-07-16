@@ -25,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.BuildConfig
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
@@ -131,7 +130,7 @@ fun LazyListScope.debugSection(search: SettingEntrySearch ) {
             SettingComponents.BooleanEntry(
                 preference = Preferences.RUNTIME_LOG,
                 title = stringResource( R.string.setting_entry_runtime_log ),
-                subtitle = stringResource( R.string.setting_description_runtime_log, BuildConfig.APP_NAME ),
+                subtitle = stringResource( R.string.setting_description_runtime_log, stringResource(app.kreate.resources.R.string.app_name) ),
                 action = SettingComponents.Action.RESTART_APP
             )
         val isRuntimeLogEnabled by Preferences.RUNTIME_LOG.collectAsStateWithLifecycle()
