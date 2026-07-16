@@ -26,7 +26,7 @@ repositories {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "app.kreate.android"
         compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()

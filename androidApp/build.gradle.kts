@@ -1,4 +1,4 @@
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import com.android.build.api.dsl.ApplicationExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
@@ -24,7 +24,6 @@ val isOfficialBuildEnv = !officialBuildPhrase.isNullOrBlank() && officialBuildPh
 plugins {
     // Android
     alias( libs.plugins.android.application )
-    alias( libs.plugins.kotlin.android )
 
     // Compose
     alias( libs.plugins.kotlin.compose )
@@ -67,7 +66,32 @@ kotlin {
 }
 
 androidComponents {
-    onVariants {
+    onVariants { variant ->
+        variant.outputs.forEach {
+            val flavorName = variant.flavorName!!
+            val buildType = variant.buildType!!
+
+            val suffix = if( "izzy" in flavorName )
+                "izzy"
+            else if( "Nightly" in flavorName )
+                "nightly"
+            // The next 4 conditions set the APK name to the architect
+            // if it's intended for release build
+            else if( "Arm64" in flavorName && buildType == "release" )
+                "arm64-v8a"
+            else if( "Arm32" in flavorName && buildType == "release" )
+                "armeabi-v7a"
+            else if( "X86_64" in flavorName && buildType == "release" )
+                "x86_64"
+            else if( "X86" in flavorName && buildType == "release" )
+                "x86"
+            // Or just append build type at the end of the APK file name
+            else
+                buildType
+
+            it.outputFileName = "$APP_NAME-${suffix}.apk"
+        }
+
         val excludedBuildTypes = setOf("Debug")
         // tasks known to consume src/androidMain/res
         val resConsumingTaskPrefixes = listOf("package", "generate", "lint", "merge", "bundle")
@@ -85,7 +109,7 @@ androidComponents {
     }
 }
 
-android {
+extensions.configure<ApplicationExtension> {
     dependenciesInfo {
         // Disables dependency metadata when building APKs.
         includeInApk = false
@@ -253,31 +277,6 @@ android {
         //</editor-fold>
     }
 
-    applicationVariants.all {
-        outputs.map { it as BaseVariantOutputImpl }
-            .forEach {
-                val suffix = if( "izzy" in flavorName )
-                    "izzy"
-                else if( "Nightly" in flavorName )
-                    "nightly"
-                // The next 4 conditions set the APK name to the architect
-                // if it's intended for release build
-                else if( "Arm64" in flavorName && buildType.name == "release" )
-                    "arm64-v8a"
-                else if( "Arm32" in flavorName && buildType.name == "release" )
-                    "armeabi-v7a"
-                else if( "X86_64" in flavorName && buildType.name == "release" )
-                    "x86_64"
-                else if( "X86" in flavorName && buildType.name == "release" )
-                    "x86"
-                // Or just append build type at the end of the APK file name
-                else
-                    buildType.name
-
-                it.outputFileName = "$APP_NAME-${suffix}.apk"
-            }
-    }
-
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_21
@@ -285,7 +284,7 @@ android {
     }
 
     sourceSets["main"].apply {
-        assets.srcDirs("$rootDir/modules/metrolist/app/src/main/assets")
+        assets.directories += "$rootDir/modules/metrolist/app/src/main/assets"
     }
 }
 
