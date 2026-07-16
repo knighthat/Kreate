@@ -1,3 +1,0 @@
-This is a phony release notes. Real release notes file will be copied at compile-time when other build type other than debug is run.
-
-This is a step to reduce hard drive wear by constantly copying release note upon build while debugging.

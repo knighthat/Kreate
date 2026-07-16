@@ -56,7 +56,6 @@ import co.touchlab.kermit.Logger
 import com.google.common.util.concurrent.MoreExecutors
 import io.ktor.client.HttpClient
 import it.fast4x.innertube.Innertube
-import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
 import it.fast4x.rimusic.service.BitmapProvider
@@ -233,7 +232,8 @@ class PlayerServiceModern:
                     PendingIntent.getActivity(
                         this,
                         0,
-                        Intent(this, MainActivity::class.java)
+                        Intent()
+                            .setClassName( applicationContext, "it.fast4x.rimusic.MainActivity" )
                             .putExtra("expandPlayerBottomSheet", true),
                         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                     )

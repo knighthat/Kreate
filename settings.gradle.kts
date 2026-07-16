@@ -19,6 +19,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "Kreate"
 include(":composeApp")
+// Platform-specific entries
+include(":androidApp")
 // Projects from extensions
 include(":oldtube")
 project(":oldtube").projectDir = file("extensions/innertube")

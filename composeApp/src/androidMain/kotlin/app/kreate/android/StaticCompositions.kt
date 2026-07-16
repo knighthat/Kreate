@@ -17,3 +17,5 @@ val LocalDownloadHelper = staticCompositionLocalOf<MyDownloadHelper> { error("No
 @OptIn(ExperimentalMaterial3Api::class)
 val LocalPlayerSheetState =
     staticCompositionLocalOf<SheetState> { error("No player sheet state provided") }
+
+val LocalFlavorSpecificFunctions = staticCompositionLocalOf<FlavorSpecificFunctions> { TODO() }

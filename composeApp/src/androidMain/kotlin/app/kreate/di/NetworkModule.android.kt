@@ -5,10 +5,7 @@ import app.kreate.android.R
 import app.kreate.android.enums.DohServer
 import app.kreate.gateway.innertube.YouTubeConstants
 import app.kreate.logging.OkHttpLogger
-import app.kreate.util.IS_DEBUG
 import co.touchlab.kermit.Logger
-import io.github.siddharthjaswal.logpose.LogPoseConfig
-import io.github.siddharthjaswal.logpose.LogPoseInterceptor
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.compression.ContentEncoding
@@ -129,13 +126,11 @@ actual val networkModule: Module = module {
     single {
         val requestLogger = HttpLoggingInterceptor(OkHttpLogger())
         requestLogger.setLevel( HttpLoggingInterceptor.Level.BASIC )
-        val logpose = LogPoseInterceptor(LogPoseConfig(enabled = IS_DEBUG))
 
         OkHttpClient.Builder()
                     .proxy( get() )
                     .dns( get() )
                     .addInterceptor( requestLogger )
-                    .addInterceptor( logpose )
                     .connectionPool(
                         ConnectionPool(10, 5, TimeUnit.MINUTES)
                     )

@@ -22,12 +22,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
+import app.kreate.android.LocalFlavorSpecificFunctions
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.android.themed.common.screens.settings.general.playerSettingsSection
-import app.kreate.android.themed.common.screens.settings.general.updateSection
 import app.kreate.components.settings.EnumEntry
 import app.kreate.components.settings.ListEntry
 import app.kreate.components.settings.SettingComponents
@@ -45,6 +45,7 @@ import java.util.Locale
 @Composable
 fun GeneralSettings( paddingValues: PaddingValues ) {
     val scrollState = rememberLazyListState()
+    val flavorSpecificFunctions = LocalFlavorSpecificFunctions.current
 
     val search = remember {
         SettingEntrySearch( scrollState, R.string.tab_general, R.drawable.app_icon_monochrome )
@@ -68,7 +69,7 @@ fun GeneralSettings( paddingValues: PaddingValues ) {
             state = scrollState,
             contentPadding = PaddingValues(bottom = Dimensions.bottomSpacer)
         ) {
-            updateSection( search )
+            flavorSpecificFunctions.updateSection( this, search )
 
             header(
                 titleId = R.string.languages,

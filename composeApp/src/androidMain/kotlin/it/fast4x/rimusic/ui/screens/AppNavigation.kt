@@ -44,6 +44,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import app.kreate.android.LocalFlavorSpecificFunctions
 import app.kreate.android.R
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.android.themed.common.component.dialog.Dialog
@@ -78,7 +79,6 @@ import it.fast4x.rimusic.ui.screens.settings.SettingsScreen
 import it.fast4x.rimusic.ui.screens.statistics.StatisticsScreen
 import kotlinx.coroutines.delay
 import me.knighthat.updater.ChangelogsDialog
-import me.knighthat.updater.UpdateHandler
 import me.knighthat.utils.Toaster
 
 private val BROWSE_ID_ARG = navArgument( "browseId" ) {
@@ -116,7 +116,7 @@ fun AppNavigation(
     val context = LocalContext.current
 
     // Flavor-specific implementation
-    UpdateHandler()
+    LocalFlavorSpecificFunctions.current.UpdateHandler()
 
     val startDestination = remember( startPage ) {
         Preferences.HOME_TAB_INDEX.update(

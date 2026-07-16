@@ -47,7 +47,6 @@ import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.bodies.SearchBody
 import it.fast4x.innertube.requests.searchPage
 import it.fast4x.innertube.utils.from
-import it.fast4x.rimusic.MainActivity
 import it.fast4x.rimusic.enums.StatisticsType
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.MediaSessionConstants.ID_CACHED
@@ -96,9 +95,10 @@ class MediaLibrarySessionCallback(
     }
 
     fun onSearch() {
-        val intent = Intent(context.applicationContext, MainActivity::class.java)
-                .setAction( action_search )
-               .setFlags(FLAG_ACTIVITY_NEW_TASK + FLAG_ACTIVITY_CLEAR_TASK)
+        val intent = Intent()
+            .setClassName( context.applicationContext, "it.fast4x.rimusic.MainActivity" )
+            .setAction( action_search )
+           .setFlags( FLAG_ACTIVITY_NEW_TASK + FLAG_ACTIVITY_CLEAR_TASK )
         context.startActivity(  intent )
     }
 
