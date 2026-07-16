@@ -59,15 +59,16 @@ kotlin {
             implementation(libs.material.icons.desktop.ext)
             implementation(libs.vlcj)
         }
-    androidMain.dependencies {
+        androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.guava)
             implementation(libs.androidx.webkit)
 
             implementation( libs.androidx.constraintlayout )
-
             implementation( libs.androidx.appcompat )
             implementation( libs.androidx.appcompat.resources )
             implementation( libs.androidx.palette )
+            implementation(libs.androidx.lifecycle.runtime)
+            implementation(libs.androidx.lifecycle.process)
 
             implementation( libs.monetcompat )
             implementation(libs.androidmaterial)
@@ -79,9 +80,7 @@ kotlin {
             implementation( libs.androidyoutubeplayer )
 
             implementation( libs.toasty )
-
-            implementation(libs.androidx.lifecycle.runtime)
-            implementation(libs.androidx.lifecycle.process)
+            implementation( libs.logpose.android )
         }
         androidUnitTest.dependencies {
             implementation( libs.junit4 )

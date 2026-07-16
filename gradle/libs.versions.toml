@@ -161,7 +161,6 @@ kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kermit-io = { module = "co.touchlab:kermit-io", version.ref = "kermit" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 logpose-android = { module = "com.github.siddharthjaswal.logpose:logpose-android", version.ref = "logpose" }
-logpose-noop = { module = "com.github.siddharthjaswal.logpose:logpose-no-op", version.ref = "logpose" }
 
 # Preferences
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
