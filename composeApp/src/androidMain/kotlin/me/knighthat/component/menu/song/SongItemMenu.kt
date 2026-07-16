@@ -28,7 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.ChangeSongThumbnail
 import app.kreate.android.themed.rimusic.component.song.SongItem

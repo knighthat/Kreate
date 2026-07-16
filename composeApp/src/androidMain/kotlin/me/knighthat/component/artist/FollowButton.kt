@@ -17,7 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Artist
 import it.fast4x.rimusic.colorPalette

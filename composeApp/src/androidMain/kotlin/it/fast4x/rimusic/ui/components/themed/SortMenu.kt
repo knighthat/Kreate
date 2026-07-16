@@ -16,7 +16,7 @@ import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import app.kreate.android.R
+import app.kreate.compose.R
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.typography
 

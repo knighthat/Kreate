@@ -6,10 +6,10 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import androidx.core.content.getSystemService
 import androidx.lifecycle.ProcessLifecycleOwner
+import app.kreate.android.BuildConfig
 import app.kreate.android.drawable.AppIcon
 import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.CrashHandler
-import app.kreate.androidApp.BuildConfig
 import app.kreate.di.THUMBNAIL_SIZE
 import app.kreate.di.initKoin
 import app.kreate.logging.CoilLogger

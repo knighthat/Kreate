@@ -25,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.R
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.header
@@ -34,6 +33,7 @@ import app.kreate.components.settings.EnumEntry
 import app.kreate.components.settings.ListEntry
 import app.kreate.components.settings.NumberPickerEntry
 import app.kreate.components.settings.SettingComponents
+import app.kreate.compose.R
 import app.kreate.preferences.Preferences
 import app.kreate.util.getRuntimeLogDir
 import co.touchlab.kermit.Logger

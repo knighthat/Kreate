@@ -3,7 +3,7 @@ package app.kreate.android.themed.common.component.menu
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.media3.common.MediaItem
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.database.Database
 import app.kreate.util.MODIFIED_PREFIX

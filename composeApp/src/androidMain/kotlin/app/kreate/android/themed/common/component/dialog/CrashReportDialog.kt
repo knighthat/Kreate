@@ -31,8 +31,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastMaxOfOrNull
 import androidx.core.net.toUri
-import app.kreate.android.R
 import app.kreate.android.utils.CrashHandler
+import app.kreate.compose.R
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.textCopyToClipboard
 import me.knighthat.utils.Repository

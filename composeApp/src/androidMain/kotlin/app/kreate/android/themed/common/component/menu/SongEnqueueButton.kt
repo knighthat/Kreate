@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
 import it.fast4x.rimusic.utils.enqueue

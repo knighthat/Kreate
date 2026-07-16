@@ -91,7 +91,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.database.Database
 import app.kreate.database.models.Lyrics

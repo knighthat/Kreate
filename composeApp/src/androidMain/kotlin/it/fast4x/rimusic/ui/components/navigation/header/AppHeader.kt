@@ -11,7 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import app.kreate.android.R
+import app.kreate.compose.R
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.extensions.games.pacman.Pacman
 import it.fast4x.rimusic.ui.components.themed.Button

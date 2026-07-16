@@ -45,7 +45,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import app.kreate.android.LocalFlavorSpecificFunctions
-import app.kreate.android.R
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
 import app.kreate.android.themed.common.component.dialog.Dialog
 import app.kreate.android.themed.common.screens.SeeMoreScreen
@@ -54,6 +53,7 @@ import app.kreate.android.themed.common.screens.artist.YouTubeArtist
 import app.kreate.android.themed.common.screens.details.SongDetailsScreen
 import app.kreate.android.themed.common.screens.settings.about.Licenses
 import app.kreate.android.themed.rimusic.screen.playlist.YouTubePlaylist
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.SearchQuery
 import app.kreate.preferences.Preferences

@@ -90,9 +90,9 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.preferences.Preferences

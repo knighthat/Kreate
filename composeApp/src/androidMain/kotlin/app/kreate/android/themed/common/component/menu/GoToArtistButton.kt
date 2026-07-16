@@ -1,9 +1,9 @@
 package app.kreate.android.themed.common.component.menu
 
 import androidx.media3.common.MediaItem
-import app.kreate.android.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.themed.common.component.BottomMenu
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.gateway.innertube.YouTube
 import co.touchlab.kermit.Logger

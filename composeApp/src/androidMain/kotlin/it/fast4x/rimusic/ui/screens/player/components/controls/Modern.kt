@@ -49,7 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.constant.Type
 import app.kreate.preferences.Preferences

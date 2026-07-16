@@ -33,13 +33,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
-import app.kreate.android.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.tab.ItemSize
 import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.viewmodel.home.HomeLibraryViewModel
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette

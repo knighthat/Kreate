@@ -61,6 +61,7 @@ import androidx.palette.graphics.Palette
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
+import app.kreate.compose.R
 import app.kreate.database.models.PersistentQueue
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.preferences.Preferences

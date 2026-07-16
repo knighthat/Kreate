@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
-import app.kreate.android.R
+import app.kreate.compose.R
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.enums.LogType
 import me.knighthat.utils.Toaster

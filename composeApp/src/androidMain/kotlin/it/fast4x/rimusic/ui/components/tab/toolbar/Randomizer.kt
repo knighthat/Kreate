@@ -1,7 +1,7 @@
 package it.fast4x.rimusic.ui.components.tab.toolbar
 
 import androidx.compose.runtime.Composable
-import app.kreate.android.R
+import app.kreate.compose.R
 import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
 import kotlin.random.Random
 

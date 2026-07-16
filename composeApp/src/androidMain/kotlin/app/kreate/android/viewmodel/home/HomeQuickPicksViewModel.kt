@@ -2,9 +2,9 @@ package app.kreate.android.viewmodel.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.innertube.toMediaItem
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Song

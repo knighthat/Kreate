@@ -11,7 +11,7 @@ import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.PlatformScheduler
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.service.DownloadHelper
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

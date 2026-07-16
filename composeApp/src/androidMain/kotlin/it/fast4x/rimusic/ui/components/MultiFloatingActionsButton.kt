@@ -53,7 +53,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import app.kreate.android.R
+import app.kreate.compose.R
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.ui.styling.favoritesIcon
 

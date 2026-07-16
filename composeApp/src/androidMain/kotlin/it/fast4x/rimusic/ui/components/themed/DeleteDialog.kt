@@ -3,7 +3,7 @@ package it.fast4x.rimusic.ui.components.themed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.res.stringResource
-import app.kreate.android.R
+import app.kreate.compose.R
 import it.fast4x.rimusic.ui.components.MenuState
 import it.fast4x.rimusic.ui.components.tab.toolbar.ConfirmDialog
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive

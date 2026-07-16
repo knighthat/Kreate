@@ -16,7 +16,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
 import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.insertIgnore
 import app.kreate.database.models.PersistentQueue

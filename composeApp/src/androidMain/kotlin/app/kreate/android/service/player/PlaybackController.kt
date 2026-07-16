@@ -8,7 +8,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.session.CommandButton
 import androidx.media3.session.SessionCommand
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.database.Database
 import it.fast4x.rimusic.enums.NotificationButtons
 import it.fast4x.rimusic.service.MyDownloadHelper

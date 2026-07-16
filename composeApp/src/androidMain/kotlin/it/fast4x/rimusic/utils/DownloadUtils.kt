@@ -12,7 +12,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
 import app.kreate.android.LocalDownloadHelper
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.di.CacheType
 import co.touchlab.kermit.Logger

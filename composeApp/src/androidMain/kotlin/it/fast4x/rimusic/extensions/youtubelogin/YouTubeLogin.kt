@@ -15,7 +15,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.datastore.preferences.core.edit
 import androidx.room.concurrent.AtomicBoolean
 import app.kreate.android.LocalPlayerAwareWindowInsets
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.di.PrefType
 import app.kreate.di.Storage
 import app.kreate.gateway.innertube.YouTube

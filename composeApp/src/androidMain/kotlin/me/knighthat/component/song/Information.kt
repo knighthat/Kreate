@@ -3,7 +3,7 @@ package me.knighthat.component.song
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
-import app.kreate.android.R
+import app.kreate.compose.R
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon

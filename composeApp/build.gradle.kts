@@ -27,7 +27,7 @@ repositories {
 
 kotlin {
     android {
-        namespace = "app.kreate.android"
+        namespace = "app.kreate.compose"
         compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
         // Expose resources to other modules.

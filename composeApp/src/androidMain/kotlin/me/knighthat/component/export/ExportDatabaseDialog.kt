@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.di.DATABASE_FILENAME
 import kotlinx.coroutines.CoroutineScope

@@ -18,8 +18,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import app.kreate.android.R
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
+import app.kreate.compose.R
 import io.ktor.client.call.body
 import it.fast4x.innertube.Innertube
 import it.fast4x.innertube.models.BrowseResponse

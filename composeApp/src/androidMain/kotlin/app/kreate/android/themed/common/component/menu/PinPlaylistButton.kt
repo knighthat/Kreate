@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.database.Database
 import app.kreate.database.models.PlaylistPreview

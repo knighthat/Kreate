@@ -3,7 +3,7 @@ package me.knighthat.updater
 import android.content.Context
 import android.os.Looper
 import androidx.compose.ui.util.fastFirstOrNull
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.util.FLAVOR_ARCH
 import app.kreate.util.FLAVOR_ENV
 import app.kreate.util.VERSION_NAME

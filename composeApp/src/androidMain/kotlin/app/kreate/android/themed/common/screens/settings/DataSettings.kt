@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
-import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.RestartPlayerService
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.StorageSizeInputDialog
@@ -35,6 +34,7 @@ import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.components.settings.EnumEntry
 import app.kreate.components.settings.SettingComponents
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.di.CacheType
 import app.kreate.preferences.Preferences

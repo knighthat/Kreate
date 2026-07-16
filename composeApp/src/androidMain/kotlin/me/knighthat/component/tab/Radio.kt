@@ -3,7 +3,7 @@ package me.knighthat.component.tab
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.database.models.Song
 import it.fast4x.rimusic.ui.components.LocalMenuState

@@ -12,7 +12,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.themed.rimusic.screen.home.HomeSongsScreen
 import app.kreate.preferences.Preferences
 import it.fast4x.compose.persist.PersistMapCleanup

@@ -69,7 +69,6 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
 import app.kreate.android.LocalPlayerAwareWindowInsets
-import app.kreate.android.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
@@ -80,6 +79,7 @@ import app.kreate.android.utils.ItemUtils
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.android.viewmodel.home.HomeQuickPicksViewModel
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType

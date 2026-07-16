@@ -24,7 +24,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.themed.common.component.BottomMenu
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography

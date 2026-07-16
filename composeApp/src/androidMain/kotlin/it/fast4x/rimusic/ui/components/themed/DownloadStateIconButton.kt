@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
-import app.kreate.android.R
+import app.kreate.compose.R
 
 @UnstableApi
 @Composable

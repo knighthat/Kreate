@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.navigation.NavController
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.constant.PlaylistSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.database.Database

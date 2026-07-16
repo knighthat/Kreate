@@ -11,9 +11,9 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withSave
-import app.kreate.android.R
 import app.kreate.android.drawable.AppIcon.Round.bitmap
 import app.kreate.android.drawable.AppIcon.bitmap
+import app.kreate.compose.R
 import it.fast4x.rimusic.utils.isAtLeastAndroid8
 
 

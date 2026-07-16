@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.enums.StatisticsType

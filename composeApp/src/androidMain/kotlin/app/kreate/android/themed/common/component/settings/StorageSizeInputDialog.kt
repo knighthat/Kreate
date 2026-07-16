@@ -37,7 +37,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.isAtLeastAndroid8

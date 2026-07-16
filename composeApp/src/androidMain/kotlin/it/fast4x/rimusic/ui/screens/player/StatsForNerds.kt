@@ -37,7 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheSpan
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.constant.Type
 import app.kreate.database.Database
 import app.kreate.database.models.Format

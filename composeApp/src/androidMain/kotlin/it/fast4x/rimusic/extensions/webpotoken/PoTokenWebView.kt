@@ -10,7 +10,7 @@ import android.webkit.WebView
 import androidx.annotation.MainThread
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
-import app.kreate.android.R
+import app.kreate.compose.R
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.isDebugModeEnabled

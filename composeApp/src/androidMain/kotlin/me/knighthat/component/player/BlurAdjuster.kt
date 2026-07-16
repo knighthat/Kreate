@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.R
 import app.kreate.components.settings.SettingComponents
+import app.kreate.compose.R
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.ui.components.themed.IconButton

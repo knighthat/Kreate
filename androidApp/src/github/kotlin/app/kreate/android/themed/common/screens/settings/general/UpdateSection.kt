@@ -11,12 +11,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.components.settings.EnumEntry
 import app.kreate.components.settings.SettingComponents
+import app.kreate.compose.R
 import app.kreate.preferences.Preferences
 import app.kreate.util.VERSION_NAME
 import it.fast4x.rimusic.enums.CheckUpdateState

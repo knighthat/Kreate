@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.exception.InvalidHeaderException
 import app.kreate.database.Database
 import app.kreate.database.mapIgnore

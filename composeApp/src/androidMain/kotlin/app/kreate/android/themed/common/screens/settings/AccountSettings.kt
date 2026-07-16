@@ -35,7 +35,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.themed.common.component.settings.RestartPlayerService
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
@@ -43,6 +42,7 @@ import app.kreate.android.themed.common.component.settings.animatedEntry
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
 import app.kreate.components.settings.SettingComponents
+import app.kreate.compose.R
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition

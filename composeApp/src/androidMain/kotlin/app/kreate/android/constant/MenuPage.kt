@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.media3.common.MediaItem
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.common.component.menu.AddSongToPlaylistButton
 import app.kreate.android.themed.common.component.menu.DeletePlaylistButton

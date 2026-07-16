@@ -30,7 +30,7 @@ import androidx.compose.ui.util.fastFilter
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalPlayerAwareWindowInsets
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.utils.ItemUtils
 import it.fast4x.compose.persist.persist

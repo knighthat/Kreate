@@ -13,8 +13,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.ContentMetadata
-import app.kreate.android.R
 import app.kreate.android.themed.common.component.BottomMenu
+import app.kreate.compose.R
 import app.kreate.di.CacheType
 import app.kreate.util.cleanPrefix
 import co.touchlab.kermit.Logger

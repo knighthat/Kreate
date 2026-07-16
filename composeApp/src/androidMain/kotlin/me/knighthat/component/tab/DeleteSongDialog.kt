@@ -7,7 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType

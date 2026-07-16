@@ -3,7 +3,7 @@ package app.kreate.android.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.gateway.innertube.models.Section
 import co.touchlab.kermit.Logger

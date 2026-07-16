@@ -44,13 +44,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.tab.ItemSize
 import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.viewmodel.home.HomeAlbumsViewModel
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.mapIgnore
 import app.kreate.database.models.Album

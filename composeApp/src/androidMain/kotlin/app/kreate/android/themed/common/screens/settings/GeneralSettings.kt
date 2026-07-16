@@ -23,7 +23,6 @@ import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.LocalFlavorSpecificFunctions
-import app.kreate.android.R
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
@@ -31,6 +30,7 @@ import app.kreate.android.themed.common.screens.settings.general.playerSettingsS
 import app.kreate.components.settings.EnumEntry
 import app.kreate.components.settings.ListEntry
 import app.kreate.components.settings.SettingComponents
+import app.kreate.compose.R
 import app.kreate.constant.Language
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette

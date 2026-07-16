@@ -1,7 +1,7 @@
 package it.fast4x.rimusic.enums
 
 import androidx.annotation.StringRes
-import app.kreate.android.R
+import app.kreate.compose.R
 import me.knighthat.enums.TextView
 
 enum class QueueType(

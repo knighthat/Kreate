@@ -1,7 +1,7 @@
 package app.kreate.di
 
 import android.content.Context
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.enums.DohServer
 import app.kreate.gateway.innertube.YouTubeConstants
 import app.kreate.logging.OkHttpLogger

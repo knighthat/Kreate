@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.gateway.innertube.models.InnertubeSongDetails

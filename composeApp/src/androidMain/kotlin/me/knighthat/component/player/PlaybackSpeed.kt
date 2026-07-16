@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.PlaybackParameters
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.constant.Speed
 import app.kreate.android.service.player.StatefulPlayer
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive

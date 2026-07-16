@@ -8,7 +8,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
-import app.kreate.android.R
+import app.kreate.compose.R
 import me.knighthat.component.dialog.InputDialogConstraints
 import me.knighthat.component.dialog.TextInputDialog
 import me.knighthat.utils.Toaster

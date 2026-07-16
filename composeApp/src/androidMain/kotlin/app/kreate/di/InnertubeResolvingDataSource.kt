@@ -9,7 +9,7 @@ import androidx.compose.ui.util.fastFilter
 import androidx.core.content.getSystemService
 import androidx.media3.common.C
 import androidx.media3.datasource.DataSpec
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.utils.CharUtils
 import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.database.Database

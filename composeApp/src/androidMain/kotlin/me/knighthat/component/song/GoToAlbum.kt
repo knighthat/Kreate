@@ -3,7 +3,7 @@ package me.knighthat.component.song
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.gateway.innertube.YouTube

@@ -29,7 +29,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem

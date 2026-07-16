@@ -13,7 +13,7 @@ import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope

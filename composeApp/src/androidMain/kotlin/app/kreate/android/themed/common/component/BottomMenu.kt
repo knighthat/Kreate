@@ -66,11 +66,11 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.R
 import app.kreate.android.constant.MenuPage
 import app.kreate.android.themed.common.component.menu.MenuButton
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.util.scrollingText

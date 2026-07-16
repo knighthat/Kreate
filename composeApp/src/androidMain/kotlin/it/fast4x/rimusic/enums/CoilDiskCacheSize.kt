@@ -3,7 +3,7 @@ package it.fast4x.rimusic.enums
 import androidx.annotation.Size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import app.kreate.android.R
+import app.kreate.compose.R
 import me.knighthat.enums.TextView
 
 enum class CoilDiskCacheMaxSize(

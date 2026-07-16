@@ -33,8 +33,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
+import app.kreate.compose.R
 import app.kreate.gateway.innertube.models.InnertubeSongDetails
 import it.fast4x.rimusic.ui.components.Skeleton
 import it.fast4x.rimusic.ui.styling.ColorPalette

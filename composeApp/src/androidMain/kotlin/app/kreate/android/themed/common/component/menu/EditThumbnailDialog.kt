@@ -24,9 +24,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import app.kreate.android.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.utils.isLocalFile
+import app.kreate.compose.R
 import co.touchlab.kermit.Logger
 import coil3.imageLoader
 import coil3.request.SuccessResult

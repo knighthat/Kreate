@@ -30,7 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import app.kreate.android.LocalPlayerAwareWindowInsets
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import it.fast4x.compose.persist.persist
 import it.fast4x.innertube.Innertube

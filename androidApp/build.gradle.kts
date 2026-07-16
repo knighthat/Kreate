@@ -136,7 +136,7 @@ extensions.configure<ApplicationExtension> {
         targetSdk = libs.versions.compileSdk.get().toInt()
     }
 
-    namespace = "app.kreate.androidApp"
+    namespace = "app.kreate.android"
 
     signingConfigs {
         create( "production" ) {

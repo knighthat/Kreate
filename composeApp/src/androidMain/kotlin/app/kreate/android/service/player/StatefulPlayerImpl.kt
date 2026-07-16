@@ -27,7 +27,7 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.offline.Download
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.service.PlayerEventUpdateDiscord
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.database.Database

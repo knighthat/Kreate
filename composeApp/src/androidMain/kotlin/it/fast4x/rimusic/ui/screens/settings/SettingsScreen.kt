@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.themed.common.screens.settings.About
 import app.kreate.android.themed.common.screens.settings.AccountSettings
 import app.kreate.android.themed.common.screens.settings.AppearanceSettings

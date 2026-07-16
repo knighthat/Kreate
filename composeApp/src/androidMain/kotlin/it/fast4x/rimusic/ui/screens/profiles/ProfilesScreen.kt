@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.navigation.NavController
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.di.ACTIVE_PROFILE_KEY
 import app.kreate.di.PrefType
 import app.kreate.di.getActiveProfile

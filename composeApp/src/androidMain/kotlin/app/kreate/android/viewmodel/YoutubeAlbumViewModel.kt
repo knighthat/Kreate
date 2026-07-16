@@ -5,7 +5,7 @@ import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.database.Database
 import app.kreate.database.insertIgnore

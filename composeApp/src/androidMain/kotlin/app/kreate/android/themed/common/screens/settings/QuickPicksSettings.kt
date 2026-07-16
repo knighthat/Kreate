@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.android.R
+import app.kreate.compose.R
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.components.settings.EnumEntry
 import app.kreate.components.settings.SettingComponents

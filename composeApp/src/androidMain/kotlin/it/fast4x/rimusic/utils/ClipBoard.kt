@@ -10,7 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import app.kreate.android.R
+import app.kreate.compose.R
 import co.touchlab.kermit.Logger
 import me.knighthat.utils.Toaster
 

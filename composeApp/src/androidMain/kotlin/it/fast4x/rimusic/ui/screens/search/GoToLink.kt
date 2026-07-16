@@ -33,8 +33,8 @@ import androidx.core.net.toUri
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalPlayerAwareWindowInsets
-import app.kreate.android.R
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.compose.R
 import app.kreate.gateway.innertube.YouTube
 import co.touchlab.kermit.Logger
 import it.fast4x.innertube.Innertube
