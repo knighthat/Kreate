@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import app.kreate.compose.R
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.gateway.innertube.models.InnertubeSongDetails
@@ -14,6 +13,8 @@ import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.error_failed_to_fetch_songs_info
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
@@ -35,7 +36,7 @@ class SongDetailsViewModel(private val songId: String): ViewModel(), KoinCompone
             .onSuccess { songDetails = it }
             .onFailure { err ->
                 Logger.e( "", err, "SongDetails" )
-                Toaster.e(  R.string.error_failed_to_fetch_songs_info )
+                Toaster.e( Res.string.error_failed_to_fetch_songs_info )
             }
     }
 
@@ -44,7 +45,7 @@ class SongDetailsViewModel(private val songId: String): ViewModel(), KoinCompone
                  .onSuccess { songBasicInfo = it }
                  .onFailure { err ->
                      Logger.e( "", err, "SongDetails" )
-                     Toaster.e( R.string.error_failed_to_fetch_songs_info )
+                     Toaster.e( Res.string.error_failed_to_fetch_songs_info )
                  }
     }
 

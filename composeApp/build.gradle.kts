@@ -93,6 +93,7 @@ kotlin {
             api( projects.database )
             implementation( projects.widgets )
             implementation( projects.gateway )
+            implementation( projects.player )
 
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)

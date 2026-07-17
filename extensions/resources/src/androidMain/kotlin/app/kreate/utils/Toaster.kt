@@ -8,6 +8,7 @@ import androidx.annotation.StringRes
 import app.kreate.internal.utils.ToasterImpl
 import app.kreate.internal.utils.icon
 import app.kreate.resources.R
+import org.jetbrains.compose.resources.StringResource
 
 /**
  * Thread-safe toasts
@@ -106,6 +107,9 @@ interface Toaster {
 
     @AnyThread
     fun e( @StringRes messageId: Int, @Duration duration: Int = Toast.LENGTH_SHORT )
+
+    @AnyThread
+    suspend fun e( resource: StringResource, @Duration duration: Int = Toast.LENGTH_SHORT )
 
 
     @AnyThread

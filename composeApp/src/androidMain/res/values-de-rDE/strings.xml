@@ -801,7 +801,6 @@
     <string name="error_failed_to_get_playlists_next_songs">Fehler beim Abrufen weiterer Titel</string>
     <string name="error_failed_to_load_artist">Künstler konnte nicht abgerufen werden</string>
     <string name="error_failed_to_load_album">Album konnte nicht geladen werden</string>
-    <string name="error_failed_to_fetch_songs_info">Titelinformation konnte nicht geladen werden</string>
     <string name="error_song_radio_failed">Radio failed</string>
     <string name="error_failed_to_get_charts">Failed to get charts</string>
     <string name="error_failed_to_acquire_account_info">Failed to acquire account info</string>

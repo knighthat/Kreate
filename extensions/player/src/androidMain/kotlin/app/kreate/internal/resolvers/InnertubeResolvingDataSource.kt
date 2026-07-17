@@ -1,25 +1,29 @@
-@file:kotlin.OptIn(kotlin.concurrent.atomics.ExperimentalAtomicApi::class)
-@file:androidx.media3.common.util.UnstableApi
+@file:OptIn(kotlin.concurrent.atomics.ExperimentalAtomicApi::class)
+@file:androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 
-package app.kreate.di
+package app.kreate.internal.resolvers
 
 import android.content.Context
 import android.net.ConnectivityManager
-import androidx.compose.ui.util.fastFilter
 import androidx.core.content.getSystemService
 import androidx.media3.common.C
 import androidx.media3.datasource.DataSpec
-import app.kreate.android.utils.CharUtils
-import app.kreate.android.utils.ConnectivityUtils
-import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Format
 import app.kreate.database.upsert
+import app.kreate.di.CHUNK_LENGTH
+import app.kreate.exceptions.LoginRequiredException
+import app.kreate.exceptions.MissingDecipherKeyException
+import app.kreate.exceptions.NoInternetException
+import app.kreate.exceptions.PlayableFormatNotFoundException
+import app.kreate.exceptions.UnplayableException
+import app.kreate.gateway.innertube.YouTube
 import app.kreate.gateway.innertube.responses.PlayerResponse
+import app.kreate.utils.CharUtils
 import app.kreate.utils.Toaster
+import app.kreate.utils.getNetworkMonitor
 import co.touchlab.kermit.Logger
 import com.grack.nanojson.JsonWriter
-import com.metrolist.innertube.YouTube
 import com.metrolist.music.utils.YTPlayerUtils
 import com.metrolist.music.utils.cipher.CipherDeobfuscator
 import io.ktor.client.HttpClient
@@ -29,12 +33,6 @@ import io.ktor.http.isSuccess
 import io.ktor.http.parseQueryString
 import io.ktor.util.network.UnresolvedAddressException
 import it.fast4x.rimusic.enums.AudioQualityFormat
-import it.fast4x.rimusic.service.LoginRequiredException
-import it.fast4x.rimusic.service.MissingDecipherKeyException
-import it.fast4x.rimusic.service.NoInternetException
-import it.fast4x.rimusic.service.PlayableFormatNotFoundException
-import it.fast4x.rimusic.service.UnplayableException
-import it.fast4x.rimusic.utils.isNetworkAvailable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -44,13 +42,15 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.json.Json
-import org.koin.core.scope.Scope
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.error_failed_to_fetch_songs_info
 import org.koin.java.KoinJavaComponent.get
 import java.net.UnknownHostException
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
+import com.metrolist.innertube.YouTube as MetrolistYouTube
 
 
 private const val METHOD_ANDROID = 1
@@ -70,6 +70,8 @@ private val jsonParser =
         useArrayPolymorphism = true
         explicitNulls = false
     }
+private val scope: CoroutineScope
+    get() = get( CoroutineScope::class.java )
 
 /**
  * Acts as a lock to keep [upsertSongFormat] from starting before
@@ -79,8 +81,6 @@ private var databaseWorker: Job = Job()
 
 //<editor-fold desc="Database handlers">
 /**
- * Reach out to [Endpoints.NEXT] endpoint for song's information.
- *
  * Info includes:
  * - Titles
  * - Artist(s)
@@ -97,15 +97,15 @@ private var databaseWorker: Job = Job()
  * New record will be created and insert into database
  *
  */
-private fun upsertSongInfo( context: Context, videoId: String ) {       // Use this to prevent suspension of thread while waiting for response from YT
+private fun upsertSongInfo( videoId: String ) {       // Use this to prevent suspension of thread while waiting for response from YT
     // Skip adding if it's just added in previous call
-    if( videoId == justInserted.load() || !isNetworkAvailable( context ) )
+    if( videoId == justInserted.load() || !getNetworkMonitor().value )
         return
 
     logger.v { "fetching and upserting $videoId's information to the database" }
 
-    databaseWorker = CoroutineScope(Dispatchers.IO ).launch {
-        get<app.kreate.gateway.innertube.YouTube>(app.kreate.gateway.innertube.YouTube::class.java)
+    databaseWorker = scope.launch {
+        get<YouTube>(YouTube::class.java)
             .getSongBasicInfo( videoId )
             .onSuccess{
                 logger.v { "$videoId's information successfully found and parsed" }
@@ -116,7 +116,7 @@ private fun upsertSongInfo( context: Context, videoId: String ) {       // Use t
             }
             .onFailure {
                 logger.e( "failed to upsert $videoId's information to database", it )
-                Toaster.e( R.string.error_failed_to_fetch_songs_info )
+                Toaster.e(Res.string.error_failed_to_fetch_songs_info )
             }
     }
 
@@ -169,11 +169,11 @@ private fun extractFormat(
 
     val sortedAudioFormats =
         streamingData?.adaptiveFormats
-            ?.fastFilter {
-                it.mimeType.startsWith( "audio" )
-            }
-            ?.sortedBy(PlayerResponse.StreamingData.Format::bitrate )
-            .orEmpty()
+                     ?.filter {
+                         it.mimeType.startsWith( "audio" )
+                     }
+                     ?.sortedBy(PlayerResponse.StreamingData.Format::bitrate )
+                     .orEmpty()
     if( sortedAudioFormats.isEmpty() )
         throw PlayableFormatNotFoundException()
 
@@ -191,7 +191,7 @@ private fun extractFormat(
 }
 
 @Throws(MissingDecipherKeyException::class)
-private fun extractStreamUrl( videoId: String, format: PlayerResponse.StreamingData.Format ): String =
+private fun extractStreamUrl( format: PlayerResponse.StreamingData.Format ): String =
     format.signatureCipher?.let { signatureCipher ->
         logger.v { "deobfuscating signature $signatureCipher" }
 
@@ -253,7 +253,7 @@ private suspend fun makeStreamCache(
         //</editor-fold>
         //<editor-fold desc="Extract and validate stream url">
         val format = extractFormat( response.streamingData, audioQuality, isConnectionMetered )
-        val streamUrl = extractStreamUrl( songId, format )
+        val streamUrl = extractStreamUrl( format )
         val validateResult = validateStreamUrl( streamUrl )
         //</editor-fold>
 
@@ -264,7 +264,7 @@ private suspend fun makeStreamCache(
             val playableUrl = response.streamingData?.expiresInSeconds?.toLong() ?: 1.hours.inWholeMilliseconds
             StreamCache(cpn, contentLength, streamUrl, playableUrl)
         } else
-        // Try again with IOS setup
+            // Try again with IOS setup
             makeStreamCache( songId, isConnectionMetered, audioQuality, METHOD_IOS )
     } catch( e: Exception ) {
         if( method == METHOD_ANDROID )
@@ -274,7 +274,7 @@ private suspend fun makeStreamCache(
             is UnknownHostException,
             is UnresolvedAddressException -> {
                 // Make sure it's not a temporary network fluctuation
-                if( !ConnectivityUtils.isAvailable.value )
+                if( !getNetworkMonitor().value )
                     throw NoInternetException(e)
             }
 
@@ -309,7 +309,7 @@ private fun getPlayableUrl( songId: String ): YTPlayerUtils.PlaybackData = runBl
         } else
             logger.d { "Stream url of $songId is cached" }
     } else {
-        YouTube.acquireVisitorData()
+        MetrolistYouTube.acquireVisitorData()
 
         val connManager = get<Context>(Context::class.java).getSystemService<ConnectivityManager>()!!
         val audioQuality = app.kreate.preferences.Preferences.AUDIO_QUALITY.value
@@ -327,13 +327,13 @@ private fun getPlayableUrl( songId: String ): YTPlayerUtils.PlaybackData = runBl
 }
 //</editor-fold>
 
-fun Scope.resolveInnertubeMedia( dataSpec: DataSpec ): DataSpec {
+internal fun resolveInnertubeMedia(dataSpec: DataSpec ): DataSpec {
     val songId = requireNotNull( dataSpec.key ) {
         // This requires all online media to have cache key
         // for caching purpose.
         "Online media doesn't contain cache Key"
     }
-    upsertSongInfo( get(), songId )
+    upsertSongInfo( songId )
 
     val cache = getPlayableUrl( songId )
     val length = cache.format.contentLength ?: C.LENGTH_UNSET.toLong()
@@ -342,14 +342,6 @@ fun Scope.resolveInnertubeMedia( dataSpec: DataSpec ): DataSpec {
                    .setLength( length )
                    .build()
 }
-
-/**
- * Remove cached url of [songId].
- *
- * @return `true` if song's url was cached, and is deleted, `false` otherwise.
- */
-fun clearCachedStreamUrlOf( songId: String ): Boolean =
-    cachedStreamUrl.remove( songId ) != null
 
 private data class StreamCache(
     val cpn: String,

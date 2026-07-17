@@ -801,7 +801,6 @@
     <string name="error_failed_to_get_playlists_next_songs">Daha fazla şarkı alınamadı</string>
     <string name="error_failed_to_load_artist">Sanatçı alınamadı</string>
     <string name="error_failed_to_load_album">Albüm yüklenemedi</string>
-    <string name="error_failed_to_fetch_songs_info">Şarkının bilgileri getirilemedi</string>
     <string name="error_song_radio_failed">Radyo başarısız oldu</string>
     <string name="error_failed_to_get_charts">Listeler alınamadı</string>
     <string name="error_failed_to_acquire_account_info">Hesap bilgileri alınamadı</string>

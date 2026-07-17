@@ -50,9 +50,9 @@ kotlin {
             implementation( libs.koin.core )
             implementation( libs.kermit )
             // Compose
+            api( libs.compose.kmp.resources )
             implementation( libs.compose.kmp.runtime )
             implementation( libs.compose.kmp.ui )
-            implementation( libs.compose.kmp.resources )
             implementation( libs.compose.kmp.foundation )
             implementation( libs.compose.kmp.material3 )
         }

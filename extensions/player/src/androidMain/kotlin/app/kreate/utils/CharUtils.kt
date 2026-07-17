@@ -1,4 +1,5 @@
-package app.kreate.android.utils
+package app.kreate.utils
+
 
 object CharUtils {
 

@@ -180,4 +180,5 @@
     <string name="error_failed_to_get_search_suggestions">Failed to get search suggestions</string>
     <string name="error_failed_to_get_search_results">Failed to get results</string>
     <string name="error_failed_to_get_more">Failed to get more results</string>
+    <string name="error_failed_to_fetch_songs_info">Không thể tải thông tin bài hát</string>
 </resources>

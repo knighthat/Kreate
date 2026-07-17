@@ -803,7 +803,6 @@
     <string name="error_failed_to_get_playlists_next_songs">Не удалось получить больше песен</string>
     <string name="error_failed_to_load_artist">Не удалось загрузить артистов</string>
     <string name="error_failed_to_load_album">Не удалось загрузить альбом</string>
-    <string name="error_failed_to_fetch_songs_info">Не удалось получить информацию о песне</string>
     <string name="error_song_radio_failed">Сбой радио</string>
     <string name="error_failed_to_get_charts">Не удалось получить чарты</string>
     <string name="error_failed_to_acquire_account_info">Не удалось получить информацию об учетной записи</string>

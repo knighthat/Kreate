@@ -12,7 +12,6 @@ import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
-import app.kreate.di.clearCachedStreamUrlOf
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
@@ -21,6 +20,8 @@ import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kreate.resources.generated.resources.Res
+import kreate.resources.generated.resources.error_failed_to_fetch_songs_info
 import me.knighthat.component.dialog.CheckboxDialog
 import org.jetbrains.annotations.Contract
 import org.koin.core.component.KoinComponent
@@ -121,7 +122,7 @@ class ResetSongDialog private constructor(
                 val innertubeSong = get<YouTube>().getSongBasicInfo( song.id )
                     .onFailure { err ->
                         Logger.e( "", err, "ResetSongDialog" )
-                        Toaster.e( R.string.error_failed_to_fetch_songs_info )
+                        Toaster.e( Res.string.error_failed_to_fetch_songs_info )
                     }
                     .getOrNull()
 
@@ -145,8 +146,6 @@ class ResetSongDialog private constructor(
 
             Database.asyncTransaction {
                 if( items.first { it.id == CACHE_CHECKBOX_ID }.selected ) {
-                    clearCachedStreamUrlOf( song.id )
-
                     cache.removeResource( song.id )
                     // FIXME: This is unsafe, use [DownloadService.sendRemoveDownload] instead
                     downloadCache.removeResource( song.id )

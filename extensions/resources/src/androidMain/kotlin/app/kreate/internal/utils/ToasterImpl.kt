@@ -6,6 +6,8 @@ import app.kreate.utils.Toaster
 import es.dmoral.toasty.Toasty
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -94,6 +96,9 @@ internal class ToasterImpl : Toaster, KoinComponent {
 
     override fun e( messageId: Int, duration: Int ) =
         this.toast( messageId, Toaster.Type.ERROR, duration )
+
+    override suspend fun e(resource: StringResource, duration: Int) =
+        e( getString(resource), duration )
 
     override fun e(
         messageId: Int,

@@ -801,7 +801,6 @@
     <string name="error_failed_to_get_playlists_next_songs">Recupero di altri brani non riuscito</string>
     <string name="error_failed_to_load_artist">Recupero dell\'artista non riuscito</string>
     <string name="error_failed_to_load_album">Impossibile caricare l\'album</string>
-    <string name="error_failed_to_fetch_songs_info">Recupero delle informazioni del brano non riuscito</string>
     <string name="error_song_radio_failed">Radio non riuscita</string>
     <string name="error_failed_to_get_charts">Recupero delle classifiche non riuscito</string>
     <string name="error_failed_to_acquire_account_info">Acquisizione delle informazioni dell\'account non riuscita</string>

@@ -801,7 +801,6 @@
     <string name="error_failed_to_get_playlists_next_songs">Error al obtener más canciones</string>
     <string name="error_failed_to_load_artist">Error al buscar el artista</string>
     <string name="error_failed_to_load_album">Error al cargar el álbum</string>
-    <string name="error_failed_to_fetch_songs_info">Error al obtener información de la canción</string>
     <string name="error_song_radio_failed">Error de la radio</string>
     <string name="error_failed_to_get_charts">Error al obtener las listas</string>
     <string name="error_failed_to_acquire_account_info">Error al obtener información de la cuenta</string>

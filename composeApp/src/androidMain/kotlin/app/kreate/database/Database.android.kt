@@ -11,9 +11,9 @@ import app.kreate.database.models.Song
 import app.kreate.database.models.SongArtistMap
 import app.kreate.database.repositories.PlaylistTable
 import app.kreate.gateway.innertube.models.InnertubeSong
+import app.kreate.utils.PropUtils
 import it.fast4x.rimusic.utils.asSong
 import kotlinx.coroutines.flow.first
-import me.knighthat.utils.PropUtils
 
 
 /**

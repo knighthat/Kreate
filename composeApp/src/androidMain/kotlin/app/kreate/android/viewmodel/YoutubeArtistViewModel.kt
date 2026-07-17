@@ -29,6 +29,7 @@ import app.kreate.database.models.SongArtistMap
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.gateway.innertube.models.InnertubeArtist
 import app.kreate.gateway.innertube.models.InnertubeSong
+import app.kreate.utils.PropUtils
 import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.utils.asMediaItem
@@ -41,7 +42,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import me.knighthat.utils.PropUtils
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 

@@ -801,7 +801,6 @@
     <string name="error_failed_to_get_playlists_next_songs">Fallou a obtención de máis cancións</string>
     <string name="error_failed_to_load_artist">Fallou a obtención do artista</string>
     <string name="error_failed_to_load_album">Fallou a carga do álbum</string>
-    <string name="error_failed_to_fetch_songs_info">Fallou a obtención da información da canción</string>
     <string name="error_song_radio_failed">Fallou a radio</string>
     <string name="error_failed_to_get_charts">Fallou a obtención dos gráficos</string>
     <string name="error_failed_to_acquire_account_info">Fallou a obtención da información da conta</string>

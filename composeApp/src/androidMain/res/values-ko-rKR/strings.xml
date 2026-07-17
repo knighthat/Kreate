@@ -801,7 +801,6 @@
     <string name="error_failed_to_get_playlists_next_songs">더 많은 곡을 불러오지 못했습니다</string>
     <string name="error_failed_to_load_artist">아티스트를 불러오지 못했습니다</string>
     <string name="error_failed_to_load_album">앨범을 불러오지 못했습니다</string>
-    <string name="error_failed_to_fetch_songs_info">곡 정보를 가져오지 못했습니다</string>
     <string name="error_song_radio_failed">라디오 실패</string>
     <string name="error_failed_to_get_charts">차트를 불러오지 못했습니다</string>
     <string name="error_failed_to_acquire_account_info">계정 정보를 가져오지 못했습니다</string>

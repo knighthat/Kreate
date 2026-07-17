@@ -24,6 +24,10 @@ kotlin {
         }.configure {
             instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
+
+        compilerOptions {
+            enableCoreLibraryDesugaring = true
+        }
     }
     jvm()
 
@@ -36,6 +40,8 @@ kotlin {
         commonMain.dependencies {
             implementation( projects.resources )
             implementation( projects.preferences )
+            implementation( projects.database )
+            implementation( projects.gateway )
 
             implementation( libs.kotlin.stdlib )
             implementation( libs.koin.core )
@@ -45,6 +51,8 @@ kotlin {
             implementation( libs.kotlin.test )
         }
         androidMain.dependencies {
+            implementation( libs.androidx.core.ktx )
+            // Media3
             api( libs.media3.ktx )
             implementation( libs.bundles.media3 )
         }
@@ -58,4 +66,8 @@ kotlin {
     compilerOptions {
         freeCompilerArgs.add( "-Xexpect-actual-classes" )
     }
+}
+
+dependencies {
+    coreLibraryDesugaring( libs.desugaring.nio )
 }

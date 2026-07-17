@@ -1,4 +1,4 @@
-package me.knighthat.utils
+package app.kreate.utils
 
 import app.kreate.util.MODIFIED_PREFIX
 import org.jetbrains.annotations.Contract
@@ -19,7 +19,7 @@ object PropUtils {
      */
     @Contract("!null,!null->!null")
     fun retainIfModified( curPropVal: String?, fetPropVal: String? ): String? =
-        if( curPropVal?.startsWith( MODIFIED_PREFIX, true ) == true )
+        if( curPropVal?.startsWith(MODIFIED_PREFIX, true) == true )
             curPropVal
         else
             fetPropVal
