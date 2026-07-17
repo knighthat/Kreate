@@ -140,6 +140,26 @@ kotlin {
     }
 }
 
+androidComponents {
+    onVariants { variant ->
+        val variantName = variant.name.replaceFirstChar { it.uppercase() }
+        val taskName = "generate${variantName}ReleaseNotesRes"
+        val genTask = tasks.register<GenerateReleaseNotesTask>( taskName ) {
+            description = "Copy release note that matches current versionCode to raw folder"
+            group = "build"
+
+            val filePath = "fastlane/metadata/android/en-US/changelogs/${libs.versions.versionCode.get()}.txt"
+            val changelogFile = rootDir.resolve( filePath )
+            sourceFile.set( changelogFile )
+
+            val outputPath = layout.buildDirectory.dir("generated/res/releaseNotes/${variant.name}")
+            outputDirectory.set( outputPath )
+        }
+
+        variant.sources.res?.addGeneratedSourceDirectory( genTask, GenerateReleaseNotesTask::outputDirectory )
+    }
+}
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
@@ -201,4 +221,22 @@ licenseReport {
     renderers = arrayOf( JsonReportRenderer() )
 
     filters = arrayOf<DependencyFilter>( ExcludeTransitiveDependenciesFilter() )
+}
+
+abstract class GenerateReleaseNotesTask : DefaultTask() {
+    @get:InputFile
+    abstract val sourceFile: RegularFileProperty
+
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
+
+    @TaskAction
+    fun generate() {
+        val src = sourceFile.get().asFile
+        check(src.exists()) {
+            "Release notes file not found: ${src.absolutePath}. Add a changelog for this versionCode before building."
+        }
+        val rawDir = outputDirectory.get().asFile.resolve("raw").apply { mkdirs() }
+        src.copyTo(rawDir.resolve("release_notes.txt"), overwrite = true)
+    }
 }

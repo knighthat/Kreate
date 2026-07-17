@@ -91,21 +91,6 @@ androidComponents {
 
             it.outputFileName = "$APP_NAME-${suffix}.apk"
         }
-
-        val excludedBuildTypes = setOf("Debug")
-        // tasks known to consume src/androidMain/res
-        val resConsumingTaskPrefixes = listOf("package", "generate", "lint", "merge", "bundle")
-        val resConsumingTaskSuffixes = listOf("Resources", "LintVitalModel", "LintModel", "Bundle")
-
-        afterEvaluate {
-            tasks.matching { task ->
-                resConsumingTaskPrefixes.any { task.name.startsWith(it) } &&
-                        resConsumingTaskSuffixes.any { task.name.endsWith(it) } &&
-                        excludedBuildTypes.none { task.name.contains(it) }
-            }.configureEach {
-                dependsOn(":androidApp:copyReleaseNote")
-            }
-        }
     }
 }
 
@@ -285,22 +270,5 @@ extensions.configure<ApplicationExtension> {
 
     sourceSets["main"].apply {
         assets.directories += "$rootDir/modules/metrolist/app/src/main/assets"
-    }
-}
-
-val copyReleaseNote = tasks.register<Copy>("copyReleaseNote" ) {
-    description = "Copy release note that matches current versionCode to raw folder"
-    group = "build"
-
-    from( "$rootDir/fastlane/metadata/android/en-US/changelogs" )
-
-    val fileName = "${libs.versions.versionCode.get()}.txt"
-    setIncludes( listOf(fileName) )
-
-    val dest = layout.buildDirectory.dir( "generated/releaseNoteRes/raw" )
-    into( dest )
-
-    rename {
-        if( it == fileName ) "release_notes.txt" else it
     }
 }
