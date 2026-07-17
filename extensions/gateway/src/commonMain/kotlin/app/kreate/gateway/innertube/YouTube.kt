@@ -57,4 +57,6 @@ interface YouTube {
     suspend fun getSeeMorePage( browseId: String, params: String? = null ): Result<List<Section>>
 
     suspend fun reverseAlbumIdFrom( playlistId: String ): Result<String>
+
+    suspend fun getLyrics( videoId: String ): Result<String>
 }

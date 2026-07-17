@@ -91,16 +91,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
-import app.kreate.compose.R
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Lyrics
+import app.kreate.gateway.innertube.YouTube
 import app.kreate.preferences.Preferences
 import app.kreate.util.cleanPrefix
 import co.touchlab.kermit.Logger
-import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.models.bodies.NextBody
-import it.fast4x.innertube.requests.lyrics
 import it.fast4x.kugou.KuGou
 import it.fast4x.lrclib.LrcLib
 import it.fast4x.lrclib.models.Track
@@ -150,6 +148,7 @@ import me.bush.translator.Language
 import me.bush.translator.Translator
 import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
+import org.koin.java.KoinJavaComponent
 import kotlin.Float.Companion.POSITIVE_INFINITY
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -555,24 +554,21 @@ fun Lyrics(
                         } else if (!isShowingSynchronizedLyrics && currentLyrics?.fixed == null) {
                             isError = false
                             lyrics = null
-                            runCatching {
-                                Innertube.lyrics(NextBody(videoId = mediaId))
-                                    ?.onSuccess { fixedLyrics ->
-                                        Database.asyncTransaction {
-                                            lyricsTable.upsert(
-                                                Lyrics(
-                                                    songId = mediaId,
-                                                    fixed = fixedLyrics ?: "",
-                                                    synced = currentLyrics?.synced
-                                                )
-                                            )
-                                        }
-                                    }?.onFailure {
+
+                            KoinJavaComponent.get<YouTube>(YouTube::class.java)
+                                .getLyrics( mediaId )
+                                .onFailure { err ->
                                     isError = true
+                                    logger.e( "Failed to fetch lyrics", err )
                                 }
-                            }.onFailure {
-                                logger.e( it ) { "Failed to fetch lyrics from Innertube" }
-                            }
+                                .onSuccess { lyrics ->
+                                    Database.asyncTransaction {
+                                        lyricsTable.upsert(
+                                            Lyrics(mediaId, lyrics, currentLyrics?.synced)
+                                        )
+                                    }
+                                }
+
                             checkedLyricsInnertube = true
                         } else {
                             lyrics = currentLyrics

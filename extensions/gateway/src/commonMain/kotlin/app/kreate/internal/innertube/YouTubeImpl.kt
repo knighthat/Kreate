@@ -47,9 +47,9 @@ import app.kreate.internal.innertube.responses.ThumbnailsImpl
 import app.kreate.internal.innertube.utils.containsExplicitBadge
 import app.kreate.internal.innertube.utils.extractArtistAndAlbum
 import app.kreate.internal.innertube.utils.firstText
+import app.kreate.internal.innertube.utils.pageType
 import app.kreate.internal.innertube.utils.toThumbnailList
 import app.kreate.preferences.Preferences
-import co.touchlab.kermit.Logger
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
@@ -488,6 +488,32 @@ internal class YouTubeImpl : YouTube, Account {
             .getOrThrow()
             .songs
             .firstNotNullOf { it.album?.navigationEndpoint?.browseEndpoint?.browseId }
+    }
+
+    override suspend fun getLyrics( videoId: String ): Result<String> = runCatching {
+        val lyricsEndpoint = requireNotNull(
+            getNext( videoId, null, null, null )
+                .contents
+                .singleColumnMusicWatchNextResultsRenderer
+                ?.tabbedRenderer
+                ?.watchNextTabbedResultsRenderer
+                ?.tabs
+                ?.find { it.tabRenderer.endpoint?.pageType == PageType.LYRICS }
+                ?.tabRenderer
+                ?.endpoint
+                ?.browseEndpoint
+                ?.browseId
+        ) { "Song doesn't have lyrics endpoint" }
+
+        browse( lyricsEndpoint, null, null, false )
+            .contents
+            ?.sectionListRenderer
+            ?.contents
+            ?.firstOrNull()
+            ?.musicDescriptionShelfRenderer
+            ?.description
+            ?.joinToString( "" )
+            .orEmpty()
     }
 
     /*
