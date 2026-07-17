@@ -35,3 +35,4 @@
 .env
 .secrets
 .vars
+.actrc
