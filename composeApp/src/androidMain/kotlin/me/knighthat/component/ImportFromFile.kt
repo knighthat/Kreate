@@ -4,7 +4,7 @@ import android.content.ActivityNotFoundException
 import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import app.kreate.compose.R
-import me.knighthat.utils.Toaster
+import app.kreate.utils.Toaster
 
 abstract class ImportFromFile(
     private val launcher: ManagedActivityResultLauncher<Array<String>, Uri?>

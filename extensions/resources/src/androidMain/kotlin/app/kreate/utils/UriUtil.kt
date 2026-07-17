@@ -1,4 +1,4 @@
-package app.kreate.android.utils
+package app.kreate.utils
 
 import android.content.ContentResolver
 import android.net.Uri

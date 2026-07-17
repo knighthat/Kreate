@@ -75,6 +75,7 @@ import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
 import app.kreate.util.cleanPrefix
 import app.kreate.util.scrollingText
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.ColorPaletteMode
 import it.fast4x.rimusic.enums.ColorPaletteName
@@ -100,7 +101,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.knighthat.component.player.PlaybackSpeed
-import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 
 private class PagerViewPort(

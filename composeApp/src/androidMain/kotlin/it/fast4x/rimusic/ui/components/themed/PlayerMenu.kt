@@ -16,12 +16,13 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
-import app.kreate.compose.R
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.insertIgnore
 import app.kreate.database.mapIgnore
 import app.kreate.di.CacheType
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.ui.components.LocalMenuState
@@ -29,7 +30,6 @@ import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.isNetworkConnected
 import it.fast4x.rimusic.utils.rememberEqualizerLauncher
-import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
 

@@ -12,8 +12,8 @@ import androidx.media3.common.util.UnstableApi
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.compose.R
 import app.kreate.database.Database
+import app.kreate.utils.Toaster
 import kotlinx.coroutines.flow.first
-import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 
 @OptIn(UnstableApi::class)

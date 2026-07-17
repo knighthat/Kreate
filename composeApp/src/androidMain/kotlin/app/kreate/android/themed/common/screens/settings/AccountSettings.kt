@@ -44,6 +44,7 @@ import app.kreate.android.themed.common.component.settings.header
 import app.kreate.components.settings.SettingComponents
 import app.kreate.compose.R
 import app.kreate.preferences.Preferences
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.extensions.discord.DiscordLoginAndGetToken
@@ -53,7 +54,6 @@ import it.fast4x.rimusic.ui.components.CustomModalBottomSheet
 import it.fast4x.rimusic.ui.styling.Dimensions
 import kotlinx.coroutines.launch
 import me.knighthat.discord.Discord
-import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 
 @ExperimentalMaterial3Api

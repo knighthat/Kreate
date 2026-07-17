@@ -29,11 +29,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.kreate.compose.R
 import app.kreate.util.scrollingText
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.ui.styling.ColorPalette
 import it.fast4x.rimusic.ui.styling.Typography
 import it.fast4x.rimusic.utils.bold
 import kotlinx.serialization.Serializable
-import me.knighthat.utils.Toaster
 
 @Serializable
 @Immutable

@@ -1,7 +1,7 @@
 package it.fast4x.rimusic.ui.components.tab.toolbar
 
 import androidx.annotation.StringRes
-import me.knighthat.utils.Toaster
+import app.kreate.utils.Toaster
 
 interface Descriptive: Clickable {
 

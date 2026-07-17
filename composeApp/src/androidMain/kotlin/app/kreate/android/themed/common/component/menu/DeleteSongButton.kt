@@ -12,9 +12,9 @@ import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.di.CacheType
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.ui.components.tab.toolbar.ConfirmDialog
 import it.fast4x.rimusic.utils.asSong
-import me.knighthat.utils.Toaster
 import org.koin.java.KoinJavaComponent.get
 
 

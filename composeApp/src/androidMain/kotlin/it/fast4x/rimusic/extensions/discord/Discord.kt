@@ -21,11 +21,11 @@ import app.kreate.android.LocalPlayerAwareWindowInsets
 import app.kreate.compose.R
 import app.kreate.preferences.Preferences
 import app.kreate.util.IS_DEBUG
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import me.knighthat.discord.Discord
-import me.knighthat.utils.Toaster
 
 @SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalMaterial3Api::class)

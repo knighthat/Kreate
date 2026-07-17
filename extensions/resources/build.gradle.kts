@@ -63,6 +63,8 @@ kotlin {
             // Expose some Palette interface
             api( libs.androidx.palette )
             implementation( libs.androidx.core.ktx )
+            implementation( libs.androidx.appcompat.resources )
+            implementation( libs.toasty )
         }
         getByName("androidDeviceTest"). dependencies {
             implementation( libs.androidx.junit )

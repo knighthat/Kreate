@@ -15,13 +15,13 @@ import app.kreate.android.LocalDownloadHelper
 import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.di.CacheType
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.enums.DownloadedStateMedia
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.isLocal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
-import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 
 

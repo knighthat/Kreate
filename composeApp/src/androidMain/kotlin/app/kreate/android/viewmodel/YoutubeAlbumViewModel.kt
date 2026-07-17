@@ -5,8 +5,8 @@ import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.kreate.compose.R
 import app.kreate.android.utils.innertube.toMediaItem
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.insertIgnore
 import app.kreate.database.models.Album
@@ -15,6 +15,7 @@ import app.kreate.database.models.SongAlbumMap
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.gateway.innertube.models.InnertubeSong
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.utils.isNetworkConnected
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +27,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.knighthat.utils.PropUtils
-import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 

@@ -33,10 +33,10 @@ import app.kreate.components.settings.SettingComponents
 import app.kreate.compose.R
 import app.kreate.constant.Language
 import app.kreate.preferences.Preferences
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.ui.styling.Dimensions
-import me.knighthat.utils.Toaster
 import java.text.Collator
 import java.util.Locale
 

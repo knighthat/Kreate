@@ -41,12 +41,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import app.kreate.compose.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.compose.R
 import app.kreate.constant.Type
 import app.kreate.database.Database
 import app.kreate.database.insertIgnore
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.service.LoginRequiredException
@@ -65,7 +66,6 @@ import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.doubleShadowDrop
 import it.fast4x.rimusic.utils.isLandscape
-import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 import java.net.UnknownHostException
 import java.nio.channels.UnresolvedAddressException

@@ -43,7 +43,6 @@ import app.kreate.android.service.player.VolumeObserver
 import app.kreate.android.service.player.WidgetListener
 import app.kreate.android.utils.centerCropBitmap
 import app.kreate.android.utils.centerCropToMatchScreenSize
-import app.kreate.android.utils.isLocalFile
 import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Event
@@ -52,6 +51,8 @@ import app.kreate.di.InternalPrefKey
 import app.kreate.di.Storage
 import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
+import app.kreate.utils.Toaster
+import app.kreate.utils.isLocalFile
 import co.touchlab.kermit.Logger
 import com.google.common.util.concurrent.MoreExecutors
 import it.fast4x.rimusic.enums.WallpaperType
@@ -87,7 +88,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import me.knighthat.discord.Discord
-import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.java.KoinJavaComponent.inject

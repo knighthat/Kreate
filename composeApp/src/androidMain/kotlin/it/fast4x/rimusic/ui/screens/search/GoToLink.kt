@@ -38,6 +38,7 @@ import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.compose.R
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.preferences.Preferences
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
@@ -54,7 +55,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
-import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.get
 

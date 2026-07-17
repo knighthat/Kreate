@@ -60,14 +60,15 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.compose.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.compose.R
 import app.kreate.constant.Type
 import app.kreate.database.Database
 import app.kreate.preferences.Preferences
 import app.kreate.util.cleanPrefix
 import app.kreate.util.scrollingText
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.BackgroundProgress
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
@@ -90,7 +91,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
-import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 import kotlin.math.absoluteValue
 

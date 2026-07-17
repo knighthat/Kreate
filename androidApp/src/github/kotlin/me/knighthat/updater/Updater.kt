@@ -7,6 +7,7 @@ import app.kreate.compose.R
 import app.kreate.util.FLAVOR_ARCH
 import app.kreate.util.FLAVOR_ENV
 import app.kreate.util.VERSION_NAME
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -20,7 +21,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import me.knighthat.updater.Updater.build
 import me.knighthat.utils.Repository
-import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.component.inject

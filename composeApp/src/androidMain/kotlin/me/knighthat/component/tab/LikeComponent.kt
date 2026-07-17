@@ -5,11 +5,11 @@ import androidx.compose.ui.res.stringResource
 import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Song
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.components.MenuState
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
-import me.knighthat.utils.Toaster
 
 class LikeComponent private constructor(
     private val menuState: MenuState,

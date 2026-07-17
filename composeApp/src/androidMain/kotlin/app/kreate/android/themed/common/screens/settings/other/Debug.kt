@@ -36,6 +36,7 @@ import app.kreate.components.settings.SettingComponents
 import app.kreate.compose.R
 import app.kreate.preferences.Preferences
 import app.kreate.util.getRuntimeLogDir
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.utils.textCopyToClipboard
@@ -46,7 +47,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kreate.resources.generated.resources.Res
 import kreate.resources.generated.resources.file
 import me.knighthat.utils.TimeDateUtils
-import me.knighthat.utils.Toaster
 import java.io.File
 import java.util.UUID
 import kotlin.io.path.createTempFile

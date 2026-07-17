@@ -11,8 +11,8 @@ import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.util.MODIFIED_PREFIX
+import app.kreate.utils.Toaster
 import me.knighthat.component.RenameDialog
-import me.knighthat.utils.Toaster
 
 class ChangeAuthorDialog private constructor(
     activeState: MutableState<Boolean>,

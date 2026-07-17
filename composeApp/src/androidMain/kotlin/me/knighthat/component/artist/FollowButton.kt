@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Artist
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.navigation.header.TabToolBar
@@ -28,7 +29,6 @@ import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.utils.isNetworkConnected
 import kotlinx.coroutines.Dispatchers
-import me.knighthat.utils.Toaster
 import org.koin.java.KoinJavaComponent.inject
 
 class FollowButton private constructor(

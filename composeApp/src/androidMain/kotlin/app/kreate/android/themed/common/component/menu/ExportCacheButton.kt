@@ -17,11 +17,11 @@ import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.compose.R
 import app.kreate.di.CacheType
 import app.kreate.util.cleanPrefix
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.component.inject

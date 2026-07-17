@@ -98,6 +98,7 @@ import app.kreate.database.models.Lyrics
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.preferences.Preferences
 import app.kreate.util.cleanPrefix
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import it.fast4x.kugou.KuGou
 import it.fast4x.lrclib.LrcLib
@@ -145,7 +146,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bush.translator.Language
 import me.bush.translator.Translator
-import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent
 import kotlin.Float.Companion.POSITIVE_INFINITY

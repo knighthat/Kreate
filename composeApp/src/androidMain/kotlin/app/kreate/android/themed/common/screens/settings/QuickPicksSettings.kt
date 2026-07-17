@@ -24,19 +24,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.compose.R
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.components.settings.EnumEntry
 import app.kreate.components.settings.SettingComponents
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.preferences.Preferences
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.ui.components.themed.ConfirmationDialog
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeLoggedIn
 import it.fast4x.rimusic.ui.styling.Dimensions
 import kotlinx.coroutines.Dispatchers
-import me.knighthat.utils.Toaster
 
 @Composable
 fun QuickPicksSettings( paddingValues: PaddingValues ) {

@@ -6,6 +6,7 @@ import app.kreate.compose.R
 import app.kreate.gateway.innertube.YouTubeConstants
 import app.kreate.logging.OkHttpLogger
 import app.kreate.util.IS_DEBUG
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import io.github.siddharthjaswal.logpose.LogPoseConfig
 import io.github.siddharthjaswal.logpose.LogPoseInterceptor
@@ -25,7 +26,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.ClassDiscriminatorMode
 import kotlinx.serialization.json.Json
-import me.knighthat.utils.Toaster
 import okhttp3.Cache
 import okhttp3.ConnectionPool
 import okhttp3.Dns

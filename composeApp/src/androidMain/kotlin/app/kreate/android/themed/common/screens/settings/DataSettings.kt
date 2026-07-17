@@ -38,6 +38,7 @@ import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.di.CacheType
 import app.kreate.preferences.Preferences
+import app.kreate.utils.Toaster
 import coil3.imageLoader
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -50,7 +51,6 @@ import me.knighthat.component.export.ExportDatabaseDialog
 import me.knighthat.component.export.ExportSettingsDialog
 import me.knighthat.component.import.ImportDatabase
 import me.knighthat.component.import.ImportSettings
-import me.knighthat.utils.Toaster
 import org.jetbrains.compose.resources.stringResource
 import org.koin.java.KoinJavaComponent.inject
 import kotlin.math.roundToInt

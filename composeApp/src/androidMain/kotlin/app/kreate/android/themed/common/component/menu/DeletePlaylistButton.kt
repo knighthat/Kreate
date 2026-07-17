@@ -10,8 +10,8 @@ import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.ui.components.tab.toolbar.ConfirmDialog
-import me.knighthat.utils.Toaster
 
 
 class DeletePlaylistButton : MenuButton<PlaylistPreview>(), ConfirmDialog {

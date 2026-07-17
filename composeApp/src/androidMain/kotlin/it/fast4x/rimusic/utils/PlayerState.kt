@@ -16,11 +16,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import app.kreate.compose.R
+import app.kreate.utils.Toaster
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import me.knighthat.utils.Toaster
 
 @Composable
 inline fun Player.DisposableListener(crossinline listenerProvider: () -> Player.Listener) {

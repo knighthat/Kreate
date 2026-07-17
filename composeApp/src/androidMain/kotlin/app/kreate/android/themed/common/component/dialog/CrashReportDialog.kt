@@ -33,11 +33,11 @@ import androidx.compose.ui.util.fastMaxOfOrNull
 import androidx.core.net.toUri
 import app.kreate.android.utils.CrashHandler
 import app.kreate.compose.R
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.textCopyToClipboard
 import me.knighthat.utils.Repository
 import me.knighthat.utils.TimeDateUtils
-import me.knighthat.utils.Toaster
 import java.io.File
 
 class CrashReportDialog(private val context: Context): Dialog() {

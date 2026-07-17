@@ -45,7 +45,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import app.kreate.compose.R
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.entry
 import app.kreate.android.themed.common.component.settings.header
@@ -54,8 +53,10 @@ import app.kreate.component.DialogCancelButton
 import app.kreate.component.DialogConfirmButton
 import app.kreate.components.settings.SETTING_DIALOG_LIST_HEIGHT
 import app.kreate.components.settings.SettingComponents
+import app.kreate.compose.R
 import app.kreate.preferences.Preferences
 import app.kreate.util.isDocumentTree
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -67,7 +68,6 @@ import kreate.resources.generated.resources.Res
 import kreate.resources.generated.resources.create_new_folder
 import kreate.resources.generated.resources.remove
 import kreate.resources.generated.resources.semantic_remove_path
-import me.knighthat.utils.Toaster
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

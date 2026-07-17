@@ -3,13 +3,13 @@ package app.kreate.android.themed.common.component.menu
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.media3.common.MediaItem
-import app.kreate.compose.R
 import app.kreate.android.themed.common.component.BottomMenu
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.cleanPrefix
+import app.kreate.utils.Toaster
 import me.knighthat.component.dialog.InputDialogConstraints
-import me.knighthat.utils.Toaster
 
 
 class SongRenameAuthorButton : TextInputDialog<MediaItem>(InputDialogConstraints.ALL) {

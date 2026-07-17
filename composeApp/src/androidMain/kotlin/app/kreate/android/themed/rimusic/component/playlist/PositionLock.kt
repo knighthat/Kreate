@@ -8,11 +8,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import app.kreate.compose.R
 import app.kreate.constant.SortOrder
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.DualIcon
 import it.fast4x.rimusic.ui.components.tab.toolbar.DynamicColor
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
-import me.knighthat.utils.Toaster
 
 class PositionLock(
     colorState: MutableState<Boolean>

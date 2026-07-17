@@ -19,6 +19,7 @@ import androidx.media3.common.util.UnstableApi
 import app.kreate.android.themed.common.component.AbstractMediaDownloadDialog
 import app.kreate.compose.R
 import app.kreate.database.models.Song
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
@@ -29,7 +30,6 @@ import it.fast4x.rimusic.utils.isNetworkAvailable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.knighthat.utils.Toaster
 
 @UnstableApi
 class DownloadAllDialog(

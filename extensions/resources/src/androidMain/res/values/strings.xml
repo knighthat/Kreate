@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name" translatable="false">Kreate</string>
+    <string name="toast_done">Done</string>
+    <string name="toast_no_internet">No internet</string>
 </resources>

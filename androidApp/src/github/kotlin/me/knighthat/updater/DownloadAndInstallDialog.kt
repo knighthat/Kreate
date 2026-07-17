@@ -36,6 +36,7 @@ import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import app.kreate.compose.R
 import app.kreate.util.IS_DEBUG
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.utils.isAtLeastAndroid7
@@ -44,7 +45,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.knighthat.component.dialog.Dialog
-import me.knighthat.utils.Toaster
 import java.io.File
 import java.io.FileInputStream
 import java.security.MessageDigest

@@ -25,8 +25,8 @@ import app.kreate.android.service.player.ErrorHandlingPolicy
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.player.StatefulPlayerImpl
 import app.kreate.android.service.player.VolumeObserver
-import app.kreate.android.utils.isLocalFile
 import app.kreate.preferences.Preferences
+import app.kreate.utils.isLocalFile
 import it.fast4x.rimusic.enums.ExoPlayerCacheLocation
 import me.knighthat.impl.DownloadHelperImpl
 import okhttp3.OkHttpClient

@@ -11,8 +11,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import app.kreate.compose.R
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
-import me.knighthat.utils.Toaster
 
 
 fun textCopyToClipboard(textCopied:String, context: Context) {

@@ -7,13 +7,13 @@ import app.kreate.compose.R
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.gateway.innertube.models.InnertubeHistory
 import app.kreate.preferences.Preferences
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import me.knighthat.utils.Toaster
 
 
 class HistoryScreenViewModel(

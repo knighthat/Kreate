@@ -15,12 +15,12 @@ import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import app.kreate.compose.R
 import app.kreate.preferences.Preferences
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import me.knighthat.utils.Toaster
 import java.util.ArrayDeque
 import kotlin.time.Duration
 

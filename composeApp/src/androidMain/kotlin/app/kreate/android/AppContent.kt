@@ -67,6 +67,7 @@ import app.kreate.database.models.PersistentQueue
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.preferences.Preferences
 import app.kreate.util.thumbnail
+import app.kreate.utils.Toaster
 import app.kreate.widgets.WidgetBroadcastReceiver
 import app.kreate.widgets.state.WidgetColorState
 import co.touchlab.kermit.Logger
@@ -111,7 +112,6 @@ import it.fast4x.rimusic.utils.resize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent
 

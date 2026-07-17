@@ -39,6 +39,7 @@ import app.kreate.gateway.innertube.SearchFilter
 import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.InnertubeVideo
 import app.kreate.preferences.Preferences
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.typography
@@ -52,7 +53,6 @@ import it.fast4x.rimusic.ui.styling.LocalAppearance
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 

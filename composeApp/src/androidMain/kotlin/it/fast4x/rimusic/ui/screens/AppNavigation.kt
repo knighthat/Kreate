@@ -58,6 +58,7 @@ import app.kreate.database.Database
 import app.kreate.database.models.SearchQuery
 import app.kreate.preferences.Preferences
 import app.kreate.util.VERSION_NAME
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.enums.HomeScreenTabs
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.StatisticsType
@@ -76,7 +77,6 @@ import it.fast4x.rimusic.ui.screens.settings.SettingsScreen
 import it.fast4x.rimusic.ui.screens.statistics.StatisticsScreen
 import kotlinx.coroutines.delay
 import me.knighthat.updater.ChangelogsDialog
-import me.knighthat.utils.Toaster
 
 private val BROWSE_ID_ARG = navArgument( "browseId" ) {
     type = NavType.StringType

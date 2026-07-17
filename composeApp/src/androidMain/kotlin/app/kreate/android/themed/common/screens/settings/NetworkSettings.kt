@@ -21,7 +21,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kreate.compose.R
 import app.kreate.android.enums.DohServer
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
@@ -31,7 +30,9 @@ import app.kreate.components.settings.EnumEntry
 import app.kreate.components.settings.InputDialogEntry
 import app.kreate.components.settings.InputDialogProperties
 import app.kreate.components.settings.SettingComponents
+import app.kreate.compose.R
 import app.kreate.preferences.Preferences
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -40,7 +41,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.component.dialog.InputDialogConstraints
-import me.knighthat.utils.Toaster
 import okhttp3.Dns
 import org.koin.java.KoinJavaComponent.inject
 import java.net.Proxy

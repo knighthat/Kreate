@@ -20,6 +20,7 @@ import app.kreate.database.insertIgnore
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import app.kreate.util.thumbnail
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import coil3.request.allowHardware
 import coil3.request.bitmapConfig
@@ -43,7 +44,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import me.knighthat.utils.Toaster
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import java.util.concurrent.Executors

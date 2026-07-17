@@ -25,6 +25,7 @@ import app.kreate.database.Database
 import app.kreate.database.mapIgnore
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.preferences.Preferences
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.enums.NavRoutes
@@ -40,7 +41,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import me.knighthat.component.playlist.NewPlaylistDialog
-import me.knighthat.utils.Toaster
 
 class PlaylistsMenu private constructor(
     coroutineScope: CoroutineScope,

@@ -14,6 +14,7 @@ import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import app.kreate.di.clearCachedStreamUrlOf
 import app.kreate.gateway.innertube.YouTube
+import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
@@ -21,7 +22,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.component.dialog.CheckboxDialog
-import me.knighthat.utils.Toaster
 import org.jetbrains.annotations.Contract
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get

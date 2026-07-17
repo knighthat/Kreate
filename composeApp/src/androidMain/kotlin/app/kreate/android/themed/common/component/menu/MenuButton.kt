@@ -5,7 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import app.kreate.android.themed.common.component.BottomMenu
-import me.knighthat.utils.Toaster
+import app.kreate.utils.Toaster
 
 
 abstract class MenuButton<T> {

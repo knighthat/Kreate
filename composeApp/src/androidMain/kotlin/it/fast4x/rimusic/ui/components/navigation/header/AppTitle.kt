@@ -24,12 +24,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import app.kreate.android.drawable.AppIcon
 import app.kreate.compose.R
+import app.kreate.utils.Toaster
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.Button
 import it.fast4x.rimusic.utils.semiBold
-import me.knighthat.utils.Toaster
 
 private fun appIconClickAction(
     navController: NavController,
