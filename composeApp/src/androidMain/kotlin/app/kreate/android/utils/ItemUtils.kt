@@ -29,13 +29,9 @@ import app.kreate.gateway.innertube.models.InnertubeArtist
 import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeSong
-import it.fast4x.innertube.Innertube
-import it.fast4x.rimusic.isVideoEnabled
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
-import it.fast4x.rimusic.utils.playVideo
 import it.fast4x.rimusic.utils.shimmerEffect
 import org.koin.compose.koinInject
 
@@ -50,100 +46,6 @@ object ItemUtils {
         modifier: Modifier = Modifier
     ) =
         Box( modifier.size( sizeDp ).clip(thumbnailShape() ).shimmerEffect() )
-
-    @JvmName("OldInnertubeLazyRowItem")
-    @UnstableApi
-    @Composable
-    fun LazyRowItem(
-        navController: NavController,
-        innertubeItems: List<Innertube.Item>,
-        currentlyPlaying: String?,
-        modifier: Modifier = Modifier,
-        menu: BottomMenu = LocalBottomMenu.current
-    ) {
-        val player: StatefulPlayer = koinInject()
-        val hapticFeedback = LocalHapticFeedback.current
-        val appearance = LocalAppearance.current
-        val songItemValues = remember( appearance ) {
-            SongItem.Values.from( appearance )
-        }
-        val albumItemValues = remember( appearance ) {
-            AlbumItem.Values.from( appearance )
-        }
-        val artistItemValues = remember( appearance ) {
-            ArtistItem.Values.from( appearance )
-        }
-        val playlistItemValues = remember( appearance ) {
-            PlaylistItem.Values.from( appearance )
-        }
-
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(COLUMN_SPACING.dp ),
-            modifier = modifier
-        ) {
-            items(
-                items = innertubeItems,
-                key = Innertube.Item::key
-            ) { childItem ->
-
-                when ( childItem ) {
-                    is Innertube.SongItem -> SongItem.Render(
-                        innertubeSong = childItem,
-                        hapticFeedback = hapticFeedback,
-                        values = songItemValues,
-                        isPlaying = childItem.key == currentlyPlaying,
-                        onClick = {
-                            player.forcePlay( childItem.asMediaItem )
-                        },
-                        onLongClick = {
-                            val page = MenuPage.Song(childItem.asMediaItem)
-                            menu.show( page, true )
-                        }
-                    )
-
-                    is Innertube.VideoItem -> {
-                        println("Innertube homePage VideoItem: ${childItem.info?.name}")
-                        SongItem.Render(
-                            innertubeVideo = childItem,
-                            hapticFeedback = hapticFeedback,
-                            isPlaying = currentlyPlaying == childItem.key,
-                            values = songItemValues,
-                            thumbnailSizeDp = SongItem.thumbnailSize(),
-                            onClick = {
-                                player.stopRadio()
-                                if ( isVideoEnabled() )
-                                    player.playVideo( childItem.asMediaItem )
-                                else
-                                    player.forcePlay( childItem.asMediaItem )
-                            },
-                            onLongClick = {
-                                val page = MenuPage.Song(childItem.asMediaItem)
-                                menu.show( page, true )
-                            }
-                        )
-                    }
-
-                    is Innertube.AlbumItem -> AlbumItem.Vertical(
-                        innertubeAlbum = childItem,
-                        values = albumItemValues,
-                        navController = navController
-                    )
-
-                    is Innertube.ArtistItem -> ArtistItem.Render(
-                        innertubeArtist = childItem,
-                        values = artistItemValues,
-                        navController = navController
-                    )
-
-                    is Innertube.PlaylistItem -> PlaylistItem.Vertical(
-                        innertubePlaylist = childItem,
-                        values = playlistItemValues,
-                        navController = navController
-                    )
-                }
-            }
-        }
-    }
 
     @UnstableApi
     @Composable

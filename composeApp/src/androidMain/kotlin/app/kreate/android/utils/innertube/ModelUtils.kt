@@ -9,11 +9,7 @@ import androidx.media3.common.MediaMetadata
 import app.kreate.database.models.Artist
 import app.kreate.database.models.Song
 import app.kreate.gateway.innertube.models.InnertubeArtist
-import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeSong
-import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.models.NavigationEndpoint
-import it.fast4x.innertube.models.Thumbnail
 import it.fast4x.rimusic.utils.EXPLICIT_BUNDLE_TAG
 
 
@@ -59,29 +55,3 @@ val InnertubeArtist.toArtist: Artist
         isYoutubeArtist = true
     )
 
-val InnertubePlaylist.toOldInnertubePlaylist: Innertube.PlaylistItem
-    get() = Innertube.PlaylistItem(
-        info = Innertube.Info(
-            name,
-            NavigationEndpoint.Endpoint.Browse( null, id, null )
-        ),
-        channel = null,
-        songCount = 0,
-        isEditable = false,
-        thumbnail = thumbnails.firstOrNull()?.let {
-            Thumbnail(it.url, it.height.toInt(), it.width.toInt())
-        }
-    )
-
-val InnertubeArtist.toOldInnertubeArtist: Innertube.ArtistItem
-    get() = Innertube.ArtistItem(
-        info = Innertube.Info(
-            name,
-            NavigationEndpoint.Endpoint.Browse( null, id, null )
-        ),
-        subscribersCountText = shortNumSubscribers,
-        channelId = id,
-        thumbnail = thumbnails.firstOrNull()?.let {
-            Thumbnail(it.url, it.height.toInt(), it.width.toInt())
-        }
-    )

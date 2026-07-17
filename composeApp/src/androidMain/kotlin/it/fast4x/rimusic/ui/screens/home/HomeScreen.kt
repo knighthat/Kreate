@@ -12,12 +12,11 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.compose.R
 import app.kreate.android.themed.rimusic.screen.home.HomeSongsScreen
+import app.kreate.compose.R
 import app.kreate.preferences.Preferences
 import it.fast4x.compose.persist.PersistMapCleanup
 import it.fast4x.rimusic.enums.NavRoutes
-import it.fast4x.rimusic.models.toUiMood
 import it.fast4x.rimusic.ui.components.Skeleton
 
 
@@ -61,10 +60,6 @@ fun HomeScreen(
                 0 -> HomeQuickPicks(
                     onSearchClick = {
                         NavRoutes.search.navigateHere( navController )
-                    },
-                    onMoodClick = { mood ->
-                        navController.currentBackStackEntry?.savedStateHandle?.set("mood", mood.toUiMood())
-                        NavRoutes.mood.navigateHere( navController )
                     },
                     onSettingsClick = {
                         NavRoutes.settings.navigateHere( navController )

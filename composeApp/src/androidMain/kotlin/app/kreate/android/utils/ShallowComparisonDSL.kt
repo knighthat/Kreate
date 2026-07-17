@@ -3,7 +3,6 @@ package app.kreate.android.utils
 import androidx.media3.common.MediaItem
 import app.kreate.database.models.Song
 import app.kreate.gateway.innertube.models.InnertubeSong
-import it.fast4x.innertube.Innertube
 import org.jetbrains.annotations.Contract
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -49,46 +48,4 @@ fun Song.shallowCompare( other: MediaItem? ): Boolean {
     }
 
     return other != null && other.mediaId == this.id
-}
-
-/**
- * @return `true` when their ids ([MediaItem.mediaId] & [Innertube.SongItem.key])
- * are equal. `false` if [other] is null.
- */
-@OptIn(ExperimentalContracts::class)
-@Contract("null->false")
-fun Innertube.SongItem.shallowCompare( other: MediaItem? ): Boolean {
-    contract {
-        returns( true ) implies( other != null )
-    }
-
-    return other != null && other.mediaId == this.key
-}
-
-/**
- * @return `true` when their ids ([MediaItem.mediaId] & [Innertube.VideoItem.key])
- * are equal. `false` if [other] is null.
- */
-@OptIn(ExperimentalContracts::class)
-@Contract("null->false")
-fun Innertube.VideoItem.shallowCompare( other: MediaItem? ): Boolean {
-    contract {
-        returns( true ) implies( other != null )
-    }
-
-    return other != null && other.mediaId == this.key
-}
-
-/**
- * @return `true` when their ids ([MediaItem.mediaId] & [Innertube.Podcast.EpisodeItem.videoId])
- * are equal. `false` if [other] is null.
- */
-@OptIn(ExperimentalContracts::class)
-@Contract("null->false")
-fun Innertube.Podcast.EpisodeItem.shallowCompare( other: MediaItem? ): Boolean {
-    contract {
-        returns( true ) implies( other != null )
-    }
-
-    return other != null && other.mediaId == this.videoId
 }

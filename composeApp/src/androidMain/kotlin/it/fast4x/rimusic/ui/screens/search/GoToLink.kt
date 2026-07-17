@@ -34,11 +34,11 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalPlayerAwareWindowInsets
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.compose.R
 import app.kreate.gateway.innertube.YouTube
+import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
-import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.requests.song
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -46,7 +46,6 @@ import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
 import it.fast4x.rimusic.ui.components.themed.InputTextField
 import it.fast4x.rimusic.ui.styling.Dimensions
-import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
@@ -226,10 +225,23 @@ fun GoToLink(
                                     uri.host == "youtu.be" -> path
                                     else -> null
                                 }?.let { videoId ->
-                                    Innertube.song(videoId)?.getOrNull()?.let { song ->
-                                        withContext(Dispatchers.Main) {
-                                            player.forcePlay(song.asMediaItem)
+                                    val song = get<YouTube>(YouTube::class.java)
+                                        .getSongBasicInfo( videoId )
+                                        .onFailure { err ->
+                                            Logger.e( "Failed to get song info", err, "GoToLink" )
                                         }
+                                        .getOrNull()
+                                    if( song == null ) {
+                                        Toaster.e( R.string.error_failed_to_get_song_info )
+                                        return@let
+                                    }
+                                    if ( song.isExplicit && Preferences.PARENTAL_CONTROL.value ) {
+                                        Toaster.w( R.string.warning_parental_control_enabled )
+                                        return@let
+                                    }
+
+                                    withContext( Dispatchers.Main ) {
+                                        player.forcePlay( song.toMediaItem )
                                     }
                                 }
                             }

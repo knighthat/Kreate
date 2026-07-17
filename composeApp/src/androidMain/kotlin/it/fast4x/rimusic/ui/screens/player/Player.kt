@@ -118,12 +118,12 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import androidx.palette.graphics.Palette
-import app.kreate.compose.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.drawable.AppIcon
 import app.kreate.android.screens.player.background.BlurredCover
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.screen.player.ActionBar
+import app.kreate.compose.R
 import app.kreate.constant.Type
 import app.kreate.database.Database
 import app.kreate.database.insertIgnore
@@ -2204,7 +2204,6 @@ fun Player(
             shape = thumbnailRoundness.shape
         ) {
             SearchYoutubeEntity(
-                navController = navController,
                 onDismiss = { showSearchEntity = false },
                 query = "${mediaItem.mediaMetadata.artist.toString()} - ${mediaItem.mediaMetadata.title.toString()}"
             )

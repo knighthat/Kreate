@@ -31,7 +31,6 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadService
 import app.kreate.database.Database
 import app.kreate.preferences.Preferences
-import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.AlbumSwipeAction
 import it.fast4x.rimusic.enums.DownloadedStateMedia
@@ -332,43 +331,6 @@ fun SwipeablePlaylistItem(
         ),
         onSwipeToLeft = swipeLeftCallback,
         onSwipeToRight = swipeRighCallback
-    ) {
-        content()
-    }
-
-}
-
-@OptIn(androidx.media3.common.util.UnstableApi::class)
-@Composable
-fun SwipeableAlbumItem(
-    albumItem: Innertube.AlbumItem,
-    onPlayNext: () -> Unit,
-    onEnqueue: () -> Unit,
-    onBookmark: () -> Unit,
-    content: @Composable () -> Unit
-) {
-    val album by remember( albumItem.key ) {
-        Database.albumTable
-                .findById( albumItem.key )
-    }.collectAsState( null, Dispatchers.IO )
-
-    val albumSwipeLeftAction = Preferences.ALBUM_SWIPE_LEFT_ACTION.value
-    val albumSwipeRightAction = Preferences.ALBUM_SWIPE_RIGHT_ACTION.value
-
-    fun getActionCallback(actionName: AlbumSwipeAction): () -> Unit {
-        return when (actionName) {
-            AlbumSwipeAction.PlayNext -> onPlayNext
-            AlbumSwipeAction.Bookmark -> onBookmark
-            AlbumSwipeAction.Enqueue -> onEnqueue
-            else -> ({})
-        }
-    }
-
-    SwipeableContent(
-        swipeToLeftIcon =  getStateIcon( albumSwipeLeftAction, album?.bookmarkedAt ),
-        swipeToRightIcon =  getStateIcon( albumSwipeRightAction, album?.bookmarkedAt ),
-        onSwipeToLeft = getActionCallback( albumSwipeLeftAction ),
-        onSwipeToRight = getActionCallback( albumSwipeRightAction )
     ) {
         content()
     }

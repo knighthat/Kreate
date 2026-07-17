@@ -21,19 +21,11 @@ import androidx.media3.common.ThumbRating
 import androidx.media3.common.util.UnstableApi
 import app.kreate.database.Database
 import app.kreate.database.models.Album
-import app.kreate.database.models.Artist
 import app.kreate.database.models.Lyrics
 import app.kreate.database.models.Song
 import app.kreate.di.THUMBNAIL_SIZE
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.util.toDuration
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.UserAgent
-import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.models.bodies.ContinuationBody
-import it.fast4x.innertube.requests.playlistPage
-import it.fast4x.innertube.utils.ProxyPreferences
-import it.fast4x.innertube.utils.getProxy
 import it.fast4x.kugou.KuGou
 import it.fast4x.lrclib.LrcLib
 import it.fast4x.rimusic.service.modern.isLocal
@@ -41,15 +33,6 @@ import kotlinx.coroutines.flow.first
 
 const val EXPLICIT_BUNDLE_TAG = "is_explicit"
 
-val Innertube.AlbumItem.asAlbum: Album
-    get() = Album (
-        id = key,
-        title = info?.name,
-        thumbnailUrl = thumbnail?.url,
-        year = year,
-        authorsText = authors?.joinToString(", ") { it.name ?: "" },
-        //shareUrl =
-    )
 
 val InnertubeAlbum.toAlbum: Album
     get() = Album(
@@ -63,109 +46,6 @@ val InnertubeAlbum.toAlbum: Album
         bookmarkedAt = null,
         isYoutubeAlbum = true
     )
-
-val Innertube.Podcast.EpisodeItem.asMediaItem: MediaItem
-    @UnstableApi
-    get() = MediaItem.Builder()
-        .setMediaId(videoId)
-        .setUri(videoId)
-        .setCustomCacheKey(videoId)
-        .setMediaMetadata(
-            MediaMetadata.Builder()
-                .setTitle(title)
-                .setDisplayTitle( title )
-                .setArtist(author.toString())
-                .setAlbumTitle(title)
-                .setArtworkUri(thumbnail.firstOrNull()?.url?.toUri())
-                .setDurationMs( durationString.toDuration().inWholeMilliseconds )
-                .setMediaType( MediaMetadata.MEDIA_TYPE_PODCAST_EPISODE )
-                .setIsBrowsable( false )
-                .setIsPlayable( true )
-                .setExtras(
-                    bundleOf(
-                        "artistNames" to author,
-                    )
-                )
-
-                .build()
-        )
-        .build()
-
-val Innertube.SongItem.asMediaItem: MediaItem
-    @UnstableApi
-    get() = MediaItem.Builder()
-        .setMediaId(key)
-        .setUri(key)
-        .setCustomCacheKey(key)
-        .setMediaMetadata(
-            MediaMetadata.Builder()
-                .setTitle(info?.name)
-                .setDisplayTitle( info?.name )
-                .setArtist(authors?.filter {it.name?.matches(Regex("\\s*([,&])\\s*")) == false }?.joinToString(", ") { it.name ?: "" })
-                .setAlbumTitle(album?.name)
-                .setArtworkUri(thumbnail?.url?.toUri())
-                .setDurationMs( durationText.toDuration().inWholeMilliseconds )
-                .setMediaType( MediaMetadata.MEDIA_TYPE_MUSIC )
-                .setIsBrowsable( false )
-                .setIsPlayable( true )
-                .setExtras(
-                    bundleOf(
-                        "albumId" to album?.endpoint?.browseId,
-                        "artistNames" to authors?.filter { it.endpoint != null }
-                            ?.mapNotNull { it.name },
-                        "artistIds" to authors?.mapNotNull { it.endpoint?.browseId },
-                        EXPLICIT_BUNDLE_TAG to explicit,
-                        "setVideoId" to setVideoId,
-                    )
-                )
-                .build()
-        )
-        .build()
-
-val Innertube.SongItem.asSong: Song
-    get() = Song (
-        id = key,
-        // Song's title must not be "null". If they are,
-        // Something is wrong with Innertube.
-        title = info!!.name!!,
-        artistsText = authors?.joinToString(", ") { it.name ?: "" },
-        durationText = durationText,
-        thumbnailUrl = thumbnail?.url,
-        isExplicit = explicit
-    )
-
-val Innertube.VideoItem.asMediaItem: MediaItem
-    @UnstableApi
-    get() = MediaItem.Builder()
-        .setMediaId(key)
-        .setUri(key)
-        .setCustomCacheKey(key)
-        .setMediaMetadata(
-            MediaMetadata.Builder()
-                .setTitle(info?.name)
-                .setDisplayTitle( info?.name )
-                .setArtist(authors?.joinToString(", ") { it.name ?: "" })
-                .setArtworkUri(thumbnail?.url?.toUri())
-                .setDurationMs( durationText.toDuration().inWholeMilliseconds )
-                .setMediaType( MediaMetadata.MEDIA_TYPE_MUSIC )
-                .setIsBrowsable( false )
-                .setIsPlayable( true )
-                .setExtras(
-                    bundleOf(
-                        "artistNames" to authors?.filter { it.endpoint != null }
-                            ?.mapNotNull { it.name },
-                        "artistIds" to authors?.mapNotNull { it.endpoint?.browseId },
-                        "isOfficialMusicVideo" to isOfficialMusicVideo,
-                        "isUserGeneratedContent" to isUserGeneratedContent,
-                        "isVideo" to true,
-                        // "artistNames" to if (isOfficialMusicVideo) authors?.filter { it.endpoint != null }?.mapNotNull { it.name } else null,
-                        // "artistIds" to if (isOfficialMusicVideo) authors?.mapNotNull { it.endpoint?.browseId } else null,
-                    )
-                )
-                .build()
-        )
-        .build()
-
 
 val Song.asMediaItem: MediaItem
     @UnstableApi
@@ -205,14 +85,6 @@ val Song.asMediaItem: MediaItem
             id.takeIf { !isLocal }
         )
         .build()
-
-val Innertube.ArtistItem.asArtist: Artist
-    get() = Artist(
-        id = key,
-        name = title,
-        thumbnailUrl = thumbnail?.url,
-        isYoutubeArtist = true
-    )
 
 val MediaItem.asSong: Song
     get() = Song (
@@ -258,57 +130,6 @@ fun String?.thumbnail(size: Int): String? {
 }
 fun String?.thumbnail(): String? {
     return this
-}
-
-@JvmName("ResultInnertubeItemsPageCompleted")
-suspend fun Result<Innertube.ItemsPage<Innertube.SongItem>?>.completed(
-    maxDepth: Int =  Int.MAX_VALUE
-): Result<Innertube.ItemsPage<Innertube.SongItem>?> = runCatching {
-    val page = getOrThrow()
-    val songs = page?.items.orEmpty().toMutableList()
-    var continuation = page?.continuation
-
-    var depth = 0
-    var continuationsList = arrayOf<String>()
-    //continuationsList += continuation.orEmpty()
-
-    println("mediaItem playlist completed() continuation? $continuation")
-
-    while (continuation != null && depth++ < maxDepth) {
-        val newSongs = Innertube
-            .playlistPage(
-                body = ContinuationBody(continuation = continuation)
-            )
-            ?.getOrNull()
-            ?.takeUnless { it.items.isNullOrEmpty() } ?: break
-
-        newSongs.items?.let { songs += it.filter { it !in songs } }
-        continuation = newSongs.continuation
-
-        //println("mediaItem loop $depth continuation founded ${continuationsList.contains(continuation)} $continuation")
-        if (continuationsList.contains(continuation)) break
-
-        continuationsList += continuation.orEmpty()
-        //println("mediaItem loop continuationList size ${continuationsList.size}")
-    }
-
-    page?.copy(items = songs, continuation = null)
-}.also { it.exceptionOrNull()?.printStackTrace() }
-
-@JvmName("ResultInnertubePlaylistOrAlbumPageCompleted")
-suspend fun Result<Innertube.PlaylistOrAlbumPage>.completed(
-    maxDepth: Int =  Int.MAX_VALUE
-): Result<Innertube.PlaylistOrAlbumPage> = runCatching {
-    val page = getOrThrow()
-    val songsPage = runCatching {
-        page.songsPage
-    }.onFailure {
-        println("Innertube songsPage PlaylistOrAlbumPage>.completed ${it.stackTraceToString()}")
-    }
-    val itemsPage = songsPage.completed(maxDepth).getOrThrow()
-    page.copy(songsPage = itemsPage)
-}.onFailure {
-    println("Innertube PlaylistOrAlbumPage>.completed ${it.stackTraceToString()}")
 }
 
 fun isNetworkConnected(context: Context): Boolean {
@@ -373,18 +194,6 @@ fun isNetworkAvailableComposable(): Boolean {
         } catch (e: Exception) {
             false
         }
-    }
-}
-
-fun getHttpClient() = HttpClient() {
-    install(UserAgent) {
-        agent = "Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0"
-    }
-    engine {
-        ProxyPreferences.preference?.let{
-            proxy = getProxy(it)
-        }
-
     }
 }
 

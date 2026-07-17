@@ -37,7 +37,6 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
-import app.kreate.compose.R
 import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.player.VolumeObserver
@@ -45,6 +44,7 @@ import app.kreate.android.service.player.WidgetListener
 import app.kreate.android.utils.centerCropBitmap
 import app.kreate.android.utils.centerCropToMatchScreenSize
 import app.kreate.android.utils.isLocalFile
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Event
 import app.kreate.di.CacheType
@@ -54,8 +54,6 @@ import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
 import co.touchlab.kermit.Logger
 import com.google.common.util.concurrent.MoreExecutors
-import io.ktor.client.HttpClient
-import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
 import it.fast4x.rimusic.service.BitmapProvider
@@ -177,8 +175,6 @@ class PlayerServiceModern:
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     override fun onCreate() {
-        Innertube.client = inject<HttpClient>().value
-
         super.onCreate()
 
         volumeObserver.register()

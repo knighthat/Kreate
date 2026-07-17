@@ -97,7 +97,6 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            implementation(projects.oldtube)
             implementation(projects.kugou)
             implementation(projects.lrclib)
             implementation( projects.discord )

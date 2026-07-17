@@ -93,7 +93,6 @@ import app.kreate.preferences.Preferences
 import app.kreate.util.scrollingText
 import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persist
-import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.enums.NavigationBarPosition
@@ -197,7 +196,6 @@ private fun MoodCard(
 fun HomeQuickPicks(
     navController: NavController,
     onSearchClick: () -> Unit,
-    onMoodClick: (mood: Innertube.Mood.Item) -> Unit,
     onSettingsClick: () -> Unit,
     viewModel: HomeQuickPicksViewModel = koinViewModel()
 ) {

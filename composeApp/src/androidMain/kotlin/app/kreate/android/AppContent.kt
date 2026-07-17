@@ -61,6 +61,7 @@ import androidx.palette.graphics.Palette
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
+import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.compose.R
 import app.kreate.database.models.PersistentQueue
 import app.kreate.gateway.innertube.YouTube
@@ -73,10 +74,6 @@ import coil3.imageLoader
 import coil3.request.allowHardware
 import coil3.toBitmap
 import com.kieronquinn.monetcompat.core.MonetCompat
-import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.requests.song
-import it.fast4x.innertube.utils.LocalePreferenceItem
-import it.fast4x.innertube.utils.LocalePreferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.AnimatedGradient
 import it.fast4x.rimusic.enums.ColorPaletteMode
@@ -106,7 +103,6 @@ import it.fast4x.rimusic.ui.styling.customColorPalette
 import it.fast4x.rimusic.ui.styling.dynamicColorPaletteOf
 import it.fast4x.rimusic.ui.styling.typographyOf
 import it.fast4x.rimusic.utils.LocalMonetCompat
-import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isAtLeastAndroid8
@@ -118,7 +114,6 @@ import kotlinx.coroutines.withContext
 import me.knighthat.utils.Toaster
 import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent
-import java.util.Locale
 
 
 const val action_search = "it.fast4x.rimusic.action.search"
@@ -169,13 +164,6 @@ fun AppCompatActivity.AppContent(
     val animatedGradient by Preferences.ANIMATED_GRADIENT.collectAsStateWithLifecycle()
     val customColor by Preferences.CUSTOM_COLOR.collectAsStateWithLifecycle()
     val lightTheme = colorPaletteMode == ColorPaletteMode.Light || (colorPaletteMode == ColorPaletteMode.System && (!isSystemInDarkTheme()))
-
-
-    LocalePreferences.preference =
-        LocalePreferenceItem(
-            hl = Locale.getDefault().language,
-            gl = Locale.getDefault().country
-        )
 
     var appearance by rememberSaveable(
         !lightTheme,
@@ -751,13 +739,23 @@ fun AppCompatActivity.AppContent(
                     uri.host == "youtu.be" -> path
                     else -> null
                 }?.let { videoId ->
-                    Innertube.song(videoId)?.getOrNull()?.let { song ->
-                        withContext(Dispatchers.Main) {
-                            if ( !song.explicit && !Preferences.PARENTAL_CONTROL.value )
-                                player.forcePlay(song.asMediaItem)
-                            else
-                                Toaster.w( "Parental control is enabled" )
+                    val song = KoinJavaComponent.get<YouTube>(YouTube::class.java)
+                        .getSongBasicInfo( videoId )
+                        .onFailure { err ->
+                            Logger.e( "Failed to get song info", err, "GoToLink" )
                         }
+                        .getOrNull()
+                    if( song == null ) {
+                        Toaster.e( R.string.error_failed_to_get_song_info )
+                        return@let
+                    }
+                    if ( song.isExplicit && Preferences.PARENTAL_CONTROL.value ) {
+                        Toaster.w( R.string.warning_parental_control_enabled )
+                        return@let
+                    }
+
+                    withContext( Dispatchers.Main ) {
+                        player.forcePlay( song.toMediaItem )
                     }
                 }
             }

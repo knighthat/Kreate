@@ -28,12 +28,10 @@ import app.kreate.database.models.Artist
 import app.kreate.gateway.innertube.models.InnertubeArtist
 import app.kreate.preferences.Preferences
 import app.kreate.util.scrollingText
-import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.ui.styling.Appearance
 import it.fast4x.rimusic.ui.styling.ColorPalette
 import it.fast4x.rimusic.ui.styling.Typography
-import it.fast4x.rimusic.utils.asArtist
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shimmerEffect
 
@@ -180,18 +178,6 @@ object ArtistItem: Visual(), MultiplatformItem {
             },
             onLongClick = onLongClick
         )
-
-    @Composable
-    fun Render(
-        innertubeArtist: Innertube.ArtistItem,
-        values: Values,
-        navController: NavController?,
-        modifier: Modifier = Modifier,
-        sizeDp: DpSize = thumbnailSize(),
-        showTitle: Boolean = true,
-        onClick: () -> Unit = {},
-        onLongClick: () -> Unit = {}
-    ) = Render( innertubeArtist.asArtist, values, navController, modifier, sizeDp, showTitle, onClick, onLongClick )
 
     @Composable
     fun Render(

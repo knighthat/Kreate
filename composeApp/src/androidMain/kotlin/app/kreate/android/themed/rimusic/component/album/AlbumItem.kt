@@ -32,12 +32,10 @@ import app.kreate.database.models.Album
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.preferences.Preferences
 import app.kreate.util.scrollingText
-import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.ui.styling.Appearance
 import it.fast4x.rimusic.ui.styling.ColorPalette
 import it.fast4x.rimusic.ui.styling.Typography
-import it.fast4x.rimusic.utils.asAlbum
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shimmerEffect
 import it.fast4x.rimusic.utils.toAlbum
@@ -352,33 +350,6 @@ object AlbumItem: Visual(), MultiplatformItem {
             },
             onLongClick = onLongClick
         )
-
-    @Composable
-    fun Horizontal(
-        innertubeAlbum: Innertube.AlbumItem,
-        values: Values,
-        navController: NavController?,
-        modifier: Modifier = Modifier,
-        sizeDp: DpSize = thumbnailSize(),
-        showYear: Boolean = true,
-        showArtists: Boolean = true,
-        onClick: () -> Unit = {},
-        onLongClick: () -> Unit = {}
-    ) = Horizontal( innertubeAlbum.asAlbum, values, navController, modifier, sizeDp, showYear, showArtists, onClick, onLongClick )
-
-    @Composable
-    fun Vertical(
-        innertubeAlbum: Innertube.AlbumItem,
-        values: Values,
-        navController: NavController?,
-        modifier: Modifier = Modifier,
-        sizeDp: DpSize = thumbnailSize(),
-        showYear: Boolean = true,
-        showArtists: Boolean = true,
-        onClick: () -> Unit = {},
-        onLongClick: () -> Unit = {}
-    ) =
-        Vertical( innertubeAlbum.asAlbum, values, navController, modifier, sizeDp, showYear, showArtists, onClick, onLongClick )
 
     @Composable
     fun Vertical(

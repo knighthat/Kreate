@@ -132,7 +132,6 @@ import it.fast4x.rimusic.utils.SynchronizedLyrics
 import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.conditional
-import it.fast4x.rimusic.utils.getHttpClient
 import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.playNext
 import it.fast4x.rimusic.utils.shimmerEffect
@@ -300,7 +299,7 @@ fun Lyrics(
 
         val languageDestination = Preferences.OTHER_APP_LANGUAGE.value.toTranslatorLanguage()
 
-        val translator = Translator(getHttpClient())
+        val translator = Translator(koinInject())
 
         var copyToClipboard by remember {
             mutableStateOf(false)

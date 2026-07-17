@@ -26,10 +26,11 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
-import app.kreate.compose.R
 import app.kreate.android.action_search
 import app.kreate.android.service.player.ExoPlayerListener
 import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.android.utils.innertube.toSong
+import app.kreate.compose.R
 import app.kreate.constant.PlaylistSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.database.Database
@@ -37,16 +38,16 @@ import app.kreate.database.ext.FormatWithSong
 import app.kreate.database.models.PersistentQueue
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
+import app.kreate.gateway.innertube.SearchFilter
+import app.kreate.gateway.innertube.YouTube
+import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.preferences.Preferences
 import app.kreate.util.cleanPrefix
+import co.touchlab.kermit.Logger
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.SettableFuture
-import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.models.bodies.SearchBody
-import it.fast4x.innertube.requests.searchPage
-import it.fast4x.innertube.utils.from
 import it.fast4x.rimusic.enums.StatisticsType
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.MediaSessionConstants.ID_CACHED
@@ -55,7 +56,6 @@ import it.fast4x.rimusic.service.modern.MediaSessionConstants.ID_FAVORITES
 import it.fast4x.rimusic.service.modern.MediaSessionConstants.ID_ONDEVICE
 import it.fast4x.rimusic.service.modern.MediaSessionConstants.ID_TOP
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.asSong
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -67,6 +67,7 @@ import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.koin.java.KoinJavaComponent
 
 @UnstableApi
 class MediaLibrarySessionCallback(
@@ -141,15 +142,15 @@ class MediaLibrarySessionCallback(
     ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
         println("PlayerServiceModern MediaLibrarySessionCallback.onGetSearchResult: $query")
         runBlocking(Dispatchers.IO) {
-            searchedSongs = Innertube.searchPage(
-                body = SearchBody(
-                    query = query,
-                    params = Innertube.SearchFilter.Song.value
-                ),
-                fromMusicShelfRendererContent = Innertube.SongItem.Companion::from
-            )?.map {
-                it?.items?.map { it.asSong }
-            }?.getOrNull() ?: emptyList()
+            searchedSongs = KoinJavaComponent.get<YouTube>(YouTube::class.java)
+                .getSearchResults( query, null, SearchFilter.SONGS )
+                .onFailure { err ->
+                    Logger.e( "failed to search for songs", err, "MediaLibrarySessionCallback" )
+                }
+                .getOrNull()
+                ?.items
+                ?.mapNotNull { (it as? InnertubeSong)?.toSong }
+                .orEmpty()
 
             val resultList = searchedSongs.map {
                 it.toMediaItem(PlayerServiceModern.SEARCHED)

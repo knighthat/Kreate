@@ -886,4 +886,6 @@
     <string name="error_failed_to_get_explore_page">Failed to get explore page</string>
     <string name="error_generic_failed_to_load_page">Failed to load page</string>
     <string name="error_failed_to_get_album">Failed to get album</string>
+    <string name="error_failed_to_get_song_info">Failed to get song\'s info</string>
+    <string name="warning_parental_control_enabled">Parental control is enabled</string>
 </resources>

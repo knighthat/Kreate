@@ -4,14 +4,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistSongsSort
+import app.kreate.android.utils.innertube.toSong
 import app.kreate.database.Database
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.Song
+import app.kreate.gateway.innertube.YouTube
 import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
-import it.fast4x.innertube.Innertube
-import it.fast4x.innertube.models.bodies.NextBody
-import it.fast4x.innertube.requests.relatedSongs
 import it.fast4x.rimusic.ui.components.MenuState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -27,12 +26,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 
 class LocalPlaylistViewModel(
     savedStateHandle: SavedStateHandle,
     menuState: MenuState
-) : ViewModel() {
+) : ViewModel(), KoinComponent {
 
     private val _relatedSongs = MutableStateFlow(emptyMap<Song, Int>())
     private val _items = MutableStateFlow(emptyList<Song>())
@@ -73,33 +74,20 @@ class LocalPlaylistViewModel(
                     delay( 100L )
 
                 withContext( Dispatchers.IO ) {
-                    val requestBody = NextBody( videoId =  items.random().id )
-                    Innertube.relatedSongs( requestBody )
-                             ?.getOrNull()      // If result is null, all subsequence calls are cancelled
-                             ?.songs
-                             ?.filterNot { songItem ->
-                                 // Fetched Song may not have properties like [likedAt]
-                                 // so the result of [List.any] may be false.
-                                 // Comparing their IDs is the most effective way
-                                 items.map( Song::id )
-                                     .any{ songItem.info?.endpoint?.videoId == it }
-                             }
-                             ?.take( count )
-                             ?.associate { songItem ->
-                                 with( songItem ) {
-                                     Song(
-                                         // Song's ID & title must not be "null". If they are,
-                                         // Something is wrong with Innertube.
-                                         id = info!!.endpoint!!.videoId!!,
-                                         title = info!!.name!!,
-                                         artistsText = authors?.joinToString { author -> author.name ?: "" },
-                                         durationText = durationText,
-                                         thumbnailUrl = thumbnail?.url,
-                                         isExplicit = explicit
-                                     ) to (0..items.size).random()      // Map this song with a random position from [items]
-                                 }
-                             }
-                             .orEmpty()
+                    val ids = items.map( Song::id )
+
+                    get<YouTube>()
+                        .getRadio( items.random().id )
+                        .onFailure { err ->
+                            Logger.e( "Failed to get related songs", err, "LocalPlaylistViewModel" )
+                        }
+                        .getOrNull()
+                        ?.filter { it.id !in ids }
+                        ?.take( count )
+                        ?.associate {
+                            it.toSong to (0..items.size).random()      // Map this song with a random position from [items]
+                        }
+                        .orEmpty()
                 }
             }.collectLatest { songs ->
                 _relatedSongs.update { songs }

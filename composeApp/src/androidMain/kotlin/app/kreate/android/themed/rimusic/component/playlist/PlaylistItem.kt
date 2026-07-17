@@ -45,9 +45,9 @@ import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.ItemUtils
 import app.kreate.database.Database
 import app.kreate.database.models.Playlist
+import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.preferences.Preferences
 import app.kreate.util.scrollingText
-import it.fast4x.innertube.Innertube
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.ui.styling.Appearance
 import it.fast4x.rimusic.ui.styling.ColorPalette
@@ -409,45 +409,7 @@ object PlaylistItem: Visual(), MultiplatformItem {
 
     @Composable
     fun Vertical(
-        innertubePlaylist: Innertube.PlaylistItem,
-        values: Values,
-        navController: NavController?,
-        modifier: Modifier = Modifier,
-        sizeDp: DpSize = thumbnailSize(),
-        showPlatformIcon: Boolean = true,
-        onClick: () -> Unit = {},
-        onLongClick: () -> Unit = {}
-    ) =
-        VerticalStructure(
-            widthDp = sizeDp.width,
-            modifier = modifier,
-            thumbnail = {
-                Thumbnail(
-                    browseId = innertubePlaylist.key,
-                    thumbnailUrl = innertubePlaylist.thumbnail?.url,
-                    sizeDp = sizeDp,
-                    showPlatformIcon = showPlatformIcon
-                )
-            },
-            firstLine = {
-                Title(
-                    title = innertubePlaylist.title.orEmpty(),
-                    values = values,
-                    textAlign = TextAlign.Center
-                )
-            },
-            onClick = click@ {
-                onClick.invoke()
-
-                if( navController == null ) return@click
-                    NavRoutes.YT_PLAYLIST.navigateHere( navController, innertubePlaylist.key )
-            },
-            onLongClick = onLongClick
-        )
-
-    @Composable
-    fun Vertical(
-        innertubePlaylist: app.kreate.gateway.innertube.models.InnertubePlaylist,
+        innertubePlaylist: InnertubePlaylist,
         values: Values,
         navController: NavController?,
         modifier: Modifier = Modifier,
@@ -544,41 +506,6 @@ object PlaylistItem: Visual(), MultiplatformItem {
                     NavRoutes.YT_PLAYLIST.navigateHere( navController, playlist.browseId )
                 else
                     NavRoutes.localPlaylist.navigateHere( navController, playlist.id.toString() )
-            },
-            onLongClick = onLongClick
-        )
-
-    @ExperimentalCoroutinesApi
-    @Composable
-    fun Horizontal(
-        innertubePlaylist: Innertube.PlaylistItem,
-        values: Values,
-        navController: NavController?,
-        modifier: Modifier = Modifier,
-        sizeDp: DpSize = thumbnailSize(),
-        showPlatformIcon: Boolean = true,
-        onClick: () -> Unit = {},
-        onLongClick: () -> Unit = {}
-    ) =
-        HorizontalStructure(
-            heightDp = sizeDp.height,
-            modifier = modifier,
-            thumbnail = {
-                Thumbnail(
-                    browseId = innertubePlaylist.key,
-                    thumbnailUrl = innertubePlaylist.thumbnail?.url,
-                    sizeDp = sizeDp,
-                    showPlatformIcon = showPlatformIcon
-                )
-            },
-            firstLine = {
-                Title( innertubePlaylist.title.toString(), values, TextAlign.Start )
-            },
-            onClick = click@ {
-                onClick.invoke()
-
-                if( navController == null ) return@click
-                    NavRoutes.YT_PLAYLIST.navigateHere( navController, innertubePlaylist.key )
             },
             onLongClick = onLongClick
         )

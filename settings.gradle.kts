@@ -22,8 +22,6 @@ include(":composeApp")
 // Platform-specific entries
 include(":androidApp")
 // Projects from extensions
-include(":oldtube")
-project(":oldtube").projectDir = file("extensions/innertube")
 include(":kugou")
 project(":kugou").projectDir = file("extensions/kugou")
 include(":lrclib")

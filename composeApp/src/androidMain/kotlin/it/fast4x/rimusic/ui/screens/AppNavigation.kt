@@ -64,14 +64,11 @@ import it.fast4x.rimusic.enums.StatisticsType
 import it.fast4x.rimusic.enums.TransitionEffect
 import it.fast4x.rimusic.extensions.games.pacman.Pacman
 import it.fast4x.rimusic.extensions.games.snake.SnakeGame
-import it.fast4x.rimusic.models.Mood
 import it.fast4x.rimusic.ui.components.CustomModalBottomSheet
 import it.fast4x.rimusic.ui.screens.history.HistoryScreen
 import it.fast4x.rimusic.ui.screens.home.HomeScreen
 import it.fast4x.rimusic.ui.screens.localplaylist.LocalPlaylistScreen
-import it.fast4x.rimusic.ui.screens.mood.MoodScreen
 import it.fast4x.rimusic.ui.screens.player.Queue
-import it.fast4x.rimusic.ui.screens.podcast.PodcastScreen
 import it.fast4x.rimusic.ui.screens.profiles.ProfileScreen
 import it.fast4x.rimusic.ui.screens.search.SearchScreen
 import it.fast4x.rimusic.ui.screens.searchresult.SearchResultScreen
@@ -254,24 +251,6 @@ fun AppNavigation(
             SeeMoreScreen( navController, miniPlayer )
         }
 
-        composable(
-            route = "${NavRoutes.podcast.name}/{id}",
-            arguments = listOf(
-                navArgument(
-                    name = "id",
-                    builder = { type = NavType.StringType }
-                )
-            )
-        ) { navBackStackEntry ->
-            val id = navBackStackEntry.arguments?.getString("id") ?: ""
-            PodcastScreen(
-                navController = navController,
-                browseId = id,
-                params = null,
-                miniPlayer = miniPlayer,
-            )
-        }
-
         composable(route = NavRoutes.settings.name) {
             SettingsScreen(
                 navController = navController,
@@ -365,19 +344,6 @@ fun AppNavigation(
                 playlistId = id,
                 miniPlayer = miniPlayer
             )
-        }
-
-        composable(
-            route = NavRoutes.mood.name,
-        ) { navBackStackEntry ->
-            val mood: Mood? = navController.previousBackStackEntry?.savedStateHandle?.get("mood")
-            if (mood != null) {
-                MoodScreen(
-                    navController = navController,
-                    mood = mood,
-                    miniPlayer = miniPlayer,
-                )
-            }
         }
 
         composable( NavRoutes.LICENSES.name ) {

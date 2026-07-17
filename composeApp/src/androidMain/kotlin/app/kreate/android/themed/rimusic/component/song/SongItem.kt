@@ -12,11 +12,9 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -39,24 +37,21 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastJoinToString
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
-import app.kreate.compose.R
 import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Visual
 import app.kreate.android.utils.innertube.toSong
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.preferences.Preferences
 import app.kreate.util.scrollingText
-import it.fast4x.innertube.Innertube
-import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.DownloadedStateMedia
 import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.thumbnailShape
@@ -68,7 +63,6 @@ import it.fast4x.rimusic.ui.styling.Typography
 import it.fast4x.rimusic.ui.styling.favoritesIcon
 import it.fast4x.rimusic.ui.styling.favoritesOverlay
 import it.fast4x.rimusic.ui.styling.onOverlay
-import it.fast4x.rimusic.ui.styling.overlay
 import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.conditional
 import it.fast4x.rimusic.utils.downloadedStateMedia
@@ -521,39 +515,6 @@ object SongItem: Visual() {
     @OptIn(UnstableApi::class)
     @Composable
     fun Render(
-        innertubeSong: Innertube.SongItem,
-        hapticFeedback: HapticFeedback,
-        isPlaying: Boolean,
-        values: Values,
-        onLongClick: () -> Unit,
-        modifier: Modifier = Modifier,
-        isInPlaylistScreen: Boolean = false,
-        itemSelector: ItemSelector<Song>? = null,
-        isRecommended: Boolean = false,
-        showThumbnail: Boolean = true,
-        trailingContent: @Composable RowScope.() -> Unit = {},
-        thumbnailOverlay: @Composable BoxScope.() -> Unit = {},
-        onClick: () -> Unit = {}
-    ) =
-        Render(
-            song = innertubeSong.asSong,
-            hapticFeedback = hapticFeedback,
-            isPlaying = isPlaying,
-            values = values,
-            modifier = modifier,
-            isInPlaylistScreen = isInPlaylistScreen,
-            itemSelector = itemSelector,
-            isRecommended = isRecommended,
-            showThumbnail = showThumbnail,
-            onLongClick = onLongClick,
-            trailingContent = trailingContent,
-            thumbnailOverlay = thumbnailOverlay,
-            onClick = onClick
-        )
-
-    @OptIn(UnstableApi::class)
-    @Composable
-    fun Render(
         innertubeSong: InnertubeSong,
         hapticFeedback: HapticFeedback,
         isPlaying: Boolean,
@@ -583,81 +544,6 @@ object SongItem: Visual() {
             thumbnailOverlay = thumbnailOverlay,
             onClick = onClick
         )
-
-    @OptIn(UnstableApi::class)
-    @Composable
-    fun Render(
-        innertubeVideo: Innertube.VideoItem,
-        hapticFeedback: HapticFeedback,
-        isPlaying: Boolean,
-        values: Values,
-        thumbnailSizeDp: DpSize,
-        modifier: Modifier = Modifier,
-        showThumbnail: Boolean = true,
-        onLongClick: (() -> Unit)? = null,
-        trailingContent: @Composable RowScope.() -> Unit = {},
-        onClick: () -> Unit = {}
-    ) =
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy( 12.dp ),
-            modifier = modifier.fillMaxWidth()
-                               .songItemModifier(isPlaying, values, onClick) {
-                                   hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-
-                                   onLongClick?.invoke()
-                               }
-                               .padding(
-                                   vertical = Dimensions.itemsVerticalPadding,
-                                   horizontal = 16.dp
-                               )
-        ) {
-            Thumbnail(
-                showThumbnail = showThumbnail,
-                thumbnailUrl = innertubeVideo.thumbnail?.url,
-                isPlaying = isPlaying,
-                values = values,
-                sizeDp = thumbnailSizeDp,
-                thumbnailOverlay = {
-                    Duration(
-                        duration = innertubeVideo.durationText.orEmpty(),
-                        values = values,
-                        modifier = Modifier.padding( all = 4.dp )
-                                           .background(
-                                               color = colorPalette().overlay,
-                                               shape = itemShape
-                                           )
-                                           .padding( horizontal = 4.dp, vertical = 2.dp )
-                                           .align( Alignment.BottomEnd )
-                    )
-                }
-            )
-
-            Column(
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier.requiredHeight( thumbnailSizeDp.height )
-                                   .padding( vertical = 5.dp )
-            ) {
-                Title( innertubeVideo.info?.name.orEmpty(), values, Modifier.fillMaxWidth() )
-                Artists(
-                    artistsText = innertubeVideo.authors
-                                                ?.fastJoinToString { it.name.orEmpty() }
-                                                .orEmpty(),
-                    values = values,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer( modifier = Modifier.weight(1f) )
-
-                Duration(
-                    duration = innertubeVideo.viewsText.orEmpty().trim(),
-                    values = values,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            trailingContent()
-        }
 
     data class Values(
         val nowPlayingOverlayColor: Color,
