@@ -90,10 +90,10 @@ jobs:
       # - -e: Additional expression, string only needs to match 1 expression to be considered matched
       #
       # Check for these locations:
+      # - androidApp/src/main
+      # - androidApp/src/github
       # - composeApp/src/commonMain
       # - composeApp/src/androidMain
-      # - composeApp/src/androidGithub
-      # - composeApp/src/github
       # - build.gradle.kts              : Any file in the project
       # - gradle/**
       # - extensions/**
@@ -104,10 +104,10 @@ jobs:
         continue-on-error: true
         run: |
           grep -q \
-              -e "^composeApp/src/androidMain/" \
+              -e "^androidApp/src/main/" \
+              -e "^androidApp/src/github/" \
               -e "^composeApp/src/commonMain/" \
-              -e "^composeApp/src/androidGithub/" \
-              -e "^composeApp/src/github/" \
+              -e "^composeApp/src/androidMain/" \
               -e "build\.gradle\.kts$" \
               -e "^gradle/" \
               -e "^extensions/" \
@@ -159,10 +159,10 @@ jobs:
             --since="${SINCE:-1 day ago}" \
             --pretty=format:"- %s" \
             --reverse -- \
+            androidApp/src/main/ \
+            androidApp/src/github/ \
             composeApp/src/androidMain/ \
             composeApp/src/commonMain/ \
-            composeApp/src/androidGithub/ \
-            composeApp/src/github/ \
             "**/build\.gradle\.kts" \
             gradle/ \
             modules/ \
@@ -228,7 +228,6 @@ jobs:
       - name: "DEBUG: Verify change logs"
         run: cat "fastlane/metadata/android/en-US/changelogs/${{ needs.prep.outputs.filename }}"
 
-
       - name: Setup Java 21
         uses: actions/setup-java@v5.3.0
         with:
@@ -252,7 +251,7 @@ jobs:
 
       - name: Get build path
         id: build_path
-        run: echo "path=composeApp/build/outputs/apk/githubUniversalNightly/release/Kreate-nightly.apk" >> $GITHUB_OUTPUT
+        run: echo "path=androidApp/build/outputs/apk/githubUniversalNightly/release/Kreate-nightly.apk" >> $GITHUB_OUTPUT
 
       - name: Upload artifact for uploading
         uses: actions/upload-artifact@v7

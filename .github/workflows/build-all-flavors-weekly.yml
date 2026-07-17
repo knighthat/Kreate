@@ -210,7 +210,7 @@ jobs:
           # Release -> release
           LOWERCASE_BUILD_TYPE=$(echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]')
           
-          echo "path=composeApp/build/outputs/apk/$LOWERCASE_PLATFORM${ARCH}Prod/$LOWERCASE_BUILD_TYPE" >> $GITHUB_OUTPUT
+          echo "path=androidApp/build/outputs/apk/$LOWERCASE_PLATFORM${ARCH}Prod/$LOWERCASE_BUILD_TYPE" >> $GITHUB_OUTPUT
 
       - name: Upload artifacts for uploading
         uses: actions/upload-artifact@v7
