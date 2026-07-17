@@ -177,22 +177,14 @@ jobs:
         with:
           java-version: "21"
           distribution: "corretto"
-          # Shouldn't use cache here, custom cache artifact is handled separately
+          cache: 'gradle'
 
-      - name: Restore Gradle dependencies & build cache
-        # actions/cache/restore only downloads the cache
-        # This will save time uploading the cache, since cache
-        # builder is handled by another workflow
-        uses: actions/cache/restore@v6
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ./build
-            ./composeApp/build
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle-wrapper.properties', '**/libs.versions.toml') }}
-          # Pulls latest cache artifact
-          restore-keys: gradle-${{ runner.os }}-
+          # Only allows the GitHub Universal flavor to write cache back.
+          # All other runners will pull the cache but won't overwrite it.
+          cache-read-only: ${{ !(matrix.platform == 'Github' && matrix.architect == 'Universal' && matrix.type == 'Release') }}
 
       - name: Build with Gradle
         # I.E. assembleGithubX64ProdRelease

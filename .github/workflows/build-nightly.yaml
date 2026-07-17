@@ -233,18 +233,13 @@ jobs:
         with:
           java-version: "21"
           distribution: "corretto"
+          cache: 'gradle'
 
-      - name: Restore Gradle dependencies & build cache
-        # This job also acts as a cache builder for release builds
-        uses: actions/cache@v6
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
         with:
-          path: |
-            ~/.gradle/caches
-            ./build
-            ./composeApp/build
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle-wrapper.properties', '**/libs.versions.toml') }}
-          # Pulls latest cache artifact
-          restore-keys: gradle-${{ runner.os }}-
+          # Force the cache to be read-only (it will restore but never save/write)
+          cache-read-only: true
 
       - name: Build with Gradle
         run: ./gradlew assembleGithubUniversalNightlyRelease
