@@ -11,6 +11,17 @@ internal data class RunsImpl(
     override val accessibility: AccessibilityImpl?
 ): Runs {
 
+    private val fullString: String by lazy { runs.joinToString( "" ) { it } }
+
+    override val length: Int = runs.sumOf( CharSequence::length )
+
+    override fun get( index: Int ): Char = fullString[index]
+
+    override fun subSequence( startIndex: Int, endIndex: Int ): CharSequence =
+        fullString.subSequence( startIndex, endIndex )
+
+    override fun toString(): String = fullString
+
     override fun iterator(): Iterator<String> = runs.map( Runs.Run::text ).iterator()
 
     override fun plus( runs: Runs ): Runs {
@@ -33,5 +44,15 @@ internal data class RunsImpl(
         override val bold: Boolean?,
         override val text: String,
         override val navigationEndpoint: EndpointImpl?
-    ): Runs.Run
+    ): Runs.Run {
+
+        override val length: Int = text.length
+
+        override fun get( index: Int ): Char = text[index]
+
+        override fun subSequence(startIndex: Int, endIndex: Int): CharSequence =
+            text.subSequence( startIndex, endIndex )
+
+        override fun toString(): String = text
+    }
 }
