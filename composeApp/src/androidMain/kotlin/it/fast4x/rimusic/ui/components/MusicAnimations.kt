@@ -22,9 +22,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.player.Player
+import app.kreate.player.PlayerListener
 import it.fast4x.rimusic.enums.MusicAnimationType
 import it.fast4x.rimusic.utils.DisposableListener
 import kotlinx.coroutines.launch
@@ -38,11 +38,11 @@ fun MusicAnimation(
     barWidth: Dp = 6.dp,
     cornerRadius: Dp = 8.dp,
     show: Boolean = true,
-    player: StatefulPlayer = koinInject()
+    player: Player = koinInject()
 ) {
     var isPlayRunning by remember { mutableStateOf(player.isPlaying) }
     player.DisposableListener {
-        object : Player.Listener {
+        object : PlayerListener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 isPlayRunning = isPlaying
             }

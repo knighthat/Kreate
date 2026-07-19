@@ -55,10 +55,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
-import app.kreate.compose.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.constant.MenuPage
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
 import app.kreate.android.themed.rimusic.component.ItemSelector
@@ -68,11 +66,13 @@ import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.renderDescription
 import app.kreate.android.utils.shallowCompare
 import app.kreate.android.viewmodel.YoutubeAlbumViewModel
+import app.kreate.compose.R
 import app.kreate.database.models.Song
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.gateway.innertube.models.Section
 import app.kreate.internal.innertube.models.share
+import app.kreate.player.Player
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.scrollingText
 import co.touchlab.kermit.Logger
@@ -96,7 +96,6 @@ import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.fadingEdge
-import it.fast4x.rimusic.utils.forcePlayAtIndex
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.semiBold
@@ -167,7 +166,7 @@ fun YouTubeAlbum(
         }
     ) {
         //<editor-fold desc="Essentials">
-        val player: StatefulPlayer = koinInject()
+        val player: Player = koinInject()
         val hapticFeedback = LocalHapticFeedback.current
         val (colorPalette, typography) = LocalAppearance.current
         val context = LocalContext.current
@@ -433,16 +432,14 @@ fun YouTubeAlbum(
                                         )
                                     },
                                     onClick = {
-                                        player.stopRadio()
-
                                         val selectedSongs = getSongs()
                                         if( song in selectedSongs )
-                                            player.forcePlayAtIndex(
+                                            player.play(
                                                 selectedSongs.fastMap( Song::asMediaItem ),
                                                 selectedSongs.indexOf( song )
                                             )
                                         else
-                                            player.forcePlayAtIndex(
+                                            player.play(
                                                 items.fastMap( Song::asMediaItem ),
                                                 index
                                             )

@@ -56,7 +56,6 @@ import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
 import app.kreate.android.constant.MenuPage
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
@@ -73,6 +72,7 @@ import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.database.models.SongPlaylistMap
 import app.kreate.di.CacheType
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import app.kreate.util.cleanPrefix
 import app.kreate.util.toDuration
@@ -117,8 +117,6 @@ import it.fast4x.rimusic.utils.checkFileExists
 import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.deleteFileIfExists
 import it.fast4x.rimusic.utils.enqueue
-import it.fast4x.rimusic.utils.forcePlayAtIndex
-import it.fast4x.rimusic.utils.forcePlayFromBeginning
 import it.fast4x.rimusic.utils.isAtLeastAndroid14
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.manageDownload
@@ -158,7 +156,7 @@ fun LocalPlaylistSongs(
 ) {
     // Essentials
     val context = LocalContext.current
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     val hapticFeedback = LocalHapticFeedback.current
     val (colorPalette, typography) = LocalAppearance.current
     val lazyListState = rememberLazyListState()
@@ -682,16 +680,14 @@ fun LocalPlaylistSongs(
                                 }
                             },
                             onClick = {
-                                player.stopRadio()
-
                                 val selectedSongs = getSongs()
                                 if( song in selectedSongs )
-                                    player.forcePlayAtIndex(
+                                    player.play(
                                         selectedSongs.fastMap( Song::asMediaItem ),
                                         selectedSongs.indexOf( song )
                                     )
                                 else
-                                    player.forcePlayAtIndex(
+                                    player.play(
                                         itemsOnDisplay.fastMap( Song::asMediaItem ),
                                         index
                                     )
@@ -729,9 +725,7 @@ fun LocalPlaylistSongs(
                 onClick = {
                     getMediaItems().let { songs ->
                         if (songs.isNotEmpty()) {
-                            player.stopRadio()
-                            player
-                                  ?.forcePlayFromBeginning( songs.shuffled() )
+                            player.play( songs.shuffled() )
                         }
                     }
                 }

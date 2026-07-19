@@ -11,9 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.compose.R
 import app.kreate.database.models.Song
+import app.kreate.player.Player
 import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
@@ -25,7 +25,7 @@ import org.koin.compose.koinInject
 @UnstableApi
 class Locator private constructor(
     firstColorState: MutableState<Boolean>,
-    private val player: StatefulPlayer,
+    private val player: Player,
     private val scrollableState: ScrollableState,
     private val offset: Int,
     private val getSongs: () -> List<Song>
@@ -37,7 +37,7 @@ class Locator private constructor(
             scrollableState: ScrollableState,
             getSongs: () -> List<Song>,
             offset: Int = 0,
-            player: StatefulPlayer = koinInject()
+            player: Player = koinInject()
         ): Locator {
             val mediaItem = player.currentMediaItem
 

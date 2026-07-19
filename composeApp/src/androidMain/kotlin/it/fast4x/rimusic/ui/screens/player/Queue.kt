@@ -56,7 +56,6 @@ import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
 import app.kreate.android.constant.MenuPage
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.playlist.PositionLock
@@ -66,6 +65,7 @@ import app.kreate.compose.R
 import app.kreate.constant.Type
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
+import app.kreate.player.Player
 import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import it.fast4x.compose.persist.persist
@@ -89,13 +89,11 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
-import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.isNowPlaying
 import it.fast4x.rimusic.utils.manageDownload
 import it.fast4x.rimusic.utils.mediaItems
-import it.fast4x.rimusic.utils.shouldBePlaying
 import me.knighthat.component.tab.ExportSongsToCSVDialog
 import me.knighthat.component.tab.Locator
 import me.knighthat.component.ui.screens.player.DeleteFromQueue
@@ -121,7 +119,7 @@ fun Queue(
     // Essentials
     val context = LocalContext.current
     val windowInsets = WindowInsets.systemBars
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
     val menuState = LocalMenuState.current
@@ -136,10 +134,10 @@ fun Queue(
             player.currentTimeline.mediaItems.map( MediaItem::asSong )
         )
         val currentMediaItem by player.currentMediaItemState.collectAsState()
-        val currentTimeline by player.currentTimelineState.collectAsState()
+        val currentTimeline by player.queueState.collectAsState()
         // TODO: Merge this LaunchedEffect to [items]
         LaunchedEffect( currentTimeline ) {
-            items = currentTimeline.mediaItems.map( MediaItem::asSong )
+            items = currentTimeline.map( MediaItem::asSong )
         }
         val songItemValues = remember( colorPalette, typography ) {
             SongItem.Values.from( colorPalette, typography )
@@ -343,11 +341,6 @@ fun Queue(
                         }
                     }
                 }
-
-                if( player.isLoadingRadio() )
-                    items( 3 ) {
-                        SongItem.Placeholder()
-                    }
             }
 
             // Search box

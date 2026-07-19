@@ -29,28 +29,27 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
-import app.kreate.compose.R
 import app.kreate.android.constant.MenuPage
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.viewmodel.SearchResultViewModel
+import app.kreate.compose.R
 import app.kreate.gateway.innertube.SearchFilter
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.gateway.innertube.models.InnertubeArtist
 import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeSong
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.ui.components.Skeleton
 import it.fast4x.rimusic.ui.components.themed.Title
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.utils.forcePlay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -157,8 +156,7 @@ fun SearchResultScreen(
                         onClick = {
                             when( item ) {
                                 is InnertubeSong -> {
-                                    val player: StatefulPlayer = get(StatefulPlayer::class.java)
-                                    player.forcePlay( item.toMediaItem )
+                                    get<Player>(Player::class.java).play( item.toMediaItem )
                                 }
                                 is InnertubeAlbum -> NavRoutes.YT_ALBUM.navigateHere( navController, item.id )
                                 is InnertubeArtist -> NavRoutes.YT_ARTIST.navigateHere( navController, item.id )

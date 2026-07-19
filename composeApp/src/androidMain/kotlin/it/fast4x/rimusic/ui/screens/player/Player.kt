@@ -113,7 +113,6 @@ import androidx.core.graphics.ColorUtils.colorToHSL
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
-import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
@@ -121,12 +120,13 @@ import androidx.palette.graphics.Palette
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.drawable.AppIcon
 import app.kreate.android.screens.player.background.BlurredCover
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.screen.player.ActionBar
 import app.kreate.compose.R
 import app.kreate.constant.Type
 import app.kreate.database.Database
 import app.kreate.database.insertIgnore
+import app.kreate.player.Player
+import app.kreate.player.PlayerListener
 import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
 import app.kreate.util.readableText
@@ -186,7 +186,6 @@ import it.fast4x.rimusic.utils.playPrevious
 import it.fast4x.rimusic.utils.positionAndDurationState
 import it.fast4x.rimusic.utils.resize
 import it.fast4x.rimusic.utils.semiBold
-import it.fast4x.rimusic.utils.shouldBePlaying
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -216,7 +215,7 @@ fun Player(
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val menuState = LocalMenuState.current
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     // Settings
     val disablePlayerHorizontalSwipe by Preferences.PLAYER_THUMBNAIL_HORIZONTAL_SWIPE_DISABLED.collectAsStateWithLifecycle()
     val showlyricsthumbnail by Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
@@ -364,7 +363,7 @@ fun Player(
     val mediaItem = currentMediaItem ?: return
 
     player.DisposableListener {
-        object : Player.Listener {
+        object : PlayerListener {
 
             override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
                 shouldBePlaying = playerError == null && player.shouldBePlaying

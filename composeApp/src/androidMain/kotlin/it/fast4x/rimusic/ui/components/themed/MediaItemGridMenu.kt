@@ -45,17 +45,17 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
-import app.kreate.compose.R
 import app.kreate.android.constant.MenuPage
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
+import app.kreate.compose.R
 import app.kreate.constant.PlaylistSortBy
 import app.kreate.constant.SortOrder
 import app.kreate.database.Database
 import app.kreate.database.insertIgnore
 import app.kreate.database.mapIgnore
 import app.kreate.database.models.Playlist
+import app.kreate.player.Player
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.readableText
 import it.fast4x.rimusic.colorPalette
@@ -67,9 +67,7 @@ import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.px
-import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asSong
-import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.getDownloadState
 import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.positionAndDurationState
@@ -91,7 +89,7 @@ fun NonQueuedMediaItemGridMenu(
     onRemoveFromQuickPicks: (() -> Unit)? = null,
     onDownload: (() -> Unit)? = null
 ) {
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
 
     BaseMediaItemGridMenu(
         navController = navController,
@@ -254,7 +252,7 @@ fun MediaItemGridMenu (
     onRemoveFromQuickPicks: (() -> Unit)? = null,
     onGoToPlaylist: ((Long) -> Unit)?
 ) {
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     val uriHandler = LocalUriHandler.current
     val hapticFeedback = LocalHapticFeedback.current
     val (_, typography) = LocalAppearance.current

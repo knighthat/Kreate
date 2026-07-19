@@ -63,14 +63,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.coil3.ImageFactory
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.compose.R
 import app.kreate.constant.Type
 import app.kreate.database.Database
+import app.kreate.player.Player
+import app.kreate.player.PlayerListener
 import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
 import app.kreate.util.cleanPrefix
@@ -87,18 +87,15 @@ import it.fast4x.rimusic.ui.components.themed.DownloadStateIconButton
 import it.fast4x.rimusic.ui.components.themed.IconButton
 import it.fast4x.rimusic.ui.components.themed.PlayerMenu
 import it.fast4x.rimusic.utils.DisposableListener
-import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.conditional
 import it.fast4x.rimusic.utils.getDownloadState
 import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.manageDownload
-import it.fast4x.rimusic.utils.mediaItems
 import it.fast4x.rimusic.utils.playAtIndex
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.shuffleQueue
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.knighthat.component.player.PlaybackSpeed
 import org.koin.compose.koinInject
@@ -133,7 +130,7 @@ fun BoxScope.ActionBar(
 ) {
     // Essentials
     val context = LocalContext.current
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     val menuState = LocalMenuState.current
 
     val mediaItem = player.currentMediaItem ?: return
@@ -203,9 +200,7 @@ fun BoxScope.ActionBar(
                     val coroutine = rememberCoroutineScope()
                     var currentIndex by remember { mutableIntStateOf( player.currentMediaItemIndex ) }
                     var nextIndex by remember { mutableIntStateOf( player.nextMediaItemIndex ) }
-                    val mediaItems: List<MediaItem> by player
-                                                             .currentTimelineState
-                                                             .map { it.mediaItems }
+                    val mediaItems: List<MediaItem> by player.queueState
                                                              .collectAsState(
                                                                  initial = emptyList(),
                                                                  context = Dispatchers.Main
@@ -228,7 +223,7 @@ fun BoxScope.ActionBar(
                     }
 
                     player.DisposableListener {
-                        object : Player.Listener {
+                        object : PlayerListener {
                             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                                 currentIndex = player.currentMediaItemIndex
                                 nextIndex = player.nextMediaItemIndex
@@ -601,16 +596,16 @@ fun BoxScope.ActionBar(
 
                 val showButtonPlayerSleepTimer by Preferences.PLAYER_ACTION_SLEEP_TIMER.collectAsStateWithLifecycle()
                 if (showButtonPlayerSleepTimer) {
-                    val sleepTimerMillisLeft: Long? by player.sleepTimerRemaining().collectAsState( null )
-
-                    IconButton(
-                        icon = R.drawable.sleep,
-                        color = if (sleepTimerMillisLeft != null) colorPalette().accent else Color.Gray,
-                        onClick = {
-                            showSleepTimerState.value = true
-                        },
-                        modifier = Modifier.size( 24.dp )
-                    )
+//                    val sleepTimerMillisLeft: Long? by player.sleepTimerRemaining().collectAsState( null )
+//
+//                    IconButton(
+//                        icon = R.drawable.sleep,
+//                        color = if (sleepTimerMillisLeft != null) colorPalette().accent else Color.Gray,
+//                        onClick = {
+//                            showSleepTimerState.value = true
+//                        },
+//                        modifier = Modifier.size( 24.dp )
+//                    )
                 }
 
                 val showButtonPlayerSystemEqualizer by Preferences.PLAYER_ACTION_OPEN_EQUALIZER.collectAsStateWithLifecycle()

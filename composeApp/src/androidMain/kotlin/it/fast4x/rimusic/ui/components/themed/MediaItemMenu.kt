@@ -65,7 +65,6 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
 import app.kreate.android.constant.MenuPage
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.compose.R
@@ -78,6 +77,7 @@ import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
+import app.kreate.player.Player
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.cleanPrefix
 import app.kreate.util.readableText
@@ -94,10 +94,8 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.favoritesIcon
 import it.fast4x.rimusic.ui.styling.px
-import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
-import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.getDownloadState
 import it.fast4x.rimusic.utils.getLikeState
 import it.fast4x.rimusic.utils.isDownloadedSong
@@ -220,7 +218,7 @@ fun NonQueuedMediaItemMenuLibrary(
     onMatchingSong: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
 
     var isHiding by remember {
         mutableStateOf(false)
@@ -322,7 +320,7 @@ fun NonQueuedMediaItemMenu(
     onAddToPreferites: (() -> Unit)? = null,
     onMatchingSong: (() -> Unit)? = null
 ) {
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
 
     val menuStyle by app.kreate.preferences.Preferences.MENU_STYLE.collectAsStateWithLifecycle()
 
@@ -384,7 +382,7 @@ fun QueuedMediaItemMenu(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
 
     val menuStyle by app.kreate.preferences.Preferences.MENU_STYLE.collectAsStateWithLifecycle()
 
@@ -613,7 +611,7 @@ fun MediaItemMenu(
 ) {
     val density = LocalDensity.current
 
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val (colorPalette, typography) = LocalAppearance.current
@@ -1118,7 +1116,7 @@ fun MediaItemMenu(
 
                 // TODO: find solution to this shit
                 onShowSleepTimer?.let {
-                    val player: StatefulPlayer = koinInject()
+                    val player: Player = koinInject()
                     var isShowingSleepTimerDialog by remember {
                         mutableStateOf(false)
                     }

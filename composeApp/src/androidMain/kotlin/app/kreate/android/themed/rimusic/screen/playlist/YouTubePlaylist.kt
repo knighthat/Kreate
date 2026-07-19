@@ -47,7 +47,6 @@ import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.constant.MenuPage
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.common.component.LoadMoreContentType
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
@@ -62,6 +61,7 @@ import app.kreate.database.Database
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import app.kreate.internal.innertube.models.share
+import app.kreate.player.Player
 import app.kreate.util.scrollingText
 import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
@@ -82,12 +82,9 @@ import it.fast4x.rimusic.ui.components.themed.PlaylistsMenu
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.fadingEdge
-import it.fast4x.rimusic.utils.forcePlayAtIndex
-import it.fast4x.rimusic.utils.forcePlayFromBeginning
 import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.isNetworkAvailable
@@ -119,7 +116,7 @@ fun YouTubePlaylist(
 ) {
     val context = LocalContext.current
     val menuState = LocalMenuState.current
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
 
@@ -355,16 +352,14 @@ fun YouTubePlaylist(
                                 itemSelector = itemSelector,
                                 modifier = Modifier.animateItem(),
                                 onClick = {
-                                    player.stopRadio()
-
                                     val selectedSongs = getSongs()
                                     if( song in selectedSongs )
-                                        player.forcePlayAtIndex(
+                                        player.play(
                                             selectedSongs.fastMap( Song::asMediaItem ),
                                             selectedSongs.indexOf( song )
                                         )
                                     else
-                                        player.forcePlayAtIndex(
+                                        player.play(
                                             songs.fastMap( Song::asMediaItem ),
                                             index
                                         )
@@ -389,8 +384,7 @@ fun YouTubePlaylist(
                         lazyListState = viewModel.listState,
                         iconId = R.drawable.shuffle,
                         onClick = {
-                            player.stopRadio()
-                            player.forcePlayFromBeginning( getMediaItems() )
+                            player.play( getMediaItems() )
                         }
                     )
             }

@@ -51,10 +51,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
-import app.kreate.compose.R
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.constant.MenuPage
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.common.component.tab.DeleteAllDownloadedDialog
 import app.kreate.android.themed.common.component.tab.DownloadAllDialog
@@ -66,11 +64,13 @@ import app.kreate.android.utils.innertube.toSong
 import app.kreate.android.utils.renderDescription
 import app.kreate.android.utils.shallowCompare
 import app.kreate.android.viewmodel.YoutubeArtistViewModel
+import app.kreate.compose.R
 import app.kreate.database.models.Song
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.gateway.innertube.models.InnertubeArtist
 import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.internal.innertube.models.share
+import app.kreate.player.Player
 import app.kreate.util.scrollingText
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
@@ -88,7 +88,6 @@ import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.fadingEdge
-import it.fast4x.rimusic.utils.forcePlayAtIndex
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.isNetworkConnected
 import it.fast4x.rimusic.utils.medium
@@ -109,7 +108,7 @@ private fun LazyListScope.renderSections(
     songItemValues: SongItem.Values,
     artistPage: InnertubeArtist,
     sectionTextModifier: Modifier,
-    player: StatefulPlayer,
+    player: Player,
     menu: BottomMenu
 ) = artistPage.sections.forEach { section ->
     // Don't show section if the title or contents is null or blank
@@ -177,8 +176,7 @@ private fun LazyListScope.renderSections(
                            values = songItemValues,
                            showThumbnail = true,
                            onClick = {
-                               player.stopRadio()
-                               player.forcePlayAtIndex(
+                               player.play(
                                    songs.map( InnertubeSong::toMediaItem ),
                                    index
                                )
@@ -213,7 +211,7 @@ private fun LazyListScope.renderLibrarySongs(
     songItemValues: SongItem.Values,
     sectionTextModifier: Modifier,
     songs: List<Song>,
-    player: StatefulPlayer,
+    player: Player,
     menu: BottomMenu
 ) {
     item( "songs" ) {
@@ -243,8 +241,7 @@ private fun LazyListScope.renderLibrarySongs(
                 values = songItemValues,
                 showThumbnail = true,
                 onClick = {
-                    player.stopRadio()
-                    player.forcePlayAtIndex(
+                    player.play(
                         songs.map( Song::asMediaItem ),
                         index
                     )
@@ -268,7 +265,7 @@ fun YouTubeArtist(
     miniPlayer: @Composable () -> Unit = {}
 ) {
     val context = LocalContext.current
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
     val saveableStateHolder = rememberSaveableStateHolder()

@@ -7,7 +7,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.database.Database
 import app.kreate.database.models.Album
 import app.kreate.database.models.Artist
@@ -28,7 +27,7 @@ import org.koin.core.component.inject
 
 class PlayerEventUpdateDiscord : Player.Listener, KoinComponent {
 
-    private val player: StatefulPlayer by inject()
+    private val player: Player by inject()
     private val discord: Discord by inject()
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val logger = Logger.withTag(this::class.java.simpleName)

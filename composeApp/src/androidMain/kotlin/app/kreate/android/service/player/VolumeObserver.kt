@@ -6,10 +6,11 @@ import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import androidx.media3.common.Player
 
 class VolumeObserver(
     private val context: Context,
-    private val player: StatefulPlayer
+    private val player: Player
 ): ContentObserver(Handler(Looper.getMainLooper()))  {
 
     private val audioManager =

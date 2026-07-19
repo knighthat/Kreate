@@ -49,7 +49,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
 import app.kreate.android.constant.MenuPage
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Search
@@ -58,6 +57,7 @@ import app.kreate.android.themed.rimusic.component.tab.Sort
 import app.kreate.android.utils.shallowCompare
 import app.kreate.compose.R
 import app.kreate.database.models.Song
+import app.kreate.player.Player
 import app.kreate.preferences.HOME_ON_DEVICE_SONGS_SORT_BY
 import app.kreate.utils.Toaster
 import it.fast4x.rimusic.colorPalette
@@ -67,11 +67,8 @@ import it.fast4x.rimusic.ui.components.SwipeablePlaylistItem
 import it.fast4x.rimusic.ui.components.tab.toolbar.Button
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.bold
-import it.fast4x.rimusic.utils.enqueue
-import it.fast4x.rimusic.utils.forcePlayAtIndex
 import it.fast4x.rimusic.utils.isAtLeastAndroid13
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onEach
@@ -95,7 +92,7 @@ fun OnDeviceSong(
 ) {
     // Essentials
     val context = LocalContext.current
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
     val menuState = LocalMenuState.current
@@ -282,16 +279,14 @@ fun OnDeviceSong(
                     onClick = {
                         search.hideIfEmpty()
 
-                        player.stopRadio()
-
                         val selectedSongs = getSongs()
                         if( song in selectedSongs )
-                            player.forcePlayAtIndex(
+                            player.play(
                                 selectedSongs.fastMap( Song::asMediaItem ),
                                 selectedSongs.indexOf( song )
                             )
                         else
-                            player.forcePlayAtIndex(
+                            player.play(
                                 itemsOnDisplay.fastMap( Song::asMediaItem ),
                                 index
                             )

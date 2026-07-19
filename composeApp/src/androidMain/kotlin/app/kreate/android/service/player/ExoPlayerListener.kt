@@ -13,6 +13,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
 import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
@@ -47,7 +48,7 @@ import kotlin.time.Duration.Companion.seconds
 @OptIn(ExperimentalAtomicApi::class)
 @UnstableApi
 class ExoPlayerListener(
-    private val player: StatefulPlayer,
+    private val player: ExoPlayer,
     private val mediaSession: MediaSession,
     private val waitingForNetwork: MutableStateFlow<Boolean>,
     private val sendOpenEqualizerIntent: () -> Unit,
@@ -139,8 +140,8 @@ class ExoPlayerListener(
         val positionToLast = player.mediaItemCount - player.currentMediaItemIndex
         // Make sure only add when about 10 songs to the last song in queue
         // TODO: Add slider in settings to let user change number of songs
-        if( positionToLast <= 10 && !player.isLoadingRadio() )
-            player.startRadio()
+//        if( positionToLast <= 10 && !player.isLoadingRadio() )
+//            player.startRadio()
     }
 
     @MainThread
@@ -199,7 +200,7 @@ class ExoPlayerListener(
             shuffledIndices.shuffle()
             shuffledIndices[shuffledIndices.indexOf(player.currentMediaItemIndex)] = shuffledIndices[0]
             shuffledIndices[0] = player.currentMediaItemIndex
-            player.setShuffleOrder(DefaultShuffleOrder(shuffledIndices, System.currentTimeMillis()))
+            player.shuffleOrder = DefaultShuffleOrder(shuffledIndices, System.currentTimeMillis())
         }
     }
 

@@ -10,9 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import app.kreate.compose.R
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.settings.SettingEntrySearch
 import app.kreate.android.themed.common.component.settings.animatedEntry
 import app.kreate.android.themed.common.component.settings.entry
@@ -22,6 +21,7 @@ import app.kreate.components.settings.EnumEntry
 import app.kreate.components.settings.ListEntry
 import app.kreate.components.settings.NumberPickerEntry
 import app.kreate.components.settings.SettingComponents
+import app.kreate.compose.R
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.enums.AudioQualityFormat
 import it.fast4x.rimusic.utils.isAtLeastAndroid6
@@ -378,7 +378,7 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
         }
     }
     entry( search, R.string.equalizer ) {
-        val player: StatefulPlayer = koinInject()
+        val player: Player = koinInject()
         val launchEqualizer by rememberEqualizerLauncher( { player.audioSessionId } )
 
         SettingComponents.Entry(

@@ -30,8 +30,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.constant.Type
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.enums.ButtonState
 import it.fast4x.rimusic.enums.PlayerPlayButtonType
@@ -66,7 +66,7 @@ fun Controls(
     shouldBePlaying: Boolean,
     positionAndDuration: Pair<Long, Long>,
     modifier: Modifier = Modifier,
-    player: StatefulPlayer = koinInject()
+    player: Player = koinInject()
 ) {
     val playerTimelineSize by Preferences.PLAYER_TIMELINE_SIZE.collectAsStateWithLifecycle()
     val playerInfoType by Preferences.PLAYER_INFO_TYPE.collectAsStateWithLifecycle()

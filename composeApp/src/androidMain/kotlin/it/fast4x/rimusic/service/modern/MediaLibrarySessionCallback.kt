@@ -15,7 +15,6 @@ import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
@@ -28,7 +27,6 @@ import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import app.kreate.android.action_search
 import app.kreate.android.service.player.ExoPlayerListener
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.innertube.toSong
 import app.kreate.compose.R
 import app.kreate.constant.PlaylistSortBy
@@ -41,6 +39,7 @@ import app.kreate.di.CacheType
 import app.kreate.gateway.innertube.SearchFilter
 import app.kreate.gateway.innertube.YouTube
 import app.kreate.gateway.innertube.models.InnertubeSong
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import app.kreate.util.cleanPrefix
 import co.touchlab.kermit.Logger
@@ -82,9 +81,9 @@ class MediaLibrarySessionCallback(
     lateinit var listener: ExoPlayerListener
     var searchedSongs: List<Song> = emptyList()
 
-    fun toggleLike( player: Player ) {
+    fun toggleLike( player: Player) {
         val mediaItem = player.currentMediaItem ?: return
-        val player: StatefulPlayer by inject()
+        val player: Player by inject()
         Database.asyncTransaction {
             songTable.rotateLikeState( mediaItem.mediaId )
                      .also {
@@ -171,10 +170,10 @@ class MediaLibrarySessionCallback(
         customCommand: SessionCommand,
         args: Bundle,
     ): ListenableFuture<SessionResult> {
-        val player = session.player as StatefulPlayer
+        val player = session.player as Player
         when (customCommand.customAction) {
             MediaSessionConstants.ACTION_TOGGLE_LIKE -> toggleLike( player )
-            MediaSessionConstants.ACTION_TOGGLE_DOWNLOAD -> player.downloadCurrentMediaItem()
+            MediaSessionConstants.ACTION_TOGGLE_DOWNLOAD -> player.currentMediaItem?.also( MyDownloadHelper::autoDownload )
             MediaSessionConstants.ACTION_TOGGLE_SHUFFLE -> player.toggleShuffleMode()
             MediaSessionConstants.ACTION_TOGGLE_REPEAT_MODE -> player.cycleRepeatMode()
             MediaSessionConstants.ACTION_START_RADIO -> player.startRadio()

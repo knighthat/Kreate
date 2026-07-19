@@ -9,16 +9,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.compose.R
 import app.kreate.database.Database
+import app.kreate.player.Player
 import app.kreate.utils.Toaster
 import kotlinx.coroutines.flow.first
 import org.koin.compose.koinInject
 
 @OptIn(UnstableApi::class)
 @Composable
-fun ApplyDiscoverToQueue( player: StatefulPlayer = koinInject() ) {
+fun ApplyDiscoverToQueue( player: Player = koinInject() ) {
     /*   DISCOVER  */
     val discoverIsEnabled by app.kreate.preferences.Preferences.ENABLE_DISCOVER.collectAsStateWithLifecycle()
     if (!discoverIsEnabled) return

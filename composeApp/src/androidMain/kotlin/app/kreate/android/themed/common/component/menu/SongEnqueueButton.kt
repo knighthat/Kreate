@@ -6,9 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import app.kreate.compose.R
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
+import app.kreate.compose.R
+import app.kreate.player.Player
 import it.fast4x.rimusic.utils.enqueue
 import org.koin.java.KoinJavaComponent.get
 
@@ -26,6 +26,6 @@ class SongEnqueueButton : MenuButton<MediaItem>() {
         val context: Context = get(Context::class.java)
         val mediaItems = listOf(item)
 
-        get<StatefulPlayer>(StatefulPlayer::class.java).enqueue( mediaItems, context )
+        get<Player>(Player::class.java).enqueue( mediaItems, context )
     }
 }

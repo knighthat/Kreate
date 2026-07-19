@@ -13,9 +13,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.PlaybackParameters
-import app.kreate.compose.R
 import app.kreate.android.constant.Speed
-import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.compose.R
+import app.kreate.player.Player
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import me.knighthat.component.dialog.Dialog
@@ -46,7 +46,7 @@ class PlaybackSpeed: Dialog, MenuIcon, Descriptive {
     override fun Render() {
         super.Render()
 
-        val player: StatefulPlayer = koinInject()
+        val player: Player = koinInject()
         LaunchedEffect( speedState ) {
             player.playbackParameters = PlaybackParameters( speedState, 1f )
         }

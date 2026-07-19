@@ -2,7 +2,6 @@ package app.kreate.android.viewmodel.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.compose.R
 import app.kreate.database.Database
@@ -16,10 +15,10 @@ import app.kreate.gateway.innertube.models.InnertubeHomePage
 import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.gateway.innertube.models.MultiContent
+import app.kreate.player.Player
 import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.forcePlay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,7 +32,7 @@ import org.koin.core.component.KoinComponent
 
 class HomeQuickPicksViewModel(
     private val youtube: YouTube,
-    private val player: StatefulPlayer
+    private val player: Player
 ) : ViewModel(), KoinComponent {
 
     private val logger = Logger.withTag( "HomeQuickPicks" )
@@ -135,8 +134,7 @@ class HomeQuickPicksViewModel(
     }
 
     fun playAll( trendingSong: Song ) {
-        player.stopRadio()
-        player.forcePlay( trendingSong.asMediaItem )
+        player.play( trendingSong.asMediaItem )
 
         viewModelScope.launch( Dispatchers.Default ) {
             val queue =

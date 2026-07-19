@@ -58,16 +58,16 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalPlayerAwareWindowInsets
-import app.kreate.compose.R
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.viewmodel.OnlineSearchViewModel
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.SearchQuery
 import app.kreate.gateway.innertube.PageType
@@ -178,7 +178,7 @@ fun OnlineSearch(
     val lazyListState = rememberLazyListState()
 
     val menuState = LocalMenuState.current
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
 
     Box(

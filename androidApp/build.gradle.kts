@@ -40,8 +40,8 @@ kotlin {
 
     dependencies {
         implementation( projects.composeApp )
+        implementation( projects.player )
 
-        implementation( libs.media3.exoplayer )
         implementation( libs.koin.android )
         implementation( libs.compose.kmp.resources )
         // Coil3
@@ -60,6 +60,9 @@ kotlin {
         // Lifecycle
         implementation( libs.androidx.lifecycle.runtime )
         implementation( libs.androidx.lifecycle.process )
+        // Media3
+        implementation( libs.media3.session )
+        implementation( libs.media3.exoplayer )
 
         coreLibraryDesugaring( libs.desugaring.nio )
     }

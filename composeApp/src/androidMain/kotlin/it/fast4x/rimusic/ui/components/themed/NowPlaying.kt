@@ -9,17 +9,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.player.Player
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.ui.components.MusicAnimation
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.onOverlay
 
+
 @OptIn(UnstableApi::class)
 @Composable
 fun NowPlayingSongIndicator (
     mediaId: String,
-    player: StatefulPlayer?,
+    player: Player?,
     containerSize: Dp = Dimensions.thumbnails.song
 ) {
 

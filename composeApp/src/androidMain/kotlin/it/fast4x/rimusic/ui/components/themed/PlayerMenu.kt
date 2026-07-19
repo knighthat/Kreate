@@ -16,12 +16,12 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.insertIgnore
 import app.kreate.database.mapIgnore
 import app.kreate.di.CacheType
+import app.kreate.player.Player
 import app.kreate.utils.Toaster
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.service.MyDownloadHelper
@@ -32,6 +32,7 @@ import it.fast4x.rimusic.utils.isNetworkConnected
 import it.fast4x.rimusic.utils.rememberEqualizerLauncher
 import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
+
 
 @ExperimentalTextApi
 @ExperimentalAnimationApi
@@ -46,7 +47,7 @@ fun PlayerMenu(
     ) {
     val context = LocalContext.current
     val menuState = LocalMenuState.current
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     val menuStyle by app.kreate.preferences.Preferences.MENU_STYLE.collectAsStateWithLifecycle()
 
     //val context = LocalContext.current

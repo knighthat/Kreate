@@ -26,15 +26,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.navigation.NavController
-import app.kreate.compose.R
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.settings.data.ExoCacheIndicator
 import app.kreate.android.themed.rimusic.component.ItemSelector
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.screen.home.onDevice.OnDeviceSong
 import app.kreate.components.settings.SettingComponents
+import app.kreate.compose.R
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.colorPalette
@@ -72,7 +72,7 @@ import org.koin.compose.koinInject
 fun HomeSongsScreen(
     navController: NavController,
     cache: Cache = koinInject(CacheType.CACHE),
-    player: StatefulPlayer = koinInject()
+    player: Player = koinInject()
 ) {
     // Essentials
     val lazyListState = rememberLazyListState()

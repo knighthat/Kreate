@@ -54,17 +54,17 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.compose.rememberNavController
 import androidx.palette.graphics.Palette
 import app.kreate.android.coil3.ImageFactory
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.compose.R
 import app.kreate.database.models.PersistentQueue
 import app.kreate.gateway.innertube.YouTube
+import app.kreate.player.Player
+import app.kreate.player.PlayerListener
 import app.kreate.preferences.Preferences
 import app.kreate.util.thumbnail
 import app.kreate.utils.Toaster
@@ -271,7 +271,7 @@ fun AppCompatActivity.AppContent(
     }
 
 
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     DisposableEffect(player, !lightTheme) {
         val listener = Preferences.Listener { _, key ->
             withContext( Dispatchers.Main ) {
@@ -677,9 +677,9 @@ fun AppCompatActivity.AppContent(
                 }
             }
 
-            val listener = object : Player.Listener {
+            val listener = object : PlayerListener {
                 override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                    if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED && mediaItem != null) {
+                    if (reason == androidx.media3.common.Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED && mediaItem != null) {
                         if ( mediaItem.localConfiguration?.tag !== PersistentQueue.Tag )
                             showPlayer = !Preferences.PLAYER_KEEP_MINIMIZED.value
                     }

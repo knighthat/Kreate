@@ -32,7 +32,6 @@ import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
 import app.kreate.android.LocalPlayerAwareWindowInsets
 import app.kreate.android.constant.MenuPage
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.innertube.toMediaItem
@@ -42,6 +41,7 @@ import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Event
 import app.kreate.gateway.innertube.models.InnertubeSong
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.HistoryType
@@ -73,7 +73,7 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun HistoryList(
     navController: NavController,
-    player: StatefulPlayer = koinInject(),
+    player: Player = koinInject(),
     menu: BottomMenu = LocalBottomMenu.current,
     viewModel: HistoryScreenViewModel = koinViewModel()
 ) {

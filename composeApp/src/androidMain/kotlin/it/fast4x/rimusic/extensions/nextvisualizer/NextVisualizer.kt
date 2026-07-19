@@ -35,12 +35,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.drawable.AppIcon
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.compose.R
+import app.kreate.player.Player
+import app.kreate.player.PlayerListener
 import app.kreate.preferences.Preferences
 import app.kreate.utils.Toaster
 import coil3.request.allowHardware
@@ -80,7 +80,7 @@ import org.koin.compose.koinInject
 
 @OptIn(UnstableApi::class)
 @Composable
-fun NextVisualizer( player: StatefulPlayer = koinInject() ) {
+fun NextVisualizer( player: Player = koinInject() ) {
 
     val context = LocalContext.current
     val visualizerEnabled by Preferences.PLAYER_VISUALIZER.collectAsStateWithLifecycle()
@@ -240,7 +240,7 @@ fun NextVisualizer( player: StatefulPlayer = koinInject() ) {
 
 @OptIn(UnstableApi::class)
 @Composable
-fun getVisualizers( player: StatefulPlayer = koinInject() ): List<Painter> {
+fun getVisualizers( player: Player = koinInject() ): List<Painter> {
 
     val context = LocalContext.current
     val circleBitmap: Bitmap
@@ -273,7 +273,7 @@ fun getVisualizers( player: StatefulPlayer = koinInject() ): List<Painter> {
     }
 
     player.DisposableListener {
-        object : Player.Listener {
+        object : PlayerListener {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 coroutineScope.launch {
                     val thumbnailUrl: String =  mediaItem?.mediaMetadata

@@ -110,7 +110,7 @@ actual val playbackModule: Module = module {
     //  subscribers should use [PlaybackService]'s player instead of injecting
     //  an instance from Koin.
     // TODO: Convert this into factory
-    single {
+    single<ExoPlayer> {
         //<editor-fold desc="DataSource">
         val dataSource = DefaultMediaSourceFactory(
             // At the bottom of the stack, it's download cache
@@ -145,18 +145,16 @@ actual val playbackModule: Module = module {
             .build()
         //</editor-fold>
 
-        PlayerImpl(
-            ExoPlayer.Builder( get() )
-                .setMediaSourceFactory( dataSource )
-                .setHandleAudioBecomingNoisy( true )
-                .setWakeMode( C.WAKE_MODE_NETWORK )
-                .setAudioAttributes( audioAttributes, handleAudioFocus )
-                .setUsePlatformDiagnostics( false )
-                .build()
-        )
-    } bind Player::class
+        ExoPlayer.Builder( get() )
+            .setMediaSourceFactory( dataSource )
+            .setHandleAudioBecomingNoisy( true )
+            .setWakeMode( C.WAKE_MODE_NETWORK )
+            .setAudioAttributes( audioAttributes, handleAudioFocus )
+            .setUsePlatformDiagnostics( false )
+            .build()
+    } bind MediaPlayer::class
 
-    factory<MediaPlayer> { get<PlayerImpl>() }
+    single<Player> { PlayerImpl(get()) }
 }
 
 enum class CacheType : Qualifier {

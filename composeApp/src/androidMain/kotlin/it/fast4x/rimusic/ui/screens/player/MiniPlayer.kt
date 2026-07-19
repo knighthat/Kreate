@@ -57,14 +57,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.PlaybackException
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.coil3.ImageFactory
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.compose.R
 import app.kreate.constant.Type
 import app.kreate.database.Database
+import app.kreate.player.Player
+import app.kreate.player.PlayerListener
 import app.kreate.preferences.Preferences
 import app.kreate.util.cleanPrefix
 import app.kreate.util.scrollingText
@@ -85,7 +85,6 @@ import it.fast4x.rimusic.utils.playNext
 import it.fast4x.rimusic.utils.playPrevious
 import it.fast4x.rimusic.utils.positionAndDurationState
 import it.fast4x.rimusic.utils.semiBold
-import it.fast4x.rimusic.utils.shouldBePlaying
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -104,7 +103,7 @@ fun MiniPlayer(
     hidePlayer: () -> Unit,
     navController: NavController? = null,
 ) {
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
 
     val context = LocalContext.current
 
@@ -125,7 +124,7 @@ fun MiniPlayer(
     val mediaItem = currentMediaItem ?: return
 
     player.DisposableListener {
-        object : Player.Listener {
+        object : PlayerListener {
             override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
                 shouldBePlaying = if (playerError == null) player.shouldBePlaying else false
             }
@@ -262,7 +261,6 @@ fun MiniPlayer(
                             if (dragAmount < 0) showPlayer()
                             else if (dragAmount > 20) {
                                 if (!disableClosingPlayerSwipingDown) {
-                                    player.stopRadio()
                                     player.clearMediaItems()
                                     hidePlayer()
                                     runCatching {

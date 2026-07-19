@@ -33,10 +33,10 @@ import androidx.core.net.toUri
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalPlayerAwareWindowInsets
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.compose.R
 import app.kreate.gateway.innertube.YouTube
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
@@ -74,7 +74,7 @@ fun GoToLink(
     onAction3: () -> Unit,
     onAction4: () -> Unit,
 ) {
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     val coroutineScope = CoroutineScope(Dispatchers.IO) + Job()
 
     val lazyListState = rememberLazyListState()

@@ -27,8 +27,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.screen.player.timeline.DurationIndicator
+import app.kreate.player.Player
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.PlayerTimelineType
 import it.fast4x.rimusic.ui.components.ProgressPercentage
@@ -49,7 +49,7 @@ const val DURATION_INDICATOR_HEIGHT = 20
 fun GetSeekBar(
     mediaItem: MediaItem,
     positionAndDuration: Pair<Long, Long>,
-    player: StatefulPlayer = koinInject()
+    player: Player = koinInject()
 ) {
     val playerTimelineType by app.kreate.preferences.Preferences.PLAYER_TIMELINE_TYPE.collectAsStateWithLifecycle()
     var scrubbingPosition by remember( mediaItem.mediaId ) {

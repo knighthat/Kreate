@@ -11,7 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import app.kreate.android.service.player.StatefulPlayer
+import app.kreate.player.Player
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -94,7 +94,7 @@ fun setDeviceVolume(context: Context, volume: Float) {
 fun MedleyMode(
     seconds: Int,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    player: StatefulPlayer = koinInject()
+    player: Player = koinInject()
 ) {
     if (seconds == 0) return
 
@@ -104,7 +104,7 @@ fun MedleyMode(
                 delay(1.seconds * seconds)
                 withContext(Dispatchers.Main) {
                     if (player.isPlaying)
-                        player.playNext()
+                        player.seekToNext()
                 }
             }
         }

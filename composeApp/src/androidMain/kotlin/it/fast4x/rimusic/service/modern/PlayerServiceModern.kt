@@ -23,7 +23,6 @@ import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
@@ -38,7 +37,6 @@ import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
 import app.kreate.android.service.player.ExoPlayerListener
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.player.VolumeObserver
 import app.kreate.android.service.player.WidgetListener
 import app.kreate.android.utils.centerCropBitmap
@@ -49,6 +47,8 @@ import app.kreate.database.models.Event
 import app.kreate.di.CacheType
 import app.kreate.di.InternalPrefKey
 import app.kreate.di.Storage
+import app.kreate.player.Player
+import app.kreate.player.PlayerListener
 import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
 import app.kreate.utils.Toaster
@@ -105,12 +105,12 @@ class PlayerServiceModern:
     MediaLibraryService(),
     PlaybackStatsListener.Callback,
     Preferences.Listener,
-    Player.Listener,
+    PlayerListener,
     KoinComponent
 {
     private val cache: Cache by inject(CacheType.CACHE)
     private val discord: Discord by inject()
-    private val player: StatefulPlayer by inject()
+    private val player: Player by inject()
     private val volumeObserver: VolumeObserver by inject()
     private val logger = Logger.withTag( this::class.java.simpleName )
 
@@ -601,7 +601,7 @@ class PlayerServiceModern:
         listener.updateMediaControl( this@PlayerServiceModern, player )
     }
 
-    inner class NotificationActionReceiver(private val player: StatefulPlayer) : BroadcastReceiver() {
+    inner class NotificationActionReceiver(private val player: Player) : BroadcastReceiver() {
         @ExperimentalCoroutinesApi
         @FlowPreview
         override fun onReceive(context: Context, intent: Intent) {
@@ -611,7 +611,7 @@ class PlayerServiceModern:
                 Action.next.value       -> player.playNext()
                 Action.previous.value   -> player.playPrevious()
                 Action.like.value       -> mediaLibrarySessionCallback.toggleLike( player )
-                Action.download.value   -> player.downloadCurrentMediaItem()
+                Action.download.value   -> player.currentMediaItem?.also( MyDownloadHelper::autoDownload )
                 Action.playradio.value  -> player.startRadio()
                 Action.shuffle.value    -> player.toggleShuffleMode()
                 Action.search.value     -> mediaLibrarySessionCallback.onSearch()

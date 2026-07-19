@@ -70,7 +70,6 @@ import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
 import app.kreate.android.LocalPlayerAwareWindowInsets
 import app.kreate.android.constant.MenuPage
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
 import app.kreate.android.themed.rimusic.component.playlist.PlaylistItem
@@ -89,6 +88,7 @@ import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeRankedArtist
 import app.kreate.gateway.innertube.models.InnertubeSong
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import app.kreate.util.scrollingText
 import co.touchlab.kermit.Logger
@@ -116,7 +116,6 @@ import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.bold
 import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.color
-import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.secondary
 import it.fast4x.rimusic.utils.semiBold
@@ -200,7 +199,7 @@ fun HomeQuickPicks(
     viewModel: HomeQuickPicksViewModel = koinViewModel()
 ) {
     val hapticFeedback = LocalHapticFeedback.current
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     val (colorPalette, typography) = LocalAppearance.current
     val menuState = LocalMenuState.current
     val windowInsets = LocalPlayerAwareWindowInsets.current
@@ -474,7 +473,6 @@ fun HomeQuickPicks(
                                         bottomMenu.show( page, true )
                                     }
                                 ) {
-                                    player.startRadio( song, true )
                                 }
                             }
                         }
@@ -496,7 +494,6 @@ fun HomeQuickPicks(
                                     bottomMenu.show( page, true )
                                 }
                             ) {
-                                player.startRadio( mediaItem, true )
                             }
                         }
                     }
@@ -793,9 +790,8 @@ fun HomeQuickPicks(
                                                         isPlaying = song.shallowCompare( currentMediaItem ),
                                                         onClick = {
                                                             val mediaItem = song.toMediaItem
-                                                            player.stopRadio()
-                                                            player.forcePlay(mediaItem)
-                                                            player.addMediaItems(songs.map { it.toMediaItem })
+                                                            player.play(mediaItem)
+                                                            player.addMediaItems( songs.map { it.toMediaItem } )
                                                         },
                                                         onLongClick = {
                                                             val page = MenuPage.Song(song.toMediaItem)

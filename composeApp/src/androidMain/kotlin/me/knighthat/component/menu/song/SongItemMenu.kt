@@ -28,12 +28,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.compose.R
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.ChangeSongThumbnail
 import app.kreate.android.themed.rimusic.component.song.SongItem
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Song
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.colorPalette
@@ -113,7 +113,7 @@ class SongItemMenu private constructor(
     @Composable
     override fun MenuComponent() {
         val context = LocalContext.current
-        val player: StatefulPlayer = koinInject()
+        val player: Player = koinInject()
         val (colorPalette, typography) = LocalAppearance.current
         val coroutineScope = rememberCoroutineScope()
 

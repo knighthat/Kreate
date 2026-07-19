@@ -50,8 +50,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.compose.R
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.constant.Type
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import app.kreate.util.scrollingText
 import it.fast4x.rimusic.colorPalette
@@ -87,7 +87,7 @@ import org.koin.compose.koinInject
 @ExperimentalFoundationApi
 @Composable
 fun InfoAlbumAndArtistModern(
-    player: StatefulPlayer,
+    player: Player,
     navController: NavController,
     mediaItem: MediaItem,
     albumId: String?,
@@ -102,7 +102,7 @@ fun InfoAlbumAndArtistModern(
     var showSelectDialog by remember { mutableStateOf(false) }
     val playerBackgroundColors by Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
     val playerInfoShowIcon by Preferences.PLAYER_SONG_INFO_ICON.collectAsStateWithLifecycle()
-    val currentMediaItem = player.currentMediaItem
+    val currentMediaItem by player.currentMediaItemState.collectAsStateWithLifecycle()
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -360,7 +360,7 @@ fun ControlsModern(
     playbackSpeed: Float,
     shouldBePlaying: Boolean,
     playerPlayButtonType: PlayerPlayButtonType,
-    player: StatefulPlayer = koinInject(),
+    player: Player = koinInject(),
     onShowSpeedPlayerDialog: () -> Unit
 ) {
     val effectRotationEnabled by Preferences.ROTATION_EFFECT.collectAsStateWithLifecycle()

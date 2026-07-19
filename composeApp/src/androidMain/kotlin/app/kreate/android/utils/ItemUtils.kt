@@ -17,7 +17,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalBottomMenu
 import app.kreate.android.constant.MenuPage
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.artist.ArtistItem
@@ -29,6 +28,7 @@ import app.kreate.gateway.innertube.models.InnertubeArtist
 import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeSong
+import app.kreate.player.Player
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.forcePlay
@@ -54,7 +54,7 @@ object ItemUtils {
         innertubeItems: List<InnertubeItem>,
         currentlyPlaying: String?,
         modifier: Modifier = Modifier,
-        player: StatefulPlayer = koinInject(),
+        player: Player = koinInject(),
         menu: BottomMenu = LocalBottomMenu.current
     ) {
         val hapticFeedback = LocalHapticFeedback.current

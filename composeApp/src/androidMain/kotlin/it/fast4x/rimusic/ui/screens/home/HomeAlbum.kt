@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.Search
 import app.kreate.android.themed.rimusic.component.album.AlbumItem
 import app.kreate.android.themed.rimusic.component.tab.ItemSize
@@ -56,6 +55,7 @@ import app.kreate.database.mapIgnore
 import app.kreate.database.models.Album
 import app.kreate.database.models.Song
 import app.kreate.database.repositories.AlbumTable
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import app.kreate.util.MODIFIED_PREFIX
 import it.fast4x.compose.persist.persistList
@@ -107,7 +107,7 @@ fun HomeAlbums(
 ) {
     // Essentials
     val menuState = LocalMenuState.current
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     val lazyGridState = rememberLazyGridState()
     val (colorPalette, typography) = LocalAppearance.current
     val context = LocalContext.current

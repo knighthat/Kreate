@@ -24,8 +24,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.compose.R
+import app.kreate.player.Player
 import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
 import it.fast4x.rimusic.service.FakeException
@@ -52,7 +52,7 @@ import java.nio.channels.UnresolvedAddressException
 @Composable
 fun PlayerError(
     error: PlaybackException,
-    player: StatefulPlayer = koinInject()
+    player: Player = koinInject()
 ) {
     val localMusicFileNotFoundError = stringResource(R.string.error_local_music_not_found)
     val networkerror = stringResource(R.string.error_a_network_error_has_occurred)

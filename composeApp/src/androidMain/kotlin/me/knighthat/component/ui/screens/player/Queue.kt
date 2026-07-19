@@ -12,8 +12,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.compose.R
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
 import app.kreate.utils.Toaster
@@ -25,7 +25,6 @@ import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.DynamicColor
 import it.fast4x.rimusic.ui.components.tab.toolbar.Icon
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
-import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.mediaItems
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -100,7 +99,7 @@ class Repeat private constructor(
 @SuppressLint("ComposableNaming")
 @Composable
 fun ShuffleQueue(
-    player: StatefulPlayer,
+    player: Player,
     reorderingState: ReorderingState
 ): MenuIcon = object: MenuIcon, Descriptive {
     override val iconId: Int = R.drawable.shuffle

@@ -4,14 +4,13 @@ import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.util.UnstableApi
-import app.kreate.compose.R
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.common.component.BottomMenu
+import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
+import app.kreate.player.Player
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.forcePlayFromBeginning
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -43,9 +42,7 @@ class PlaylistShuffleButton : MenuButton<PlaylistPreview>() {
                         .flowOn( Dispatchers.Default )
                         .first()
 
-            val player = get<StatefulPlayer>(StatefulPlayer::class.java)
-            player.stopRadio()
-            player.forcePlayFromBeginning( songs )
+            get<Player>(Player::class.java).play( songs )
         }
     }
 }

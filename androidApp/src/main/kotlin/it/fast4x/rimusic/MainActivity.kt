@@ -1,10 +1,8 @@
 package it.fast4x.rimusic
 
-import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.content.res.Configuration
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -13,16 +11,12 @@ import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
 import android.view.WindowManager
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -35,22 +29,23 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
 import app.kreate.android.AppContent
 import app.kreate.android.LocalFlavorSpecificFunctions
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.service.updater.UpdatePlugins
 import app.kreate.android.themed.common.component.dialog.CrashReportDialog
+import app.kreate.player.PlaybackService
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import co.touchlab.kermit.Logger
+import com.google.common.util.concurrent.MoreExecutors
 import com.kieronquinn.monetcompat.core.MonetActivityAccessException
 import com.kieronquinn.monetcompat.core.MonetCompat
 import com.kieronquinn.monetcompat.interfaces.MonetColorsChangedListener
 import dev.kdrag0n.monet.theme.ColorScheme
 import it.fast4x.rimusic.enums.ColorPaletteName
-import it.fast4x.rimusic.service.modern.PlayerServiceModern
-import it.fast4x.rimusic.utils.intent
 import it.fast4x.rimusic.utils.invokeOnReady
-import it.fast4x.rimusic.utils.playNext
 import it.fast4x.rimusic.utils.setDefaultPalette
 import org.koin.java.KoinJavaComponent.inject
 import java.util.Objects
@@ -65,12 +60,6 @@ MainActivity :
     MonetColorsChangedListener
 //,PersistMapOwner
 {
-    private val serviceConnection = object : ServiceConnection {
-
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {}
-
-        override fun onServiceDisconnected(name: ComponentName?) {}
-    }
 
     private var intentUriData by mutableStateOf<Uri?>(null)
 
@@ -80,6 +69,7 @@ MainActivity :
     private var lastAcceleration = 0f
     private var shakeCounter = 0
 
+    private var mediaController: MediaController? = null
     private var _monet: MonetCompat? by mutableStateOf(null)
     private val monet get() = _monet ?: throw MonetActivityAccessException()
 
@@ -89,10 +79,27 @@ MainActivity :
     override fun onStart() {
         super.onStart()
 
-        runCatching {
-            bindService(intent<PlayerServiceModern>(), serviceConnection, Context.BIND_AUTO_CREATE)
-        }.onFailure {
-            logger.e( it ) { "Failed to bind PlayerServiceModern" }
+        monet.invokeOnReady {
+                /*
+                Instead of checking getBoolean() individually, we can use .let() to express condition.
+                Or, the whole thing is 'false' if null appears in the process.
+             */
+            val launchedFromNotification: Boolean =
+                intent?.extras?.let {
+                    it.getBoolean("expandPlayerBottomSheet") || it.getBoolean("fromWidget")
+                } ?: false
+
+            println("MainActivity.onCreate launchedFromNotification: $launchedFromNotification intent $intent.action")
+
+            intentUriData = intent.data ?: intent.getStringExtra(Intent.EXTRA_TEXT)?.toUri()
+
+            setContent {
+                CompositionLocalProvider(
+                    LocalFlavorSpecificFunctions provides FlavorSpecificFunctionsImpl()
+                ) {
+                    AppContent(monet, pipState, launchedFromNotification, intentUriData)
+                }
+            }
         }
     }
 
@@ -127,10 +134,6 @@ MainActivity :
         )
         monet.updateMonetColors()
 
-        monet.invokeOnReady {
-            startApp()
-        }
-
         if ( Preferences.AUDIO_SHAKE_TO_SKIP.value ) {
             sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
             Objects.requireNonNull(sensorManager)
@@ -141,6 +144,22 @@ MainActivity :
                     SensorManager.SENSOR_DELAY_NORMAL
                 )
         }
+        if( !Preferences.CLOSE_APP_ON_BACK.value )
+            if( Build.VERSION.SDK_INT >= 33 ) {
+                onBackInvokedDispatcher.registerOnBackInvokedCallback( OnBackInvokedDispatcher.PRIORITY_DEFAULT ) {}
+            }
+        if ( Preferences.KEEP_SCREEN_ON.value )
+            window.addFlags( WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON )
+
+        //<editor-fold desc="Initialize playback service">
+        val playbackComponent = ComponentName(this, PlaybackService::class.java)
+        val sessionToken = SessionToken(this, playbackComponent)
+        val controllerFuture = MediaController.Builder(this, sessionToken).buildAsync()
+        controllerFuture.addListener(
+            { mediaController = controllerFuture.get() },
+            MoreExecutors.directExecutor()
+        )
+        //</editor-fold>
     }
 
     override fun onPictureInPictureModeChanged(
@@ -151,47 +170,6 @@ MainActivity :
         println("MainActivity.onPictureInPictureModeChanged isInPictureInPictureMode: $isInPictureInPictureMode")
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
 
-    }
-
-    @SuppressLint("UnusedBoxWithConstraintsScope")
-    @OptIn(
-        ExperimentalTextApi::class,
-        ExperimentalFoundationApi::class, ExperimentalAnimationApi::class,
-        ExperimentalMaterial3Api::class
-    )
-    fun startApp() {
-        if ( !Preferences.CLOSE_APP_ON_BACK.value )
-            if (Build.VERSION.SDK_INT >= 33) {
-                onBackInvokedDispatcher.registerOnBackInvokedCallback(
-                    OnBackInvokedDispatcher.PRIORITY_DEFAULT
-                ) {
-                    //Log.d("onBackPress", "yeah")
-                }
-            }
-
-        /*
-            Instead of checking getBoolean() individually, we can use .let() to express condition.
-            Or, the whole thing is 'false' if null appears in the process.
-         */
-        val launchedFromNotification: Boolean =
-            intent?.extras?.let {
-                it.getBoolean("expandPlayerBottomSheet") || it.getBoolean("fromWidget")
-            } ?: false
-
-        println("MainActivity.onCreate launchedFromNotification: $launchedFromNotification intent $intent.action")
-
-        intentUriData = intent.data ?: intent.getStringExtra(Intent.EXTRA_TEXT)?.toUri()
-
-        if ( Preferences.KEEP_SCREEN_ON.value )
-            window.addFlags( WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON )
-
-        setContent {
-            CompositionLocalProvider(
-                LocalFlavorSpecificFunctions provides FlavorSpecificFunctionsImpl()
-            ) {
-                AppContent(monet, pipState, launchedFromNotification, intentUriData)
-            }
-        }
     }
 
     private val sensorListener: SensorEventListener = object : SensorEventListener {
@@ -219,7 +197,7 @@ MainActivity :
                 if (shakeCounter >= 1) {
                     //Toast.makeText(applicationContext, "Shaked $shakeCounter times", Toast.LENGTH_SHORT).show()
                     shakeCounter = 0
-                    inject<StatefulPlayer>(StatefulPlayer::class.java).value.playNext()
+                    inject<Player>(Player::class.java).value.seekToNextMediaItem()
                 }
 
             }
@@ -261,23 +239,10 @@ MainActivity :
     @UnstableApi
     override fun onDestroy() =
         try {
-            //<editor-fold desc="Stop player">
-            // Stop music
-            val player by inject<StatefulPlayer>(StatefulPlayer::class.java)
-            player.run {
-                stop()
-                // FIXME: Android will try to recreate service if
-                //  there's some MediaItems left in the queue .
-                clearMediaItems()
+            mediaController?.run {
+                release()
+                mediaController = null
             }
-            // Unbind service (making sure there's no connection with the service)
-            unbindService( serviceConnection )
-            // Stop service (release resources)
-            val intent = Intent(this, PlayerServiceModern::class.java)
-            stopService( intent )
-
-            logger.d { "Successfully stop player and unbind PlayerServiceModern service" }
-            //</editor-fold>
 
             // Delete latest report
             val report = CrashReportDialog(this)

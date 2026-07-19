@@ -6,15 +6,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.compose.R
 import app.kreate.database.models.Song
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import app.kreate.utils.Toaster
 import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.forcePlayFromBeginning
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -64,9 +63,8 @@ class SongShuffler(
                                                      .map( Song::asMediaItem )
             // This is a cautious move, because binder's calls often require to be run on Main thread.
             CoroutineScope( Dispatchers.Main ).launch {
-                val player: StatefulPlayer by inject(StatefulPlayer::class.java)
-                player.stopRadio()
-                player.forcePlayFromBeginning( songsToPlay )
+                val player: Player by inject(Player::class.java)
+                player.play( songsToPlay )
             }
         }
     }

@@ -91,11 +91,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.database.models.Lyrics
 import app.kreate.gateway.innertube.YouTube
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import app.kreate.util.cleanPrefix
 import app.kreate.utils.Toaster
@@ -195,7 +195,7 @@ fun Lyrics(
         val context = LocalContext.current
         val menuState = LocalMenuState.current
         val currentView = LocalView.current
-        val player: StatefulPlayer = koinInject()
+        val player: Player = koinInject()
 
         val showlyricsthumbnail by Preferences.LYRICS_SHOW_THUMBNAIL.collectAsStateWithLifecycle()
         val isShowingSynchronizedLyrics by Preferences.LYRICS_SYNCHRONIZED.collectAsStateWithLifecycle()
@@ -852,7 +852,7 @@ fun Lyrics(
             if (text?.isNotEmpty() == true) {
                 if (isShowingSynchronizedLyrics) {
                     val density = LocalDensity.current
-                    val player: StatefulPlayer = koinInject()
+                    val player: Player = koinInject()
 
                     val synchronizedLyrics = remember(text) {
                         val sentences = LrcLib.Lyrics(text).sentences

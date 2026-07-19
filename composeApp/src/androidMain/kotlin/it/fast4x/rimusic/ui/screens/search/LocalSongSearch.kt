@@ -40,11 +40,11 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.navigation.NavController
 import app.kreate.android.LocalPlayerAwareWindowInsets
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.shallowCompare
 import app.kreate.database.Database
 import app.kreate.database.models.Song
+import app.kreate.player.Player
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavigationBarPosition
 import it.fast4x.rimusic.typography
@@ -56,6 +56,7 @@ import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.px
 import it.fast4x.rimusic.utils.align
+import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.medium
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -78,7 +79,7 @@ fun LocalSongSearch(
     onAction3: () -> Unit,
     onAction4: () -> Unit,
 ) {
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     val menuState = LocalMenuState.current
     val (colorPalette, typography) = LocalAppearance.current
     val hapticFeedback = LocalHapticFeedback.current
@@ -264,7 +265,7 @@ fun LocalSongSearch(
                         }
                     },
                     onClick = {
-                        player.startRadio( song )
+                        player.startRadio( song.asMediaItem )
                     }
                 )
             }

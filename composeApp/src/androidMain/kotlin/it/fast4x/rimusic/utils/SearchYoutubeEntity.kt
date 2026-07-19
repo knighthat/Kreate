@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.compose.rememberNavController
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.android.themed.rimusic.component.song.SongItem
 import app.kreate.android.utils.innertube.toMediaItem
 import app.kreate.android.utils.shallowCompare
@@ -38,6 +37,7 @@ import app.kreate.compose.R
 import app.kreate.gateway.innertube.SearchFilter
 import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.InnertubeVideo
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import app.kreate.utils.Toaster
 import it.fast4x.rimusic.colorPalette
@@ -67,7 +67,7 @@ fun SearchYoutubeEntity (
     query: String,
     viewModel: SearchResultViewModel = koinViewModel()
 ) {
-    val player: StatefulPlayer = koinInject()
+    val player: Player = koinInject()
     val menuState = LocalMenuState.current
     val hapticFeedback = LocalHapticFeedback.current
     val appearance = LocalAppearance.current
@@ -140,11 +140,10 @@ fun SearchYoutubeEntity (
                                 isPlaying = video.shallowCompare( currentMediaItem ),
                                 values = songItemValues,
                                 onClick = {
-                                    player.stopRadio()
                                     if ( isVideoEnabled )
                                         player.playVideo( mediaItem )
                                     else
-                                        player.forcePlay( mediaItem )
+                                        player.play( mediaItem )
 
                                     onDismiss()
                                 },

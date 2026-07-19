@@ -3,8 +3,10 @@ package app.kreate.android
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import app.kreate.android.themed.common.component.BottomMenu
+import app.kreate.player.Player
 import it.fast4x.rimusic.service.MyDownloadHelper
 
 
@@ -19,3 +21,5 @@ val LocalPlayerSheetState =
     staticCompositionLocalOf<SheetState> { error("No player sheet state provided") }
 
 val LocalFlavorSpecificFunctions = staticCompositionLocalOf<FlavorSpecificFunctions> { TODO() }
+
+val LocalPlayer = compositionLocalOf<Player> { TODO() }

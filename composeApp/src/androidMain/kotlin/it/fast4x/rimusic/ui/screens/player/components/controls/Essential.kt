@@ -52,9 +52,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.compose.R
 import app.kreate.constant.Type
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
 import app.kreate.util.cleanPrefix
@@ -91,7 +91,7 @@ import org.koin.compose.koinInject
 @ExperimentalFoundationApi
 @Composable
 fun InfoAlbumAndArtistEssential(
-    player: StatefulPlayer,
+    player: Player,
     navController: NavController,
     mediaItem: MediaItem,
     albumId: String?,
@@ -108,7 +108,7 @@ fun InfoAlbumAndArtistEssential(
     val textoutline by Preferences.TEXT_OUTLINE.collectAsStateWithLifecycle()
     val playerBackgroundColors by Preferences.PLAYER_BACKGROUND.collectAsStateWithLifecycle()
     var likeButtonWidth by remember{ mutableStateOf(0.dp) }
-    val currentMediaItem = player.currentMediaItem
+    val currentMediaItem by player.currentMediaItemState.collectAsStateWithLifecycle()
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -360,7 +360,7 @@ fun ControlsEssential(
     mediaId: String,
     playerPlayButtonType: PlayerPlayButtonType,
     isGradientBackgroundEnabled: Boolean,
-    player: StatefulPlayer = koinInject(),
+    player: Player = koinInject(),
     onShowSpeedPlayerDialog: () -> Unit,
 ) {
     val context = LocalContext.current

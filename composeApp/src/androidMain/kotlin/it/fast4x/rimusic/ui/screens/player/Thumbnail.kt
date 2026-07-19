@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,9 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import app.kreate.android.coil3.ImageFactory
-import app.kreate.android.service.player.StatefulPlayer
 import app.kreate.compose.R
 import app.kreate.constant.Type
 import app.kreate.database.Database
@@ -87,7 +86,7 @@ fun Thumbnail(
     modifier: Modifier = Modifier
 ) {
     println("Thumbnail call")
-    val player: StatefulPlayer = koinInject()
+    val player: app.kreate.player.Player = koinInject()
 
     println("Thumbnail call after return")
 
@@ -127,18 +126,23 @@ fun Thumbnail(
     val showvisthumbnail by app.kreate.preferences.Preferences.PLAYER_SHOW_THUMBNAIL_ON_VISUALIZER.collectAsStateWithLifecycle()
     //var expandedlyrics by rememberPreference(expandedlyricsKey,false)
 
-    val currentWindow by player.currentWindowState.collectAsState()
+    var currentWindow by remember { mutableStateOf<Timeline.Window?>(null) }
     player.DisposableListener {
         object : Player.Listener {
+            private val reusableWindow = Timeline.Window()
+
             override fun onPlaybackStateChanged(playbackState: Int) {
                 error = player.playerError
             }
 
             override fun onPlayerError(playbackException: PlaybackException) {
                 error = playbackException
-                player.stopRadio()
                 //context.stopService(context.intent<PlayerService>())
                 //context.stopService(context.intent<MyDownloadService>())
+            }
+
+            override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+                currentWindow = timeline.getWindow( 0, reusableWindow )
             }
         }
     }
