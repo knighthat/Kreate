@@ -33,9 +33,6 @@ vlcj = "4.12.1"
 kotlinxCoroutines = "1.11.0"
 hypnoticcanvas = "0.4.1"
 ksoup = "0.6.0"
-jetbrains-annotations = "26.1.0"
-lombok = "1.18.46"
-junit5 = "6.1.0"
 webkit = "1.15.0"
 compose-kmp = "1.11.1"
 activity-compose = "1.13.0"
@@ -63,7 +60,6 @@ logpose = "0.9.11"
 # Kotlinx
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-guava = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-guava", version.ref = "kotlinxCoroutines" }
-kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 # Room
@@ -118,10 +114,6 @@ coil3 = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
 coil3-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil3" }
 coil3-network-ktor = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil3" }
 
-# KSoup
-ksoup-html = { group = "com.mohamedrejeb.ksoup", name = "ksoup-html", version.ref = "ksoup" }
-ksoup-entities = { group = "com.mohamedrejeb.ksoup", name = "ksoup-entities", version.ref = "ksoup" }
-
 # Hypnotic canvas
 hypnoticcanvas = { group = "com.mikepenz.hypnoticcanvas", name = "hypnoticcanvas", version.ref = "hypnoticcanvas" }
 hypnoticcanvas-shaders = { group = "com.mikepenz.hypnoticcanvas", name = "hypnoticcanvas-shaders", version.ref = "hypnoticcanvas" }
@@ -130,20 +122,11 @@ hypnoticcanvas-shaders = { group = "com.mikepenz.hypnoticcanvas", name = "hypnot
 nanojson = { group = "com.github.TeamNewPipe", name = "nanojson", version = "e9d656ddb49a412a5a0a5d5ef20ca7ef09549996" }
 metrolist-extractor = { module = "com.github.MetrolistGroup:MetrolistExtractor", version = "6305155" }
 
-# Annotations
-lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
-jetbrains-annotations = { group = "org.jetbrains", name = "annotations", version.ref = "jetbrains-annotations" }
-
 # Testing
-junit5-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit5" }
-junit5-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit5" }
-junit5-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit5" }
-junit-platform = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junit5" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 androidx-test = { group = "androidx.test", name = "core", version.ref = "androidTest" }
-kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
 
@@ -166,7 +149,6 @@ logpose-android = { module = "com.github.siddharthjaswal.logpose:logpose-android
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
-
 # Extras
 translator = {  group = "com.github.therealbush", name = "translator", version.ref = "translator" }
 kotlin-csv = {  group = "com.jsoizo", name = "kotlin-csv-jvm", version.ref = "kotlin-csv" }
@@ -175,8 +157,6 @@ toasty = { group = "com.github.GrenderG", name = "Toasty", version.ref = "toasty
 androidyoutubeplayer = { group = "com.pierfrancescosoffritti.androidyoutubeplayer", name = "core", version.ref = "androidyoutubeplayer" }
 vlcj = {  group = "uk.co.caprica", name = "vlcj", version.ref = "vlcj" }
 desugaring-nio = { group = "com.android.tools", name = "desugar_jdk_libs_nio", version.ref = "desugaring" }
-# This lib isn't used by the project, but it provides @Inject for discord module.
-# Doing this is easier than removing unsused files every update with the upstream
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 colorpicker = { module = "com.github.skydoves:colorpicker-compose", version.ref = "colorpicker" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlibVersion" }
@@ -204,5 +184,4 @@ license-report = { id = "com.github.jk1.dependency-license-report", version.ref 
 [bundles]
 compose-kmp = ['compose-kmp-animation', 'compose-kmp-foundation', 'compose-kmp-material3', 'compose-kmp-ui']
 ktor = ['ktor-core', 'ktor-encoding', 'ktor-content-negotiation', 'ktor-serialization-json', 'ktor-serialization-protobuf', 'ktor-okhttp', 'ktor-websockets']
-junit5 = ["junit5-jupiter-params", "junit5-jupiter-engine", "junit5-jupiter-api"]
 media3 = ['media3-datasource-okhttp', 'media3-exoplayer', 'media3-ktx', 'media3-session']
