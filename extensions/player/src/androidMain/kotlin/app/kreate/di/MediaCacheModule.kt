@@ -3,43 +3,34 @@
 package app.kreate.di
 
 import android.content.Context
-import androidx.media3.common.AudioAttributes
-import androidx.media3.common.C
 import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.datasource.cache.Cache
-import androidx.media3.datasource.cache.CacheDataSink
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.datasource.okhttp.OkHttpDataSource
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import app.kreate.UserAgents
-import app.kreate.internal.player.ErrorHandlingPolicy
-import app.kreate.internal.player.PlayerImpl
 import app.kreate.internal.resolvers.resolveInnertubeMedia
-import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import app.kreate.utils.isLocalFile
 import it.fast4x.rimusic.enums.ExoPlayerCacheLocation
 import okhttp3.OkHttpClient
-import org.koin.core.module.Module
 import org.koin.core.qualifier.Qualifier
 import org.koin.core.qualifier.QualifierValue
-import org.koin.dsl.bind
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import kotlin.io.path.createTempDirectory
-import androidx.media3.common.Player as MediaPlayer
 
-
-const val CHUNK_LENGTH = 512 * 1024L     // 512KB
 
 private const val CACHE_DIRNAME = "exo_cache"
 private const val DOWNLOAD_CACHE_DIRNAME = "exo_downloads"
+
+internal val PLAYBACK_DATA_SOURCE = named("PLAYBACK_DATA_SOURCE")
+internal val DOWNLOAD_DATA_SOURCE = named("DOWNLOAD_DATA_SOURCE")
 
 private fun initCache( context: Context, size: Long, cacheDirName: String ): Cache {
     val location = Preferences.EXO_CACHE_LOCATION.value
@@ -65,17 +56,24 @@ private fun initCache( context: Context, size: Long, cacheDirName: String ): Cac
     // Ensure this location exists
     cacheDir.mkdirs()
 
-    return SimpleCache( cacheDir, cacheEvictor, StandaloneDatabaseProvider(context) )
+    return SimpleCache(cacheDir, cacheEvictor, StandaloneDatabaseProvider(context))
 }
 
-actual val playbackModule: Module = module {
+val mediaCacheModule = module {
     //<editor-fold desc="Cache">
+    // Each cache instance is the source of truth, 2 different Cache can't point to the same folder.
+
     single( CacheType.CACHE ) {
         initCache( get(), Preferences.EXO_CACHE_SIZE.value, CACHE_DIRNAME )
     }
     single( CacheType.DOWNLOAD ) {
         initCache( get(), Preferences.EXO_DOWNLOAD_SIZE.value, DOWNLOAD_CACHE_DIRNAME )
     }
+    //</editor-fold>
+    //<editor-fold desc="DataSources">
+    // DataSource facilitates read and write operations, it cannot be operated by multiple services
+    // at the same time, so DataSource must be created separately for each service, hence factory
+
     factory( CacheType.CACHE ) {
         CacheDataSource.Factory()
                        .setCache( get(CacheType.CACHE) )
@@ -86,10 +84,10 @@ actual val playbackModule: Module = module {
                        .setCache( get(CacheType.DOWNLOAD) )
                        .setFlags( FLAG_IGNORE_CACHE_ON_ERROR )
     }
-    //</editor-fold>
-
-    single {
+    factory( PLAYBACK_DATA_SOURCE ) {
         ResolvingDataSource.Factory(
+            // Player has the ability to play from local file, so DefaultDataSource is required
+            // to for read purpose, combined with OkHttpDataSource to get remote streaming.
             DefaultDataSource.Factory(
                 get(),
                 OkHttpDataSource.Factory(get<OkHttpClient>())
@@ -104,57 +102,19 @@ actual val playbackModule: Module = module {
                 resolveInnertubeMedia( dataSpec )
         }
     }
-
-    // FIXME: This is technically usable but not recommended,
-    //  new instance should be created on each injection.
-    //  subscribers should use [PlaybackService]'s player instead of injecting
-    //  an instance from Koin.
-    // TODO: Convert this into factory
-    single<ExoPlayer> {
-        //<editor-fold desc="DataSource">
-        val dataSource = DefaultMediaSourceFactory(
-            // At the bottom of the stack, it's download cache
-            get<CacheDataSource.Factory>(CacheType.DOWNLOAD)
-                // Read-only cache, player doesn't get to write anything in here
-                .setCacheWriteDataSinkFactory( null )
-                .setUpstreamDataSourceFactory(
-                    // Next up is regular cache
-                    get<CacheDataSource.Factory>(CacheType.CACHE)
-                        // The final upstream handles 2 cases, local files and remote files
-                        .setUpstreamDataSourceFactory( get<ResolvingDataSource.Factory>() )
-                        // Player is allowed to write chunks into this storage.
-                        .setCacheWriteDataSinkFactory(
-                            CacheDataSink.Factory()
-                                .setCache( get(CacheType.CACHE) )
-                                // Chunks are small so recovery can work better
-                                .setFragmentSize( CHUNK_LENGTH )
-                                // Bigger than default buffer size to avoid
-                                // constant write to disk, but small enough
-                                // to avoid data loss if app crashes
-                                .setBufferSize( 64 * 1024 )     // 64KiB
-                        )
-                )
-        )
-        dataSource.setLoadErrorHandlingPolicy( ErrorHandlingPolicy())
-        //</editor-fold>
-        //<editor-fold desc="Audio handlers">
-        val handleAudioFocus = Preferences.AUDIO_SMART_PAUSE_DURING_CALLS.value
-        val audioAttributes = AudioAttributes.Builder()
-            .setUsage( C.USAGE_MEDIA )
-            .setContentType( C.AUDIO_CONTENT_TYPE_MUSIC )
-            .build()
-        //</editor-fold>
-
-        ExoPlayer.Builder( get() )
-            .setMediaSourceFactory( dataSource )
-            .setHandleAudioBecomingNoisy( true )
-            .setWakeMode( C.WAKE_MODE_NETWORK )
-            .setAudioAttributes( audioAttributes, handleAudioFocus )
-            .setUsePlatformDiagnostics( false )
-            .build()
-    } bind MediaPlayer::class
-
-    single<Player> { PlayerImpl(get()) }
+    factory( DOWNLOAD_DATA_SOURCE ) {
+        ResolvingDataSource.Factory(
+            // Download's ResolvingDataSource has no business reading local files,
+            // so only OkHttpDataSource is provided. And uri points to local file gets error
+            OkHttpDataSource.Factory(get<OkHttpClient>()).setUserAgent( UserAgents.CHROME_WINDOWS )
+        ) { dataSpec ->
+            if ( dataSpec.uri.isLocalFile() )
+                error( "Cannot download local file ${dataSpec.uri}" )
+            else
+                resolveInnertubeMedia( dataSpec )
+        }
+    }
+    //</editor-fold>
 }
 
 enum class CacheType : Qualifier {

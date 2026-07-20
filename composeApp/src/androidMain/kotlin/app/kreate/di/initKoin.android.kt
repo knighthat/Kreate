@@ -9,7 +9,9 @@ import org.koin.dsl.module
 
 actual val platformModules: Array<out Module> = arrayOf(
     playerModule,
+    mediaCacheModule,
     playbackModule,
+    downloadModule,
     profileModule,
     module {
         singleOf<ActionHandler>( ::ActionHandlerImpl )

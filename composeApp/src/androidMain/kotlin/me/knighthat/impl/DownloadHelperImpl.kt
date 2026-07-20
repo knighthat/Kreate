@@ -6,19 +6,15 @@ import androidx.annotation.OptIn
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.database.StandaloneDatabaseProvider
-import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper
 import androidx.media3.exoplayer.offline.DownloadRequest
-import androidx.media3.exoplayer.scheduler.Requirements
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.DownloadHelper
 import app.kreate.database.Database
 import app.kreate.database.insertIgnore
 import app.kreate.database.models.Song
-import app.kreate.di.CacheType
 import app.kreate.util.thumbnail
 import app.kreate.utils.Toaster
 import co.touchlab.kermit.Logger
@@ -45,14 +41,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
+import org.koin.core.component.inject
 import java.util.concurrent.Executors
 
 
 @OptIn(UnstableApi::class)
 class DownloadHelperImpl(
     private val context: Context,
-): DownloadHelper, KoinComponent {
+): DownloadHelper, KoinComponent, DownloadManager.Listener {
 
     companion object {
 
@@ -69,35 +65,7 @@ class DownloadHelperImpl(
     )
 
     override val downloads: MutableStateFlow<Map<String, Download>>
-    override val downloadManager by lazy {
-        val listener = object: DownloadManager.Listener {
-            override fun onDownloadChanged(
-                downloadManager: DownloadManager,
-                download: Download,
-                finalException: Exception?
-            ) = syncDownloads(download)
-
-            override fun onDownloadRemoved(
-                downloadManager: DownloadManager,
-                download: Download
-            ) = syncDownloads(download)
-        }
-
-        val manager = DownloadManager(
-            context,
-            StandaloneDatabaseProvider(context),
-            get(CacheType.DOWNLOAD),
-            get<ResolvingDataSource.Factory>(),
-            executor
-        )
-
-        manager.maxParallelDownloads = NUM_PARALLEL_DOWNLOADS
-        manager.minRetryCount = NUM_RETRIES
-        manager.requirements = Requirements(Requirements.NETWORK)
-        manager.addListener( listener )
-
-        manager
-    }
+    override val downloadManager: DownloadManager by inject()
 
     private lateinit var downloadNotificationHelper: DownloadNotificationHelper
 
@@ -108,6 +76,7 @@ class DownloadHelperImpl(
             results[cursor.download.request.id] = cursor.download
         }
         downloads = MutableStateFlow(results)
+        downloadManager.addListener( this )
     }
 
     @Synchronized
@@ -229,4 +198,15 @@ class DownloadHelperImpl(
         else if( !isDownloaded )
             addDownload( song.asMediaItem )
     }
+
+    override fun onDownloadChanged(
+        downloadManager: DownloadManager,
+        download: Download,
+        finalException: Exception?
+    ) = syncDownloads(download)
+
+    override fun onDownloadRemoved(
+        downloadManager: DownloadManager,
+        download: Download
+    ) = syncDownloads(download)
 }
