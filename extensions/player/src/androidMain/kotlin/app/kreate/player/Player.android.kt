@@ -2,9 +2,7 @@ package app.kreate.player
 
 import androidx.annotation.AnyThread
 import androidx.media3.exoplayer.ExoPlayer
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlin.time.Duration
 
 
 actual interface Player : ExoPlayer {
@@ -19,15 +17,6 @@ actual interface Player : ExoPlayer {
     fun cycleRepeatMode()
 
     fun toggleShuffleMode()
-
-    @Deprecated("Use PlaybackService timer implementation")
-    fun sleepTimerRemaining(): Flow<Long?>
-
-    @Deprecated("Use PlaybackService timer implementation")
-    fun stopSleepTimer()
-
-    @Deprecated("Use PlaybackService timer implementation")
-    fun startSleepTimer( duration: Duration )
 
     actual fun startRadio()
 

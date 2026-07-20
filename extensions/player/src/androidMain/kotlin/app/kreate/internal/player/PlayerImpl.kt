@@ -27,11 +27,9 @@ import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
@@ -42,7 +40,6 @@ import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
-import kotlin.time.Duration
 import androidx.media3.common.Player as MediaPlayer
 
 
@@ -294,12 +291,6 @@ internal class PlayerImpl(
 
     // TODO: Make this enable video mode
     override fun playVideo( mediaItem: MediaItem ) = play( mediaItem )
-
-    override fun sleepTimerRemaining(): Flow<Long?> = flow { emit(null) }
-
-    override fun stopSleepTimer() { /* Does nothing */ }
-
-    override fun startSleepTimer( duration: Duration ) { /* Does nothing */ }
     //endregion
 
     /*

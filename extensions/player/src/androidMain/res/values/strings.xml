@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_title_sleep_timer">Sleep timer</string>
+    <string name="notification_description_sleep_timer">Active count down until player stops</string>
+    <string name="notification_content_sleep_timer_ongoing">Remaining time: %1$d:%2$02d:%3$02d</string>
+    <string name="notification_content_sleep_timer_finished">Time\'s up</string>
+    <string name="notification_button_pause">Pause</string>
+    <string name="notification_button_stop">Stop</string>
+    <string name="notification_button_restart">Restart</string>
+    <string name="notification_button_resume">Resume</string>
+    <string name="notification_button_cancel">Cancel</string>
+</resources>

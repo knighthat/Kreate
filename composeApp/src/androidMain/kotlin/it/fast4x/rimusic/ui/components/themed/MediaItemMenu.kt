@@ -78,6 +78,7 @@ import app.kreate.database.models.PlaylistPreview
 import app.kreate.database.models.Song
 import app.kreate.di.CacheType
 import app.kreate.player.Player
+import app.kreate.player.timer.SleepTimer
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.cleanPrefix
 import app.kreate.util.readableText
@@ -109,8 +110,7 @@ import kotlinx.coroutines.launch
 import me.knighthat.sync.YouTubeSync
 import org.koin.compose.koinInject
 import org.koin.java.KoinJavaComponent.inject
-import java.time.LocalTime.now
-import java.time.format.DateTimeFormatter
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -1121,7 +1121,7 @@ fun MediaItemMenu(
                         mutableStateOf(false)
                     }
 
-                    val sleepTimerMillisLeft by player.sleepTimerRemaining().collectAsState(initial = null)
+                    val sleepTimerState by SleepTimer.state.collectAsStateWithLifecycle()
 
                     val positionAndDuration = player.positionAndDurationState()
 
@@ -1134,14 +1134,14 @@ fun MediaItemMenu(
                     //val timeToStop = System.currentTimeMillis()
 
                     if (isShowingSleepTimerDialog) {
-                        if (sleepTimerMillisLeft != null) {
+                        if( sleepTimerState.isActive ) {
                             ConfirmationDialog(
                                 text = stringResource(R.string.stop_sleep_timer),
                                 cancelText = stringResource(R.string.no),
                                 confirmText = stringResource(R.string.stop),
                                 onDismiss = { isShowingSleepTimerDialog = false },
                                 onConfirm = {
-                                    player.stopSleepTimer()
+                                    SleepTimer.stop( context )
                                     onDismiss()
                                 }
                             )
@@ -1239,9 +1239,7 @@ fun MediaItemMenu(
                                                 + timeRemaining.toDuration( DurationUnit.MILLISECONDS ).readableText()
                                                 + " " + stringResource(R.string.end_of_song),
                                         onClick = {
-                                            player.startSleepTimer(
-                                                timeRemaining.toDuration( DurationUnit.MILLISECONDS )
-                                            )
+                                            SleepTimer.start( context, timeRemaining )
                                             isShowingSleepTimerDialog = false
                                         }
                                     )
@@ -1266,9 +1264,7 @@ fun MediaItemMenu(
                                     IconButton(
                                         enabled = amount > 0,
                                         onClick = {
-                                            player.startSleepTimer(
-                                                (amount * 5 * 60 * 1000L).toDuration( DurationUnit.MILLISECONDS )
-                                            )
+                                            SleepTimer.start( context, amount * 5 * 60 * 1000L )
                                             isShowingSleepTimerDialog = false
                                         },
                                         icon = R.drawable.checkmark,
@@ -1283,27 +1279,22 @@ fun MediaItemMenu(
                         icon = R.drawable.sleep,
                         text = stringResource(R.string.sleep_timer),
                         onClick = { isShowingSleepTimerDialog = true },
-                        trailingContent = sleepTimerMillisLeft?.let {
-                            {
-                                BasicText(
-                                    text = stringResource(
-                                        R.string.left,
-                                        it.toDuration( DurationUnit.MILLISECONDS ).readableText()
-                                    ) + " / " +
-                                            now()
-                                                .plusSeconds(it / 1000)
-                                                .format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " " +
-                                            stringResource(R.string.sleeptimer_stop),
-                                    style = typography().xxs.medium,
-                                    modifier = modifier
-                                        .background(
-                                            color = colorPalette().background0,
-                                            shape = RoundedCornerShape(16.dp)
-                                        )
-                                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                                        .animateContentSize()
-                                )
-                            }
+                        trailingContent = {
+                            if( !sleepTimerState.isActive ) return@MenuEntry
+
+                            BasicText(
+                                text = sleepTimerState.remainingMillis.milliseconds.toComponents { hours, minutes, seconds, _ ->
+                                    stringResource( app.kreate.player.R.string.notification_content_sleep_timer_ongoing, hours, minutes, seconds )
+                                },
+                                style = typography().xxs.medium,
+                                modifier = modifier
+                                    .background(
+                                        color = colorPalette().background0,
+                                        shape = RoundedCornerShape(16.dp)
+                                    )
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                                    .animateContentSize()
+                            )
                         }
                     )
                 }

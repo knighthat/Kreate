@@ -127,6 +127,7 @@ import app.kreate.database.Database
 import app.kreate.database.insertIgnore
 import app.kreate.player.Player
 import app.kreate.player.PlayerListener
+import app.kreate.player.timer.SleepTimer
 import app.kreate.preferences.Preferences
 import app.kreate.preferences.QUEUE_LOOP_TYPE
 import app.kreate.util.readableText
@@ -391,20 +392,20 @@ fun Player(
         mutableStateOf(false)
     }
 
-    val sleepTimerMillisLeft by player.sleepTimerRemaining().collectAsState(initial = null)
+    val sleepTimerState by SleepTimer.state.collectAsStateWithLifecycle()
 
     val positionAndDuration by player.positionAndDurationState()
     var timeRemaining by remember { mutableLongStateOf(0) }
     timeRemaining = positionAndDuration.second - positionAndDuration.first
 
-    if (sleepTimerMillisLeft != null)
-        if (sleepTimerMillisLeft!! < timeRemaining && !delayedSleepTimer)  {
-            player.startSleepTimer(
-                timeRemaining.toDuration( DurationUnit.MILLISECONDS )
-            )
-            delayedSleepTimer = true
-            Toaster.n( R.string.info_sleep_timer_delayed_at_end_of_song )
-        }
+    if(sleepTimerState.isActive
+        && sleepTimerState.remainingMillis < timeRemaining
+        && !delayedSleepTimer
+    )  {
+        SleepTimer.start( context, timeRemaining )
+        delayedSleepTimer = true
+        Toaster.n( R.string.info_sleep_timer_delayed_at_end_of_song )
+    }
 
     val windowInsets = WindowInsets.systemBars
 
@@ -450,16 +451,15 @@ fun Player(
     val screenHeight = configuration.screenHeightDp.dp
 
     if (isShowingSleepTimerDialog) {
-        if (sleepTimerMillisLeft != null) {
+        if( sleepTimerState.remainingMillis > 0 ) {
             ConfirmationDialog(
                 text = stringResource(R.string.stop_sleep_timer),
                 cancelText = stringResource(R.string.no),
                 confirmText = stringResource(R.string.stop),
                 onDismiss = { isShowingSleepTimerDialog = false },
                 onConfirm = {
-                    player.stopSleepTimer()
+                    SleepTimer.stop( context )
                     delayedSleepTimer = false
-                    //onDismiss()
                 }
             )
         } else {
@@ -556,9 +556,7 @@ fun Player(
                                 + timeRemaining.toDuration( DurationUnit.MILLISECONDS ).readableText()
                                 + " " + stringResource(R.string.end_of_song),
                         onClick = {
-                            player.startSleepTimer(
-                                timeRemaining.toDuration( DurationUnit.MILLISECONDS )
-                            )
+                            SleepTimer.start( context, timeRemaining )
                             isShowingSleepTimerDialog = false
                         }
                     )
@@ -583,9 +581,7 @@ fun Player(
                     IconButton(
                         enabled = amount > 0,
                         onClick = {
-                            player.startSleepTimer(
-                                (amount * 5 * 60 * 1000L).toDuration( DurationUnit.MILLISECONDS )
-                            )
+                            SleepTimer.start( context, amount * 5 * 60 * 1000L )
                             isShowingSleepTimerDialog = false
                         },
                         icon = R.drawable.checkmark,

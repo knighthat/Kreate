@@ -1,0 +1,8 @@
+package app.kreate.utils
+
+import android.os.Build
+
+
+val IS_ANDROID_8_OR_LATER = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+
+val IS_ANDROID_13_OR_LATER = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU

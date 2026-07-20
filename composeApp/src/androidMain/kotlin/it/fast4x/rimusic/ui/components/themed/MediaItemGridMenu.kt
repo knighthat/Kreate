@@ -34,12 +34,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
@@ -56,6 +58,7 @@ import app.kreate.database.insertIgnore
 import app.kreate.database.mapIgnore
 import app.kreate.database.models.Playlist
 import app.kreate.player.Player
+import app.kreate.player.timer.SleepTimer
 import app.kreate.util.MODIFIED_PREFIX
 import app.kreate.util.readableText
 import it.fast4x.rimusic.colorPalette
@@ -74,6 +77,7 @@ import it.fast4x.rimusic.utils.positionAndDurationState
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.Dispatchers
 import org.koin.compose.koinInject
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -257,6 +261,7 @@ fun MediaItemGridMenu (
     val hapticFeedback = LocalHapticFeedback.current
     val (_, typography) = LocalAppearance.current
     val menu = LocalBottomMenu.current
+    val context = LocalContext.current
 
     val isLocal by remember { derivedStateOf { mediaItem.isLocal } }
 
@@ -330,7 +335,7 @@ fun MediaItemGridMenu (
         mutableStateOf(false)
     }
 
-    val sleepTimerMillisLeft by player.sleepTimerRemaining().collectAsState(initial = null)
+    val sleepTimerState by SleepTimer.state.collectAsStateWithLifecycle()
 
     val positionAndDuration = player.positionAndDurationState()
 
@@ -343,14 +348,14 @@ fun MediaItemGridMenu (
     //val timeToStop = System.currentTimeMillis()
 
     if (isShowingSleepTimerDialog) {
-        if (sleepTimerMillisLeft != null) {
+        if( sleepTimerState.isActive ) {
             ConfirmationDialog(
                 text = stringResource(R.string.stop_sleep_timer),
                 cancelText = stringResource(R.string.no),
                 confirmText = stringResource(R.string.stop),
                 onDismiss = { isShowingSleepTimerDialog = false },
                 onConfirm = {
-                    player.stopSleepTimer()
+                    SleepTimer.stop( context )
                     onDismiss()
                 }
             )
@@ -448,9 +453,7 @@ fun MediaItemGridMenu (
                                 + timeRemaining.toDuration( DurationUnit.MILLISECONDS ).readableText()
                                 + " " + stringResource(R.string.end_of_song),
                         onClick = {
-                            player.startSleepTimer(
-                                timeRemaining.toDuration( DurationUnit.MILLISECONDS )
-                            )
+                            SleepTimer.start( context, timeRemaining )
                             isShowingSleepTimerDialog = false
                         }
                     )
@@ -475,9 +478,7 @@ fun MediaItemGridMenu (
                     IconButton(
                         enabled = amount > 0,
                         onClick = {
-                            player.startSleepTimer(
-                                (amount * 5 * 60 * 1000L).toDuration( DurationUnit.MILLISECONDS )
-                            )
+                            SleepTimer.start( context, amount * 5 * 60 * 1000L )
                             isShowingSleepTimerDialog = false
                         },
                         icon = R.drawable.checkmark,
@@ -784,8 +785,7 @@ fun MediaItemGridMenu (
                 GridMenuItem(
                     icon = R.drawable.sleep,
                     title = R.string.sleep_timer,
-                    titleString = sleepTimerMillisLeft?.toDuration( DurationUnit.MILLISECONDS )
-                                                      ?.readableText() ?: "",
+                    titleString = sleepTimerState.remainingMillis.milliseconds.readableText(),
                     colorIcon = colorPalette.text,
                     colorText = colorPalette.text,
                     onClick = {

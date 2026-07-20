@@ -15,6 +15,7 @@ kotlin {
         namespace = "app.kreate.player"
         compileSdk = libs.versions.compileSdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
+        androidResources.enable = true
 
         withHostTestBuilder {
         }
