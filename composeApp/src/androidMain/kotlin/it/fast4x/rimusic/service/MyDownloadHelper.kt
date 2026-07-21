@@ -13,8 +13,6 @@ object MyDownloadHelper : KoinComponent {
 
     val instance: DownloadHelper by inject()
 
-    fun getDownload( songId: String ) = instance.getDownload( songId )
-
     fun getDownloadNotificationHelper(): DownloadNotificationHelper = instance.getDownloadNotificationHelper()
 
     fun addDownload(mediaItem: MediaItem) = instance.addDownload( mediaItem )

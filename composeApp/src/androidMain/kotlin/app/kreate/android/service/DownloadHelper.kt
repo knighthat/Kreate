@@ -6,8 +6,7 @@ import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper
 import app.kreate.database.models.Song
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @UnstableApi
 interface DownloadHelper {
@@ -18,9 +17,7 @@ interface DownloadHelper {
     }
 
     val downloadManager: DownloadManager
-    val downloads: MutableStateFlow<Map<String, Download>>
-
-    fun getDownload( songId: String ): Flow<Download?>
+    val downloads: StateFlow<Map<String, Download>>
 
     fun getDownloadNotificationHelper(): DownloadNotificationHelper
 

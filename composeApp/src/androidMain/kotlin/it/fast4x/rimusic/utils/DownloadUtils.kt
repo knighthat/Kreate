@@ -6,12 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.exoplayer.offline.Download
-import app.kreate.android.LocalDownloadHelper
 import app.kreate.compose.R
 import app.kreate.database.Database
 import app.kreate.di.CacheType
@@ -22,6 +22,7 @@ import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.isLocal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import org.koin.compose.koinInject
 
 
@@ -32,8 +33,10 @@ fun downloadedStateMedia(
     cache: Cache = koinInject(CacheType.CACHE)
 ): DownloadedStateMedia {
     val isDownloaded by remember {
-        MyDownloadHelper.getDownload( mediaId )
-                        .map { it?.state == Download.STATE_COMPLETED }
+        MyDownloadHelper.instance
+                        .downloads
+                        .mapNotNull { it[mediaId] }
+                        .map { it.state == Download.STATE_COMPLETED }
     }.collectAsState( false, Dispatchers.IO )
 
     // Return early so it doesn't create another remember function
@@ -96,11 +99,10 @@ fun manageDownload(
 @UnstableApi
 @Composable
 fun getDownloadState(mediaId: String): Int {
-    val downloader = LocalDownloadHelper.current
     if (!isNetworkAvailableComposable()) return 3
 
-    return downloader.getDownload(mediaId).collectAsState(initial = null).value?.state
-        ?: 3
+    val downloads by MyDownloadHelper.instance.downloads.collectAsStateWithLifecycle()
+    return downloads[mediaId]?.state ?: Download.STATE_COMPLETED
 }
 
 @OptIn(UnstableApi::class)
