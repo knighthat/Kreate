@@ -59,7 +59,6 @@ import it.fast4x.rimusic.enums.WallpaperType
 import it.fast4x.rimusic.extensions.connectivity.AndroidConnectivityObserverLegacy
 import it.fast4x.rimusic.service.BitmapProvider
 import it.fast4x.rimusic.service.MyDownloadHelper
-import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.utils.AppLifecycleTracker
 import it.fast4x.rimusic.utils.CoilBitmapLoader
 import it.fast4x.rimusic.utils.collect
@@ -405,7 +404,6 @@ class PlayerServiceModern:
             listener.saveQueueToDatabase()
             volumeObserver.unregister()
 
-            stopService(intent<MyDownloadService>())
             stopService(intent<PlayerServiceModern>())
 
             player.removeListener( listener )

@@ -3,32 +3,27 @@ package me.knighthat.impl
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.annotation.OptIn
-import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper
-import androidx.media3.exoplayer.offline.DownloadRequest
 import app.kreate.android.coil3.ImageFactory
 import app.kreate.android.service.DownloadHelper
 import app.kreate.database.Database
 import app.kreate.database.insertIgnore
 import app.kreate.database.models.Song
+import app.kreate.player.download.MediaDownloader
 import app.kreate.util.thumbnail
 import app.kreate.utils.Toaster
-import co.touchlab.kermit.Logger
 import coil3.request.allowHardware
 import coil3.request.bitmapConfig
-import it.fast4x.rimusic.service.MyDownloadService
+import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
-import it.fast4x.rimusic.utils.download
 import it.fast4x.rimusic.utils.downloadSyncedLyrics
 import it.fast4x.rimusic.utils.isNetworkConnected
-import it.fast4x.rimusic.utils.removeDownload
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -69,6 +64,7 @@ class DownloadHelperImpl(
                 SupervisorJob() +
                 CoroutineName(EXECUTOR_NAME)
     )
+    private val downloader: MediaDownloader by inject()
 
     override val downloadManager: DownloadManager by inject()
     override val downloads = callbackFlow {
@@ -149,15 +145,6 @@ class DownloadHelperImpl(
             return
         }
 
-        val downloadRequest = DownloadRequest
-            .Builder(
-                /* id      = */ mediaItem.mediaId,
-                /* uri     = */ mediaItem.mediaId.toUri()
-            )
-            .setCustomCacheKey(mediaItem.mediaId)
-            .setData("${mediaItem.mediaMetadata.artist.toString()} - ${mediaItem.mediaMetadata.title.toString()}".encodeToByteArray()) // Title in notification
-            .build()
-
         Database.asyncTransaction {
             insertIgnore( mediaItem )
         }
@@ -169,11 +156,7 @@ class DownloadHelperImpl(
 //            )
 
         coroutineScope.launch {
-            context.download<MyDownloadService>(downloadRequest).exceptionOrNull()?.let {
-                if (it is CancellationException) throw it
-
-                Logger.e( it, "DownloadHelperImpl" ) { "addDownload failed!"}
-            }
+            downloader.download( mediaItem )
             downloadSyncedLyrics( mediaItem.asSong )
 
             ImageFactory.requestBuilder( imageUrl.toString() ) {
@@ -184,16 +167,8 @@ class DownloadHelperImpl(
     }
 
     override fun removeDownload( mediaItem: MediaItem ) {
-        if (mediaItem.isLocal) return
-
-        //sendRemoveDownload(context,MyDownloadService::class.java,mediaItem.mediaId,false)
-        coroutineScope.launch {
-            context.removeDownload<MyDownloadService>(mediaItem.mediaId).exceptionOrNull()?.let {
-                if (it is CancellationException) throw it
-
-                Logger.e( it, "DownloadHelperImpl" ) { "removeDownload failed!"}
-            }
-        }
+        if( !mediaItem.isLocal )
+            downloader.remove( mediaItem )
     }
 
     override fun autoDownload( mediaItem: MediaItem ) {

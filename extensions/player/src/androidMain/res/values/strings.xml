@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="notification_title_sleep_timer">Sleep timer</string>
     <string name="notification_description_sleep_timer">Active count down until player stops</string>
@@ -9,4 +9,5 @@
     <string name="notification_button_restart">Restart</string>
     <string name="notification_button_resume">Resume</string>
     <string name="notification_button_cancel">Cancel</string>
+    <string name="notification_channel_name_download">Download</string>
 </resources>

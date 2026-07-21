@@ -28,7 +28,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
-import androidx.media3.exoplayer.offline.DownloadService
 import app.kreate.database.Database
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
@@ -36,7 +35,7 @@ import it.fast4x.rimusic.enums.AlbumSwipeAction
 import it.fast4x.rimusic.enums.DownloadedStateMedia
 import it.fast4x.rimusic.enums.PlaylistSwipeAction
 import it.fast4x.rimusic.enums.QueueSwipeAction
-import it.fast4x.rimusic.service.MyDownloadService
+import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.utils.downloadedStateMedia
 import it.fast4x.rimusic.utils.getDownloadState
@@ -213,12 +212,7 @@ fun SwipeableQueueItem(
                    || downloadedStateMedia == DownloadedStateMedia.CACHED_AND_DOWNLOADED
             )
         ) {
-            DownloadService.sendRemoveDownload(
-                context,
-                MyDownloadService::class.java,
-                mediaItem.mediaId,
-                false
-            )
+            MyDownloadHelper.removeDownload( mediaItem )
         } else {
             onDownload()
         }

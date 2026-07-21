@@ -6,6 +6,8 @@ import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.scheduler.Requirements
+import app.kreate.internal.download.MediaDownloaderImpl
+import app.kreate.player.download.MediaDownloader
 import org.koin.dsl.module
 import java.util.concurrent.Executors
 
@@ -13,6 +15,7 @@ import java.util.concurrent.Executors
 private const val MAX_PARALLEL_DOWNLOADS = 3
 
 val downloadModule = module {
+    single<MediaDownloader> { MediaDownloaderImpl(get(), get(), get()) }
     single {
         DownloadManager(
             get(),

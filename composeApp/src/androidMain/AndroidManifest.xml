@@ -8,7 +8,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
@@ -46,16 +45,6 @@
             </intent-filter>
         </receiver>
         <!-- NEW PLAYER SERVICE -->
-
-        <service android:name="it.fast4x.rimusic.service.MyDownloadService"
-            android:exported="false"
-            android:foregroundServiceType="dataSync">
-            <!-- This is needed for Scheduler -->
-            <intent-filter>
-                <action android:name="androidx.media3.exoplayer.downloadService.action.RESTART"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </service>
 
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"

@@ -1,6 +1,5 @@
 package app.kreate.player
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
@@ -8,18 +7,15 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.IBinder
 import android.os.SystemClock
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.media3.exoplayer.ExoPlayer
 import app.kreate.player.timer.SleepTimer
 import app.kreate.player.timer.TimerState
-import app.kreate.utils.IS_ANDROID_13_OR_LATER
 import app.kreate.utils.IS_ANDROID_8_OR_LATER
 import app.kreate.utils.NotificationUtil
 import co.touchlab.kermit.Logger
@@ -250,9 +246,7 @@ class SleepTimerService : Service(), KoinComponent {
 
         // POST_NOTIFICATIONS only exists/matters from API 33 onward; below
         // that, notifications don't require a runtime grant.
-        if( IS_ANDROID_13_OR_LATER
-            && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-        )
+        if( NotificationUtil.canPostNotification(this) )
             @SuppressLint("MissingPermission")
             NotificationManagerCompat.from( this ).notify( NOTIFICATION_ID, buildNotification(finished) )
         else

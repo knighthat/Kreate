@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
     <!-- Permission used by SleepTimerService, POST_NOTIFICATION defined in main manifest file -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!-- Permission required by MediaDownloadService to restart the service after process death / reboot  -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application>
 
@@ -26,6 +28,18 @@
             <property
                     android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                     android:value="app_timer" />
+        </service>
+
+        <!-- Service can only be controlled locally, so not exported -->
+        <service
+                android:name=".MediaDownloadService"
+                android:exported="false"
+                android:foregroundServiceType="dataSync">
+            <intent-filter>
+                <!-- For letting the framework/scheduler relaunch the service after the process died mid-download. -->
+                <action android:name="androidx.media3.exoplayer.downloadService.action.RESTART" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </service>
     </application>
 </manifest>

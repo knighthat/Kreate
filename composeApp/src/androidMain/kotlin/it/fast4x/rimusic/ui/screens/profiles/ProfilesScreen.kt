@@ -37,7 +37,6 @@ import app.kreate.di.ACTIVE_PROFILE_KEY
 import app.kreate.di.PrefType
 import app.kreate.di.getActiveProfile
 import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.Skeleton
@@ -243,7 +242,6 @@ private fun changeProfile(profile: String) {
     val context: Context by inject(Context::class.java)
 
     context.stopService( context.intent<PlayerServiceModern>() )
-    context.stopService( context.intent<MyDownloadService>() )
 
     // Close other activities
     (context as? Activity)?.finishAffinity()

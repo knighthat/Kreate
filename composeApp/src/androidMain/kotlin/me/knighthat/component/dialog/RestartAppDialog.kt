@@ -18,7 +18,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.kreate.compose.R
 import it.fast4x.rimusic.colorPalette
-import it.fast4x.rimusic.service.MyDownloadService
 import it.fast4x.rimusic.service.modern.PlayerServiceModern
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.utils.intent
@@ -40,7 +39,6 @@ object RestartAppDialog: ConfirmDialog {
         val context: Context by inject(Context::class.java)
 
         context.stopService( context.intent<PlayerServiceModern>() )
-        context.stopService( context.intent<MyDownloadService>() )
 
         // Close other activities
         (context as? Activity)?.finishAffinity()
