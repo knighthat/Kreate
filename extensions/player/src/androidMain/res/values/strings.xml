@@ -9,5 +9,20 @@
     <string name="notification_button_restart">Restart</string>
     <string name="notification_button_resume">Resume</string>
     <string name="notification_button_cancel">Cancel</string>
-    <string name="notification_channel_name_download">Download</string>
+    <string name="notification_group_name_download">Downloads</string>
+    <string name="notification_group_description_download">Media download progress and results</string>
+    <string name="notification_channel_name_in_progress">In-progress</string>
+    <string name="notification_channel_description_in_progress">Progress of ongoing media downloads</string>
+    <string name="notification_channel_name_complete">Complete</string>
+    <string name="notification_channel_description_complete">Status of completed downloads, including failed ones</string>
+    <string name="notification_title_downloads_in_progress">Downloads in-progress</string>
+    <string name="notification_title_downloads_waiting">Downloads waiting</string>
+    <string name="notification_description_downloads_wait_connection">Waiting for a network connection</string>
+    <string name="notification_description_downloads_wait_device">Waiting for device requirements</string>
+    <string name="notification_description_downloads_downloading">Downloading %1$d/%2$d</string>
+    <string name="notification_description_state_restarting">Restarting…</string>
+    <string name="notification_description_state_downloading">Downloaded %d%%</string>
+    <string name="notification_description_downloads_success">Download complete</string>
+    <string name="notification_description_downloads_failure">Download failed</string>
+    <string name="notification_title_downloads_complete">Downloads</string>
 </resources>

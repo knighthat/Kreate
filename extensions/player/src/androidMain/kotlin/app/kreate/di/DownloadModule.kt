@@ -7,6 +7,7 @@ import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.exoplayer.offline.DownloadManager
 import androidx.media3.exoplayer.scheduler.Requirements
 import app.kreate.internal.download.MediaDownloaderImpl
+import app.kreate.internal.download.TerminalStateNotifier
 import app.kreate.player.download.MediaDownloader
 import org.koin.dsl.module
 import java.util.concurrent.Executors
@@ -29,6 +30,10 @@ val downloadModule = module {
             maxParallelDownloads = MAX_PARALLEL_DOWNLOADS
             minRetryCount = 2
             requirements = Requirements(Requirements.NETWORK)
+
+            // Attached here (not in the service) so it's registered exactly once per
+            // process, and keeps working while the service is shutting down.
+            addListener( TerminalStateNotifier(get()) )
         }
     }
 }
