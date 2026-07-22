@@ -1,6 +1,7 @@
 package app.kreate.internal.database.repositories
 
 import androidx.room.Dao
+import androidx.room.MapColumn
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import app.kreate.constant.AlbumSortBy
@@ -79,6 +80,13 @@ internal abstract class AbstractAlbumTable: AlbumTable {
         WHERE song_id = :songId
     """)
     abstract override fun findBySongId( songId: String ): Flow<Album?>
+
+    @Query("""
+        SELECT id, bookmarked_at
+        FROM albums
+        WHERE bookmarked_at IS NOT NULL
+    """)
+    abstract override fun observedBookmarkedState(): Flow<Map<@MapColumn("id") String, @MapColumn("bookmarked_at") Long>>
 
     @Query("""
         SELECT 

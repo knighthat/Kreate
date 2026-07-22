@@ -24,7 +24,6 @@ import app.kreate.di.CacheType
 import app.kreate.player.Player
 import app.kreate.utils.Toaster
 import it.fast4x.rimusic.enums.MenuStyle
-import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.ui.components.LocalMenuState
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.utils.asSong
@@ -129,7 +128,6 @@ fun PlayerMenu(
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
             },
@@ -167,7 +165,6 @@ fun MiniPlayerMenu(
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
             },
@@ -186,7 +183,6 @@ fun MiniPlayerMenu(
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
             },

@@ -57,6 +57,8 @@ interface SongTable: DatabaseTable<Song> {
      */
     fun findById( songId: String ): Flow<Song?>
 
+    fun findByIds( songIds: Collection<String> ): List<Song>
+
     /**
      * [searchTerm] appears in [Song.title] or [Song.artistsText].
      * Additionally, it's **case-insensitive**
@@ -79,6 +81,11 @@ interface SongTable: DatabaseTable<Song> {
      * @return all [Song]s that have [Song.artistsText] match [artistName]
      */
     fun findAllByArtist( artistName: String ): Flow<List<Song>>
+
+    /**
+     * Returns all [Song.id] and its [Song.likedAt] if set
+     */
+    fun observeLikeState(): Flow<Map<String, Long>>
 
     /**
      * @return whether any record in [Song] table has id [songId]

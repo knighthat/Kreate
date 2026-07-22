@@ -85,13 +85,11 @@ class MediaLibrarySessionCallback(
         val mediaItem = player.currentMediaItem ?: return
         val player: Player by inject()
         Database.asyncTransaction {
-            songTable.rotateLikeState( mediaItem.mediaId )
+            songTable.toggleLike( mediaItem.mediaId )
                      .also {
                          listener.updateMediaControl( context, player )
                      }
         }
-
-        MyDownloadHelper.autoDownloadWhenLiked( mediaItem )
     }
 
     fun onSearch() {
@@ -173,7 +171,7 @@ class MediaLibrarySessionCallback(
         val player = session.player as Player
         when (customCommand.customAction) {
             MediaSessionConstants.ACTION_TOGGLE_LIKE -> toggleLike( player )
-            MediaSessionConstants.ACTION_TOGGLE_DOWNLOAD -> player.currentMediaItem?.also( MyDownloadHelper::autoDownload )
+            MediaSessionConstants.ACTION_TOGGLE_DOWNLOAD -> player.currentMediaItem?.also( MyDownloadHelper::addDownload )
             MediaSessionConstants.ACTION_TOGGLE_SHUFFLE -> player.toggleShuffleMode()
             MediaSessionConstants.ACTION_TOGGLE_REPEAT_MODE -> player.cycleRepeatMode()
             MediaSessionConstants.ACTION_START_RADIO -> player.startRadio()

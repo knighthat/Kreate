@@ -27,9 +27,7 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.Executors
@@ -100,41 +98,6 @@ class DownloadHelperImpl(
     override fun removeDownload( mediaItem: MediaItem ) {
         if( !mediaItem.isLocal )
             downloader.remove( mediaItem )
-    }
-
-    override fun autoDownload( mediaItem: MediaItem ) {
-        if ( app.kreate.preferences.Preferences.AUTO_DOWNLOAD.value ) {
-            if (downloads.value[mediaItem.mediaId]?.state != Download.STATE_COMPLETED)
-                addDownload(mediaItem)
-        }
-    }
-
-    override fun autoDownloadWhenLiked( mediaItem: MediaItem ) {
-        if ( app.kreate.preferences.Preferences.AUTO_DOWNLOAD_ON_LIKE.value ) {
-            Database.asyncQuery {
-                runBlocking {
-                    if( songTable.isLiked( mediaItem.mediaId ).first() )
-                        autoDownload(mediaItem)
-                    else
-                        removeDownload(mediaItem)
-                }
-            }
-        }
-    }
-
-    override fun downloadOnLike( mediaItem: MediaItem, likeState: Boolean? ) {
-        // Only continues when this setting is enabled
-        val isSettingEnabled = app.kreate.preferences.Preferences.AUTO_DOWNLOAD_ON_LIKE.value
-        if( !isSettingEnabled || !isNetworkConnected( context ) )
-            return
-
-        // [likeState] is a tri-state value,
-        // only `true` represents like, so
-        // `true` must be value set to download
-        if( likeState == true )
-            autoDownload( mediaItem)
-        else
-            removeDownload( mediaItem)
     }
 
     override fun handleDownload( song: Song, removeIfDownloaded: Boolean ) {

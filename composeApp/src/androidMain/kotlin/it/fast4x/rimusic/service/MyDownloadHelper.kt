@@ -19,11 +19,5 @@ object MyDownloadHelper : KoinComponent {
 
     fun removeDownload(mediaItem: MediaItem) = instance.removeDownload( mediaItem )
 
-    fun autoDownload(mediaItem: MediaItem) = instance.autoDownload( mediaItem )
-
-    fun autoDownloadWhenLiked(mediaItem: MediaItem) = instance.autoDownloadWhenLiked( mediaItem )
-
-    fun downloadOnLike(mediaItem: MediaItem, likeState: Boolean?) = instance.downloadOnLike( mediaItem, likeState )
-
     fun handleDownload(song: Song, removeIfDownloaded: Boolean) = instance.handleDownload( song, removeIfDownloaded )
 }

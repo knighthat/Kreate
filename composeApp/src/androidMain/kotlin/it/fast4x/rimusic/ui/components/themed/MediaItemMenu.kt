@@ -87,7 +87,6 @@ import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.MenuStyle
 import it.fast4x.rimusic.enums.NavRoutes
 import it.fast4x.rimusic.models.Info
-import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
@@ -139,7 +138,6 @@ fun InHistoryMediaItemMenu(
             } else if (!isYouTubeSyncEnabled()){
                 Database.asyncTransaction {
                     songTable.likeState( song.id, true )
-                    MyDownloadHelper.autoDownloadWhenLiked(song.asMediaItem)
                 }
             }
         },
@@ -193,7 +191,6 @@ fun InPlaylistMediaItemMenu(
             } else if (!isYouTubeSyncEnabled()){
                 Database.asyncTransaction {
                     songTable.likeState( song.id, true )
-                    MyDownloadHelper.autoDownloadWhenLiked(song.asMediaItem)
                 }
             }
         },
@@ -266,7 +263,6 @@ fun NonQueuedMediaItemMenuLibrary(
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
             },
@@ -293,7 +289,6 @@ fun NonQueuedMediaItemMenuLibrary(
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
             },
@@ -409,7 +404,6 @@ fun QueuedMediaItemMenu(
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
             }
@@ -437,7 +431,6 @@ fun QueuedMediaItemMenu(
                 } else if (!isYouTubeSyncEnabled()){
                     Database.asyncTransaction {
                         songTable.likeState( mediaItem.mediaId, true )
-                        MyDownloadHelper.autoDownloadWhenLiked(mediaItem)
                     }
                 }
             },

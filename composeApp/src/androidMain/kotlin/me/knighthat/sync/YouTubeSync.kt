@@ -6,9 +6,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import app.kreate.database.Database
 import app.kreate.database.insertIgnore
-import it.fast4x.rimusic.service.MyDownloadHelper
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 
 /**
  * Handles YouTube syncing
@@ -38,10 +35,5 @@ object YouTubeSync {
         // Always ensure song in database before proceed
         Database.insertIgnore( mediaItem )
         Database.songTable.toggleLike( mediaItem.mediaId )
-
-        val likeState = runBlocking {
-            Database.songTable.likeState( mediaItem.mediaId ).first()
-        }
-        MyDownloadHelper.downloadOnLike( mediaItem, likeState )
     }
 }

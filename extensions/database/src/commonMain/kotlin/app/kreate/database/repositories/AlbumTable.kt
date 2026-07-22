@@ -47,6 +47,11 @@ interface AlbumTable: DatabaseTable<Album> {
     fun findBySongId( songId: String ): Flow<Album?>
 
     /**
+     * Returns all [Album.id] and its [Album.bookmarkedAt] if set
+     */
+    fun observedBookmarkedState(): Flow<Map<String, Long>>
+
+    /**
      * @return whether [Album] with id [albumId] is bookmarked,
      * if album doesn't exist, return default value - `false`
      */

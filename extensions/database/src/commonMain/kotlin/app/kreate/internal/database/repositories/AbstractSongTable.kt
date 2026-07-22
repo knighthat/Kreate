@@ -1,6 +1,7 @@
 package app.kreate.internal.database.repositories
 
 import androidx.room.Dao
+import androidx.room.MapColumn
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.RoomRawQuery
@@ -92,6 +93,9 @@ internal abstract class AbstractSongTable: SongTable {
     @Query("SELECT DISTINCT * FROM songs WHERE id = :songId")
     abstract override fun findById( songId: String ): Flow<Song?>
 
+    @Query("SELECT DISTINCT * FROM songs WHERE id in (:songIds)")
+    abstract override fun findByIds( songIds: Collection<String> ): List<Song>
+
     @Query("""
         SELECT DISTINCT * 
         FROM songs 
@@ -111,6 +115,13 @@ internal abstract class AbstractSongTable: SongTable {
         ) COLLATE NOCASE = trim(:artistName) COLLATE NOCASE
     """)
     abstract override fun findAllByArtist( artistName: String ): Flow<List<Song>>
+
+    @Query("""
+        SELECT id, liked_at
+        FROM songs
+        WHERE liked_at IS NOT NULL
+    """)
+    abstract override fun observeLikeState(): Flow<Map<@MapColumn("id") String, @MapColumn("liked_at") Long>>
 
     @Query("SELECT COUNT(*) > 0 FROM songs WHERE id = :songId")
     abstract override fun exists( songId: String ): Flow<Boolean>

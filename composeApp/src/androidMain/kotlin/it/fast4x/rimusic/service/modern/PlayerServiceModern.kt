@@ -609,7 +609,7 @@ class PlayerServiceModern:
                 Action.next.value       -> player.playNext()
                 Action.previous.value   -> player.playPrevious()
                 Action.like.value       -> mediaLibrarySessionCallback.toggleLike( player )
-                Action.download.value   -> player.currentMediaItem?.also( MyDownloadHelper::autoDownload )
+                Action.download.value   -> player.currentMediaItem?.also( MyDownloadHelper::addDownload )
                 Action.playradio.value  -> player.startRadio()
                 Action.shuffle.value    -> player.toggleShuffleMode()
                 Action.search.value     -> mediaLibrarySessionCallback.onSearch()

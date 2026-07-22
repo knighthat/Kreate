@@ -33,13 +33,41 @@ import app.kreate.internal.database.migrations.From34To35Migration
 import app.kreate.internal.database.migrations.From35To36Migration
 import app.kreate.internal.database.migrations.From8To9Migration
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import org.koin.core.scope.Scope
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
 
 expect val DATABASE_FILENAME: String
+
+val databaseModule = module {
+    // RoomDatabase is the source of truth, so only one instance can be created at a time
+    single {
+        getDatabaseBuilder()
+            .loadConfig()
+            .addCallback( ClearGhostMaps() )
+            .addCallback( EnableFeatures() )
+            .apply {
+                dbCallbacks.forEach( ::addCallback )
+            }
+            .build()
+    } bind RoomDatabase::class
+
+    factory<AlbumTable> { get<AbstractRoomDatabase>().albumTable }
+    factory<ArtistTable> { get<AbstractRoomDatabase>().artistTable }
+    factory<EventTable> { get<AbstractRoomDatabase>().eventTable }
+    factory<FormatTable> { get<AbstractRoomDatabase>().formatTable }
+    factory<LyricsTable> { get<AbstractRoomDatabase>().lyricsTable }
+    factory<PlaylistTable> { get<AbstractRoomDatabase>().playlistTable }
+    factory<QueuedMediaItemTable> { get<AbstractRoomDatabase>().queueTable }
+    factory<SearchQueryTable> { get<AbstractRoomDatabase>().searchQueryTable }
+    factory<SongAlbumMapTable> { get<AbstractRoomDatabase>().songAlbumMapTable }
+    factory<SongArtistMapTable> { get<AbstractRoomDatabase>().songArtistMapTable }
+    factory<SongPlaylistMapTable> { get<AbstractRoomDatabase>().songPlaylistMapTable }
+    factory<SongTable> { get<AbstractRoomDatabase>().songTable }
+}
+
+val dbCallbacks = mutableListOf<RoomDatabase.Callback>()
 
 internal expect fun Scope.getDatabaseBuilder(): RoomDatabase.Builder<AbstractRoomDatabase>
 
@@ -63,27 +91,3 @@ internal fun RoomDatabase.Builder<AbstractRoomDatabase>.loadConfig(): RoomDataba
             From34To35Migration(),
             From35To36Migration()
         )
-
-val databaseModule = module {
-    // RoomDatabase is the source of truth, so only one instance can be created at a time
-    single {
-        getDatabaseBuilder()
-            .loadConfig()
-            .addCallback( ClearGhostMaps() )
-            .addCallback( EnableFeatures() )
-            .build()
-    } bind RoomDatabase::class
-
-    factory<AlbumTable> { get<AbstractRoomDatabase>().albumTable }
-    factory<ArtistTable> { get<AbstractRoomDatabase>().artistTable }
-    factory<EventTable> { get<AbstractRoomDatabase>().eventTable }
-    factory<FormatTable> { get<AbstractRoomDatabase>().formatTable }
-    factory<LyricsTable> { get<AbstractRoomDatabase>().lyricsTable }
-    factory<PlaylistTable> { get<AbstractRoomDatabase>().playlistTable }
-    factory<QueuedMediaItemTable> { get<AbstractRoomDatabase>().queueTable }
-    factory<SearchQueryTable> { get<AbstractRoomDatabase>().searchQueryTable }
-    factory<SongAlbumMapTable> { get<AbstractRoomDatabase>().songAlbumMapTable }
-    factory<SongArtistMapTable> { get<AbstractRoomDatabase>().songArtistMapTable }
-    factory<SongPlaylistMapTable> { get<AbstractRoomDatabase>().songPlaylistMapTable }
-    factory<SongTable> { get<AbstractRoomDatabase>().songTable }
-}

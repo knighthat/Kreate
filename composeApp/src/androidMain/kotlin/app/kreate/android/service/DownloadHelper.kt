@@ -25,11 +25,5 @@ interface DownloadHelper {
 
     fun removeDownload( mediaItem: MediaItem )
 
-    fun autoDownload( mediaItem: MediaItem )
-
-    fun autoDownloadWhenLiked( mediaItem: MediaItem )
-
-    fun downloadOnLike( mediaItem: MediaItem, likeState: Boolean? )
-
     fun handleDownload( song: Song, removeIfDownloaded: Boolean = false )
 }

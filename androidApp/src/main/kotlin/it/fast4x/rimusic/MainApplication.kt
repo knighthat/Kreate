@@ -10,7 +10,10 @@ import app.kreate.android.BuildConfig
 import app.kreate.android.drawable.AppIcon
 import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.CrashHandler
+import app.kreate.database.callbacks.DownloadOnAlbumBookmarkedCallback
+import app.kreate.database.callbacks.DownloadOnLikeCallback
 import app.kreate.di.THUMBNAIL_SIZE
+import app.kreate.di.dbCallbacks
 import app.kreate.di.initKoin
 import app.kreate.logging.CoilLogger
 import app.kreate.logging.KoinBufferedLogger
@@ -69,6 +72,9 @@ class MainApplication : Application(), SingletonImageLoader.Factory {
         }
         // Register app lifecycle tracker
         ProcessLifecycleOwner.get().lifecycle.addObserver(AppLifecycleTracker)
+
+        dbCallbacks.add( DownloadOnLikeCallback() )
+        dbCallbacks.add( DownloadOnAlbumBookmarkedCallback() )
     }
 
     override fun newImageLoader( context: PlatformContext ): ImageLoader {
