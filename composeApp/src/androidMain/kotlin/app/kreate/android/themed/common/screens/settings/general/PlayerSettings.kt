@@ -375,6 +375,12 @@ fun LazyListScope.playerSettingsSection( search: SettingEntrySearch ) {
                     preference = Preferences.AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED,
                     title = stringResource( R.string.settings_enable_autodownload_song_when_album_bookmarked )
                 )
+
+            if( search appearsIn R.string.settings_enable_autodownload_lyrics_on_song_download )
+                SettingComponents.BooleanEntry(
+                    preference = Preferences.AUTO_DOWNLOAD_LYRICS_ON_SONG_DOWNLOAD,
+                    title = stringResource( R.string.settings_enable_autodownload_lyrics_on_song_download )
+                )
         }
     }
     entry( search, R.string.equalizer ) {

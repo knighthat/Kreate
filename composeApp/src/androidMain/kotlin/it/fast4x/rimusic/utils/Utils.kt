@@ -19,17 +19,12 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.ThumbRating
 import androidx.media3.common.util.UnstableApi
-import app.kreate.database.Database
 import app.kreate.database.models.Album
-import app.kreate.database.models.Lyrics
 import app.kreate.database.models.Song
 import app.kreate.di.THUMBNAIL_SIZE
 import app.kreate.gateway.innertube.models.InnertubeAlbum
 import app.kreate.util.toDuration
-import it.fast4x.kugou.KuGou
-import it.fast4x.lrclib.LrcLib
 import it.fast4x.rimusic.service.modern.isLocal
-import kotlinx.coroutines.flow.first
 
 const val EXPLICIT_BUNDLE_TAG = "is_explicit"
 
@@ -269,40 +264,3 @@ fun Modifier.conditional(condition : Boolean, modifier : Modifier.() -> Modifier
         this
     }
 }
-
-suspend fun downloadSyncedLyrics( song: Song ) {
-    val storedLyrics = Database.lyricsTable.findBySongId( song.id ).first()
-    if( storedLyrics?.synced != null ) return
-
-    var fetchedLyrics: Lyrics? = null
-    LrcLib.lyrics(
-        artist = song.cleanArtistsText(),
-        title = song.cleanTitle(),
-        duration = song.durationText.toDuration()
-    )?.onSuccess {
-        fetchedLyrics = Lyrics(
-            songId = song.id,
-            fixed = storedLyrics?.fixed,
-            synced = it?.text.orEmpty()
-        )
-    }?.onFailure {
-        // Try out different source for lyrics
-        KuGou.lyrics(
-            artist = song.cleanArtistsText(),
-            title = song.cleanTitle(),
-            duration = song.durationText.toDuration().inWholeSeconds
-        )?.onSuccess {
-            fetchedLyrics = Lyrics(
-                songId = song.id,
-                fixed = storedLyrics?.fixed,
-                synced = it?.value.orEmpty()
-            )
-        }
-    }
-
-    if( fetchedLyrics != null )
-        Database.asyncTransaction {
-            lyricsTable.upsert( fetchedLyrics!! )
-        }
-}
-

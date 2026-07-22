@@ -908,6 +908,9 @@ sealed class Preferences<K, V>(
         val AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED by lazy {
             BooleanPref(preferences, Key.AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED, false)
         }
+        val AUTO_DOWNLOAD_LYRICS_ON_SONG_DOWNLOAD by lazy {
+            BooleanPref(preferences, Key.AUTO_DOWNLOAD_LYRICS_ON_SONG_DOWNLOAD, false)
+        }
         val KEEP_SCREEN_ON by lazy {
             BooleanPref(preferences, Key.KEEP_SCREEN_ON, false)
         }
@@ -1556,6 +1559,7 @@ sealed class Preferences<K, V>(
         val AUTO_DOWNLOAD = booleanPreferencesKey("auto_download")
         val AUTO_DOWNLOAD_ON_LIKE = booleanPreferencesKey("auto_download_on_like")
         val AUTO_DOWNLOAD_ON_ALBUM_BOOKMARKED = booleanPreferencesKey("auto_download_on_album_bookmarked")
+        val AUTO_DOWNLOAD_LYRICS_ON_SONG_DOWNLOAD = booleanPreferencesKey("auto_download_lyrics_on_song_download")
         val KEEP_SCREEN_ON = booleanPreferencesKey("keep_screen_on")
         val PAUSE_SEARCH_HISTORY = booleanPreferencesKey("pause_search_history")
         val LOCAL_PLAYLIST_SMART_RECOMMENDATION = booleanPreferencesKey("local_playlist_smart_recommendation")
