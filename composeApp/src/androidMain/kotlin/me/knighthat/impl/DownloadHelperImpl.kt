@@ -18,7 +18,6 @@ import app.kreate.util.thumbnail
 import app.kreate.utils.Toaster
 import coil3.request.allowHardware
 import coil3.request.bitmapConfig
-import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.isLocal
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
@@ -28,22 +27,12 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.trySendBlocking
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import me.knighthat.component.dialog.RestartAppDialog.isActive
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
-import kotlin.time.Duration.Companion.milliseconds
 
 
 @OptIn(UnstableApi::class)
@@ -67,65 +56,7 @@ class DownloadHelperImpl(
     private val downloader: MediaDownloader by inject()
 
     override val downloadManager: DownloadManager by inject()
-    override val downloads = callbackFlow {
-        val results = ConcurrentHashMap<String, Download>()
-        // Marks "something changed, re-read now" and controls whether we keep polling.
-        var busy = downloadManager.currentDownloads.isNotEmpty()
-
-        fun emitSnapshot( downloadManager: DownloadManager ) {
-            downloadManager.currentDownloads
-                .also {
-                    busy = it.isNotEmpty()
-                }
-                .forEach {
-                    results[it.request.id] = it
-                }
-            trySendBlocking( results.toMap() )
-        }
-
-        val listener = object : DownloadManager.Listener {
-            override fun onInitialized( downloadManager: DownloadManager ) {
-                // On init, populate the map with existing Downloads, including completed ones
-                val cursor = downloadManager.downloadIndex.getDownloads()
-                while( cursor.moveToNext() ) {
-                    results[cursor.download.request.id] = cursor.download
-                }
-
-                emitSnapshot( downloadManager )
-            }
-
-            override fun onDownloadChanged(
-                downloadManager: DownloadManager,
-                download: Download,
-                finalException: Exception?,
-            ) = emitSnapshot( downloadManager )
-
-            override fun onDownloadRemoved(
-                downloadManager: DownloadManager,
-                download: Download
-            ) = emitSnapshot( downloadManager )
-
-            override fun onDownloadsPausedChanged(
-                downloadManager: DownloadManager,
-                downloadsPaused: Boolean,
-            ) = emitSnapshot( downloadManager )
-
-            // Fires when the queue drains — our cue to stop polling entirely.
-            override fun onIdle( downloadManager: DownloadManager ) = emitSnapshot( downloadManager )
-        }
-        downloadManager.addListener( listener )
-
-        // The polling loop: active only while work is in flight, otherwise it idles at
-        // one wake-up per interval doing a single list check.
-        while( isActive ) {
-            // TODO: When implement download progress bar, reduce this
-            //  value to 250 millis for smoother animation
-            delay( 500.milliseconds )
-            if( busy ) emitSnapshot( downloadManager )
-        }
-
-        awaitClose { downloadManager.removeListener(listener) }
-    }.distinctUntilChanged().stateIn( coroutineScope, SharingStarted.Lazily, emptyMap() )
+    override val downloads = downloader.downloads
 
     private lateinit var downloadNotificationHelper: DownloadNotificationHelper
 

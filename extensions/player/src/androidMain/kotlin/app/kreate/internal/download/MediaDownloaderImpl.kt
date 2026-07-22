@@ -11,14 +11,18 @@ import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
 import app.kreate.player.MediaDownloadService
 import app.kreate.player.download.MediaDownloader
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.isActive
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.time.Duration.Companion.milliseconds
 
 
 @OptIn(UnstableApi::class)
@@ -27,6 +31,8 @@ internal class MediaDownloaderImpl(
     downloadManager: DownloadManager,
     private val context: Context,
 ) : MediaDownloader {
+
+    private val logger = Logger.withTag( "MediaDownloaderImpl" )
 
     override val downloads = callbackFlow {
         val results = ConcurrentHashMap<String, Download>()
@@ -37,11 +43,13 @@ internal class MediaDownloaderImpl(
 
         val listener = object : DownloadManager.Listener {
             override fun onInitialized( downloadManager: DownloadManager ) {
-                val results = mutableMapOf<String, Download>()
+                logger.v { "Initializing download snapshot listener" }
+
                 val cursor = downloadManager.downloadIndex.getDownloads()
                 while( cursor.moveToNext() ) {
                     results[cursor.download.request.id] = cursor.download
                 }
+                logger.d { "Indexed downloads: ${results.size}" }
 
                 emitSnapshot()
             }
@@ -51,16 +59,29 @@ internal class MediaDownloaderImpl(
                 download: Download,
                 finalException: java.lang.Exception?
             ) {
+                logger.v { "Download (${download.request.id}) state changed to ${download.state}" }
+
                 results[download.request.id] = download
                 emitSnapshot()
             }
 
             override fun onDownloadRemoved( downloadManager: DownloadManager, download: Download ) {
+                logger.v { "Download (${download.request.id}) removed from active downloads" }
+
                 results.remove( download.request.id )
                 emitSnapshot()
             }
         }
         downloadManager.addListener( listener )
+
+        // The polling loop: active only while work is in flight, otherwise it idles at
+        // one wake-up per interval doing a single list check.
+        while( isActive ) {
+            emitSnapshot()
+            // TODO: When implement download progress bar, reduce this
+            //  value to 250 millis for smoother animation
+            delay( 500.milliseconds )
+        }
 
         awaitClose { downloadManager.removeListener(listener) }
     }.distinctUntilChanged().stateIn( coroutineScope, SharingStarted.Eagerly, emptyMap() )
