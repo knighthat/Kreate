@@ -72,9 +72,7 @@ import it.fast4x.rimusic.utils.doubleShadowDrop
 import it.fast4x.rimusic.utils.dropShadow
 import it.fast4x.rimusic.utils.getLikeState
 import it.fast4x.rimusic.utils.isExplicit
-import it.fast4x.rimusic.utils.playNext
 import it.fast4x.rimusic.utils.semiBold
-import it.fast4x.rimusic.utils.smartRewind
 import it.fast4x.rimusic.utils.textCopyToClipboard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -382,7 +380,7 @@ fun ControlsModern(
                   indication = ripple(bounded = true),
                   interactionSource = remember { MutableInteractionSource() },
                   onClick = {
-                      player.smartRewind()
+                      player.seekToPrevious()
 
                       if (effectRotationEnabled) isRotated = !isRotated
                   },
@@ -551,7 +549,7 @@ fun ControlsModern(
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = {
                     //player.forceSeekToNext()
-                    player.playNext()
+                    player.seekToNext()
                     if (effectRotationEnabled) isRotated = !isRotated
                 },
                 onLongClick = {}
@@ -605,7 +603,7 @@ fun ControlsModern(
                           interactionSource = null,
                           indication = null,
                           onClick = {
-                              player.smartRewind()
+                              player.seekToPrevious()
 
                               if (effectRotationEnabled) isRotated = !isRotated
                           },
@@ -680,7 +678,7 @@ fun ControlsModern(
                           indication = null,
                           onClick = {
                               //player.forceSeekToNext()
-                              player.playNext()
+                              player.seekToNext()
                               if (effectRotationEnabled) isRotated = !isRotated
                           },
                           onLongClick = {}

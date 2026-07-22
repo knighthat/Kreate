@@ -70,7 +70,6 @@ import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.IconButton
 import it.fast4x.rimusic.ui.components.themed.SecondaryTextButton
 import it.fast4x.rimusic.utils.DisposableListener
-import it.fast4x.rimusic.utils.currentWindow
 import it.fast4x.rimusic.utils.hasPermission
 import it.fast4x.rimusic.utils.isCompositionLaunched
 import it.fast4x.rimusic.utils.resize
@@ -252,9 +251,7 @@ fun getVisualizers( player: Player = koinInject() ): List<Painter> {
     }
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
-        val thumbnailUrl: String =  player
-                                          ?.currentWindow
-                                          ?.mediaItem
+        val thumbnailUrl: String =  player.currentMediaItem
                                           ?.mediaMetadata
                                           ?.artworkUri
                                           .toString()

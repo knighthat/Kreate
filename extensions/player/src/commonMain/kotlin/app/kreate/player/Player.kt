@@ -16,6 +16,7 @@ expect interface Player {
     val shuffleModeState: StateFlow<Boolean>
     val currentMediaItemState: StateFlow<MediaItem?>
     val queueState: StateFlow<List<MediaItem>>
+    val queue: List<MediaItem>
 
     /**
      * Clears playlist, except for the currently playing [MediaItem]. Then use the currently

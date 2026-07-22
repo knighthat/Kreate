@@ -42,7 +42,6 @@ import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.styling.PureBlackColorPalette
 import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.color
-import it.fast4x.rimusic.utils.currentWindow
 import it.fast4x.rimusic.utils.medium
 import org.koin.compose.koinInject
 import java.net.UnknownHostException
@@ -82,7 +81,7 @@ fun PlayerError(
     if (errorCounter < 2) {
         Logger.e( error.cause?.cause, "PlaybackErrorHandler" ) { "Playback error" }
         Toaster.w(
-            if (player.currentWindow?.mediaItem?.isLocal == true)
+            if (player.currentMediaItem?.isLocal == true)
                 localMusicFileNotFoundError
             else when (error.cause?.cause) {
                 is UnresolvedAddressException, is UnknownHostException -> networkerror

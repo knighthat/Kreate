@@ -83,7 +83,6 @@ import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.fadingEdge
 import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isLandscape
@@ -167,7 +166,7 @@ fun YouTubePlaylist(
         )
         val addToFavorite = LikeComponent( ::getSongs )
         val enqueue = Enqueue {
-            player.enqueue( getMediaItems(), context )
+            player.enqueue( getMediaItems() )
 
             // Turn of selector clears the selected list
             itemSelector.isActive = false

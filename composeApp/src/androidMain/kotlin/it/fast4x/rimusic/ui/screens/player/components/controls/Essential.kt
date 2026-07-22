@@ -76,9 +76,7 @@ import it.fast4x.rimusic.utils.bold
 import it.fast4x.rimusic.utils.conditional
 import it.fast4x.rimusic.utils.getLikeState
 import it.fast4x.rimusic.utils.isExplicit
-import it.fast4x.rimusic.utils.playNext
 import it.fast4x.rimusic.utils.semiBold
-import it.fast4x.rimusic.utils.smartRewind
 import it.fast4x.rimusic.utils.textCopyToClipboard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -420,7 +418,7 @@ fun ControlsEssential(
                 indication = ripple(bounded = false),
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = {
-                    player.smartRewind()
+                    player.seekToPrevious()
 
                     if (effectRotationEnabled) isRotated = !isRotated
                 },
@@ -539,7 +537,7 @@ fun ControlsEssential(
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = {
                     //player.forceSeekToNext()
-                    player.playNext()
+                    player.seekToNext()
                     if (effectRotationEnabled) isRotated = !isRotated
                 },
                 onLongClick = {}

@@ -49,9 +49,7 @@ import it.fast4x.rimusic.ui.components.themed.PlayNext
 import it.fast4x.rimusic.ui.components.themed.PlaylistsMenu
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.favoritesIcon
-import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.enqueue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -133,10 +131,10 @@ class SongItemMenu private constructor(
         }
         val startRadio = Radio { listOf(song) }
         val playNext = PlayNext {
-            player.addNext( listOf(song.asMediaItem), context )
+            player.addNext( listOf(song.asMediaItem) )
         }
         val enqueue = Enqueue {
-            player.enqueue( listOf(song.asMediaItem), context )
+            player.enqueue( listOf(song.asMediaItem) )
         }
         val addToFavorite = LikeComponent { listOf(song) }
         val addToPlaylist = PlaylistsMenu.init(

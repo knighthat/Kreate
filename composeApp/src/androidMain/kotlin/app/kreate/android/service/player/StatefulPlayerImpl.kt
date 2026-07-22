@@ -46,10 +46,7 @@ import it.fast4x.rimusic.service.MyDownloadHelper
 import it.fast4x.rimusic.service.modern.PlayerServiceModern.Companion.SleepTimerNotificationId
 import it.fast4x.rimusic.utils.TimerJob
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.manageDownload
-import it.fast4x.rimusic.utils.mediaItems
-import it.fast4x.rimusic.utils.setGlobalVolume
 import it.fast4x.rimusic.utils.timer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -128,7 +125,6 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
         skipSilenceEnabled = Preferences.AUDIO_SKIP_SILENCE.value
         repeatMode = Preferences.QUEUE_LOOP_TYPE.value.type
         volume = Preferences.AUDIO_VOLUME.value
-        setGlobalVolume( player.volume )
         playbackParameters = PlaybackParameters(
             Preferences.AUDIO_SPEED_VALUE.value,
             Preferences.AUDIO_PITCH.value
@@ -264,10 +260,6 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
     ) {
         this.stopRadio()
 
-        // Play song immediately while other songs are being loaded
-        if( player.currentMediaItem?.mediaId != mediaItem.mediaId )
-            player.forcePlay( mediaItem )
-
         // Prevent UI from freezing up while data is being fetched
         radioJob = coroutineScope.launch {
             get<YouTube>()
@@ -283,7 +275,7 @@ class StatefulPlayerImpl(private val player: ExoPlayer) :
 
                     // Any call to [player] must happen on Main thread
                     val currentQueue = withContext( Dispatchers.Main ) {
-                        player.mediaItems.fastMap( MediaItem::mediaId )
+                        (0 until player.mediaItemCount).map { player.getMediaItemAt(it).mediaId }
                     }
 
                     // Songs with the same id as provided [Song] should be removed.

@@ -134,9 +134,7 @@ import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.conditional
 import it.fast4x.rimusic.utils.medium
-import it.fast4x.rimusic.utils.playNext
 import it.fast4x.rimusic.utils.shimmerEffect
-import it.fast4x.rimusic.utils.smartRewind
 import it.fast4x.rimusic.utils.textCopyToClipboard
 import it.fast4x.rimusic.utils.verticalFadingEdge
 import kotlinx.coroutines.Dispatchers
@@ -1767,7 +1765,7 @@ fun Lyrics(
                                 indication = ripple(bounded = false),
                                 interactionSource = remember { MutableInteractionSource() },
                                 onClick = {
-                                    player.smartRewind()
+                                    player.seekToPrevious()
 
                                     if (effectRotationEnabled) isRotated = !isRotated
                                 }
@@ -1815,7 +1813,7 @@ fun Lyrics(
                                 indication = ripple(bounded = false),
                                 interactionSource = remember { MutableInteractionSource() },
                                 onClick = {
-                                    player.playNext()
+                                    player.seekToNext()
                                     if (effectRotationEnabled) isRotated = !isRotated
                                 }
                             )

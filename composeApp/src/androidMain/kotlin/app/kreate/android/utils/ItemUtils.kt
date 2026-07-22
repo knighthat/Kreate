@@ -31,7 +31,6 @@ import app.kreate.gateway.innertube.models.InnertubeSong
 import app.kreate.player.Player
 import it.fast4x.rimusic.thumbnailShape
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.shimmerEffect
 import org.koin.compose.koinInject
 
@@ -83,7 +82,7 @@ object ItemUtils {
                         values = songIV,
                         isPlaying = item.id == currentlyPlaying,
                         onClick = {
-                            player.forcePlay( item.toMediaItem )
+                            player.play( item.toMediaItem )
                         },
                         onLongClick = {
                             val page = MenuPage.Song(item.toMediaItem)

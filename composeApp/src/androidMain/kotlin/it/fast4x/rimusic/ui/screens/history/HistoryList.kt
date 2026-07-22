@@ -55,7 +55,6 @@ import it.fast4x.rimusic.ui.components.themed.Title
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.forcePlay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -206,7 +205,7 @@ fun HistoryList(
                             isPlaying = event.song.shallowCompare( currentMediaItem ),
                             values = songItemValues,
                             onClick = {
-                                player.forcePlay( event.song.asMediaItem )
+                                player.play( event.song.asMediaItem )
                             },
                             onLongClick = {
                                 val page = MenuPage.Song(event.song.asMediaItem)
@@ -241,7 +240,7 @@ fun HistoryList(
                                 values = songItemValues,
                                 onClick = {
                                     val mediaItem = song.toMediaItem
-                                    player.forcePlay( mediaItem )
+                                    player.play( mediaItem )
                                 },
                                 onLongClick = {
                                     val mediaItem = song.toMediaItem

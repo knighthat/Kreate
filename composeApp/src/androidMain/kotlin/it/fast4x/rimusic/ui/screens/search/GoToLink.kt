@@ -47,7 +47,6 @@ import it.fast4x.rimusic.typography
 import it.fast4x.rimusic.ui.components.themed.HeaderWithIcon
 import it.fast4x.rimusic.ui.components.themed.InputTextField
 import it.fast4x.rimusic.ui.styling.Dimensions
-import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -241,7 +240,7 @@ fun GoToLink(
                                     }
 
                                     withContext( Dispatchers.Main ) {
-                                        player.forcePlay( song.toMediaItem )
+                                        player.play( song.toMediaItem )
                                     }
                                 }
                             }

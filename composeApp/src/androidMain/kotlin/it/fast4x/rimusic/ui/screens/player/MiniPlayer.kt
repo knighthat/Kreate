@@ -81,8 +81,6 @@ import it.fast4x.rimusic.ui.styling.favoritesOverlay
 import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.intent
 import it.fast4x.rimusic.utils.isExplicit
-import it.fast4x.rimusic.utils.playNext
-import it.fast4x.rimusic.utils.playPrevious
 import it.fast4x.rimusic.utils.positionAndDurationState
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.CoroutineScope
@@ -361,7 +359,7 @@ fun MiniPlayer(
                     icon = R.drawable.play_skip_back,
                     color = colorPalette().iconButtonPlayer,
                     onClick = {
-                        player.playPrevious()
+                        player.seekToPrevious()
                         if (effectRotationEnabled) isRotated = !isRotated
                     },
                     modifier = Modifier
@@ -399,7 +397,7 @@ fun MiniPlayer(
                     icon = R.drawable.play_skip_forward,
                     color = colorPalette().iconButtonPlayer,
                     onClick = {
-                        player.playNext()
+                        player.seekToNext()
                         if (effectRotationEnabled) isRotated = !isRotated
                     },
                     modifier = Modifier

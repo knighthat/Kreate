@@ -40,6 +40,7 @@ import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.random.Random
 import androidx.media3.common.Player as MediaPlayer
 
 
@@ -189,6 +190,13 @@ internal class PlayerImpl(
     override val queueState: StateFlow<List<MediaItem>> = _queueState.asStateFlow()
     override val shouldBePlaying: Boolean
         get() = !(playbackState == MediaPlayer.STATE_ENDED || !playWhenReady)
+    override val queue: List<MediaItem>
+        get() = object : AbstractList<MediaItem>() {
+
+            override val size: Int get() = mediaItemCount
+
+            override fun get( index: Int ): MediaItem = getMediaItemAt(index)
+        }
 
     override fun startRadio() {
         logger.v { "Starting radio for currently playing media item: ${currentMediaItem?.mediaId}" }
@@ -252,6 +260,21 @@ internal class PlayerImpl(
         logger.v { "Toggling shuffle mode" }
         shuffleModeEnabled = !shuffleModeEnabled
     }
+
+    override fun shuffleQueue() {
+        val playlist = captureQueue( nextMediaItemIndex )
+        scope.launch {
+            val random = Random( playlist.hashCode() * 41 + playlist.size )
+            val shuffledPlaylist = playlist.shuffled( random )
+
+            withContext( Dispatchers.Main ) {
+                replaceMediaItems( nextMediaItemIndex, mediaItemCount, shuffledPlaylist )
+            }
+        }
+    }
+
+    override fun captureQueue( from: Int, to: Int ): List<MediaItem> =
+        (from until to).map( ::getMediaItemAt )
 
     override fun addNext( mediaItem: MediaItem ) {
         logger.v { "Adding ${mediaItem.mediaId} to play next" }
@@ -355,7 +378,7 @@ internal class PlayerImpl(
 
         // Copy current queue, remove all duplicates, and add [filteredMediaItems] to next position
         val queue =
-            (0 until mediaItemCount).map( ::getMediaItemAt ).toMutableList().also { list ->
+            captureQueue().toMutableList().also { list ->
                 // Capture unique IDs here also to speed up filter
                 val appendingIds = mediaItems.map( MediaItem::mediaId ).toSet()
                 list.removeIf { it.mediaId in appendingIds }

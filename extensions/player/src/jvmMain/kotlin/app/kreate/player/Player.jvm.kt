@@ -9,6 +9,7 @@ actual interface Player {
     actual val shuffleModeState: StateFlow<Boolean>
     actual val currentMediaItemState: StateFlow<MediaItem?>
     actual val queueState: StateFlow<List<MediaItem>>
+    actual val queue: List<MediaItem>
 
     actual fun startRadio()
 

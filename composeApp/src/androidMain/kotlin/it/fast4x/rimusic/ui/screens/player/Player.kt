@@ -176,14 +176,9 @@ import it.fast4x.rimusic.utils.AppLifecycleTracker
 import it.fast4x.rimusic.utils.DisposableListener
 import it.fast4x.rimusic.utils.SearchYoutubeEntity
 import it.fast4x.rimusic.utils.VerticalfadingEdge2
-import it.fast4x.rimusic.utils.currentWindow
 import it.fast4x.rimusic.utils.doubleShadowDrop
 import it.fast4x.rimusic.utils.horizontalFadingEdge
 import it.fast4x.rimusic.utils.isLandscape
-import it.fast4x.rimusic.utils.mediaItems
-import it.fast4x.rimusic.utils.playAtIndex
-import it.fast4x.rimusic.utils.playNext
-import it.fast4x.rimusic.utils.playPrevious
 import it.fast4x.rimusic.utils.positionAndDurationState
 import it.fast4x.rimusic.utils.resize
 import it.fast4x.rimusic.utils.semiBold
@@ -320,7 +315,7 @@ fun Player(
     }
 
     var mediaItems by remember {
-        mutableStateOf(player.currentTimeline.mediaItems)
+        mutableStateOf( player.captureQueue() )
     }
     var playerError by remember {
         mutableStateOf<PlaybackException?>(player.playerError)
@@ -375,7 +370,7 @@ fun Player(
                 shouldBePlaying = playerError == null && player.shouldBePlaying
             }
             override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-                mediaItems = timeline.mediaItems
+                mediaItems = player.captureQueue()
             }
             override fun onPlayerError(playbackException: PlaybackException) {
                 playerError = playbackException
@@ -632,15 +627,13 @@ fun Player(
                 playerBackgroundColors == PlayerBackgroundColors.AnimatedGradient
 
         println("Player url mediaitem ${mediaItem.mediaMetadata.artworkUri}")
-        println("Player url binder ${player.currentWindow?.mediaItem?.mediaMetadata?.artworkUri}")
+        println("Player url binder ${player.currentMediaItem?.mediaMetadata?.artworkUri}")
     LaunchedEffect(mediaItem.mediaId, updateBrush) {
         if (playerBackgroundColors == PlayerBackgroundColors.CoverColorGradient ||
             playerBackgroundColors == PlayerBackgroundColors.CoverColor ||
             playerBackgroundColors == PlayerBackgroundColors.AnimatedGradient || updateBrush
         ) {
-            val thumbnailUrl: String =  player
-                                              .currentWindow
-                                              ?.mediaItem
+            val thumbnailUrl: String =  player.currentMediaItem
                                               ?.mediaMetadata
                                               ?.artworkUri
                                               .toString()
@@ -754,9 +747,9 @@ fun Player(
                         onDragEnd = {
                             if (!disablePlayerHorizontalSwipe && playerType == Type.LEGACY) {
                                 if (deltaX > 5) {
-                                    player.playPrevious()
+                                    player.seekToPrevious()
                                 } else if (deltaX < -5) {
-                                    player.playNext()
+                                    player.seekToNext()
                                 }
 
                             }
@@ -990,9 +983,9 @@ fun Player(
                             onDragEnd = {
                                 if (!disablePlayerHorizontalSwipe && playerType == Type.LEGACY) {
                                     if (deltaX > 5) {
-                                        player.playPrevious()
+                                        player.seekToPrevious()
                                     } else if (deltaX < -5) {
-                                        player.playNext()
+                                        player.seekToNext()
                                     }
 
                                 }
@@ -1063,7 +1056,7 @@ fun Player(
                      var previousPage = pagerStateFS.settledPage
                      snapshotFlow { pagerStateFS.settledPage }.distinctUntilChanged().collect {
                          if (previousPage != it) {
-                             if (it != player.currentMediaItemIndex) player.playAtIndex(it)
+                             if (it != player.currentMediaItemIndex) player.seekToDefaultPosition( it )
                          }
                          previousPage = it
                      }
@@ -1227,9 +1220,9 @@ fun Player(
                                         onDragEnd = {
                                             if (!disablePlayerHorizontalSwipe && playerType == Type.LEGACY) {
                                                 if (deltaX > 5) {
-                                                    player.playPrevious()
+                                                    player.seekToPrevious()
                                                 } else if (deltaX < -5) {
-                                                    player.playNext()
+                                                    player.seekToNext()
                                                 }
 
                                             }
@@ -1275,9 +1268,9 @@ fun Player(
                                             onDragEnd = {
                                                 if (!disablePlayerHorizontalSwipe) {
                                                     if (deltaX > 5) {
-                                                        player.playPrevious()
+                                                        player.seekToPrevious()
                                                     } else if (deltaX < -5) {
-                                                        player.playNext()
+                                                        player.seekToNext()
                                                     }
 
                                                 }
@@ -1319,7 +1312,7 @@ fun Player(
                                      var previousPage = pagerState.settledPage
                                      snapshotFlow { pagerState.settledPage }.distinctUntilChanged().collect {
                                          if ( previousPage != it && it != player.currentMediaItemIndex )
-                                             player.playAtIndex(it)
+                                             player.seekToDefaultPosition( it )
                                          previousPage = it
                                      }
                                  }
@@ -1389,7 +1382,7 @@ fun Player(
                                                      isShowingLyrics = !isShowingLyrics
                                                  }
                                                  if (it != pagerState.settledPage) {
-                                                     player.playAtIndex(it)
+                                                     player.seekToDefaultPosition( it )
                                                  }
                                              },
                                              onLongClick = {
@@ -1457,9 +1450,9 @@ fun Player(
                                                 onDragEnd = {
                                                     if (!disablePlayerHorizontalSwipe && playerType == Type.LEGACY) {
                                                         if (deltaX > 5) {
-                                                            player.playPrevious()
+                                                            player.seekToPrevious()
                                                         } else if (deltaX < -5) {
-                                                            player.playNext()
+                                                            player.seekToNext()
                                                         }
 
                                                     }
@@ -1531,7 +1524,7 @@ fun Player(
                             if (previousPage != it) {
                                 delay(if (swipeAnimationNoThumbnail == SwipeAnimationNoThumbnail.Fade) 0
                                       else 400)
-                                if (it != player.currentMediaItemIndex) player.playAtIndex(it)
+                                if (it != player.currentMediaItemIndex) player.seekToDefaultPosition( it )
                             }
                             previousPage = it
                         }
@@ -1852,7 +1845,7 @@ fun Player(
                                      var previousPage = pagerState.settledPage
                                      snapshotFlow { pagerState.settledPage }.distinctUntilChanged().collect {
                                          if ( previousPage != it && it != player.currentMediaItemIndex )
-                                             player.playAtIndex(it)
+                                             player.seekToDefaultPosition( it )
                                          previousPage = it
                                      }
                                  }
@@ -1940,7 +1933,7 @@ fun Player(
                                                      isShowingLyrics = !isShowingLyrics
                                                  }
                                                  if (it != pagerState.settledPage) {
-                                                     player.playAtIndex(it)
+                                                     player.seekToDefaultPosition( it )
                                                  }
                                              },
                                              onLongClick = {
@@ -2012,9 +2005,9 @@ fun Player(
                                     onDragEnd = {
                                         if (!disablePlayerHorizontalSwipe) {
                                             if (deltaX > 5) {
-                                                player.playPrevious()
+                                                player.seekToPrevious()
                                             } else if (deltaX <-5){
-                                                player.playNext()
+                                                player.seekToNext()
                                             }
 
                                         }

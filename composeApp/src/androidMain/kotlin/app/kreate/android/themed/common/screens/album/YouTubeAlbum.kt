@@ -89,12 +89,10 @@ import it.fast4x.rimusic.ui.components.themed.PlayNext
 import it.fast4x.rimusic.ui.components.themed.PlaylistsMenu
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.color
-import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.fadingEdge
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.medium
@@ -206,7 +204,7 @@ fun YouTubeAlbum(
         val locator = Locator( lazyListState, ::getSongs )
         val playNext = PlayNext {
             getMediaItems().let {
-                player.addNext( it, context )
+                player.addNext( it )
 
                 // Turn of selector clears the selected list
                 itemSelector.isActive = false
@@ -214,7 +212,7 @@ fun YouTubeAlbum(
         }
         val enqueue = Enqueue {
             getMediaItems().let {
-                player.enqueue( it, context )
+                player.enqueue( it )
 
                 // Turn of selector clears the selected list
                 itemSelector.isActive = false

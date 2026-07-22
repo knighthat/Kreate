@@ -91,9 +91,7 @@ import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.asSong
 import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isLandscape
-import it.fast4x.rimusic.utils.isNowPlaying
 import it.fast4x.rimusic.utils.manageDownload
-import it.fast4x.rimusic.utils.mediaItems
 import me.knighthat.component.tab.ExportSongsToCSVDialog
 import me.knighthat.component.tab.Locator
 import me.knighthat.component.ui.screens.player.DeleteFromQueue
@@ -131,7 +129,7 @@ fun Queue(
     Box( Modifier.fillMaxSize() ) {
         var items by persist(
             tag = "queue/songs",
-            player.currentTimeline.mediaItems.map( MediaItem::asSong )
+            player.captureQueue().map( MediaItem::asSong )
         )
         val currentMediaItem by player.currentMediaItemState.collectAsState()
         val currentTimeline by player.queueState.collectAsState()
@@ -315,7 +313,7 @@ fun Queue(
                                         Box( Modifier.width( 24.dp ) )
                                 },
                                 onClick = {
-                                    if( player.isNowPlaying(song.id) ) {
+                                    if( player.currentMediaItem?.mediaId == song.id ) {
                                         if(player.shouldBePlaying)
                                             player.pause()
                                         else

@@ -65,8 +65,6 @@ import it.fast4x.rimusic.utils.collect
 import it.fast4x.rimusic.utils.intent
 import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isAtLeastAndroid7
-import it.fast4x.rimusic.utils.playNext
-import it.fast4x.rimusic.utils.playPrevious
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -606,8 +604,8 @@ class PlayerServiceModern:
             when ( intent.action ) {
                 Action.pause.value      -> player.pause()
                 Action.play.value       -> player.play()
-                Action.next.value       -> player.playNext()
-                Action.previous.value   -> player.playPrevious()
+                Action.next.value       -> player.seekToNext()
+                Action.previous.value   -> player.seekToPrevious()
                 Action.like.value       -> mediaLibrarySessionCallback.toggleLike( player )
                 Action.download.value   -> player.currentMediaItem?.also( MyDownloadHelper::addDownload )
                 Action.playradio.value  -> player.startRadio()

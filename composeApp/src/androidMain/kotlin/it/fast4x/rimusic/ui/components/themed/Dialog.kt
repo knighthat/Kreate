@@ -116,7 +116,6 @@ import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.secondary
 import it.fast4x.rimusic.utils.semiBold
 import it.fast4x.rimusic.utils.setDeviceVolume
-import it.fast4x.rimusic.utils.setGlobalVolume
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
@@ -2292,7 +2291,6 @@ fun PlaybackParamsDialog(
                     onClick = {
                         Preferences.AUDIO_PITCH.update( 0.5f )
                         player.volume = playbackVolume
-                        player.setGlobalVolume(playbackVolume)
                     },
                     icon = R.drawable.volume_up,
                     color = colorPalette().favoritesIcon,
@@ -2305,7 +2303,6 @@ fun PlaybackParamsDialog(
                     onSlide = { newValue ->
                         Preferences.AUDIO_PITCH.update( newValue )
                         player.volume = playbackVolume
-                        player.setGlobalVolume(playbackVolume)
                     },
                     onSlideComplete = {},
                     toDisplay = { "%.1f".format(playbackVolume) },

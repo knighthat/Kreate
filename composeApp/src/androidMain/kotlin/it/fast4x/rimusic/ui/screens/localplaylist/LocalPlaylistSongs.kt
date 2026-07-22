@@ -110,13 +110,11 @@ import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.ui.styling.onOverlay
 import it.fast4x.rimusic.ui.styling.overlay
 import it.fast4x.rimusic.utils.DeletePlaylist
-import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
 import it.fast4x.rimusic.utils.center
 import it.fast4x.rimusic.utils.checkFileExists
 import it.fast4x.rimusic.utils.color
 import it.fast4x.rimusic.utils.deleteFileIfExists
-import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.isAtLeastAndroid14
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.manageDownload
@@ -237,13 +235,13 @@ fun LocalPlaylistSongs(
     }
 
     val playNext = PlayNext {
-        player.addNext( getMediaItems(), context )
+        player.addNext( getMediaItems() )
 
         // Turn of selector clears the selected list
         itemSelector.isActive = false
     }
     val enqueue = Enqueue {
-        player.enqueue( getMediaItems(), context )
+        player.enqueue( getMediaItems() )
 
         // Turn of selector clears the selected list
         itemSelector.isActive = false

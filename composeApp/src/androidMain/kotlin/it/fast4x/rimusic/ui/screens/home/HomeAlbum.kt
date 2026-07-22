@@ -80,9 +80,7 @@ import it.fast4x.rimusic.ui.components.themed.MultiFloatingActionsContainer
 import it.fast4x.rimusic.ui.screens.settings.isYouTubeSyncEnabled
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
-import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.enqueue
 import it.fast4x.rimusic.utils.semiBold
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -386,16 +384,14 @@ fun HomeAlbums(
                                         },
                                         onPlayNext = {
                                             println("mediaItem ${songs}")
-                                            player.addNext(
-                                                songs.map(Song::asMediaItem), context
-                                            )
+                                            val mediaItems = songs.map(Song::asMediaItem)
+                                            player.addNext( mediaItems )
 
                                         },
                                         onEnqueue = {
                                             println("mediaItem ${songs}")
-                                            player.enqueue(
-                                                songs.map(Song::asMediaItem), context
-                                            )
+                                            val mediaItems = songs.map(Song::asMediaItem)
+                                            player.enqueue( mediaItems )
 
                                         },
                                         onAddToPlaylist = { playlistPreview ->

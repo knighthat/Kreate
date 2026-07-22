@@ -58,7 +58,6 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import app.kreate.android.LocalPlayerAwareWindowInsets
@@ -77,6 +76,7 @@ import app.kreate.gateway.innertube.models.InnertubeItem
 import app.kreate.gateway.innertube.models.InnertubePlaylist
 import app.kreate.gateway.innertube.models.InnertubeSearchSuggestion
 import app.kreate.gateway.innertube.models.InnertubeSong
+import app.kreate.player.Player
 import app.kreate.preferences.Preferences
 import it.fast4x.rimusic.colorPalette
 import it.fast4x.rimusic.enums.NavRoutes
@@ -90,7 +90,6 @@ import it.fast4x.rimusic.ui.components.themed.TitleMiniSection
 import it.fast4x.rimusic.ui.styling.Dimensions
 import it.fast4x.rimusic.ui.styling.LocalAppearance
 import it.fast4x.rimusic.utils.align
-import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.medium
 import it.fast4x.rimusic.utils.secondary
 import kotlinx.coroutines.Dispatchers
@@ -300,7 +299,7 @@ fun OnlineSearch(
                             role = Role.Button,
                             onClick = {
                                 when( item.type ) {
-                                    InnertubeSong::class -> player.forcePlay( item.toMediaItem() )
+                                    InnertubeSong::class -> player.play( item.toMediaItem() )
                                     InnertubeAlbum::class -> NavRoutes.YT_ALBUM.navigateHere( navController, item.id )
                                     InnertubeArtist::class -> NavRoutes.YT_ARTIST.navigateHere( navController, item.id )
                                     InnertubePlaylist::class -> NavRoutes.YT_PLAYLIST.navigateHere( navController, item.id )

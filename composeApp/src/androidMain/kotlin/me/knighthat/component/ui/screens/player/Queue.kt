@@ -25,7 +25,6 @@ import it.fast4x.rimusic.ui.components.tab.toolbar.Descriptive
 import it.fast4x.rimusic.ui.components.tab.toolbar.DynamicColor
 import it.fast4x.rimusic.ui.components.tab.toolbar.Icon
 import it.fast4x.rimusic.ui.components.tab.toolbar.MenuIcon
-import it.fast4x.rimusic.utils.mediaItems
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.drop
@@ -122,7 +121,7 @@ fun ShuffleQueue(
             }
 
             // Any calls to [Player] must happen on Main thread
-            val mediaItems = player.mediaItems.toList()
+            val mediaItems = player.captureQueue()
             CoroutineScope( Dispatchers.Default ).launch {
                 val startAt = index + 1
                 val shuffled = mediaItems.subList( startAt, mediaItems.size ).shuffled()

@@ -13,7 +13,6 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
 import androidx.media3.session.CommandButton
 import androidx.media3.session.MediaSession
@@ -32,8 +31,6 @@ import it.fast4x.rimusic.service.NoInternetException
 import it.fast4x.rimusic.service.PlayableFormatNotFoundException
 import it.fast4x.rimusic.service.UnknownException
 import it.fast4x.rimusic.service.UnplayableException
-import it.fast4x.rimusic.utils.mediaItems
-import it.fast4x.rimusic.utils.playNext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -48,7 +45,7 @@ import kotlin.time.Duration.Companion.seconds
 @OptIn(ExperimentalAtomicApi::class)
 @UnstableApi
 class ExoPlayerListener(
-    private val player: ExoPlayer,
+    private val player: app.kreate.player.Player,
     private val mediaSession: MediaSession,
     private val waitingForNetwork: MutableStateFlow<Boolean>,
     private val sendOpenEqualizerIntent: () -> Unit,
@@ -76,7 +73,7 @@ class ExoPlayerListener(
             val (queue, index, playerPos) = withContext(Dispatchers.Main ) {
                 // Any call related to [Player] must happen on main thread
                 with( player ) {
-                    Triple(currentTimeline.mediaItems, currentMediaItemIndex, currentPosition)
+                    Triple(captureQueue(), currentMediaItemIndex, currentPosition)
                 }
             }
             if( queue.isEmpty() ) return@launch
@@ -218,7 +215,7 @@ class ExoPlayerListener(
         // TODO: Add additional recovery step if type of error allows it
 
         if ( Preferences.PLAYBACK_SKIP_ON_ERROR.value && player.hasNextMediaItem() )
-            player.playNext()
+            player.seekToNext()
     }
 
     override fun onEvents(player: Player, events: Player.Events) {

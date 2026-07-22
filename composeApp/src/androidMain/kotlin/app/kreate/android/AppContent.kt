@@ -104,7 +104,6 @@ import it.fast4x.rimusic.ui.styling.customColorPalette
 import it.fast4x.rimusic.ui.styling.dynamicColorPaletteOf
 import it.fast4x.rimusic.ui.styling.typographyOf
 import it.fast4x.rimusic.utils.LocalMonetCompat
-import it.fast4x.rimusic.utils.forcePlay
 import it.fast4x.rimusic.utils.isAtLeastAndroid6
 import it.fast4x.rimusic.utils.isAtLeastAndroid8
 import it.fast4x.rimusic.utils.isVideo
@@ -755,7 +754,7 @@ fun AppCompatActivity.AppContent(
                     }
 
                     withContext( Dispatchers.Main ) {
-                        player.forcePlay( song.toMediaItem )
+                        player.play( song.toMediaItem )
                     }
                 }
             }

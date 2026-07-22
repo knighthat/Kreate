@@ -92,9 +92,7 @@ import it.fast4x.rimusic.utils.getDownloadState
 import it.fast4x.rimusic.utils.isDownloadedSong
 import it.fast4x.rimusic.utils.isLandscape
 import it.fast4x.rimusic.utils.manageDownload
-import it.fast4x.rimusic.utils.playAtIndex
 import it.fast4x.rimusic.utils.semiBold
-import it.fast4x.rimusic.utils.shuffleQueue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.knighthat.component.player.PlaybackSpeed
@@ -283,7 +281,7 @@ fun BoxScope.ActionBar(
                             modifier = Modifier
                                 .combinedClickable(
                                     onClick = {
-                                        player.playAtIndex(index)
+                                        player.seekToDefaultPosition( index )
                                     },
                                     onLongClick = {
                                         if ( index < mediaItems.size ) {

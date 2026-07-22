@@ -54,9 +54,7 @@ import it.fast4x.rimusic.ui.components.themed.MultiFloatingActionsContainer
 import it.fast4x.rimusic.ui.components.themed.PlayNext
 import it.fast4x.rimusic.ui.components.themed.PlaylistsMenu
 import it.fast4x.rimusic.ui.styling.Dimensions
-import it.fast4x.rimusic.utils.addNext
 import it.fast4x.rimusic.utils.asMediaItem
-import it.fast4x.rimusic.utils.enqueue
 import me.knighthat.component.ResetCache
 import me.knighthat.component.tab.ImportSongsFromCSV
 import me.knighthat.component.tab.LikeComponent
@@ -95,13 +93,13 @@ fun HomeSongsScreen(
     val import = ImportSongsFromCSV()
     val shuffle = SongShuffler(::getSongs)
     val playNext = PlayNext {
-        player.addNext( getMediaItems(), context )
+        player.addNext( getMediaItems() )
 
         // Turn of selector clears the selected list
         itemSelector.isActive = false
     }
     val enqueue = Enqueue {
-        player.enqueue( getMediaItems(), context )
+        player.enqueue( getMediaItems() )
 
         // Turn of selector clears the selected list
         itemSelector.isActive = false
