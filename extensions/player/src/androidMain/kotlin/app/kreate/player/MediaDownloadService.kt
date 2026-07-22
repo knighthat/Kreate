@@ -13,7 +13,6 @@ import app.kreate.utils.NotificationUtil
 import co.touchlab.kermit.Logger
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
-import kotlin.random.Random
 
 
 // DownloadService isn't meant to be interacted directly with
@@ -23,12 +22,17 @@ internal class MediaDownloadService : DownloadService(
     DEFAULT_FOREGROUND_NOTIFICATION_UPDATE_INTERVAL,
 ), KoinComponent {
 
+    companion object {
+
+        private const val JOB_ID = 4127
+    }
+
     private val logger = Logger.withTag( "MediaDownloadService" )
 
     override fun getDownloadManager(): DownloadManager = get()
 
     // TODO: Convert to WorkManagerScheduler from `androidx.media3:media3-exoplayer-workmanager`
-    override fun getScheduler(): Scheduler = PlatformScheduler(this, Random.nextInt())
+    override fun getScheduler(): Scheduler = PlatformScheduler(this, JOB_ID)
 
     override fun getForegroundNotification(
         downloads: MutableList<Download>,
