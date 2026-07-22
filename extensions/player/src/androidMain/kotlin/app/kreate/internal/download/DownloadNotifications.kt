@@ -13,6 +13,7 @@ import androidx.core.content.getSystemService
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.scheduler.Requirements
+import app.kreate.player.DownloadActionReceiver
 import app.kreate.player.MediaDownloadService
 import app.kreate.player.R
 import app.kreate.utils.IS_ANDROID_8_OR_LATER
@@ -191,6 +192,17 @@ internal object DownloadNotifications {
                                  // This prevents notification from going off everytime new download
                                  // gets added to the queue.
                                  .setGroupAlertBehavior( NotificationCompat.GROUP_ALERT_SUMMARY )
+                                 .setCategory( NotificationCompat.CATEGORY_PROGRESS )
+                                 .addAction(
+                                     app.kreate.resources.R.drawable.cancel_circle,
+                                     context.getString( R.string.notification_button_cancel ),
+                                     DownloadActionReceiver.pendingIntent(
+                                         context,
+                                         DownloadActionReceiver.ACTION_CANCEL,
+                                         download.request.id,
+                                         progressChildId( download.request.id )
+                                     )
+                                 )
                                  .build()
     }
 
@@ -216,9 +228,9 @@ internal object DownloadNotifications {
     ) {
         if ( !NotificationUtil.canPostNotification(context) ) return
 
-        val nm = NotificationManagerCompat.from(context)
+        val nm = NotificationManagerCompat.from( context )
         val failed = download.state == Download.STATE_FAILED
-        val childId = finishedChildId(download.request.id)
+        val childId = finishedChildId( download.request.id )
         val icon = if( failed ) android.R.drawable.stat_notify_error else android.R.drawable.stat_sys_download_done
         val contentText = context.getString(
             if( failed )
@@ -235,6 +247,12 @@ internal object DownloadNotifications {
             .setOnlyAlertOnce( true )
             .setContentIntent( launchAppPendingIntent(context) )
             .setContentText( contentText )
+        if( failed )
+            builder.addAction(
+                app.kreate.resources.R.drawable.replay,
+                context.getString( R.string.notification_button_restart ),
+                DownloadActionReceiver.retryPendingIntent( context, download.request, childId )
+            )
         nm.notify( childId, builder.build() )
 
         // (Re)post the finished-group parent so children collapse under it.

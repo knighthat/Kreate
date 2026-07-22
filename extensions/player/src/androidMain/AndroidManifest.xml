@@ -41,5 +41,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
+        <receiver
+                android:name=".DownloadActionReceiver"
+                android:exported="false" />
     </application>
 </manifest>
