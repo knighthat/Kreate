@@ -22,6 +22,7 @@ import android.app.Application
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import me.knighthat.kreate.preferences.preferencesModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -38,7 +39,8 @@ class KreateApplication : Application() {
                 module {
                     // Lives as long as the process; use for work that must outlive any screen
                     single { CoroutineScope(SupervisorJob() + Dispatchers.Default) }
-                }
+                },
+                preferencesModule,
             )
         }
     }

@@ -34,8 +34,10 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.datastore.preferences)
-    implementation(libs.kotlinx.coroutines.android)
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.androidx.datastore.preferences.core)
+    api(libs.kotlinx.coroutines.core)
 
     testImplementation(libs.junit)
 }
