@@ -16,6 +16,9 @@ Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper
 
 - Package/namespace is `me.knighthat.kreate`; minSdk 24, compileSdk/targetSdk 37, Java 21 source/target.
 - Release minification is off.
+- Work that must outlive a screen runs on the global `CoroutineScope` (Koin singleton,
+  `SupervisorJob` + `Dispatchers.Default`); in UI code use `rememberCoroutineScope()` /
+  `viewModelScope` instead.
 
 ## License
 
