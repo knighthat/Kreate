@@ -29,7 +29,7 @@
         android:name=".KreateApplication"
         android:theme="@style/Theme.Kreate">
         <activity
-            android:name=".MainActivity"
+            android:name=".KreateActivity"
             android:exported="true"
             android:theme="@style/Theme.Kreate">
             <intent-filter>
