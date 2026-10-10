@@ -54,6 +54,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":database"))
     implementation(project(":preferences"))
 
     // Core

@@ -17,6 +17,7 @@
  */
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
 }
@@ -41,8 +42,11 @@ room {
 }
 
 dependencies {
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.sqlite.bundled)
+    implementation(libs.kotlinx.serialization.json)
     api(libs.kotlinx.coroutines.core)
 
     ksp(libs.androidx.room.compiler)
