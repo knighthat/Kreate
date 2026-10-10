@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+  - Kreate
+  - Copyright (C) 2026 KnightHat
+  -
+  - This program is free software: you can redistribute it and/or modify
+  - it under the terms of the GNU General Public License as published by
+  - the Free Software Foundation, either version 3 of the License, or
+  - (at your option) any later version.
+  -
+  - This program is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  - GNU General Public License for more details.
+  -
+  - You should have received a copy of the GNU General Public License
+  - along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" height="108" id="svg1" version="1.1"
+    viewBox="0 0 108 108" width="108" xmlns="http://www.w3.org/2000/svg" xml:space="preserve"><defs
+     id="defs1"><linearGradient
+       id="linearGradient2"><stop
+         style="stop-color:#3159f7;stop-opacity:1;"
+         id="stop2"
+         offset="0" /><stop style="stop-color:#bb19ff;stop-opacity:1;" id="stop3" offset="1" /></linearGradient><linearGradient
+    gradientTransform="matrix(0.99385142,0,0,0.99520182,0.36392154,0.18120474)"
+    gradientUnits="userSpaceOnUse" id="linearGradient3" x1="26.176075" x2="103.96709" y1="111.0953"
+    y2="26.77873" xlink:href="#linearGradient2" /></defs>
+    <g style="display:inline" id="layer1"
+        transform="matrix(0.79701342,0,0,0.79701342,0.00147038,0.00153561)"><rect
+       style="fill:url(#linearGradient3);stroke-width:0.263133"
+       height="135.50583"
+       id="rect2"
+       ry="0"
+       width="135.50587"
+       x="-0.0018448641"
+       y="-0.0019266997" /></g></svg>
