@@ -21,17 +21,15 @@ package me.knighthat.kreate.database.repository
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.model.Album
 import me.knighthat.kreate.database.model.Song
-import me.knighthat.kreate.database.model.UserAlbum
 
 /**
  * Albums, and the ones the active user keeps in their library.
  *
- * Functions on the shared catalog act for everyone. Functions on the library only touch
- * the active user's data.
+ * Everything here acts for all users. What one user keeps about an album lives in [UserAlbumRepository].
  */
 interface AlbumRepository {
 
-    fun find(id: String): Flow<Album?>
+    fun find(albumId: String): Flow<Album?>
 
     /**
      * Songs of the album, in album order.
@@ -41,21 +39,16 @@ interface AlbumRepository {
     suspend fun save(album: Album)
 
     /**
-     * Deletes the album for everyone, its songs stay without an album.
-     * To remove it from one library use [removeFromLibrary].
+     * Changes the shared album for everyone, only what [transform] changes is replaced.
+     * Use it, not [save], to change a few fields.
+     *
+     * @throws IllegalArgumentException when the album doesn't exist, or [transform] changes its id
      */
-    suspend fun delete(id: String)
-
-    fun library(): Flow<List<UserAlbum>>
-
-    fun bookmarked(): Flow<List<UserAlbum>>
-
-    fun findInLibrary(albumId: String): Flow<UserAlbum?>
+    suspend fun update(albumId: String, transform: (Album) -> Album)
 
     /**
-     * Adds to the library, or updates the entry. The [Album] must be saved first.
+     * Deletes the album for everyone, its songs stay without an album.
+     * To remove it from one library use [UserAlbumRepository.remove].
      */
-    suspend fun saveToLibrary(album: UserAlbum)
-
-    suspend fun removeFromLibrary(albumId: String)
+    suspend fun delete(albumId: String)
 }

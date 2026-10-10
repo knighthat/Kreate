@@ -32,7 +32,7 @@ import kotlin.time.Clock
 /**
  * Room backed implementation of [PlaylistRepository].
  */
-internal class RoomPlaylistRepository(
+internal class PlaylistRepositoryImpl(
     private val playlistDao: UserPlaylistDao,
     activeUser: ActiveUser,
     private val clock: Clock,

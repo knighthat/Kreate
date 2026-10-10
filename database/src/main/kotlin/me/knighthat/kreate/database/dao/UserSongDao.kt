@@ -23,18 +23,19 @@ import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.entity.UserSongEntity
+import me.knighthat.kreate.database.view.UserSongViewEntity
 
 @Dao
 internal interface UserSongDao {
 
-    @Query("SELECT * FROM user_song WHERE user_id = :userId")
-    fun all(userId: String): Flow<List<UserSongEntity>>
+    @Query("SELECT * FROM user_song_view WHERE user_id = :userId")
+    fun all(userId: String): Flow<List<UserSongViewEntity>>
 
-    @Query("SELECT * FROM user_song WHERE user_id = :userId AND liked_at IS NOT NULL ORDER BY liked_at DESC")
-    fun liked(userId: String): Flow<List<UserSongEntity>>
+    @Query("SELECT * FROM user_song_view WHERE user_id = :userId AND liked_at IS NOT NULL ORDER BY liked_at DESC")
+    fun liked(userId: String): Flow<List<UserSongViewEntity>>
 
-    @Query("SELECT * FROM user_song WHERE user_id = :userId AND song_id = :songId")
-    fun find(userId: String, songId: String): Flow<UserSongEntity?>
+    @Query("SELECT * FROM user_song_view WHERE user_id = :userId AND song_id = :songId")
+    fun find(userId: String, songId: String): Flow<UserSongViewEntity?>
 
     @Query("SELECT * FROM user_song WHERE user_id = :userId AND song_id = :songId")
     suspend fun get(userId: String, songId: String): UserSongEntity?

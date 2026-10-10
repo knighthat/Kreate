@@ -23,18 +23,19 @@ import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.entity.UserAlbumEntity
+import me.knighthat.kreate.database.view.UserAlbumViewEntity
 
 @Dao
 internal interface UserAlbumDao {
 
-    @Query("SELECT * FROM user_album WHERE user_id = :userId")
-    fun all(userId: String): Flow<List<UserAlbumEntity>>
+    @Query("SELECT * FROM user_album_view WHERE user_id = :userId")
+    fun all(userId: String): Flow<List<UserAlbumViewEntity>>
 
-    @Query("SELECT * FROM user_album WHERE user_id = :userId AND bookmarked_at IS NOT NULL ORDER BY bookmarked_at DESC")
-    fun bookmarked(userId: String): Flow<List<UserAlbumEntity>>
+    @Query("SELECT * FROM user_album_view WHERE user_id = :userId AND bookmarked_at IS NOT NULL ORDER BY bookmarked_at DESC")
+    fun bookmarked(userId: String): Flow<List<UserAlbumViewEntity>>
 
-    @Query("SELECT * FROM user_album WHERE user_id = :userId AND album_id = :albumId")
-    fun find(userId: String, albumId: String): Flow<UserAlbumEntity?>
+    @Query("SELECT * FROM user_album_view WHERE user_id = :userId AND album_id = :albumId")
+    fun find(userId: String, albumId: String): Flow<UserAlbumViewEntity?>
 
     @Query("SELECT * FROM user_album WHERE user_id = :userId AND album_id = :albumId")
     suspend fun get(userId: String, albumId: String): UserAlbumEntity?

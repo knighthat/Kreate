@@ -23,18 +23,19 @@ import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.entity.UserArtistEntity
+import me.knighthat.kreate.database.view.UserArtistViewEntity
 
 @Dao
 internal interface UserArtistDao {
 
-    @Query("SELECT * FROM user_artist WHERE user_id = :userId")
-    fun all(userId: String): Flow<List<UserArtistEntity>>
+    @Query("SELECT * FROM user_artist_view WHERE user_id = :userId")
+    fun all(userId: String): Flow<List<UserArtistViewEntity>>
 
-    @Query("SELECT * FROM user_artist WHERE user_id = :userId AND follow_since IS NOT NULL ORDER BY follow_since DESC")
-    fun followed(userId: String): Flow<List<UserArtistEntity>>
+    @Query("SELECT * FROM user_artist_view WHERE user_id = :userId AND follow_since IS NOT NULL ORDER BY follow_since DESC")
+    fun followed(userId: String): Flow<List<UserArtistViewEntity>>
 
-    @Query("SELECT * FROM user_artist WHERE user_id = :userId AND artist_id = :artistId")
-    fun find(userId: String, artistId: String): Flow<UserArtistEntity?>
+    @Query("SELECT * FROM user_artist_view WHERE user_id = :userId AND artist_id = :artistId")
+    fun find(userId: String, artistId: String): Flow<UserArtistViewEntity?>
 
     @Query("SELECT * FROM user_artist WHERE user_id = :userId AND artist_id = :artistId")
     suspend fun get(userId: String, artistId: String): UserArtistEntity?

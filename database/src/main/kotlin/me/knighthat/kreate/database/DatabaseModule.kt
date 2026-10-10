@@ -23,19 +23,25 @@ import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.coroutines.Dispatchers
 import me.knighthat.kreate.database.repository.AlbumRepository
+import me.knighthat.kreate.database.repository.AlbumRepositoryImpl
 import me.knighthat.kreate.database.repository.ArtistRepository
+import me.knighthat.kreate.database.repository.ArtistRepositoryImpl
 import me.knighthat.kreate.database.repository.HistoryRepository
+import me.knighthat.kreate.database.repository.HistoryRepositoryImpl
 import me.knighthat.kreate.database.repository.PlaylistRepository
+import me.knighthat.kreate.database.repository.PlaylistRepositoryImpl
 import me.knighthat.kreate.database.repository.QueueRepository
-import me.knighthat.kreate.database.repository.RoomAlbumRepository
-import me.knighthat.kreate.database.repository.RoomArtistRepository
-import me.knighthat.kreate.database.repository.RoomHistoryRepository
-import me.knighthat.kreate.database.repository.RoomPlaylistRepository
-import me.knighthat.kreate.database.repository.RoomQueueRepository
-import me.knighthat.kreate.database.repository.RoomSongRepository
-import me.knighthat.kreate.database.repository.RoomUserRepository
+import me.knighthat.kreate.database.repository.QueueRepositoryImpl
 import me.knighthat.kreate.database.repository.SongRepository
+import me.knighthat.kreate.database.repository.SongRepositoryImpl
+import me.knighthat.kreate.database.repository.UserAlbumRepository
+import me.knighthat.kreate.database.repository.UserAlbumRepositoryImpl
+import me.knighthat.kreate.database.repository.UserArtistRepository
+import me.knighthat.kreate.database.repository.UserArtistRepositoryImpl
 import me.knighthat.kreate.database.repository.UserRepository
+import me.knighthat.kreate.database.repository.UserRepositoryImpl
+import me.knighthat.kreate.database.repository.UserSongRepository
+import me.knighthat.kreate.database.repository.UserSongRepositoryImpl
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -72,11 +78,14 @@ val databaseModule = module {
     single { get<AppDatabase>().userPlaylistDao() }
     single { get<AppDatabase>().userSongDao() }
 
-    singleOf(::RoomAlbumRepository) bind AlbumRepository::class
-    singleOf(::RoomArtistRepository) bind ArtistRepository::class
-    singleOf(::RoomHistoryRepository) bind HistoryRepository::class
-    singleOf(::RoomPlaylistRepository) bind PlaylistRepository::class
-    singleOf(::RoomQueueRepository) bind QueueRepository::class
-    singleOf(::RoomSongRepository) bind SongRepository::class
-    singleOf(::RoomUserRepository) bind UserRepository::class
+    singleOf(::AlbumRepositoryImpl) bind AlbumRepository::class
+    singleOf(::UserAlbumRepositoryImpl) bind UserAlbumRepository::class
+    singleOf(::ArtistRepositoryImpl) bind ArtistRepository::class
+    singleOf(::UserArtistRepositoryImpl) bind UserArtistRepository::class
+    singleOf(::HistoryRepositoryImpl) bind HistoryRepository::class
+    singleOf(::PlaylistRepositoryImpl) bind PlaylistRepository::class
+    singleOf(::QueueRepositoryImpl) bind QueueRepository::class
+    singleOf(::SongRepositoryImpl) bind SongRepository::class
+    singleOf(::UserSongRepositoryImpl) bind UserSongRepository::class
+    singleOf(::UserRepositoryImpl) bind UserRepository::class
 }

@@ -22,6 +22,7 @@ import me.knighthat.kreate.database.model.Origin
 import me.knighthat.kreate.database.model.Song
 import me.knighthat.kreate.database.model.UserPlaylist
 import me.knighthat.kreate.database.model.UserSong
+import me.knighthat.kreate.database.view.UserSongViewEntity
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import kotlin.time.Duration.Companion.seconds
@@ -34,7 +35,7 @@ class MappersTest {
 
     @Test
     fun songSurvivesRoundTrip() {
-        val song = Song("id", Origin.YOUTUBE, "name", 200.seconds, true, "album", 3)
+        val song = Song("id", Origin.YOUTUBE, "name", "cover", 200.seconds, true, "album", 3)
 
         val entity = song.toEntity(created, updated)
 
@@ -58,5 +59,19 @@ class MappersTest {
         val playlist = UserPlaylist(id = 7, origin = Origin.LOCAL, name = "mix")
 
         assertEquals(playlist, playlist.toEntity("user", created, updated).toModel())
+    }
+
+    @Test
+    fun songViewReadsJsonListsAndDefaultsMissingOnesToEmpty() {
+        val view = UserSongViewEntity(
+            userId = "user", songId = "song", origin = Origin.LOCAL, name = "n", artists = null,
+            artistIds = listOf("a1", "a2"), thumbnail = null, duration = null, isExplicit = null,
+            albumId = null, albumName = null, albumPosition = null, likedAt = null,
+        )
+
+        val model = view.toModel()
+
+        assertEquals(emptyList<String>(), model.artists)
+        assertEquals(listOf("a1", "a2"), model.artistIds)
     }
 }

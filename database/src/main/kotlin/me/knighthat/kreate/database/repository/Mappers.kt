@@ -41,9 +41,15 @@ import me.knighthat.kreate.database.model.Song
 import me.knighthat.kreate.database.model.SongFormat
 import me.knighthat.kreate.database.model.User
 import me.knighthat.kreate.database.model.UserAlbum
+import me.knighthat.kreate.database.model.UserAlbumView
 import me.knighthat.kreate.database.model.UserArtist
+import me.knighthat.kreate.database.model.UserArtistView
 import me.knighthat.kreate.database.model.UserPlaylist
 import me.knighthat.kreate.database.model.UserSong
+import me.knighthat.kreate.database.model.UserSongView
+import me.knighthat.kreate.database.view.UserAlbumViewEntity
+import me.knighthat.kreate.database.view.UserArtistViewEntity
+import me.knighthat.kreate.database.view.UserSongViewEntity
 import kotlin.time.Instant
 
 // Models carry no timestamps and no user id. Repositories add them when writing,
@@ -66,10 +72,21 @@ internal fun Album.toEntity(createdAt: Instant, updatedAt: Instant) =
     AlbumEntity(id, origin, name, thumbnail, year, artists, url, isExplicit, createdAt, updatedAt)
 
 internal fun SongEntity.toModel() =
-    Song(id, origin, name, duration, isExplicit, albumId, albumPosition)
+    Song(id, origin, name, thumbnail, duration, isExplicit, albumId, albumPosition)
 
 internal fun Song.toEntity(createdAt: Instant, updatedAt: Instant) =
-    SongEntity(id, origin, name, duration, isExplicit, albumId, albumPosition, createdAt, updatedAt)
+    SongEntity(
+        id,
+        origin,
+        name,
+        thumbnail,
+        duration,
+        isExplicit,
+        albumId,
+        albumPosition,
+        createdAt,
+        updatedAt
+    )
 
 internal fun UserArtistEntity.toModel() = UserArtist(artistId, name, thumbnail, followSince)
 
@@ -107,3 +124,25 @@ internal fun SearchHistoryEntity.toModel() = SearchHistory(query, lastUsed)
 internal fun PlaybackHistoryEntity.toModel() = PlaybackHistory(id, songId, timeSpent, createdAt)
 
 internal fun PersistentQueueEntity.toModel() = QueuedSong(songId, position)
+
+internal fun UserSongViewEntity.toModel() = UserSongView(
+    songId, origin, name, artists.orEmpty(), artistIds.orEmpty(), thumbnail, duration,
+    isExplicit, albumId, albumName, albumPosition, likedAt,
+)
+
+internal fun UserAlbumViewEntity.toModel() = UserAlbumView(
+    albumId,
+    origin,
+    name,
+    artists.orEmpty(),
+    thumbnail,
+    year,
+    url,
+    isExplicit,
+    songCount,
+    bookmarkedAt,
+)
+
+internal fun UserArtistViewEntity.toModel() = UserArtistView(
+    artistId, origin, name, thumbnail, songCount, followSince,
+)

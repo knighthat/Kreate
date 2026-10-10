@@ -49,6 +49,9 @@ import me.knighthat.kreate.database.entity.UserArtistEntity
 import me.knighthat.kreate.database.entity.UserEntity
 import me.knighthat.kreate.database.entity.UserPlaylistEntity
 import me.knighthat.kreate.database.entity.UserSongEntity
+import me.knighthat.kreate.database.view.UserAlbumViewEntity
+import me.knighthat.kreate.database.view.UserArtistViewEntity
+import me.knighthat.kreate.database.view.UserSongViewEntity
 
 @Database(
     entities = [
@@ -67,6 +70,11 @@ import me.knighthat.kreate.database.entity.UserSongEntity
         UserArtistEntity::class,
         UserPlaylistEntity::class,
         UserSongEntity::class,
+    ],
+    views = [
+        UserAlbumViewEntity::class,
+        UserArtistViewEntity::class,
+        UserSongViewEntity::class,
     ],
     version = 1,
 )

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "24abefa91c7f7c89a8fdeffec931d696",
+    "identityHash": "d3de317707cdc0f8fdc6e2dc522ebc95",
     "entities": [
       {
         "tableName": "album",
@@ -374,7 +374,7 @@
       },
       {
         "tableName": "song",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `origin` TEXT NOT NULL, `name` TEXT, `duration` INTEGER, `is_explicit` INTEGER, `album_id` TEXT, `album_position` INTEGER, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`album_id`) REFERENCES `album`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `origin` TEXT NOT NULL, `name` TEXT, `thumbnail` TEXT, `duration` INTEGER, `is_explicit` INTEGER, `album_id` TEXT, `album_position` INTEGER, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`album_id`) REFERENCES `album`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -391,6 +391,11 @@
           {
             "fieldPath": "name",
             "columnName": "name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "thumbnail",
+            "columnName": "thumbnail",
             "affinity": "TEXT"
           },
           {
@@ -1055,9 +1060,23 @@
         ]
       }
     ],
+    "views": [
+      {
+        "viewName": "user_album_view",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n    ual.user_id AS user_id,\n    a.id AS album_id,\n    a.origin AS origin,\n    COALESCE(ual.name, a.name) AS name,\n    COALESCE(ual.artists, a.artists) AS artists,\n    COALESCE(ual.thumbnail, a.thumbnail) AS thumbnail,\n    a.year AS year,\n    a.url AS url,\n    a.is_explicit AS is_explicit,\n    (SELECT COUNT(*) FROM song s WHERE s.album_id = a.id) AS song_count,\n    ual.bookmarked_at AS bookmarked_at\nFROM user_album ual\nJOIN album a ON a.id = ual.album_id"
+      },
+      {
+        "viewName": "user_artist_view",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n    uar.user_id AS user_id,\n    ar.id AS artist_id,\n    ar.origin AS origin,\n    COALESCE(uar.name, ar.name) AS name,\n    COALESCE(uar.thumbnail, ar.thumbnail) AS thumbnail,\n    (SELECT COUNT(*) FROM song_artist_map m WHERE m.artist_id = ar.id) AS song_count,\n    uar.follow_since AS follow_since\nFROM user_artist uar\nJOIN artist ar ON ar.id = uar.artist_id"
+      },
+      {
+        "viewName": "user_song_view",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n    us.user_id AS user_id,\n    s.id AS song_id,\n    s.origin AS origin,\n    COALESCE(us.name, s.name) AS name,\n    COALESCE(\n        us.artists,\n        (SELECT json_group_array(COALESCE(ua.name, ar.name)) FILTER (WHERE COALESCE(ua.name, ar.name) IS NOT NULL)\n            FROM song_artist_map m\n            JOIN artist ar ON ar.id = m.artist_id\n            LEFT JOIN user_artist ua ON ua.artist_id = ar.id AND ua.user_id = us.user_id\n            WHERE m.song_id = s.id)\n    ) AS artists,\n    (SELECT json_group_array(m.artist_id) FROM song_artist_map m WHERE m.song_id = s.id) AS artist_ids,\n    COALESCE(us.thumbnail, s.thumbnail, ual.thumbnail, al.thumbnail) AS thumbnail,\n    s.duration AS duration,\n    s.is_explicit AS is_explicit,\n    s.album_id AS album_id,\n    COALESCE(ual.name, al.name) AS album_name,\n    s.album_position AS album_position,\n    us.liked_at AS liked_at\nFROM user_song us\nJOIN song s ON s.id = us.song_id\nLEFT JOIN album al ON al.id = s.album_id\nLEFT JOIN user_album ual ON ual.album_id = s.album_id AND ual.user_id = us.user_id"
+      }
+    ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '24abefa91c7f7c89a8fdeffec931d696')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd3de317707cdc0f8fdc6e2dc522ebc95')"
     ]
   }
 }

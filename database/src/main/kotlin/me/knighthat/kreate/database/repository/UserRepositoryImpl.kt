@@ -28,7 +28,7 @@ import kotlin.time.Clock
 /**
  * Room backed implementation of [UserRepository].
  */
-internal class RoomUserRepository(
+internal class UserRepositoryImpl(
     private val userDao: UserDao,
     private val clock: Clock,
 ) : UserRepository {

@@ -18,39 +18,34 @@
 
 package me.knighthat.kreate.database.repository
 
+import androidx.room.withTransaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import me.knighthat.kreate.database.ActiveUser
+import me.knighthat.kreate.database.AppDatabase
 import me.knighthat.kreate.database.dao.LyricsDao
 import me.knighthat.kreate.database.dao.SongDao
 import me.knighthat.kreate.database.dao.SongFormatDao
-import me.knighthat.kreate.database.dao.UserSongDao
 import me.knighthat.kreate.database.entity.ArtistEntity
 import me.knighthat.kreate.database.entity.SongArtistMapEntity
 import me.knighthat.kreate.database.entity.SongFormatEntity
-import me.knighthat.kreate.database.entity.UserSongEntity
 import me.knighthat.kreate.database.model.Artist
 import me.knighthat.kreate.database.model.Lyrics
 import me.knighthat.kreate.database.model.Song
 import me.knighthat.kreate.database.model.SongFormat
-import me.knighthat.kreate.database.model.UserSong
 import kotlin.time.Clock
 
 /**
  * Room backed implementation of [SongRepository].
  */
-internal class RoomSongRepository(
+internal class SongRepositoryImpl(
+    private val database: AppDatabase,
     private val songDao: SongDao,
     private val songFormatDao: SongFormatDao,
     private val lyricsDao: LyricsDao,
-    private val userSongDao: UserSongDao,
-    activeUser: ActiveUser,
     private val clock: Clock,
 ) : SongRepository {
 
-    private val scope = UserScope(activeUser)
-
-    override fun find(id: String): Flow<Song?> = songDao.find(id).map { it?.toModel() }
+    override fun find(songId: String): Flow<Song?> = songDao.find(songId).map { it?.toModel() }
 
     override suspend fun save(song: Song) {
         val now = clock.now()
@@ -58,7 +53,7 @@ internal class RoomSongRepository(
         songDao.upsert(song.toEntity(createdAt, now))
     }
 
-    override suspend fun delete(id: String) = songDao.delete(id)
+    override suspend fun delete(songId: String) = songDao.delete(songId)
 
     override fun artistsOf(songId: String): Flow<List<Artist>> =
         songDao.artistsOf(songId).map { it.map(ArtistEntity::toModel) }
@@ -91,28 +86,13 @@ internal class RoomSongRepository(
 
     override suspend fun deleteLyrics(songId: String) = lyricsDao.delete(songId)
 
-    override fun library(): Flow<List<UserSong>> =
-        scope.observe(emptyList()) { userId ->
-            userSongDao.all(userId).map { it.map(UserSongEntity::toModel) }
-        }
+    override suspend fun update(songId: String, transform: (Song) -> Song) {
+        database.withTransaction {
+            val current = requireNotNull(songDao.get(songId)) { "Song $songId doesn't exist" }
+            val updated = transform(current.toModel())
+            require(updated.id == songId) { "The id of a song cannot be changed" }
 
-    override fun liked(): Flow<List<UserSong>> =
-        scope.observe(emptyList()) { userId ->
-            userSongDao.liked(userId).map { it.map(UserSongEntity::toModel) }
+            songDao.upsert(updated.toEntity(current.createdAt, clock.now()))
         }
-
-    override fun findInLibrary(songId: String): Flow<UserSong?> =
-        scope.observe(null) { userId ->
-            userSongDao.find(userId, songId).map { it?.toModel() }
-        }
-
-    override suspend fun saveToLibrary(song: UserSong) {
-        val userId = scope.requireId()
-        val now = clock.now()
-        val createdAt = userSongDao.get(userId, song.songId)?.createdAt ?: now
-        userSongDao.upsert(song.toEntity(userId, createdAt, now))
     }
-
-    override suspend fun removeFromLibrary(songId: String) =
-        userSongDao.delete(scope.requireId(), songId)
 }

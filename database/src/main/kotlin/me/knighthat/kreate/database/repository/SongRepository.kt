@@ -23,25 +23,31 @@ import me.knighthat.kreate.database.model.Artist
 import me.knighthat.kreate.database.model.Lyrics
 import me.knighthat.kreate.database.model.Song
 import me.knighthat.kreate.database.model.SongFormat
-import me.knighthat.kreate.database.model.UserSong
 
 /**
- * Songs with their formats, lyrics and artists, and the ones the active user keeps in their library.
+ * Songs with their formats, lyrics and artists, shared by every user.
  *
- * Functions on the shared catalog act for everyone. Functions on the library only touch
- * the active user's data.
+ * Everything here acts for all users. What one user keeps about a song lives in [UserSongRepository].
  */
 interface SongRepository {
 
-    fun find(id: String): Flow<Song?>
+    fun find(songId: String): Flow<Song?>
 
     suspend fun save(song: Song)
 
     /**
-     * Deletes the song for everyone, with its formats and lyrics. To remove it from one
-     * library use [removeFromLibrary].
+     * Changes the shared song for everyone, only what [transform] changes is replaced.
+     * Use it, not [save], to change a few fields.
+     *
+     * @throws IllegalArgumentException when the song doesn't exist, or [transform] changes its id
      */
-    suspend fun delete(id: String)
+    suspend fun update(songId: String, transform: (Song) -> Song)
+
+    /**
+     * Deletes the song for everyone, with its formats and lyrics. To remove it from one
+     * library use [UserSongRepository.remove].
+     */
+    suspend fun delete(songId: String)
 
     fun artistsOf(songId: String): Flow<List<Artist>>
 
@@ -63,17 +69,4 @@ interface SongRepository {
     suspend fun saveLyrics(lyrics: Lyrics)
 
     suspend fun deleteLyrics(songId: String)
-
-    fun library(): Flow<List<UserSong>>
-
-    fun liked(): Flow<List<UserSong>>
-
-    fun findInLibrary(songId: String): Flow<UserSong?>
-
-    /**
-     * Adds to the library, or updates the entry. The [Song] must be saved first.
-     */
-    suspend fun saveToLibrary(song: UserSong)
-
-    suspend fun removeFromLibrary(songId: String)
 }

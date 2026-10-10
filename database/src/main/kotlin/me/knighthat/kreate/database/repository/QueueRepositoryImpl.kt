@@ -28,7 +28,7 @@ import me.knighthat.kreate.database.model.QueuedSong
 /**
  * Room backed implementation of [QueueRepository].
  */
-internal class RoomQueueRepository(
+internal class QueueRepositoryImpl(
     private val queueDao: PersistentQueueDao,
     activeUser: ActiveUser,
 ) : QueueRepository {

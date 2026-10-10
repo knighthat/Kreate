@@ -33,7 +33,7 @@ import kotlin.time.Duration
 /**
  * Room backed implementation of [HistoryRepository].
  */
-internal class RoomHistoryRepository(
+internal class HistoryRepositoryImpl(
     private val searchHistoryDao: SearchHistoryDao,
     private val playbackHistoryDao: PlaybackHistoryDao,
     activeUser: ActiveUser,

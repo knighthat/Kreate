@@ -35,6 +35,7 @@ import kotlin.time.Instant
  * @property id id of the song at its [origin]
  * @property origin where the song comes from
  * @property name title of the song, `null` when unknown
+ * @property thumbnail cover of the song, `null` to use the one of its album
  * @property duration length of the song, whole seconds in storage
  * @property isExplicit `null` when unknown
  * @property albumId album the song belongs to, `null` for none
@@ -59,6 +60,7 @@ internal data class SongEntity(
     val id: String,
     val origin: Origin,
     val name: String? = null,
+    val thumbnail: String? = null,
     val duration: Duration? = null,
     @ColumnInfo(name = "is_explicit")
     val isExplicit: Boolean? = null,

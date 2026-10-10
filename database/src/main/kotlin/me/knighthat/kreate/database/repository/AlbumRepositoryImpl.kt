@@ -18,31 +18,26 @@
 
 package me.knighthat.kreate.database.repository
 
+import androidx.room.withTransaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import me.knighthat.kreate.database.ActiveUser
+import me.knighthat.kreate.database.AppDatabase
 import me.knighthat.kreate.database.dao.AlbumDao
-import me.knighthat.kreate.database.dao.UserAlbumDao
 import me.knighthat.kreate.database.entity.SongEntity
-import me.knighthat.kreate.database.entity.UserAlbumEntity
 import me.knighthat.kreate.database.model.Album
 import me.knighthat.kreate.database.model.Song
-import me.knighthat.kreate.database.model.UserAlbum
 import kotlin.time.Clock
 
 /**
  * Room backed implementation of [AlbumRepository].
  */
-internal class RoomAlbumRepository(
+internal class AlbumRepositoryImpl(
+    private val database: AppDatabase,
     private val albumDao: AlbumDao,
-    private val userAlbumDao: UserAlbumDao,
-    activeUser: ActiveUser,
     private val clock: Clock,
 ) : AlbumRepository {
 
-    private val scope = UserScope(activeUser)
-
-    override fun find(id: String): Flow<Album?> = albumDao.find(id).map { it?.toModel() }
+    override fun find(albumId: String): Flow<Album?> = albumDao.find(albumId).map { it?.toModel() }
 
     override fun songsOf(albumId: String): Flow<List<Song>> =
         albumDao.songsOf(albumId).map { it.map(SongEntity::toModel) }
@@ -53,30 +48,15 @@ internal class RoomAlbumRepository(
         albumDao.upsert(album.toEntity(createdAt, now))
     }
 
-    override suspend fun delete(id: String) = albumDao.delete(id)
+    override suspend fun delete(albumId: String) = albumDao.delete(albumId)
 
-    override fun library(): Flow<List<UserAlbum>> =
-        scope.observe(emptyList()) { userId ->
-            userAlbumDao.all(userId).map { it.map(UserAlbumEntity::toModel) }
+    override suspend fun update(albumId: String, transform: (Album) -> Album) {
+        database.withTransaction {
+            val current = requireNotNull(albumDao.get(albumId)) { "Album $albumId doesn't exist" }
+            val updated = transform(current.toModel())
+            require(updated.id == albumId) { "The id of an album cannot be changed" }
+
+            albumDao.upsert(updated.toEntity(current.createdAt, clock.now()))
         }
-
-    override fun bookmarked(): Flow<List<UserAlbum>> =
-        scope.observe(emptyList()) { userId ->
-            userAlbumDao.bookmarked(userId).map { it.map(UserAlbumEntity::toModel) }
-        }
-
-    override fun findInLibrary(albumId: String): Flow<UserAlbum?> =
-        scope.observe(null) { userId ->
-            userAlbumDao.find(userId, albumId).map { it?.toModel() }
-        }
-
-    override suspend fun saveToLibrary(album: UserAlbum) {
-        val userId = scope.requireId()
-        val now = clock.now()
-        val createdAt = userAlbumDao.get(userId, album.albumId)?.createdAt ?: now
-        userAlbumDao.upsert(album.toEntity(userId, createdAt, now))
     }
-
-    override suspend fun removeFromLibrary(albumId: String) =
-        userAlbumDao.delete(scope.requireId(), albumId)
 }

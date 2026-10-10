@@ -20,35 +20,28 @@ package me.knighthat.kreate.database.repository
 
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.model.Artist
-import me.knighthat.kreate.database.model.UserArtist
 
 /**
  * Artists, and the ones the active user keeps in their library.
  *
- * Functions on the shared catalog act for everyone. Functions on the library only touch
- * the active user's data.
+ * Everything here acts for all users. What one user keeps about a artist lives in [UserArtistRepository].
  */
 interface ArtistRepository {
 
-    fun find(id: String): Flow<Artist?>
+    fun find(artistId: String): Flow<Artist?>
 
     suspend fun save(artist: Artist)
 
     /**
-     * Deletes the artist for everyone. To remove it from one library use [removeFromLibrary].
+     * Changes the shared artist for everyone, only what [transform] changes is replaced.
+     * Use it, not [save], to change a few fields.
+     *
+     * @throws IllegalArgumentException when the artist doesn't exist, or [transform] changes its id
      */
-    suspend fun delete(id: String)
-
-    fun library(): Flow<List<UserArtist>>
-
-    fun followed(): Flow<List<UserArtist>>
-
-    fun findInLibrary(artistId: String): Flow<UserArtist?>
+    suspend fun update(artistId: String, transform: (Artist) -> Artist)
 
     /**
-     * Adds to the library, or updates the entry. The [Artist] must be saved first.
+     * Deletes the artist for everyone. To remove it from one library use [UserArtistRepository.remove].
      */
-    suspend fun saveToLibrary(artist: UserArtist)
-
-    suspend fun removeFromLibrary(artistId: String)
+    suspend fun delete(artistId: String)
 }
