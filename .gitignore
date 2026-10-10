@@ -1,0 +1,17 @@
+# Gradle / Kotlin
+.gradle/
+.kotlin/
+build/
+local.properties
+
+# Android Studio / IntelliJ (.idea-specific ignores live in .idea/.gitignore)
+*.iml
+
+# Native / misc
+.externalNativeBuild/
+.cxx/
+captures/
+.DS_Store
+
+# Claude Code (per-user)
+.claude/settings.local.json

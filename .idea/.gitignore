@@ -1,0 +1,17 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# Android Studio (per-machine or regenerated)
+/caches/
+/libraries/
+/modules.xml
+/navEditor.xml
+/assetWizardSettings.xml
+/deploymentTargetSelector.xml
+/deviceManager.xml
+/studiobot.xml
+/markdown.xml
+/misc.xml
+/AndroidProjectSystem.xml
+/git_toolbox_prj.xml
