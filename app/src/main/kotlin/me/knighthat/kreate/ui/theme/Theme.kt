@@ -26,28 +26,256 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import me.knighthat.kreate.R
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+@Composable
+private fun lightScheme() = lightColorScheme(
+    primary = colorResource(R.color.primary_light),
+    onPrimary = colorResource(R.color.on_primary_light),
+    primaryContainer = colorResource(R.color.primary_container_light),
+    onPrimaryContainer = colorResource(R.color.on_primary_container_light),
+    secondary = colorResource(R.color.secondary_light),
+    onSecondary = colorResource(R.color.on_secondary_light),
+    secondaryContainer = colorResource(R.color.secondary_container_light),
+    onSecondaryContainer = colorResource(R.color.on_secondary_container_light),
+    tertiary = colorResource(R.color.tertiary_light),
+    onTertiary = colorResource(R.color.on_tertiary_light),
+    tertiaryContainer = colorResource(R.color.tertiary_container_light),
+    onTertiaryContainer = colorResource(R.color.on_tertiary_container_light),
+    error = colorResource(R.color.error_light),
+    onError = colorResource(R.color.on_error_light),
+    errorContainer = colorResource(R.color.error_container_light),
+    onErrorContainer = colorResource(R.color.on_error_container_light),
+    background = colorResource(R.color.background_light),
+    onBackground = colorResource(R.color.on_background_light),
+    surface = colorResource(R.color.surface_light),
+    onSurface = colorResource(R.color.on_surface_light),
+    surfaceVariant = colorResource(R.color.surface_variant_light),
+    onSurfaceVariant = colorResource(R.color.on_surface_variant_light),
+    outline = colorResource(R.color.outline_light),
+    outlineVariant = colorResource(R.color.outline_variant_light),
+    scrim = colorResource(R.color.scrim_light),
+    inverseSurface = colorResource(R.color.inverse_surface_light),
+    inverseOnSurface = colorResource(R.color.inverse_on_surface_light),
+    inversePrimary = colorResource(R.color.inverse_primary_light),
+    surfaceDim = colorResource(R.color.surface_dim_light),
+    surfaceBright = colorResource(R.color.surface_bright_light),
+    surfaceContainerLowest = colorResource(R.color.surface_container_lowest_light),
+    surfaceContainerLow = colorResource(R.color.surface_container_low_light),
+    surfaceContainer = colorResource(R.color.surface_container_light),
+    surfaceContainerHigh = colorResource(R.color.surface_container_high_light),
+    surfaceContainerHighest = colorResource(R.color.surface_container_highest_light),
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+@Composable
+private fun darkScheme() = darkColorScheme(
+    primary = colorResource(R.color.primary_dark),
+    onPrimary = colorResource(R.color.on_primary_dark),
+    primaryContainer = colorResource(R.color.primary_container_dark),
+    onPrimaryContainer = colorResource(R.color.on_primary_container_dark),
+    secondary = colorResource(R.color.secondary_dark),
+    onSecondary = colorResource(R.color.on_secondary_dark),
+    secondaryContainer = colorResource(R.color.secondary_container_dark),
+    onSecondaryContainer = colorResource(R.color.on_secondary_container_dark),
+    tertiary = colorResource(R.color.tertiary_dark),
+    onTertiary = colorResource(R.color.on_tertiary_dark),
+    tertiaryContainer = colorResource(R.color.tertiary_container_dark),
+    onTertiaryContainer = colorResource(R.color.on_tertiary_container_dark),
+    error = colorResource(R.color.error_dark),
+    onError = colorResource(R.color.on_error_dark),
+    errorContainer = colorResource(R.color.error_container_dark),
+    onErrorContainer = colorResource(R.color.on_error_container_dark),
+    background = colorResource(R.color.background_dark),
+    onBackground = colorResource(R.color.on_background_dark),
+    surface = colorResource(R.color.surface_dark),
+    onSurface = colorResource(R.color.on_surface_dark),
+    surfaceVariant = colorResource(R.color.surface_variant_dark),
+    onSurfaceVariant = colorResource(R.color.on_surface_variant_dark),
+    outline = colorResource(R.color.outline_dark),
+    outlineVariant = colorResource(R.color.outline_variant_dark),
+    scrim = colorResource(R.color.scrim_dark),
+    inverseSurface = colorResource(R.color.inverse_surface_dark),
+    inverseOnSurface = colorResource(R.color.inverse_on_surface_dark),
+    inversePrimary = colorResource(R.color.inverse_primary_dark),
+    surfaceDim = colorResource(R.color.surface_dim_dark),
+    surfaceBright = colorResource(R.color.surface_bright_dark),
+    surfaceContainerLowest = colorResource(R.color.surface_container_lowest_dark),
+    surfaceContainerLow = colorResource(R.color.surface_container_low_dark),
+    surfaceContainer = colorResource(R.color.surface_container_dark),
+    surfaceContainerHigh = colorResource(R.color.surface_container_high_dark),
+    surfaceContainerHighest = colorResource(R.color.surface_container_highest_dark),
+)
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+@Composable
+private fun mediumContrastLightColorScheme() = lightColorScheme(
+    primary = colorResource(R.color.primary_light_medium_contrast),
+    onPrimary = colorResource(R.color.on_primary_light_medium_contrast),
+    primaryContainer = colorResource(R.color.primary_container_light_medium_contrast),
+    onPrimaryContainer = colorResource(R.color.on_primary_container_light_medium_contrast),
+    secondary = colorResource(R.color.secondary_light_medium_contrast),
+    onSecondary = colorResource(R.color.on_secondary_light_medium_contrast),
+    secondaryContainer = colorResource(R.color.secondary_container_light_medium_contrast),
+    onSecondaryContainer = colorResource(R.color.on_secondary_container_light_medium_contrast),
+    tertiary = colorResource(R.color.tertiary_light_medium_contrast),
+    onTertiary = colorResource(R.color.on_tertiary_light_medium_contrast),
+    tertiaryContainer = colorResource(R.color.tertiary_container_light_medium_contrast),
+    onTertiaryContainer = colorResource(R.color.on_tertiary_container_light_medium_contrast),
+    error = colorResource(R.color.error_light_medium_contrast),
+    onError = colorResource(R.color.on_error_light_medium_contrast),
+    errorContainer = colorResource(R.color.error_container_light_medium_contrast),
+    onErrorContainer = colorResource(R.color.on_error_container_light_medium_contrast),
+    background = colorResource(R.color.background_light_medium_contrast),
+    onBackground = colorResource(R.color.on_background_light_medium_contrast),
+    surface = colorResource(R.color.surface_light_medium_contrast),
+    onSurface = colorResource(R.color.on_surface_light_medium_contrast),
+    surfaceVariant = colorResource(R.color.surface_variant_light_medium_contrast),
+    onSurfaceVariant = colorResource(R.color.on_surface_variant_light_medium_contrast),
+    outline = colorResource(R.color.outline_light_medium_contrast),
+    outlineVariant = colorResource(R.color.outline_variant_light_medium_contrast),
+    scrim = colorResource(R.color.scrim_light_medium_contrast),
+    inverseSurface = colorResource(R.color.inverse_surface_light_medium_contrast),
+    inverseOnSurface = colorResource(R.color.inverse_on_surface_light_medium_contrast),
+    inversePrimary = colorResource(R.color.inverse_primary_light_medium_contrast),
+    surfaceDim = colorResource(R.color.surface_dim_light_medium_contrast),
+    surfaceBright = colorResource(R.color.surface_bright_light_medium_contrast),
+    surfaceContainerLowest = colorResource(R.color.surface_container_lowest_light_medium_contrast),
+    surfaceContainerLow = colorResource(R.color.surface_container_low_light_medium_contrast),
+    surfaceContainer = colorResource(R.color.surface_container_light_medium_contrast),
+    surfaceContainerHigh = colorResource(R.color.surface_container_high_light_medium_contrast),
+    surfaceContainerHighest = colorResource(R.color.surface_container_highest_light_medium_contrast),
+)
+
+@Composable
+private fun highContrastLightColorScheme() = lightColorScheme(
+    primary = colorResource(R.color.primary_light_high_contrast),
+    onPrimary = colorResource(R.color.on_primary_light_high_contrast),
+    primaryContainer = colorResource(R.color.primary_container_light_high_contrast),
+    onPrimaryContainer = colorResource(R.color.on_primary_container_light_high_contrast),
+    secondary = colorResource(R.color.secondary_light_high_contrast),
+    onSecondary = colorResource(R.color.on_secondary_light_high_contrast),
+    secondaryContainer = colorResource(R.color.secondary_container_light_high_contrast),
+    onSecondaryContainer = colorResource(R.color.on_secondary_container_light_high_contrast),
+    tertiary = colorResource(R.color.tertiary_light_high_contrast),
+    onTertiary = colorResource(R.color.on_tertiary_light_high_contrast),
+    tertiaryContainer = colorResource(R.color.tertiary_container_light_high_contrast),
+    onTertiaryContainer = colorResource(R.color.on_tertiary_container_light_high_contrast),
+    error = colorResource(R.color.error_light_high_contrast),
+    onError = colorResource(R.color.on_error_light_high_contrast),
+    errorContainer = colorResource(R.color.error_container_light_high_contrast),
+    onErrorContainer = colorResource(R.color.on_error_container_light_high_contrast),
+    background = colorResource(R.color.background_light_high_contrast),
+    onBackground = colorResource(R.color.on_background_light_high_contrast),
+    surface = colorResource(R.color.surface_light_high_contrast),
+    onSurface = colorResource(R.color.on_surface_light_high_contrast),
+    surfaceVariant = colorResource(R.color.surface_variant_light_high_contrast),
+    onSurfaceVariant = colorResource(R.color.on_surface_variant_light_high_contrast),
+    outline = colorResource(R.color.outline_light_high_contrast),
+    outlineVariant = colorResource(R.color.outline_variant_light_high_contrast),
+    scrim = colorResource(R.color.scrim_light_high_contrast),
+    inverseSurface = colorResource(R.color.inverse_surface_light_high_contrast),
+    inverseOnSurface = colorResource(R.color.inverse_on_surface_light_high_contrast),
+    inversePrimary = colorResource(R.color.inverse_primary_light_high_contrast),
+    surfaceDim = colorResource(R.color.surface_dim_light_high_contrast),
+    surfaceBright = colorResource(R.color.surface_bright_light_high_contrast),
+    surfaceContainerLowest = colorResource(R.color.surface_container_lowest_light_high_contrast),
+    surfaceContainerLow = colorResource(R.color.surface_container_low_light_high_contrast),
+    surfaceContainer = colorResource(R.color.surface_container_light_high_contrast),
+    surfaceContainerHigh = colorResource(R.color.surface_container_high_light_high_contrast),
+    surfaceContainerHighest = colorResource(R.color.surface_container_highest_light_high_contrast),
+)
+
+@Composable
+private fun mediumContrastDarkColorScheme() = darkColorScheme(
+    primary = colorResource(R.color.primary_dark_medium_contrast),
+    onPrimary = colorResource(R.color.on_primary_dark_medium_contrast),
+    primaryContainer = colorResource(R.color.primary_container_dark_medium_contrast),
+    onPrimaryContainer = colorResource(R.color.on_primary_container_dark_medium_contrast),
+    secondary = colorResource(R.color.secondary_dark_medium_contrast),
+    onSecondary = colorResource(R.color.on_secondary_dark_medium_contrast),
+    secondaryContainer = colorResource(R.color.secondary_container_dark_medium_contrast),
+    onSecondaryContainer = colorResource(R.color.on_secondary_container_dark_medium_contrast),
+    tertiary = colorResource(R.color.tertiary_dark_medium_contrast),
+    onTertiary = colorResource(R.color.on_tertiary_dark_medium_contrast),
+    tertiaryContainer = colorResource(R.color.tertiary_container_dark_medium_contrast),
+    onTertiaryContainer = colorResource(R.color.on_tertiary_container_dark_medium_contrast),
+    error = colorResource(R.color.error_dark_medium_contrast),
+    onError = colorResource(R.color.on_error_dark_medium_contrast),
+    errorContainer = colorResource(R.color.error_container_dark_medium_contrast),
+    onErrorContainer = colorResource(R.color.on_error_container_dark_medium_contrast),
+    background = colorResource(R.color.background_dark_medium_contrast),
+    onBackground = colorResource(R.color.on_background_dark_medium_contrast),
+    surface = colorResource(R.color.surface_dark_medium_contrast),
+    onSurface = colorResource(R.color.on_surface_dark_medium_contrast),
+    surfaceVariant = colorResource(R.color.surface_variant_dark_medium_contrast),
+    onSurfaceVariant = colorResource(R.color.on_surface_variant_dark_medium_contrast),
+    outline = colorResource(R.color.outline_dark_medium_contrast),
+    outlineVariant = colorResource(R.color.outline_variant_dark_medium_contrast),
+    scrim = colorResource(R.color.scrim_dark_medium_contrast),
+    inverseSurface = colorResource(R.color.inverse_surface_dark_medium_contrast),
+    inverseOnSurface = colorResource(R.color.inverse_on_surface_dark_medium_contrast),
+    inversePrimary = colorResource(R.color.inverse_primary_dark_medium_contrast),
+    surfaceDim = colorResource(R.color.surface_dim_dark_medium_contrast),
+    surfaceBright = colorResource(R.color.surface_bright_dark_medium_contrast),
+    surfaceContainerLowest = colorResource(R.color.surface_container_lowest_dark_medium_contrast),
+    surfaceContainerLow = colorResource(R.color.surface_container_low_dark_medium_contrast),
+    surfaceContainer = colorResource(R.color.surface_container_dark_medium_contrast),
+    surfaceContainerHigh = colorResource(R.color.surface_container_high_dark_medium_contrast),
+    surfaceContainerHighest = colorResource(R.color.surface_container_highest_dark_medium_contrast),
+)
+
+@Composable
+private fun highContrastDarkColorScheme() = darkColorScheme(
+    primary = colorResource(R.color.primary_dark_high_contrast),
+    onPrimary = colorResource(R.color.on_primary_dark_high_contrast),
+    primaryContainer = colorResource(R.color.primary_container_dark_high_contrast),
+    onPrimaryContainer = colorResource(R.color.on_primary_container_dark_high_contrast),
+    secondary = colorResource(R.color.secondary_dark_high_contrast),
+    onSecondary = colorResource(R.color.on_secondary_dark_high_contrast),
+    secondaryContainer = colorResource(R.color.secondary_container_dark_high_contrast),
+    onSecondaryContainer = colorResource(R.color.on_secondary_container_dark_high_contrast),
+    tertiary = colorResource(R.color.tertiary_dark_high_contrast),
+    onTertiary = colorResource(R.color.on_tertiary_dark_high_contrast),
+    tertiaryContainer = colorResource(R.color.tertiary_container_dark_high_contrast),
+    onTertiaryContainer = colorResource(R.color.on_tertiary_container_dark_high_contrast),
+    error = colorResource(R.color.error_dark_high_contrast),
+    onError = colorResource(R.color.on_error_dark_high_contrast),
+    errorContainer = colorResource(R.color.error_container_dark_high_contrast),
+    onErrorContainer = colorResource(R.color.on_error_container_dark_high_contrast),
+    background = colorResource(R.color.background_dark_high_contrast),
+    onBackground = colorResource(R.color.on_background_dark_high_contrast),
+    surface = colorResource(R.color.surface_dark_high_contrast),
+    onSurface = colorResource(R.color.on_surface_dark_high_contrast),
+    surfaceVariant = colorResource(R.color.surface_variant_dark_high_contrast),
+    onSurfaceVariant = colorResource(R.color.on_surface_variant_dark_high_contrast),
+    outline = colorResource(R.color.outline_dark_high_contrast),
+    outlineVariant = colorResource(R.color.outline_variant_dark_high_contrast),
+    scrim = colorResource(R.color.scrim_dark_high_contrast),
+    inverseSurface = colorResource(R.color.inverse_surface_dark_high_contrast),
+    inverseOnSurface = colorResource(R.color.inverse_on_surface_dark_high_contrast),
+    inversePrimary = colorResource(R.color.inverse_primary_dark_high_contrast),
+    surfaceDim = colorResource(R.color.surface_dim_dark_high_contrast),
+    surfaceBright = colorResource(R.color.surface_bright_dark_high_contrast),
+    surfaceContainerLowest = colorResource(R.color.surface_container_lowest_dark_high_contrast),
+    surfaceContainerLow = colorResource(R.color.surface_container_low_dark_high_contrast),
+    surfaceContainer = colorResource(R.color.surface_container_dark_high_contrast),
+    surfaceContainerHigh = colorResource(R.color.surface_container_high_dark_high_contrast),
+    surfaceContainerHighest = colorResource(R.color.surface_container_highest_dark_high_contrast),
+)
+
+@Immutable
+data class ColorFamily(
+    val color: Color,
+    val onColor: Color,
+    val colorContainer: Color,
+    val onColorContainer: Color
+)
+
+val unspecified_scheme = ColorFamily(
+    Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
 )
 
 @Composable
@@ -55,7 +283,7 @@ fun KreateTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
+    content: @Composable() () -> Unit
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -63,13 +291,14 @@ fun KreateTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> darkScheme()
+        else -> lightScheme()
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = AppTypography,
         content = content
     )
 }
+

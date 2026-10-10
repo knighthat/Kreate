@@ -1,10 +1,236 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="primary_light">#FF6A548D</color>
+    <color name="on_primary_light">#FFFFFFFF</color>
+    <color name="primary_container_light">#FFECDCFF</color>
+    <color name="on_primary_container_light">#FF523C73</color>
+    <color name="secondary_light">#FF645A70</color>
+    <color name="on_secondary_light">#FFFFFFFF</color>
+    <color name="secondary_container_light">#FFEBDEF7</color>
+    <color name="on_secondary_container_light">#FF4C4357</color>
+    <color name="tertiary_light">#FF7F525B</color>
+    <color name="on_tertiary_light">#FFFFFFFF</color>
+    <color name="tertiary_container_light">#FFFFD9DF</color>
+    <color name="on_tertiary_container_light">#FF643B44</color>
+    <color name="error_light">#FFBA1A1A</color>
+    <color name="on_error_light">#FFFFFFFF</color>
+    <color name="error_container_light">#FFFFDAD6</color>
+    <color name="on_error_container_light">#FF93000A</color>
+    <color name="background_light">#FFFEF7FF</color>
+    <color name="on_background_light">#FF1D1A20</color>
+    <color name="surface_light">#FFFEF7FF</color>
+    <color name="on_surface_light">#FF1D1A20</color>
+    <color name="surface_variant_light">#FFE8E0EB</color>
+    <color name="on_surface_variant_light">#FF4A454E</color>
+    <color name="outline_light">#FF7B757F</color>
+    <color name="outline_variant_light">#FFCBC4CF</color>
+    <color name="scrim_light">#FF000000</color>
+    <color name="inverse_surface_light">#FF322F35</color>
+    <color name="inverse_on_surface_light">#FFF6EEF7</color>
+    <color name="inverse_primary_light">#FFD5BBFC</color>
+    <color name="surface_dim_light">#FFDFD8E0</color>
+    <color name="surface_bright_light">#FFFEF7FF</color>
+    <color name="surface_container_lowest_light">#FFFFFFFF</color>
+    <color name="surface_container_low_light">#FFF9F1F9</color>
+    <color name="surface_container_light">#FFF3ECF4</color>
+    <color name="surface_container_high_light">#FFEDE6EE</color>
+    <color name="surface_container_highest_light">#FFE7E0E8</color>
+
+    <color name="primary_light_medium_contrast">#FF402B61</color>
+    <color name="on_primary_light_medium_contrast">#FFFFFFFF</color>
+    <color name="primary_container_light_medium_contrast">#FF79629C</color>
+    <color name="on_primary_container_light_medium_contrast">#FFFFFFFF</color>
+    <color name="secondary_light_medium_contrast">#FF3B3346</color>
+    <color name="on_secondary_light_medium_contrast">#FFFFFFFF</color>
+    <color name="secondary_container_light_medium_contrast">#FF73697F</color>
+    <color name="on_secondary_container_light_medium_contrast">#FFFFFFFF</color>
+    <color name="tertiary_light_medium_contrast">#FF512A34</color>
+    <color name="on_tertiary_light_medium_contrast">#FFFFFFFF</color>
+    <color name="tertiary_container_light_medium_contrast">#FF8F606A</color>
+    <color name="on_tertiary_container_light_medium_contrast">#FFFFFFFF</color>
+    <color name="error_light_medium_contrast">#FF740006</color>
+    <color name="on_error_light_medium_contrast">#FFFFFFFF</color>
+    <color name="error_container_light_medium_contrast">#FFCF2C27</color>
+    <color name="on_error_container_light_medium_contrast">#FFFFFFFF</color>
+    <color name="background_light_medium_contrast">#FFFEF7FF</color>
+    <color name="on_background_light_medium_contrast">#FF1D1A20</color>
+    <color name="surface_light_medium_contrast">#FFFEF7FF</color>
+    <color name="on_surface_light_medium_contrast">#FF131015</color>
+    <color name="surface_variant_light_medium_contrast">#FFE8E0EB</color>
+    <color name="on_surface_variant_light_medium_contrast">#FF39343D</color>
+    <color name="outline_light_medium_contrast">#FF55515A</color>
+    <color name="outline_variant_light_medium_contrast">#FF706B75</color>
+    <color name="scrim_light_medium_contrast">#FF000000</color>
+    <color name="inverse_surface_light_medium_contrast">#FF322F35</color>
+    <color name="inverse_on_surface_light_medium_contrast">#FFF6EEF7</color>
+    <color name="inverse_primary_light_medium_contrast">#FFD5BBFC</color>
+    <color name="surface_dim_light_medium_contrast">#FFCBC4CC</color>
+    <color name="surface_bright_light_medium_contrast">#FFFEF7FF</color>
+    <color name="surface_container_lowest_light_medium_contrast">#FFFFFFFF</color>
+    <color name="surface_container_low_light_medium_contrast">#FFF9F1F9</color>
+    <color name="surface_container_light_medium_contrast">#FFEDE6EE</color>
+    <color name="surface_container_high_light_medium_contrast">#FFE1DBE3</color>
+    <color name="surface_container_highest_light_medium_contrast">#FFD6CFD7</color>
+
+    <color name="primary_light_high_contrast">#FF362156</color>
+    <color name="on_primary_light_high_contrast">#FFFFFFFF</color>
+    <color name="primary_container_light_high_contrast">#FF543E76</color>
+    <color name="on_primary_container_light_high_contrast">#FFFFFFFF</color>
+    <color name="secondary_light_high_contrast">#FF30293C</color>
+    <color name="on_secondary_light_high_contrast">#FFFFFFFF</color>
+    <color name="secondary_container_light_high_contrast">#FF4E455A</color>
+    <color name="on_secondary_container_light_high_contrast">#FFFFFFFF</color>
+    <color name="tertiary_light_high_contrast">#FF46212A</color>
+    <color name="on_tertiary_light_high_contrast">#FFFFFFFF</color>
+    <color name="tertiary_container_light_high_contrast">#FF673D46</color>
+    <color name="on_tertiary_container_light_high_contrast">#FFFFFFFF</color>
+    <color name="error_light_high_contrast">#FF600004</color>
+    <color name="on_error_light_high_contrast">#FFFFFFFF</color>
+    <color name="error_container_light_high_contrast">#FF98000A</color>
+    <color name="on_error_container_light_high_contrast">#FFFFFFFF</color>
+    <color name="background_light_high_contrast">#FFFEF7FF</color>
+    <color name="on_background_light_high_contrast">#FF1D1A20</color>
+    <color name="surface_light_high_contrast">#FFFEF7FF</color>
+    <color name="on_surface_light_high_contrast">#FF000000</color>
+    <color name="surface_variant_light_high_contrast">#FFE8E0EB</color>
+    <color name="on_surface_variant_light_high_contrast">#FF000000</color>
+    <color name="outline_light_high_contrast">#FF2E2B33</color>
+    <color name="outline_variant_light_high_contrast">#FF4C4750</color>
+    <color name="scrim_light_high_contrast">#FF000000</color>
+    <color name="inverse_surface_light_high_contrast">#FF322F35</color>
+    <color name="inverse_on_surface_light_high_contrast">#FFFFFFFF</color>
+    <color name="inverse_primary_light_high_contrast">#FFD5BBFC</color>
+    <color name="surface_dim_light_high_contrast">#FFBDB7BE</color>
+    <color name="surface_bright_light_high_contrast">#FFFEF7FF</color>
+    <color name="surface_container_lowest_light_high_contrast">#FFFFFFFF</color>
+    <color name="surface_container_low_light_high_contrast">#FFF6EEF7</color>
+    <color name="surface_container_light_high_contrast">#FFE7E0E8</color>
+    <color name="surface_container_high_light_high_contrast">#FFD9D2DA</color>
+    <color name="surface_container_highest_light_high_contrast">#FFCBC4CC</color>
+
+    <color name="primary_dark">#FFD5BBFC</color>
+    <color name="on_primary_dark">#FF3A255B</color>
+    <color name="primary_container_dark">#FF523C73</color>
+    <color name="on_primary_container_dark">#FFECDCFF</color>
+    <color name="secondary_dark">#FFCEC2DB</color>
+    <color name="on_secondary_dark">#FF352D40</color>
+    <color name="secondary_container_dark">#FF4C4357</color>
+    <color name="on_secondary_container_dark">#FFEBDEF7</color>
+    <color name="tertiary_dark">#FFF1B7C2</color>
+    <color name="on_tertiary_dark">#FF4B252E</color>
+    <color name="tertiary_container_dark">#FF643B44</color>
+    <color name="on_tertiary_container_dark">#FFFFD9DF</color>
+    <color name="error_dark">#FFFFB4AB</color>
+    <color name="on_error_dark">#FF690005</color>
+    <color name="error_container_dark">#FF93000A</color>
+    <color name="on_error_container_dark">#FFFFDAD6</color>
+    <color name="background_dark">#FF151218</color>
+    <color name="on_background_dark">#FFE7E0E8</color>
+    <color name="surface_dark">#FF151218</color>
+    <color name="on_surface_dark">#FFE7E0E8</color>
+    <color name="surface_variant_dark">#FF4A454E</color>
+    <color name="on_surface_variant_dark">#FFCBC4CF</color>
+    <color name="outline_dark">#FF958E99</color>
+    <color name="outline_variant_dark">#FF4A454E</color>
+    <color name="scrim_dark">#FF000000</color>
+    <color name="inverse_surface_dark">#FFE7E0E8</color>
+    <color name="inverse_on_surface_dark">#FF322F35</color>
+    <color name="inverse_primary_dark">#FF6A548D</color>
+    <color name="surface_dim_dark">#FF151218</color>
+    <color name="surface_bright_dark">#FF3B383E</color>
+    <color name="surface_container_lowest_dark">#FF100D12</color>
+    <color name="surface_container_low_dark">#FF1D1A20</color>
+    <color name="surface_container_dark">#FF211E24</color>
+    <color name="surface_container_high_dark">#FF2C292F</color>
+    <color name="surface_container_highest_dark">#FF37333A</color>
+
+    <color name="primary_dark_medium_contrast">#FFE8D5FF</color>
+    <color name="on_primary_dark_medium_contrast">#FF2F1A4F</color>
+    <color name="primary_container_dark_medium_contrast">#FF9E86C2</color>
+    <color name="on_primary_container_dark_medium_contrast">#FF000000</color>
+    <color name="secondary_dark_medium_contrast">#FFE4D7F1</color>
+    <color name="on_secondary_dark_medium_contrast">#FF2A2235</color>
+    <color name="secondary_container_dark_medium_contrast">#FF978CA4</color>
+    <color name="on_secondary_container_dark_medium_contrast">#FF000000</color>
+    <color name="tertiary_dark_medium_contrast">#FFFFD1D9</color>
+    <color name="on_tertiary_dark_medium_contrast">#FF3E1A23</color>
+    <color name="tertiary_container_dark_medium_contrast">#FFB7838D</color>
+    <color name="on_tertiary_container_dark_medium_contrast">#FF000000</color>
+    <color name="error_dark_medium_contrast">#FFFFD2CC</color>
+    <color name="on_error_dark_medium_contrast">#FF540003</color>
+    <color name="error_container_dark_medium_contrast">#FFFF5449</color>
+    <color name="on_error_container_dark_medium_contrast">#FF000000</color>
+    <color name="background_dark_medium_contrast">#FF151218</color>
+    <color name="on_background_dark_medium_contrast">#FFE7E0E8</color>
+    <color name="surface_dark_medium_contrast">#FF151218</color>
+    <color name="on_surface_dark_medium_contrast">#FFFFFFFF</color>
+    <color name="surface_variant_dark_medium_contrast">#FF4A454E</color>
+    <color name="on_surface_variant_dark_medium_contrast">#FFE2DAE5</color>
+    <color name="outline_dark_medium_contrast">#FFB6AFBA</color>
+    <color name="outline_variant_dark_medium_contrast">#FF948E98</color>
+    <color name="scrim_dark_medium_contrast">#FF000000</color>
+    <color name="inverse_surface_dark_medium_contrast">#FFE7E0E8</color>
+    <color name="inverse_on_surface_dark_medium_contrast">#FF2C292F</color>
+    <color name="inverse_primary_dark_medium_contrast">#FF533D74</color>
+    <color name="surface_dim_dark_medium_contrast">#FF151218</color>
+    <color name="surface_bright_dark_medium_contrast">#FF474349</color>
+    <color name="surface_container_lowest_dark_medium_contrast">#FF08070B</color>
+    <color name="surface_container_low_dark_medium_contrast">#FF1F1C22</color>
+    <color name="surface_container_dark_medium_contrast">#FF2A272D</color>
+    <color name="surface_container_high_dark_medium_contrast">#FF353137</color>
+    <color name="surface_container_highest_dark_medium_contrast">#FF403C43</color>
+
+    <color name="primary_dark_high_contrast">#FFF7ECFF</color>
+    <color name="on_primary_dark_high_contrast">#FF000000</color>
+    <color name="primary_container_dark_high_contrast">#FFD1B7F7</color>
+    <color name="on_primary_container_dark_high_contrast">#FF13002F</color>
+    <color name="secondary_dark_high_contrast">#FFF7ECFF</color>
+    <color name="on_secondary_dark_high_contrast">#FF000000</color>
+    <color name="secondary_container_dark_high_contrast">#FFCABED7</color>
+    <color name="on_secondary_container_dark_high_contrast">#FF0F0819</color>
+    <color name="tertiary_dark_high_contrast">#FFFFEBEE</color>
+    <color name="on_tertiary_dark_high_contrast">#FF000000</color>
+    <color name="tertiary_container_dark_high_contrast">#FFEDB4BF</color>
+    <color name="on_tertiary_container_dark_high_contrast">#FF1D0209</color>
+    <color name="error_dark_high_contrast">#FFFFECE9</color>
+    <color name="on_error_dark_high_contrast">#FF000000</color>
+    <color name="error_container_dark_high_contrast">#FFFFAEA4</color>
+    <color name="on_error_container_dark_high_contrast">#FF220001</color>
+    <color name="background_dark_high_contrast">#FF151218</color>
+    <color name="on_background_dark_high_contrast">#FFE7E0E8</color>
+    <color name="surface_dark_high_contrast">#FF151218</color>
+    <color name="on_surface_dark_high_contrast">#FFFFFFFF</color>
+    <color name="surface_variant_dark_high_contrast">#FF4A454E</color>
+    <color name="on_surface_variant_dark_high_contrast">#FFFFFFFF</color>
+    <color name="outline_dark_high_contrast">#FFF6EDF9</color>
+    <color name="outline_variant_dark_high_contrast">#FFC7C0CB</color>
+    <color name="scrim_dark_high_contrast">#FF000000</color>
+    <color name="inverse_surface_dark_high_contrast">#FFE7E0E8</color>
+    <color name="inverse_on_surface_dark_high_contrast">#FF000000</color>
+    <color name="inverse_primary_dark_high_contrast">#FF533D74</color>
+    <color name="surface_dim_dark_high_contrast">#FF151218</color>
+    <color name="surface_bright_dark_high_contrast">#FF524F55</color>
+    <color name="surface_container_lowest_dark_high_contrast">#FF000000</color>
+    <color name="surface_container_low_dark_high_contrast">#FF211E24</color>
+    <color name="surface_container_dark_high_contrast">#FF322F35</color>
+    <color name="surface_container_high_dark_high_contrast">#FF3E3A40</color>
+    <color name="surface_container_highest_dark_high_contrast">#FF49454C</color>
+
 </resources>
