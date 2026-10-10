@@ -15,3 +15,5 @@ captures/
 
 # Claude Code (per-user)
 .claude/settings.local.json
+
+.ignore.d/
