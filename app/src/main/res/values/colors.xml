@@ -233,4 +233,6 @@
     <color name="surface_container_high_dark_high_contrast">#FF3E3A40</color>
     <color name="surface_container_highest_dark_high_contrast">#FF49454C</color>
 
+    <color name="black">#0000</color>
+    <color name="white">#FFFF</color>
 </resources>
