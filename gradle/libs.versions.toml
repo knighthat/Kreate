@@ -17,6 +17,9 @@ composeBom = "2026.09.00"
 koin = "4.2.2"
 coroutines = "1.11.0"
 datastore = "1.2.1"
+room = "2.8.5"
+sqlite = "2.6.2"
+ksp = "2.3.12"
 material-kolor = "5.0.1"
 material3 = "1.4.0"
 
@@ -45,6 +48,11 @@ androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-p
 # Material Kolor
 material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "material-kolor" }
 
+# Room
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+
 # Koin
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core" }
@@ -62,6 +70,8 @@ androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", vers
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 
 [plugins]
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+androidx-room = { id = "androidx.room", version.ref = "room" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

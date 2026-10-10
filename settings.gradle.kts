@@ -42,4 +42,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Kreate"
 include(":app")
+include(":database")
 include(":preferences")
