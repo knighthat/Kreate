@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate.preferences
 
+import me.knighthat.kreate.constant.ContrastLevel
+import me.knighthat.kreate.constant.ThemeMode
 import me.knighthat.kreate.preferences.Preferences.awaitLoaded
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -33,6 +35,9 @@ import org.koin.core.component.inject
 object Preferences : KoinComponent {
 
     private val engine: PreferenceEngine by inject()
+
+    val THEME_MODE by lazy { enum("theme_mode", ThemeMode.AUTOMATIC) }
+    val CONTRAST_LEVEL by lazy { enum("contrast_level", ContrastLevel.NORMAL) }
 
     /**
      * Suspends until the active profile's settings are loaded for the first time.

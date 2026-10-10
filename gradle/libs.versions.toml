@@ -16,6 +16,8 @@ composeBom = "2026.09.00"
 koin = "4.2.2"
 coroutines = "1.11.0"
 datastore = "1.2.1"
+material-kolor = "5.0.1"
+material3 = "1.4.0"
 
 [libraries]
 # Core
@@ -38,6 +40,9 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 # DataStore
 androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
 
+# Material Kolor
+material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "material-kolor" }
+
 # Koin
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core" }
@@ -52,6 +57,7 @@ androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }

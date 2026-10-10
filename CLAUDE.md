@@ -16,6 +16,8 @@ Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper
 
 - Package/namespace is `me.knighthat.kreate`; minSdk 24, compileSdk/targetSdk 37, Java 21 source/target.
 - Release minification is off.
+- Enum values use SCREAMING_SNAKE_CASE (`NORMAL`, `AUTOMATIC_DYNAMIC`), not PascalCase.
+- In a class or object, declare properties before functions.
 - Work that must outlive a screen runs on the global `CoroutineScope` (Koin singleton,
   `SupervisorJob` + `Dispatchers.Default`); in UI code use `rememberCoroutineScope()` /
   `viewModelScope` instead.

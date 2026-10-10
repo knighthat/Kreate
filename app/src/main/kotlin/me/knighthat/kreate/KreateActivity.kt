@@ -27,7 +27,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import me.knighthat.kreate.preferences.Preferences
 import me.knighthat.kreate.ui.theme.KreateTheme
 
 class KreateActivity : ComponentActivity() {
@@ -44,7 +48,14 @@ class KreateActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            KreateTheme {
+            val themeMode by Preferences.THEME_MODE.state.collectAsState()
+            val contrastLevel by Preferences.CONTRAST_LEVEL.state.collectAsState()
+
+            KreateTheme(
+                themeMode = themeMode,
+                contrastLevel = contrastLevel,
+                colorSeed = Color.Unspecified,
+            ) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
                         name = "Android",

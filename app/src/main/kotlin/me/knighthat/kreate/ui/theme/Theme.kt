@@ -20,6 +20,7 @@ package me.knighthat.kreate.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -28,9 +29,13 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import me.knighthat.kreate.R
+import me.knighthat.kreate.constant.ContrastLevel
+import me.knighthat.kreate.constant.ThemeMode
+import com.materialkolor.dynamicColorScheme as seededColorScheme
 
 @Composable
 private fun lightScheme() = lightColorScheme(
@@ -279,20 +284,55 @@ val unspecified_scheme = ColorFamily(
 )
 
 @Composable
+private fun staticColorScheme(darkTheme: Boolean, contrastLevel: ContrastLevel): ColorScheme =
+    if (darkTheme) when (contrastLevel) {
+        ContrastLevel.NORMAL -> darkScheme()
+        ContrastLevel.MEDIUM -> mediumContrastDarkColorScheme()
+        ContrastLevel.HIGH -> highContrastDarkColorScheme()
+    } else when (contrastLevel) {
+        ContrastLevel.NORMAL -> lightScheme()
+        ContrastLevel.MEDIUM -> mediumContrastLightColorScheme()
+        ContrastLevel.HIGH -> highContrastLightColorScheme()
+    }
+
+/**
+ * @param colorSeed color used as primary by [ThemeMode.THUMBNAIL], [Color.Unspecified] means no seed
+ * yet and the static scheme is used. It is runtime-only, never store it.
+ */
+@Composable
 fun KreateTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
-    content: @Composable() () -> Unit
+    themeMode: ThemeMode,
+    contrastLevel: ContrastLevel,
+    colorSeed: Color,
+    content: @Composable () -> Unit
 ) {
+    val darkTheme = when (themeMode) {
+        ThemeMode.AUTOMATIC, ThemeMode.AUTOMATIC_DYNAMIC, ThemeMode.THUMBNAIL -> isSystemInDarkTheme()
+        ThemeMode.LIGHT, ThemeMode.LIGHT_DYNAMIC -> false
+        ThemeMode.DARK, ThemeMode.DARK_DYNAMIC -> true
+    }
+    val dynamicColor = themeMode == ThemeMode.AUTOMATIC_DYNAMIC
+            || themeMode == ThemeMode.LIGHT_DYNAMIC
+            || themeMode == ThemeMode.DARK_DYNAMIC
+
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        themeMode == ThemeMode.THUMBNAIL && colorSeed.isSpecified -> seededColorScheme(
+            seedColor = colorSeed,
+            isDark = darkTheme,
+            contrastLevel = when (contrastLevel) {
+                ContrastLevel.NORMAL -> 0.0
+                ContrastLevel.MEDIUM -> 0.5
+                ContrastLevel.HIGH -> 1.0
+            },
+        )
+
+        // Dynamic color is available on Android 12+, it has no contrast levels
+        dynamicColor && contrastLevel == ContrastLevel.NORMAL && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> darkScheme()
-        else -> lightScheme()
+        else -> staticColorScheme(darkTheme, contrastLevel)
     }
 
     MaterialTheme(
