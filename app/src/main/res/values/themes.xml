@@ -21,4 +21,10 @@
     <style name="Theme.Kreate" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/white</item>
     </style>
+
+    <style name="Theme.Kreate.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.Kreate</item>
+    </style>
 </resources>

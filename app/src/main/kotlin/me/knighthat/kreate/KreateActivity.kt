@@ -27,14 +27,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import me.knighthat.kreate.preferences.Preferences
+import me.knighthat.kreate.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate.ui.theme.KreateTheme
+import org.koin.android.ext.android.inject
 
 class KreateActivity : ComponentActivity() {
+
+    private val scope: CoroutineScope by inject()
+
+    private var preferencesLoaded = false
 
     @Composable
     private fun Greeting(name: String, modifier: Modifier = Modifier) {
@@ -45,11 +54,19 @@ class KreateActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Must be called before super.onCreate, it swaps the splash theme for the app theme
+        installSplashScreen().setKeepOnScreenCondition { !preferencesLoaded }
         super.onCreate(savedInstanceState)
+
+        lifecycleScope.launch {
+            Preferences.awaitLoaded()
+            preferencesLoaded = true
+        }
+
         enableEdgeToEdge()
         setContent {
-            val themeMode by Preferences.THEME_MODE.state.collectAsState()
-            val contrastLevel by Preferences.CONTRAST_LEVEL.state.collectAsState()
+            val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
+            val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
 
             KreateTheme(
                 themeMode = themeMode,
@@ -64,5 +81,12 @@ class KreateActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // The process may be killed after this point, and the activity scope is already
+        // cancelled by onDestroy, so save on the global scope.
+        scope.launch { Preferences.flush() }
     }
 }
