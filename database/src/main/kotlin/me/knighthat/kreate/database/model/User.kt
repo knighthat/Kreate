@@ -18,15 +18,21 @@
 
 package me.knighthat.kreate.database.model
 
+import kotlin.time.Instant
+
 /**
  * A profile.
  *
  * @property id same id as the profile in `ProfileManager`
  * @property name display name of the profile
  * @property thumbnail image of the profile, `null` for none
+ * @property activeSince when the profile last became the active one, `null` if it never was
+ * @property lastSeen when the profile was last active, `null` if it never was
  */
 data class User(
     val id: String,
     val name: String,
     val thumbnail: String? = null,
+    val activeSince: Instant? = null,
+    val lastSeen: Instant? = null,
 )

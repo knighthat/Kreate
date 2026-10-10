@@ -43,5 +43,10 @@ internal class RoomUserRepository(
         userDao.upsert(user.toEntity(createdAt, now))
     }
 
+    // Not a content change of the profile, so `updated_at` stays as it is
+    override suspend fun markActive(id: String) = userDao.setActiveSince(id, clock.now())
+
+    override suspend fun markSeen(id: String) = userDao.setLastSeen(id, clock.now())
+
     override suspend fun delete(id: String) = userDao.delete(id)
 }

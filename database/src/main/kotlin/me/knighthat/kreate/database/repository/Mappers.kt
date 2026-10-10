@@ -49,10 +49,10 @@ import kotlin.time.Instant
 // Models carry no timestamps and no user id. Repositories add them when writing,
 // so `createdAt` and `updatedAt` are always set in one place.
 
-internal fun UserEntity.toModel() = User(id, name, thumbnail)
+internal fun UserEntity.toModel() = User(id, name, thumbnail, activeSince, lastSeen)
 
 internal fun User.toEntity(createdAt: Instant, updatedAt: Instant) =
-    UserEntity(id, name, thumbnail, createdAt, updatedAt)
+    UserEntity(id, name, thumbnail, activeSince, lastSeen, createdAt, updatedAt)
 
 internal fun ArtistEntity.toModel() = Artist(id, origin, name, thumbnail)
 

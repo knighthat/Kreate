@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "4bcb198cf1cd5eed094a62490bf22dee",
+    "identityHash": "24abefa91c7f7c89a8fdeffec931d696",
     "entities": [
       {
         "tableName": "album",
@@ -650,7 +650,7 @@
       },
       {
         "tableName": "user",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `thumbnail` TEXT, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `thumbnail` TEXT, `active_since` INTEGER, `last_seen` INTEGER, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -668,6 +668,16 @@
             "fieldPath": "thumbnail",
             "columnName": "thumbnail",
             "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "activeSince",
+            "columnName": "active_since",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "lastSeen",
+            "columnName": "last_seen",
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "createdAt",
@@ -1047,7 +1057,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4bcb198cf1cd5eed094a62490bf22dee')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '24abefa91c7f7c89a8fdeffec931d696')"
     ]
   }
 }

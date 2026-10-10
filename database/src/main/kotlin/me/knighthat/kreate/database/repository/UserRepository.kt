@@ -36,6 +36,16 @@ interface UserRepository {
     suspend fun save(user: User)
 
     /**
+     * Records that the user became the active one just now. Does nothing for an unknown user.
+     */
+    suspend fun markActive(id: String)
+
+    /**
+     * Records that the user was active until just now. Does nothing for an unknown user.
+     */
+    suspend fun markSeen(id: String)
+
+    /**
      * Removes the user and everything the user owns: library, playlists, history and queue.
      * The shared catalog stays, other users may still use it.
      */

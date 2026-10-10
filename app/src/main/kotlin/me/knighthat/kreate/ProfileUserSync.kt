@@ -50,6 +50,9 @@ class ProfileUserSync(
     // Profiles already written during this run, so that switching profile doesn't touch every row
     private val synced = mutableMapOf<String, String>()
 
+    // Active profile as of the last run, to tell a switch from a start-up
+    private var activeId: String? = null
+
     override val id: StateFlow<String?> =
         combine(profileManager.profiles, profileManager.activeProfile) { profiles, active ->
             profiles to active
@@ -57,12 +60,30 @@ class ProfileUserSync(
             profiles.forEach { profile ->
                 if (synced[profile.id] == profile.name) return@forEach
 
-                // Keep what the database already knows about the user, like its thumbnail
-                val thumbnail = userRepository.find(profile.id).first()?.thumbnail
-                userRepository.save(User(profile.id, profile.name, thumbnail))
+                // Keep what the database already knows about the user, like its thumbnail and activity times
+                val user = userRepository.find(profile.id).first()?.copy(name = profile.name)
+                    ?: User(profile.id, profile.name)
+                userRepository.save(user)
                 synced[profile.id] = profile.name
             }
-            active?.id
+
+            val current = active?.id
+            if (current != activeId) {
+                val previous = activeId
+                activeId = current
+
+                // The profile we leave was last seen now
+                if (previous != null) userRepository.markSeen(previous)
+
+                // A switch starts a new activity period. On start-up there is no switch,
+                // only a profile that never was active gets its first time
+                val isSwitch = previous != null
+                if (current != null && (isSwitch || userRepository.find(current)
+                        .first()?.activeSince == null)
+                )
+                    userRepository.markActive(current)
+            }
+            current
         }.distinctUntilChanged().stateIn(scope, SharingStarted.Eagerly, null)
 
     /**

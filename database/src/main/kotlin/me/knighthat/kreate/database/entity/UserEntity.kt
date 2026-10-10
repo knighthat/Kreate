@@ -31,6 +31,8 @@ import kotlin.time.Instant
  * @property id same id as the profile in `ProfileManager`
  * @property name display name of the profile
  * @property thumbnail image of the profile, `null` for none
+ * @property activeSince when the profile last became the active one, `null` if it never was
+ * @property lastSeen when the profile was last active, `null` if it never was
  * @property createdAt when the profile was first stored
  * @property updatedAt when the profile was last changed
  */
@@ -40,6 +42,10 @@ internal data class UserEntity(
     val id: String,
     val name: String,
     val thumbnail: String? = null,
+    @ColumnInfo(name = "active_since")
+    val activeSince: Instant? = null,
+    @ColumnInfo(name = "last_seen")
+    val lastSeen: Instant? = null,
     @ColumnInfo(name = "created_at")
     val createdAt: Instant,
     @ColumnInfo(name = "updated_at")

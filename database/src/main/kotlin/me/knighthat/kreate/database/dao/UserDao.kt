@@ -23,6 +23,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.entity.UserEntity
+import kotlin.time.Instant
 
 @Dao
 internal interface UserDao {
@@ -38,6 +39,12 @@ internal interface UserDao {
 
     @Upsert
     suspend fun upsert(user: UserEntity)
+
+    @Query("UPDATE user SET active_since = :time WHERE id = :id")
+    suspend fun setActiveSince(id: String, time: Instant)
+
+    @Query("UPDATE user SET last_seen = :time WHERE id = :id")
+    suspend fun setLastSeen(id: String, time: Instant)
 
     /**
      * Removes the user and everything the user owns: followed artists, saved albums and songs,
