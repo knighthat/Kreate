@@ -22,7 +22,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -36,7 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.kreate.constant.ContrastLevel
@@ -49,7 +47,6 @@ import me.knighthat.kreate.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate.screen.SetupWizardScreen
 import me.knighthat.kreate.screen.setupCompletedFile
 import me.knighthat.kreate.ui.theme.KreateTheme
-import me.knighthat.kreate.utils.AUDIO_PERMISSION
 import me.knighthat.kreate.utils.hasAudioPermission
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
@@ -71,8 +68,6 @@ class KreateActivity : ComponentActivity() {
     private var isReady = false
 
     private val scope: CoroutineScope by inject()
-
-    private val audioAllowed = MutableStateFlow(false)
 
     @Composable
     private fun Greeting(name: String, modifier: Modifier = Modifier) {
@@ -120,20 +115,17 @@ class KreateActivity : ComponentActivity() {
             //</editor-fold>
             isReady = true
 
-            // Keep the scan schedule in step with the interval, but only once scanning is allowed
-            audioAllowed.first { it }
+            //<editor-fold defaultstate="collapsed" desc="Scan local media">
+            // Without the permission there is nothing to scan, so nothing is asked or scheduled
+            if (!hasAudioPermission()) return@launch
+            // A recreated activity (rotation) must not scan again, only the schedule needs to follow it
+            if (savedInstanceState == null) LocalMusicScheduler.scanNow(this@KreateActivity)
+            // Keep the scan schedule in step with the interval
             Preferences.LOCAL_SCAN_INTERVAL.state.collect {
                 LocalMusicScheduler.schedule(this@KreateActivity, it)
             }
+            //</editor-fold>
         }
-
-        // A recreated activity (rotation) must not scan again, only the schedule needs to follow it
-        if (hasAudioPermission())
-            onAudioAllowed(scanNow = savedInstanceState == null)
-        else
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-                if (granted) onAudioAllowed(scanNow = true)
-            }.launch(AUDIO_PERMISSION)
     }
 
     override fun onStart() {
@@ -169,14 +161,6 @@ class KreateActivity : ComponentActivity() {
             } else
                 SetupWizardScreen()
         }
-    }
-
-    /**
-     * Lets the schedule start, and scans the device's music now when [scanNow] is set.
-     */
-    private fun onAudioAllowed(scanNow: Boolean) {
-        if (scanNow) LocalMusicScheduler.scanNow(this)
-        audioAllowed.value = true
     }
 
     override fun onStop() {
