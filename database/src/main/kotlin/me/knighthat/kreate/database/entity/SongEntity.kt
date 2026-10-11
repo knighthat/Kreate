@@ -55,7 +55,7 @@ import kotlin.time.Instant
             onDelete = ForeignKey.SET_NULL,
         ),
     ],
-    indices = [Index("album_id")],
+    indices = [Index("album_id", "album_position")],
 )
 internal data class SongEntity(
     @PrimaryKey

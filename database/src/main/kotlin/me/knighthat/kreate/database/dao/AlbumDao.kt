@@ -18,8 +18,11 @@
 
 package me.knighthat.kreate.database.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.room.RoomRawQuery
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.entity.AlbumEntity
@@ -41,8 +44,11 @@ internal interface AlbumDao {
     @Upsert
     suspend fun upsertAll(albums: List<AlbumEntity>)
 
-    @Query("SELECT * FROM song WHERE album_id = :albumId ORDER BY album_position")
-    fun songsOf(albumId: String): Flow<List<SongEntity>>
+    /**
+     * One page at a time of the songs in [query], which must select from `song`.
+     */
+    @RawQuery(observedEntities = [SongEntity::class])
+    fun pagedSongs(query: RoomRawQuery): PagingSource<Int, SongEntity>
 
     @Upsert
     suspend fun upsert(album: AlbumEntity)

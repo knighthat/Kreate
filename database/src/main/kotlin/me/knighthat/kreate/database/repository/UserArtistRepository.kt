@@ -18,10 +18,14 @@
 
 package me.knighthat.kreate.database.repository
 
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.model.Artist
 import me.knighthat.kreate.database.model.UserArtist
 import me.knighthat.kreate.database.model.UserArtistView
+import me.knighthat.kreate.database.paging.SortDirection
+import me.knighthat.kreate.database.paging.SortOrder
+import me.knighthat.kreate.database.paging.UserArtistSort
 
 /**
  * The artists the active user keeps in their library, as the user sees them: the user's own
@@ -30,9 +34,21 @@ import me.knighthat.kreate.database.model.UserArtistView
  */
 interface UserArtistRepository {
 
-    fun all(): Flow<List<UserArtistView>>
+    /**
+     * Every artist in the library, a page at a time. Pages load as the list is read,
+     * and the list follows changes in the database.
+     */
+    fun all(order: SortOrder<UserArtistSort> = SortOrder(UserArtistSort.NAME)): Flow<PagingData<UserArtistView>>
 
-    fun followed(): Flow<List<UserArtistView>>
+    /**
+     * Artists the user follows, a page at a time. Newest follow first unless [order] says otherwise.
+     */
+    fun followed(
+        order: SortOrder<UserArtistSort> = SortOrder(
+            UserArtistSort.FOLLOW_SINCE,
+            SortDirection.DESCENDING
+        ),
+    ): Flow<PagingData<UserArtistView>>
 
     fun find(artistId: String): Flow<UserArtistView?>
 

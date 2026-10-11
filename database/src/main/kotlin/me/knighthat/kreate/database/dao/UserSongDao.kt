@@ -18,10 +18,13 @@
 
 package me.knighthat.kreate.database.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.room.RoomRawQuery
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.entity.UserSongEntity
@@ -30,11 +33,11 @@ import me.knighthat.kreate.database.view.UserSongViewEntity
 @Dao
 internal interface UserSongDao {
 
-    @Query("SELECT * FROM user_song_view WHERE user_id = :userId")
-    fun all(userId: String): Flow<List<UserSongViewEntity>>
-
-    @Query("SELECT * FROM user_song_view WHERE user_id = :userId AND liked_at IS NOT NULL ORDER BY liked_at DESC")
-    fun liked(userId: String): Flow<List<UserSongViewEntity>>
+    /**
+     * One page at a time of the songs in [query], which must select from `user_song_view`.
+     */
+    @RawQuery(observedEntities = [UserSongViewEntity::class])
+    fun paged(query: RoomRawQuery): PagingSource<Int, UserSongViewEntity>
 
     @Query("SELECT * FROM user_song_view WHERE user_id = :userId AND song_id = :songId")
     fun find(userId: String, songId: String): Flow<UserSongViewEntity?>

@@ -18,10 +18,13 @@
 
 package me.knighthat.kreate.database.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.room.RoomRawQuery
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.entity.UserArtistEntity
@@ -30,11 +33,11 @@ import me.knighthat.kreate.database.view.UserArtistViewEntity
 @Dao
 internal interface UserArtistDao {
 
-    @Query("SELECT * FROM user_artist_view WHERE user_id = :userId")
-    fun all(userId: String): Flow<List<UserArtistViewEntity>>
-
-    @Query("SELECT * FROM user_artist_view WHERE user_id = :userId AND follow_since IS NOT NULL ORDER BY follow_since DESC")
-    fun followed(userId: String): Flow<List<UserArtistViewEntity>>
+    /**
+     * One page at a time of the artists in [query], which must select from `user_artist_view`.
+     */
+    @RawQuery(observedEntities = [UserArtistViewEntity::class])
+    fun paged(query: RoomRawQuery): PagingSource<Int, UserArtistViewEntity>
 
     @Query("SELECT * FROM user_artist_view WHERE user_id = :userId AND artist_id = :artistId")
     fun find(userId: String, artistId: String): Flow<UserArtistViewEntity?>

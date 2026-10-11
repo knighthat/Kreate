@@ -18,9 +18,12 @@
 
 package me.knighthat.kreate.database.repository
 
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.model.Album
 import me.knighthat.kreate.database.model.Song
+import me.knighthat.kreate.database.paging.SongSort
+import me.knighthat.kreate.database.paging.SortOrder
 
 /**
  * Albums, and the ones the active user keeps in their library.
@@ -32,9 +35,12 @@ interface AlbumRepository {
     fun find(albumId: String): Flow<Album?>
 
     /**
-     * Songs of the album, in album order.
+     * Songs of the album, a page at a time, in album order unless [order] says otherwise.
      */
-    fun songsOf(albumId: String): Flow<List<Song>>
+    fun songsOf(
+        albumId: String,
+        order: SortOrder<SongSort> = SortOrder(SongSort.ALBUM_POSITION),
+    ): Flow<PagingData<Song>>
 
     suspend fun save(album: Album)
 

@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate.database.repository
 
+import androidx.paging.PagingData
+import androidx.room.RoomRawQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.AppDatabase
@@ -26,6 +28,10 @@ import me.knighthat.kreate.database.entity.SongEntity
 import me.knighthat.kreate.database.inTransaction
 import me.knighthat.kreate.database.model.Album
 import me.knighthat.kreate.database.model.Song
+import me.knighthat.kreate.database.paging.SongSort
+import me.knighthat.kreate.database.paging.SortOrder
+import me.knighthat.kreate.database.paging.pagedFlow
+import me.knighthat.kreate.database.paging.toOrderBy
 import kotlin.time.Clock
 
 /**
@@ -39,8 +45,15 @@ internal class AlbumRepositoryImpl(
 
     override fun find(albumId: String): Flow<Album?> = albumDao.find(albumId).map { it?.toModel() }
 
-    override fun songsOf(albumId: String): Flow<List<Song>> =
-        albumDao.songsOf(albumId).map { it.map(SongEntity::toModel) }
+    override fun songsOf(albumId: String, order: SortOrder<SongSort>): Flow<PagingData<Song>> =
+        pagedFlow(SongEntity::toModel) {
+            albumDao.pagedSongs(
+                RoomRawQuery(
+                    sql = "SELECT * FROM song WHERE album_id = ? ${order.toOrderBy("song.id")}",
+                    onBindStatement = { it.bindText(1, albumId) },
+                )
+            )
+        }
 
     override suspend fun save(album: Album) {
         val now = clock.now()

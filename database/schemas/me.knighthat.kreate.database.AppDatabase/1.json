@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "cb764402b094f722c63238ce3ac3f970",
+    "identityHash": "003229b1e15711d60c056d0ad9b119b5",
     "entities": [
       {
         "tableName": "album",
@@ -444,13 +444,14 @@
         },
         "indices": [
           {
-            "name": "index_song_album_id",
+            "name": "index_song_album_id_album_position",
             "unique": false,
             "columnNames": [
-              "album_id"
+              "album_id",
+              "album_position"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_song_album_id` ON `${TABLE_NAME}` (`album_id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_song_album_id_album_position` ON `${TABLE_NAME}` (`album_id`, `album_position`)"
           }
         ],
         "foreignKeys": [
@@ -774,6 +775,16 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_user_album_album_id` ON `${TABLE_NAME}` (`album_id`)"
+          },
+          {
+            "name": "index_user_album_user_id_bookmarked_at",
+            "unique": false,
+            "columnNames": [
+              "user_id",
+              "bookmarked_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_user_album_user_id_bookmarked_at` ON `${TABLE_NAME}` (`user_id`, `bookmarked_at`)"
           }
         ],
         "foreignKeys": [
@@ -861,6 +872,16 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_user_artist_artist_id` ON `${TABLE_NAME}` (`artist_id`)"
+          },
+          {
+            "name": "index_user_artist_user_id_follow_since",
+            "unique": false,
+            "columnNames": [
+              "user_id",
+              "follow_since"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_user_artist_user_id_follow_since` ON `${TABLE_NAME}` (`user_id`, `follow_since`)"
           }
         ],
         "foreignKeys": [
@@ -1037,6 +1058,16 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_user_song_song_id` ON `${TABLE_NAME}` (`song_id`)"
+          },
+          {
+            "name": "index_user_song_user_id_liked_at",
+            "unique": false,
+            "columnNames": [
+              "user_id",
+              "liked_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_user_song_user_id_liked_at` ON `${TABLE_NAME}` (`user_id`, `liked_at`)"
           }
         ],
         "foreignKeys": [
@@ -1081,7 +1112,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cb764402b094f722c63238ce3ac3f970')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '003229b1e15711d60c056d0ad9b119b5')"
     ]
   }
 }

@@ -54,7 +54,7 @@ import kotlin.time.Instant
             onDelete = ForeignKey.CASCADE,
         ),
     ],
-    indices = [Index("album_id")],
+    indices = [Index("album_id"), Index("user_id", "bookmarked_at")],
 )
 internal data class UserAlbumEntity(
     @ColumnInfo(name = "user_id")

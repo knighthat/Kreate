@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate.database.repository
 
+import androidx.paging.PagingData
+import androidx.room.RoomRawQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.ActiveUser
@@ -27,6 +29,11 @@ import me.knighthat.kreate.database.entity.SongPlaylistMapEntity
 import me.knighthat.kreate.database.entity.UserPlaylistEntity
 import me.knighthat.kreate.database.model.Song
 import me.knighthat.kreate.database.model.UserPlaylist
+import me.knighthat.kreate.database.paging.PlaylistSort
+import me.knighthat.kreate.database.paging.SongSort
+import me.knighthat.kreate.database.paging.SortOrder
+import me.knighthat.kreate.database.paging.pagedFlow
+import me.knighthat.kreate.database.paging.toOrderBy
 import kotlin.time.Clock
 
 /**
@@ -40,16 +47,32 @@ internal class PlaylistRepositoryImpl(
 
     private val scope = UserScope(activeUser)
 
-    override fun all(): Flow<List<UserPlaylist>> =
-        scope.observe(emptyList()) { userId ->
-            playlistDao.all(userId).map { it.map(UserPlaylistEntity::toModel) }
+    override fun all(order: SortOrder<PlaylistSort>): Flow<PagingData<UserPlaylist>> =
+        scope.observe(PagingData.empty()) { userId ->
+            pagedFlow(UserPlaylistEntity::toModel) {
+                playlistDao.paged(
+                    RoomRawQuery(
+                        sql = "SELECT * FROM user_playlist WHERE user_id = ? ${order.toOrderBy("playlist_id")}",
+                        onBindStatement = { it.bindText(1, userId) },
+                    )
+                )
+            }
         }
 
     override fun find(playlistId: Long): Flow<UserPlaylist?> =
         playlistDao.find(playlistId).map { it?.toModel() }
 
-    override fun songsOf(playlistId: Long): Flow<List<Song>> =
-        playlistDao.songsOf(playlistId).map { it.map(SongEntity::toModel) }
+    override fun songsOf(playlistId: Long, order: SortOrder<SongSort>): Flow<PagingData<Song>> =
+        pagedFlow(SongEntity::toModel) {
+            playlistDao.pagedSongs(
+                RoomRawQuery(
+                    sql = "SELECT song.* FROM song " +
+                            "JOIN song_playlist_map ON song_playlist_map.song_id = song.id " +
+                            "WHERE song_playlist_map.playlist_id = ? ${order.toOrderBy("song.id")}",
+                    onBindStatement = { it.bindLong(1, playlistId) },
+                )
+            )
+        }
 
     override suspend fun save(playlist: UserPlaylist): Long {
         val userId = scope.requireId()

@@ -18,17 +18,22 @@
 
 package me.knighthat.kreate.database.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.room.RoomRawQuery
 import androidx.room.Upsert
-import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.entity.SearchHistoryEntity
 
 @Dao
 internal interface SearchHistoryDao {
 
-    @Query("SELECT * FROM search_history WHERE user_id = :userId ORDER BY last_used DESC")
-    fun all(userId: String): Flow<List<SearchHistoryEntity>>
+    /**
+     * One page at a time of the searches in [query], which must select from `search_history`.
+     */
+    @RawQuery(observedEntities = [SearchHistoryEntity::class])
+    fun paged(query: RoomRawQuery): PagingSource<Int, SearchHistoryEntity>
 
     @Upsert
     suspend fun upsert(history: SearchHistoryEntity)

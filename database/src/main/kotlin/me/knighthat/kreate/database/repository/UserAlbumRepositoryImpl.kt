@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate.database.repository
 
+import androidx.paging.PagingData
+import androidx.room.RoomRawQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.ActiveUser
@@ -26,6 +28,10 @@ import me.knighthat.kreate.database.dao.UserAlbumDao
 import me.knighthat.kreate.database.inTransaction
 import me.knighthat.kreate.database.model.UserAlbum
 import me.knighthat.kreate.database.model.UserAlbumView
+import me.knighthat.kreate.database.paging.SortOrder
+import me.knighthat.kreate.database.paging.UserAlbumSort
+import me.knighthat.kreate.database.paging.pagedFlow
+import me.knighthat.kreate.database.paging.toOrderBy
 import me.knighthat.kreate.database.view.UserAlbumViewEntity
 import kotlin.time.Clock
 
@@ -41,14 +47,30 @@ internal class UserAlbumRepositoryImpl(
 
     private val scope = UserScope(activeUser)
 
-    override fun all(): Flow<List<UserAlbumView>> =
-        scope.observe(emptyList()) { userId ->
-            userAlbumDao.all(userId).map { it.map(UserAlbumViewEntity::toModel) }
-        }
+    override fun all(order: SortOrder<UserAlbumSort>): Flow<PagingData<UserAlbumView>> =
+        paged(order, filter = "")
 
-    override fun bookmarked(): Flow<List<UserAlbumView>> =
-        scope.observe(emptyList()) { userId ->
-            userAlbumDao.bookmarked(userId).map { it.map(UserAlbumViewEntity::toModel) }
+    // A bookmark is a time, -1 is a dislike
+    override fun bookmarked(order: SortOrder<UserAlbumSort>): Flow<PagingData<UserAlbumView>> =
+        paged(order, filter = "AND bookmarked_at >= 0")
+
+    private fun paged(
+        order: SortOrder<UserAlbumSort>,
+        filter: String
+    ): Flow<PagingData<UserAlbumView>> =
+        scope.observe(PagingData.empty()) { userId ->
+            pagedFlow(UserAlbumViewEntity::toModel) {
+                userAlbumDao.paged(
+                    RoomRawQuery(
+                        sql = "SELECT * FROM user_album_view WHERE user_id = ? $filter ${
+                            order.toOrderBy(
+                                "album_id"
+                            )
+                        }",
+                        onBindStatement = { it.bindText(1, userId) },
+                    )
+                )
+            }
         }
 
     override fun find(albumId: String): Flow<UserAlbumView?> =

@@ -18,10 +18,14 @@
 
 package me.knighthat.kreate.database.repository
 
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.model.Song
 import me.knighthat.kreate.database.model.UserSong
 import me.knighthat.kreate.database.model.UserSongView
+import me.knighthat.kreate.database.paging.SortDirection
+import me.knighthat.kreate.database.paging.SortOrder
+import me.knighthat.kreate.database.paging.UserSongSort
 
 /**
  * The songs the active user keeps in their library, as the user sees them: the user's own
@@ -30,9 +34,18 @@ import me.knighthat.kreate.database.model.UserSongView
  */
 interface UserSongRepository {
 
-    fun all(): Flow<List<UserSongView>>
+    /**
+     * Every song in the library, a page at a time. Pages load as the list is read,
+     * and the list follows changes in the database.
+     */
+    fun all(order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME)): Flow<PagingData<UserSongView>>
 
-    fun liked(): Flow<List<UserSongView>>
+    /**
+     * Songs the user liked, a page at a time. Newest like first unless [order] says otherwise.
+     */
+    fun liked(
+        order: SortOrder<UserSongSort> = SortOrder(UserSongSort.LIKED_AT, SortDirection.DESCENDING),
+    ): Flow<PagingData<UserSongView>>
 
     fun find(songId: String): Flow<UserSongView?>
 

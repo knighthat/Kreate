@@ -20,6 +20,7 @@ coroutines = "1.11.0"
 datastore = "1.2.1"
 room = "2.8.5"
 sqlite = "2.6.2"
+paging = "3.5.2"
 ksp = "2.3.12"
 serialization = "1.11.0"
 material-kolor = "5.0.1"
@@ -70,7 +71,11 @@ material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "m
 # Room
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+
+# Paging
+androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
 
 # Serialization
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }

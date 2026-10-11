@@ -45,9 +45,12 @@ dependencies {
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.paging)
     implementation(libs.androidx.sqlite.bundled)
     implementation(libs.kotlinx.serialization.json)
     api(libs.kotlinx.coroutines.core)
+    // Repositories return PagingData, so callers need the types
+    api(libs.androidx.paging.common)
 
     ksp(libs.androidx.room.compiler)
 

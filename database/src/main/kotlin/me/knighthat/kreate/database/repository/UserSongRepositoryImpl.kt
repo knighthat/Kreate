@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate.database.repository
 
+import androidx.paging.PagingData
+import androidx.room.RoomRawQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.ActiveUser
@@ -26,6 +28,10 @@ import me.knighthat.kreate.database.dao.UserSongDao
 import me.knighthat.kreate.database.inTransaction
 import me.knighthat.kreate.database.model.UserSong
 import me.knighthat.kreate.database.model.UserSongView
+import me.knighthat.kreate.database.paging.SortOrder
+import me.knighthat.kreate.database.paging.UserSongSort
+import me.knighthat.kreate.database.paging.pagedFlow
+import me.knighthat.kreate.database.paging.toOrderBy
 import me.knighthat.kreate.database.view.UserSongViewEntity
 import kotlin.time.Clock
 
@@ -41,14 +47,30 @@ internal class UserSongRepositoryImpl(
 
     private val scope = UserScope(activeUser)
 
-    override fun all(): Flow<List<UserSongView>> =
-        scope.observe(emptyList()) { userId ->
-            userSongDao.all(userId).map { it.map(UserSongViewEntity::toModel) }
-        }
+    override fun all(order: SortOrder<UserSongSort>): Flow<PagingData<UserSongView>> =
+        paged(order, filter = "")
 
-    override fun liked(): Flow<List<UserSongView>> =
-        scope.observe(emptyList()) { userId ->
-            userSongDao.liked(userId).map { it.map(UserSongViewEntity::toModel) }
+    // A like is a time, -1 is a dislike
+    override fun liked(order: SortOrder<UserSongSort>): Flow<PagingData<UserSongView>> =
+        paged(order, filter = "AND liked_at >= 0")
+
+    private fun paged(
+        order: SortOrder<UserSongSort>,
+        filter: String
+    ): Flow<PagingData<UserSongView>> =
+        scope.observe(PagingData.empty()) { userId ->
+            pagedFlow(UserSongViewEntity::toModel) {
+                userSongDao.paged(
+                    RoomRawQuery(
+                        sql = "SELECT * FROM user_song_view WHERE user_id = ? $filter ${
+                            order.toOrderBy(
+                                "song_id"
+                            )
+                        }",
+                        onBindStatement = { it.bindText(1, userId) },
+                    )
+                )
+            }
         }
 
     override fun find(songId: String): Flow<UserSongView?> =

@@ -18,9 +18,13 @@
 
 package me.knighthat.kreate.database.repository
 
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.model.PlaybackHistory
 import me.knighthat.kreate.database.model.SearchHistory
+import me.knighthat.kreate.database.paging.SearchSort
+import me.knighthat.kreate.database.paging.SortDirection
+import me.knighthat.kreate.database.paging.SortOrder
 import kotlin.time.Duration
 
 /**
@@ -29,9 +33,11 @@ import kotlin.time.Duration
 interface HistoryRepository {
 
     /**
-     * Searches, most recent first.
+     * Searches, a page at a time. Most recent first unless [order] says otherwise.
      */
-    fun searches(): Flow<List<SearchHistory>>
+    fun searches(
+        order: SortOrder<SearchSort> = SortOrder(SearchSort.LAST_USED, SortDirection.DESCENDING),
+    ): Flow<PagingData<SearchHistory>>
 
     /**
      * Remembers [query], searching for it again only refreshes the time.

@@ -18,11 +18,14 @@
 
 package me.knighthat.kreate.database.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.room.RoomRawQuery
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.entity.SongEntity
@@ -32,8 +35,11 @@ import me.knighthat.kreate.database.entity.UserPlaylistEntity
 @Dao
 internal interface UserPlaylistDao {
 
-    @Query("SELECT * FROM user_playlist WHERE user_id = :userId ORDER BY name")
-    fun all(userId: String): Flow<List<UserPlaylistEntity>>
+    /**
+     * One page at a time of the playlists in [query], which must select from `user_playlist`.
+     */
+    @RawQuery(observedEntities = [UserPlaylistEntity::class])
+    fun paged(query: RoomRawQuery): PagingSource<Int, UserPlaylistEntity>
 
     @Query("SELECT * FROM user_playlist WHERE playlist_id = :playlistId")
     fun find(playlistId: Long): Flow<UserPlaylistEntity?>
@@ -41,14 +47,11 @@ internal interface UserPlaylistDao {
     @Query("SELECT * FROM user_playlist WHERE playlist_id = :playlistId")
     suspend fun get(playlistId: Long): UserPlaylistEntity?
 
-    @Query(
-        """
-        SELECT song.* FROM song
-        JOIN song_playlist_map ON song_playlist_map.song_id = song.id
-        WHERE song_playlist_map.playlist_id = :playlistId
-        """,
-    )
-    fun songsOf(playlistId: Long): Flow<List<SongEntity>>
+    /**
+     * One page at a time of the songs in [query], which must select from `song` and `song_playlist_map`.
+     */
+    @RawQuery(observedEntities = [SongEntity::class, SongPlaylistMapEntity::class])
+    fun pagedSongs(query: RoomRawQuery): PagingSource<Int, SongEntity>
 
     /**
      * @return the row id when a playlist was inserted, `-1` when an existing one was updated

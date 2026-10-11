@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate.database.repository
 
+import androidx.paging.PagingData
+import androidx.room.RoomRawQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.ActiveUser
@@ -26,6 +28,10 @@ import me.knighthat.kreate.database.dao.UserArtistDao
 import me.knighthat.kreate.database.inTransaction
 import me.knighthat.kreate.database.model.UserArtist
 import me.knighthat.kreate.database.model.UserArtistView
+import me.knighthat.kreate.database.paging.SortOrder
+import me.knighthat.kreate.database.paging.UserArtistSort
+import me.knighthat.kreate.database.paging.pagedFlow
+import me.knighthat.kreate.database.paging.toOrderBy
 import me.knighthat.kreate.database.view.UserArtistViewEntity
 import kotlin.time.Clock
 
@@ -41,14 +47,30 @@ internal class UserArtistRepositoryImpl(
 
     private val scope = UserScope(activeUser)
 
-    override fun all(): Flow<List<UserArtistView>> =
-        scope.observe(emptyList()) { userId ->
-            userArtistDao.all(userId).map { it.map(UserArtistViewEntity::toModel) }
-        }
+    override fun all(order: SortOrder<UserArtistSort>): Flow<PagingData<UserArtistView>> =
+        paged(order, filter = "")
 
-    override fun followed(): Flow<List<UserArtistView>> =
-        scope.observe(emptyList()) { userId ->
-            userArtistDao.followed(userId).map { it.map(UserArtistViewEntity::toModel) }
+    // A follow is a time, -1 is a dislike
+    override fun followed(order: SortOrder<UserArtistSort>): Flow<PagingData<UserArtistView>> =
+        paged(order, filter = "AND follow_since >= 0")
+
+    private fun paged(
+        order: SortOrder<UserArtistSort>,
+        filter: String
+    ): Flow<PagingData<UserArtistView>> =
+        scope.observe(PagingData.empty()) { userId ->
+            pagedFlow(UserArtistViewEntity::toModel) {
+                userArtistDao.paged(
+                    RoomRawQuery(
+                        sql = "SELECT * FROM user_artist_view WHERE user_id = ? $filter ${
+                            order.toOrderBy(
+                                "artist_id"
+                            )
+                        }",
+                        onBindStatement = { it.bindText(1, userId) },
+                    )
+                )
+            }
         }
 
     override fun find(artistId: String): Flow<UserArtistView?> =

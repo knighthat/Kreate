@@ -18,10 +18,14 @@
 
 package me.knighthat.kreate.database.repository
 
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.model.Album
 import me.knighthat.kreate.database.model.UserAlbum
 import me.knighthat.kreate.database.model.UserAlbumView
+import me.knighthat.kreate.database.paging.SortDirection
+import me.knighthat.kreate.database.paging.SortOrder
+import me.knighthat.kreate.database.paging.UserAlbumSort
 
 /**
  * The albums the active user keeps in their library, as the user sees them: the user's own
@@ -30,9 +34,21 @@ import me.knighthat.kreate.database.model.UserAlbumView
  */
 interface UserAlbumRepository {
 
-    fun all(): Flow<List<UserAlbumView>>
+    /**
+     * Every album in the library, a page at a time. Pages load as the list is read,
+     * and the list follows changes in the database.
+     */
+    fun all(order: SortOrder<UserAlbumSort> = SortOrder(UserAlbumSort.NAME)): Flow<PagingData<UserAlbumView>>
 
-    fun bookmarked(): Flow<List<UserAlbumView>>
+    /**
+     * Albums the user bookmarked, a page at a time. Newest bookmark first unless [order] says otherwise.
+     */
+    fun bookmarked(
+        order: SortOrder<UserAlbumSort> = SortOrder(
+            UserAlbumSort.BOOKMARKED_AT,
+            SortDirection.DESCENDING
+        ),
+    ): Flow<PagingData<UserAlbumView>>
 
     fun find(albumId: String): Flow<UserAlbumView?>
 

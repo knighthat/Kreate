@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate.database.repository
 
+import androidx.paging.PagingData
+import androidx.room.RoomRawQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.ActiveUser
@@ -27,6 +29,10 @@ import me.knighthat.kreate.database.entity.PlaybackHistoryEntity
 import me.knighthat.kreate.database.entity.SearchHistoryEntity
 import me.knighthat.kreate.database.model.PlaybackHistory
 import me.knighthat.kreate.database.model.SearchHistory
+import me.knighthat.kreate.database.paging.SearchSort
+import me.knighthat.kreate.database.paging.SortOrder
+import me.knighthat.kreate.database.paging.pagedFlow
+import me.knighthat.kreate.database.paging.toOrderBy
 import kotlin.time.Clock
 import kotlin.time.Duration
 
@@ -42,9 +48,16 @@ internal class HistoryRepositoryImpl(
 
     private val scope = UserScope(activeUser)
 
-    override fun searches(): Flow<List<SearchHistory>> =
-        scope.observe(emptyList()) { userId ->
-            searchHistoryDao.all(userId).map { it.map(SearchHistoryEntity::toModel) }
+    override fun searches(order: SortOrder<SearchSort>): Flow<PagingData<SearchHistory>> =
+        scope.observe(PagingData.empty()) { userId ->
+            pagedFlow(SearchHistoryEntity::toModel) {
+                searchHistoryDao.paged(
+                    RoomRawQuery(
+                        sql = "SELECT * FROM search_history WHERE user_id = ? ${order.toOrderBy("query")}",
+                        onBindStatement = { it.bindText(1, userId) },
+                    )
+                )
+            }
         }
 
     override suspend fun recordSearch(query: String) =

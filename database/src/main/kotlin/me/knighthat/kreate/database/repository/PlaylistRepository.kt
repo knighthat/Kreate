@@ -18,20 +18,33 @@
 
 package me.knighthat.kreate.database.repository
 
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.model.Song
 import me.knighthat.kreate.database.model.UserPlaylist
+import me.knighthat.kreate.database.paging.PlaylistSort
+import me.knighthat.kreate.database.paging.SongSort
+import me.knighthat.kreate.database.paging.SortOrder
 
 /**
  * Playlists of the active user. Changing a playlist of another user is rejected.
  */
 interface PlaylistRepository {
 
-    fun all(): Flow<List<UserPlaylist>>
+    /**
+     * The playlists of the active user, a page at a time.
+     */
+    fun all(order: SortOrder<PlaylistSort> = SortOrder(PlaylistSort.NAME)): Flow<PagingData<UserPlaylist>>
 
     fun find(playlistId: Long): Flow<UserPlaylist?>
 
-    fun songsOf(playlistId: Long): Flow<List<Song>>
+    /**
+     * Songs of the playlist, a page at a time.
+     */
+    fun songsOf(
+        playlistId: Long,
+        order: SortOrder<SongSort> = SortOrder(SongSort.NAME),
+    ): Flow<PagingData<Song>>
 
     /**
      * Creates the playlist when its id is `0`, otherwise updates it.
