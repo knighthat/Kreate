@@ -18,7 +18,6 @@
 
 package me.knighthat.kreate
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -108,9 +107,10 @@ class KreateActivity : ComponentActivity() {
                         Greeting(name = "Android")
                         TextButton(onClick = {
                             startActivity(
-                                Intent(
+                                ProfilesActivity.intent(
                                     this@KreateActivity,
-                                    ProfilesActivity::class.java
+                                    themeMode,
+                                    contrastLevel
                                 )
                             )
                         }) {

@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.format.DateUtils
 import androidx.activity.ComponentActivity
@@ -58,12 +60,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import me.knighthat.kreate.constant.ContrastLevel
+import me.knighthat.kreate.constant.ThemeMode
 import me.knighthat.kreate.database.model.User
 import me.knighthat.kreate.database.repository.UserRepository
-import me.knighthat.kreate.preferences.Preferences
 import me.knighthat.kreate.preferences.Profile
 import me.knighthat.kreate.preferences.ProfileManager
-import me.knighthat.kreate.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate.ui.theme.KreateTheme
 import org.koin.android.ext.android.inject
 
@@ -71,6 +73,9 @@ import org.koin.android.ext.android.inject
  * Lists the profiles and lets you add, switch to and delete them.
  */
 class ProfilesActivity : ComponentActivity() {
+
+    private lateinit var themeMode: ThemeMode
+    private lateinit var contrastLevel: ContrastLevel
 
     private val profileManager: ProfileManager by inject()
     private val profileUserSync: ProfileUserSync by inject()
@@ -192,10 +197,22 @@ class ProfilesActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
-            val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
 
+        // Given by the caller, not observed. Switching profile here changes the preferences, following
+        // them would repaint this screen in the new profile's colors while it is still in use.
+        // The screen behind this one follows them and shows the new colors when we return.
+        themeMode = intent.getStringExtra(EXTRA_THEME_MODE)
+            ?.let { name -> ThemeMode.entries.firstOrNull { it.name == name } }
+            ?: ThemeMode.AUTOMATIC
+        contrastLevel = intent.getStringExtra(EXTRA_CONTRAST_LEVEL)
+            ?.let { name -> ContrastLevel.entries.firstOrNull { it.name == name } }
+            ?: ContrastLevel.NORMAL
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        setContent {
             KreateTheme(
                 themeMode = themeMode,
                 contrastLevel = contrastLevel,
@@ -206,5 +223,19 @@ class ProfilesActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+
+        private const val EXTRA_THEME_MODE = "theme_mode"
+        private const val EXTRA_CONTRAST_LEVEL = "contrast_level"
+
+        /**
+         * Starts the screen with the colors it keeps for its whole life.
+         */
+        fun intent(context: Context, themeMode: ThemeMode, contrastLevel: ContrastLevel) =
+            Intent(context, ProfilesActivity::class.java)
+                .putExtra(EXTRA_THEME_MODE, themeMode.name)
+                .putExtra(EXTRA_CONTRAST_LEVEL, contrastLevel.name)
     }
 }
