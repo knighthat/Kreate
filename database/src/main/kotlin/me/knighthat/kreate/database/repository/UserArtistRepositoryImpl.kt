@@ -18,12 +18,12 @@
 
 package me.knighthat.kreate.database.repository
 
-import androidx.room.withTransaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.ActiveUser
 import me.knighthat.kreate.database.AppDatabase
 import me.knighthat.kreate.database.dao.UserArtistDao
+import me.knighthat.kreate.database.inTransaction
 import me.knighthat.kreate.database.model.UserArtist
 import me.knighthat.kreate.database.model.UserArtistView
 import me.knighthat.kreate.database.view.UserArtistViewEntity
@@ -65,7 +65,7 @@ internal class UserArtistRepositoryImpl(
 
     override suspend fun update(artistId: String, transform: (UserArtist) -> UserArtist) {
         val userId = scope.requireId()
-        database.withTransaction {
+        database.inTransaction {
             val current = userArtistDao.get(userId, artistId)
             val updated = transform(current?.toModel() ?: UserArtist(artistId))
             require(updated.artistId == artistId) { "The artist of a library entry cannot be changed" }

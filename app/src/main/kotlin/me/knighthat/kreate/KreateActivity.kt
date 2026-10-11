@@ -23,6 +23,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -36,7 +37,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import me.knighthat.kreate.media.AUDIO_PERMISSION
+import me.knighthat.kreate.media.LocalMusicScheduler
+import me.knighthat.kreate.media.hasAudioPermission
 import me.knighthat.kreate.preferences.Preferences
 import me.knighthat.kreate.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate.ui.theme.KreateTheme
@@ -47,6 +53,8 @@ class KreateActivity : ComponentActivity() {
     private val scope: CoroutineScope by inject()
 
     private var preferencesLoaded = false
+
+    private val audioAllowed = MutableStateFlow(false)
 
     @Composable
     private fun Greeting(name: String, modifier: Modifier = Modifier) {
@@ -64,9 +72,28 @@ class KreateActivity : ComponentActivity() {
         lifecycleScope.launch {
             Preferences.awaitLoaded()
             preferencesLoaded = true
+
+            // Keep the scan schedule in step with the interval, but only once scanning is allowed
+            audioAllowed.first { it }
+            Preferences.LOCAL_SCAN_INTERVAL.state.collect {
+                LocalMusicScheduler.schedule(this@KreateActivity, it)
+            }
         }
 
         enableEdgeToEdge()
+
+        // A recreated activity (rotation) must not scan again, only the schedule needs to follow it
+        if (hasAudioPermission())
+            onAudioAllowed(scanNow = savedInstanceState == null)
+        else
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+                if (granted) onAudioAllowed(scanNow = true)
+            }.launch(AUDIO_PERMISSION)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
         setContent {
             val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
             val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
@@ -93,6 +120,14 @@ class KreateActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    /**
+     * Lets the schedule start, and scans the device's music now when [scanNow] is set.
+     */
+    private fun onAudioAllowed(scanNow: Boolean) {
+        if (scanNow) LocalMusicScheduler.scanNow(this)
+        audioAllowed.value = true
     }
 
     override fun onStop() {

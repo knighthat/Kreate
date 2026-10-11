@@ -18,12 +18,12 @@
 
 package me.knighthat.kreate.database.repository
 
-import androidx.room.withTransaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.ActiveUser
 import me.knighthat.kreate.database.AppDatabase
 import me.knighthat.kreate.database.dao.UserSongDao
+import me.knighthat.kreate.database.inTransaction
 import me.knighthat.kreate.database.model.UserSong
 import me.knighthat.kreate.database.model.UserSongView
 import me.knighthat.kreate.database.view.UserSongViewEntity
@@ -65,7 +65,7 @@ internal class UserSongRepositoryImpl(
 
     override suspend fun update(songId: String, transform: (UserSong) -> UserSong) {
         val userId = scope.requireId()
-        database.withTransaction {
+        database.inTransaction {
             val current = userSongDao.get(userId, songId)
             val updated = transform(current?.toModel() ?: UserSong(songId))
             require(updated.songId == songId) { "The song of a library entry cannot be changed" }

@@ -40,6 +40,7 @@ import kotlin.time.Instant
  * @property isExplicit `null` when unknown
  * @property albumId album the song belongs to, `null` for none
  * @property albumPosition position of the song in its album
+ * @property unavailableSince when a scan first missed the song, `null` while it is available
  * @property createdAt when the song was first stored
  * @property updatedAt when the song was last changed
  */
@@ -68,6 +69,8 @@ internal data class SongEntity(
     val albumId: String? = null,
     @ColumnInfo(name = "album_position")
     val albumPosition: Int? = null,
+    @ColumnInfo(name = "unavailable_since")
+    val unavailableSince: Instant? = null,
     @ColumnInfo(name = "created_at")
     val createdAt: Instant,
     @ColumnInfo(name = "updated_at")

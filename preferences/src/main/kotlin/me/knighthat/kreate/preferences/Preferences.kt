@@ -40,6 +40,12 @@ object Preferences : KoinComponent {
     val CONTRAST_LEVEL by lazy { enum("contrast_level", ContrastLevel.NORMAL) }
 
     /**
+     * Minutes between two scans of the device's music. The system runs periodic work
+     * at most every 15 minutes, so smaller values behave like 15.
+     */
+    val LOCAL_SCAN_INTERVAL by lazy { int("local_scan_interval", 30) }
+
+    /**
      * Suspends until the active profile's settings are loaded for the first time.
      */
     suspend fun awaitLoaded() = engine.awaitLoaded()
@@ -48,6 +54,9 @@ object Preferences : KoinComponent {
      * Saves pending changes now, call it when the app is about to close.
      */
     suspend fun flush() = engine.flush()
+
+    private fun int(name: String, default: Int) =
+        Preference(name, default, codec<Int, Int>({ it }, { it }), engine)
 
     private inline fun <reified E : Enum<E>> enum(name: String, default: E) =
         Preference(name, default, enumCodec<E>(), engine)

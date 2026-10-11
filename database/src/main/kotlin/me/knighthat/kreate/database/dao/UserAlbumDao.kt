@@ -19,6 +19,8 @@
 package me.knighthat.kreate.database.dao
 
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
@@ -42,6 +44,12 @@ internal interface UserAlbumDao {
 
     @Upsert
     suspend fun upsert(album: UserAlbumEntity)
+
+    /**
+     * Adds the albums the user doesn't have yet. Albums already there keep their overrides.
+     */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(albums: List<UserAlbumEntity>)
 
     @Query("DELETE FROM user_album WHERE user_id = :userId AND album_id = :albumId")
     suspend fun delete(userId: String, albumId: String)

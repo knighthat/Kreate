@@ -20,6 +20,8 @@ package me.knighthat.kreate.database.repository
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import me.knighthat.kreate.database.ActiveUser
@@ -35,6 +37,11 @@ internal class UserScope(private val activeUser: ActiveUser) {
     @OptIn(ExperimentalCoroutinesApi::class)
     fun <T> observe(whenNone: T, query: (userId: String) -> Flow<T>): Flow<T> =
         activeUser.id.flatMapLatest { if (it == null) flowOf(whenNone) else query(it) }
+
+    /**
+     * Suspends until a user is active, then returns its id.
+     */
+    suspend fun awaitId(): String = activeUser.id.filterNotNull().first()
 
     /**
      * Id of the active user right now. Call it first in a write, so the data lands

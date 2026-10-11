@@ -66,12 +66,47 @@ class MappersTest {
         val view = UserSongViewEntity(
             userId = "user", songId = "song", origin = Origin.LOCAL, name = "n", artists = null,
             artistIds = listOf("a1", "a2"), thumbnail = null, duration = null, isExplicit = null,
-            albumId = null, albumName = null, albumPosition = null, likedAt = null,
+            albumId = null,
+            albumName = null,
+            albumPosition = null,
+            unavailableSince = null,
+            likedAt = null,
         )
 
         val model = view.toModel()
 
         assertEquals(emptyList<String>(), model.artists)
         assertEquals(listOf("a1", "a2"), model.artistIds)
+    }
+
+    @Test
+    fun songIsUnavailableOnlyWhenAScanMissedIt() {
+        val view = UserSongViewEntity(
+            userId = "user",
+            songId = "song",
+            origin = Origin.LOCAL,
+            name = null,
+            artists = null,
+            artistIds = null,
+            thumbnail = null,
+            duration = null,
+            isExplicit = null,
+            albumId = null,
+            albumName = null,
+            albumPosition = null,
+            unavailableSince = null,
+            likedAt = null,
+        )
+
+        assertEquals(true, view.toModel().isAvailable)
+        assertEquals(false, view.copy(unavailableSince = created).toModel().isAvailable)
+    }
+
+    @Test
+    fun unavailableSinceSurvivesSongRoundTrip() {
+        val song = Song("id", Origin.LOCAL, unavailableSince = updated)
+
+        assertEquals(updated, song.toEntity(created, updated).unavailableSince)
+        assertEquals(song, song.toEntity(created, updated).toModel())
     }
 }

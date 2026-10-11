@@ -24,6 +24,7 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.entity.AlbumEntity
 import me.knighthat.kreate.database.entity.SongEntity
+import me.knighthat.kreate.database.model.Origin
 
 @Dao
 internal interface AlbumDao {
@@ -33,6 +34,12 @@ internal interface AlbumDao {
 
     @Query("SELECT * FROM album WHERE id = :id")
     suspend fun get(id: String): AlbumEntity?
+
+    @Query("SELECT * FROM album WHERE origin = :origin")
+    suspend fun withOrigin(origin: Origin): List<AlbumEntity>
+
+    @Upsert
+    suspend fun upsertAll(albums: List<AlbumEntity>)
 
     @Query("SELECT * FROM song WHERE album_id = :albumId ORDER BY album_position")
     fun songsOf(albumId: String): Flow<List<SongEntity>>

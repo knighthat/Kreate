@@ -23,6 +23,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.entity.ArtistEntity
+import me.knighthat.kreate.database.model.Origin
 
 @Dao
 internal interface ArtistDao {
@@ -32,6 +33,12 @@ internal interface ArtistDao {
 
     @Query("SELECT * FROM artist WHERE id = :id")
     suspend fun get(id: String): ArtistEntity?
+
+    @Query("SELECT * FROM artist WHERE origin = :origin")
+    suspend fun withOrigin(origin: Origin): List<ArtistEntity>
+
+    @Upsert
+    suspend fun upsertAll(artists: List<ArtistEntity>)
 
     @Upsert
     suspend fun upsert(artist: ArtistEntity)

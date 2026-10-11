@@ -19,6 +19,7 @@
 package me.knighthat.kreate.database.model
 
 import kotlin.time.Duration
+import kotlin.time.Instant
 
 /**
  * Song shared by every user. Per-user overrides live in [UserSong].
@@ -31,6 +32,7 @@ import kotlin.time.Duration
  * @property isExplicit `null` when unknown
  * @property albumId album the song belongs to, `null` for none
  * @property albumPosition position of the song in its album
+ * @property unavailableSince when a scan first missed the song, `null` while it is available
  */
 data class Song(
     val id: String,
@@ -41,4 +43,5 @@ data class Song(
     val isExplicit: Boolean? = null,
     val albumId: String? = null,
     val albumPosition: Int? = null,
+    val unavailableSince: Instant? = null,
 )

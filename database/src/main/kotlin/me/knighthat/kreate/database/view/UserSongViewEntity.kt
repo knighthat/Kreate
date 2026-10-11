@@ -51,6 +51,7 @@ import kotlin.time.Instant
                 "    s.album_id AS album_id,\n" +
                 "    COALESCE(ual.name, al.name) AS album_name,\n" +
                 "    s.album_position AS album_position,\n" +
+                "    s.unavailable_since AS unavailable_since,\n" +
                 "    us.liked_at AS liked_at\n" +
                 "FROM user_song us\n" +
                 "JOIN song s ON s.id = us.song_id\n" +
@@ -77,6 +78,8 @@ internal data class UserSongViewEntity(
     val albumName: String?,
     @ColumnInfo(name = "album_position")
     val albumPosition: Int?,
+    @ColumnInfo(name = "unavailable_since")
+    val unavailableSince: Instant?,
     @ColumnInfo(name = "liked_at")
     val likedAt: Instant?,
 )

@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.entity.ArtistEntity
 import me.knighthat.kreate.database.entity.SongArtistMapEntity
 import me.knighthat.kreate.database.entity.SongEntity
+import me.knighthat.kreate.database.model.Origin
 
 @Dao
 internal interface SongDao {
@@ -37,6 +38,27 @@ internal interface SongDao {
 
     @Query("SELECT * FROM song WHERE id = :id")
     suspend fun get(id: String): SongEntity?
+
+    @Query("SELECT * FROM song WHERE origin = :origin")
+    suspend fun withOrigin(origin: Origin): List<SongEntity>
+
+    @Query(
+        """
+        SELECT song_artist_map.* FROM song_artist_map
+        JOIN song ON song.id = song_artist_map.song_id
+        WHERE song.origin = :origin
+        """,
+    )
+    suspend fun linksOfOrigin(origin: Origin): List<SongArtistMapEntity>
+
+    @Upsert
+    suspend fun upsertAll(songs: List<SongEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun linkAll(maps: List<SongArtistMapEntity>)
+
+    @Delete
+    suspend fun unlinkAll(maps: List<SongArtistMapEntity>)
 
     @Query(
         """

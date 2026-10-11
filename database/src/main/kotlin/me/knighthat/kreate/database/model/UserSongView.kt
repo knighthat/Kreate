@@ -36,6 +36,7 @@ import kotlin.time.Instant
  * @property albumId album the song belongs to, `null` for none
  * @property albumName title of the album as the user sees it
  * @property albumPosition position of the song in its album
+ * @property unavailableSince when a scan first missed the song, `null` while it is available
  * @property likedAt when the user liked the song, `null` if not liked
  */
 data class UserSongView(
@@ -50,5 +51,12 @@ data class UserSongView(
     val albumId: String? = null,
     val albumName: String? = null,
     val albumPosition: Int? = null,
+    val unavailableSince: Instant? = null,
     val likedAt: Instant? = null,
-)
+) {
+
+    /**
+     * Whether the file was found by the last scan. Unavailable songs should be hidden or skipped.
+     */
+    val isAvailable: Boolean get() = unavailableSince == null
+}

@@ -18,11 +18,11 @@
 
 package me.knighthat.kreate.database.repository
 
-import androidx.room.withTransaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.AppDatabase
 import me.knighthat.kreate.database.dao.ArtistDao
+import me.knighthat.kreate.database.inTransaction
 import me.knighthat.kreate.database.model.Artist
 import kotlin.time.Clock
 
@@ -47,7 +47,7 @@ internal class ArtistRepositoryImpl(
     override suspend fun delete(artistId: String) = artistDao.delete(artistId)
 
     override suspend fun update(artistId: String, transform: (Artist) -> Artist) {
-        database.withTransaction {
+        database.inTransaction {
             val current =
                 requireNotNull(artistDao.get(artistId)) { "Artist $artistId doesn't exist" }
             val updated = transform(current.toModel())

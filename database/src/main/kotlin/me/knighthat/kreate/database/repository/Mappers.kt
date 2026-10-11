@@ -72,7 +72,17 @@ internal fun Album.toEntity(createdAt: Instant, updatedAt: Instant) =
     AlbumEntity(id, origin, name, thumbnail, year, artists, url, isExplicit, createdAt, updatedAt)
 
 internal fun SongEntity.toModel() =
-    Song(id, origin, name, thumbnail, duration, isExplicit, albumId, albumPosition)
+    Song(
+        id,
+        origin,
+        name,
+        thumbnail,
+        duration,
+        isExplicit,
+        albumId,
+        albumPosition,
+        unavailableSince
+    )
 
 internal fun Song.toEntity(createdAt: Instant, updatedAt: Instant) =
     SongEntity(
@@ -84,6 +94,7 @@ internal fun Song.toEntity(createdAt: Instant, updatedAt: Instant) =
         isExplicit,
         albumId,
         albumPosition,
+        unavailableSince,
         createdAt,
         updatedAt
     )
@@ -127,7 +138,7 @@ internal fun PersistentQueueEntity.toModel() = QueuedSong(songId, position)
 
 internal fun UserSongViewEntity.toModel() = UserSongView(
     songId, origin, name, artists.orEmpty(), artistIds.orEmpty(), thumbnail, duration,
-    isExplicit, albumId, albumName, albumPosition, likedAt,
+    isExplicit, albumId, albumName, albumPosition, unavailableSince, likedAt,
 )
 
 internal fun UserAlbumViewEntity.toModel() = UserAlbumView(

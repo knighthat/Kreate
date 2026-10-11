@@ -18,7 +18,6 @@
 
 package me.knighthat.kreate.database.repository
 
-import androidx.room.withTransaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.AppDatabase
@@ -28,6 +27,7 @@ import me.knighthat.kreate.database.dao.SongFormatDao
 import me.knighthat.kreate.database.entity.ArtistEntity
 import me.knighthat.kreate.database.entity.SongArtistMapEntity
 import me.knighthat.kreate.database.entity.SongFormatEntity
+import me.knighthat.kreate.database.inTransaction
 import me.knighthat.kreate.database.model.Artist
 import me.knighthat.kreate.database.model.Lyrics
 import me.knighthat.kreate.database.model.Song
@@ -87,7 +87,7 @@ internal class SongRepositoryImpl(
     override suspend fun deleteLyrics(songId: String) = lyricsDao.delete(songId)
 
     override suspend fun update(songId: String, transform: (Song) -> Song) {
-        database.withTransaction {
+        database.inTransaction {
             val current = requireNotNull(songDao.get(songId)) { "Song $songId doesn't exist" }
             val updated = transform(current.toModel())
             require(updated.id == songId) { "The id of a song cannot be changed" }
