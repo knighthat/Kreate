@@ -20,7 +20,6 @@ package me.knighthat.kreate.preferences
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -39,13 +38,14 @@ import java.io.File
 import kotlin.uuid.Uuid
 
 /**
- * Keeps track of the profiles and which one is currently in use.
+ * Keeps track of which profiles exist and which one is currently in use. It only knows ids,
+ * the names and everything else about a profile belong to the user in the database.
  *
  * Layout under the app's files directory:
- * - `global.preferences_pb`: profile list and the active profile id
+ * - `global.preferences_pb`: profile ids and the active profile id
  * - `profiles/<id>/`: files of one profile, owned by [PreferenceStorage]
  *
- * Create a single instance per process, [scope] is used to share [activeProfile].
+ * Create a single instance per process, [scope] is used to share [activeId].
  */
 class ProfileManager internal constructor(
     scope: CoroutineScope,
@@ -64,19 +64,20 @@ class ProfileManager internal constructor(
     ) { File(rootDirectory, GLOBAL_FILE_NAME) }
 
     /**
-     * All known profiles, sorted by name.
+     * Ids of all known profiles.
      */
-    val profiles: Flow<List<Profile>> = global.data.map { it.profiles() }
+    val ids: Flow<Set<String>> = global.data.map { it[PROFILE_IDS].orEmpty() }
 
     /**
-     * The profile in use, `null` until the global store is loaded.
-     * Falls back to the first profile when the stored id is missing or no longer exists.
+     * Id of the profile in use, `null` until the global store is loaded.
+     * Falls back to the default profile when the stored id is missing or no longer exists.
      */
-    val activeProfile: StateFlow<Profile?> = global.data
+    val activeId: StateFlow<String?> = global.data
         .map { preferences ->
-            val profiles = preferences.profiles()
-            profiles.firstOrNull { it.id == preferences[ACTIVE_PROFILE_ID] }
-                ?: profiles.firstOrNull()
+            val ids = preferences[PROFILE_IDS].orEmpty()
+            preferences[ACTIVE_PROFILE_ID]?.takeIf { it in ids }
+                ?: Profile.DEFAULT_ID.takeIf { it in ids }
+                ?: ids.minOrNull()
         }
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, null)
@@ -85,32 +86,19 @@ class ProfileManager internal constructor(
         scope.launch {
             global.edit {
                 if (Profile.DEFAULT_ID !in it[PROFILE_IDS].orEmpty())
-                    it.addProfile(DEFAULT_PROFILE_NAME, Profile.DEFAULT_ID)
+                    it[PROFILE_IDS] = it[PROFILE_IDS].orEmpty() + Profile.DEFAULT_ID
             }
         }
     }
 
     /**
-     * Adds a new profile. It does not become active.
-     */
-    suspend fun create(name: String): Profile {
-        lateinit var profile: Profile
-        global.edit { profile = it.addProfile(name) }
-        return profile
-    }
-
-    /**
-     * Changes the name of the profile with [profileId]. Unknown ids are ignored.
+     * Registers a profile. It does not become active. Adding a known id changes nothing.
      *
-     * @throws IllegalArgumentException for a blank [name]
+     * @return the id of the profile
      */
-    suspend fun rename(profileId: String, name: String) {
-        require(name.isNotBlank()) { "A profile needs a name" }
-
-        global.edit {
-            if (profileId in it[PROFILE_IDS].orEmpty())
-                it[profileNameKey(profileId)] = name
-        }
+    suspend fun add(id: String = Uuid.random().toString()): String {
+        global.edit { it[PROFILE_IDS] = it[PROFILE_IDS].orEmpty() + id }
+        return id
     }
 
     /**
@@ -118,7 +106,7 @@ class ProfileManager internal constructor(
      */
     suspend fun switchTo(profileId: String) {
         global.edit {
-            if (it.profiles().any { profile -> profile.id == profileId })
+            if (profileId in it[PROFILE_IDS].orEmpty())
                 it[ACTIVE_PROFILE_ID] = profileId
         }
     }
@@ -138,7 +126,6 @@ class ProfileManager internal constructor(
             if (profileId !in ids) return@edit
 
             it[PROFILE_IDS] = ids - profileId
-            it.remove(profileNameKey(profileId))
             if (it[ACTIVE_PROFILE_ID] == profileId)
                 it.remove(ACTIVE_PROFILE_ID)
 
@@ -150,31 +137,11 @@ class ProfileManager internal constructor(
         return true
     }
 
-    private fun Preferences.profiles(): List<Profile> =
-        this[PROFILE_IDS].orEmpty()
-            .map { Profile(it, this[profileNameKey(it)].orEmpty()) }
-            .sortedWith(compareBy(Profile::name, Profile::id))
-
-    private fun MutablePreferences.addProfile(
-        name: String,
-        id: String = Uuid.random().toString()
-    ): Profile {
-        val profile = Profile(id, name)
-
-        this[PROFILE_IDS] = this[PROFILE_IDS].orEmpty() + profile.id
-        this[profileNameKey(profile.id)] = name
-
-        return profile
-    }
-
     private companion object {
 
         const val GLOBAL_FILE_NAME = "global.preferences_pb"
-        const val DEFAULT_PROFILE_NAME = "Default"
 
         val PROFILE_IDS = stringSetPreferencesKey("profile_ids")
         val ACTIVE_PROFILE_ID = stringPreferencesKey("active_profile_id")
-
-        fun profileNameKey(profileId: String) = stringPreferencesKey("profile_name.$profileId")
     }
 }

@@ -50,7 +50,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -83,8 +82,7 @@ class ProfilesActivity : ComponentActivity() {
 
     @Composable
     private fun ProfileRow(
-        profile: Profile,
-        user: User?,
+        user: User,
         isActive: Boolean,
         onSwitch: () -> Unit,
         onDelete: () -> Unit,
@@ -92,7 +90,7 @@ class ProfilesActivity : ComponentActivity() {
         val context = LocalContext.current
         // The active profile shows since when it is active, the others when they were last used
         val subtitle = if (isActive)
-            user?.activeSince?.let {
+            user.activeSince?.let {
                 "Active since " + DateUtils.formatDateTime(
                     context,
                     it.toEpochMilliseconds(),
@@ -100,7 +98,7 @@ class ProfilesActivity : ComponentActivity() {
                 )
             }
         else
-            user?.lastSeen?.let {
+            user.lastSeen?.let {
                 "Last seen " + DateUtils.getRelativeTimeSpanString(it.toEpochMilliseconds())
             }
 
@@ -113,7 +111,7 @@ class ProfilesActivity : ComponentActivity() {
                     .background(if (isActive) MaterialTheme.colorScheme.primary else Color.Transparent),
             )
             ListItem(
-                headlineContent = { Text(profile.name) },
+                headlineContent = { Text(user.name) },
                 supportingContent = subtitle?.let { { Text(it) } },
                 trailingContent = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -121,7 +119,7 @@ class ProfilesActivity : ComponentActivity() {
                         // The default profile can't be deleted
                         TextButton(
                             onClick = onDelete,
-                            enabled = !profile.isDefault
+                            enabled = user.id != Profile.DEFAULT_ID
                         ) { Text("Delete") }
                     }
                 },
@@ -162,33 +160,32 @@ class ProfilesActivity : ComponentActivity() {
     @Composable
     private fun Profiles(modifier: Modifier = Modifier) {
         val scope = rememberCoroutineScope()
-        val profiles by profileManager.profiles.collectAsState(emptyList())
-        val activeProfile by profileManager.activeProfile.collectAsState()
+        val ids by profileManager.ids.collectAsState(emptySet())
+        val activeId by profileManager.activeId.collectAsState()
         val users by userRepository.all().collectAsState(emptyList())
-        val usersById = remember(users) { users.associateBy(User::id) }
         var text by rememberSaveable { mutableStateOf("") }
-        val shown = profiles.filter { it.name.contains(text.trim(), ignoreCase = true) }
+        val shown =
+            users.filter { it.id in ids && it.name.contains(text.trim(), ignoreCase = true) }
 
         LazyColumn(modifier = modifier.fillMaxSize()) {
             item {
                 SearchOrAdd(
                     text = text,
                     onTextChange = { text = it },
-                    onCreate = { name -> scope.launch { profileManager.create(name) } },
+                    onCreate = { name -> scope.launch { profileUserSync.createProfile(name) } },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
                 )
                 HorizontalDivider()
             }
-            items(shown, key = Profile::id) { profile ->
+            items(shown, key = User::id) { user ->
                 ProfileRow(
-                    profile = profile,
-                    user = usersById[profile.id],
-                    isActive = profile.id == activeProfile?.id,
-                    onSwitch = { scope.launch { profileManager.switchTo(profile.id) } },
+                    user = user,
+                    isActive = user.id == activeId,
+                    onSwitch = { scope.launch { profileManager.switchTo(user.id) } },
                     // Also removes the user from the database, ProfileManager alone would leave it behind
-                    onDelete = { scope.launch { profileUserSync.deleteProfile(profile.id) } },
+                    onDelete = { scope.launch { profileUserSync.deleteProfile(user.id) } },
                 )
             }
         }

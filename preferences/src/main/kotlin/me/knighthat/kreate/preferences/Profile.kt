@@ -19,17 +19,13 @@
 package me.knighthat.kreate.preferences
 
 /**
- * A user of the app. Every profile owns a separate preferences file.
+ * Constants of the profiles. A profile is only an id here, its name and everything else
+ * about the user live in the database.
  */
-data class Profile(val id: String, val name: String) {
+object Profile {
 
     /**
-     * The built-in profile, it always exists and cannot be deleted.
+     * Id of the built-in profile, it always exists and cannot be deleted.
      */
-    val isDefault: Boolean get() = id == DEFAULT_ID
-
-    companion object {
-
-        const val DEFAULT_ID = "default"
-    }
+    const val DEFAULT_ID = "default"
 }

@@ -53,7 +53,6 @@ import me.knighthat.kreate.utils.AUDIO_PERMISSION
 import me.knighthat.kreate.utils.hasAudioPermission
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
-import org.koin.core.context.GlobalContext
 
 class KreateActivity : ComponentActivity() {
 
@@ -112,7 +111,7 @@ class KreateActivity : ComponentActivity() {
                 // Only apply if all args are provided
                 if (!tosChecksum.isNullOrBlank() && !profileName.isNullOrBlank() && themeMode != null && contrastLevel != null) {
                     val activeUserId = get<ActiveUser>().id.first { it != null }!!
-                    GlobalContext.get().get<UserRepository>().rename(activeUserId, profileName)
+                    get<UserRepository>().rename(activeUserId, profileName)
                     Preferences.TOS_CHECKSUM.update(tosChecksum)
                     Preferences.THEME_MODE.update(themeMode)
                     Preferences.CONTRAST_LEVEL.update(contrastLevel)

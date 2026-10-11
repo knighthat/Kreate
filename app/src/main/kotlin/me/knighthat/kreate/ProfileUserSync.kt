@@ -29,11 +29,16 @@ import kotlinx.coroutines.flow.stateIn
 import me.knighthat.kreate.database.ActiveUser
 import me.knighthat.kreate.database.model.User
 import me.knighthat.kreate.database.repository.UserRepository
+import me.knighthat.kreate.preferences.Profile
 import me.knighthat.kreate.preferences.ProfileManager
+import kotlin.uuid.Uuid
 
 /**
- * Keeps the database `user` table in step with the profiles of [ProfileManager], without
+ * Keeps the database `user` table in step with the profile ids of [ProfileManager], without
  * either module knowing about the other. A profile and its user share the same id.
+ *
+ * The profile only has an id, so the user is the only place holding the name. A user is
+ * created for every id that has none, an existing user is never overwritten.
  *
  * It is also the [ActiveUser]. The id is only published after every profile has a row,
  * so nothing is written for a user that doesn't exist yet.
@@ -47,27 +52,30 @@ class ProfileUserSync(
     scope: CoroutineScope,
 ) : ActiveUser {
 
-    // Profiles already written during this run, so that switching profile doesn't touch every row
-    private val synced = mutableMapOf<String, String>()
+    // Ids that already have a user during this run, so that switching profile doesn't query every row
+    private val synced = mutableSetOf<String>()
 
     // Active profile as of the last run, to tell a switch from a start-up
     private var activeId: String? = null
 
     override val id: StateFlow<String?> =
-        combine(profileManager.profiles, profileManager.activeProfile) { profiles, active ->
-            profiles to active
-        }.map { (profiles, active) ->
-            profiles.forEach { profile ->
-                if (synced[profile.id] == profile.name) return@forEach
+        combine(profileManager.ids, profileManager.activeId) { ids, active ->
+            ids to active
+        }.map { (ids, active) ->
+            ids.forEach { id ->
+                if (id in synced) return@forEach
 
-                // Keep what the database already knows about the user, like its thumbnail and activity times
-                val user = userRepository.find(profile.id).first()?.copy(name = profile.name)
-                    ?: User(profile.id, profile.name)
-                userRepository.save(user)
-                synced[profile.id] = profile.name
+                if (userRepository.find(id).first() == null)
+                    userRepository.save(
+                        User(
+                            id,
+                            if (id == Profile.DEFAULT_ID) DEFAULT_NAME else FALLBACK_NAME
+                        )
+                    )
+                synced += id
             }
 
-            val current = active?.id
+            val current = active
             if (current != activeId) {
                 val previous = activeId
                 activeId = current
@@ -87,6 +95,19 @@ class ProfileUserSync(
         }.distinctUntilChanged().stateIn(scope, SharingStarted.Eagerly, null)
 
     /**
+     * Creates a profile named [name]. The user is stored before the id is registered,
+     * so the profile never shows up without its name.
+     *
+     * @return the id of the new profile
+     */
+    suspend fun createProfile(name: String): String {
+        val id = Uuid.random().toString()
+        userRepository.save(User(id, name))
+        synced += id
+        return profileManager.add(id)
+    }
+
+    /**
      * Deletes the profile and its preferences, then the user with everything it owns
      * (library, playlists, history and queue). The shared catalog stays.
      *
@@ -96,7 +117,14 @@ class ProfileUserSync(
     suspend fun deleteProfile(profileId: String): Boolean {
         if (!profileManager.delete(profileId)) return false
 
+        synced -= profileId
         userRepository.delete(profileId)
         return true
+    }
+
+    private companion object {
+
+        const val DEFAULT_NAME = "Default"
+        const val FALLBACK_NAME = "Profile"
     }
 }
