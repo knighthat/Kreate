@@ -20,6 +20,7 @@ package me.knighthat.kreate.preferences
 
 import me.knighthat.kreate.constant.ContrastLevel
 import me.knighthat.kreate.constant.ThemeMode
+import me.knighthat.kreate.preferences.Preferences.IMAGE_DISK_CACHE
 import me.knighthat.kreate.preferences.Preferences.awaitLoaded
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -57,6 +58,25 @@ object Preferences : KoinComponent {
      */
     val TOS_CHECKSUM = string("tos_checksum", "")
 
+    //<editor-fold defaultstate="collapsed" desc="Coil3">
+    /**
+     * Largest size, in bytes, the image disk cache may grow to. The default is 128 MiB.
+     *
+     * The size is fixed when the image loader is built, so a new value applies from the next
+     * launch. A smaller value does not shrink the files already stored, the cache trims
+     * itself as new images are written.
+     */
+    val IMAGE_DISK_CACHE by lazy { long("image_disk_cache", 128L * 1024 * 1024) }
+
+    /**
+     * Share of the app's memory class that decoded images in the memory cache may use,
+     * from `0.0` to `1.0`. The default is `0.15` (15%).
+     *
+     * Applies from the next launch, like [IMAGE_DISK_CACHE].
+     */
+    val IMAGE_MEMORY_CACHE_PERCENT by lazy { double("image_memory_cache_percent", .15) }
+    //</editor-fold>
+
     /**
      * Suspends until the active profile's settings are loaded for the first time.
      */
@@ -72,6 +92,12 @@ object Preferences : KoinComponent {
 
     private fun string(name: String, default: String) =
         Preference(name, default, codec<String, String>({ it }, { it }), engine)
+
+    private fun long(name: String, default: Long) =
+        Preference(name, default, codec<Long, Long>({ it }, { it }), engine)
+
+    private fun double(name: String, default: Double) =
+        Preference(name, default, codec<Double, Double>({ it }, { it }), engine)
 
     private inline fun <reified E : Enum<E>> enum(name: String, default: E) =
         Preference(name, default, enumCodec<E>(), engine)
