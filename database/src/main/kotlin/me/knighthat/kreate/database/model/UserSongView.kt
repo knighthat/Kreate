@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate.database.model
 
+import android.net.Uri
 import kotlin.time.Duration
 import kotlin.time.Instant
 
@@ -45,7 +46,7 @@ data class UserSongView(
     val name: String? = null,
     val artists: List<String> = emptyList(),
     val artistIds: List<String> = emptyList(),
-    val thumbnail: String? = null,
+    val thumbnail: Uri? = null,
     val duration: Duration? = null,
     val isExplicit: Boolean? = null,
     val albumId: String? = null,

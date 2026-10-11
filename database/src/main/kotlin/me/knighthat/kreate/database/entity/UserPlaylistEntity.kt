@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate.database.entity
 
+import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -58,7 +59,7 @@ internal data class UserPlaylistEntity(
     val userId: String,
     val origin: Origin,
     val name: String,
-    val thumbnail: String? = null,
+    val thumbnail: Uri? = null,
     @ColumnInfo(name = "is_monthly", defaultValue = "0")
     val isMonthly: Boolean = false,
     @ColumnInfo(name = "created_at")

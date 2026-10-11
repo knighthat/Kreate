@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate.database.entity
 
+import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -40,7 +41,7 @@ internal data class ArtistEntity(
     val id: String,
     val origin: Origin,
     val name: String? = null,
-    val thumbnail: String? = null,
+    val thumbnail: Uri? = null,
     @ColumnInfo(name = "created_at")
     val createdAt: Instant,
     @ColumnInfo(name = "updated_at")

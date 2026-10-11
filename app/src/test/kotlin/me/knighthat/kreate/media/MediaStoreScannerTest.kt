@@ -34,7 +34,7 @@ class MediaStoreScannerTest {
         album: String? = "Album",
     ) = toLocalSong(
         id = 7, title = title, durationMs = durationMs, track = track, year = year,
-        artistId = 11, artist = artist, albumId = 13, album = album, albumArt = "art://13",
+        artistId = 11, artist = artist, albumId = 13, album = album, albumArt = null,
     )
 
     @Test
@@ -48,7 +48,7 @@ class MediaStoreScannerTest {
         assertEquals("11", song.artist?.id)
         assertEquals("Artist", song.artist?.name)
         assertEquals("13", song.album?.id)
-        assertEquals("art://13", song.album?.thumbnail)
+        assertNull(song.album?.thumbnail)
         assertEquals(2020, song.album?.year)
     }
 

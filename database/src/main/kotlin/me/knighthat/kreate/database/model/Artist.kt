@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate.database.model
 
+import android.net.Uri
+
 /**
  * Artist shared by every user. Per-user overrides live in [UserArtist].
  *
@@ -30,5 +32,5 @@ data class Artist(
     val id: String,
     val origin: Origin,
     val name: String? = null,
-    val thumbnail: String? = null,
+    val thumbnail: Uri? = null,
 )

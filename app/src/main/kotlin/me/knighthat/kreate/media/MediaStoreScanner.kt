@@ -87,7 +87,7 @@ class MediaStoreScanner(private val resolver: ContentResolver) {
                     artist = cursor.getString(artist),
                     albumId = albumIdValue,
                     album = cursor.getString(album),
-                    albumArt = ContentUris.withAppendedId(ALBUM_ART, albumIdValue).toString(),
+                    albumArt = ContentUris.withAppendedId(ALBUM_ART, albumIdValue),
                 )
             }
         }
@@ -116,7 +116,7 @@ internal fun toLocalSong(
     artist: String?,
     albumId: Long,
     album: String?,
-    albumArt: String?,
+    albumArt: Uri?,
 ): LocalSong {
     fun String?.known() = this?.takeIf { it.isNotBlank() && it != MediaStore.UNKNOWN_STRING }
 

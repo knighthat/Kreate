@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate.database.view
 
+import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
 import me.knighthat.kreate.database.model.Origin
@@ -48,7 +49,7 @@ internal data class UserArtistViewEntity(
     val artistId: String,
     val origin: Origin,
     val name: String?,
-    val thumbnail: String?,
+    val thumbnail: Uri?,
     @ColumnInfo(name = "song_count")
     val songCount: Int,
     @ColumnInfo(name = "follow_since")

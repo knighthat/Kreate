@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate.database.model
 
+import android.net.Uri
+
 /**
  * Album shared by every user. Per-user overrides live in [UserAlbum].
  *
@@ -34,7 +36,7 @@ data class Album(
     val id: String,
     val origin: Origin,
     val name: String? = null,
-    val thumbnail: String? = null,
+    val thumbnail: Uri? = null,
     val year: Int? = null,
     val artists: List<String>? = null,
     val url: String? = null,

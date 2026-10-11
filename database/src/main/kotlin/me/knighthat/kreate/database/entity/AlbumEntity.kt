@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate.database.entity
 
+import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -44,7 +45,7 @@ internal data class AlbumEntity(
     val id: String,
     val origin: Origin,
     val name: String? = null,
-    val thumbnail: String? = null,
+    val thumbnail: Uri? = null,
     val year: Int? = null,
     val artists: List<String>? = null,
     val url: String? = null,

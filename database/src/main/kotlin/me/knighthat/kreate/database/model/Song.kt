@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate.database.model
 
+import android.net.Uri
 import kotlin.time.Duration
 import kotlin.time.Instant
 
@@ -38,7 +39,7 @@ data class Song(
     val id: String,
     val origin: Origin,
     val name: String? = null,
-    val thumbnail: String? = null,
+    val thumbnail: Uri? = null,
     val duration: Duration? = null,
     val isExplicit: Boolean? = null,
     val albumId: String? = null,

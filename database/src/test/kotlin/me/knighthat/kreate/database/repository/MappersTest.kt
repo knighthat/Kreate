@@ -35,7 +35,7 @@ class MappersTest {
 
     @Test
     fun songSurvivesRoundTrip() {
-        val song = Song("id", Origin.YOUTUBE, "name", "cover", 200.seconds, true, "album", 3)
+        val song = Song("id", Origin.YOUTUBE, "name", null, 200.seconds, true, "album", 3)
 
         val entity = song.toEntity(created, updated)
 

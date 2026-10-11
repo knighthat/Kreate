@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate.database.entity
 
+import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -61,7 +62,7 @@ internal data class SongEntity(
     val id: String,
     val origin: Origin,
     val name: String? = null,
-    val thumbnail: String? = null,
+    val thumbnail: Uri? = null,
     val duration: Duration? = null,
     @ColumnInfo(name = "is_explicit")
     val isExplicit: Boolean? = null,

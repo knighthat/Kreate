@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate.database.entity
 
+import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -41,7 +42,7 @@ internal data class UserEntity(
     @PrimaryKey
     val id: String,
     val name: String,
-    val thumbnail: String? = null,
+    val thumbnail: Uri? = null,
     @ColumnInfo(name = "active_since")
     val activeSince: Instant? = null,
     @ColumnInfo(name = "last_seen")

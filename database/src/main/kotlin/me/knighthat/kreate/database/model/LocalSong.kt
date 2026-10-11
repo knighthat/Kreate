@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate.database.model
 
+import android.net.Uri
 import kotlin.time.Duration
 
 /**
@@ -57,6 +58,6 @@ data class LocalArtist(
 data class LocalAlbum(
     val id: String,
     val name: String? = null,
-    val thumbnail: String? = null,
+    val thumbnail: Uri? = null,
     val year: Int? = null,
 )

@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate.database.view
 
+import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
 import me.knighthat.kreate.database.model.Origin
@@ -53,7 +54,7 @@ internal data class UserAlbumViewEntity(
     val origin: Origin,
     val name: String?,
     val artists: List<String>?,
-    val thumbnail: String?,
+    val thumbnail: Uri?,
     val year: Int?,
     val url: String?,
     @ColumnInfo(name = "is_explicit")

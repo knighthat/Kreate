@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate.database
 
+import android.net.Uri
 import androidx.room.TypeConverter
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
@@ -29,7 +30,8 @@ import kotlin.time.Instant
 private val NAMES_SERIALIZER = ListSerializer(String.serializer())
 
 /**
- * Stores [Instant] as epoch millis, [Duration] as whole seconds and name lists as a JSON array.
+ * Stores [Instant] as epoch millis, [Duration] as whole seconds, name lists as a JSON array
+ * and [Uri] as its text.
  */
 internal class Converters {
 
@@ -52,4 +54,10 @@ internal class Converters {
     @TypeConverter
     fun toNames(value: String?): List<String>? =
         value?.let { runCatching { Json.decodeFromString(NAMES_SERIALIZER, it) }.getOrNull() }
+
+    @TypeConverter
+    fun fromUri(value: Uri?): String? = value?.toString()
+
+    @TypeConverter
+    fun toUri(value: String?): Uri? = value?.let(Uri::parse)
 }

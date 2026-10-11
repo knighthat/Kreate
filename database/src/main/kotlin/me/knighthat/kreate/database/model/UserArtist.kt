@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate.database.model
 
+import android.net.Uri
 import kotlin.time.Instant
 
 /**
@@ -31,6 +32,6 @@ import kotlin.time.Instant
 data class UserArtist(
     val artistId: String,
     val name: String? = null,
-    val thumbnail: String? = null,
+    val thumbnail: Uri? = null,
     val followSince: Instant? = null,
 )

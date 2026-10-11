@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate.database.model
 
+import android.net.Uri
+
 /**
  * A playlist of the active user.
  *
@@ -31,6 +33,6 @@ data class UserPlaylist(
     val id: Long = 0,
     val origin: Origin,
     val name: String,
-    val thumbnail: String? = null,
+    val thumbnail: Uri? = null,
     val isMonthly: Boolean = false,
 )

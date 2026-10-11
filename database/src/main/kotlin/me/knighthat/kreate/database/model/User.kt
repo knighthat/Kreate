@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate.database.model
 
+import android.net.Uri
 import kotlin.time.Instant
 
 /**
@@ -32,7 +33,7 @@ import kotlin.time.Instant
 data class User(
     val id: String,
     val name: String,
-    val thumbnail: String? = null,
+    val thumbnail: Uri? = null,
     val activeSince: Instant? = null,
     val lastSeen: Instant? = null,
 )
