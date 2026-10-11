@@ -46,6 +46,18 @@ object Preferences : KoinComponent {
     val LOCAL_SCAN_INTERVAL by lazy { int("local_scan_interval", 30) }
 
     /**
+     * SHA-256 checksum of the Terms of Service this profile has accepted,
+     * empty until it accepts.
+     *
+     * It is kept per profile on purpose: when the terms change, every profile
+     * has to accept the new version itself, one profile accepting does not
+     * cover the others.
+     *
+     * It is read at every launch, so it is declared eagerly instead of `by lazy`.
+     */
+    val TOS_CHECKSUM = string("tos_checksum", "")
+
+    /**
      * Suspends until the active profile's settings are loaded for the first time.
      */
     suspend fun awaitLoaded() = engine.awaitLoaded()
@@ -57,6 +69,9 @@ object Preferences : KoinComponent {
 
     private fun int(name: String, default: Int) =
         Preference(name, default, codec<Int, Int>({ it }, { it }), engine)
+
+    private fun string(name: String, default: String) =
+        Preference(name, default, codec<String, String>({ it }, { it }), engine)
 
     private inline fun <reified E : Enum<E>> enum(name: String, default: E) =
         Preference(name, default, enumCodec<E>(), engine)

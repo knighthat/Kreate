@@ -40,6 +40,9 @@ internal interface UserDao {
     @Upsert
     suspend fun upsert(user: UserEntity)
 
+    @Query("UPDATE user SET name = :name, updated_at = :time WHERE id = :id")
+    suspend fun setName(id: String, name: String, time: Instant)
+
     @Query("UPDATE user SET active_since = :time WHERE id = :id")
     suspend fun setActiveSince(id: String, time: Instant)
 

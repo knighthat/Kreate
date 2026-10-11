@@ -25,6 +25,7 @@ import kotlinx.coroutines.SupervisorJob
 import me.knighthat.kreate.database.ActiveUser
 import me.knighthat.kreate.database.databaseModule
 import me.knighthat.kreate.preferences.preferencesModule
+import me.knighthat.kreate.screen.setupCompletedFile
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.dsl.bind
@@ -44,7 +45,8 @@ class KreateApplication : Application() {
                     single { CoroutineScope(SupervisorJob() + Dispatchers.Default) }
 
                     // Creates the database users of the profiles, and tells the database who is active
-                    single(createdAtStart = true) {
+                    val isSetup = setupCompletedFile().exists()
+                    single(createdAtStart = isSetup) {
                         ProfileUserSync(
                             get(),
                             get(),

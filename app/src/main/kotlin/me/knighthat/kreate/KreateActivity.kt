@@ -39,19 +39,39 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import me.knighthat.kreate.media.AUDIO_PERMISSION
+import me.knighthat.kreate.constant.ContrastLevel
+import me.knighthat.kreate.constant.ThemeMode
+import me.knighthat.kreate.database.ActiveUser
+import me.knighthat.kreate.database.repository.UserRepository
 import me.knighthat.kreate.media.LocalMusicScheduler
-import me.knighthat.kreate.media.hasAudioPermission
 import me.knighthat.kreate.preferences.Preferences
 import me.knighthat.kreate.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate.screen.SetupWizardScreen
+import me.knighthat.kreate.screen.setupCompletedFile
 import me.knighthat.kreate.ui.theme.KreateTheme
+import me.knighthat.kreate.utils.AUDIO_PERMISSION
+import me.knighthat.kreate.utils.hasAudioPermission
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
+import org.koin.core.context.GlobalContext
 
 class KreateActivity : ComponentActivity() {
 
-    private val scope: CoroutineScope by inject()
+    companion object {
+        const val SETUP_WIZARD_DONE_ACTION = "me.knighthat.kreate.SETUP_WIZARD_DONE_ACTION"
 
-    private var preferencesLoaded = false
+        //<editor-fold defaultstate="collapsed" desc="Setup Wizard extra fields">
+        const val SETUP_WIZARD_TOS_CHECKSUM = "me.knighthat.kreate.SETUP_WIZARD_TOS_CHECKSUM"
+        const val SETUP_WIZARD_PROFILE_NAME = "me.knighthat.kreate.SETUP_WIZARD_PROFILE_NAME"
+        const val SETUP_WIZARD_THEME_MODE = "me.knighthat.kreate.SETUP_WIZARD_THEME_MODE"
+        const val SETUP_WIZARD_CONTRAST_LEVEL = "me.knighthat.kreate.SETUP_WIZARD_CONTRAST_LEVEL"
+        //</editor-fold>
+    }
+
+    private var isSetup = false
+    private var isReady = false
+
+    private val scope: CoroutineScope by inject()
 
     private val audioAllowed = MutableStateFlow(false)
 
@@ -65,12 +85,41 @@ class KreateActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Must be called before super.onCreate, it swaps the splash theme for the app theme
-        installSplashScreen().setKeepOnScreenCondition { !preferencesLoaded }
+        installSplashScreen().setKeepOnScreenCondition { !isReady }
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+
+        isSetup = setupCompletedFile().exists()
+        // Don't run subsequent tasks if not yet setup
+        if (!isSetup) {
+            isReady = true
+            return
+        }
 
         lifecycleScope.launch {
             Preferences.awaitLoaded()
-            preferencesLoaded = true
+            //<editor-fold defaultstate="collapsed" desc="Load values from wizard if available">
+            if (savedInstanceState == null && intent.action == SETUP_WIZARD_DONE_ACTION) {
+                val tosChecksum = intent.getStringExtra(SETUP_WIZARD_TOS_CHECKSUM)
+                val profileName = intent.getStringExtra(SETUP_WIZARD_PROFILE_NAME)
+                val themeMode = ThemeMode.entries.firstOrNull {
+                    it.name == intent.getStringExtra(SETUP_WIZARD_THEME_MODE)
+                }
+                val contrastLevel = ContrastLevel.entries.firstOrNull {
+                    it.name == intent.getStringExtra(SETUP_WIZARD_CONTRAST_LEVEL)
+                }
+
+                // Only apply if all args are provided
+                if (!tosChecksum.isNullOrBlank() && !profileName.isNullOrBlank() && themeMode != null && contrastLevel != null) {
+                    val activeUserId = get<ActiveUser>().id.first { it != null }!!
+                    GlobalContext.get().get<UserRepository>().rename(activeUserId, profileName)
+                    Preferences.TOS_CHECKSUM.update(tosChecksum)
+                    Preferences.THEME_MODE.update(themeMode)
+                    Preferences.CONTRAST_LEVEL.update(contrastLevel)
+                }
+            }
+            //</editor-fold>
+            isReady = true
 
             // Keep the scan schedule in step with the interval, but only once scanning is allowed
             audioAllowed.first { it }
@@ -78,8 +127,6 @@ class KreateActivity : ComponentActivity() {
                 LocalMusicScheduler.schedule(this@KreateActivity, it)
             }
         }
-
-        enableEdgeToEdge()
 
         // A recreated activity (rotation) must not scan again, only the schedule needs to follow it
         if (hasAudioPermission())
@@ -94,31 +141,34 @@ class KreateActivity : ComponentActivity() {
         super.onStart()
 
         setContent {
-            val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
-            val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
+            if (isSetup) {
+                val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
+                val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
 
-            KreateTheme(
-                themeMode = themeMode,
-                contrastLevel = contrastLevel,
-                colorSeed = Color.Unspecified,
-            ) {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Column(modifier = Modifier.padding(innerPadding)) {
-                        Greeting(name = "Android")
-                        TextButton(onClick = {
-                            startActivity(
-                                ProfilesActivity.intent(
-                                    this@KreateActivity,
-                                    themeMode,
-                                    contrastLevel
+                KreateTheme(
+                    themeMode = themeMode,
+                    contrastLevel = contrastLevel,
+                    colorSeed = Color.Unspecified,
+                ) {
+                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                        Column(modifier = Modifier.padding(innerPadding)) {
+                            Greeting(name = "Android")
+                            TextButton(onClick = {
+                                startActivity(
+                                    ProfilesActivity.intent(
+                                        this@KreateActivity,
+                                        themeMode,
+                                        contrastLevel
+                                    )
                                 )
-                            )
-                        }) {
-                            Text("Profiles")
+                            }) {
+                                Text("Profiles")
+                            }
                         }
                     }
                 }
-            }
+            } else
+                SetupWizardScreen()
         }
     }
 

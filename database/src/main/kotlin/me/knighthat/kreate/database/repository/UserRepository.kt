@@ -36,6 +36,13 @@ interface UserRepository {
     suspend fun save(user: User)
 
     /**
+     * Changes the display name of the user. Does nothing for an unknown user.
+     *
+     * @throws IllegalArgumentException for a blank [name]
+     */
+    suspend fun rename(id: String, name: String)
+
+    /**
      * Records that the user became the active one just now. Does nothing for an unknown user.
      */
     suspend fun markActive(id: String)

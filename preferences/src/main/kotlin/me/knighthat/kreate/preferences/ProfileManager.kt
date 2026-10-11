@@ -100,6 +100,20 @@ class ProfileManager internal constructor(
     }
 
     /**
+     * Changes the name of the profile with [profileId]. Unknown ids are ignored.
+     *
+     * @throws IllegalArgumentException for a blank [name]
+     */
+    suspend fun rename(profileId: String, name: String) {
+        require(name.isNotBlank()) { "A profile needs a name" }
+
+        global.edit {
+            if (profileId in it[PROFILE_IDS].orEmpty())
+                it[profileNameKey(profileId)] = name
+        }
+    }
+
+    /**
      * Makes the profile with [profileId] active. Unknown ids are ignored.
      */
     suspend fun switchTo(profileId: String) {

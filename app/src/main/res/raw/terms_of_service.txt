@@ -1,0 +1,35 @@
+TERMS OF SERVICE
+
+Last updated: October 11th, 2026
+
+By continuing to use the app, you agree to all the terms below. Please read these terms carefully.
+
+1. About Kreate
+
+Kreate is a free music player. It is open source software, released under the GNU General Public License, version 3 or later.
+
+2. Your music and your data
+
+Kreate plays music files stored on your device and keeps its own library on your device: your profiles, playlists, likes, play history and settings. This data is stored locally. Kreate does not collect your data.
+
+Kreate reads the music on your device only after you allow it. You can take that permission back at any time in the system settings, and Kreate then stops reading your files.
+
+3. Content from other services
+
+Kreate may show or play content from third party services. Those services are not run by or connected to the developers of Kreate. You must follow their terms and the laws that apply to you when you use their content. These services have their own privacy practices, which Kreate does not control.
+
+4. Your responsibility
+
+You are responsible for the content you play or import with Kreate. The developers do not check it and are not responsible for how you use it.
+
+5. No warranty
+
+Kreate is provided as is, without any warranty, as described in the GNU General Public License. To the extent the law allows, the developers are not liable for data loss, damage to your device, or any other harm that comes from using it. Back up what matters to you.
+
+6. Changes
+
+These terms may change in future versions. When they do, Kreate asks you to read them again.
+
+7. Contact
+
+Questions or problems can be reported in the project's issue tracker.

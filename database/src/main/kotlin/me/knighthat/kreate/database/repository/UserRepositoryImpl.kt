@@ -43,6 +43,12 @@ internal class UserRepositoryImpl(
         userDao.upsert(user.toEntity(createdAt, now))
     }
 
+    override suspend fun rename(id: String, name: String) {
+        require(name.isNotBlank()) { "A profile needs a name" }
+
+        userDao.setName(id, name, clock.now())
+    }
+
     // Not a content change of the profile, so `updated_at` stays as it is
     override suspend fun markActive(id: String) = userDao.setActiveSince(id, clock.now())
 
