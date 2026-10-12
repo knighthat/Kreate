@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +40,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import me.knighthat.kreate.R
+import me.knighthat.kreate.ui.component.ProfileButton
+import me.knighthat.kreate.ui.component.SearchButton
+import me.knighthat.kreate.ui.component.SettingsButton
 
 /**
  * The title large under the logo and the actions, shrinking into one row as [content] scrolls.
@@ -75,15 +77,9 @@ private fun HomeTopBar(
             )
         },
         actions = {
-            IconButton(onClick = onSearch) {
-                Icon(painterResource(R.drawable.search), contentDescription = "Search")
-            }
-            IconButton(onClick = onProfile) {
-                Icon(painterResource(R.drawable.person), contentDescription = "Profile")
-            }
-            IconButton(onClick = onSettings) {
-                Icon(painterResource(R.drawable.settings), contentDescription = "Settings")
-            }
+            SearchButton(onSearch)
+            ProfileButton(onProfile)
+            SettingsButton(onSettings)
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surfaceDim,
