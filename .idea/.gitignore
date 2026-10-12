@@ -5,6 +5,7 @@
 # Android Studio (per-machine or regenerated)
 /caches/
 /libraries/
+/dictionaries
 /modules.xml
 /navEditor.xml
 /assetWizardSettings.xml
