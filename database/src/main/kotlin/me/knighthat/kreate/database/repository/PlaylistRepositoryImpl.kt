@@ -59,6 +59,25 @@ internal class PlaylistRepositoryImpl(
             }
         }
 
+    override fun search(
+        query: String,
+        order: SortOrder<PlaylistSort>
+    ): Flow<PagingData<UserPlaylist>> =
+        scope.observe(PagingData.empty()) { userId ->
+            pagedFlow(UserPlaylistEntity::toModel) {
+                playlistDao.paged(
+                    RoomRawQuery(
+                        sql = "SELECT * FROM user_playlist WHERE user_id = ? AND name LIKE ? ESCAPE '\\' " +
+                                order.toOrderBy("playlist_id"),
+                        onBindStatement = {
+                            it.bindText(1, userId)
+                            it.bindText(2, containsPattern(query))
+                        },
+                    )
+                )
+            }
+        }
+
     override fun find(playlistId: Long): Flow<UserPlaylist?> =
         playlistDao.find(playlistId).map { it?.toModel() }
 

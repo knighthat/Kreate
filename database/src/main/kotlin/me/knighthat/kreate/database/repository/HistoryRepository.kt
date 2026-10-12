@@ -40,6 +40,12 @@ interface HistoryRepository {
     ): Flow<PagingData<SearchHistory>>
 
     /**
+     * Up to [limit] searches that start with [prefix] regardless of case, most recent first.
+     * Every search matches a blank [prefix].
+     */
+    fun searchesStartingWith(prefix: String, limit: Int): Flow<List<SearchHistory>>
+
+    /**
      * Remembers [query], searching for it again only refreshes the time.
      */
     suspend fun recordSearch(query: String)

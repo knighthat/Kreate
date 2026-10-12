@@ -56,3 +56,7 @@ fun ProfileButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
 @Composable
 fun SettingsButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
     IconAction(R.drawable.settings, "Settings", onClick, modifier)
+
+@Composable
+fun ConfigButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
+    IconAction(R.drawable.tune, "Config", onClick, modifier)

@@ -20,6 +20,7 @@ package me.knighthat.kreate.database.repository
 
 import androidx.paging.PagingData
 import androidx.room.RoomRawQuery
+import androidx.sqlite.SQLiteStatement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.ActiveUser
@@ -54,9 +55,20 @@ internal class UserAlbumRepositoryImpl(
     override fun bookmarked(order: SortOrder<UserAlbumSort>): Flow<PagingData<UserAlbumView>> =
         paged(order, filter = "AND bookmarked_at >= 0")
 
+    override fun search(query: String, order: SortOrder<UserAlbumSort>) =
+        paged(
+            order,
+            filter = "AND (name LIKE ?2 ESCAPE '\\' OR artists LIKE ?2 ESCAPE '\\')",
+        ) { it.bindText(2, containsPattern(query)) }
+
+    /**
+     * @param filter extra conditions after the user's, its `?` start at position 2
+     * @param bind binds the values of [filter]
+     */
     private fun paged(
         order: SortOrder<UserAlbumSort>,
-        filter: String
+        filter: String,
+        bind: (SQLiteStatement) -> Unit = {},
     ): Flow<PagingData<UserAlbumView>> =
         scope.observe(PagingData.empty()) { userId ->
             pagedFlow(UserAlbumViewEntity::toModel) {
@@ -67,7 +79,10 @@ internal class UserAlbumRepositoryImpl(
                                 "album_id"
                             )
                         }",
-                        onBindStatement = { it.bindText(1, userId) },
+                        onBindStatement = {
+                            it.bindText(1, userId)
+                            bind(it)
+                        },
                     )
                 )
             }

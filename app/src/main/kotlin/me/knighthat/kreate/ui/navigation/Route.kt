@@ -50,6 +50,9 @@ data object Artists : Route
 data object Playlists : Route
 
 @Serializable
+data object Search : Route
+
+@Serializable
 data class LocalAlbum(val id: String) : Route {
 
     override val arguments: Bundle get() = bundleOf(ID to id)

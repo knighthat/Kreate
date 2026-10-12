@@ -56,6 +56,14 @@ interface UserAlbumRepository {
      */
     fun ofArtist(artistId: String, limit: Int): Flow<List<UserAlbumView>>
 
+    /**
+     * Albums of the library whose title or artists contain [query], a page at a time.
+     */
+    fun search(
+        query: String,
+        order: SortOrder<UserAlbumSort> = SortOrder(UserAlbumSort.NAME),
+    ): Flow<PagingData<UserAlbumView>>
+
     fun find(albumId: String): Flow<UserAlbumView?>
 
     /**

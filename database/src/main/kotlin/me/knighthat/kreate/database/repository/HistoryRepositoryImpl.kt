@@ -60,6 +60,12 @@ internal class HistoryRepositoryImpl(
             }
         }
 
+    override fun searchesStartingWith(prefix: String, limit: Int): Flow<List<SearchHistory>> =
+        scope.observe(emptyList()) { userId ->
+            searchHistoryDao.startingWith(userId, prefixPattern(prefix), limit)
+                .map { it.map(SearchHistoryEntity::toModel) }
+        }
+
     override suspend fun recordSearch(query: String) =
         searchHistoryDao.upsert(SearchHistoryEntity(query, scope.requireId(), clock.now()))
 

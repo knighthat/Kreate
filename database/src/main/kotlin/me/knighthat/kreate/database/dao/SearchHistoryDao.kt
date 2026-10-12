@@ -24,6 +24,7 @@ import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.room.RoomRawQuery
 import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.entity.SearchHistoryEntity
 
 @Dao
@@ -34,6 +35,12 @@ internal interface SearchHistoryDao {
      */
     @RawQuery(observedEntities = [SearchHistoryEntity::class])
     fun paged(query: RoomRawQuery): PagingSource<Int, SearchHistoryEntity>
+
+    @Query(
+        "SELECT * FROM search_history WHERE user_id = :userId AND query LIKE :pattern ESCAPE '\\' " +
+                "ORDER BY last_used DESC NULLS LAST, query LIMIT :limit"
+    )
+    fun startingWith(userId: String, pattern: String, limit: Int): Flow<List<SearchHistoryEntity>>
 
     @Upsert
     suspend fun upsert(history: SearchHistoryEntity)

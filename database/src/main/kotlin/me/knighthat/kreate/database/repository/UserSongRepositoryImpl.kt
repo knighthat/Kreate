@@ -55,6 +55,13 @@ internal class UserSongRepositoryImpl(
     override fun liked(order: SortOrder<UserSongSort>): Flow<PagingData<UserSongView>> =
         paged(order, filter = "AND liked_at >= 0")
 
+    override fun search(query: String, order: SortOrder<UserSongSort>) =
+        paged(
+            order,
+            filter = "AND (name LIKE ?2 ESCAPE '\\' OR artists LIKE ?2 ESCAPE '\\' " +
+                    "OR album_name LIKE ?2 ESCAPE '\\')",
+        ) { it.bindText(2, containsPattern(query)) }
+
     override fun ofAlbum(albumId: String, order: SortOrder<UserSongSort>) =
         paged(order, filter = "AND album_id = ?") { it.bindText(2, albumId) }
 

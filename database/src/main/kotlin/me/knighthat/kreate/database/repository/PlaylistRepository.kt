@@ -36,6 +36,14 @@ interface PlaylistRepository {
      */
     fun all(order: SortOrder<PlaylistSort> = SortOrder(PlaylistSort.NAME)): Flow<PagingData<UserPlaylist>>
 
+    /**
+     * Playlists of the active user whose name contains [query], a page at a time.
+     */
+    fun search(
+        query: String,
+        order: SortOrder<PlaylistSort> = SortOrder(PlaylistSort.NAME),
+    ): Flow<PagingData<UserPlaylist>>
+
     fun find(playlistId: Long): Flow<UserPlaylist?>
 
     /**

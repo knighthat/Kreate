@@ -25,6 +25,7 @@ import me.knighthat.kreate.ui.screen.home.HomeAlbumsViewModel
 import me.knighthat.kreate.ui.screen.home.HomeArtistsViewModel
 import me.knighthat.kreate.ui.screen.home.HomePlaylistsViewModel
 import me.knighthat.kreate.ui.screen.home.HomeSongsViewModel
+import me.knighthat.kreate.ui.screen.search.SearchViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -34,6 +35,8 @@ val viewModelModule = module {
     viewModelOf(::HomeAlbumsViewModel)
     viewModelOf(::HomeArtistsViewModel)
     viewModelOf(::HomePlaylistsViewModel)
+
+    viewModelOf(::SearchViewModel)
 
     viewModelOf(::LocalAlbumDetailViewModel)
     viewModelOf(::LocalArtistDetailViewModel)

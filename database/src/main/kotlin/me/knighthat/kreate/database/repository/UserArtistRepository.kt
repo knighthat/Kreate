@@ -50,6 +50,14 @@ interface UserArtistRepository {
         ),
     ): Flow<PagingData<UserArtistView>>
 
+    /**
+     * Artists of the library whose name contains [query], a page at a time.
+     */
+    fun search(
+        query: String,
+        order: SortOrder<UserArtistSort> = SortOrder(UserArtistSort.NAME),
+    ): Flow<PagingData<UserArtistView>>
+
     fun find(artistId: String): Flow<UserArtistView?>
 
     /**

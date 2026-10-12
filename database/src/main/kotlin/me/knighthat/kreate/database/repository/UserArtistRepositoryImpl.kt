@@ -20,6 +20,7 @@ package me.knighthat.kreate.database.repository
 
 import androidx.paging.PagingData
 import androidx.room.RoomRawQuery
+import androidx.sqlite.SQLiteStatement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.ActiveUser
@@ -54,9 +55,19 @@ internal class UserArtistRepositoryImpl(
     override fun followed(order: SortOrder<UserArtistSort>): Flow<PagingData<UserArtistView>> =
         paged(order, filter = "AND follow_since >= 0")
 
+    override fun search(query: String, order: SortOrder<UserArtistSort>) =
+        paged(order, filter = "AND name LIKE ?2 ESCAPE '\\'") {
+            it.bindText(2, containsPattern(query))
+        }
+
+    /**
+     * @param filter extra conditions after the user's, its `?` start at position 2
+     * @param bind binds the values of [filter]
+     */
     private fun paged(
         order: SortOrder<UserArtistSort>,
-        filter: String
+        filter: String,
+        bind: (SQLiteStatement) -> Unit = {},
     ): Flow<PagingData<UserArtistView>> =
         scope.observe(PagingData.empty()) { userId ->
             pagedFlow(UserArtistViewEntity::toModel) {
@@ -67,7 +78,10 @@ internal class UserArtistRepositoryImpl(
                                 "artist_id"
                             )
                         }",
-                        onBindStatement = { it.bindText(1, userId) },
+                        onBindStatement = {
+                            it.bindText(1, userId)
+                            bind(it)
+                        },
                     )
                 )
             }

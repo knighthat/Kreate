@@ -72,6 +72,14 @@ interface UserSongRepository {
         order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME),
     ): Flow<PagingData<UserSongView>>
 
+    /**
+     * Songs of the library whose title, artists or album contain [query], a page at a time.
+     */
+    fun search(
+        query: String,
+        order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME),
+    ): Flow<PagingData<UserSongView>>
+
     fun find(songId: String): Flow<UserSongView?>
 
     /**
