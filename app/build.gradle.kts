@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.material3)
 
     // Images, remote ones go through the app's Ktor client
@@ -86,11 +87,17 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.kotlinx.serialization.json)
 
+    // Playback, remote audio goes through the app's OkHttp client
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.session)
+    implementation(libs.androidx.media3.datasource.okhttp)
+
     // Theming
     implementation(libs.material.kolor)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.guava)
 
     // Koin
     implementation(platform(libs.koin.bom))

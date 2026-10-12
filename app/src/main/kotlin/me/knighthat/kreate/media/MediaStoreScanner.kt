@@ -19,11 +19,9 @@
 package me.knighthat.kreate.media
 
 import android.content.ContentResolver
-import android.content.ContentUris
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import androidx.core.net.toUri
 import me.knighthat.kreate.database.model.LocalAlbum
 import me.knighthat.kreate.database.model.LocalArtist
 import me.knighthat.kreate.database.model.LocalSong
@@ -87,16 +85,11 @@ class MediaStoreScanner(private val resolver: ContentResolver) {
                     artist = cursor.getString(artist),
                     albumId = albumIdValue,
                     album = cursor.getString(album),
-                    albumArt = ContentUris.withAppendedId(ALBUM_ART, albumIdValue),
+                    albumArt = albumArtUri(albumIdValue),
                 )
             }
         }
         return songs
-    }
-
-    private companion object {
-
-        val ALBUM_ART: Uri = "content://media/external/audio/albumart".toUri()
     }
 }
 

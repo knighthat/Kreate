@@ -23,16 +23,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
@@ -44,10 +37,9 @@ import me.knighthat.kreate.database.ActiveUser
 import me.knighthat.kreate.database.repository.UserRepository
 import me.knighthat.kreate.media.LocalMusicScheduler
 import me.knighthat.kreate.preferences.Preferences
-import me.knighthat.kreate.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate.screen.SetupWizardScreen
 import me.knighthat.kreate.screen.setupCompletedFile
-import me.knighthat.kreate.ui.theme.KreateTheme
+import me.knighthat.kreate.ui.screen.KreateApp
 import me.knighthat.kreate.utils.hasAudioPermission
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
@@ -147,33 +139,9 @@ class KreateActivity : ComponentActivity() {
         super.onStart()
 
         setContent {
-            if (isSetup) {
-                val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
-                val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
-
-                KreateTheme(
-                    themeMode = themeMode,
-                    contrastLevel = contrastLevel,
-                    colorSeed = Color.Unspecified,
-                ) {
-                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        Column(modifier = Modifier.padding(innerPadding)) {
-                            Greeting(name = "Android")
-                            TextButton(onClick = {
-                                startActivity(
-                                    ProfilesActivity.intent(
-                                        this@KreateActivity,
-                                        themeMode,
-                                        contrastLevel
-                                    )
-                                )
-                            }) {
-                                Text("Profiles")
-                            }
-                        }
-                    }
-                }
-            } else
+            if (isSetup)
+                KreateApp()
+            else
                 SetupWizardScreen()
         }
     }
