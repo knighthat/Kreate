@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -56,6 +57,9 @@ class KreateActivity : ComponentActivity() {
     companion object {
         const val SETUP_WIZARD_DONE_ACTION = "me.knighthat.kreate.SETUP_WIZARD_DONE_ACTION"
 
+        // Add this to launch option '-a me.knighthat.kreate.SETUP_WIZARD_SKIP_ACTION'
+        const val SETUP_WIZARD_SKIP_ACTION = "me.knighthat.kreate.SETUP_WIZARD_SKIP_ACTION"
+
         //<editor-fold defaultstate="collapsed" desc="Setup Wizard extra fields">
         const val SETUP_WIZARD_TOS_CHECKSUM = "me.knighthat.kreate.SETUP_WIZARD_TOS_CHECKSUM"
         const val SETUP_WIZARD_PROFILE_NAME = "me.knighthat.kreate.SETUP_WIZARD_PROFILE_NAME"
@@ -86,6 +90,17 @@ class KreateActivity : ComponentActivity() {
         isSetup = setupCompletedFile().exists()
         // Don't run subsequent tasks if not yet setup
         if (!isSetup) {
+            //<editor-fold defaultstate="collapsed" desc="Skip wizard">
+            if (savedInstanceState == null && intent.action == SETUP_WIZARD_SKIP_ACTION) {
+                setupCompletedFile().createNewFile()
+                startActivity(
+                    Intent(this, KreateActivity::class.java)
+                )
+                // The system queued the new start already, a fresh process picks it up
+                Runtime.getRuntime().exit(0)
+            }
+            //</editor-fold>
+
             isReady = true
             return
         }
