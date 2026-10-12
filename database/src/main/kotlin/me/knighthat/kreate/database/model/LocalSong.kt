@@ -26,6 +26,8 @@ import kotlin.time.Duration
  *
  * @property id id of the song in the media index
  * @property name title, `null` when unknown
+ * @property thumbnail cover of the album the song is in, `null` when it has no album. A cover in the
+ *   file itself is read from the file and takes priority over this one.
  * @property duration length of the song
  * @property albumPosition position of the song in its album
  * @property artist the artist of the song, `null` when unknown
@@ -34,6 +36,7 @@ import kotlin.time.Duration
 data class LocalSong(
     val id: String,
     val name: String? = null,
+    val thumbnail: Uri? = null,
     val duration: Duration? = null,
     val albumPosition: Int? = null,
     val artist: LocalArtist? = null,
@@ -52,12 +55,10 @@ data class LocalArtist(
 /**
  * @property id id of the album in the media index
  * @property name title of the album, `null` when unknown
- * @property thumbnail cover of the album, `null` for none
  * @property year release year, `null` when unknown
  */
 data class LocalAlbum(
     val id: String,
     val name: String? = null,
-    val thumbnail: Uri? = null,
     val year: Int? = null,
 )

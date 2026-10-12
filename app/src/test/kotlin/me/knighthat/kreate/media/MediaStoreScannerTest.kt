@@ -48,7 +48,7 @@ class MediaStoreScannerTest {
         assertEquals("11", song.artist?.id)
         assertEquals("Artist", song.artist?.name)
         assertEquals("13", song.album?.id)
-        assertNull(song.album?.thumbnail)
+        assertNull(song.thumbnail)
         assertEquals(2020, song.album?.year)
     }
 
@@ -68,6 +68,7 @@ class MediaStoreScannerTest {
         assertNull(song.duration)
         assertNull(song.artist)
         assertNull(song.album)
+        assertNull(song.thumbnail)
     }
 
     @Test

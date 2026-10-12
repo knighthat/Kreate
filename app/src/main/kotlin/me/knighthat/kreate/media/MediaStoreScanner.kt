@@ -123,11 +123,14 @@ internal fun toLocalSong(
     return LocalSong(
         id = id.toString(),
         name = title.known(),
+        // The cover belongs to the album, an unknown album is a guess of the index (often a whole
+        // folder) so its songs get none and only show a cover embedded in the file
+        thumbnail = albumArt.takeIf { album.known() != null },
         duration = durationMs.takeIf { it > 0 }?.milliseconds,
         albumPosition = (track % 1000).takeIf { it > 0 },
         artist = artist.known()?.let { LocalArtist(artistId.toString(), it) },
         album = album.known()?.let {
-            LocalAlbum(albumId.toString(), it, albumArt, year.takeIf { y -> y > 0 })
+            LocalAlbum(albumId.toString(), it, year.takeIf { y -> y > 0 })
         },
     )
 }
