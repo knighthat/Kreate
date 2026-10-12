@@ -69,6 +69,11 @@ internal class LocalCatalogRepositoryImpl(
 
             val artists = songs.mapNotNull { it.artist }.distinctBy { it.id }
                 .map { ArtistEntity(it.id, Origin.LOCAL, it.name, null, now, now) }
+            // An album is by everyone who has a song on it, each name once
+            val artistsOfAlbum = songs
+                .filter { it.album != null }
+                .groupBy({ it.album!!.id }, { it.artist?.name })
+                .mapValues { (_, names) -> names.filterNotNull().distinct().ifEmpty { null } }
             val albums = songs.mapNotNull { it.album }.distinctBy { it.id }
                 .map {
                     AlbumEntity(
@@ -77,7 +82,7 @@ internal class LocalCatalogRepositoryImpl(
                         it.name,
                         null,
                         it.year,
-                        null,
+                        artistsOfAlbum[it.id],
                         null,
                         null,
                         now,
