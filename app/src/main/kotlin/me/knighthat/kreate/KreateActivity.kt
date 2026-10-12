@@ -23,9 +23,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
@@ -65,20 +62,13 @@ class KreateActivity : ComponentActivity() {
 
     private val scope: CoroutineScope by inject()
 
-    @Composable
-    private fun Greeting(name: String, modifier: Modifier = Modifier) {
-        Text(
-            text = "Hello $name!",
-            modifier = modifier
-        )
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         // Must be called before super.onCreate, it swaps the splash theme for the app theme
         installSplashScreen().setKeepOnScreenCondition { !isReady }
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // Requires context, must run after `super.onCreate(savedInstanceState)`
         isSetup = setupCompletedFile().exists()
         // Don't run subsequent tasks if not yet setup
         if (!isSetup) {

@@ -42,6 +42,17 @@ internal interface UserAlbumDao {
     @Query("SELECT * FROM user_album_view WHERE user_id = :userId AND album_id = :albumId")
     fun find(userId: String, albumId: String): Flow<UserAlbumViewEntity?>
 
+    /**
+     * Albums of the library that have a song the artist is credited on, newest first.
+     */
+    @Query(
+        "SELECT * FROM user_album_view WHERE user_id = :userId AND album_id IN (" +
+                "SELECT s.album_id FROM song s JOIN song_artist_map m ON m.song_id = s.id " +
+                "WHERE m.artist_id = :artistId AND s.album_id IS NOT NULL) " +
+                "ORDER BY year DESC, name COLLATE NOCASE LIMIT :limit"
+    )
+    fun ofArtist(userId: String, artistId: String, limit: Int): Flow<List<UserAlbumViewEntity>>
+
     @Query("SELECT * FROM user_album WHERE user_id = :userId AND album_id = :albumId")
     suspend fun get(userId: String, albumId: String): UserAlbumEntity?
 

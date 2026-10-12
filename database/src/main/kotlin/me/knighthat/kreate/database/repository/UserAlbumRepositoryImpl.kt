@@ -73,6 +73,12 @@ internal class UserAlbumRepositoryImpl(
             }
         }
 
+    override fun ofArtist(artistId: String, limit: Int): Flow<List<UserAlbumView>> =
+        scope.observe(emptyList()) { userId ->
+            userAlbumDao.ofArtist(userId, artistId, limit)
+                .map { albums -> albums.map(UserAlbumViewEntity::toModel) }
+        }
+
     override fun find(albumId: String): Flow<UserAlbumView?> =
         scope.observe(null) { userId ->
             userAlbumDao.find(userId, albumId).map { it?.toModel() }

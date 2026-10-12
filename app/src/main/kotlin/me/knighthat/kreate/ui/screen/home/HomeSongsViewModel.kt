@@ -16,26 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.knighthat.kreate.ui.screen
+package me.knighthat.kreate.ui.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
-import me.knighthat.kreate.database.repository.UserAlbumRepository
-import me.knighthat.kreate.database.repository.UserArtistRepository
 import me.knighthat.kreate.database.repository.UserSongRepository
+import me.knighthat.kreate.ui.component.toMediaItems
 
 /**
- * The songs, albums and artists in the active user's library. Pages are kept while the screen
- * lives, so they survive a rotation.
+ * The songs in the active user's library. Pages are kept while the screen lives.
  */
-class KreateAppViewModel(
-    songRepository: UserSongRepository,
-    albumRepository: UserAlbumRepository,
-    artistRepository: UserArtistRepository,
-) : ViewModel() {
+class HomeSongsViewModel(songRepository: UserSongRepository) : ViewModel() {
 
-    val songs = songRepository.all().cachedIn(viewModelScope)
-    val albums = albumRepository.all().cachedIn(viewModelScope)
-    val artists = artistRepository.all().cachedIn(viewModelScope)
+    val songs = songRepository.all()
+        .toMediaItems()
+        .cachedIn(viewModelScope)
 }

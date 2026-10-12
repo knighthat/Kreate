@@ -50,6 +50,12 @@ interface UserAlbumRepository {
         ),
     ): Flow<PagingData<UserAlbumView>>
 
+    /**
+     * Albums of the library that have a song the artist is credited on, newest first, at most
+     * [limit] of them. The list follows changes in the database.
+     */
+    fun ofArtist(artistId: String, limit: Int): Flow<List<UserAlbumView>>
+
     fun find(albumId: String): Flow<UserAlbumView?>
 
     /**

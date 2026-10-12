@@ -27,12 +27,14 @@ import androidx.media3.common.MediaItem
 /**
  * A song as a row: cover, title, "artist · album" under it, and the length at the end, level
  * with the bottom line. Icons above the title tell a file on this device and explicit songs.
+ * Pass `showThumbnail = false` where the cover is already on screen, like inside its album.
  */
 @Composable
 fun SongItem(
     item: MediaItem,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    showThumbnail: Boolean = true,
 ) {
     val duration = formatDuration(item.mediaMetadata.durationMs)
 
@@ -40,6 +42,7 @@ fun SongItem(
         item = item,
         onClick = onClick,
         modifier = modifier,
+        showThumbnail = showThumbnail,
         trailing = duration?.let {
             { Text(it, style = MaterialTheme.typography.labelSmall) }
         },

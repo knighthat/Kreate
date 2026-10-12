@@ -74,6 +74,11 @@ dependencies {
     implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.material3)
 
+    // Navigation
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+
     // Images, remote ones go through the app's Ktor client
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor)

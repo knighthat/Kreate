@@ -47,6 +47,31 @@ interface UserSongRepository {
         order: SortOrder<UserSongSort> = SortOrder(UserSongSort.LIKED_AT, SortDirection.DESCENDING),
     ): Flow<PagingData<UserSongView>>
 
+    /**
+     * Songs of the library that are on the album, a page at a time, in album order unless
+     * [order] says otherwise.
+     */
+    fun ofAlbum(
+        albumId: String,
+        order: SortOrder<UserSongSort> = SortOrder(UserSongSort.ALBUM_POSITION),
+    ): Flow<PagingData<UserSongView>>
+
+    /**
+     * Songs of the library that the artist is credited on, a page at a time.
+     */
+    fun ofArtist(
+        artistId: String,
+        order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME),
+    ): Flow<PagingData<UserSongView>>
+
+    /**
+     * Songs of the library that are in the playlist, a page at a time.
+     */
+    fun ofPlaylist(
+        playlistId: Long,
+        order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME),
+    ): Flow<PagingData<UserSongView>>
+
     fun find(songId: String): Flow<UserSongView?>
 
     /**

@@ -18,59 +18,72 @@
 
 package me.knighthat.kreate.ui.screen
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
+import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
 import me.knighthat.kreate.preferences.Preferences
 import me.knighthat.kreate.preferences.collectAsStateWithLifecycle
-import me.knighthat.kreate.ui.component.AlbumItem
-import me.knighthat.kreate.ui.component.ArtistItem
-import me.knighthat.kreate.ui.component.SongItem
-import me.knighthat.kreate.ui.component.toMediaItem
+import me.knighthat.kreate.ui.navigation.Albums
+import me.knighthat.kreate.ui.navigation.Artists
+import me.knighthat.kreate.ui.navigation.LocalAlbum
+import me.knighthat.kreate.ui.navigation.LocalArtist
+import me.knighthat.kreate.ui.navigation.LocalPlaylist
+import me.knighthat.kreate.ui.navigation.Playlists
+import me.knighthat.kreate.ui.navigation.Route
+import me.knighthat.kreate.ui.navigation.Songs
+import me.knighthat.kreate.ui.navigation.Tab
+import me.knighthat.kreate.ui.navigation.rememberTopLevelBackStack
+import me.knighthat.kreate.ui.navigation.routeViewModel
+import me.knighthat.kreate.ui.screen.detail.LocalAlbumDetailScreen
+import me.knighthat.kreate.ui.screen.detail.LocalArtistDetailScreen
+import me.knighthat.kreate.ui.screen.detail.LocalPlaylistDetailScreen
+import me.knighthat.kreate.ui.screen.home.HomeAlbumsScreen
+import me.knighthat.kreate.ui.screen.home.HomeArtistsScreen
+import me.knighthat.kreate.ui.screen.home.HomePlaylistsScreen
+import me.knighthat.kreate.ui.screen.home.HomeSongsScreen
 import me.knighthat.kreate.ui.theme.KreateTheme
-import org.koin.androidx.compose.koinViewModel
 
 
-private const val SONG_ROWS = 3
-private val SONG_HEIGHT = 64.dp
-private val SONG_WIDTH = 280.dp
-
+/**
+ * One button for each [Tab].
+ */
 @Composable
-private fun Section(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-    )
+private fun BottomBar(
+    selected: Tab,
+    onSelect: (Tab) -> Unit,
+) {
+    NavigationBar {
+        Tab.entries.forEach {
+            NavigationBarItem(
+                selected = it == selected,
+                onClick = { onSelect(it) },
+                icon = { Icon(painterResource(it.icon), contentDescription = null) },
+                label = { Text(it.label) },
+            )
+        }
+    }
 }
 
 @Composable
-fun KreateApp(
-    viewModel: KreateAppViewModel = koinViewModel()
-) {
+fun KreateApp() {
     val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
     val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
+
+    val topLevel = rememberTopLevelBackStack()
 
     KreateTheme(
         themeMode = themeMode,
@@ -78,62 +91,54 @@ fun KreateApp(
         colorSeed = Color.Unspecified,
     ) {
         Scaffold(
-            topBar = {},
-            bottomBar = {},
+            bottomBar = {
+                // Only the tabs have the bar, a detail screen covers the whole window
+                if ((topLevel.backStack.lastOrNull() as? Route)?.let(Tab::of) != null)
+                    BottomBar(selected = topLevel.currentTab, onSelect = topLevel::switchTab)
+            },
             containerColor = MaterialTheme.colorScheme.surfaceDim,
             modifier = Modifier.fillMaxSize(),
-        ) { innerPadding ->
-            val songs = viewModel.songs.collectAsLazyPagingItems()
-            val albums = viewModel.albums.collectAsLazyPagingItems()
-            val artists = viewModel.artists.collectAsLazyPagingItems()
+        ) { barPadding ->
+            NavDisplay(
+                backStack = topLevel.backStack,
+                onBack = topLevel::pop,
+                entryDecorators = listOf(
+                    rememberSaveableStateHolderNavEntryDecorator(),
+                    rememberViewModelStoreNavEntryDecorator(),
+                ),
+                entryProvider = entryProvider {
+                    val paddingModifier =
+                        Modifier.padding(bottom = barPadding.calculateBottomPadding())
 
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Section("Songs")
-                LazyHorizontalGrid(
-                    rows = GridCells.Fixed(SONG_ROWS),
-                    contentPadding = PaddingValues(horizontal = 8.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(SONG_HEIGHT * SONG_ROWS),
-                ) {
-                    items(count = songs.itemCount, key = songs.itemKey { it.songId }) { index ->
-                        // A song that can't be played right now has no item, its cell stays empty
-                        val item = songs[index]?.let { remember(it) { it.toMediaItem() } }
-                        if (item != null)
-                            SongItem(item, onClick = {}, modifier = Modifier.width(SONG_WIDTH))
+                    entry<Songs> { HomeSongsScreen(paddingModifier) }
+                    entry<Albums> {
+                        HomeAlbumsScreen({ topLevel.push(LocalAlbum(it)) }, paddingModifier)
                     }
-                }
+                    entry<Artists> {
+                        HomeArtistsScreen({ topLevel.push(LocalArtist(it)) }, paddingModifier)
+                    }
+                    entry<Playlists> {
+                        HomePlaylistsScreen(
+                            { topLevel.push(LocalPlaylist(it.toLong())) },
+                            paddingModifier
+                        )
+                    }
 
-                Section("Albums")
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    items(count = albums.itemCount, key = albums.itemKey { it.albumId }) { index ->
-                        val item = albums[index]?.let { remember(it) { it.toMediaItem() } }
-                        if (item != null)
-                            AlbumItem(item, onClick = {}, modifier = Modifier.width(104.dp))
+                    entry<LocalAlbum> {
+                        LocalAlbumDetailScreen(topLevel::pop, viewModel = routeViewModel(it))
                     }
-                }
-
-                Section("Artists")
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    items(
-                        count = artists.itemCount,
-                        key = artists.itemKey { it.artistId }) { index ->
-                        val item = artists[index]?.let { remember(it) { it.toMediaItem() } }
-                        if (item != null)
-                            ArtistItem(item, onClick = {}, modifier = Modifier.width(80.dp))
+                    entry<LocalArtist> {
+                        LocalArtistDetailScreen(
+                            onBack = topLevel::pop,
+                            onOpenAlbum = { id -> topLevel.push(LocalAlbum(id)) },
+                            viewModel = routeViewModel(it),
+                        )
                     }
-                }
-            }
+                    entry<LocalPlaylist> {
+                        LocalPlaylistDetailScreen(topLevel::pop, viewModel = routeViewModel(it))
+                    }
+                },
+            )
         }
     }
 }

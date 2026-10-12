@@ -20,6 +20,7 @@ package me.knighthat.kreate.database.repository
 
 import androidx.paging.PagingData
 import androidx.room.RoomRawQuery
+import androidx.sqlite.SQLiteStatement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.ActiveUser
@@ -54,9 +55,29 @@ internal class UserSongRepositoryImpl(
     override fun liked(order: SortOrder<UserSongSort>): Flow<PagingData<UserSongView>> =
         paged(order, filter = "AND liked_at >= 0")
 
+    override fun ofAlbum(albumId: String, order: SortOrder<UserSongSort>) =
+        paged(order, filter = "AND album_id = ?") { it.bindText(2, albumId) }
+
+    override fun ofArtist(artistId: String, order: SortOrder<UserSongSort>) =
+        paged(
+            order,
+            filter = "AND song_id IN (SELECT song_id FROM song_artist_map WHERE artist_id = ?)",
+        ) { it.bindText(2, artistId) }
+
+    override fun ofPlaylist(playlistId: Long, order: SortOrder<UserSongSort>) =
+        paged(
+            order,
+            filter = "AND song_id IN (SELECT song_id FROM song_playlist_map WHERE playlist_id = ?)",
+        ) { it.bindLong(2, playlistId) }
+
+    /**
+     * @param filter extra conditions after the user's, its `?` start at position 2
+     * @param bind binds the values of [filter]
+     */
     private fun paged(
         order: SortOrder<UserSongSort>,
-        filter: String
+        filter: String,
+        bind: (SQLiteStatement) -> Unit = {},
     ): Flow<PagingData<UserSongView>> =
         scope.observe(PagingData.empty()) { userId ->
             pagedFlow(UserSongViewEntity::toModel) {
@@ -67,7 +88,10 @@ internal class UserSongRepositoryImpl(
                                 "song_id"
                             )
                         }",
-                        onBindStatement = { it.bindText(1, userId) },
+                        onBindStatement = {
+                            it.bindText(1, userId)
+                            bind(it)
+                        },
                     )
                 )
             }

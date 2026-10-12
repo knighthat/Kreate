@@ -29,6 +29,10 @@ import androidx.media3.common.Rating
 import androidx.media3.common.ThumbRating
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaConstants
+import androidx.paging.PagingData
+import androidx.paging.flatMap
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.model.Origin
 import me.knighthat.kreate.database.model.UserAlbumView
 import me.knighthat.kreate.database.model.UserArtistView
@@ -237,3 +241,10 @@ fun UserPlaylist.toMediaItem(): MediaItem =
         setIsBrowsable(true)
         setIsPlayable(false)
     }
+
+/**
+ * The songs as media items, ready to show. A song that can't be played right now is left out.
+ * Convert before `cachedIn` so the items are kept with the pages.
+ */
+fun Flow<PagingData<UserSongView>>.toMediaItems(): Flow<PagingData<MediaItem>> =
+    map { page -> page.flatMap { listOfNotNull(it.toMediaItem()) } }

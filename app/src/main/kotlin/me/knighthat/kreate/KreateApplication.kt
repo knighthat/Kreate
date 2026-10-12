@@ -36,12 +36,10 @@ import me.knighthat.kreate.media.LocalCoverKeyer
 import me.knighthat.kreate.preferences.Preferences
 import me.knighthat.kreate.preferences.preferencesModule
 import me.knighthat.kreate.screen.setupCompletedFile
-import me.knighthat.kreate.ui.screen.KreateAppViewModel
 import okio.Path.Companion.toOkioPath
 import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
-import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -77,8 +75,6 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
 
             modules(
                 module {
-                    viewModelOf(::KreateAppViewModel)
-
                     // Lives as long as the process; use for work that must outlive any screen
                     single { CoroutineScope(SupervisorJob() + Dispatchers.Default) }
 
@@ -95,6 +91,7 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                 databaseModule,
                 preferencesModule,
                 networkModule,
+                viewModelModule
             )
         }
     }

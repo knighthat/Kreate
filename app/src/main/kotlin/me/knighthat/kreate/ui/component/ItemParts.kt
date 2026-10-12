@@ -146,13 +146,15 @@ fun ItemBadges(
 
 /**
  * An item as a row: cover, then the title with its badges above and the subtitle below.
- * [trailing] sits at the end, level with the bottom of the text.
+ * [trailing] sits at the end, level with the bottom of the text. The cover is left out when
+ * [showThumbnail] is `false`, the text then starts at the edge.
  */
 @Composable
 fun ItemRow(
     item: MediaItem,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    showThumbnail: Boolean = true,
     trailing: (@Composable () -> Unit)? = null,
 ) {
     val metadata = item.mediaMetadata
@@ -165,15 +167,16 @@ fun ItemRow(
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 6.dp),
     ) {
-        Thumbnail(
-            uri = metadata.artworkUri,
-            title = metadata.title,
-            shape = MaterialTheme.shapes.small,
-            modifier = Modifier.size(ROW_THUMBNAIL_SIZE),
-            localSongId = item.mediaId.toLongOrNull().takeIf {
-                item.isLocal && metadata.mediaType == MediaMetadata.MEDIA_TYPE_MUSIC
-            },
-        )
+        if (showThumbnail)
+            Thumbnail(
+                uri = metadata.artworkUri,
+                title = metadata.title,
+                shape = MaterialTheme.shapes.small,
+                modifier = Modifier.size(ROW_THUMBNAIL_SIZE),
+                localSongId = item.mediaId.toLongOrNull().takeIf {
+                    item.isLocal && metadata.mediaType == MediaMetadata.MEDIA_TYPE_MUSIC
+                },
+            )
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.Bottom,
