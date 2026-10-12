@@ -45,6 +45,7 @@ import me.knighthat.kreate.ui.navigation.LocalPlaylist
 import me.knighthat.kreate.ui.navigation.Playlists
 import me.knighthat.kreate.ui.navigation.Route
 import me.knighthat.kreate.ui.navigation.Search
+import me.knighthat.kreate.ui.navigation.SearchResults
 import me.knighthat.kreate.ui.navigation.Songs
 import me.knighthat.kreate.ui.navigation.Tab
 import me.knighthat.kreate.ui.navigation.rememberTopLevelBackStack
@@ -56,6 +57,7 @@ import me.knighthat.kreate.ui.screen.home.HomeAlbumsScreen
 import me.knighthat.kreate.ui.screen.home.HomeArtistsScreen
 import me.knighthat.kreate.ui.screen.home.HomePlaylistsScreen
 import me.knighthat.kreate.ui.screen.home.HomeSongsScreen
+import me.knighthat.kreate.ui.screen.search.SearchResultsScreen
 import me.knighthat.kreate.ui.screen.search.SearchScreen
 import me.knighthat.kreate.ui.theme.KreateTheme
 
@@ -143,6 +145,19 @@ fun KreateApp() {
                             onOpenAlbum = { topLevel.push(LocalAlbum(it)) },
                             onOpenArtist = { topLevel.push(LocalArtist(it)) },
                             onOpenPlaylist = { topLevel.push(LocalPlaylist(it.toLong())) },
+                            onSearch = { query, origin, tab ->
+                                topLevel.push(SearchResults(query, origin, tab))
+                            },
+                        )
+                    }
+                    entry<SearchResults> {
+                        SearchResultsScreen(
+                            initialTab = it.tab,
+                            onBack = topLevel::pop,
+                            onOpenAlbum = { id -> topLevel.push(LocalAlbum(id)) },
+                            onOpenArtist = { id -> topLevel.push(LocalArtist(id)) },
+                            onOpenPlaylist = { id -> topLevel.push(LocalPlaylist(id.toLong())) },
+                            viewModel = routeViewModel(it),
                         )
                     }
 

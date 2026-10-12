@@ -225,6 +225,7 @@ fun SearchScreen(
     onOpenAlbum: (albumId: String) -> Unit,
     onOpenArtist: (artistId: String) -> Unit,
     onOpenPlaylist: (playlistId: String) -> Unit,
+    onSearch: (query: String, origin: Origin, tab: Tab) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = koinViewModel(),
 ) {
@@ -237,6 +238,15 @@ fun SearchScreen(
     val albums = viewModel.albums.collectAsLazyPagingItems()
     val artists = viewModel.artists.collectAsLazyPagingItems()
     val playlists = viewModel.playlists.collectAsLazyPagingItems()
+
+    // Records the search and opens its results, a blank text searches for nothing
+    val search = { term: String ->
+        if (term.isNotBlank()) {
+            viewModel.submit()
+            // Opens on the first chosen kind, from the left
+            onSearch(term.trim(), origin, Tab.entries.firstOrNull { it in categories } ?: Tab.SONGS)
+        }
+    }
 
     var showConfig by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
@@ -265,7 +275,7 @@ fun SearchScreen(
             SearchInputBar(
                 text = text,
                 onTextChange = viewModel::setText,
-                onSearch = viewModel::submit,
+                onSearch = { search(text) },
                 onConfig = { showConfig = true },
                 focusRequester = focusRequester,
             )
@@ -311,13 +321,13 @@ fun SearchScreen(
                         item(key = "recent-title") {
                             SectionTitle(if (text.isBlank()) "Recent searches" else "Searches")
                         }
-                    items(recent, key = { "recent:" + it.query }) { search ->
+                    items(recent, key = { "recent:" + it.query }) { recentSearch ->
                         ListItem(
-                            headlineContent = { Text(search.query) },
+                            headlineContent = { Text(recentSearch.query) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                             modifier = Modifier.clickable {
-                                viewModel.setText(search.query)
-                                viewModel.submit()
+                                viewModel.setText(recentSearch.query)
+                                search(recentSearch.query)
                             },
                         )
                     }

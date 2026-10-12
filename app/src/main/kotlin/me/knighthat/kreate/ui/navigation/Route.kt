@@ -24,6 +24,7 @@ import androidx.core.os.bundleOf
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import me.knighthat.kreate.R
+import me.knighthat.kreate.database.model.Origin
 
 /**
  * Every screen the app can show. Entries on the back stack are instances of this.
@@ -51,6 +52,20 @@ data object Playlists : Route
 
 @Serializable
 data object Search : Route
+
+/**
+ * What [origin] found for [query], by kind. The screen opens on the [tab] of one of them.
+ */
+@Serializable
+data class SearchResults(val query: String, val origin: Origin, val tab: Tab) : Route {
+
+    override val arguments: Bundle get() = bundleOf(QUERY to query, ORIGIN to origin.name)
+
+    companion object {
+        const val QUERY = "query"
+        const val ORIGIN = "origin"
+    }
+}
 
 @Serializable
 data class LocalAlbum(val id: String) : Route {
