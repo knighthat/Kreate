@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "003229b1e15711d60c056d0ad9b119b5",
+    "identityHash": "91ade89a79d723a12a5d60ca044cc70a",
     "entities": [
       {
         "tableName": "album",
@@ -1107,12 +1107,12 @@
       },
       {
         "viewName": "user_song_view",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n    us.user_id AS user_id,\n    s.id AS song_id,\n    s.origin AS origin,\n    COALESCE(us.name, s.name) AS name,\n    COALESCE(\n        us.artists,\n        (SELECT json_group_array(COALESCE(ua.name, ar.name)) FILTER (WHERE COALESCE(ua.name, ar.name) IS NOT NULL)\n            FROM song_artist_map m\n            JOIN artist ar ON ar.id = m.artist_id\n            LEFT JOIN user_artist ua ON ua.artist_id = ar.id AND ua.user_id = us.user_id\n            WHERE m.song_id = s.id)\n    ) AS artists,\n    (SELECT json_group_array(m.artist_id) FROM song_artist_map m WHERE m.song_id = s.id) AS artist_ids,\n    COALESCE(us.thumbnail, s.thumbnail, ual.thumbnail, al.thumbnail) AS thumbnail,\n    s.duration AS duration,\n    s.is_explicit AS is_explicit,\n    s.album_id AS album_id,\n    COALESCE(ual.name, al.name) AS album_name,\n    s.album_position AS album_position,\n    s.unavailable_since AS unavailable_since,\n    us.liked_at AS liked_at\nFROM user_song us\nJOIN song s ON s.id = us.song_id\nLEFT JOIN album al ON al.id = s.album_id\nLEFT JOIN user_album ual ON ual.album_id = s.album_id AND ual.user_id = us.user_id"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n    us.user_id AS user_id,\n    s.id AS song_id,\n    s.origin AS origin,\n    COALESCE(us.name, s.name) AS name,\n    COALESCE(\n        us.artists,\n        (SELECT json_group_array(COALESCE(ua.name, ar.name)) FILTER (WHERE COALESCE(ua.name, ar.name) IS NOT NULL)\n            FROM song_artist_map m\n            JOIN artist ar ON ar.id = m.artist_id\n            LEFT JOIN user_artist ua ON ua.artist_id = ar.id AND ua.user_id = us.user_id\n            WHERE m.song_id = s.id)\n    ) AS artists,\n    (SELECT json_group_array(m.artist_id) FROM song_artist_map m WHERE m.song_id = s.id) AS artist_ids,\n    COALESCE(us.thumbnail, s.thumbnail, ual.thumbnail, al.thumbnail) AS thumbnail,\n    s.duration AS duration,\n    s.is_explicit AS is_explicit,\n    s.album_id AS album_id,\n    COALESCE(ual.name, al.name) AS album_name,\n    s.album_position AS album_position,\n    s.unavailable_since AS unavailable_since,\n    us.liked_at AS liked_at\nFROM user_song us\nJOIN song s ON s.id = us.song_id\nLEFT JOIN album al ON al.id = s.album_id\nLEFT JOIN user_album ual ON ual.album_id = s.album_id AND ual.user_id = us.user_id\nWHERE s.unavailable_since IS NULL"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '003229b1e15711d60c056d0ad9b119b5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '91ade89a79d723a12a5d60ca044cc70a')"
     ]
   }
 }

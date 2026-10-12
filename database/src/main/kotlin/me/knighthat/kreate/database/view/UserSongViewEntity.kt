@@ -28,6 +28,9 @@ import kotlin.time.Instant
 /**
  * A song in one user's library with every value resolved: the user's own value when set,
  * the shared one otherwise. Filter on [userId].
+ *
+ * Songs a scan missed (`unavailable_since` is set) are left out, they come back once a scan
+ * finds them again. Their rows and the users' data stay in the tables.
  */
 @DatabaseView(
     viewName = "user_song_view",
@@ -57,7 +60,8 @@ import kotlin.time.Instant
                 "FROM user_song us\n" +
                 "JOIN song s ON s.id = us.song_id\n" +
                 "LEFT JOIN album al ON al.id = s.album_id\n" +
-                "LEFT JOIN user_album ual ON ual.album_id = s.album_id AND ual.user_id = us.user_id\n",
+                "LEFT JOIN user_album ual ON ual.album_id = s.album_id AND ual.user_id = us.user_id\n" +
+                "WHERE s.unavailable_since IS NULL\n",
 )
 internal data class UserSongViewEntity(
     @ColumnInfo(name = "user_id")
