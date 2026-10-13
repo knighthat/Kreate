@@ -32,10 +32,10 @@ import me.knighthat.kreate.constant.ContrastLevel
 import me.knighthat.kreate.constant.ThemeMode
 import me.knighthat.kreate.database.ActiveUser
 import me.knighthat.kreate.database.repository.UserRepository
-import me.knighthat.kreate.media.LocalMusicScheduler
 import me.knighthat.kreate.preferences.Preferences
 import me.knighthat.kreate.screen.SetupWizardScreen
 import me.knighthat.kreate.screen.setupCompletedFile
+import me.knighthat.kreate.source.local.LocalMusicScheduler
 import me.knighthat.kreate.ui.screen.KreateApp
 import me.knighthat.kreate.utils.hasAudioPermission
 import org.koin.android.ext.android.get

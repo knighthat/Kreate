@@ -31,12 +31,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import me.knighthat.kreate.database.ActiveUser
 import me.knighthat.kreate.database.databaseModule
-import me.knighthat.kreate.media.LocalCoverFetcher
-import me.knighthat.kreate.media.LocalCoverKeyer
 import me.knighthat.kreate.playback.playbackModule
 import me.knighthat.kreate.preferences.Preferences
 import me.knighthat.kreate.preferences.preferencesModule
 import me.knighthat.kreate.screen.setupCompletedFile
+import me.knighthat.kreate.source.local.LocalCoverFetcher
+import me.knighthat.kreate.source.local.LocalCoverKeyer
 import okio.Path.Companion.toOkioPath
 import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext

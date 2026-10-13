@@ -46,8 +46,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import coil3.compose.AsyncImage
 import me.knighthat.kreate.R
-import me.knighthat.kreate.media.LocalCover
-import me.knighthat.kreate.media.isAlbumArt
+import me.knighthat.kreate.source.local.LocalCover
+import me.knighthat.kreate.source.local.isAlbumArt
 
 private val BADGE_SIZE = 12.dp
 private val ROW_THUMBNAIL_SIZE = 48.dp

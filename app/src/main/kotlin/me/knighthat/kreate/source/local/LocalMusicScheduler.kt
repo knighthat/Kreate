@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.knighthat.kreate.media
+package me.knighthat.kreate.source.local
 
 import android.content.Context
 import androidx.work.Constraints
@@ -26,7 +26,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import me.knighthat.kreate.media.LocalMusicScheduler.scanNow
+import me.knighthat.kreate.source.local.LocalMusicScheduler.scanNow
 import java.util.concurrent.TimeUnit
 
 /**

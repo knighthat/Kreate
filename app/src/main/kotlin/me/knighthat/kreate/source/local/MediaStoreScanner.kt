@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.knighthat.kreate.media
+package me.knighthat.kreate.source.local
 
 import android.content.ContentResolver
 import android.net.Uri

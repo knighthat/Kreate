@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import me.knighthat.kreate.database.model.Origin
-import me.knighthat.kreate.media.albumArtUri
+import me.knighthat.kreate.source.local.albumArtUri
 import me.knighthat.kreate.ui.component.SongItem
 import org.koin.androidx.compose.koinViewModel
 

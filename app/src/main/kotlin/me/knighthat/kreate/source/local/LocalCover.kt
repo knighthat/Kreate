@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.knighthat.kreate.media
+package me.knighthat.kreate.source.local
 
 import android.content.ContentUris
 import android.graphics.Bitmap
@@ -33,7 +33,7 @@ import coil3.fetch.Fetcher
 import coil3.fetch.ImageFetchResult
 import coil3.key.Keyer
 import coil3.request.Options
-import me.knighthat.kreate.media.LocalCoverFetcher.Companion.MAX_SIZE
+import me.knighthat.kreate.source.local.LocalCoverFetcher.Companion.MAX_SIZE
 import java.io.IOException
 
 private val ALBUM_ART: Uri = "content://media/external/audio/albumart".toUri()

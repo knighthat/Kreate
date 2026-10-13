@@ -38,7 +38,7 @@ import me.knighthat.kreate.database.model.UserAlbumView
 import me.knighthat.kreate.database.model.UserArtistView
 import me.knighthat.kreate.database.model.UserPlaylist
 import me.knighthat.kreate.database.model.UserSongView
-import me.knighthat.kreate.media.albumArtUri
+import me.knighthat.kreate.source.local.albumArtUri
 import kotlin.time.Duration
 import kotlin.time.Instant
 
