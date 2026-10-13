@@ -37,7 +37,7 @@ object Preferences : KoinComponent {
 
     private val engine: PreferenceEngine by inject()
 
-    val THEME_MODE by lazy { enum("theme_mode", ThemeMode.AUTOMATIC) }
+    val THEME_MODE by lazy { enum("theme_mode", ThemeMode.THUMBNAIL) }
     val CONTRAST_LEVEL by lazy { enum("contrast_level", ContrastLevel.NORMAL) }
 
     /**

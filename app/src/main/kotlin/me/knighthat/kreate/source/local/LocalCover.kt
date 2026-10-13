@@ -33,6 +33,7 @@ import coil3.fetch.Fetcher
 import coil3.fetch.ImageFetchResult
 import coil3.key.Keyer
 import coil3.request.Options
+import coil3.size.pxOrElse
 import me.knighthat.kreate.source.local.LocalCoverFetcher.Companion.MAX_SIZE
 import java.io.IOException
 
@@ -57,12 +58,15 @@ fun Uri.isAlbumArt(): Boolean =
  * @property songId id of the song in the media index
  * @property albumArt cover of the song's album, `null` when the song has no album
  */
-data class LocalCover(val songId: Long, val albumArt: Uri?)
+data class LocalCover(val songId: Long, val albumArt: Uri?) {
+
+    /** Key of the picture in Coil's caches. */
+    val cacheKey: String get() = "local_cover:$songId:$albumArt"
+}
 
 class LocalCoverKeyer : Keyer<LocalCover> {
 
-    override fun key(data: LocalCover, options: Options) =
-        "local_cover:${data.songId}:${data.albumArt}"
+    override fun key(data: LocalCover, options: Options) = data.cacheKey
 }
 
 /**
@@ -114,14 +118,22 @@ class LocalCoverFetcher(
     }
 
     /**
-     * Decodes at most [MAX_SIZE] pixels per side, the pictures in files can be very large.
+     * Decodes at most [MAX_SIZE] pixels per side, the pictures in files can be very large. When
+     * the request has a size, the picture is made no larger than needed to cover it, a small
+     * thumbnail doesn't need to keep a large picture in memory.
      */
     private fun decode(bytes: ByteArray): Bitmap? {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
 
+        val width = options.size.width.pxOrElse { MAX_SIZE }
+        val height = options.size.height.pxOrElse { MAX_SIZE }
+
         var sample = 1
-        while (bounds.outWidth / sample > MAX_SIZE || bounds.outHeight / sample > MAX_SIZE)
+        while (
+            bounds.outWidth / sample > MAX_SIZE || bounds.outHeight / sample > MAX_SIZE ||
+            (bounds.outWidth / (sample * 2) >= width && bounds.outHeight / (sample * 2) >= height)
+        )
             sample *= 2
 
         return BitmapFactory.decodeByteArray(

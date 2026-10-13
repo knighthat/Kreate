@@ -35,12 +35,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import me.knighthat.kreate.constant.ThemeMode
 import me.knighthat.kreate.playback.PlaybackController
 import me.knighthat.kreate.preferences.Preferences
 import me.knighthat.kreate.preferences.collectAsStateWithLifecycle
@@ -68,6 +68,7 @@ import me.knighthat.kreate.ui.screen.home.HomeSongsScreen
 import me.knighthat.kreate.ui.screen.search.SearchResultsScreen
 import me.knighthat.kreate.ui.screen.search.SearchScreen
 import me.knighthat.kreate.ui.theme.KreateTheme
+import me.knighthat.kreate.ui.theme.rememberThumbnailSeed
 import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
@@ -128,11 +129,13 @@ fun KreateApp() {
 
     val topLevel = rememberTopLevelBackStack()
     val playback = koinInject<PlaybackController>()
+    val playing by playback.state.collectFlowAsState()
+    val seed = rememberThumbnailSeed(playing.current, themeMode == ThemeMode.THUMBNAIL)
 
     KreateTheme(
         themeMode = themeMode,
         contrastLevel = contrastLevel,
-        colorSeed = Color.Unspecified,
+        colorSeed = seed,
     ) {
         Scaffold(
             bottomBar = {

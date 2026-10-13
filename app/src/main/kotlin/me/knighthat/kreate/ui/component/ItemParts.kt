@@ -53,6 +53,22 @@ private val BADGE_SIZE = 12.dp
 private val ROW_THUMBNAIL_SIZE = 48.dp
 
 /**
+ * What Coil loads for the picture of an item, `null` when it has none. See [Thumbnail] for the
+ * parameters.
+ */
+fun thumbnailModel(uri: Uri?, localSongId: Long?): Any? =
+    if (localSongId != null && (uri == null || uri.isAlbumArt())) LocalCover(localSongId, uri)
+    else uri
+
+/**
+ * Id in the media index when this is a song on this device, `null` otherwise.
+ */
+val MediaItem.localSongId: Long?
+    get() = mediaId.toLongOrNull().takeIf {
+        isLocal && mediaMetadata.mediaType == MediaMetadata.MEDIA_TYPE_MUSIC
+    }
+
+/**
  * Cover or picture of an item. The size comes from [modifier]. While there is no picture, or
  * it cannot be loaded, the first letter of [title] shows on a plain background.
  *
@@ -68,9 +84,7 @@ fun Thumbnail(
     modifier: Modifier = Modifier,
     localSongId: Long? = null,
 ) {
-    val model: Any? =
-        if (localSongId != null && (uri == null || uri.isAlbumArt())) LocalCover(localSongId, uri)
-        else uri
+    val model = thumbnailModel(uri, localSongId)
 
     Box(
         modifier = modifier
@@ -173,9 +187,7 @@ fun ItemRow(
                 title = metadata.title,
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier.size(ROW_THUMBNAIL_SIZE),
-                localSongId = item.mediaId.toLongOrNull().takeIf {
-                    item.isLocal && metadata.mediaType == MediaMetadata.MEDIA_TYPE_MUSIC
-                },
+                localSongId = item.localSongId,
             )
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
