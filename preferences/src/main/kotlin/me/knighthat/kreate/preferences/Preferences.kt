@@ -23,6 +23,7 @@ import me.knighthat.kreate.constant.OpenSubsonicAuth
 import me.knighthat.kreate.constant.ThemeMode
 import me.knighthat.kreate.preferences.Preferences.IMAGE_DISK_CACHE
 import me.knighthat.kreate.preferences.Preferences.NETWORK_CONNECT_TIMEOUT
+import me.knighthat.kreate.preferences.Preferences.OPEN_SUBSONIC_CERTIFICATE_SHA256
 import me.knighthat.kreate.preferences.Preferences.awaitLoaded
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -100,6 +101,24 @@ object Preferences : KoinComponent {
     val OPEN_SUBSONIC_AUTH by lazy { enum("open_subsonic_auth", OpenSubsonicAuth.PASSWORD) }
 
     val OPEN_SUBSONIC_USERNAME by lazy { string("open_subsonic_username", "") }
+
+    /**
+     * Whether a server whose certificate chain ends in a self-signed certificate is trusted.
+     * Off by default. The first such certificate seen is remembered in
+     * [OPEN_SUBSONIC_CERTIFICATE_SHA256], and a different one is refused until the user trusts it.
+     */
+    val OPEN_SUBSONIC_ALLOW_SELF_SIGNED by lazy {
+        boolean(
+            "open_subsonic_allow_self_signed",
+            false
+        )
+    }
+
+    /** Host the remembered certificate belongs to, empty when none is remembered. */
+    val OPEN_SUBSONIC_CERTIFICATE_HOST by lazy { string("open_subsonic_certificate_host", "") }
+
+    /** SHA-256 fingerprint of the remembered self-signed certificate, empty when none is. */
+    val OPEN_SUBSONIC_CERTIFICATE_SHA256 by lazy { string("open_subsonic_certificate_sha256", "") }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Coil3">

@@ -146,7 +146,7 @@ fun SearchResultsScreen(
                     current.loadState.refresh !is LoadState.Loading)
         ) {
             Text(
-                text = if (viewModel.origin != Origin.LOCAL) "Searching YouTube isn't available yet"
+                text = if (viewModel.origin != Origin.LOCAL) "Searching ${viewModel.origin.name} isn't available yet"
                 else "No ${selected.label.lowercase()} found for \"${viewModel.query}\"",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

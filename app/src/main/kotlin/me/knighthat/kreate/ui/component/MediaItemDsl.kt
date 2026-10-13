@@ -152,7 +152,7 @@ fun UserSongView.toMediaItem(): MediaItem? {
             songId.toLongOrNull() ?: return null,
         )
 
-        Origin.YOUTUBE -> return null
+        Origin.YOUTUBE, Origin.OPEN_SUBSONIC -> return null
     }
 
     return mediaItem(songId, uri) {
@@ -229,7 +229,7 @@ fun UserPlaylist.toMediaItem(): MediaItem =
         setSubtitle(
             subtitle(
                 if (isMonthly) "Monthly" else null,
-                if (origin == Origin.LOCAL) "On this device" else "YouTube"
+                if (origin == Origin.LOCAL) "On this device" else origin.name
             )
         )
         setArtworkUri(thumbnail)

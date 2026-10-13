@@ -54,7 +54,7 @@ fun LocalPlaylistDetailScreen(
                 DetailHeader(
                     uri = playlist?.thumbnail,
                     title = playlist?.name,
-                    subtitle = playlist?.let { if (it.origin == Origin.LOCAL) "On this device" else "YouTube" },
+                    subtitle = playlist?.let { if (it.origin == Origin.LOCAL) "On this device" else it.origin.name },
                     shape = MaterialTheme.shapes.medium,
                 )
             }

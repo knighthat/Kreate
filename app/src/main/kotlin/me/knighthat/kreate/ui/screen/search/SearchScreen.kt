@@ -70,6 +70,8 @@ import androidx.media3.common.MediaItem
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import me.knighthat.kreate.database.model.Origin
+import me.knighthat.kreate.preferences.Preferences
+import me.knighthat.kreate.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate.ui.component.BackButton
 import me.knighthat.kreate.ui.component.ConfigButton
 import me.knighthat.kreate.ui.component.ItemRow
@@ -83,11 +85,6 @@ private const val SUGGESTION_LIMIT = 3
 
 /** Kinds of matches, the first one wins when there is not room for all. */
 private val SUGGESTION_PRIORITY = listOf(Tab.SONGS, Tab.PLAYLISTS, Tab.ALBUMS, Tab.ARTISTS)
-
-private fun Origin.label(): String = when (this) {
-    Origin.LOCAL -> "Local"
-    Origin.YOUTUBE -> "YouTube"
-}
 
 /**
  * The text box with its two buttons, it sits where the bottom bar is on other screens.
@@ -146,12 +143,16 @@ private fun ConfigSheet(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
         ) {
-            Origin.entries.forEachIndexed { index, entry ->
+            // The server is only offered while it is in use
+            val serverEnabled by Preferences.OPEN_SUBSONIC_ENABLED.collectAsStateWithLifecycle()
+            val origins = Origin.entries.filter { it != Origin.OPEN_SUBSONIC || serverEnabled }
+
+            origins.forEachIndexed { index, entry ->
                 SegmentedButton(
                     selected = entry == origin,
                     onClick = { onOriginChange(entry) },
-                    shape = SegmentedButtonDefaults.itemShape(index, Origin.entries.size),
-                    label = { Text(entry.label()) },
+                    shape = SegmentedButtonDefaults.itemShape(index, origins.size),
+                    label = { Text(entry.name) },
                 )
             }
         }
@@ -286,7 +287,7 @@ fun SearchScreen(
         if (suggestions.isEmpty() && recent.isEmpty()) {
             Text(
                 text = when {
-                    origin != Origin.LOCAL -> "Searching YouTube isn't available yet"
+                    origin != Origin.LOCAL -> "Searching ${origin.name} isn't available yet"
                     query.isEmpty() -> "Your searches will show up here"
                     else -> "No suggestions for \"$query\""
                 },

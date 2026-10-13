@@ -34,6 +34,7 @@ import me.knighthat.kreate.database.databaseModule
 import me.knighthat.kreate.playback.playbackModule
 import me.knighthat.kreate.preferences.Preferences
 import me.knighthat.kreate.preferences.preferencesModule
+import me.knighthat.kreate.provider.providerModule
 import me.knighthat.kreate.screen.setupCompletedFile
 import me.knighthat.kreate.source.local.LocalCoverFetcher
 import me.knighthat.kreate.source.local.LocalCoverKeyer
@@ -91,6 +92,7 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                 },
                 databaseModule,
                 preferencesModule,
+                providerModule,
                 networkModule,
                 playbackModule,
                 viewModelModule

@@ -27,4 +27,7 @@ enum class Origin {
 
     /** Found on the device. */
     LOCAL,
+
+    /** Streamed from an OpenSubsonic server, like Navidrome. */
+    OPEN_SUBSONIC,
 }
