@@ -18,13 +18,18 @@
 
 package me.knighthat.kreate.ui.component
 
+import android.content.Context
+import android.content.Intent
 import androidx.annotation.DrawableRes
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import me.knighthat.kreate.ProfilesActivity
 import me.knighthat.kreate.R
+import me.knighthat.kreate.preferences.Preferences
+import org.koin.core.context.GlobalContext
 
 /**
  * An icon button whose only content is [icon], described to screen readers as [description].
@@ -50,8 +55,24 @@ fun SearchButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
     IconAction(R.drawable.search, "Search", onClick, modifier)
 
 @Composable
-fun ProfileButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconAction(R.drawable.person, "Profile", onClick, modifier)
+fun ProfileButton(modifier: Modifier = Modifier) =
+    IconAction(
+        icon = R.drawable.person,
+        description = "Profile",
+        onClick = {
+            val context = GlobalContext.get().get<Context>()
+
+            context.startActivity(
+                ProfilesActivity.intent(
+                    context,
+                    Preferences.THEME_MODE.value,
+                    Preferences.CONTRAST_LEVEL.value
+                )
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        },
+        modifier = modifier
+    )
 
 @Composable
 fun SettingsButton(onClick: () -> Unit, modifier: Modifier = Modifier) =

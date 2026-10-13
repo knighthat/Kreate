@@ -53,7 +53,6 @@ private fun HomeTopBar(
     title: String,
     scrollBehavior: TopAppBarScrollBehavior,
     onSearch: () -> Unit,
-    onProfile: () -> Unit,
     onSettings: () -> Unit,
 ) {
     LargeTopAppBar(
@@ -78,7 +77,7 @@ private fun HomeTopBar(
         },
         actions = {
             SearchButton(onSearch)
-            ProfileButton(onProfile)
+            ProfileButton()
             SettingsButton(onSettings)
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -99,14 +98,13 @@ fun HomeScaffold(
     title: String,
     modifier: Modifier = Modifier,
     onSearch: () -> Unit = {},
-    onProfile: () -> Unit = {},
     onSettings: () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
-        topBar = { HomeTopBar(title, scrollBehavior, onSearch, onProfile, onSettings) },
+        topBar = { HomeTopBar(title, scrollBehavior, onSearch, onSettings) },
         containerColor = MaterialTheme.colorScheme.surfaceDim,
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         content = content,
