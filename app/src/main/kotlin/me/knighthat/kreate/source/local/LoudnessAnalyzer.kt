@@ -27,25 +27,10 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
+import me.knighthat.kreate.database.model.SongFormat
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-
-/**
- * What [LoudnessAnalyzer] found out about a file.
- *
- * @property mimetype media type of the audio track
- * @property bitrate bits per second, the average over the file without its cover art when the audio track doesn't
- *   state one, `null` when neither is known
- * @property length size of the file in bytes, `null` when unknown
- * @property loudness integrated loudness in LUFS
- */
-data class LoudnessAnalysis(
-    val mimetype: String,
-    val bitrate: Int?,
-    val length: Long?,
-    val loudness: Double,
-)
 
 /**
  * Decodes an audio file from start to end and measures its loudness with [LoudnessMeter].
@@ -54,12 +39,14 @@ data class LoudnessAnalysis(
 class LoudnessAnalyzer(private val context: Context) {
 
     /**
-     * The loudness of the first audio track of the file at [uri], `null` when the file has no
-     * audio track, is silent, or decodes to samples of a kind the meter can't read.
+     * The [LOCAL_FORMAT_TAG] format of song [songId], whose file is at [uri], from its first audio
+     * track. The bitrate is the average over the file without its cover art when the track doesn't
+     * state one. `null` when the file has no audio track, is silent, or decodes to samples of a kind
+     * the meter can't read.
      *
      * @throws IOException when the file can't be opened
      */
-    suspend fun analyze(uri: Uri): LoudnessAnalysis? {
+    suspend fun analyze(songId: String, uri: Uri): SongFormat? {
         val extractor = MediaExtractor()
         try {
             extractor.setDataSource(context, uri, null)
@@ -74,12 +61,14 @@ class LoudnessAnalyzer(private val context: Context) {
             val loudness = decode(extractor, format, mimetype) ?: return null
             val length = context.contentResolver.openFileDescriptor(uri, "r")
                 ?.use { it.statSize.takeIf { size -> size >= 0 } }
-            return LoudnessAnalysis(
+            return SongFormat(
+                songId = songId,
+                tag = LOCAL_FORMAT_TAG,
                 mimetype = mimetype,
                 bitrate = format.integerOrNull(MediaFormat.KEY_BIT_RATE)
                     ?: averageBitrate(length?.minus(coverSize(uri)), format),
                 length = length,
-                loudness = loudness,
+                gain = (loudness - REFERENCE_LUFS).toFloat(),
             )
         } finally {
             extractor.release()

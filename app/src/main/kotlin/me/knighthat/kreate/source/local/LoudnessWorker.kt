@@ -88,21 +88,12 @@ class LoudnessWorker(
                         )
                     }
                 }
-                .collect { (songId, analysis) ->
-                    if (analysis == null) {
+                .collect { (songId, format) ->
+                    if (format == null) {
                         failed += songId
                         return@collect
                     }
-                    songs.saveFormat(
-                        SongFormat(
-                            songId = songId,
-                            tag = LOCAL_FORMAT_TAG,
-                            mimetype = analysis.mimetype,
-                            bitrate = analysis.bitrate,
-                            length = analysis.length,
-                            gain = (analysis.loudness - REFERENCE_LUFS).toFloat(),
-                        )
-                    )
+                    songs.saveFormat(format)
                     // Once each run, a file the index and the file system disagree on would repeat forever
                     done += songId
                 }
@@ -122,11 +113,11 @@ class LoudnessWorker(
             .keys.toList()
     }
 
-    private suspend fun measure(analyzer: LoudnessAnalyzer, songId: String): LoudnessAnalysis? {
+    private suspend fun measure(analyzer: LoudnessAnalyzer, songId: String): SongFormat? {
         val id = songId.toLongOrNull() ?: return null
         val uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id)
         return try {
-            withContext(Dispatchers.IO) { analyzer.analyze(uri) }
+            withContext(Dispatchers.IO) { analyzer.analyze(songId, uri) }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
