@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "91ade89a79d723a12a5d60ca044cc70a",
+    "identityHash": "57b5211630bb3f20870ff7ae9af05640",
     "entities": [
       {
         "tableName": "album",
@@ -911,7 +911,7 @@
       },
       {
         "tableName": "user_playlist",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`playlist_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `user_id` TEXT NOT NULL, `origin` TEXT NOT NULL, `name` TEXT NOT NULL, `thumbnail` TEXT, `is_monthly` INTEGER NOT NULL DEFAULT 0, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`playlist_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `user_id` TEXT NOT NULL, `origin` TEXT NOT NULL, `name` TEXT NOT NULL, `thumbnail` TEXT, `is_monthly` INTEGER NOT NULL DEFAULT 0, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, `remote_id` TEXT, FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "playlistId",
@@ -960,6 +960,11 @@
             "columnName": "updated_at",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "remoteId",
+            "columnName": "remote_id",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -977,6 +982,16 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_user_playlist_user_id` ON `${TABLE_NAME}` (`user_id`)"
+          },
+          {
+            "name": "index_user_playlist_user_id_remote_id",
+            "unique": true,
+            "columnNames": [
+              "user_id",
+              "remote_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_user_playlist_user_id_remote_id` ON `${TABLE_NAME}` (`user_id`, `remote_id`)"
           }
         ],
         "foreignKeys": [
@@ -1112,7 +1127,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '91ade89a79d723a12a5d60ca044cc70a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '57b5211630bb3f20870ff7ae9af05640')"
     ]
   }
 }

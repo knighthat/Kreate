@@ -24,8 +24,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import me.knighthat.kreate.database.model.Album
+import me.knighthat.kreate.database.model.Origin
 import me.knighthat.kreate.database.repository.AlbumRepository
 import me.knighthat.kreate.database.repository.UserSongRepository
+import me.knighthat.kreate.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate.ui.component.toMediaItems
 import me.knighthat.kreate.ui.navigation.LocalAlbum
 
@@ -34,8 +37,9 @@ import me.knighthat.kreate.ui.navigation.LocalAlbum
  */
 class LocalAlbumDetailViewModel(
     savedStateHandle: SavedStateHandle,
-    repository: AlbumRepository,
+    private val repository: AlbumRepository,
     songRepository: UserSongRepository,
+    private val openSubsonic: OpenSubsonicProvider,
 ) : ViewModel() {
 
     val albumId: String = checkNotNull(savedStateHandle[LocalAlbum.ID]) {
@@ -48,4 +52,32 @@ class LocalAlbumDetailViewModel(
     val songs = songRepository.ofAlbum(albumId)
         .toMediaItems()
         .cachedIn(viewModelScope)
+
+    /**
+     * Whether the album can be shared: it has a link, or its server can make one.
+     */
+    fun canShare(album: Album): Boolean =
+        album.url != null || album.origin == Origin.OPEN_SUBSONIC
+
+    /**
+     * A link to the album that anyone can open. An OpenSubsonic album gets a share made on the
+     * server the first time, which is kept and used again while the server still has it.
+     *
+     * @return the link, or why there is none
+     */
+    suspend fun shareLink(): Result<String> = runCatching {
+        val album = checkNotNull(album.value) { "The album isn't loaded" }
+        if (album.origin != Origin.OPEN_SUBSONIC)
+            return@runCatching checkNotNull(album.url) { "This album has no link" }
+
+        // A share deleted or expired on the server is made again
+        album.url?.takeIf { openSubsonic.shareUrls()?.contains(it) == true }
+            ?.let { return@runCatching it }
+
+        val link = checkNotNull(openSubsonic.createShare(album.id, album.name)) {
+            "The server is turned off"
+        }
+        repository.update(album.id) { it.copy(url = link) }
+        link
+    }
 }

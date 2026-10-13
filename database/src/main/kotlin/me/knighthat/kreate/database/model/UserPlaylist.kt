@@ -28,6 +28,7 @@ import android.net.Uri
  * @property name name chosen by the user, a playlist always has one
  * @property thumbnail image of the playlist, `null` for none
  * @property isMonthly whether this is a monthly playlist
+ * @property remoteId id of the playlist at its [origin], `null` for one made in the app
  */
 data class UserPlaylist(
     val id: Long = 0,
@@ -35,4 +36,5 @@ data class UserPlaylist(
     val name: String,
     val thumbnail: Uri? = null,
     val isMonthly: Boolean = false,
+    val remoteId: String? = null,
 )

@@ -39,7 +39,16 @@ class Secret internal constructor(
      */
     val state: StateFlow<String> get() = store.stateOf(name)
 
+    /**
+     * The value now, which is empty while the profile's file is still being read. Use [current]
+     * when the real value is needed.
+     */
     val value: String get() = state.value
+
+    /**
+     * The value once the active profile's file is read.
+     */
+    suspend fun current(): String = store.current(name)
 
     /**
      * Saves [value] for the active profile. The change shows in [state] once it is on disk.

@@ -115,10 +115,20 @@ internal fun UserSong.toEntity(userId: String, createdAt: Instant, updatedAt: In
     UserSongEntity(userId, songId, name, artists, thumbnail, likedAt, createdAt, updatedAt)
 
 internal fun UserPlaylistEntity.toModel() =
-    UserPlaylist(playlistId, origin, name, thumbnail, isMonthly)
+    UserPlaylist(playlistId, origin, name, thumbnail, isMonthly, remoteId)
 
 internal fun UserPlaylist.toEntity(userId: String, createdAt: Instant, updatedAt: Instant) =
-    UserPlaylistEntity(id, userId, origin, name, thumbnail, isMonthly, createdAt, updatedAt)
+    UserPlaylistEntity(
+        id,
+        userId,
+        origin,
+        name,
+        thumbnail,
+        isMonthly,
+        createdAt,
+        updatedAt,
+        remoteId
+    )
 
 internal fun SongFormatEntity.toModel() = SongFormat(songId, tag, mimetype, bitrate, length, gain)
 

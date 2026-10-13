@@ -109,6 +109,16 @@ class SecretStoreTest {
     }
 
     @Test
+    fun currentWaitsForTheFileToBeRead() {
+        store.secret("password").update("saved")
+        eventually { secretsFile(Profile.DEFAULT_ID).isFile }
+        restart()
+
+        // Read before anything loaded it, the value right away is still empty
+        assertEquals("saved", runBlocking { store.secret("password").current() })
+    }
+
+    @Test
     fun emptyValueRemovesTheSecret() {
         val password = store.secret("password")
         password.update("x")

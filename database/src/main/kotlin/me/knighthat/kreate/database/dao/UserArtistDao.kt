@@ -20,6 +20,7 @@ package me.knighthat.kreate.database.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -28,6 +29,7 @@ import androidx.room.RoomRawQuery
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.entity.UserArtistEntity
+import me.knighthat.kreate.database.model.Origin
 import me.knighthat.kreate.database.view.UserArtistViewEntity
 
 @Dao
@@ -53,6 +55,21 @@ internal interface UserArtistDao {
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(artists: List<UserArtistEntity>)
+
+    /**
+     * The user's rows about artists from [origin].
+     */
+    @Query(
+        "SELECT ua.* FROM user_artist ua JOIN artist a ON a.id = ua.artist_id " +
+                "WHERE ua.user_id = :userId AND a.origin = :origin"
+    )
+    suspend fun withOrigin(userId: String, origin: Origin): List<UserArtistEntity>
+
+    @Upsert
+    suspend fun upsertAll(artists: List<UserArtistEntity>)
+
+    @Delete
+    suspend fun deleteAll(artists: List<UserArtistEntity>)
 
     @Query("DELETE FROM user_artist WHERE user_id = :userId AND artist_id = :artistId")
     suspend fun delete(userId: String, artistId: String)

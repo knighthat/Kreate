@@ -76,6 +76,12 @@ fun ProfileButton(modifier: Modifier = Modifier) =
     )
 
 @Composable
+fun ShareButton(onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) =
+    IconButton(onClick = onClick, modifier = modifier, enabled = enabled) {
+        Icon(painterResource(R.drawable.share), contentDescription = "Share")
+    }
+
+@Composable
 fun SettingsButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
     IconAction(R.drawable.settings, "Settings", onClick, modifier)
 

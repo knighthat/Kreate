@@ -37,9 +37,11 @@ interface OpenSubsonicSettings {
 
     val username: String
 
-    val password: String
+    /** Waits for the saved password to be read, see [Secrets]. */
+    suspend fun password(): String
 
-    val apiKey: String
+    /** Waits for the saved API key to be read, see [Secrets]. */
+    suspend fun apiKey(): String
 
     /** Whether a server with a self-signed certificate may be trusted, see [CertificatePin]. */
     val allowSelfSigned: Boolean
@@ -60,8 +62,8 @@ internal object ProfileOpenSubsonicSettings : OpenSubsonicSettings {
     override val url get() = Preferences.OPEN_SUBSONIC_URL.value
     override val auth get() = Preferences.OPEN_SUBSONIC_AUTH.value
     override val username get() = Preferences.OPEN_SUBSONIC_USERNAME.value
-    override val password get() = Secrets.OPEN_SUBSONIC_PASSWORD.value
-    override val apiKey get() = Secrets.OPEN_SUBSONIC_API_KEY.value
+    override suspend fun password() = Secrets.OPEN_SUBSONIC_PASSWORD.current()
+    override suspend fun apiKey() = Secrets.OPEN_SUBSONIC_API_KEY.current()
     override val allowSelfSigned get() = Preferences.OPEN_SUBSONIC_ALLOW_SELF_SIGNED.value
 
     override val pinnedCertificate: CertificatePin?

@@ -24,14 +24,22 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.repository.PlaylistRepository
+import me.knighthat.kreate.provider.opensubsonic.LibrarySection
+import me.knighthat.kreate.provider.opensubsonic.OpenSubsonicLibrary
 import me.knighthat.kreate.ui.component.toMediaItem
 
 /**
  * The playlists of the active user. Pages are kept while the screen lives.
  */
-class HomePlaylistsViewModel(playlistRepository: PlaylistRepository) : ViewModel() {
+class HomePlaylistsViewModel(
+    playlistRepository: PlaylistRepository,
+    private val library: OpenSubsonicLibrary,
+) : ViewModel() {
 
     val playlists = playlistRepository.all()
         .map { page -> page.map { it.toMediaItem() } }
         .cachedIn(viewModelScope)
+
+    /** Brings the playlists of the server into the library, call it when the tab shows. */
+    fun refresh() = library.refresh(LibrarySection.PLAYLISTS)
 }

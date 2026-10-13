@@ -19,6 +19,7 @@
 package me.knighthat.kreate.ui.screen.detail
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -31,8 +32,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import me.knighthat.kreate.ui.component.BackButton
 
 /**
- * The frame of a detail screen: a small top bar with a back button and the [title] of the item,
- * and no actions.
+ * The frame of a detail screen: a small top bar with a back button, the [title] of the item and
+ * its [actions] at the end.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +41,7 @@ fun DetailScaffold(
     title: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
@@ -49,6 +51,7 @@ fun DetailScaffold(
                 navigationIcon = {
                     BackButton(onBack)
                 },
+                actions = actions,
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surfaceDim,
                 ),

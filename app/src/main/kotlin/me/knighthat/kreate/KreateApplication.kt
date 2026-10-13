@@ -34,10 +34,12 @@ import me.knighthat.kreate.database.databaseModule
 import me.knighthat.kreate.playback.playbackModule
 import me.knighthat.kreate.preferences.Preferences
 import me.knighthat.kreate.preferences.preferencesModule
+import me.knighthat.kreate.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate.provider.providerModule
 import me.knighthat.kreate.screen.setupCompletedFile
 import me.knighthat.kreate.source.local.LocalCoverFetcher
 import me.knighthat.kreate.source.local.LocalCoverKeyer
+import me.knighthat.kreate.source.opensubsonic.OpenSubsonicCoverFetcher
 import okio.Path.Companion.toOkioPath
 import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
@@ -50,6 +52,8 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
     override fun newImageLoader(context: PlatformContext): ImageLoader =
         ImageLoader.Builder(context)
             .components {
+                // Before the network fetcher, server covers look like any address but need the sign in
+                add(OpenSubsonicCoverFetcher.Factory(get<OpenSubsonicProvider>()))
                 add(KtorNetworkFetcherFactory(httpClient = { get<HttpClient>() }))
                 add(LocalCoverKeyer())
                 add(LocalCoverFetcher.Factory())

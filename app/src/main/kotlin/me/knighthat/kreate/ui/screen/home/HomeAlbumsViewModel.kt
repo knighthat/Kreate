@@ -24,14 +24,22 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate.database.repository.UserAlbumRepository
+import me.knighthat.kreate.provider.opensubsonic.LibrarySection
+import me.knighthat.kreate.provider.opensubsonic.OpenSubsonicLibrary
 import me.knighthat.kreate.ui.component.toMediaItem
 
 /**
  * The albums in the active user's library. Pages are kept while the screen lives.
  */
-class HomeAlbumsViewModel(albumRepository: UserAlbumRepository) : ViewModel() {
+class HomeAlbumsViewModel(
+    albumRepository: UserAlbumRepository,
+    private val library: OpenSubsonicLibrary,
+) : ViewModel() {
 
     val albums = albumRepository.all()
         .map { page -> page.map { it.toMediaItem() } }
         .cachedIn(viewModelScope)
+
+    /** Brings the albums of the server into the library, call it when the tab shows. */
+    fun refresh() = library.refresh(LibrarySection.ALBUMS)
 }

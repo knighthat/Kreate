@@ -38,6 +38,7 @@ import kotlin.time.Instant
  * @property isMonthly whether this is a monthly playlist
  * @property createdAt when the playlist was first stored
  * @property updatedAt when the playlist was last changed
+ * @property remoteId id of the playlist at its [origin], `null` for one made in the app
  */
 @Entity(
     tableName = "user_playlist",
@@ -49,7 +50,7 @@ import kotlin.time.Instant
             onDelete = ForeignKey.CASCADE,
         ),
     ],
-    indices = [Index("user_id")],
+    indices = [Index("user_id"), Index("user_id", "remote_id", unique = true)],
 )
 internal data class UserPlaylistEntity(
     @PrimaryKey(autoGenerate = true)
@@ -66,4 +67,6 @@ internal data class UserPlaylistEntity(
     val createdAt: Instant,
     @ColumnInfo(name = "updated_at")
     val updatedAt: Instant,
+    @ColumnInfo(name = "remote_id")
+    val remoteId: String? = null,
 )

@@ -19,6 +19,7 @@
 package me.knighthat.kreate.provider
 
 import me.knighthat.kreate.provider.local.LocalProvider
+import me.knighthat.kreate.provider.opensubsonic.OpenSubsonicLibrary
 import me.knighthat.kreate.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate.provider.youtube.YouTubeProvider
 import org.koin.dsl.module
@@ -31,6 +32,8 @@ val providerModule = module {
     single { LocalProvider(get(), get(), get()) }
     single { YouTubeProvider() }
     single { OpenSubsonicProvider(get(), get()) }
+    // The scope is the app's long lived one
+    single { OpenSubsonicLibrary(get(), get(), get()) }
     single {
         Providers(
             listOf(

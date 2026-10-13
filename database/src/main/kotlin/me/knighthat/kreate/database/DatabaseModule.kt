@@ -34,6 +34,8 @@ import me.knighthat.kreate.database.repository.PlaylistRepository
 import me.knighthat.kreate.database.repository.PlaylistRepositoryImpl
 import me.knighthat.kreate.database.repository.QueueRepository
 import me.knighthat.kreate.database.repository.QueueRepositoryImpl
+import me.knighthat.kreate.database.repository.RemoteCatalogRepository
+import me.knighthat.kreate.database.repository.RemoteCatalogRepositoryImpl
 import me.knighthat.kreate.database.repository.SongRepository
 import me.knighthat.kreate.database.repository.SongRepositoryImpl
 import me.knighthat.kreate.database.repository.UserAlbumRepository
@@ -86,6 +88,7 @@ val databaseModule = module {
     singleOf(::UserArtistRepositoryImpl) bind UserArtistRepository::class
     singleOf(::HistoryRepositoryImpl) bind HistoryRepository::class
     singleOf(::LocalCatalogRepositoryImpl) bind LocalCatalogRepository::class
+    singleOf(::RemoteCatalogRepositoryImpl) bind RemoteCatalogRepository::class
     singleOf(::PlaylistRepositoryImpl) bind PlaylistRepository::class
     singleOf(::QueueRepositoryImpl) bind QueueRepository::class
     singleOf(::SongRepositoryImpl) bind SongRepository::class

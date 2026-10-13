@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -47,6 +48,9 @@ fun HomeArtistsScreen(
     viewModel: HomeArtistsViewModel = koinViewModel(),
 ) {
     val artists = viewModel.artists.collectAsLazyPagingItems()
+
+    // Each visit to the tab, the server's items are brought up to date
+    LaunchedEffect(Unit) { viewModel.refresh() }
 
     HomeScaffold(Tab.ARTISTS.label, modifier, onSearch, onSettings) { padding ->
         LazyVerticalGrid(
