@@ -85,7 +85,7 @@ internal class DataStorePreferenceStorage(private val rootDirectory: File) : Pre
     }
 
     private fun profileDirectory(profileId: String): File =
-        File(File(rootDirectory, "profiles"), profileId)
+        Profile.directory(rootDirectory, profileId)
 
     private fun MutablePreferences.remove(name: String) {
         asMap().keys.firstOrNull { it.name == name }?.let(::remove)

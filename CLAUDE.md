@@ -21,6 +21,8 @@ Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper
 - Work that must outlive a screen runs on the global `CoroutineScope` (Koin singleton,
   `SupervisorJob` + `Dispatchers.Default`); in UI code use `rememberCoroutineScope()` /
   `viewModelScope` instead.
+- Passwords, API keys and tokens never go in `Preferences`. Declare them in `Secrets`, which keeps
+  them in `secrets.preferences_pb` in the profile's folder.
 
 ## License
 

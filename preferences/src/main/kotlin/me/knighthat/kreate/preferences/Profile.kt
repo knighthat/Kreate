@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate.preferences
 
+import java.io.File
+
 /**
  * Constants of the profiles. A profile is only an id here, its name and everything else
  * about the user live in the database.
@@ -28,4 +30,11 @@ object Profile {
      * Id of the built-in profile, it always exists and cannot be deleted.
      */
     const val DEFAULT_ID = "default"
+
+    /**
+     * Folder of the profile's files under [rootDirectory], the one place a profile keeps data.
+     * Deleting a profile deletes it.
+     */
+    internal fun directory(rootDirectory: File, profileId: String): File =
+        File(File(rootDirectory, "profiles"), profileId)
 }

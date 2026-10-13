@@ -28,16 +28,14 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import me.knighthat.kreate.preferences.Preferences
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
 import java.util.concurrent.TimeUnit
 
-private const val CONNECT_TIMEOUT_SECONDS = 15L
-private const val READ_TIMEOUT_SECONDS = 30L
-private const val MAX_RETRIES = 3
-
 /**
- * Networking shared by the whole app.
+ * Networking shared by the whole app. Timeouts and retries come from [Preferences] when the
+ * clients are built, so a change applies from the next launch.
  *
  * - [OkHttpClient]: the one client, so connections and threads are pooled. Derive a variant
  *   with `client.newBuilder()`, it shares the pool. It has no HTTP cache on purpose.
@@ -48,8 +46,8 @@ private const val MAX_RETRIES = 3
 val networkModule = module {
     single {
         OkHttpClient.Builder()
-            .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .connectTimeout(Preferences.NETWORK_CONNECT_TIMEOUT.value.toLong(), TimeUnit.SECONDS)
+            .readTimeout(Preferences.NETWORK_READ_TIMEOUT.value.toLong(), TimeUnit.SECONDS)
             .build()
     }
 
@@ -67,7 +65,7 @@ val networkModule = module {
             install(ContentNegotiation) { json(get<Json>()) }
 
             install(HttpRequestRetry) {
-                retryOnServerErrors(MAX_RETRIES)
+                retryOnServerErrors(Preferences.NETWORK_MAX_RETRIES.value)
                 exponentialDelay()
             }
 

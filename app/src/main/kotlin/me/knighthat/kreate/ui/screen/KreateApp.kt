@@ -47,15 +47,19 @@ import me.knighthat.kreate.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate.ui.component.MiniPlayer
 import me.knighthat.kreate.ui.navigation.Albums
 import me.knighthat.kreate.ui.navigation.Artists
+import me.knighthat.kreate.ui.navigation.GeneralSettings
 import me.knighthat.kreate.ui.navigation.LocalAlbum
 import me.knighthat.kreate.ui.navigation.LocalArtist
 import me.knighthat.kreate.ui.navigation.LocalPlaylist
+import me.knighthat.kreate.ui.navigation.NetworkSettings
 import me.knighthat.kreate.ui.navigation.Playlists
 import me.knighthat.kreate.ui.navigation.Route
 import me.knighthat.kreate.ui.navigation.Search
 import me.knighthat.kreate.ui.navigation.SearchResults
+import me.knighthat.kreate.ui.navigation.Settings
 import me.knighthat.kreate.ui.navigation.Songs
 import me.knighthat.kreate.ui.navigation.Tab
+import me.knighthat.kreate.ui.navigation.UiSettings
 import me.knighthat.kreate.ui.navigation.rememberTopLevelBackStack
 import me.knighthat.kreate.ui.navigation.routeViewModel
 import me.knighthat.kreate.ui.screen.detail.LocalAlbumDetailScreen
@@ -67,6 +71,10 @@ import me.knighthat.kreate.ui.screen.home.HomePlaylistsScreen
 import me.knighthat.kreate.ui.screen.home.HomeSongsScreen
 import me.knighthat.kreate.ui.screen.search.SearchResultsScreen
 import me.knighthat.kreate.ui.screen.search.SearchScreen
+import me.knighthat.kreate.ui.screen.settings.GeneralSettingsScreen
+import me.knighthat.kreate.ui.screen.settings.NetworkSettingsScreen
+import me.knighthat.kreate.ui.screen.settings.SettingsScreen
+import me.knighthat.kreate.ui.screen.settings.UiSettingsScreen
 import me.knighthat.kreate.ui.theme.KreateTheme
 import me.knighthat.kreate.ui.theme.rememberThumbnailSeed
 import org.koin.compose.koinInject
@@ -161,12 +169,17 @@ fun KreateApp() {
                         Modifier.padding(bottom = barPadding.calculateBottomPadding())
 
                     entry<Songs> {
-                        HomeSongsScreen({ topLevel.push(Search) }, paddingModifier)
+                        HomeSongsScreen(
+                            { topLevel.push(Search) },
+                            { topLevel.push(Settings) },
+                            paddingModifier,
+                        )
                     }
                     entry<Albums> {
                         HomeAlbumsScreen(
                             { topLevel.push(LocalAlbum(it)) },
                             { topLevel.push(Search) },
+                            { topLevel.push(Settings) },
                             paddingModifier,
                         )
                     }
@@ -174,6 +187,7 @@ fun KreateApp() {
                         HomeArtistsScreen(
                             { topLevel.push(LocalArtist(it)) },
                             { topLevel.push(Search) },
+                            { topLevel.push(Settings) },
                             paddingModifier,
                         )
                     }
@@ -181,6 +195,7 @@ fun KreateApp() {
                         HomePlaylistsScreen(
                             { topLevel.push(LocalPlaylist(it.toLong())) },
                             { topLevel.push(Search) },
+                            { topLevel.push(Settings) },
                             paddingModifier,
                         )
                     }
@@ -206,6 +221,16 @@ fun KreateApp() {
                             viewModel = routeViewModel(it),
                         )
                     }
+
+                    entry<Settings> {
+                        SettingsScreen(
+                            onBack = topLevel::pop,
+                            onOpen = topLevel::push,
+                        )
+                    }
+                    entry<GeneralSettings> { GeneralSettingsScreen(topLevel::pop) }
+                    entry<UiSettings> { UiSettingsScreen(topLevel::pop) }
+                    entry<NetworkSettings> { NetworkSettingsScreen(topLevel::pop) }
 
                     entry<LocalAlbum> {
                         LocalAlbumDetailScreen(topLevel::pop, viewModel = routeViewModel(it))

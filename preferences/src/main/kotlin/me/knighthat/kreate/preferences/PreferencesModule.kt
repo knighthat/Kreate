@@ -18,12 +18,14 @@
 
 package me.knighthat.kreate.preferences
 
+import android.content.Context
 import org.koin.dsl.module
 
 /**
- * Pass it to `initKoin` to make [Preferences] and [ProfileManager] available.
+ * Pass it to `initKoin` to make [Preferences], [Secrets] and [ProfileManager] available.
  */
 val preferencesModule = module {
     single { ProfileManager(get(), get()) }
     single { PreferenceEngine(get(), get()) }
+    single { SecretStore(get(), get(), get<Context>()) }
 }

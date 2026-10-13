@@ -42,12 +42,13 @@ private const val ARTIST_ITEM_SIZE = 100
 fun HomeArtistsScreen(
     onOpen: (mediaId: String) -> Unit,
     onSearch: () -> Unit,
+    onSettings: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeArtistsViewModel = koinViewModel(),
 ) {
     val artists = viewModel.artists.collectAsLazyPagingItems()
 
-    HomeScaffold(Tab.ARTISTS.label, modifier, onSearch = onSearch) { padding ->
+    HomeScaffold(Tab.ARTISTS.label, modifier, onSearch, onSettings) { padding ->
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = ARTIST_ITEM_SIZE.dp),
             contentPadding = padding,

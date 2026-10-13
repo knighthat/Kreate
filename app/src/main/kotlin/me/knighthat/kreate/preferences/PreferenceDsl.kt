@@ -24,3 +24,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun <T> Preference<T>.collectAsStateWithLifecycle() = this.state.collectAsStateWithLifecycle()
+
+@Composable
+fun Secret.collectAsStateWithLifecycle() = this.state.collectAsStateWithLifecycle()

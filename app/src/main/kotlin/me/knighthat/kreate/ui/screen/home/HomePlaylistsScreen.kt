@@ -42,12 +42,13 @@ private const val PLAYLIST_ITEM_SIZE = 220
 fun HomePlaylistsScreen(
     onOpen: (mediaId: String) -> Unit,
     onSearch: () -> Unit,
+    onSettings: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomePlaylistsViewModel = koinViewModel(),
 ) {
     val playlists = viewModel.playlists.collectAsLazyPagingItems()
 
-    HomeScaffold(Tab.PLAYLISTS.label, modifier, onSearch = onSearch) { padding ->
+    HomeScaffold(Tab.PLAYLISTS.label, modifier, onSearch, onSettings) { padding ->
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = PLAYLIST_ITEM_SIZE.dp),
             contentPadding = padding,

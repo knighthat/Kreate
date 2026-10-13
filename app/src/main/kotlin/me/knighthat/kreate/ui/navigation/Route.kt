@@ -53,6 +53,19 @@ data object Playlists : Route
 @Serializable
 data object Search : Route
 
+/** The list of settings pages. */
+@Serializable
+data object Settings : Route
+
+@Serializable
+data object GeneralSettings : Route
+
+@Serializable
+data object UiSettings : Route
+
+@Serializable
+data object NetworkSettings : Route
+
 /**
  * What [origin] found for [query], by kind. The screen opens on the [tab] of one of them.
  */

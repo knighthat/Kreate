@@ -19,8 +19,10 @@
 package me.knighthat.kreate.preferences
 
 import me.knighthat.kreate.constant.ContrastLevel
+import me.knighthat.kreate.constant.OpenSubsonicAuth
 import me.knighthat.kreate.constant.ThemeMode
 import me.knighthat.kreate.preferences.Preferences.IMAGE_DISK_CACHE
+import me.knighthat.kreate.preferences.Preferences.NETWORK_CONNECT_TIMEOUT
 import me.knighthat.kreate.preferences.Preferences.awaitLoaded
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -58,6 +60,48 @@ object Preferences : KoinComponent {
      */
     val TOS_CHECKSUM = string("tos_checksum", "")
 
+    //<editor-fold defaultstate="collapsed" desc="Network">
+    /**
+     * Seconds to wait for a connection before giving up. The default is 15.
+     *
+     * The client is built once, so a new value applies from the next launch.
+     */
+    val NETWORK_CONNECT_TIMEOUT by lazy { int("network_connect_timeout", 15) }
+
+    /**
+     * Seconds to wait for the next bytes of a response before giving up. The default i/s 30.
+     *
+     * Applies from the next launch, like [NETWORK_CONNECT_TIMEOUT].
+     */
+    val NETWORK_READ_TIMEOUT by lazy { int("network_read_timeout", 30) }
+
+    /**
+     * How many times a request that got a server error is sent again. The default is 3.
+     *
+     * Applies from the next launch, like [NETWORK_CONNECT_TIMEOUT].
+     */
+    val NETWORK_MAX_RETRIES by lazy { int("network_max_retries", 3) }
+
+    /**
+     * Whether the OpenSubsonic server is in use. Off by default.
+     *
+     * While it is off nothing may contact the server, however complete the address and
+     * credentials are. Check it before every request.
+     */
+    val OPEN_SUBSONIC_ENABLED by lazy { boolean("open_subsonic_enabled", false) }
+
+    /**
+     * Address of the OpenSubsonic server without `/rest`, like `https://music.example.com`.
+     * Empty until the user sets one.
+     */
+    val OPEN_SUBSONIC_URL by lazy { string("open_subsonic_url", "") }
+
+    /** Which credentials sign in, see [OpenSubsonicAuth]. */
+    val OPEN_SUBSONIC_AUTH by lazy { enum("open_subsonic_auth", OpenSubsonicAuth.PASSWORD) }
+
+    val OPEN_SUBSONIC_USERNAME by lazy { string("open_subsonic_username", "") }
+    //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Coil3">
     /**
      * Largest size, in bytes, the image disk cache may grow to. The default is 128 MiB.
@@ -92,6 +136,9 @@ object Preferences : KoinComponent {
 
     private fun string(name: String, default: String) =
         Preference(name, default, codec<String, String>({ it }, { it }), engine)
+
+    private fun boolean(name: String, default: Boolean) =
+        Preference(name, default, codec<Boolean, Boolean>({ it }, { it }), engine)
 
     private fun long(name: String, default: Long) =
         Preference(name, default, codec<Long, Long>({ it }, { it }), engine)

@@ -46,6 +46,11 @@ internal fun interface SchemaStep {
 internal val PROFILE_STEPS: List<SchemaStep> = emptyList()
 
 /**
+ * Same as [PROFILE_STEPS] but for the secrets file of a profile.
+ */
+internal val SECRET_STEPS: List<SchemaStep> = emptyList()
+
+/**
  * Same as [PROFILE_STEPS] but for the global file.
  */
 internal val GLOBAL_STEPS: List<SchemaStep> = emptyList()

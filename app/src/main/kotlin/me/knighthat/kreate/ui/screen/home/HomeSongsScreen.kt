@@ -34,12 +34,13 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun HomeSongsScreen(
     onSearch: () -> Unit,
+    onSettings: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeSongsViewModel = koinViewModel(),
 ) {
     val songs = viewModel.songs.collectAsLazyPagingItems()
 
-    HomeScaffold(Tab.SONGS.label, modifier, onSearch = onSearch) { padding ->
+    HomeScaffold(Tab.SONGS.label, modifier, onSearch, onSettings) { padding ->
         LazyColumn(
             contentPadding = padding,
             modifier = Modifier.fillMaxSize(),
