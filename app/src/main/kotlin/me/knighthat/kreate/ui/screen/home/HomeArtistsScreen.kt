@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.MediaItem
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import me.knighthat.kreate.ui.component.ArtistItem
@@ -41,7 +42,7 @@ private const val ARTIST_ITEM_SIZE = 100
  */
 @Composable
 fun HomeArtistsScreen(
-    onOpen: (mediaId: String) -> Unit,
+    onOpen: (MediaItem) -> Unit,
     onSearch: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
@@ -63,7 +64,7 @@ fun HomeArtistsScreen(
                 .padding(horizontal = 12.dp),
         ) {
             items(count = artists.itemCount, key = artists.itemKey { it.mediaId }) { index ->
-                artists[index]?.let { ArtistItem(it, onClick = { onOpen(it.mediaId) }) }
+                artists[index]?.let { ArtistItem(it, onClick = { onOpen(it) }) }
             }
         }
     }

@@ -54,7 +54,9 @@ fun routeExtras(route: Route): CreationExtras {
 /**
  * The ViewModel of the screen that shows [route]. It reads the route's values from its
  * `SavedStateHandle`, so the screen never passes them in.
+ *
+ * @param tag tells apart two ViewModels of one route, a screen made of two needs it on one of them
  */
 @Composable
-inline fun <reified VM : ViewModel> routeViewModel(route: Route): VM =
-    koinViewModel(key = route.toString(), extras = routeExtras(route))
+inline fun <reified VM : ViewModel> routeViewModel(route: Route, tag: String = ""): VM =
+    koinViewModel(key = if (tag.isEmpty()) "$route" else "$route#$tag", extras = routeExtras(route))

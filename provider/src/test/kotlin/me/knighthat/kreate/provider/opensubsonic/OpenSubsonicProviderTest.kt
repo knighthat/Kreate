@@ -38,7 +38,9 @@ import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.IOException
+import java.util.Collections
 import javax.net.ssl.SSLHandshakeException
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 class OpenSubsonicProviderTest {
@@ -63,7 +65,9 @@ class OpenSubsonicProviderTest {
         }
     }
 
-    private val requests = mutableListOf<HttpRequestData>()
+    // Requests may run in parallel, like the albums of an artist
+    private val requests: MutableList<HttpRequestData> =
+        Collections.synchronizedList(mutableListOf())
 
     private fun provider(
         settings: OpenSubsonicSettings = FakeSettings(),
@@ -265,6 +269,80 @@ class OpenSubsonicProviderTest {
         assertEquals(0L, playlist.id)
         assertEquals(Origin.OPEN_SUBSONIC, playlist.origin)
         assertEquals("p1", playlist.remoteId)
+    }
+
+    @Test
+    fun anAlbumComesWithItsSongsInOrder() = runBlocking {
+        val (album, songs) = provider {
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","album":{
+                "id":"al1","name":"FEAR","artist":"NF","year":2025,"starred":"2024-01-01T00:00:00Z","song":[
+                {"id":"s1","title":"One","albumId":"al1","album":"FEAR","track":1,"duration":200,"artistId":"ar1","artist":"NF"},
+                {"id":"s2","title":"Two","albumId":"al1","album":"FEAR","track":2,"duration":181,"explicitStatus":"explicit",
+                 "starred":"2024-02-03T04:05:06Z","artists":[{"id":"ar1","name":"NF"},{"id":"ar2","name":"mgk"}]}]}}}"""
+        }.albumWithSongs("al1")!!
+
+        assertEquals("al1", requests.single().form()["id"])
+        assertEquals("FEAR", album.item.name)
+        assertEquals(listOf("s1", "s2"), songs.map { it.song.id })
+
+        val (one, onesAlbum, onesArtists, notStarred) = songs[0]
+        assertEquals("One", one.name)
+        assertEquals(Origin.OPEN_SUBSONIC, one.origin)
+        assertEquals("al1", one.albumId)
+        assertEquals(1, one.albumPosition)
+        assertEquals(200.seconds, one.duration)
+        assertEquals("FEAR", onesAlbum?.name)
+        assertEquals(listOf("ar1"), onesArtists.map { it.id })
+        assertNull(notStarred)
+
+        val two = songs[1]
+        assertEquals(true, two.song.isExplicit)
+        assertEquals(listOf("NF", "mgk"), two.artists.map { it.name })
+        assertEquals(Instant.parse("2024-02-03T04:05:06Z"), two.starredAt)
+    }
+
+    @Test
+    fun anArtistComesWithTheSongsOfEveryAlbum() = runBlocking {
+        val found = provider { request ->
+            when (request.url.encodedPath.substringAfterLast('/')) {
+                "getArtist" -> """{"subsonic-response":{"status":"ok","version":"1.16.1","artist":{
+                    "id":"ar1","name":"NF","album":[{"id":"al1","name":"A"},{"id":"al2","name":"B"}]}}}"""
+
+                else -> {
+                    val id = request.form()["id"]
+                    """{"subsonic-response":{"status":"ok","version":"1.16.1","album":{"id":"$id","name":"$id",
+                        "song":[{"id":"$id-s","title":"t","albumId":"$id","artistId":"ar1"}]}}}"""
+                }
+            }
+        }.artistWithSongs("ar1")!!
+
+        assertEquals("NF", found.artist.item.name)
+        assertEquals(setOf("al1", "al2"), found.albums.map { it.item.id }.toSet())
+        assertEquals(setOf("al1-s", "al2-s"), found.songs.map { it.song.id }.toSet())
+        assertEquals(3, requests.size)
+    }
+
+    @Test
+    fun aPlaylistComesWithItsEntries() = runBlocking {
+        val songs = provider {
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","playlist":{"id":"p1","name":"Mix","entry":[
+                {"id":"s9","title":"Nine"},{"id":"s3","title":"Three","albumId":"al3","album":"Three"}]}}}"""
+        }.playlistSongs("p1")!!
+
+        assertEquals("p1", requests.single().form()["id"])
+        assertEquals(listOf("s9", "s3"), songs.map { it.song.id })
+        assertNull(songs[0].album)
+        assertEquals("al3", songs[1].album?.id)
+    }
+
+    @Test
+    fun nothingIsFetchedWhileDisabled() = runBlocking {
+        val server = provider(FakeSettings(enabled = false))
+
+        assertNull(server.albumWithSongs("al1"))
+        assertNull(server.artistWithSongs("ar1"))
+        assertNull(server.playlistSongs("p1"))
+        assertTrue(requests.isEmpty())
     }
 
     @Test

@@ -28,6 +28,7 @@ import androidx.room.RoomRawQuery
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.entity.UserSongEntity
+import me.knighthat.kreate.database.model.Origin
 import me.knighthat.kreate.database.view.UserSongViewEntity
 
 @Dao
@@ -53,6 +54,18 @@ internal interface UserSongDao {
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(songs: List<UserSongEntity>)
+
+    /**
+     * The user's rows about songs from [origin].
+     */
+    @Query(
+        "SELECT us.* FROM user_song us JOIN song s ON s.id = us.song_id " +
+                "WHERE us.user_id = :userId AND s.origin = :origin"
+    )
+    suspend fun withOrigin(userId: String, origin: Origin): List<UserSongEntity>
+
+    @Upsert
+    suspend fun upsertAll(songs: List<UserSongEntity>)
 
     @Query("DELETE FROM user_song WHERE user_id = :userId AND song_id = :songId")
     suspend fun delete(userId: String, songId: String)

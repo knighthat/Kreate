@@ -19,6 +19,8 @@
 package me.knighthat.kreate.database.dao
 
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
@@ -39,6 +41,10 @@ internal interface ArtistDao {
 
     @Upsert
     suspend fun upsertAll(artists: List<ArtistEntity>)
+
+    /** Stores the artists that aren't stored yet, the others are left as they are. */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(artists: List<ArtistEntity>)
 
     @Upsert
     suspend fun upsert(artist: ArtistEntity)

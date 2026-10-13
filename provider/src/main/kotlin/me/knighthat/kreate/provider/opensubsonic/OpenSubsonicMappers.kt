@@ -28,8 +28,11 @@ import kotlinx.serialization.json.jsonPrimitive
 import me.knighthat.kreate.database.model.Album
 import me.knighthat.kreate.database.model.Artist
 import me.knighthat.kreate.database.model.Origin
+import me.knighthat.kreate.database.model.Song
 import me.knighthat.kreate.database.model.UserPlaylist
 import me.knighthat.kreate.database.repository.RemoteItem
+import me.knighthat.kreate.database.repository.RemoteSong
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 /*
@@ -57,13 +60,60 @@ internal fun JsonObject.toAlbum(cover: (String) -> Uri?): RemoteItem<Album> {
         thumbnail = string("coverArt")?.let(cover),
         year = get("year")?.jsonPrimitive?.intOrNull?.takeIf { it > 0 },
         artists = artists.ifEmpty { null },
-        isExplicit = when (string("explicitStatus")) {
-            "explicit" -> true
-            "clean" -> false
-            else -> null
-        },
+        isExplicit = explicit(),
     )
     return RemoteItem(album, starred())
+}
+
+/**
+ * A song, `Child` in the API. Its album and artists only carry what the song knows about them.
+ */
+internal fun JsonObject.toSong(cover: (String) -> Uri?): RemoteSong {
+    val artists = array("artists")
+        ?.mapNotNull { it.jsonObject.toArtistOrNull() }
+        ?.ifEmpty { null }
+        ?: listOfNotNull(string("artistId")?.let {
+            Artist(
+                it,
+                Origin.OPEN_SUBSONIC,
+                string("artist")
+            )
+        })
+    val albumId = string("albumId")
+
+    val song = Song(
+        id = string("id")!!,
+        origin = Origin.OPEN_SUBSONIC,
+        name = string("title"),
+        thumbnail = string("coverArt")?.let(cover),
+        duration = get("duration")?.jsonPrimitive?.intOrNull?.seconds,
+        isExplicit = explicit(),
+        albumId = albumId,
+        albumPosition = get("track")?.jsonPrimitive?.intOrNull?.takeIf { it > 0 },
+    )
+    val album = albumId?.let {
+        Album(
+            id = it,
+            origin = Origin.OPEN_SUBSONIC,
+            name = string("album"),
+            thumbnail = string("coverArt")?.let(cover),
+            year = get("year")?.jsonPrimitive?.intOrNull?.takeIf { year -> year > 0 },
+            artists = listOfNotNull(
+                string("displayAlbumArtist") ?: string("artist")
+            ).ifEmpty { null },
+        )
+    }
+    return RemoteSong(song, album, artists, starred())
+}
+
+/** An artist as other items credit it, `null` without an id. */
+private fun JsonObject.toArtistOrNull(): Artist? =
+    string("id")?.let { Artist(it, Origin.OPEN_SUBSONIC, string("name")) }
+
+private fun JsonObject.explicit(): Boolean? = when (string("explicitStatus")) {
+    "explicit" -> true
+    "clean" -> false
+    else -> null
 }
 
 internal fun JsonObject.toArtist(cover: (String) -> Uri?): RemoteItem<Artist> {

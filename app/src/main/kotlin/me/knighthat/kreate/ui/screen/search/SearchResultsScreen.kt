@@ -95,9 +95,9 @@ private fun ResultsGrid(
 fun SearchResultsScreen(
     initialTab: Tab,
     onBack: () -> Unit,
-    onOpenAlbum: (albumId: String) -> Unit,
-    onOpenArtist: (artistId: String) -> Unit,
-    onOpenPlaylist: (playlistId: String) -> Unit,
+    onOpenAlbum: (MediaItem) -> Unit,
+    onOpenArtist: (MediaItem) -> Unit,
+    onOpenPlaylist: (MediaItem) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchResultsViewModel = koinViewModel(),
 ) {
@@ -165,15 +165,15 @@ fun SearchResultsScreen(
             }
 
             Tab.ALBUMS -> ResultsGrid(albums, ALBUM_ITEM_SIZE, padding) {
-                AlbumItem(it, onClick = { onOpenAlbum(it.mediaId) })
+                AlbumItem(it, onClick = { onOpenAlbum(it) })
             }
 
             Tab.ARTISTS -> ResultsGrid(artists, ARTIST_ITEM_SIZE, padding) {
-                ArtistItem(it, onClick = { onOpenArtist(it.mediaId) })
+                ArtistItem(it, onClick = { onOpenArtist(it) })
             }
 
             Tab.PLAYLISTS -> ResultsGrid(playlists, PLAYLIST_ITEM_SIZE, padding) {
-                PlaylistItem(it, onClick = { onOpenPlaylist(it.mediaId) })
+                PlaylistItem(it, onClick = { onOpenPlaylist(it) })
             }
         }
     }

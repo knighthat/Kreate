@@ -20,6 +20,8 @@ package me.knighthat.kreate.database.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.room.RoomRawQuery
@@ -43,6 +45,10 @@ internal interface AlbumDao {
 
     @Upsert
     suspend fun upsertAll(albums: List<AlbumEntity>)
+
+    /** Stores the albums that aren't stored yet, the others are left as they are. */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(albums: List<AlbumEntity>)
 
     /**
      * One page at a time of the songs in [query], which must select from `song`.

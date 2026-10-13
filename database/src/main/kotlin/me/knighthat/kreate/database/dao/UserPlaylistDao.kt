@@ -78,6 +78,12 @@ internal interface UserPlaylistDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addSong(map: SongPlaylistMapEntity)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addSongs(maps: List<SongPlaylistMapEntity>)
+
+    @Query("DELETE FROM song_playlist_map WHERE playlist_id = :playlistId")
+    suspend fun clearSongs(playlistId: Long)
+
     @Delete
     suspend fun removeSong(map: SongPlaylistMapEntity)
 }

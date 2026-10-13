@@ -27,6 +27,11 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.contentType
 import io.ktor.http.parameters
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.boolean
@@ -41,6 +46,7 @@ import me.knighthat.kreate.database.model.Origin
 import me.knighthat.kreate.database.model.Song
 import me.knighthat.kreate.database.model.UserPlaylist
 import me.knighthat.kreate.database.repository.RemoteItem
+import me.knighthat.kreate.database.repository.RemoteSong
 import me.knighthat.kreate.provider.Provider
 import me.knighthat.kreate.provider.SearchResults
 import me.knighthat.kreate.provider.opensubsonic.OpenSubsonicProvider.Companion.PAGE_SIZE
@@ -172,6 +178,63 @@ class OpenSubsonicProvider internal constructor(
 
         return call("getPlaylists")["playlists"]?.jsonObject?.array("playlist").orEmpty()
             .map { it.jsonObject.toPlaylist(::coverUri) }
+    }
+
+    /**
+     * An album of the server with its songs, in the album's order.
+     *
+     * @return `null` while the server is off or not set up
+     * @throws ServerException when the server can't be used or refuses, like for an id it doesn't have
+     */
+    suspend fun albumWithSongs(albumId: String): Pair<RemoteItem<Album>, List<RemoteSong>>? {
+        serverUrl ?: return null
+
+        val album = call("getAlbum", "id" to albumId)["album"]?.jsonObject
+            ?: throw ServerException(ServerCheck.NotSubsonic)
+        return album.toAlbum(::coverUri) to album.array("song").orEmpty()
+            .map { it.jsonObject.toSong(::coverUri) }
+    }
+
+    /**
+     * An artist of the server with their albums and the songs on them. The API has no list of
+     * an artist's songs, so every album is asked for, a few at a time.
+     *
+     * @return `null` while the server is off or not set up
+     * @throws ServerException when the server can't be used or refuses
+     */
+    suspend fun artistWithSongs(artistId: String): ArtistWithSongs? {
+        serverUrl ?: return null
+
+        val artist = call("getArtist", "id" to artistId)["artist"]?.jsonObject
+            ?: throw ServerException(ServerCheck.NotSubsonic)
+        val albumIds = artist.array("album").orEmpty()
+            .mapNotNull { it.jsonObject["id"]?.jsonPrimitive?.contentOrNull }
+
+        val gate = Semaphore(PARALLEL_REQUESTS)
+        val albums = coroutineScope {
+            albumIds.map { async { gate.withPermit { albumWithSongs(it) } } }.awaitAll()
+                .filterNotNull()
+        }
+        return ArtistWithSongs(
+            artist = artist.toArtist(::coverUri),
+            albums = albums.map { it.first },
+            songs = albums.flatMap { it.second },
+        )
+    }
+
+    /**
+     * The songs of a playlist of the server, in its order.
+     *
+     * @param playlistId id of the playlist on the server
+     * @return `null` while the server is off or not set up
+     * @throws ServerException when the server can't be used or refuses
+     */
+    suspend fun playlistSongs(playlistId: String): List<RemoteSong>? {
+        serverUrl ?: return null
+
+        val playlist = call("getPlaylist", "id" to playlistId)["playlist"]?.jsonObject
+            ?: throw ServerException(ServerCheck.NotSubsonic)
+        return playlist.array("entry").orEmpty().map { it.jsonObject.toSong(::coverUri) }
     }
 
     /**
@@ -310,13 +373,15 @@ class OpenSubsonicProvider internal constructor(
 
     override suspend fun song(songId: String): Song? = TODO(PENDING)
 
-    override suspend fun album(albumId: String): Album? = TODO(PENDING)
+    override suspend fun album(albumId: String): Album? = albumWithSongs(albumId)?.first?.item
 
-    override suspend fun artist(artistId: String): Artist? = TODO(PENDING)
+    override suspend fun artist(artistId: String): Artist? = artistWithSongs(artistId)?.artist?.item
 
-    override suspend fun songsOf(albumId: String): List<Song> = TODO(PENDING)
+    override suspend fun songsOf(albumId: String): List<Song> =
+        albumWithSongs(albumId)?.second?.map { it.song }.orEmpty()
 
-    override suspend fun albumsOf(artistId: String): List<Album> = TODO(PENDING)
+    override suspend fun albumsOf(artistId: String): List<Album> =
+        artistWithSongs(artistId)?.albums?.map { it.item }.orEmpty()
 
     override suspend fun playbackUri(songId: String): Uri? = endpoint("stream", "id" to songId)
 
@@ -457,6 +522,9 @@ class OpenSubsonicProvider internal constructor(
 
     private companion object {
         const val PENDING = "Requests to the server are not written yet"
+
+        /** Requests sent at once when one item needs many, like the albums of an artist. */
+        const val PARALLEL_REQUESTS = 4
 
         /** Largest page `getAlbumList2` accepts. */
         const val PAGE_SIZE = 500

@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.MediaItem
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import me.knighthat.kreate.ui.component.PlaylistItem
@@ -41,7 +42,7 @@ private const val PLAYLIST_ITEM_SIZE = 220
  */
 @Composable
 fun HomePlaylistsScreen(
-    onOpen: (mediaId: String) -> Unit,
+    onOpen: (MediaItem) -> Unit,
     onSearch: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
@@ -63,7 +64,7 @@ fun HomePlaylistsScreen(
                 .padding(horizontal = 12.dp),
         ) {
             items(count = playlists.itemCount, key = playlists.itemKey { it.mediaId }) { index ->
-                playlists[index]?.let { PlaylistItem(it, onClick = { onOpen(it.mediaId) }) }
+                playlists[index]?.let { PlaylistItem(it, onClick = { onOpen(it) }) }
             }
         }
     }

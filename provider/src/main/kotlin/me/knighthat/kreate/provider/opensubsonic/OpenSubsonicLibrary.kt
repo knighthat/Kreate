@@ -40,7 +40,8 @@ enum class LibrarySection {
 
 /**
  * Brings the server's library into the database, one [LibrarySection] at a time, so its items
- * show among the others. Nothing happens while the server is off or not set up.
+ * show among the others, and the songs of an album, artist or playlist when it is opened.
+ * Nothing happens while the server is off or not set up.
  *
  * A section is fetched again at most every few minutes, opening a tab back and forth doesn't
  * download the library each time. The work runs on [scope], the app's long lived scope, so
@@ -82,6 +83,49 @@ class OpenSubsonicLibrary(
                 Log.w(TAG, "Couldn't bring $section of the server up to date", e)
             }
         }
+    }
+
+    /**
+     * Stores the album and every song on it.
+     *
+     * @return `false` when the server is off or not set up, nothing is stored then
+     * @throws ServerException when the server can't be used or refuses
+     */
+    suspend fun syncAlbum(albumId: String): Boolean {
+        val (album, songs) = provider.albumWithSongs(albumId) ?: return false
+        repository.syncSongs(Origin.OPEN_SUBSONIC, songs, albums = listOf(album))
+        return true
+    }
+
+    /**
+     * Stores the artist, their albums and every song on those albums.
+     *
+     * @return `false` when the server is off or not set up, nothing is stored then
+     * @throws ServerException when the server can't be used or refuses
+     */
+    suspend fun syncArtist(artistId: String): Boolean {
+        val found = provider.artistWithSongs(artistId) ?: return false
+        repository.syncSongs(
+            Origin.OPEN_SUBSONIC,
+            found.songs,
+            albums = found.albums,
+            artists = listOf(found.artist),
+        )
+        return true
+    }
+
+    /**
+     * Stores every song of a playlist and makes them the songs of its row in the database.
+     *
+     * @param playlistId id of the playlist in the database
+     * @param remoteId id of the playlist on the server
+     * @return `false` when the server is off or not set up, nothing is stored then
+     * @throws ServerException when the server can't be used or refuses
+     */
+    suspend fun syncPlaylist(playlistId: Long, remoteId: String): Boolean {
+        val songs = provider.playlistSongs(remoteId) ?: return false
+        repository.syncSongs(Origin.OPEN_SUBSONIC, songs, playlistId = playlistId)
+        return true
     }
 
     /**

@@ -21,6 +21,7 @@ package me.knighthat.kreate.database.repository
 import me.knighthat.kreate.database.model.Album
 import me.knighthat.kreate.database.model.Artist
 import me.knighthat.kreate.database.model.Origin
+import me.knighthat.kreate.database.model.Song
 import me.knighthat.kreate.database.model.UserPlaylist
 import kotlin.time.Instant
 
@@ -30,6 +31,21 @@ import kotlin.time.Instant
  * @property starredAt when the user starred it on the server, `null` when not starred
  */
 data class RemoteItem<T>(val item: T, val starredAt: Instant?)
+
+/**
+ * A song of a server with what it points at and what the active user did with it there.
+ *
+ * @property album the song's album as the song knows it, `null` when it has none. It only fills
+ * in an album that isn't stored yet.
+ * @property artists every artist credited on the song, which only fill in the ones not stored yet
+ * @property starredAt when the user starred it on the server, `null` when not starred
+ */
+data class RemoteSong(
+    val song: Song,
+    val album: Album?,
+    val artists: List<Artist>,
+    val starredAt: Instant?,
+)
 
 /**
  * Keeps the library of a server in the shared catalog and the active user's library. Each call
@@ -65,4 +81,24 @@ interface RemoteCatalogRepository {
      * @throws IllegalArgumentException when a playlist has no remote id or is from another origin
      */
     suspend fun syncPlaylists(origin: Origin, playlists: List<UserPlaylist>)
+
+    /**
+     * Stores [songs] in the catalog and the active user's library, credited to their artists.
+     * The like follows the star on the server like the bookmark of [syncAlbums]. [albums] and
+     * [artists] are stored as with [syncAlbums] and [syncArtists], without removing anything.
+     *
+     * An album or artist a song points at that isn't stored yet is stored from what the song
+     * knows, without a row in the user's library. One already stored is kept as it is.
+     *
+     * @param playlistId a playlist of the user whose songs become [songs], `null` for none
+     * @throws IllegalArgumentException when an item is from another origin, or the playlist
+     * doesn't exist or isn't the active user's
+     */
+    suspend fun syncSongs(
+        origin: Origin,
+        songs: List<RemoteSong>,
+        albums: List<RemoteItem<Album>> = emptyList(),
+        artists: List<RemoteItem<Artist>> = emptyList(),
+        playlistId: Long? = null,
+    )
 }

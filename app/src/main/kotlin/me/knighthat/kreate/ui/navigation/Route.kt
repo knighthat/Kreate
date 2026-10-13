@@ -21,10 +21,12 @@ package me.knighthat.kreate.ui.navigation
 import android.os.Bundle
 import androidx.annotation.DrawableRes
 import androidx.core.os.bundleOf
+import androidx.media3.common.MediaItem
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import me.knighthat.kreate.R
 import me.knighthat.kreate.database.model.Origin
+import me.knighthat.kreate.ui.component.origin
 
 /**
  * Every screen the app can show. Entries on the back stack are instances of this.
@@ -109,6 +111,54 @@ data class LocalPlaylist(val id: Long) : Route {
         const val ID = "playlistId"
     }
 }
+
+/**
+ * An album of the OpenSubsonic server, its songs are fetched before it shows. Its screen reads
+ * the album like [LocalAlbum] does, from the same argument.
+ */
+@Serializable
+data class OpenSubsonicAlbum(val id: String) : Route {
+
+    override val arguments: Bundle get() = bundleOf(LocalAlbum.ID to id)
+}
+
+/**
+ * An artist of the OpenSubsonic server, the songs of their albums are fetched before it shows.
+ */
+@Serializable
+data class OpenSubsonicArtist(val id: String) : Route {
+
+    override val arguments: Bundle get() = bundleOf(LocalArtist.ID to id)
+}
+
+/**
+ * A playlist of the OpenSubsonic server, by its id in the database. Its songs are fetched
+ * before it shows.
+ */
+@Serializable
+data class OpenSubsonicPlaylist(val id: Long) : Route {
+
+    override val arguments: Bundle get() = bundleOf(LocalPlaylist.ID to id)
+}
+
+/**
+ * The screen of an album, by where it comes from.
+ */
+fun albumRoute(item: MediaItem): Route =
+    if (item.origin == Origin.OPEN_SUBSONIC) OpenSubsonicAlbum(item.mediaId) else LocalAlbum(item.mediaId)
+
+/**
+ * The screen of an artist, by where they come from.
+ */
+fun artistRoute(item: MediaItem): Route =
+    if (item.origin == Origin.OPEN_SUBSONIC) OpenSubsonicArtist(item.mediaId) else LocalArtist(item.mediaId)
+
+/**
+ * The screen of a playlist, by where it comes from.
+ */
+fun playlistRoute(item: MediaItem): Route =
+    if (item.origin == Origin.OPEN_SUBSONIC) OpenSubsonicPlaylist(item.mediaId.toLong())
+    else LocalPlaylist(item.mediaId.toLong())
 
 /**
  * The destinations that share the library bottom bar, in the order they appear on it.

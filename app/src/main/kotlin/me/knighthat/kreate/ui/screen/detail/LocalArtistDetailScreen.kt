@@ -32,6 +32,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.MediaItem
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import me.knighthat.kreate.ui.component.AlbumItem
@@ -45,7 +46,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LocalArtistDetailScreen(
     onBack: () -> Unit,
-    onOpenAlbum: (albumId: String) -> Unit,
+    onOpenAlbum: (MediaItem) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LocalArtistDetailViewModel = koinViewModel(),
 ) {
@@ -77,7 +78,7 @@ fun LocalArtistDetailScreen(
                         items(albums, key = { it.mediaId }) {
                             AlbumItem(
                                 it,
-                                onClick = { onOpenAlbum(it.mediaId) },
+                                onClick = { onOpenAlbum(it) },
                                 modifier = Modifier.width(104.dp),
                             )
                         }

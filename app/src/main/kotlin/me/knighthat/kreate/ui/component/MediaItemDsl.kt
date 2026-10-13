@@ -135,13 +135,21 @@ val MediaItem.isFollowed: Boolean
  * Whether the item is a file on this device, see [toMediaItem].
  */
 val MediaItem.isLocal: Boolean
-    get() = mediaMetadata.extras?.getString(EXTRA_ORIGIN) == Origin.LOCAL.name
+    get() = origin == Origin.LOCAL
 
 /**
- * A song that can be played, with the values the user sees.
+ * Where the item comes from, `null` for an item made without one.
+ */
+val MediaItem.origin: Origin?
+    get() = mediaMetadata.extras?.getString(EXTRA_ORIGIN)
+        ?.let { name -> Origin.entries.firstOrNull { it.name == name } }
+
+/**
+ * A song with the values the user sees. A song from an OpenSubsonic server is shown but can't be
+ * played yet, its stream needs the sign in, which isn't added to the player yet.
  *
- * @return `null` when the song has no source to play from: a song from YouTube needs a stream
- * address that is not resolved yet, and an unavailable file cannot be read.
+ * @return `null` when the song can't be shown: a song from YouTube needs a stream address that
+ * is not resolved yet, and an unavailable file cannot be read.
  */
 fun UserSongView.toMediaItem(): MediaItem? {
     if (!isAvailable) return null
@@ -152,7 +160,8 @@ fun UserSongView.toMediaItem(): MediaItem? {
             songId.toLongOrNull() ?: return null,
         )
 
-        Origin.YOUTUBE, Origin.OPEN_SUBSONIC -> return null
+        Origin.YOUTUBE -> return null
+        Origin.OPEN_SUBSONIC -> null
     }
 
     return mediaItem(songId, uri) {
@@ -173,7 +182,7 @@ fun UserSongView.toMediaItem(): MediaItem? {
             putExplicit(isExplicit)
         })
         setIsBrowsable(false)
-        setIsPlayable(true)
+        setIsPlayable(uri != null)
     }
 }
 

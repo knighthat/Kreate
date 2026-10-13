@@ -21,6 +21,9 @@ package me.knighthat.kreate
 import me.knighthat.kreate.ui.screen.detail.LocalAlbumDetailViewModel
 import me.knighthat.kreate.ui.screen.detail.LocalArtistDetailViewModel
 import me.knighthat.kreate.ui.screen.detail.LocalPlaylistDetailViewModel
+import me.knighthat.kreate.ui.screen.detail.OpenSubsonicAlbumDetailViewModel
+import me.knighthat.kreate.ui.screen.detail.OpenSubsonicArtistDetailViewModel
+import me.knighthat.kreate.ui.screen.detail.OpenSubsonicPlaylistDetailViewModel
 import me.knighthat.kreate.ui.screen.home.HomeAlbumsViewModel
 import me.knighthat.kreate.ui.screen.home.HomeArtistsViewModel
 import me.knighthat.kreate.ui.screen.home.HomePlaylistsViewModel
@@ -44,6 +47,9 @@ val viewModelModule = module {
     viewModelOf(::LocalAlbumDetailViewModel)
     viewModelOf(::LocalArtistDetailViewModel)
     viewModelOf(::LocalPlaylistDetailViewModel)
+    viewModelOf(::OpenSubsonicAlbumDetailViewModel)
+    viewModelOf(::OpenSubsonicArtistDetailViewModel)
+    viewModelOf(::OpenSubsonicPlaylistDetailViewModel)
 
     viewModelOf(::NetworkSettingsViewModel)
 }

@@ -52,6 +52,9 @@ import me.knighthat.kreate.ui.navigation.LocalAlbum
 import me.knighthat.kreate.ui.navigation.LocalArtist
 import me.knighthat.kreate.ui.navigation.LocalPlaylist
 import me.knighthat.kreate.ui.navigation.NetworkSettings
+import me.knighthat.kreate.ui.navigation.OpenSubsonicAlbum
+import me.knighthat.kreate.ui.navigation.OpenSubsonicArtist
+import me.knighthat.kreate.ui.navigation.OpenSubsonicPlaylist
 import me.knighthat.kreate.ui.navigation.Playlists
 import me.knighthat.kreate.ui.navigation.Route
 import me.knighthat.kreate.ui.navigation.Search
@@ -60,11 +63,20 @@ import me.knighthat.kreate.ui.navigation.Settings
 import me.knighthat.kreate.ui.navigation.Songs
 import me.knighthat.kreate.ui.navigation.Tab
 import me.knighthat.kreate.ui.navigation.UiSettings
+import me.knighthat.kreate.ui.navigation.albumRoute
+import me.knighthat.kreate.ui.navigation.artistRoute
+import me.knighthat.kreate.ui.navigation.playlistRoute
 import me.knighthat.kreate.ui.navigation.rememberTopLevelBackStack
 import me.knighthat.kreate.ui.navigation.routeViewModel
 import me.knighthat.kreate.ui.screen.detail.LocalAlbumDetailScreen
+import me.knighthat.kreate.ui.screen.detail.LocalAlbumDetailViewModel
 import me.knighthat.kreate.ui.screen.detail.LocalArtistDetailScreen
+import me.knighthat.kreate.ui.screen.detail.LocalArtistDetailViewModel
 import me.knighthat.kreate.ui.screen.detail.LocalPlaylistDetailScreen
+import me.knighthat.kreate.ui.screen.detail.LocalPlaylistDetailViewModel
+import me.knighthat.kreate.ui.screen.detail.OpenSubsonicAlbumDetailScreen
+import me.knighthat.kreate.ui.screen.detail.OpenSubsonicArtistDetailScreen
+import me.knighthat.kreate.ui.screen.detail.OpenSubsonicPlaylistDetailScreen
 import me.knighthat.kreate.ui.screen.home.HomeAlbumsScreen
 import me.knighthat.kreate.ui.screen.home.HomeArtistsScreen
 import me.knighthat.kreate.ui.screen.home.HomePlaylistsScreen
@@ -80,6 +92,9 @@ import me.knighthat.kreate.ui.theme.rememberThumbnailSeed
 import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
+
+/** Tells the ViewModel that syncs a server's item apart from the one that shows it. */
+private const val SYNC_TAG = "sync"
 
 /**
  * The [MiniPlayer] for what [controller] is playing, hidden while its queue is empty.
@@ -177,7 +192,7 @@ fun KreateApp() {
                     }
                     entry<Albums> {
                         HomeAlbumsScreen(
-                            { topLevel.push(LocalAlbum(it)) },
+                            { topLevel.push(albumRoute(it)) },
                             { topLevel.push(Search) },
                             { topLevel.push(Settings) },
                             paddingModifier,
@@ -185,7 +200,7 @@ fun KreateApp() {
                     }
                     entry<Artists> {
                         HomeArtistsScreen(
-                            { topLevel.push(LocalArtist(it)) },
+                            { topLevel.push(artistRoute(it)) },
                             { topLevel.push(Search) },
                             { topLevel.push(Settings) },
                             paddingModifier,
@@ -193,7 +208,7 @@ fun KreateApp() {
                     }
                     entry<Playlists> {
                         HomePlaylistsScreen(
-                            { topLevel.push(LocalPlaylist(it.toLong())) },
+                            { topLevel.push(playlistRoute(it)) },
                             { topLevel.push(Search) },
                             { topLevel.push(Settings) },
                             paddingModifier,
@@ -203,9 +218,9 @@ fun KreateApp() {
                     entry<Search> {
                         SearchScreen(
                             onBack = topLevel::pop,
-                            onOpenAlbum = { topLevel.push(LocalAlbum(it)) },
-                            onOpenArtist = { topLevel.push(LocalArtist(it)) },
-                            onOpenPlaylist = { topLevel.push(LocalPlaylist(it.toLong())) },
+                            onOpenAlbum = { topLevel.push(albumRoute(it)) },
+                            onOpenArtist = { topLevel.push(artistRoute(it)) },
+                            onOpenPlaylist = { topLevel.push(playlistRoute(it)) },
                             onSearch = { query, origin, tab ->
                                 topLevel.push(SearchResults(query, origin, tab))
                             },
@@ -215,9 +230,9 @@ fun KreateApp() {
                         SearchResultsScreen(
                             initialTab = it.tab,
                             onBack = topLevel::pop,
-                            onOpenAlbum = { id -> topLevel.push(LocalAlbum(id)) },
-                            onOpenArtist = { id -> topLevel.push(LocalArtist(id)) },
-                            onOpenPlaylist = { id -> topLevel.push(LocalPlaylist(id.toLong())) },
+                            onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
+                            onOpenArtist = { item -> topLevel.push(artistRoute(item)) },
+                            onOpenPlaylist = { item -> topLevel.push(playlistRoute(item)) },
                             viewModel = routeViewModel(it),
                         )
                     }
@@ -238,12 +253,54 @@ fun KreateApp() {
                     entry<LocalArtist> {
                         LocalArtistDetailScreen(
                             onBack = topLevel::pop,
-                            onOpenAlbum = { id -> topLevel.push(LocalAlbum(id)) },
+                            onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
                             viewModel = routeViewModel(it),
                         )
                     }
                     entry<LocalPlaylist> {
                         LocalPlaylistDetailScreen(topLevel::pop, viewModel = routeViewModel(it))
+                    }
+
+                    // Server items are fetched and stored first, then show like library items
+                    entry<OpenSubsonicAlbum> {
+                        val library = routeViewModel<LocalAlbumDetailViewModel>(it)
+                        val album by library.album.collectFlowAsState()
+
+                        OpenSubsonicAlbumDetailScreen(
+                            title = album?.name.orEmpty(),
+                            onBack = topLevel::pop,
+                            viewModel = routeViewModel(it, tag = SYNC_TAG),
+                        ) {
+                            LocalAlbumDetailScreen(topLevel::pop, viewModel = library)
+                        }
+                    }
+                    entry<OpenSubsonicArtist> {
+                        val library = routeViewModel<LocalArtistDetailViewModel>(it)
+                        val artist by library.artist.collectFlowAsState()
+
+                        OpenSubsonicArtistDetailScreen(
+                            title = artist?.name.orEmpty(),
+                            onBack = topLevel::pop,
+                            viewModel = routeViewModel(it, tag = SYNC_TAG),
+                        ) {
+                            LocalArtistDetailScreen(
+                                onBack = topLevel::pop,
+                                onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
+                                viewModel = library,
+                            )
+                        }
+                    }
+                    entry<OpenSubsonicPlaylist> {
+                        val library = routeViewModel<LocalPlaylistDetailViewModel>(it)
+                        val playlist by library.playlist.collectFlowAsState()
+
+                        OpenSubsonicPlaylistDetailScreen(
+                            title = playlist?.name.orEmpty(),
+                            onBack = topLevel::pop,
+                            viewModel = routeViewModel(it, tag = SYNC_TAG),
+                        ) {
+                            LocalPlaylistDetailScreen(topLevel::pop, viewModel = library)
+                        }
                     }
                 },
             )

@@ -223,9 +223,9 @@ private fun suggestionsOf(results: Map<Tab, LazyPagingItems<MediaItem>>): List<S
 @Composable
 fun SearchScreen(
     onBack: () -> Unit,
-    onOpenAlbum: (albumId: String) -> Unit,
-    onOpenArtist: (artistId: String) -> Unit,
-    onOpenPlaylist: (playlistId: String) -> Unit,
+    onOpenAlbum: (MediaItem) -> Unit,
+    onOpenArtist: (MediaItem) -> Unit,
+    onOpenPlaylist: (MediaItem) -> Unit,
     onSearch: (query: String, origin: Origin, tab: Tab) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = koinViewModel(),
@@ -308,9 +308,9 @@ fun SearchScreen(
                         item = it.item,
                         onClick = {
                             when (it.kind) {
-                                Tab.ALBUMS -> onOpenAlbum(it.item.mediaId)
-                                Tab.ARTISTS -> onOpenArtist(it.item.mediaId)
-                                Tab.PLAYLISTS -> onOpenPlaylist(it.item.mediaId)
+                                Tab.ALBUMS -> onOpenAlbum(it.item)
+                                Tab.ARTISTS -> onOpenArtist(it.item)
+                                Tab.PLAYLISTS -> onOpenPlaylist(it.item)
                                 Tab.SONGS -> {}
                             }
                         },
