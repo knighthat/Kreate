@@ -31,7 +31,8 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 /**
- * Reads the music on the device and brings the local catalog up to date.
+ * Reads the music on the device and brings the local catalog up to date. After a scan that
+ * worked, the loudness of new songs is measured, see [LoudnessWorker].
  *
  * Without the audio permission it does nothing, the next run tries again.
  */
@@ -54,6 +55,7 @@ class LocalMusicWorker(
             }
             Log.i(TAG, "Found ${songs.size} songs on the device")
             catalog.sync(songs)
+            LocalMusicScheduler.measureLoudness(applicationContext)
             Result.success()
         } catch (e: CancellationException) {
             throw e

@@ -33,6 +33,26 @@ import kotlin.time.Duration.Companion.milliseconds
 class MediaStoreScanner(private val resolver: ContentResolver) {
 
     /**
+     * Size in bytes of every music file the index knows about, by song id. Empty when the
+     * permission is missing.
+     */
+    fun sizes(): Map<String, Long> {
+        val sizes = mutableMapOf<String, Long>()
+        resolver.query(
+            collection(),
+            arrayOf(MediaStore.Audio.Media._ID, MediaStore.Audio.Media.SIZE),
+            "${MediaStore.Audio.Media.IS_MUSIC} != 0",
+            null,
+            null,
+        )?.use { cursor ->
+            val id = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
+            val size = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
+            while (cursor.moveToNext()) sizes[cursor.getLong(id).toString()] = cursor.getLong(size)
+        }
+        return sizes
+    }
+
+    /**
      * Every music file the index knows about, empty when the permission is missing.
      */
     fun scan(): List<LocalSong> {
@@ -48,16 +68,9 @@ class MediaStoreScanner(private val resolver: ContentResolver) {
             MediaStore.Audio.Media.ALBUM,
         )
 
-        // Volumes exist since Android 10, they include storage the device can add, like an SD card
-        val collection =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-            else
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-
         val songs = mutableListOf<LocalSong>()
         resolver.query(
-            collection,
+            collection(),
             projection,
             "${MediaStore.Audio.Media.IS_MUSIC} != 0",
             null,
@@ -91,6 +104,13 @@ class MediaStoreScanner(private val resolver: ContentResolver) {
         }
         return songs
     }
+
+    // Volumes exist since Android 10, they include storage the device can add, like an SD card
+    private fun collection(): Uri =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+        else
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
 }
 
 /**

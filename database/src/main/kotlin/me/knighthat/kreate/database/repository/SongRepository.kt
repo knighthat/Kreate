@@ -21,6 +21,7 @@ package me.knighthat.kreate.database.repository
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate.database.model.Artist
 import me.knighthat.kreate.database.model.Lyrics
+import me.knighthat.kreate.database.model.Origin
 import me.knighthat.kreate.database.model.Song
 import me.knighthat.kreate.database.model.SongFormat
 
@@ -61,6 +62,18 @@ interface SongRepository {
     fun formatsOf(songId: String): Flow<List<SongFormat>>
 
     suspend fun saveFormat(format: SongFormat)
+
+    /**
+     * Size in bytes of the format [tag] of each song that has one with a gain and a known size,
+     * by song id. A song whose file has a different size now was replaced.
+     */
+    suspend fun formatLengths(tag: String): Map<String, Long>
+
+    /**
+     * Ids of the available songs from [origin] whose format [tag] has no gain yet, including
+     * songs without that format at all.
+     */
+    suspend fun idsWithoutGain(origin: Origin, tag: String): List<String>
 
     suspend fun deleteFormats(songId: String)
 

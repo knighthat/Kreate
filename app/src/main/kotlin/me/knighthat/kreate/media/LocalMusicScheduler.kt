@@ -19,6 +19,7 @@
 package me.knighthat.kreate.media
 
 import android.content.Context
+import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -35,6 +36,7 @@ object LocalMusicScheduler {
 
     private const val PERIODIC_NAME = "local_music_scan"
     private const val ONCE_NAME = "local_music_scan_now"
+    private const val LOUDNESS_NAME = "local_music_loudness"
 
     private val MIN_INTERVAL_MINUTES =
         TimeUnit.MILLISECONDS.toMinutes(PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS)
@@ -67,5 +69,19 @@ object LocalMusicScheduler {
                 ExistingWorkPolicy.KEEP,
                 OneTimeWorkRequestBuilder<LocalMusicWorker>().build()
             )
+    }
+
+    /**
+     * Measures the loudness of the songs that have none yet with [LoudnessWorker], while the
+     * battery isn't low. Does nothing while an earlier run is still waiting or running, that run
+     * picks up the new songs too.
+     */
+    fun measureLoudness(context: Context) {
+        val request = OneTimeWorkRequestBuilder<LoudnessWorker>()
+            .setConstraints(Constraints.Builder().setRequiresBatteryNotLow(true).build())
+            .build()
+
+        WorkManager.getInstance(context)
+            .enqueueUniqueWork(LOUDNESS_NAME, ExistingWorkPolicy.KEEP, request)
     }
 }

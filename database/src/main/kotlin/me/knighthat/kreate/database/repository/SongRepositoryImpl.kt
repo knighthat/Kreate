@@ -30,6 +30,7 @@ import me.knighthat.kreate.database.entity.SongFormatEntity
 import me.knighthat.kreate.database.inTransaction
 import me.knighthat.kreate.database.model.Artist
 import me.knighthat.kreate.database.model.Lyrics
+import me.knighthat.kreate.database.model.Origin
 import me.knighthat.kreate.database.model.Song
 import me.knighthat.kreate.database.model.SongFormat
 import kotlin.time.Clock
@@ -72,6 +73,12 @@ internal class SongRepositoryImpl(
         val createdAt = songFormatDao.get(format.songId, format.tag)?.createdAt ?: now
         songFormatDao.upsert(format.toEntity(createdAt, now))
     }
+
+    override suspend fun formatLengths(tag: String): Map<String, Long> =
+        songFormatDao.lengths(tag).associate { it.songId to it.length }
+
+    override suspend fun idsWithoutGain(origin: Origin, tag: String): List<String> =
+        songFormatDao.idsWithoutGain(origin, tag)
 
     override suspend fun deleteFormats(songId: String) = songFormatDao.deleteAll(songId)
 
