@@ -23,11 +23,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import me.knighthat.kreate.database.model.Origin
 import me.knighthat.kreate.database.repository.ArtistRepository
 import me.knighthat.kreate.database.repository.UserAlbumRepository
 import me.knighthat.kreate.database.repository.UserSongRepository
+import me.knighthat.kreate.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate.provider.opensubsonic.Shareable
 import me.knighthat.kreate.ui.component.toMediaItem
 import me.knighthat.kreate.ui.component.toMediaItems
 import me.knighthat.kreate.ui.navigation.LocalArtist
@@ -40,6 +45,7 @@ class LocalArtistDetailViewModel(
     repository: ArtistRepository,
     songRepository: UserSongRepository,
     albumRepository: UserAlbumRepository,
+    private val openSubsonic: OpenSubsonicProvider,
 ) : ViewModel() {
 
     val artistId: String = checkNotNull(savedStateHandle[LocalArtist.ID]) {
@@ -56,6 +62,31 @@ class LocalArtistDetailViewModel(
     val songs = songRepository.ofArtist(artistId)
         .toMediaItems()
         .cachedIn(viewModelScope)
+
+    /**
+     * Whether the artist can be shared: they are from the server and the user may make shares
+     * there. `false` until that is known.
+     */
+    val canShare: StateFlow<Boolean> = artist
+        .map { it?.origin == Origin.OPEN_SUBSONIC }
+        .distinctUntilChanged()
+        .map { fromServer -> fromServer && openSubsonic.shareRole() != false }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    /**
+     * A link to the artist that anyone can open, asked of the server at every tap. It gives a
+     * share it has already or makes one. Links aren't stored, a share can expire or be deleted on
+     * the server.
+     *
+     * @return the link, or why there is none
+     */
+    suspend fun shareLink(): Result<String> = runCatching {
+        val artist = checkNotNull(artist.value) { "The artist isn't loaded" }
+
+        checkNotNull(openSubsonic.shareLink(Shareable.Artist(artist.id), artist.name)) {
+            "The server is turned off"
+        }
+    }
 
     private companion object {
         /** Albums shown on the page, the artist may have more. */

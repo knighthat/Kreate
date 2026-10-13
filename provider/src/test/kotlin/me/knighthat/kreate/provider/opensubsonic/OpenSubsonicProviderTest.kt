@@ -345,50 +345,153 @@ class OpenSubsonicProviderTest {
         assertTrue(requests.isEmpty())
     }
 
-    @Test
-    fun aShareIsMadeForTheItemWithItsName() = runBlocking {
-        val link = provider {
-            """{"subsonic-response":{"status":"ok","version":"1.16.1","shares":{"share":[
-                {"id":"s1","url":"https://music.example.com/share/s1","description":"FEAR"}]}}}"""
-        }.createShare("al-1", "FEAR")
+    /** Answers `getShares` with [shares] and `createShare` with a new link, other calls with [other]. */
+    private fun shareServer(shares: String, other: (HttpRequestData) -> String = { OK }) =
+        provider { request ->
+            when (request.url.encodedPath.substringAfterLast('/')) {
+                "getShares" -> """{"subsonic-response":{"status":"ok","version":"1.16.1","shares":{"share":[$shares]}}}"""
+                "createShare" -> """{"subsonic-response":{"status":"ok","version":"1.16.1","shares":{"share":[
+                {"id":"new","url":"https://music.example.com/share/new"}]}}}"""
 
-        assertEquals("https://music.example.com/share/s1", link)
-        val form = requests.single().form()
+                else -> other(request)
+            }
+        }
+
+    private fun share(id: String, vararg entries: String, expires: String? = null) =
+        """{"id":"$id","url":"https://music.example.com/share/$id"${
+            expires?.let { ",\"expires\":\"$it\"" }.orEmpty()
+        },
+            "entry":[${entries.joinToString(",") { """{"id":"$it"}""" }}]}"""
+
+    private fun createdShares() = requests.filter { it.url.encodedPath.endsWith("/createShare") }
+
+    @Test
+    fun anAlbumsExistingShareIsUsedAgain() = runBlocking {
+        val link = shareServer(share("other", "al-2") + "," + share("mine", "al-1"))
+            .shareLink(Shareable.Album("al-1"), "FEAR")
+
+        assertEquals("https://music.example.com/share/mine", link)
+        assertTrue(createdShares().isEmpty())
+    }
+
+    @Test
+    fun aShareIsMadeWhenTheItemHasNone() = runBlocking {
+        val link = shareServer(share("other", "al-2")).shareLink(Shareable.Album("al-1"), "FEAR")
+
+        assertEquals("https://music.example.com/share/new", link)
+        val form = createdShares().single().form()
         assertEquals("al-1", form["id"])
         assertEquals("FEAR", form["description"])
-        assertTrue(requests.single().url.encodedPath.endsWith("/rest/createShare"))
+    }
+
+    @Test
+    fun anExpiredShareIsNotUsedAgain() = runBlocking {
+        val link = shareServer(share("old", "al-1", expires = "2000-01-01T00:00:00Z"))
+            .shareLink(Shareable.Album("al-1"), null)
+
+        assertEquals("https://music.example.com/share/new", link)
+    }
+
+    @Test
+    fun anArtistsShareHoldsAllOfTheirAlbums() = runBlocking {
+        val artist =
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","artist":{"id":"ar-1",
+            "album":[{"id":"al-1"},{"id":"al-2"}]}}}"""
+
+        // A share of one of their albums isn't a share of the artist
+        val made =
+            shareServer(share("one", "al-1")) { artist }.shareLink(Shareable.Artist("ar-1"), "NF")
+        assertEquals("https://music.example.com/share/new", made)
+        assertEquals("ar-1", createdShares().single().form()["id"])
+
+        requests.clear()
+        val found = shareServer(share("all", "al-2", "al-1")) { artist }.shareLink(
+            Shareable.Artist("ar-1"),
+            "NF"
+        )
+        assertEquals("https://music.example.com/share/all", found)
+        assertTrue(createdShares().isEmpty())
+    }
+
+    @Test
+    fun aPlaylistsShareHoldsAllOfItsSongs() = runBlocking {
+        val playlist =
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","playlist":{"id":"p-1",
+            "entry":[{"id":"s-1"},{"id":"s-2"}]}}}"""
+
+        val found = shareServer(
+            share(
+                "mix",
+                "s-1",
+                "s-2"
+            )
+        ) { playlist }.shareLink(Shareable.Playlist("p-1"), "Mix")
+
+        assertEquals("https://music.example.com/share/mix", found)
+        assertTrue(createdShares().isEmpty())
+    }
+
+    @Test
+    fun aServerThatDeniesTheShareSaysWhy() = runBlocking {
+        val server = provider { request ->
+            if (request.url.encodedPath.endsWith("/getShares"))
+                """{"subsonic-response":{"status":"ok","version":"1.16.1","shares":{}}}"""
+            else """{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":70,"message":"not found"}}}"""
+        }
+
+        val error = assertThrows(ServerException::class.java) {
+            runBlocking { server.shareLink(Shareable.Album("al-1"), null) }
+        }
+        assertEquals(ServerCheck.Rejected(70, "not found"), error.check)
     }
 
     @Test
     fun noShareIsMadeWhileDisabled() = runBlocking {
-        assertNull(provider(FakeSettings(enabled = false)).createShare("al-1", null))
-        assertNull(provider(FakeSettings(enabled = false)).shareUrls())
+        assertNull(provider(FakeSettings(enabled = false)).shareLink(Shareable.Album("al-1"), null))
         assertTrue(requests.isEmpty())
     }
 
     @Test
-    fun theLinksOfExistingSharesAreListed() = runBlocking {
-        val links = provider {
-            """{"subsonic-response":{"status":"ok","version":"1.16.1","shares":{"share":[
-                {"id":"s1","url":"https://music.example.com/share/s1"},
-                {"id":"s2","url":"https://music.example.com/share/s2"}]}}}"""
-        }.shareUrls()
+    fun theShareRoleIsReadForTheUser() = runBlocking {
+        val server = provider { USER_MAY_SHARE }
 
-        assertEquals(
-            setOf(
-                "https://music.example.com/share/s1",
-                "https://music.example.com/share/s2"
-            ), links
-        )
+        assertEquals(true, server.shareRole())
+        assertEquals("me", requests.single().form()["username"])
+        assertTrue(requests.single().url.encodedPath.endsWith("/rest/getUser"))
     }
 
     @Test
-    fun noSharesIsAnEmptyList() = runBlocking {
-        val links = provider {
-            """{"subsonic-response":{"status":"ok","version":"1.16.1","shares":{}}}"""
-        }.shareUrls()
+    fun theShareRoleIsAskedOnce() = runBlocking {
+        val server = provider {
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","user":{"username":"me","shareRole":false}}}"""
+        }
 
-        assertEquals(emptySet<String>(), links)
+        assertEquals(false, server.shareRole())
+        assertEquals(false, server.shareRole())
+        assertEquals(1, requests.size)
+    }
+
+    @Test
+    fun anUnreadableShareRoleIsUnknown() = runBlocking {
+        val server = provider {
+            """{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":50,"message":"admin only"}}}"""
+        }
+
+        assertNull(server.shareRole())
+        assertNull(provider(FakeSettings(enabled = false)).shareRole())
+    }
+
+    @Test
+    fun withAnApiKeyTheUsernameComesFromTheToken() = runBlocking {
+        val role =
+            provider(FakeSettings(auth = OpenSubsonicAuth.API_KEY, username = "")) { request ->
+                if (request.url.encodedPath.endsWith("/tokenInfo"))
+                    """{"subsonic-response":{"status":"ok","version":"1.16.1","tokenInfo":{"username":"keyed"}}}"""
+                else USER_MAY_SHARE
+            }.shareRole()
+
+        assertEquals(true, role)
+        assertEquals("keyed", requests.last().form()["username"])
     }
 
     @Test
@@ -458,6 +561,9 @@ class OpenSubsonicProviderTest {
 
         const val OK =
             """{"subsonic-response":{"status":"ok","version":"1.16.1","type":"navidrome","serverVersion":"0.55.0","openSubsonic":true}}"""
+
+        const val USER_MAY_SHARE =
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","user":{"username":"me","shareRole":true}}}"""
 
         const val FAILED_40 =
             """{"subsonic-response":{"status":"failed","version":"1.16.1","type":"navidrome","serverVersion":"0.55.0","openSubsonic":true,"error":{"code":40,"message":"Wrong username or password"}}}"""

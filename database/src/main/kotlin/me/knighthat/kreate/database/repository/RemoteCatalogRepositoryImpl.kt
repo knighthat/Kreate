@@ -172,9 +172,7 @@ internal class RemoteCatalogRepositoryImpl(
         val stored = albumDao.withOrigin(origin).associateBy { it.id }
         albumDao.upsertAll(incoming.mapNotNull { (album, _) ->
             val old = stored[album.id]
-            // The server doesn't list share links, keep the one made for the album
             val new = album.toEntity(old?.createdAt ?: now, now)
-                .let { if (it.url == null && old != null) it.copy(url = old.url) else it }
             new.takeUnless { old != null && it.copy(updatedAt = old.updatedAt) == old }
         })
 

@@ -23,12 +23,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import me.knighthat.kreate.database.model.Album
 import me.knighthat.kreate.database.model.Origin
 import me.knighthat.kreate.database.repository.AlbumRepository
 import me.knighthat.kreate.database.repository.UserSongRepository
 import me.knighthat.kreate.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate.provider.opensubsonic.Shareable
 import me.knighthat.kreate.ui.component.toMediaItems
 import me.knighthat.kreate.ui.navigation.LocalAlbum
 
@@ -37,7 +40,7 @@ import me.knighthat.kreate.ui.navigation.LocalAlbum
  */
 class LocalAlbumDetailViewModel(
     savedStateHandle: SavedStateHandle,
-    private val repository: AlbumRepository,
+    repository: AlbumRepository,
     songRepository: UserSongRepository,
     private val openSubsonic: OpenSubsonicProvider,
 ) : ViewModel() {
@@ -54,14 +57,22 @@ class LocalAlbumDetailViewModel(
         .cachedIn(viewModelScope)
 
     /**
-     * Whether the album can be shared: it has a link, or its server can make one.
+     * Whether the album can be shared: an album of the server when the user may make shares
+     * there, or another album that has a link. `false` until that is known.
      */
-    fun canShare(album: Album): Boolean =
-        album.url != null || album.origin == Origin.OPEN_SUBSONIC
+    val canShare: StateFlow<Boolean> = album
+        .map { it?.let { album -> album.origin to (album.url != null) } }
+        .distinctUntilChanged()
+        .map { found ->
+            val (origin, hasLink) = found ?: return@map false
+            if (origin == Origin.OPEN_SUBSONIC) openSubsonic.shareRole() != false else hasLink
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     /**
-     * A link to the album that anyone can open. An OpenSubsonic album gets a share made on the
-     * server the first time, which is kept and used again while the server still has it.
+     * A link to the album that anyone can open. For an album of the server it is asked of the
+     * server at every tap, which gives a share it has already or makes one. Links aren't stored,
+     * a share can expire or be deleted on the server.
      *
      * @return the link, or why there is none
      */
@@ -70,14 +81,8 @@ class LocalAlbumDetailViewModel(
         if (album.origin != Origin.OPEN_SUBSONIC)
             return@runCatching checkNotNull(album.url) { "This album has no link" }
 
-        // A share deleted or expired on the server is made again
-        album.url?.takeIf { openSubsonic.shareUrls()?.contains(it) == true }
-            ?.let { return@runCatching it }
-
-        val link = checkNotNull(openSubsonic.createShare(album.id, album.name)) {
+        checkNotNull(openSubsonic.shareLink(Shareable.Album(album.id), album.name)) {
             "The server is turned off"
         }
-        repository.update(album.id) { it.copy(url = link) }
-        link
     }
 }

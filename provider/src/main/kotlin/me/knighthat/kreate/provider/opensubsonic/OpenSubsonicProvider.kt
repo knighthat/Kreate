@@ -33,8 +33,10 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
@@ -55,6 +57,8 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 import java.security.cert.CertificateException
 import javax.net.ssl.SSLHandshakeException
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 private const val API_VERSION = "1.16.1"
 private const val CLIENT_NAME = "kreate"
@@ -70,6 +74,7 @@ class OpenSubsonicProvider internal constructor(
     private val client: () -> HttpClient,
     private val json: Json,
     private val settings: OpenSubsonicSettings,
+    private val clock: Clock = Clock.System,
 ) : Provider {
 
     /**
@@ -82,6 +87,10 @@ class OpenSubsonicProvider internal constructor(
     )
 
     override val origin = Origin.OPEN_SUBSONIC
+
+    /** The last [shareRole] read, with the server and sign in it is for. */
+    @Volatile
+    private var knownShareRole: Pair<String, Boolean>? = null
 
     /**
      * Whether a server answers at the address, and what it says about itself. No credentials
@@ -238,21 +247,26 @@ class OpenSubsonicProvider internal constructor(
     }
 
     /**
-     * Makes a public link to an album, playlist or song of the server. Anyone with it can open
-     * and play the item without an account, until it is deleted or expires on the server.
+     * A public link to [item]. Anyone with it can open and play the item without an account,
+     * until it is deleted or expires on the server.
      *
-     * Every call makes a new link, keep it and reuse it while [shareUrls] still has it.
+     * A share of the user's that holds exactly the item and hasn't expired is used again, the
+     * server makes a new share at every request otherwise. Only when there is none a share is
+     * made. Navidrome also shares an artist, as all of their albums, other servers may not.
      *
-     * @param itemId id of the item on the server
-     * @param description shown on the shared page, like the item's name
+     * Check [shareRole] first, a user without it can't make shares.
+     *
+     * @param description shown on the shared page of a new share, like the item's name
      * @return the link, `null` while the server is off or not set up
-     * @throws ServerException when the server can't be used or refuses, like when sharing is
-     * turned off on the server
+     * @throws ServerException when the server can't be used or refuses, like for a kind of item
+     * it doesn't share
      */
-    suspend fun createShare(itemId: String, description: String?): String? {
+    suspend fun shareLink(item: Shareable, description: String?): String? {
         serverUrl ?: return null
 
-        val params = listOfNotNull("id" to itemId, description?.let { "description" to it })
+        existingShare(entriesOf(item))?.let { return it }
+
+        val params = listOfNotNull("id" to item.id, description?.let { "description" to it })
         return call("createShare", *params.toTypedArray())["shares"]?.jsonObject
             ?.array("share")?.firstOrNull()?.jsonObject
             ?.get("url")?.jsonPrimitive?.contentOrNull
@@ -260,17 +274,66 @@ class OpenSubsonicProvider internal constructor(
     }
 
     /**
-     * Links of the user's shares that still exist on the server.
-     *
-     * @return `null` while the server is off or not set up
-     * @throws ServerException when the server can't be used or refuses the request
+     * Ids of what a share of [item] holds: the album itself, every album of the artist, or every
+     * song of the playlist.
      */
-    suspend fun shareUrls(): Set<String>? {
-        serverUrl ?: return null
+    private suspend fun entriesOf(item: Shareable): Set<String> = when (item) {
+        is Shareable.Album -> setOf(item.id)
+        is Shareable.Artist -> call("getArtist", "id" to item.id)["artist"]?.jsonObject
+            ?.array("album").orEmpty().ids()
+
+        is Shareable.Playlist -> call("getPlaylist", "id" to item.id)["playlist"]?.jsonObject
+            ?.array("entry").orEmpty().ids()
+    }
+
+    /**
+     * Link of a share of the user's that holds exactly [entries] and hasn't expired, `null` when
+     * there is none.
+     */
+    private suspend fun existingShare(entries: Set<String>): String? {
+        if (entries.isEmpty()) return null
+        val now = clock.now()
 
         return call("getShares")["shares"]?.jsonObject?.array("share").orEmpty()
-            .mapNotNull { it.jsonObject["url"]?.jsonPrimitive?.contentOrNull }
-            .toSet()
+            .map { it.jsonObject }
+            .firstOrNull { share ->
+                val expires = share["expires"]?.jsonPrimitive?.contentOrNull
+                    ?.let { runCatching { Instant.parse(it) }.getOrNull() }
+                (expires == null || expires > now) && share.array("entry").orEmpty()
+                    .ids() == entries
+            }
+            ?.get("url")?.jsonPrimitive?.contentOrNull
+    }
+
+    private fun List<JsonElement>.ids(): Set<String> =
+        mapNotNull { it.jsonObject["id"]?.jsonPrimitive?.contentOrNull }.toSet()
+
+    /**
+     * Whether the signed in user may make shares, the `shareRole` of `getUser`. With an API key the
+     * username comes from `tokenInfo`. The answer is kept for the server and sign in it was read
+     * with, a change of the role on the server shows after the app restarts.
+     *
+     * @return `null` when it can't be read, like while the server is off or from a server that
+     * doesn't tell
+     */
+    suspend fun shareRole(): Boolean? {
+        val server = serverUrl ?: return null
+        val key = "$server|${settings.auth}|${settings.username}"
+        knownShareRole?.takeIf { it.first == key }?.let { return it.second }
+
+        return try {
+            val username = when (settings.auth) {
+                OpenSubsonicAuth.PASSWORD -> settings.username
+                OpenSubsonicAuth.API_KEY -> call("tokenInfo")["tokenInfo"]?.jsonObject
+                    ?.get("username")?.jsonPrimitive?.contentOrNull
+            }
+            username?.let {
+                call("getUser", "username" to it)["user"]?.jsonObject
+                    ?.get("shareRole")?.jsonPrimitive?.booleanOrNull
+            }?.also { knownShareRole = key to it }
+        } catch (_: ServerException) {
+            null
+        }
     }
 
     /**

@@ -59,8 +59,7 @@ interface RemoteCatalogRepository {
 
     /**
      * Stores [albums] in the catalog and the active user's library. The user's own name, cover
-     * and artists are kept, and so is the album's `url` when the server gives none, like a share
-     * link made for it. The bookmark follows the star on the server, except that an album the
+     * and artists are kept. The bookmark follows the star on the server, except that an album the
      * user disliked stays disliked while it isn't starred. Albums of [origin] that are no longer
      * on the server leave the user's library.
      *

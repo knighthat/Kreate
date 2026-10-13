@@ -54,7 +54,16 @@ fun LocalArtistDetailScreen(
     val albums by viewModel.albums.collectAsState()
     val songs = viewModel.songs.collectAsLazyPagingItems()
 
-    DetailScaffold(artist?.name.orEmpty(), onBack, modifier) { innerPadding ->
+    val canShare by viewModel.canShare.collectAsState()
+
+    DetailScaffold(
+        title = artist?.name.orEmpty(),
+        onBack = onBack,
+        modifier = modifier,
+        actions = {
+            if (canShare) ShareAction(artist?.name, "artist", viewModel::shareLink)
+        },
+    ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()

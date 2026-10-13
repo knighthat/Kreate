@@ -22,3 +22,4 @@ package me.knighthat.kreate.provider.opensubsonic
  * A request to the server failed, [check] says how.
  */
 class ServerException(val check: ServerCheck) : Exception(check.toString())
+
