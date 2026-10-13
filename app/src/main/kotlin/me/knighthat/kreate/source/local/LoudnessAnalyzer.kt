@@ -27,6 +27,7 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
+import me.knighthat.kreate.database.model.Origin
 import me.knighthat.kreate.database.model.SongFormat
 import java.io.IOException
 import java.nio.ByteBuffer
@@ -39,7 +40,7 @@ import java.nio.ByteOrder
 class LoudnessAnalyzer(private val context: Context) {
 
     /**
-     * The [LOCAL_FORMAT_TAG] format of song [songId], whose file is at [uri], from its first audio
+     * The format of the local song [songId], whose file is at [uri], from its first audio
      * track. The bitrate is the average over the file without its cover art when the track doesn't
      * state one. `null` when the file has no audio track, is silent, or decodes to samples of a kind
      * the meter can't read.
@@ -63,7 +64,7 @@ class LoudnessAnalyzer(private val context: Context) {
                 ?.use { it.statSize.takeIf { size -> size >= 0 } }
             return SongFormat(
                 songId = songId,
-                tag = LOCAL_FORMAT_TAG,
+                tag = Origin.LOCAL.name,
                 mimetype = mimetype,
                 bitrate = format.integerOrNull(MediaFormat.KEY_BIT_RATE)
                     ?: averageBitrate(length?.minus(coverSize(uri)), format),

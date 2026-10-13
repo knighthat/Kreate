@@ -39,13 +39,9 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 /**
- * Tag of the format of a song on this device, it has one format: the file.
- */
-const val LOCAL_FORMAT_TAG = "local"
-
-/**
  * Measures the loudness of the songs on the device whose format has no gain yet, and saves it as
- * the gain of their [LOCAL_FORMAT_TAG] format. A song whose file has another size than when it was
+ * the gain of their format, tagged with the name of [Origin.LOCAL]. A song on the device has one
+ * format: the file. A song whose file has another size than when it was
  * measured was replaced, it is measured again. Each song is saved as soon as it is measured, so
  * a run that is stopped keeps what it did.
  *
@@ -72,7 +68,7 @@ class LoudnessWorker(
 
         // Songs a scan adds while this runs are picked up by asking again
         while (true) {
-            val pending = (songs.idsWithoutGain(Origin.LOCAL, LOCAL_FORMAT_TAG) +
+            val pending = (songs.idsWithoutGain(Origin.LOCAL, Origin.LOCAL.name) +
                     replaced(scanner)).distinct() - failed - done
             if (pending.isEmpty()) break
 
@@ -108,7 +104,7 @@ class LoudnessWorker(
      */
     private suspend fun replaced(scanner: MediaStoreScanner): List<String> {
         val sizes = withContext(Dispatchers.IO) { scanner.sizes() }
-        return songs.formatLengths(LOCAL_FORMAT_TAG)
+        return songs.formatLengths(Origin.LOCAL.name)
             .filter { (songId, length) -> sizes[songId]?.let { it != length } == true }
             .keys.toList()
     }
