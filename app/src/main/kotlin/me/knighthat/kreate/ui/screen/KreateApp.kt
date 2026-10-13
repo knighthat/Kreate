@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate.ui.screen
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -27,7 +28,12 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -35,8 +41,10 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import me.knighthat.kreate.playback.PlaybackController
 import me.knighthat.kreate.preferences.Preferences
 import me.knighthat.kreate.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate.ui.component.MiniPlayer
 import me.knighthat.kreate.ui.navigation.Albums
 import me.knighthat.kreate.ui.navigation.Artists
 import me.knighthat.kreate.ui.navigation.LocalAlbum
@@ -60,7 +68,38 @@ import me.knighthat.kreate.ui.screen.home.HomeSongsScreen
 import me.knighthat.kreate.ui.screen.search.SearchResultsScreen
 import me.knighthat.kreate.ui.screen.search.SearchScreen
 import me.knighthat.kreate.ui.theme.KreateTheme
+import org.koin.compose.koinInject
+import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
+
+/**
+ * The [MiniPlayer] for what [controller] is playing, hidden while its queue is empty.
+ */
+@Composable
+private fun PlaybackMiniPlayer(controller: PlaybackController) {
+    val state by controller.state.collectFlowAsState()
+    val item = state.current ?: return
+
+    // Re-read every frame while playing, drawing is the only place that depends on it
+    var progress by remember { mutableFloatStateOf(controller.progress()) }
+    LaunchedEffect(item, state.isPlaying) {
+        progress = controller.progress()
+        while (state.isPlaying) {
+            withFrameNanos { }
+            progress = controller.progress()
+        }
+    }
+
+    MiniPlayer(
+        item = item,
+        isPlaying = state.isPlaying,
+        progress = { progress },
+        onTogglePlay = controller::togglePlay,
+        onNext = controller::next,
+        // Expanding to the full player isn't there yet
+        onClick = {},
+    )
+}
 
 /**
  * One button for each [Tab].
@@ -88,6 +127,7 @@ fun KreateApp() {
     val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
 
     val topLevel = rememberTopLevelBackStack()
+    val playback = koinInject<PlaybackController>()
 
     KreateTheme(
         themeMode = themeMode,
@@ -98,7 +138,10 @@ fun KreateApp() {
             bottomBar = {
                 // Only the tabs have the bar, a detail screen covers the whole window
                 if ((topLevel.backStack.lastOrNull() as? Route)?.let(Tab::of) != null)
-                    BottomBar(selected = topLevel.currentTab, onSelect = topLevel::switchTab)
+                    Column {
+                        PlaybackMiniPlayer(playback)
+                        BottomBar(selected = topLevel.currentTab, onSelect = topLevel::switchTab)
+                    }
             },
             containerColor = MaterialTheme.colorScheme.surfaceDim,
             modifier = Modifier.fillMaxSize(),

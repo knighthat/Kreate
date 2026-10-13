@@ -21,12 +21,17 @@ package me.knighthat.kreate.playback
 import android.content.ComponentName
 import android.content.Context
 import android.util.Log
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
 
@@ -42,7 +47,29 @@ class PlaybackControllerImpl(
     private val scope: CoroutineScope,
 ) : PlaybackController {
 
+    private val _state = MutableStateFlow(PlaybackState())
+    override val state: StateFlow<PlaybackState> = _state.asStateFlow()
+
     private var connection: ListenableFuture<MediaController>? = null
+    private var controller: MediaController? = null
+
+    init {
+        // Connects early so the state is known before anything is played
+        connect()
+    }
+
+    override fun progress(): Float {
+        val controller = controller ?: return 0f
+        val duration = controller.duration
+        if (duration == C.TIME_UNSET || duration <= 0) return 0f
+        return (controller.currentPosition.toFloat() / duration).coerceIn(0f, 1f)
+    }
+
+    override fun togglePlay() = run("toggle play") { controller ->
+        if (controller.isPlaying) controller.pause() else controller.play()
+    }
+
+    override fun next() = run("skip to next") { it.seekToNext() }
 
     override fun play(item: MediaItem) = run("play ${item.mediaId}") { controller ->
         val queued = (0 until controller.mediaItemCount)
@@ -78,7 +105,40 @@ class PlaybackControllerImpl(
         connection?.takeIf { !it.isDone || it.isUsable() }?.let { return it }
 
         val token = SessionToken(context, ComponentName(context, PlaybackService::class.java))
-        return MediaController.Builder(context, token).buildAsync().also { connection = it }
+        val future = MediaController.Builder(context, token)
+            .setListener(object : MediaController.Listener {
+                override fun onDisconnected(disconnected: MediaController) {
+                    if (controller !== disconnected) return
+                    controller = null
+                    _state.value = PlaybackState()
+                }
+            })
+            .buildAsync()
+        connection = future
+
+        scope.launch {
+            try {
+                val connected = future.await()
+                controller = connected
+                connected.addListener(object : Player.Listener {
+                    override fun onEvents(player: Player, events: Player.Events) =
+                        publish(connected)
+                })
+                publish(connected)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "Couldn't connect", e)
+            }
+        }
+        return future
+    }
+
+    private fun publish(controller: MediaController) {
+        _state.value = PlaybackState(
+            current = controller.currentMediaItem,
+            isPlaying = controller.isPlaying,
+        )
     }
 
     private fun ListenableFuture<MediaController>.isUsable(): Boolean =

@@ -27,7 +27,9 @@ import me.knighthat.kreate.ui.component.toMediaItems
 /**
  * The songs in the active user's library. Pages are kept while the screen lives.
  */
-class HomeSongsViewModel(songRepository: UserSongRepository) : ViewModel() {
+class HomeSongsViewModel(
+    songRepository: UserSongRepository
+) : ViewModel() {
 
     val songs = songRepository.all()
         .toMediaItems()

@@ -21,6 +21,7 @@ package me.knighthat.kreate.ui.component
 import android.content.Context
 import android.content.Intent
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.Crossfade
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -77,6 +78,24 @@ fun ProfileButton(modifier: Modifier = Modifier) =
 @Composable
 fun SettingsButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
     IconAction(R.drawable.settings, "Settings", onClick, modifier)
+
+/**
+ * Pauses while [isPlaying], plays otherwise. The icon shows what a tap does.
+ */
+@Composable
+fun PlayPauseButton(isPlaying: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) =
+    IconButton(onClick = onClick, modifier = modifier) {
+        Crossfade(targetState = isPlaying, label = "PlayPauseIcon") { playing ->
+            if (playing)
+                Icon(painterResource(R.drawable.pause), contentDescription = "Pause")
+            else
+                Icon(painterResource(R.drawable.play_arrow), contentDescription = "Play")
+        }
+    }
+
+@Composable
+fun SkipNextButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
+    IconAction(R.drawable.skip_next, "Next", onClick, modifier)
 
 @Composable
 fun ConfigButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
