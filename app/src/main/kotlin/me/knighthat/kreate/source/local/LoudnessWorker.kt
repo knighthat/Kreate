@@ -26,6 +26,10 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate.database.model.Origin
 import me.knighthat.kreate.database.model.SongFormat
@@ -54,6 +58,7 @@ class LoudnessWorker(
 
     private val songs: SongRepository by inject()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun doWork(): Result {
         if (!applicationContext.hasAudioPermission()) {
             Log.i(TAG, "Skipped, the audio permission isn't granted")
@@ -71,25 +76,36 @@ class LoudnessWorker(
                     replaced(scanner)).distinct() - failed - done
             if (pending.isEmpty()) break
 
-            for (songId in pending) {
-                val analysis = measure(analyzer, songId)
-                if (analysis == null) {
-                    failed += songId
-                    continue
+            // Several songs are measured at once, the results are handled one by one
+            pending.asFlow()
+                .flatMapMerge(PARALLELISM) { songId ->
+                    flow {
+                        emit(
+                            songId to measure(
+                                analyzer,
+                                songId
+                            )
+                        )
+                    }
                 }
-                songs.saveFormat(
-                    SongFormat(
-                        songId = songId,
-                        tag = LOCAL_FORMAT_TAG,
-                        mimetype = analysis.mimetype,
-                        bitrate = analysis.bitrate,
-                        length = analysis.length,
-                        gain = (analysis.loudness - REFERENCE_LUFS).toFloat(),
+                .collect { (songId, analysis) ->
+                    if (analysis == null) {
+                        failed += songId
+                        return@collect
+                    }
+                    songs.saveFormat(
+                        SongFormat(
+                            songId = songId,
+                            tag = LOCAL_FORMAT_TAG,
+                            mimetype = analysis.mimetype,
+                            bitrate = analysis.bitrate,
+                            length = analysis.length,
+                            gain = (analysis.loudness - REFERENCE_LUFS).toFloat(),
+                        )
                     )
-                )
-                // Once each run, a file the index and the file system disagree on would repeat forever
-                done += songId
-            }
+                    // Once each run, a file the index and the file system disagree on would repeat forever
+                    done += songId
+                }
         }
 
         Log.i(TAG, "Measured ${done.size} songs, ${failed.size} couldn't be measured")
@@ -122,5 +138,8 @@ class LoudnessWorker(
     private companion object {
 
         const val TAG = "LoudnessWorker"
+
+        /** Songs measured at once. Decoding is heavy, so half the cores are left for the rest of the app. */
+        val PARALLELISM = (Runtime.getRuntime().availableProcessors() / 2).coerceIn(1, 4)
     }
 }
