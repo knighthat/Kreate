@@ -166,7 +166,7 @@ fun UserSongView.toMediaItem(): MediaItem? {
 
     return mediaItem(songId, uri) {
         setTitle(name)
-        setSubtitle(subtitle(artists.joined(), albumName))
+        setSubtitle(artists.joined())
         setArtist(artists.joined())
         setAlbumArtist(artists.firstOrNull())
         setAlbumTitle(albumName)

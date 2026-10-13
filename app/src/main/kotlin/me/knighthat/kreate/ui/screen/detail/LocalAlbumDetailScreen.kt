@@ -78,7 +78,7 @@ fun LocalAlbumDetailScreen(
             }
             items(count = songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
                 songs[index]?.let {
-                    SongItem(it, onClick = {}, showThumbnail = false)
+                    SongItem(it, onClick = {}, showThumbnail = false, showAlbum = false)
                 }
             }
         }

@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -40,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
@@ -160,8 +162,9 @@ fun ItemBadges(
 
 /**
  * An item as a row: cover, then the title with its badges above and the subtitle below.
- * [trailing] sits at the end, level with the bottom of the text. The cover is left out when
- * [showThumbnail] is `false`, the text then starts at the edge.
+ * [overlineEnd] sits on the line of the badges, at its end. [trailing] sits at the end, level
+ * with the bottom of the text. The cover is left out when [showThumbnail] is `false`, the text
+ * then starts at the edge.
  */
 @Composable
 fun ItemRow(
@@ -169,6 +172,7 @@ fun ItemRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     showThumbnail: Boolean = true,
+    overlineEnd: String? = null,
     trailing: (@Composable () -> Unit)? = null,
 ) {
     val metadata = item.mediaMetadata
@@ -189,29 +193,50 @@ fun ItemRow(
                 modifier = Modifier.size(ROW_THUMBNAIL_SIZE),
                 localSongId = item.localSongId,
             )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.Bottom,
-            modifier = Modifier.weight(1f),
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                if (item.hasBadges) ItemBadges(item)
-                Text(
-                    text = metadata.title?.toString().orEmpty(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                if (subtitle != null)
+        // The line above the title spans the width of the trailing content too, so what sits
+        // at its end lines up with it
+        Column(modifier = Modifier.weight(1f)) {
+            if (item.hasBadges || overlineEnd != null)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    // Keeps the line as tall as with badges when there is only the text
+                    ItemBadges(item, reserveHeight = true)
+                    if (overlineEnd != null)
+                        Text(
+                            text = overlineEnd,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.End,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f),
+                        )
+                }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.Bottom,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = subtitle.toString(),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        text = metadata.title?.toString().orEmpty(),
+                        style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
+                    if (subtitle != null)
+                        Text(
+                            text = subtitle.toString(),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                }
+                trailing?.invoke()
             }
-            trailing?.invoke()
         }
     }
 }

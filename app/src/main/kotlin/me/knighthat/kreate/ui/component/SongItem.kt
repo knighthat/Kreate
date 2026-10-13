@@ -25,9 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.media3.common.MediaItem
 
 /**
- * A song as a row: cover, title, "artist · album" under it, and the length at the end, level
- * with the bottom line. Icons above the title tell a file on this device and explicit songs.
- * Pass `showThumbnail = false` where the cover is already on screen, like inside its album.
+ * A song as a row: cover, title, its artists under it, and the length at the end, level with
+ * the bottom line. Icons above the title tell a file on this device and explicit songs, and the
+ * album is on that line at the end. Pass `showThumbnail = false` and `showAlbum = false` inside
+ * its album, where the cover and the name are already on screen.
  */
 @Composable
 fun SongItem(
@@ -35,6 +36,7 @@ fun SongItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     showThumbnail: Boolean = true,
+    showAlbum: Boolean = true,
 ) {
     val duration = formatDuration(item.mediaMetadata.durationMs)
 
@@ -43,6 +45,7 @@ fun SongItem(
         onClick = onClick,
         modifier = modifier,
         showThumbnail = showThumbnail,
+        overlineEnd = item.mediaMetadata.albumTitle?.toString()?.takeIf { showAlbum },
         trailing = duration?.let {
             { Text(it, style = MaterialTheme.typography.labelSmall) }
         },
