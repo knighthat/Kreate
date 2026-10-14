@@ -32,9 +32,13 @@ object Profile {
     const val DEFAULT_ID = "default"
 
     /**
-     * Folder of the profile's files under [rootDirectory], the one place a profile keeps data.
-     * Deleting a profile deletes it.
+     * Folder under a root that holds one folder per profile.
+     */
+    internal const val DIRECTORY_NAME = "profiles"
+
+    /**
+     * Folder of the profile's files under [rootDirectory]. Deleting a profile deletes it.
      */
     internal fun directory(rootDirectory: File, profileId: String): File =
-        File(File(rootDirectory, "profiles"), profileId)
+        File(File(rootDirectory, DIRECTORY_NAME), profileId)
 }

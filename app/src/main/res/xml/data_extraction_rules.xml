@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-   Sample data extraction rules file; uncomment and customize as necessary.
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!--
+   Backup and transfer rules for API 31 and above, keep in sync with backup_rules.xml.
    See https://developer.android.com/about/versions/12/backup-restore#xml-changes
-   for details.
+
+   Files that must stay on the device get an <exclude> in both sections. Paths take no wildcards,
+   so a file under a folder with a variable name (like profiles/<id>/) goes in noBackupFilesDir
+   instead, which Android never backs up or transfers. Secrets (secrets.preferences_pb) live there.
 -->
 <data-extraction-rules>
-    <cloud-backup>
-        <!-- TODO: Use <include> and <exclude> to control what is backed up.
-        <include .../>
-        <exclude .../>
-        -->
-    </cloud-backup>
-    <!--
-    <device-transfer>
-        <include .../>
-        <exclude .../>
-    </device-transfer>
-    -->
+    <cloud-backup />
+    <device-transfer />
 </data-extraction-rules>

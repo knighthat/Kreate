@@ -45,6 +45,8 @@ import kotlin.uuid.Uuid
  * - `global.preferences_pb`: profile ids and the active profile id
  * - `profiles/<id>/`: files of one profile, owned by [PreferenceStorage]
  *
+ * Secrets are not here, [SecretStore] keeps them under the no-backup folder.
+ *
  * Create a single instance per process, [scope] is used to share [activeId].
  */
 class ProfileManager internal constructor(

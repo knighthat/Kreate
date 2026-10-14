@@ -33,6 +33,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.job
@@ -42,8 +43,9 @@ import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Keeps the [Secret]s of each profile in `<root>/profiles/<id>/secrets.preferences_pb`, a file of
- * its own beside the profile's preferences. Deleting the profile deletes its secrets, and they
- * follow the active profile like preferences do.
+ * its own apart from the profile's preferences. The root is the app's no-backup folder, so secrets
+ * never leave the device through a backup or a device transfer. Deleting the profile deletes its
+ * secrets, and they follow the active profile like preferences do.
  *
  * This class is the only owner of the secret files, a file must never be opened elsewhere.
  *
@@ -59,7 +61,7 @@ internal class SecretStore(
 ) {
 
     constructor(scope: CoroutineScope, profiles: ProfileManager, context: Context) :
-            this(scope, profiles, context.filesDir)
+            this(scope, profiles, context.noBackupFilesDir)
 
     private class OpenStore(val scope: CoroutineScope, val dataStore: DataStore<Preferences>)
 
@@ -85,9 +87,15 @@ internal class SecretStore(
             }
         }
         scope.launch {
-            // A deleted profile's file is gone, release the store that had it open
-            profiles.ids.collect { ids ->
-                tasks.trySend { stores.keys.filter { it !in ids }.forEach(::close) }
+            // Release and delete the files of deleted profiles, also those deleted while no store ran
+            profiles.ids.filter { it.isNotEmpty() }.collect { ids ->
+                tasks.trySend {
+                    stores.keys.filter { it !in ids }.forEach(::close)
+                    File(rootDirectory, Profile.DIRECTORY_NAME)
+                        .listFiles()
+                        ?.filter { it.name !in ids }
+                        ?.forEach { it.deleteRecursively() }
+                }
             }
         }
     }

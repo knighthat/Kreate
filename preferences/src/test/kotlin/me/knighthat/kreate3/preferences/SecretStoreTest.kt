@@ -153,6 +153,29 @@ class SecretStoreTest {
         assertTrue(secretsFile(other).isFile)
     }
 
+    @Test
+    fun deletingAProfileDeletesItsSecrets() {
+        val password = store.secret("password")
+        val other = runBlocking { profiles.add("other") }
+        runBlocking { profiles.switchTo(other) }
+        eventually { profiles.activeId.value == other }
+        password.update("other")
+        eventually { secretsFile(other).isFile }
+
+        runBlocking { profiles.delete(other) }
+
+        eventually { !Profile.directory(root, other).exists() }
+    }
+
+    @Test
+    fun deletesSecretsOfProfilesDeletedWhileNotRunning() {
+        val orphan = Profile.directory(root, "gone").apply { mkdirs() }
+        File(orphan, "secrets.preferences_pb").writeText("")
+        restart()
+
+        eventually { !orphan.exists() }
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun rejectsNamesThatAreNotFileSafe() {
         store.secret("../escape")
