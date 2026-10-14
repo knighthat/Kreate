@@ -34,6 +34,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+
+    testOptions.unitTests.all {
+        // Robolectric sets up Android's file descriptors through JDK internals
+        it.jvmArgs(
+            "--add-exports=java.base/jdk.internal.access=ALL-UNNAMED",
+            "--add-opens=java.base/java.io=ALL-UNNAMED",
+        )
+    }
 }
 
 room {
@@ -55,4 +63,8 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)
+    // Room runs on the JVM through Robolectric, with the framework driver in place of the bundled one
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.sqlite.framework)
+    testImplementation(libs.androidx.paging.testing)
 }

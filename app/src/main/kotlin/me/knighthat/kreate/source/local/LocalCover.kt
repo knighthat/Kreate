@@ -126,15 +126,12 @@ class LocalCoverFetcher(
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
 
-        val width = options.size.width.pxOrElse { MAX_SIZE }
-        val height = options.size.height.pxOrElse { MAX_SIZE }
-
-        var sample = 1
-        while (
-            bounds.outWidth / sample > MAX_SIZE || bounds.outHeight / sample > MAX_SIZE ||
-            (bounds.outWidth / (sample * 2) >= width && bounds.outHeight / (sample * 2) >= height)
+        val sample = sampleSize(
+            width = bounds.outWidth,
+            height = bounds.outHeight,
+            targetWidth = options.size.width.pxOrElse { MAX_SIZE },
+            targetHeight = options.size.height.pxOrElse { MAX_SIZE },
         )
-            sample *= 2
 
         return BitmapFactory.decodeByteArray(
             bytes,
@@ -150,8 +147,22 @@ class LocalCoverFetcher(
             LocalCoverFetcher(data, options)
     }
 
-    private companion object {
+    internal companion object {
 
         const val MAX_SIZE = 1024
+
+        /**
+         * The power of two to divide a [width] by [height] picture by, so that neither side is
+         * over [MAX_SIZE] and the picture still covers [targetWidth] by [targetHeight].
+         */
+        fun sampleSize(width: Int, height: Int, targetWidth: Int, targetHeight: Int): Int {
+            var sample = 1
+            while (
+                width / sample > MAX_SIZE || height / sample > MAX_SIZE ||
+                (width / (sample * 2) >= targetWidth && height / (sample * 2) >= targetHeight)
+            )
+                sample *= 2
+            return sample
+        }
     }
 }

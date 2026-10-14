@@ -52,6 +52,14 @@ android {
     buildFeatures {
         compose = true
     }
+
+    testOptions.unitTests.all {
+        // Robolectric sets up Android's file descriptors through JDK internals
+        it.jvmArgs(
+            "--add-exports=java.base/jdk.internal.access=ALL-UNNAMED",
+            "--add-opens=java.base/java.io=ALL-UNNAMED",
+        )
+    }
 }
 
 dependencies {
@@ -117,6 +125,8 @@ dependencies {
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.ktor.client.mock)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.robolectric)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.junit)

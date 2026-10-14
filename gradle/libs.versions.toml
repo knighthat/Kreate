@@ -30,6 +30,7 @@ okhttp = "5.5.0"
 ktor = "3.6.0"
 media3 = "1.11.1"
 navigation3 = "1.2.0"
+robolectric = "4.17"
 
 [libraries]
 # Core
@@ -108,6 +109,10 @@ androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+androidx-paging-testing = { module = "androidx.paging:paging-testing", version.ref = "paging" }
+androidx-sqlite-framework = { module = "androidx.sqlite:sqlite-framework", version.ref = "sqlite" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 
 [plugins]

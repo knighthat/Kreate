@@ -1,0 +1,315 @@
+/*
+ * Kreate
+ * Copyright (C) 2026 KnightHat
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package me.knighthat.kreate.database.repository
+
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import me.knighthat.kreate.database.DatabaseTest
+import me.knighthat.kreate.database.asList
+import me.knighthat.kreate.database.entity.SongPlaylistMapEntity
+import me.knighthat.kreate.database.entity.UserPlaylistEntity
+import me.knighthat.kreate.database.model.Origin
+import me.knighthat.kreate.database.model.UserAlbum
+import me.knighthat.kreate.database.model.UserArtist
+import me.knighthat.kreate.database.model.UserSong
+import me.knighthat.kreate.database.paging.SortDirection
+import me.knighthat.kreate.database.paging.SortOrder
+import me.knighthat.kreate.database.paging.UserSongSort
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+import kotlin.time.Instant
+
+/**
+ * The user's songs, albums and artists, and the views that combine them with the catalog.
+ */
+internal class UserLibraryRepositoryTest : DatabaseTest() {
+
+    private val liked = Instant.fromEpochMilliseconds(5_000)
+
+    private lateinit var songs: UserSongRepositoryImpl
+    private lateinit var albums: UserAlbumRepositoryImpl
+    private lateinit var artists: UserArtistRepositoryImpl
+
+    @Before
+    fun setUp() = runBlocking {
+        addUser()
+        songs = UserSongRepositoryImpl(database, database.userSongDao(), activeUser, clock)
+        albums = UserAlbumRepositoryImpl(database, database.userAlbumDao(), activeUser, clock)
+        artists = UserArtistRepositoryImpl(database, database.userArtistDao(), activeUser, clock)
+    }
+
+    private suspend fun librarySong(id: String, likedAt: Instant? = null, name: String? = id) =
+        songs.save(UserSong(id, likedAt = likedAt, name = name.takeIf { it != id }))
+
+    //<editor-fold desc="Songs">
+    @Test
+    fun likedSongsLeaveOutDislikesAndNeutralOnes() = runBlocking {
+        listOf("liked", "disliked", "neutral").forEach { addSong(it) }
+        librarySong("liked", liked)
+        librarySong("disliked", DISLIKED)
+        librarySong("neutral")
+
+        assertEquals(listOf("liked"), songs.liked().asList().map { it.songId })
+        assertEquals(3, songs.all().asList().size)
+    }
+
+    @Test
+    fun anUnavailableSongIsHidden() = runBlocking {
+        addSong("here")
+        addSong("gone", unavailableSince = EPOCH)
+        librarySong("here")
+        librarySong("gone")
+
+        assertEquals(listOf("here"), songs.all().asList().map { it.songId })
+        assertNull(songs.find("gone").first())
+    }
+
+    @Test
+    fun searchLooksAtTheNameArtistsAndAlbum() = runBlocking {
+        addArtist("r1", name = "Queen")
+        addAlbum("a1", name = "Night at the Opera")
+        addSong("byName", name = "Bohemian")
+        addSong("byArtist", name = "Other", artists = listOf("r1"))
+        addSong("byAlbum", name = "Third", albumId = "a1")
+        addSong("none", name = "Nothing")
+        listOf("byName", "byArtist", "byAlbum", "none").forEach { librarySong(it) }
+
+        assertEquals(listOf("byName"), songs.search("bohem").asList().map { it.songId })
+        assertEquals(listOf("byArtist"), songs.search("QUEEN").asList().map { it.songId })
+        assertEquals(listOf("byAlbum"), songs.search(" opera ").asList().map { it.songId })
+    }
+
+    @Test
+    fun searchTakesWildcardsLiterally() = runBlocking {
+        addSong("percent", name = "100% Pure")
+        addSong("plain", name = "1000 Pure")
+        addSong("underscore", name = "a_b")
+        addSong("letter", name = "axb")
+        listOf("percent", "plain", "underscore", "letter").forEach { librarySong(it) }
+
+        assertEquals(listOf("percent"), songs.search("100%").asList().map { it.songId })
+        assertEquals(listOf("underscore"), songs.search("a_b").asList().map { it.songId })
+    }
+
+    @Test
+    fun songsOfAnAlbumArtistAndPlaylist() = runBlocking {
+        addAlbum("a1")
+        addArtist("r1")
+        addSong("onAlbum", albumId = "a1")
+        addSong("byArtist", artists = listOf("r1"))
+        addSong("inPlaylist")
+        listOf("onAlbum", "byArtist", "inPlaylist").forEach { librarySong(it) }
+        val playlistId = database.userPlaylistDao().upsert(
+            UserPlaylistEntity(
+                userId = USER,
+                origin = Origin.LOCAL,
+                name = "Mix",
+                createdAt = EPOCH,
+                updatedAt = EPOCH
+            )
+        )
+        database.userPlaylistDao().addSong(SongPlaylistMapEntity("inPlaylist", playlistId))
+
+        assertEquals(listOf("onAlbum"), songs.ofAlbum("a1").asList().map { it.songId })
+        assertEquals(listOf("byArtist"), songs.ofArtist("r1").asList().map { it.songId })
+        assertEquals(listOf("inPlaylist"), songs.ofPlaylist(playlistId).asList().map { it.songId })
+    }
+
+    @Test
+    fun songsAreSortedIgnoringCaseWithMissingValuesLast() = runBlocking {
+        addSong("b", name = "beta")
+        addSong("a", name = "Alpha")
+        addSong("none", name = null)
+        listOf("b", "a", "none").forEach { librarySong(it) }
+
+        assertEquals(listOf("a", "b", "none"), songs.all().asList().map { it.songId })
+        assertEquals(
+            listOf("b", "a", "none"),
+            songs.all(SortOrder(UserSongSort.NAME, SortDirection.DESCENDING)).asList()
+                .map { it.songId }
+        )
+    }
+
+    @Test
+    fun theViewPrefersTheUsersOwnNames() = runBlocking {
+        addArtist("r1", name = "Catalog artist")
+        addArtist("r2", name = "Second")
+        addAlbum("a1", name = "Catalog album")
+        addSong("s1", name = "Catalog name", albumId = "a1", artists = listOf("r1", "r2"))
+        librarySong("s1", name = "My name")
+        artists.save(UserArtist("r1", name = "My artist"))
+        albums.save(UserAlbum("a1", name = "My album"))
+
+        val view = songs.find("s1").first()!!
+        assertEquals("My name", view.name)
+        assertEquals(listOf("My artist", "Second"), view.artists)
+        assertEquals(listOf("r1", "r2"), view.artistIds)
+        assertEquals("My album", view.albumName)
+    }
+
+    @Test
+    fun aSongWithoutArtistsHasEmptyLists() = runBlocking {
+        addSong("s1")
+        librarySong("s1")
+
+        val view = songs.find("s1").first()!!
+        assertEquals(emptyList<String>(), view.artists)
+        assertEquals(emptyList<String>(), view.artistIds)
+    }
+
+    @Test
+    fun updatingKeepsWhenTheRowWasMade() = runBlocking {
+        addSong("s1")
+        val created = clock.now()
+        songs.update("s1") { it.copy(likedAt = liked) }
+        clock.advance()
+
+        songs.update("s1") { it.copy(name = "Mine") }
+
+        val row = database.userSongDao().get(USER, "s1")!!
+        assertEquals(liked, row.likedAt)
+        assertEquals("Mine", row.name)
+        assertEquals(created, row.createdAt)
+        assertEquals(clock.now(), row.updatedAt)
+    }
+
+    @Test
+    fun updatingCannotMoveTheEntryToAnotherSong() {
+        runBlocking { addSong("s1") }
+
+        assertThrows(IllegalArgumentException::class.java) {
+            runBlocking { songs.update("s1") { it.copy(songId = "s2") } }
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            runBlocking { albums.update("a1") { it.copy(albumId = "a2") } }
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            runBlocking { artists.update("r1") { it.copy(artistId = "r2") } }
+        }
+    }
+
+    @Test
+    fun theLibraryFollowsTheActiveUser() = runBlocking {
+        addUser("other")
+        addSong("s1")
+        librarySong("s1", liked)
+
+        activeUser.id.value = "other"
+
+        assertNull(songs.find("s1").first())
+        assertTrue(songs.all().asList().isEmpty())
+    }
+
+    @Test
+    fun withoutActiveUserTheLibraryIsEmptyAndCannotChange() {
+        runBlocking {
+            addSong("s1")
+            librarySong("s1")
+        }
+        activeUser.id.value = null
+
+        // The lists are PagingData.empty() then, which a snapshot waits on forever
+        assertNull(runBlocking { songs.find("s1").first() })
+        assertThrows(IllegalStateException::class.java) {
+            runBlocking { songs.save(UserSong("s1")) }
+        }
+    }
+
+    @Test
+    fun removingASongLeavesTheCatalog() = runBlocking {
+        addSong("s1")
+        librarySong("s1")
+
+        songs.remove("s1")
+
+        assertNull(database.userSongDao().get(USER, "s1"))
+        assertNotNull(database.songDao().get("s1"))
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Albums and artists">
+    @Test
+    fun bookmarkedAlbumsAndFollowedArtistsLeaveOutDislikes() = runBlocking {
+        listOf("a1", "a2", "a3").forEach { addAlbum(it) }
+        albums.save(UserAlbum("a1", bookmarkedAt = liked))
+        albums.save(UserAlbum("a2", bookmarkedAt = DISLIKED))
+        albums.save(UserAlbum("a3"))
+        listOf("r1", "r2").forEach { addArtist(it) }
+        artists.save(UserArtist("r1", followSince = liked))
+        artists.save(UserArtist("r2", followSince = DISLIKED))
+
+        assertEquals(listOf("a1"), albums.bookmarked().asList().map { it.albumId })
+        assertEquals(listOf("r1"), artists.followed().asList().map { it.artistId })
+    }
+
+    @Test
+    fun albumsAndArtistsCountTheirSongs() = runBlocking {
+        addAlbum("a1")
+        addArtist("r1")
+        addSong("s1", albumId = "a1", artists = listOf("r1"))
+        addSong("s2", albumId = "a1", artists = listOf("r1"))
+        addSong("s3", albumId = "a1")
+        albums.save(UserAlbum("a1"))
+        artists.save(UserArtist("r1"))
+
+        assertEquals(3, albums.find("a1").first()?.songCount)
+        assertEquals(2, artists.find("r1").first()?.songCount)
+    }
+
+    @Test
+    fun theAlbumsOfAnArtistAreNewestFirst() = runBlocking {
+        addArtist("r1")
+        addAlbum("old", year = 1990)
+        addAlbum("new", year = 2020)
+        addAlbum("unknown", year = null)
+        addAlbum("notTheirs", year = 2024)
+        addSong("s1", albumId = "old", artists = listOf("r1"))
+        addSong("s2", albumId = "new", artists = listOf("r1"))
+        addSong("s3", albumId = "new", artists = listOf("r1"))
+        addSong("s4", albumId = "unknown", artists = listOf("r1"))
+        addSong("s5", albumId = "notTheirs")
+        listOf("old", "new", "unknown", "notTheirs").forEach { albums.save(UserAlbum(it)) }
+
+        assertEquals(
+            listOf("new", "old", "unknown"),
+            albums.ofArtist("r1", 10).first().map { it.albumId })
+        assertEquals(listOf("new"), albums.ofArtist("r1", 1).first().map { it.albumId })
+    }
+
+    @Test
+    fun albumsAndArtistsAreSearchedByName() = runBlocking {
+        addAlbum("a1", name = "Abbey Road")
+        addAlbum("a2", name = "Revolver")
+        addArtist("r1", name = "The Beatles")
+        addArtist("r2", name = "Queen")
+        albums.save(UserAlbum("a1"))
+        albums.save(UserAlbum("a2"))
+        artists.save(UserArtist("r1"))
+        artists.save(UserArtist("r2"))
+
+        assertEquals(listOf("a1"), albums.search("road").asList().map { it.albumId })
+        assertEquals(listOf("r1"), artists.search("beatles").asList().map { it.artistId })
+    }
+    //</editor-fold>
+}

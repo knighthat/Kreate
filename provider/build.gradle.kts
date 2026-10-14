@@ -31,6 +31,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+
+    // Log calls in tests do nothing instead of throwing
+    testOptions.unitTests.isReturnDefaultValues = true
 }
 
 dependencies {
