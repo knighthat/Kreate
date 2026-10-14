@@ -34,22 +34,44 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher_black"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher_black_round"
         android:supportsRtl="true"
         android:name=".KreateApplication"
         android:theme="@style/Theme.Kreate">
         <activity
             android:name=".KreateActivity"
             android:exported="true"
-            android:theme="@style/Theme.Kreate.Splash">
+            android:theme="@style/Theme.Kreate.Splash" />
+
+        <!-- One launcher entry per app icon, only the chosen one is enabled (see AppIcon) -->
+        <activity-alias
+            android:name=".BlackIcon"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_black"
+            android:roundIcon="@mipmap/ic_launcher_black_round"
+            android:targetActivity=".KreateActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+        <activity-alias
+            android:name=".GradientIcon"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:targetActivity=".KreateActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
         <activity
             android:name=".ProfilesActivity"
             android:exported="false" />

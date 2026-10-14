@@ -20,19 +20,26 @@ package me.knighthat.kreate3.ui.screen.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import me.knighthat.kreate3.AppIcon
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 
 /**
- * What the user sees and touches: the theme.
+ * What the user sees and touches: the theme and the app icon.
  */
 @Composable
 fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
     val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    var appIcon by remember { mutableStateOf(AppIcon.current(context)) }
 
     SettingsPage("UI", onBack, modifier) {
         SettingsSection("Theme")
@@ -49,6 +56,18 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             options = ContrastLevel.entries,
             label = ContrastLevel::prettyName,
             onSelect = Preferences.CONTRAST_LEVEL::update,
+        )
+
+        SettingsSection("Launcher")
+        ChoiceSetting(
+            title = "App icon",
+            value = appIcon,
+            options = AppIcon.entries,
+            label = AppIcon::prettyName,
+            onSelect = {
+                it.apply(context)
+                appIcon = it
+            },
         )
     }
 }

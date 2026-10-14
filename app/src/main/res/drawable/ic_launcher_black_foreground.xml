@@ -1,0 +1,42 @@
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- ic_splash's 360 viewport, centered and shrunk to fit the safe zone -->
+    <group
+        android:scaleX="0.1804"
+        android:scaleY="0.1804"
+        android:translateX="21.5292"
+        android:translateY="21.5292">
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="m72.72 159.96c0 -29.81 0.17 -59.15 -0.13 -88.51 -0.07 -6.71 5.11 -12.46 12.24 -12.04 8.48 0.51 17.02 0.12 25.54 0.12 8.89 0 13.47 4.54 13.47 13.36 0 18.09 -0.13 36.2 0.14 54.29 0.04 2.66 1.95 5.28 2.99 7.93 2.43 -1.13 5.4 -1.68 7.2 -3.46 22.6 -22.34 45.08 -44.82 67.47 -67.37 2.76 -2.78 5.61 -3.95 9.51 -3.91 16.27 0.18 32.54 0.17 48.81 0.01 4.59 -0.05 8.48 0.75 10.22 5.4 1.63 4.36 -1.37 7.17 -4.11 9.9 -33.01 33.02 -66.02 66.03 -99.03 99.04 -16.77 16.78 -33.6 33.49 -50.26 50.39 -2.67 2.71 -4.19 2.76 -6.86 0.01C98.76 213.68 87.24 202.57 76.15 191.02 74.23 189.03 73.05 185.61 72.87 182.77 72.43 175.35 72.72 167.87 72.72 159.96Z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="m286.79 298.57c-2.08 0.46 -3.8 1.03 -5.54 1.03 -19.15 0.06 -38.31 0.21 -57.46 -0.13 -3.07 -0.05 -6.84 -1.56 -9.04 -3.69 -12.82 -12.32 -25.22 -25.08 -37.89 -37.56 -2.58 -2.54 -2.32 -4.33 0.11 -6.75 12.56 -12.42 25.05 -24.92 37.48 -37.47 2.9 -2.93 5.42 -2.81 7.94 0.2 8.96 10.74 17.85 21.56 26.86 32.27 5.77 6.86 11.72 13.57 17.55 20.38 6.99 8.16 14 16.3 20.86 24.57 1.87 2.25 2.42 4.87 -0.86 7.14z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="m116.54 274.08c0 7.45 -0.1 14.45 0.04 21.44 0.07 3.71 -1.49 5.1 -5.14 5.07 -11.86 -0.11 -23.73 -0.11 -35.59 0 -3.74 0.03 -5.01 -1.6 -5 -5.22 0.08 -27.22 0.02 -54.45 0.11 -81.68 0 -1.45 0.92 -2.91 1.42 -4.36 1.37 0.76 2.98 1.27 4.04 2.32 12.32 12.2 24.65 24.39 36.71 36.84 1.85 1.91 3.03 5.09 3.26 7.8C116.88 262.04 116.54 267.85 116.54 274.08Z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="m163.33 205.84c7.44 -7.44 14.71 -14.62 21.84 -21.91 2.83 -2.9 5.2 -2.8 7.97 0.06 5.38 5.57 10.83 11.07 16.41 16.43 2.54 2.43 2.52 4.25 0.01 6.74 -13.49 13.34 -26.9 26.77 -40.26 40.25 -2.36 2.38 -4.18 2.87 -6.73 0.2 -5.77 -6.03 -11.66 -11.96 -17.73 -17.7 -2.47 -2.33 -2.03 -3.74 0.17 -5.85 6.13 -5.89 12.06 -11.98 18.31 -18.22z" />
+    </group>
+</vector>
