@@ -24,30 +24,32 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate3.database.repository.PlaylistRepository
-import me.knighthat.kreate3.provider.LibrarySection
-import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
-import me.knighthat.kreate3.provider.youtube.YouTubeLibrary
+import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.livePlaylists
 import me.knighthat.kreate3.ui.component.toMediaItem
 
 /**
- * The playlists of the active user. Pages are kept while the screen lives.
+ * The playlists of the active user, then their playlists on the external sources. Pages are kept while the screen lives.
  */
 class HomePlaylistsViewModel(
     playlistRepository: PlaylistRepository,
-    private val library: OpenSubsonicLibrary,
-    private val youtubeLibrary: YouTubeLibrary,
+    openSubsonic: OpenSubsonicProvider,
+    youTube: YouTubeProvider,
 ) : ViewModel() {
+
+    private val remote = LiveItems(viewModelScope) { livePlaylists(openSubsonic, youTube) }
 
     val playlists = playlistRepository.all()
         .map { page -> page.map { it.toMediaItem() } }
         .cachedIn(viewModelScope)
 
+    /** The playlists of the server and of YouTube, fetched live and never stored. */
+    val live = remote.items
+
     /**
-     * Brings the playlists of the server and of YouTube into the library, call it when the tab
-     * shows. Each does nothing while it isn't set up.
+     * Fetches the playlists of the server and of YouTube again, call it when the tab shows. Each
+     * adds nothing while it isn't set up.
      */
-    fun refresh() {
-        library.refresh(LibrarySection.PLAYLISTS)
-        youtubeLibrary.refresh(LibrarySection.PLAYLISTS)
-    }
+    fun refresh() = remote.refresh()
 }

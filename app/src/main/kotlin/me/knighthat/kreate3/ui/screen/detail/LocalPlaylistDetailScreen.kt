@@ -44,15 +44,10 @@ fun LocalPlaylistDetailScreen(
     val playlist by viewModel.playlist.collectAsState()
     val songs = viewModel.songs.collectAsLazyPagingItems()
 
-    val canShare by viewModel.canShare.collectAsState()
-
     DetailScaffold(
         title = playlist?.name.orEmpty(),
         onBack = onBack,
         modifier = modifier,
-        actions = {
-            if (canShare) ShareAction(playlist?.name, "playlist", viewModel::shareLink)
-        },
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

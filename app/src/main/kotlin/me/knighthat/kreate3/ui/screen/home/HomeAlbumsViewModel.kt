@@ -24,30 +24,32 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate3.database.repository.UserAlbumRepository
-import me.knighthat.kreate3.provider.LibrarySection
-import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
-import me.knighthat.kreate3.provider.youtube.YouTubeLibrary
+import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.liveAlbums
 import me.knighthat.kreate3.ui.component.toMediaItem
 
 /**
- * The albums in the active user's library. Pages are kept while the screen lives.
+ * The albums in the active user's library, then the ones saved on the external sources. Pages are kept while the screen lives.
  */
 class HomeAlbumsViewModel(
     albumRepository: UserAlbumRepository,
-    private val library: OpenSubsonicLibrary,
-    private val youtubeLibrary: YouTubeLibrary,
+    openSubsonic: OpenSubsonicProvider,
+    youTube: YouTubeProvider,
 ) : ViewModel() {
+
+    private val remote = LiveItems(viewModelScope) { liveAlbums(openSubsonic, youTube) }
 
     val albums = albumRepository.all()
         .map { page -> page.map { it.toMediaItem() } }
         .cachedIn(viewModelScope)
 
+    /** The albums of the server and of YouTube, fetched live and never stored. */
+    val live = remote.items
+
     /**
-     * Brings the albums of the server and of YouTube into the library, call it when the tab
-     * shows. Each does nothing while it isn't set up.
+     * Fetches the albums of the server and of YouTube again, call it when the tab shows. Each
+     * adds nothing while it isn't set up.
      */
-    fun refresh() {
-        library.refresh(LibrarySection.ALBUMS)
-        youtubeLibrary.refresh(LibrarySection.ALBUMS)
-    }
+    fun refresh() = remote.refresh()
 }

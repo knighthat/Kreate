@@ -34,17 +34,11 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
-import me.knighthat.kreate3.database.model.Album
-import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Origin
-import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
-import me.knighthat.kreate3.database.repository.RemoteItem
 import me.knighthat.kreate3.database.repository.RemoteSong
-import me.knighthat.kreate3.provider.LibrarySection
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Collections
@@ -68,35 +62,17 @@ class OpenSubsonicLibraryTest {
         override fun pin(pin: CertificatePin?) = Unit
     }
 
-    /** Remembers what it was asked to store, as `<method> <ids>`. */
+    /** Remembers what it was asked to store, as the ids of the liked songs. */
     private class Recorder : RemoteCatalogRepository {
         val calls: MutableList<String> = Collections.synchronizedList(mutableListOf())
 
-        override suspend fun syncAlbums(origin: Origin, albums: List<RemoteItem<Album>>) {
-            calls += "albums ${albums.map { it.item.id }}"
-        }
-
-        override suspend fun syncArtists(origin: Origin, artists: List<RemoteItem<Artist>>) {
-            calls += "artists ${artists.map { it.item.id }}"
-        }
-
-        override suspend fun syncPlaylists(origin: Origin, playlists: List<UserPlaylist>) {
-            calls += "playlists ${playlists.map { it.remoteId }}"
-        }
-
-        override suspend fun syncSongs(
+        override suspend fun syncLikedSongs(
             origin: Origin,
             songs: List<RemoteSong>,
-            albums: List<RemoteItem<Album>>,
-            artists: List<RemoteItem<Artist>>,
-            playlistId: Long?,
+            complete: Boolean,
         ) {
-            calls += "songs ${songs.map { it.song.id }} albums ${albums.map { it.item.id }} " +
-                    "artists ${artists.map { it.item.id }} playlist $playlistId"
+            calls += "liked ${songs.map { it.song.id }} complete $complete"
         }
-
-        override suspend fun syncLikedSongs(origin: Origin, songs: List<RemoteSong>) =
-            error("Liked songs are not brought on their own")
     }
 
     private class TestClock(var time: Instant = Instant.fromEpochMilliseconds(0)) : Clock {
@@ -112,12 +88,7 @@ class OpenSubsonicLibraryTest {
     /** What the server answers, by method. */
     private var answer: suspend (method: String) -> String = { method ->
         when (method) {
-            "getAlbumList2" -> ok(""""albumList2":{"album":[{"id":"a1"},{"id":"a2"}]}""")
-            "getArtists" -> ok(""""artists":{"index":[{"name":"A","artist":[{"id":"r1"}]}]}""")
-            "getPlaylists" -> ok(""""playlists":{"playlist":[{"id":"p1","name":"Mix"}]}""")
-            "getAlbum" -> ok(""""album":{"id":"a1","song":[{"id":"s1"},{"id":"s2"}]}""")
-            "getArtist" -> ok(""""artist":{"id":"r1","album":[{"id":"a1"}]}""")
-            "getPlaylist" -> ok(""""playlist":{"id":"p1","entry":[{"id":"s3"}]}""")
+            "getStarred2" -> ok(""""starred2":{"song":[{"id":"s1","starred":"2024-01-01T00:00:00Z"},{"id":"s2"}]}""")
             else -> error("Unexpected $method")
         }
     }
@@ -137,7 +108,11 @@ class OpenSubsonicLibraryTest {
         settings,
     )
 
-    private val library = OpenSubsonicLibrary(provider, repository, scope, clock)
+    /** Whether syncing the starred songs is on. */
+    @Volatile
+    private var syncing = true
+
+    private val library = OpenSubsonicLibrary(provider, repository, scope, clock) { syncing }
 
     private fun ok(content: String) =
         """{"subsonic-response":{"status":"ok","version":"1.16.1",$content}}"""
@@ -153,30 +128,25 @@ class OpenSubsonicLibraryTest {
     fun tearDown() = scope.cancel()
 
     @Test
-    fun everySectionIsStored() {
-        library.refresh(LibrarySection.ALBUMS)
-        library.refresh(LibrarySection.ARTISTS)
-        library.refresh(LibrarySection.PLAYLISTS)
+    fun theStarredSongsAreLiked() {
+        library.refresh()
 
-        eventually { repository.calls.size == 3 }
-        assertEquals(
-            setOf("albums [a1, a2]", "artists [r1]", "playlists [p1]"),
-            repository.calls.toSet()
-        )
+        eventually { repository.calls.size == 1 }
+        assertEquals(listOf("liked [s1, s2] complete true"), repository.calls)
     }
 
     @Test
-    fun aSectionIsNotRefreshedAgainSoon() {
-        library.refresh(LibrarySection.ALBUMS)
+    fun theSongsAreNotRefreshedAgainSoon() {
+        library.refresh()
         eventually { repository.calls.size == 1 }
 
         clock.time += 4.minutes
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
         settle()
         assertEquals(1, requests.get())
 
         clock.time += 1.minutes
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
         eventually { repository.calls.size == 2 }
     }
 
@@ -186,8 +156,8 @@ class OpenSubsonicLibraryTest {
         val default = answer
         answer = { release.await(); default(it) }
 
-        library.refresh(LibrarySection.ALBUMS)
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
+        library.refresh()
         settle()
         release.complete(Unit)
 
@@ -202,13 +172,13 @@ class OpenSubsonicLibraryTest {
         val default = answer
         answer =
             { """{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":0,"message":"Busy"}}}""" }
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
         eventually { requests.get() == 1 }
         settle()
         assertTrue(repository.calls.isEmpty())
 
         answer = default
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
 
         eventually { repository.calls.size == 1 }
     }
@@ -217,7 +187,7 @@ class OpenSubsonicLibraryTest {
     fun nothingIsRefreshedWhileTheServerIsOff() {
         settings.enabled = false
 
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
         settle()
 
         assertEquals(0, requests.get())
@@ -232,63 +202,48 @@ class OpenSubsonicLibraryTest {
             default(method)
         }
 
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
         eventually { requests.get() == 1 }
         settle()
         assertTrue(repository.calls.isEmpty())
 
-        // The new address is a section of its own, refreshed at once
+        // The new address is refreshed at once
         answer = default
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
         eventually { repository.calls.size == 1 }
     }
 
     @Test
-    fun anAlbumIsStoredWithItsSongs() = runBlocking {
-        assertTrue(library.syncAlbum("a1"))
+    fun nothingIsSyncedWhileTurnedOff() {
+        syncing = false
 
-        assertEquals(
-            listOf("songs [s1, s2] albums [a1] artists [] playlist null"),
-            repository.calls
-        )
-    }
+        library.refresh()
+        settle()
 
-    @Test
-    fun anArtistIsStoredWithTheirAlbumsAndSongs() = runBlocking {
-        assertTrue(library.syncArtist("r1"))
-
-        assertEquals(
-            listOf("songs [s1, s2] albums [a1] artists [r1] playlist null"),
-            repository.calls
-        )
-    }
-
-    @Test
-    fun aPlaylistsSongsGoToItsRow() = runBlocking {
-        assertTrue(library.syncPlaylist(7, "p1"))
-
-        assertEquals(listOf("songs [s3] albums [] artists [] playlist 7"), repository.calls)
-    }
-
-    @Test
-    fun itemsAreNotStoredWhileTheServerIsOff() = runBlocking {
-        settings.enabled = false
-
-        assertFalse(library.syncAlbum("a1"))
-        assertFalse(library.syncArtist("r1"))
-        assertFalse(library.syncPlaylist(7, "p1"))
-        assertTrue(repository.calls.isEmpty())
         assertEquals(0, requests.get())
     }
 
     @Test
-    fun aRefusedItemThrowsWhatTheServerSaid() {
-        answer =
-            { """{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":70,"message":"Not found"}}}""" }
+    fun aFetchRunningWhenTurnedOffIsDropped() {
+        val default = answer
+        answer = { method ->
+            syncing = false
+            default(method)
+        }
 
-        val error = runCatching { runBlocking { library.syncAlbum("a1") } }.exceptionOrNull()
+        library.refresh()
+        eventually { requests.get() == 1 }
+        settle()
 
-        assertEquals(ServerCheck.Rejected(70, "Not found"), (error as ServerException).check)
         assertTrue(repository.calls.isEmpty())
+    }
+
+    @Test
+    fun refreshingNowFetchesAtOnce() {
+        library.refresh()
+        eventually { repository.calls.size == 1 }
+
+        library.refreshNow()
+        eventually { repository.calls.size == 2 }
     }
 }

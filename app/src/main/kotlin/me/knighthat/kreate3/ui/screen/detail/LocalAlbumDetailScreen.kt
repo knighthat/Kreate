@@ -52,7 +52,7 @@ fun LocalAlbumDetailScreen(
         onBack = onBack,
         modifier = modifier,
         actions = {
-            if (canShare) ShareAction(album?.name, "album", viewModel::shareLink)
+            if (canShare) ShareAction(album?.name, "album") { viewModel.shareLink() }
         },
     ) { innerPadding ->
         LazyColumn(

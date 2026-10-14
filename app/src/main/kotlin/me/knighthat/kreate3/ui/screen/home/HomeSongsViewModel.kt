@@ -22,7 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import me.knighthat.kreate3.database.repository.UserSongRepository
-import me.knighthat.kreate3.provider.LibrarySection
+import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
 import me.knighthat.kreate3.provider.youtube.YouTubeLibrary
 import me.knighthat.kreate3.ui.component.toMediaItems
 
@@ -31,6 +31,7 @@ import me.knighthat.kreate3.ui.component.toMediaItems
  */
 class HomeSongsViewModel(
     songRepository: UserSongRepository,
+    private val openSubsonicLibrary: OpenSubsonicLibrary,
     private val youtubeLibrary: YouTubeLibrary,
 ) : ViewModel() {
 
@@ -39,8 +40,11 @@ class HomeSongsViewModel(
         .cachedIn(viewModelScope)
 
     /**
-     * Brings the songs liked on YouTube into the library, call it when the tab shows. It does
-     * nothing while nobody is signed in.
+     * Brings the songs liked on the server and on YouTube into the library, call it when the tab
+     * shows. Each does nothing while it isn't set up.
      */
-    fun refresh() = youtubeLibrary.refresh(LibrarySection.SONGS)
+    fun refresh() {
+        openSubsonicLibrary.refresh()
+        youtubeLibrary.refresh()
+    }
 }

@@ -232,18 +232,33 @@ class OpenSubsonicProvider internal constructor(
     }
 
     /**
-     * The songs of a playlist of the server, in its order.
+     * A playlist of the server with its songs, in its order.
      *
      * @param playlistId id of the playlist on the server
      * @return `null` while the server is off or not set up
      * @throws ServerException when the server can't be used or refuses
      */
-    suspend fun playlistSongs(playlistId: String): List<RemoteSong>? {
+    suspend fun playlistWithSongs(playlistId: String): Pair<UserPlaylist, List<RemoteSong>>? {
         serverUrl ?: return null
 
         val playlist = call("getPlaylist", "id" to playlistId)["playlist"]?.jsonObject
             ?: throw ServerException(ServerCheck.NotSubsonic)
-        return playlist.array("entry").orEmpty().map { it.jsonObject.toSong(::coverUri) }
+        return playlist.toPlaylist(::coverUri) to playlist.array("entry").orEmpty()
+            .map { it.jsonObject.toSong(::coverUri) }
+    }
+
+    /**
+     * Every song the user starred on the server, each with when it was starred.
+     *
+     * @return `null` while the server is off or not set up
+     * @throws ServerException when the server can't be used or refuses the request
+     */
+    suspend fun starredSongs(): List<RemoteSong>? {
+        serverUrl ?: return null
+
+        val starred = call("getStarred2")["starred2"]?.jsonObject
+            ?: throw ServerException(ServerCheck.NotSubsonic)
+        return starred.array("song").orEmpty().map { it.jsonObject.toSong(::coverUri) }
     }
 
     /**

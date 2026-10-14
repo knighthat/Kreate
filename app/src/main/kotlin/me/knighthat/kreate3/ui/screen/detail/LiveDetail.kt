@@ -47,6 +47,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
+import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
 import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.ui.component.AlbumItem
@@ -55,7 +57,7 @@ import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.navigation.Tab
 
 /**
- * Where fetching an item of an online catalog stands. What it fetched is only kept by the screen,
+ * Where fetching an item of an online catalog or the OpenSubsonic server stands. What it fetched is only kept by the screen,
  * never stored.
  */
 sealed interface LiveState<out T> {
@@ -95,9 +97,25 @@ abstract class LiveDetailViewModel<T : Any> : ViewModel() {
                 throw e
             } catch (e: YouTubeException) {
                 LiveState.Failed(if (e.status == null) "Can't reach YouTube" else "YouTube refused: ${e.message}")
+            } catch (e: ServerException) {
+                LiveState.Failed(e.reason())
             }
         }
     }
+}
+
+/** What a screen of the OpenSubsonic server says when the provider gives nothing. */
+internal const val SERVER_OFF = "The server is turned off, turn it on in Network settings"
+
+/** What to tell the user when the OpenSubsonic server couldn't give an item. */
+private fun ServerException.reason(): String = when (val check = check) {
+    is ServerCheck.Rejected -> "The server refused: ${check.message.ifEmpty { "error ${check.code}" }}"
+    is ServerCheck.Unreachable -> "Can't reach the server: ${check.reason}"
+    is ServerCheck.UntrustedCertificate -> "The server's certificate isn't trusted"
+    is ServerCheck.CertificateChanged -> "The server's certificate changed, check it in Network settings"
+    ServerCheck.NotSubsonic -> "The server sent something unexpected"
+    ServerCheck.NotConfigured -> "Sign in to the server in Network settings"
+    else -> "Couldn't load this from the server"
 }
 
 /**

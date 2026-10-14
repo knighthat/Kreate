@@ -26,12 +26,12 @@ Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper
 - Passwords, API keys and tokens never go in `Preferences`. Declare them in `Secrets`, which keeps
   them in `secrets.preferences_pb` in the profile's folder.
 - External sources sync liked songs, albums, artists and playlists separately. Of the synced data,
-  only liked songs are written to the database, and the server wins: `liked_at` is the server's like
-  time, or the
-  current time when the song is inserted or newly liked (an already liked song keeps its time); a
-  liked song of that origin the server doesn't list as liked gets `liked_at = NULL`, while
-  dislikes (`-1`) are left alone. Albums, artists and
-  playlists are never stored: lists and detail screens show only what the server returns, live.
+  only liked songs are written to the database, and the server wins: `liked_at` is the server's
+  like time, or the current time when the song is inserted or newly liked (an already liked song
+  keeps its time); a liked song of that origin the server doesn't list as liked gets
+  `liked_at = NULL`, while dislikes (`-1`) are left alone. Albums, artists and playlists are never
+  stored: lists and detail screens show only what the server returns, live. Signing out or turning
+  off a source or its sync only stops syncing, it never clears synced likes.
 
 ## License
 

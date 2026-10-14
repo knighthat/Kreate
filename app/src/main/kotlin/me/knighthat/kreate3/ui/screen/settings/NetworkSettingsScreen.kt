@@ -40,11 +40,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
+import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.LibrarySection
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
+import me.knighthat.kreate3.provider.opensubsonic.openSubsonicSyncSetting
 import me.knighthat.kreate3.provider.youtube.YouTubeChannel
 import me.knighthat.kreate3.provider.youtube.youTubeSyncSetting
 import org.koin.androidx.compose.koinViewModel
@@ -180,10 +182,34 @@ private fun validateServerUrl(url: String): String? = when {
 }
 
 /**
- * How requests are made, and the OpenSubsonic server (like Navidrome) to play music from.
+ * A switch for each [LibrarySection] of a source: the liked songs are synced, the others show.
+ *
+ * @param setting the setting of a section, like `youTubeSyncSetting`
+ * @param where what the user's library is called on the source, like "on YouTube"
  */
+@Composable
+private fun LibrarySyncSettings(
+    setting: (LibrarySection) -> Preference<Boolean>,
+    where: String,
+    onSyncChange: (LibrarySection, Boolean) -> Unit,
+) = LibrarySection.entries.forEach { section ->
+    val syncs by setting(section).collectAsStateWithLifecycle()
+    val (title, summary) = when (section) {
+        LibrarySection.SONGS -> "Sync liked songs" to "The songs you liked $where are liked here too"
+        LibrarySection.ALBUMS -> "Show albums" to "The albums you saved $where show in your library"
+        LibrarySection.ARTISTS -> "Show artists" to "The artists you follow $where show in your library"
+        LibrarySection.PLAYLISTS -> "Show playlists" to "Your playlists $where show in your library"
+    }
+    SwitchSetting(
+        title = title,
+        summary = summary,
+        checked = syncs,
+        onCheckedChange = { onSyncChange(section, it) },
+    )
+}
+
 /**
- * Who is signed in to YouTube, with a way to sign in or out.
+ * Whether the YouTube account is used, who is signed in, with a way to sign in or out.
  */
 @Composable
 private fun YouTubeAccountSettings(
@@ -194,14 +220,26 @@ private fun YouTubeAccountSettings(
     onRetry: () -> Unit,
     onSwitch: (YouTubeChannel) -> Unit,
     onSyncChange: (LibrarySection, Boolean) -> Unit,
+    onEnabledChange: (Boolean) -> Unit,
     onSignOut: () -> Unit,
 ) {
+    val enabled by Preferences.YOUTUBE_ACCOUNT_ENABLED.collectAsStateWithLifecycle()
     var askSignOut by remember { mutableStateOf(false) }
     var pickChannel by remember { mutableStateOf(false) }
     // A choice only when the account has several channels
     val canSwitch = channels.size > 1
 
     SettingsSection("YouTube")
+    SwitchSetting(
+        title = "Use YouTube account",
+        summary = "YouTube is used signed out while this is off",
+        checked = enabled,
+        onCheckedChange = onEnabledChange,
+    )
+
+    // The session stays when hidden, it is used again once the setting is back on
+    if (!enabled) return
+
     when (state) {
         YouTubeAccountState.SignedOut -> SettingsItem(
             title = "Sign in",
@@ -235,24 +273,10 @@ private fun YouTubeAccountSettings(
         )
     }
     if (state != YouTubeAccountState.SignedOut) {
-        LibrarySection.entries.forEach { section ->
-            val syncs by section.youTubeSyncSetting.collectAsStateWithLifecycle()
-            val (title, summary) = when (section) {
-                LibrarySection.SONGS -> "Sync liked songs" to "The songs you liked are liked here too"
-                LibrarySection.ALBUMS -> "Sync albums" to "The albums you saved show in your library"
-                LibrarySection.ARTISTS -> "Sync artists" to "The artists you subscribed to show in your library"
-                LibrarySection.PLAYLISTS -> "Sync playlists" to "Your YouTube playlists show in your library"
-            }
-            SwitchSetting(
-                title = title,
-                summary = summary,
-                checked = syncs,
-                onCheckedChange = { onSyncChange(section, it) },
-            )
-        }
+        LibrarySyncSettings({ it.youTubeSyncSetting }, "on YouTube", onSyncChange)
         SettingsItem(
             title = "Sign out",
-            summary = "Your YouTube library leaves this profile",
+            summary = "Your liked songs stay in this profile",
             onClick = { askSignOut = true },
         )
     }
@@ -270,7 +294,7 @@ private fun YouTubeAccountSettings(
         AlertDialog(
             onDismissRequest = { askSignOut = false },
             title = { Text("Sign out of YouTube?") },
-            text = { Text("Your YouTube albums, artists and playlists leave this profile. You can sign in again any time.") },
+            text = { Text("Your YouTube library stops showing here, the songs you liked stay liked. You can sign in again any time.") },
             confirmButton = {
                 TextButton(onClick = {
                     askSignOut = false
@@ -348,6 +372,7 @@ fun NetworkSettingsScreen(
             onRetry = youtube::retry,
             onSwitch = youtube::switchTo,
             onSyncChange = youtube::setSyncing,
+            onEnabledChange = youtube::setEnabled,
             onSignOut = youtube::signOut,
         )
 
@@ -439,5 +464,8 @@ fun NetworkSettingsScreen(
             credentialsCheck.credentialsSummary(),
             viewModel::retry
         )
+
+        SettingsSection("Server library")
+        LibrarySyncSettings({ it.openSubsonicSyncSetting }, "on the server", viewModel::setSyncing)
     }
 }

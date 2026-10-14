@@ -23,10 +23,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -49,8 +52,9 @@ fun HomeArtistsScreen(
     viewModel: HomeArtistsViewModel = koinViewModel(),
 ) {
     val artists = viewModel.artists.collectAsLazyPagingItems()
+    val live by viewModel.live.collectAsStateWithLifecycle()
 
-    // Each visit to the tab, the server's items are brought up to date
+    // Each visit to the tab, the items of the external sources are fetched again
     LaunchedEffect(Unit) { viewModel.refresh() }
 
     HomeScaffold(Tab.ARTISTS.label, modifier, onSearch, onSettings) { padding ->
@@ -65,6 +69,9 @@ fun HomeArtistsScreen(
         ) {
             items(count = artists.itemCount, key = artists.itemKey { it.mediaId }) { index ->
                 artists[index]?.let { ArtistItem(it, onClick = { onOpen(it) }) }
+            }
+            items(live, key = { it.liveKey }) {
+                ArtistItem(it, onClick = { onOpen(it) })
             }
         }
     }

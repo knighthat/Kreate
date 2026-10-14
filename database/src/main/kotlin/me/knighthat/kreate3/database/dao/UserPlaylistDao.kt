@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.entity.SongEntity
 import me.knighthat.kreate3.database.entity.SongPlaylistMapEntity
 import me.knighthat.kreate3.database.entity.UserPlaylistEntity
-import me.knighthat.kreate3.database.model.Origin
 
 @Dao
 internal interface UserPlaylistDao {
@@ -59,18 +58,6 @@ internal interface UserPlaylistDao {
      */
     @Upsert
     suspend fun upsert(playlist: UserPlaylistEntity): Long
-
-    /**
-     * The user's playlists from [origin] that have an id there.
-     */
-    @Query("SELECT * FROM user_playlist WHERE user_id = :userId AND origin = :origin AND remote_id IS NOT NULL")
-    suspend fun withRemoteOrigin(userId: String, origin: Origin): List<UserPlaylistEntity>
-
-    @Upsert
-    suspend fun upsertAll(playlists: List<UserPlaylistEntity>)
-
-    @Delete
-    suspend fun deleteAll(playlists: List<UserPlaylistEntity>)
 
     @Query("DELETE FROM user_playlist WHERE playlist_id = :playlistId AND user_id = :userId")
     suspend fun delete(playlistId: Long, userId: String)

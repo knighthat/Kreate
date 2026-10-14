@@ -324,15 +324,30 @@ class OpenSubsonicProviderTest {
 
     @Test
     fun aPlaylistComesWithItsEntries() = runBlocking {
-        val songs = provider {
+        val (playlist, songs) = provider {
             """{"subsonic-response":{"status":"ok","version":"1.16.1","playlist":{"id":"p1","name":"Mix","entry":[
                 {"id":"s9","title":"Nine"},{"id":"s3","title":"Three","albumId":"al3","album":"Three"}]}}}"""
-        }.playlistSongs("p1")!!
+        }.playlistWithSongs("p1")!!
 
         assertEquals("p1", requests.single().form()["id"])
+        assertEquals("Mix", playlist.name)
+        assertEquals("p1", playlist.remoteId)
         assertEquals(listOf("s9", "s3"), songs.map { it.song.id })
         assertNull(songs[0].album)
         assertEquals("al3", songs[1].album?.id)
+    }
+
+    @Test
+    fun starredSongsComeWithWhenTheyWereStarred() = runBlocking {
+        val songs = provider {
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","starred2":{
+                "album":[{"id":"al1","name":"A"}],
+                "song":[{"id":"s1","title":"One","starred":"2024-02-03T04:05:06Z"},{"id":"s2","title":"Two","starred":"2024-01-01T00:00:00Z"}]}}}"""
+        }.starredSongs()!!
+
+        assertTrue(requests.single().url.encodedPath.endsWith("getStarred2"))
+        assertEquals(listOf("s1", "s2"), songs.map { it.song.id })
+        assertEquals(Instant.parse("2024-02-03T04:05:06Z"), songs[0].starredAt)
     }
 
     @Test
@@ -341,7 +356,8 @@ class OpenSubsonicProviderTest {
 
         assertNull(server.albumWithSongs("al1"))
         assertNull(server.artistWithSongs("ar1"))
-        assertNull(server.playlistSongs("p1"))
+        assertNull(server.playlistWithSongs("p1"))
+        assertNull(server.starredSongs())
         assertTrue(requests.isEmpty())
     }
 

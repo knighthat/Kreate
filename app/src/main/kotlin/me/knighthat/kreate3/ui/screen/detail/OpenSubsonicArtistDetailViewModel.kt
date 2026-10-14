@@ -15,29 +15,66 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
-import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
+import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
+import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate3.provider.opensubsonic.Shareable
+import me.knighthat.kreate3.ui.component.toLiveMediaItem
 import me.knighthat.kreate3.ui.navigation.LocalArtist
 
 /**
- * Brings the artist whose id is in the saved state, their albums and the songs on them, from
- * the server.
+ * An artist of the OpenSubsonic server as their screen shows them.
+ *
+ * @property songs the songs of every album of theirs, album after album
+ */
+data class OpenSubsonicArtistDetail(
+    val name: String?,
+    val thumbnail: Uri?,
+    val albums: List<MediaItem>,
+    val songs: List<MediaItem>,
+)
+
+/**
+ * Fetches the artist whose id is in the saved state, their albums and the songs on them, from the
+ * server. Nothing is stored.
  */
 class OpenSubsonicArtistDetailViewModel(
     savedStateHandle: SavedStateHandle,
-    private val library: OpenSubsonicLibrary,
-) : SyncDetailViewModel() {
+    private val provider: OpenSubsonicProvider,
+) : LiveDetailViewModel<OpenSubsonicArtistDetail>() {
 
     val artistId: String = checkNotNull(savedStateHandle[LocalArtist.ID]) {
         "LocalArtist.ID is missing from the saved state"
     }
 
+    override val notFound = SERVER_OFF
+
+    /** Whether the user may make shares on the server, `false` until that is known. */
+    val canShare = provider.canShare(viewModelScope)
+
     init {
-        sync()
+        load()
     }
 
-    override suspend fun fetchAndStore() = library.syncArtist(artistId)
+    override suspend fun fetch(): OpenSubsonicArtistDetail? {
+        val found = provider.artistWithSongs(artistId) ?: return null
+        val artist = found.artist.item
+        return OpenSubsonicArtistDetail(
+            name = artist.name,
+            thumbnail = artist.thumbnail,
+            albums = found.albums.map { it.item.toLiveMediaItem() }.distinctBy { it.mediaId },
+            songs = found.songs.map { it.toLiveMediaItem() }.distinctBy { it.mediaId },
+        )
+    }
+
+    /**
+     * A link to the artist, as all of their albums, that anyone can open. See
+     * [OpenSubsonicAlbumDetailViewModel.shareLink].
+     */
+    suspend fun shareLink(name: String?): Result<String> =
+        provider.shareLinkOf(Shareable.Artist(artistId), name)
 }

@@ -119,8 +119,8 @@ data class LocalPlaylist(val id: Long) : Route {
 }
 
 /**
- * An album of the OpenSubsonic server, its songs are fetched before it shows. Its screen reads
- * the album like [LocalAlbum] does, from the same argument.
+ * An album of the OpenSubsonic server, fetched when it opens and never stored. Its screen reads
+ * the album id from the same argument as [LocalAlbum].
  */
 @Serializable
 data class OpenSubsonicAlbum(val id: String) : Route {
@@ -129,7 +129,7 @@ data class OpenSubsonicAlbum(val id: String) : Route {
 }
 
 /**
- * An artist of the OpenSubsonic server, the songs of their albums are fetched before it shows.
+ * An artist of the OpenSubsonic server, fetched when they open and never stored.
  */
 @Serializable
 data class OpenSubsonicArtist(val id: String) : Route {
@@ -138,13 +138,16 @@ data class OpenSubsonicArtist(val id: String) : Route {
 }
 
 /**
- * A playlist of the OpenSubsonic server, by its id in the database. Its songs are fetched
- * before it shows.
+ * A playlist of the OpenSubsonic server by its id there, fetched when it opens and never stored.
  */
 @Serializable
-data class OpenSubsonicPlaylist(val id: Long) : Route {
+data class OpenSubsonicPlaylist(val id: String) : Route {
 
-    override val arguments: Bundle get() = bundleOf(LocalPlaylist.ID to id)
+    override val arguments: Bundle get() = bundleOf(ID to id)
+
+    companion object {
+        const val ID = "remotePlaylistId"
+    }
 }
 
 /**
@@ -230,11 +233,11 @@ fun artistRoute(item: MediaItem): Route = when (item.origin) {
 }
 
 /**
- * The screen of a playlist, by where it comes from. A playlist of YouTube opens by its id there,
- * whether it is saved, like one of the user's library, or not.
+ * The screen of a playlist, by where it comes from. A playlist of an external source opens by its
+ * id there.
  */
 fun playlistRoute(item: MediaItem): Route = when (item.origin) {
-    Origin.OPEN_SUBSONIC -> OpenSubsonicPlaylist(item.mediaId.toLong())
+    Origin.OPEN_SUBSONIC -> OpenSubsonicPlaylist(item.remoteId ?: item.mediaId)
     Origin.YOUTUBE -> YouTubePlaylist(item.remoteId ?: item.mediaId)
     else -> LocalPlaylist(item.mediaId.toLong())
 }

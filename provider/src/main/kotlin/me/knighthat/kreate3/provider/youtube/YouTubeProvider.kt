@@ -56,8 +56,8 @@ fun isYouTubeSession(cookies: String): Boolean = YouTubeSession.of(cookies) != n
  * `null`.
  *
  * Nobody needs to be signed in. Once the user signed in, with the cookies kept in
- * `Secrets.YOUTUBE_COOKIES`, every request is sent in their session and the user's library can be
- * read, see [libraryAlbums].
+ * `Secrets.YOUTUBE_COOKIES`, and while the account is in use, every request is sent in their
+ * session and the user's library can be read, see [libraryAlbums].
  *
  * Lists that are long come in parts, a [YouTubePage] hands its continuation to the method that
  * gave it for the next part. Pictures are the addresses YouTube gives, [artworkUri] sizes them.
@@ -72,14 +72,16 @@ class YouTubeProvider internal constructor(
     /**
      * @param client the app's client
      * @param cookies the cookies of the signed in session, empty while nobody is signed in. They
-     * are the active profile's by default.
+     * are the active profile's by default, none while [Preferences.YOUTUBE_ACCOUNT_ENABLED] is off.
      * @param pageId page id of the channel the signed in user acts as, empty for their account's
      * own. The active profile's choice by default.
      */
     constructor(
         client: HttpClient,
         json: Json,
-        cookies: suspend () -> String = { Secrets.YOUTUBE_COOKIES.current() },
+        cookies: suspend () -> String = {
+            if (Preferences.YOUTUBE_ACCOUNT_ENABLED.value) Secrets.YOUTUBE_COOKIES.current() else ""
+        },
         pageId: () -> String = { Preferences.YOUTUBE_PAGE_ID.value },
     ) : this(
         InnerTube(client, json, Locale::getDefault, cookies, pageId = pageId),

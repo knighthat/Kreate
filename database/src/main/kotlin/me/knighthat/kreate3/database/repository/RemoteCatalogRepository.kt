@@ -22,11 +22,11 @@ import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
-import me.knighthat.kreate3.database.model.UserPlaylist
 import kotlin.time.Instant
 
 /**
- * An item of a server's library with what the active user did with it there.
+ * An item of a server's library with what the active user did with it there. Albums, artists
+ * and playlists of a server are only shown, never stored.
  *
  * @property starredAt when the user starred it on the server, `null` when not starred
  */
@@ -38,7 +38,8 @@ data class RemoteItem<T>(val item: T, val starredAt: Instant?)
  * @property album the song's album as the song knows it, `null` when it has none. It only fills
  * in an album that isn't stored yet.
  * @property artists every artist credited on the song, which only fill in the ones not stored yet
- * @property starredAt when the user starred it on the server, `null` when not starred
+ * @property starredAt when the user starred it on the server, `null` when not starred or when the
+ * server doesn't tell when
  */
 data class RemoteSong(
     val song: Song,
@@ -48,9 +49,9 @@ data class RemoteSong(
 )
 
 /**
- * Keeps the library of a server in the shared catalog and the active user's library. Each call
- * replaces what is stored for one kind of item from one [Origin] with what the server has now,
- * items of other origins are not touched. Ids are the server's own.
+ * Keeps the songs a server lists as liked in the shared catalog and the active user's library.
+ * Liked songs are the only part of a server's library that is stored, items of other origins are
+ * not touched. Ids are the server's own.
  *
  * Every call waits up to 10 seconds for an active user and throws [IllegalStateException] if there
  * is none.
@@ -58,59 +59,22 @@ data class RemoteSong(
 interface RemoteCatalogRepository {
 
     /**
-     * Stores [albums] in the catalog and the active user's library. The user's own name, cover
-     * and artists are kept. The bookmark follows the star on the server, except that an album the
-     * user disliked stays disliked while it isn't starred, and a bookmark already stored keeps
-     * its time, the one of the star when it was first seen. Albums of [origin] that are no longer
-     * on the server leave the user's library.
+     * Makes [songs], the songs the server lists as liked with the most recently liked first, the
+     * active user's liked songs of [origin]. Each is stored with the server's values, credited to
+     * its artists. An album or artist a song points at that isn't stored yet is stored from what
+     * the song knows, without a row in the user's library, one already stored is kept as it is.
      *
-     * @throws IllegalArgumentException when an album is from another origin
-     */
-    suspend fun syncAlbums(origin: Origin, albums: List<RemoteItem<Album>>)
-
-    /**
-     * Same as [syncAlbums] for artists, the star is the follow.
-     */
-    suspend fun syncArtists(origin: Origin, artists: List<RemoteItem<Artist>>)
-
-    /**
-     * Stores [playlists] as the active user's, matched by [UserPlaylist.remoteId]. Their name and
-     * cover come from the server. Playlists of [origin] with a remote id that are no longer on
-     * the server are deleted, playlists made in the app are kept.
+     * A song is liked at its [RemoteSong.starredAt] when the server gives one. Otherwise a song
+     * already liked keeps its time, and any other, new or not liked until now, is liked now, a
+     * millisecond earlier for each song before it so they keep the server's order.
      *
-     * @throws IllegalArgumentException when a playlist has no remote id or is from another origin
-     */
-    suspend fun syncPlaylists(origin: Origin, playlists: List<UserPlaylist>)
-
-    /**
-     * Stores [songs] in the catalog and the active user's library, credited to their artists.
-     * The like follows the star on the server like the bookmark of [syncAlbums]. [albums] and
-     * [artists] are stored as with [syncAlbums] and [syncArtists], without removing anything.
+     * When [complete], a song of [origin] liked in the user's library that isn't in [songs] loses
+     * its like, the song stays in their library. Dislikes of songs not in [songs] always stay,
+     * a server has no list of them.
      *
-     * An album or artist a song points at that isn't stored yet is stored from what the song
-     * knows, without a row in the user's library. One already stored is kept as it is.
-     *
-     * @param playlistId a playlist of the user whose songs become [songs], `null` for none
-     * @throws IllegalArgumentException when an item is from another origin, or the playlist
-     * doesn't exist or isn't the active user's
-     */
-    suspend fun syncSongs(
-        origin: Origin,
-        songs: List<RemoteSong>,
-        albums: List<RemoteItem<Album>> = emptyList(),
-        artists: List<RemoteItem<Artist>> = emptyList(),
-        playlistId: Long? = null,
-    )
-
-    /**
-     * Makes [songs] the active user's liked songs of [origin]. Each is stored like with
-     * [syncSongs] and liked at its [RemoteSong.starredAt], or now when the server doesn't tell
-     * when. A song already liked keeps its time, a dislike is replaced by the like.
-     *
-     * A song of [origin] liked in the user's library that isn't in [songs] loses its like, the song
-     * stays in their library. Dislikes of songs not in [songs] stay.
-     *
+     * @param complete whether [songs] are all the server's liked songs, `false` when it has more
+     * than were fetched
      * @throws IllegalArgumentException when an item is from another origin
      */
-    suspend fun syncLikedSongs(origin: Origin, songs: List<RemoteSong>)
+    suspend fun syncLikedSongs(origin: Origin, songs: List<RemoteSong>, complete: Boolean = true)
 }

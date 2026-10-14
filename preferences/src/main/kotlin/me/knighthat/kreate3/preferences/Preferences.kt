@@ -25,6 +25,7 @@ import me.knighthat.kreate3.preferences.Preferences.IMAGE_DISK_CACHE
 import me.knighthat.kreate3.preferences.Preferences.NETWORK_CONNECT_TIMEOUT
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_CERTIFICATE_SHA256
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_SYNC_ALBUMS
+import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_SYNC_SONGS
 import me.knighthat.kreate3.preferences.Preferences.awaitLoaded
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -115,6 +116,18 @@ object Preferences : KoinComponent {
         )
     }
 
+    /** Like [YOUTUBE_SYNC_SONGS], for the songs starred on the OpenSubsonic server. */
+    val OPEN_SUBSONIC_SYNC_SONGS by lazy { boolean("open_subsonic_sync_songs", true) }
+
+    /** Like [YOUTUBE_SYNC_ALBUMS], for the albums on the OpenSubsonic server. */
+    val OPEN_SUBSONIC_SYNC_ALBUMS by lazy { boolean("open_subsonic_sync_albums", true) }
+
+    /** Like [YOUTUBE_SYNC_ALBUMS], for the artists on the OpenSubsonic server. */
+    val OPEN_SUBSONIC_SYNC_ARTISTS by lazy { boolean("open_subsonic_sync_artists", true) }
+
+    /** Like [YOUTUBE_SYNC_ALBUMS], for the playlists on the OpenSubsonic server. */
+    val OPEN_SUBSONIC_SYNC_PLAYLISTS by lazy { boolean("open_subsonic_sync_playlists", true) }
+
     /** Host the remembered certificate belongs to, empty when none is remembered. */
     val OPEN_SUBSONIC_CERTIFICATE_HOST by lazy { string("open_subsonic_certificate_host", "") }
 
@@ -129,16 +142,25 @@ object Preferences : KoinComponent {
     val YOUTUBE_PAGE_ID by lazy { string("youtube_page_id", "") }
 
     /**
+     * Whether the YouTube account is in use. Off by default.
+     *
+     * While it is off every request to YouTube is sent signed out, whatever session is saved:
+     * nothing of the user's library is fetched or synced. YouTube itself, like searching, still
+     * works. Turning it off leaves what was synced as it is.
+     */
+    val YOUTUBE_ACCOUNT_ENABLED by lazy { boolean("youtube_account_enabled", false) }
+
+    /**
      * Whether the songs the signed in user liked on YouTube are liked in the profile's library,
      * and the ones they no longer like aren't. On by default. While it is off they aren't
-     * fetched, and turning it off takes the likes of YouTube songs away, the songs stay.
+     * fetched, turning it off leaves the likes as they are.
      */
     val YOUTUBE_SYNC_SONGS by lazy { boolean("youtube_sync_songs", true) }
 
     /**
      * Whether the albums saved in the signed in user's YouTube library show in the profile's
-     * library. On by default. While it is off they aren't fetched, and turning it off takes them
-     * out.
+     * library. On by default. They are fetched each time they show, never stored, and not at all
+     * while it is off.
      */
     val YOUTUBE_SYNC_ALBUMS by lazy { boolean("youtube_sync_albums", true) }
 

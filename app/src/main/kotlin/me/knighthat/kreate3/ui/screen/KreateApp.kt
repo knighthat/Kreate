@@ -76,11 +76,8 @@ import me.knighthat.kreate3.ui.navigation.rememberTopLevelBackStack
 import me.knighthat.kreate3.ui.navigation.routeViewModel
 import me.knighthat.kreate3.ui.navigation.youTubeMoreRoute
 import me.knighthat.kreate3.ui.screen.detail.LocalAlbumDetailScreen
-import me.knighthat.kreate3.ui.screen.detail.LocalAlbumDetailViewModel
 import me.knighthat.kreate3.ui.screen.detail.LocalArtistDetailScreen
-import me.knighthat.kreate3.ui.screen.detail.LocalArtistDetailViewModel
 import me.knighthat.kreate3.ui.screen.detail.LocalPlaylistDetailScreen
-import me.knighthat.kreate3.ui.screen.detail.LocalPlaylistDetailViewModel
 import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicAlbumDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicArtistDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicPlaylistDetailScreen
@@ -103,10 +100,6 @@ import me.knighthat.kreate3.ui.theme.KreateTheme
 import me.knighthat.kreate3.ui.theme.rememberThumbnailSeed
 import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
-
-
-/** Tells the ViewModel that syncs a server's item apart from the one that shows it. */
-private const val SYNC_TAG = "sync"
 
 /**
  * The [MiniPlayer] for what [controller] is playing, hidden while its queue is empty.
@@ -281,36 +274,23 @@ fun KreateApp() {
                         LocalPlaylistDetailScreen(topLevel::pop, viewModel = routeViewModel(it))
                     }
 
-                    // Server items are fetched and stored first, then show like library items
+                    // Items of external sources are fetched live and never stored
                     entry<OpenSubsonicAlbum> {
-                        val library = routeViewModel<LocalAlbumDetailViewModel>(it)
-                        val album by library.album.collectFlowAsState()
-
-                        OpenSubsonicAlbumDetailScreen(
-                            title = album?.name.orEmpty(),
-                            onBack = topLevel::pop,
-                            viewModel = routeViewModel(it, tag = SYNC_TAG),
-                        ) {
-                            LocalAlbumDetailScreen(topLevel::pop, viewModel = library)
-                        }
+                        OpenSubsonicAlbumDetailScreen(topLevel::pop, viewModel = routeViewModel(it))
                     }
                     entry<OpenSubsonicArtist> {
-                        val library = routeViewModel<LocalArtistDetailViewModel>(it)
-                        val artist by library.artist.collectFlowAsState()
-
                         OpenSubsonicArtistDetailScreen(
-                            title = artist?.name.orEmpty(),
                             onBack = topLevel::pop,
-                            viewModel = routeViewModel(it, tag = SYNC_TAG),
-                        ) {
-                            LocalArtistDetailScreen(
-                                onBack = topLevel::pop,
-                                onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
-                                viewModel = library,
-                            )
-                        }
+                            onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
+                            viewModel = routeViewModel(it),
+                        )
                     }
-                    // YouTube items are fetched live and never stored
+                    entry<OpenSubsonicPlaylist> {
+                        OpenSubsonicPlaylistDetailScreen(
+                            topLevel::pop,
+                            viewModel = routeViewModel(it)
+                        )
+                    }
                     entry<YouTubeAlbum> {
                         YouTubeAlbumDetailScreen(
                             onBack = topLevel::pop,
@@ -351,18 +331,6 @@ fun KreateApp() {
                     }
                     entry<YouTubePlaylist> {
                         YouTubePlaylistDetailScreen(topLevel::pop, viewModel = routeViewModel(it))
-                    }
-                    entry<OpenSubsonicPlaylist> {
-                        val library = routeViewModel<LocalPlaylistDetailViewModel>(it)
-                        val playlist by library.playlist.collectFlowAsState()
-
-                        OpenSubsonicPlaylistDetailScreen(
-                            title = playlist?.name.orEmpty(),
-                            onBack = topLevel::pop,
-                            viewModel = routeViewModel(it, tag = SYNC_TAG),
-                        ) {
-                            LocalPlaylistDetailScreen(topLevel::pop, viewModel = library)
-                        }
                     }
                 },
             )

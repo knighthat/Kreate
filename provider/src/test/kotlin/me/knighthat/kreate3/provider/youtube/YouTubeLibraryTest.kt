@@ -31,14 +31,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
-import me.knighthat.kreate3.database.model.Album
-import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Origin
-import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
-import me.knighthat.kreate3.database.repository.RemoteItem
 import me.knighthat.kreate3.database.repository.RemoteSong
-import me.knighthat.kreate3.provider.LibrarySection
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -47,7 +42,6 @@ import java.util.Collections
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
@@ -56,35 +50,14 @@ class YouTubeLibraryTest {
     /** Remembers what it was asked to store. */
     private class Recorder : RemoteCatalogRepository {
         val calls: MutableList<String> = Collections.synchronizedList(mutableListOf())
-        val albums: MutableList<RemoteItem<Album>> = Collections.synchronizedList(mutableListOf())
         val songs: MutableList<RemoteSong> = Collections.synchronizedList(mutableListOf())
 
-        override suspend fun syncAlbums(origin: Origin, albums: List<RemoteItem<Album>>) {
-            calls += "$origin albums ${albums.map { it.item.id }}"
-            this.albums += albums
-        }
-
-        override suspend fun syncArtists(origin: Origin, artists: List<RemoteItem<Artist>>) {
-            calls += "$origin artists ${artists.map { it.item.id }}"
-        }
-
-        override suspend fun syncPlaylists(origin: Origin, playlists: List<UserPlaylist>) {
-            calls += "$origin playlists ${playlists.map { it.remoteId }}"
-        }
-
-        override suspend fun syncSongs(
+        override suspend fun syncLikedSongs(
             origin: Origin,
             songs: List<RemoteSong>,
-            albums: List<RemoteItem<Album>>,
-            artists: List<RemoteItem<Artist>>,
-            playlistId: Long?,
+            complete: Boolean,
         ) {
-            calls += "$origin songs ${songs.map { it.song.id }}"
-            this.songs += songs
-        }
-
-        override suspend fun syncLikedSongs(origin: Origin, songs: List<RemoteSong>) {
-            calls += "$origin liked ${songs.map { it.song.id }}"
+            calls += "$origin liked ${songs.map { it.song.id }}" + if (complete) "" else " (partly)"
             this.songs += songs
         }
     }
@@ -107,9 +80,9 @@ class YouTubeLibraryTest {
     @Volatile
     private var pageId = ""
 
-    /** Sections whose syncing is on. */
-    private val syncing: MutableSet<LibrarySection> =
-        Collections.synchronizedSet(LibrarySection.entries.toMutableSet())
+    /** Whether syncing the liked songs is on. */
+    @Volatile
+    private var syncing = true
 
     /** Whether "Liked Music" has more parts than are fetched. */
     @Volatile
@@ -140,37 +113,11 @@ class YouTubeLibraryTest {
         YouTubeParser { null },
     )
 
-    private val library = YouTubeLibrary(provider, repository, scope, clock) { it in syncing }
+    private val library = YouTubeLibrary(provider, repository, scope, clock) { syncing }
 
     private fun answer(browseId: String?): String {
-        if (browseId == "VLLM") return likes()
-        val shelf = when (browseId) {
-            "FEmusic_liked_albums" -> """{"gridRenderer":{"items":[${
-                card(
-                    "MPREb_a1",
-                    "ALBUM"
-                )
-            },${card("MPREb_a2", "ALBUM")}]}}"""
-
-            "FEmusic_library_corpus_artists" -> """{"gridRenderer":{"items":[${
-                card(
-                    "UC1",
-                    "ARTIST"
-                )
-            }]}}"""
-
-            "FEmusic_liked_playlists" -> """{"gridRenderer":{"items":[${
-                card(
-                    "VLLM",
-                    "PLAYLIST"
-                )
-            }]}}"""
-
-            else -> error("Unexpected $browseId")
-        }
-        return """{"responseContext":{"serviceTrackingParams":[{"params":[{"key":"logged_in","value":"$loggedIn"}]}]},
-            "contents":{"singleColumnBrowseResultsRenderer":{"tabs":[{"tabRenderer":{"content":
-            {"sectionListRenderer":{"contents":[{"itemSectionRenderer":{"contents":[$shelf]}}]}}}}]}}}"""
+        check(browseId == "VLLM") { "Unexpected $browseId" }
+        return likes()
     }
 
     private val signedIn
@@ -196,11 +143,6 @@ class YouTubeLibraryTest {
         {"musicResponsiveListItemFlexColumnRenderer":{"text":{"runs":[{"text":"$id"}]}}}],
         "playlistItemData":{"videoId":"$id"}}}"""
 
-    private fun card(id: String, type: String) =
-        """{"musicTwoRowItemRenderer":{"title":{"runs":[{"text":"$id"}]},
-        "navigationEndpoint":{"browseEndpoint":{"browseId":"$id",
-        "browseEndpointContextSupportedConfigs":{"browseEndpointContextMusicConfig":{"pageType":"MUSIC_PAGE_TYPE_$type"}}}}}}"""
-
     private suspend fun awaitCalls(count: Int) = withTimeout(5_000) {
         while (repository.calls.size < count) delay(10)
     }
@@ -209,41 +151,20 @@ class YouTubeLibraryTest {
     fun tearDown() = scope.cancel()
 
     @Test
-    fun eachSectionIsStoredAsYouTubes() = runBlocking {
-        library.refresh(LibrarySection.SONGS)
-        library.refresh(LibrarySection.ALBUMS)
-        library.refresh(LibrarySection.ARTISTS)
-        library.refresh(LibrarySection.PLAYLISTS)
-        awaitCalls(4)
-
-        assertEquals(
-            setOf(
-                "YOUTUBE liked [s1, s2]",
-                "YOUTUBE albums [MPREb_a1, MPREb_a2]",
-                "YOUTUBE artists [UC1]",
-                "YOUTUBE playlists [LM]",
-            ),
-            repository.calls.toSet(),
-        )
-    }
-
-    @Test
-    fun albumsAreSavedNowInTheOrderOfTheLibrary() = runBlocking {
-        library.refresh(LibrarySection.ALBUMS)
+    fun likedSongsAreGivenAsYouTubeListsThem() = runBlocking {
+        library.refresh()
         awaitCalls(1)
 
-        // The first one, the most recently added, is the newest
-        assertEquals(
-            listOf(clock.time, clock.time - 1.milliseconds),
-            repository.albums.map { it.starredAt },
-        )
+        assertEquals(listOf("YOUTUBE liked [s1, s2]"), repository.calls.toList())
+        // YouTube tells no like time, the repository picks one
+        assertTrue(repository.songs.all { it.starredAt == null })
     }
 
     @Test
     fun nothingHappensWhileNobodyIsSignedIn() = runBlocking {
         cookies = ""
 
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
         delay(200)
 
         assertTrue(repository.calls.isEmpty())
@@ -254,7 +175,7 @@ class YouTubeLibraryTest {
     fun aSessionThatEndedKeepsWhatIsStored() = runBlocking {
         loggedIn = "0"
 
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
         withTimeout(5_000) { while (requests.get() < 1) delay(10) }
         delay(200)
 
@@ -262,91 +183,68 @@ class YouTubeLibraryTest {
 
         // A failure lets the next call try again at once
         loggedIn = "1"
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
         awaitCalls(1)
     }
 
     @Test
-    fun aSectionIsNotFetchedAgainSoon() = runBlocking {
-        library.refresh(LibrarySection.ALBUMS)
+    fun theSongsAreNotFetchedAgainSoon() = runBlocking {
+        library.refresh()
         awaitCalls(1)
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
         delay(200)
         assertEquals(1, requests.get())
 
         clock.time += 6.minutes
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
+        awaitCalls(2)
+    }
+
+    @Test
+    fun refreshingNowFetchesAtOnce() = runBlocking {
+        library.refresh()
+        awaitCalls(1)
+
+        library.refreshNow()
         awaitCalls(2)
     }
 
     @Test
     fun anotherSessionIsFetchedAtOnce() = runBlocking {
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
         awaitCalls(1)
 
         cookies = "SAPISID=someone-else"
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
         awaitCalls(2)
     }
 
     @Test
     fun anotherChannelIsFetchedAtOnce() = runBlocking {
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
         awaitCalls(1)
 
         pageId = "1111"
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
         awaitCalls(2)
     }
 
     @Test
-    fun signingOutEmptiesTheYouTubeLibrary() = runBlocking {
-        library.clear()
+    fun nothingIsFetchedWhileTurnedOff() = runBlocking {
+        syncing = false
 
-        assertEquals(
-            listOf(
-                "YOUTUBE liked []",
-                "YOUTUBE albums []",
-                "YOUTUBE artists []",
-                "YOUTUBE playlists []",
-            ),
-            repository.calls.toList(),
-        )
-        assertEquals(0, requests.get())
-    }
-
-    @Test
-    fun aSectionTurnedOffIsNotFetched() = runBlocking {
-        syncing -= LibrarySection.ARTISTS
-
-        library.refreshAll()
-        awaitCalls(3)
+        library.refreshNow()
         delay(200)
 
-        assertEquals(
-            setOf(
-                "YOUTUBE liked [s1, s2]",
-                "YOUTUBE albums [MPREb_a1, MPREb_a2]",
-                "YOUTUBE playlists [LM]",
-            ),
-            repository.calls.toSet(),
-        )
-        assertEquals(3, requests.get())
-    }
-
-    @Test
-    fun turningASectionOffTakesOnlyItOut() = runBlocking {
-        library.clear(LibrarySection.PLAYLISTS)
-
-        assertEquals(listOf("YOUTUBE playlists []"), repository.calls.toList())
+        assertTrue(repository.calls.isEmpty())
         assertEquals(0, requests.get())
     }
 
     @Test
     fun aFetchRunningWhenTurnedOffIsDropped() = runBlocking {
-        onRequest = { syncing -= LibrarySection.ALBUMS }
+        onRequest = { syncing = false }
 
-        library.refresh(LibrarySection.ALBUMS)
+        library.refresh()
         withTimeout(5_000) { while (requests.get() < 1) delay(10) }
         delay(200)
 
@@ -354,36 +252,31 @@ class YouTubeLibraryTest {
     }
 
     @Test
-    fun turningASectionBackOnFetchesItAtOnce() = runBlocking {
-        library.refresh(LibrarySection.ALBUMS)
+    fun turningOffTakesNoLikeAway() = runBlocking {
+        library.refresh()
         awaitCalls(1)
 
-        syncing -= LibrarySection.ALBUMS
-        library.clear(LibrarySection.ALBUMS)
-        syncing += LibrarySection.ALBUMS
-        library.refresh(LibrarySection.ALBUMS)
-        awaitCalls(3)
+        syncing = false
+        library.refreshNow()
+        delay(200)
 
-        assertEquals(
-            listOf(
-                "YOUTUBE albums [MPREb_a1, MPREb_a2]",
-                "YOUTUBE albums []",
-                "YOUTUBE albums [MPREb_a1, MPREb_a2]",
-            ),
-            repository.calls.toList(),
-        )
+        // Nothing told the repository to take the likes away
+        assertEquals(listOf("YOUTUBE liked [s1, s2]"), repository.calls.toList())
     }
 
     @Test
-    fun likedSongsAreLikedNowInTheOrderOfYouTube() = runBlocking {
-        library.refresh(LibrarySection.SONGS)
+    fun turningBackOnFetchesAtOnce() = runBlocking {
+        library.refresh()
         awaitCalls(1)
 
-        assertEquals(listOf("YOUTUBE liked [s1, s2]"), repository.calls.toList())
-        // The first one, the most recently liked, is the newest
+        syncing = false
+        syncing = true
+        library.refreshNow()
+        awaitCalls(2)
+
         assertEquals(
-            listOf(clock.time, clock.time - 1.milliseconds),
-            repository.songs.map { it.starredAt },
+            listOf("YOUTUBE liked [s1, s2]", "YOUTUBE liked [s1, s2]"),
+            repository.calls.toList(),
         )
     }
 
@@ -391,19 +284,19 @@ class YouTubeLibraryTest {
     fun likesBeyondWhatIsFetchedAreNotTakenAway() = runBlocking {
         endlessLikes = true
 
-        library.refresh(LibrarySection.SONGS)
+        library.refresh()
         awaitCalls(1)
 
         // Only the likes fetched are given, the others stay as they are
-        assertTrue(repository.calls.single().startsWith("YOUTUBE songs [s1, s2, s3]"))
-        assertTrue(repository.songs.all { it.starredAt != null })
+        assertTrue(repository.calls.single().startsWith("YOUTUBE liked [s1, s2, s3"))
+        assertTrue(repository.calls.single().endsWith("(partly)"))
     }
 
     @Test
     fun likedSongsOutsideTheSessionTakeNothingAway() = runBlocking {
         loggedIn = "0"
 
-        library.refresh(LibrarySection.SONGS)
+        library.refresh()
         withTimeout(5_000) { while (requests.get() < 1) delay(10) }
         delay(200)
 

@@ -15,28 +15,70 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
-import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
+import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
+import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate3.provider.opensubsonic.Shareable
+import me.knighthat.kreate3.ui.component.toLiveMediaItem
 import me.knighthat.kreate3.ui.navigation.LocalAlbum
 
 /**
- * Brings the album whose id is in the saved state, and its songs, from the server.
+ * An album of the OpenSubsonic server as its screen shows it.
+ *
+ * @property songs in the album's order, they show the album's cover so they carry none
+ */
+data class OpenSubsonicAlbumDetail(
+    val name: String?,
+    val thumbnail: Uri?,
+    val subtitle: String?,
+    val songs: List<MediaItem>,
+)
+
+/**
+ * Fetches the album whose id is in the saved state, and its songs, from the server. Nothing is
+ * stored.
  */
 class OpenSubsonicAlbumDetailViewModel(
     savedStateHandle: SavedStateHandle,
-    private val library: OpenSubsonicLibrary,
-) : SyncDetailViewModel() {
+    private val provider: OpenSubsonicProvider,
+) : LiveDetailViewModel<OpenSubsonicAlbumDetail>() {
 
     val albumId: String = checkNotNull(savedStateHandle[LocalAlbum.ID]) {
         "LocalAlbum.ID is missing from the saved state"
     }
 
+    override val notFound = SERVER_OFF
+
+    /** Whether the user may make shares on the server, `false` until that is known. */
+    val canShare = provider.canShare(viewModelScope)
+
     init {
-        sync()
+        load()
     }
 
-    override suspend fun fetchAndStore() = library.syncAlbum(albumId)
+    override suspend fun fetch(): OpenSubsonicAlbumDetail? {
+        val (remote, songs) = provider.albumWithSongs(albumId) ?: return null
+        val album = remote.item
+        return OpenSubsonicAlbumDetail(
+            name = album.name,
+            thumbnail = album.thumbnail,
+            subtitle = listOfNotNull(album.artists?.joinToString(", "), album.year?.toString())
+                .takeIf { it.isNotEmpty() }?.joinToString(" · "),
+            songs = songs.map { it.toLiveMediaItem(thumbnail = null) }.distinctBy { it.mediaId },
+        )
+    }
+
+    /**
+     * A link to the album that anyone can open, asked of the server at every tap. It gives a
+     * share it has already or makes one. Links aren't stored, a share can expire or be deleted on
+     * the server.
+     *
+     * @return the link, or why there is none
+     */
+    suspend fun shareLink(name: String?): Result<String> =
+        provider.shareLinkOf(Shareable.Album(albumId), name)
 }

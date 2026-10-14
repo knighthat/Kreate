@@ -15,37 +15,61 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
-import kotlinx.coroutines.flow.first
-import me.knighthat.kreate3.database.repository.PlaylistRepository
-import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
-import me.knighthat.kreate3.ui.navigation.LocalPlaylist
+import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
+import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate3.provider.opensubsonic.Shareable
+import me.knighthat.kreate3.ui.component.toLiveMediaItem
+import me.knighthat.kreate3.ui.navigation.OpenSubsonicPlaylist
 
 /**
- * Brings the songs of the playlist whose id is in the saved state from the server. The id is the
- * playlist's in the database, the server's is read from it.
+ * A playlist of the OpenSubsonic server as its screen shows it.
+ */
+data class OpenSubsonicPlaylistDetail(
+    val name: String,
+    val thumbnail: Uri?,
+    val songs: List<MediaItem>,
+)
+
+/**
+ * Fetches the playlist whose id on the server is in the saved state, and its songs. Nothing is
+ * stored.
  */
 class OpenSubsonicPlaylistDetailViewModel(
     savedStateHandle: SavedStateHandle,
-    private val repository: PlaylistRepository,
-    private val library: OpenSubsonicLibrary,
-) : SyncDetailViewModel() {
+    private val provider: OpenSubsonicProvider,
+) : LiveDetailViewModel<OpenSubsonicPlaylistDetail>() {
 
-    val playlistId: Long = checkNotNull(savedStateHandle[LocalPlaylist.ID]) {
-        "LocalPlaylist.ID is missing from the saved state"
+    val playlistId: String = checkNotNull(savedStateHandle[OpenSubsonicPlaylist.ID]) {
+        "OpenSubsonicPlaylist.ID is missing from the saved state"
     }
+
+    override val notFound = SERVER_OFF
+
+    /** Whether the user may make shares on the server, `false` until that is known. */
+    val canShare = provider.canShare(viewModelScope)
 
     init {
-        sync()
+        load()
     }
 
-    override suspend fun fetchAndStore(): Boolean {
-        val playlist =
-            checkNotNull(repository.find(playlistId).first()) { "This playlist no longer exists" }
-        val remoteId = checkNotNull(playlist.remoteId) { "This playlist isn't on the server" }
-        return library.syncPlaylist(playlistId, remoteId)
+    override suspend fun fetch(): OpenSubsonicPlaylistDetail? {
+        val (playlist, songs) = provider.playlistWithSongs(playlistId) ?: return null
+        return OpenSubsonicPlaylistDetail(
+            name = playlist.name,
+            thumbnail = playlist.thumbnail,
+            songs = songs.map { it.toLiveMediaItem() }.distinctBy { it.mediaId },
+        )
     }
+
+    /**
+     * A link to the playlist that anyone can open. See
+     * [OpenSubsonicAlbumDetailViewModel.shareLink].
+     */
+    suspend fun shareLink(name: String?): Result<String> =
+        provider.shareLinkOf(Shareable.Playlist(playlistId), name)
 }

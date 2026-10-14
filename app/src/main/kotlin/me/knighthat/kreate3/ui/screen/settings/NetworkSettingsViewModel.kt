@@ -33,8 +33,11 @@ import kotlinx.coroutines.flow.update
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
+import me.knighthat.kreate3.provider.LibrarySection
+import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
+import me.knighthat.kreate3.provider.opensubsonic.openSubsonicSyncSetting
 
 /**
  * Where a check of the server stands.
@@ -55,7 +58,10 @@ sealed interface CheckState {
  * succeeded. Every change of the settings starts the checks over.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-class NetworkSettingsViewModel(private val provider: OpenSubsonicProvider) : ViewModel() {
+class NetworkSettingsViewModel(
+    private val provider: OpenSubsonicProvider,
+    private val library: OpenSubsonicLibrary,
+) : ViewModel() {
 
     private val attempt = MutableStateFlow(0)
 
@@ -102,6 +108,15 @@ class NetworkSettingsViewModel(private val provider: OpenSubsonicProvider) : Vie
     }
 
     /** Forgets the trusted certificate, the next one the server presents is trusted. */
+    /**
+     * Shows [section] of the server's library from now on, or hides it when [on] is `false`. The
+     * starred songs are synced instead, turning them off only stops the syncing.
+     */
+    fun setSyncing(section: LibrarySection, on: Boolean) {
+        section.openSubsonicSyncSetting.update(on)
+        if (section == LibrarySection.SONGS && on) library.refreshNow()
+    }
+
     fun forgetCertificate() {
         provider.forgetCertificate()
         retry()

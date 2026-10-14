@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
+import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.LibrarySection
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Clock
@@ -31,122 +32,66 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
 /**
- * Brings the server's library into the database, one [LibrarySection] at a time, so its items
- * show among the others, and the songs of an album, artist or playlist when it is opened.
- * Nothing happens while the server is off or not set up.
+ * Keeps the songs starred on the server liked in the active user's library. Starred songs are
+ * the only part of the server's library that is stored, its albums, artists and playlists are
+ * fetched each time they show. Turning the server or the syncing off only stops the syncing, the
+ * likes stay as they are.
  *
- * A section is fetched again at most every few minutes, opening a tab back and forth doesn't
- * download the library each time. The work runs on [scope], the app's long lived scope, so
- * leaving the screen doesn't throw away a library already downloaded.
+ * @param syncs whether the starred songs are synced, [Preferences.OPEN_SUBSONIC_SYNC_SONGS]
  */
 class OpenSubsonicLibrary(
     private val provider: OpenSubsonicProvider,
     private val repository: RemoteCatalogRepository,
     private val scope: CoroutineScope,
     private val clock: Clock = Clock.System,
+    private val syncs: () -> Boolean = { LibrarySection.SONGS.openSubsonicSyncSetting.value },
 ) {
 
-    /** When each section of each server address was last brought up to date, or is being now. */
-    private val refreshed = ConcurrentHashMap<Pair<String, LibrarySection>, Instant>()
+    /** When the liked songs of each server address were last brought up to date, or are being now. */
+    private val refreshed = ConcurrentHashMap<String, Instant>()
 
     /**
-     * Brings [section] up to date unless it was done recently. A failure leaves what is stored
-     * as it was, and lets the next call try again.
+     * Brings the liked songs up to date unless it was done recently or their syncing is off. A
+     * failure leaves what is stored as it was, and lets the next call try again.
      */
-    fun refresh(section: LibrarySection) {
+    fun refresh() {
+        if (!syncs()) return
         val server = provider.serverUrl ?: return
-        val key = server to section
         val now = clock.now()
 
-        // Claims the section, so a second call while this one runs does nothing
-        val last = refreshed[key]
+        // Claims the server, so a second call while this one runs does nothing
+        val last = refreshed[server]
         if (last != null && now - last < MIN_INTERVAL) return
-        if (last == null && refreshed.putIfAbsent(key, now) != null) return
-        if (last != null && !refreshed.replace(key, last, now)) return
+        if (last == null && refreshed.putIfAbsent(server, now) != null) return
+        if (last != null && !refreshed.replace(server, last, now)) return
 
         scope.launch {
             try {
-                if (!sync(server, section)) refreshed.remove(key)
+                if (!sync(server)) refreshed.remove(server)
             } catch (e: CancellationException) {
-                refreshed.remove(key)
+                refreshed.remove(server)
                 throw e
             } catch (e: Exception) {
-                refreshed.remove(key)
-                Log.w(TAG, "Couldn't bring $section of the server up to date", e)
+                refreshed.remove(server)
+                Log.w(TAG, "Couldn't bring the liked songs of the server up to date", e)
             }
         }
     }
 
-    /**
-     * Stores the album and every song on it.
-     *
-     * @return `false` when the server is off or not set up, nothing is stored then
-     * @throws ServerException when the server can't be used or refuses
-     */
-    suspend fun syncAlbum(albumId: String): Boolean {
-        val (album, songs) = provider.albumWithSongs(albumId) ?: return false
-        repository.syncSongs(Origin.OPEN_SUBSONIC, songs, albums = listOf(album))
-        return true
+    /** Brings the liked songs up to date now, like right after turning their syncing on. */
+    fun refreshNow() {
+        refreshed.clear()
+        refresh()
     }
 
     /**
-     * Stores the artist, their albums and every song on those albums.
-     *
-     * @return `false` when the server is off or not set up, nothing is stored then
-     * @throws ServerException when the server can't be used or refuses
+     * @return whether the songs were stored, `false` when the server is off, or its address
+     * changed or the syncing was turned off meanwhile
      */
-    suspend fun syncArtist(artistId: String): Boolean {
-        val found = provider.artistWithSongs(artistId) ?: return false
-        repository.syncSongs(
-            Origin.OPEN_SUBSONIC,
-            found.songs,
-            albums = found.albums,
-            artists = listOf(found.artist),
-        )
-        return true
-    }
-
-    /**
-     * Stores every song of a playlist and makes them the songs of its row in the database.
-     *
-     * @param playlistId id of the playlist in the database
-     * @param remoteId id of the playlist on the server
-     * @return `false` when the server is off or not set up, nothing is stored then
-     * @throws ServerException when the server can't be used or refuses
-     */
-    suspend fun syncPlaylist(playlistId: Long, remoteId: String): Boolean {
-        val songs = provider.playlistSongs(remoteId) ?: return false
-        repository.syncSongs(Origin.OPEN_SUBSONIC, songs, playlistId = playlistId)
-        return true
-    }
-
-    /**
-     * @return whether the section was stored, `false` when the server is off or its address
-     * changed meanwhile
-     */
-    private suspend fun sync(server: String, section: LibrarySection): Boolean {
-        when (section) {
-            // Starred songs are stored with their albums and playlists when those are opened
-            LibrarySection.SONGS -> Unit
-
-            LibrarySection.ALBUMS -> {
-                val albums = provider.libraryAlbums() ?: return false
-                if (provider.serverUrl != server) return false
-                repository.syncAlbums(Origin.OPEN_SUBSONIC, albums)
-            }
-
-            LibrarySection.ARTISTS -> {
-                val artists = provider.libraryArtists() ?: return false
-                if (provider.serverUrl != server) return false
-                repository.syncArtists(Origin.OPEN_SUBSONIC, artists)
-            }
-
-            LibrarySection.PLAYLISTS -> {
-                val playlists = provider.libraryPlaylists() ?: return false
-                if (provider.serverUrl != server) return false
-                repository.syncPlaylists(Origin.OPEN_SUBSONIC, playlists)
-            }
-        }
+    private suspend fun sync(server: String): Boolean {
+        val songs = provider.starredSongs() ?: return false
+        if (provider.serverUrl != server || !syncs()) return false
+        repository.syncLikedSongs(Origin.OPEN_SUBSONIC, songs)
         return true
     }
 
@@ -157,3 +102,15 @@ class OpenSubsonicLibrary(
         val MIN_INTERVAL = 5.minutes
     }
 }
+
+/**
+ * The setting that turns [this] section of the server's library on: the starred songs are synced,
+ * the others show on the home screen.
+ */
+val LibrarySection.openSubsonicSyncSetting
+    get() = when (this) {
+        LibrarySection.SONGS -> Preferences.OPEN_SUBSONIC_SYNC_SONGS
+        LibrarySection.ALBUMS -> Preferences.OPEN_SUBSONIC_SYNC_ALBUMS
+        LibrarySection.ARTISTS -> Preferences.OPEN_SUBSONIC_SYNC_ARTISTS
+        LibrarySection.PLAYLISTS -> Preferences.OPEN_SUBSONIC_SYNC_PLAYLISTS
+    }

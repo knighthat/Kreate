@@ -24,22 +24,14 @@ import me.knighthat.kreate3.database.AppDatabase
 import me.knighthat.kreate3.database.dao.AlbumDao
 import me.knighthat.kreate3.database.dao.ArtistDao
 import me.knighthat.kreate3.database.dao.SongDao
-import me.knighthat.kreate3.database.dao.UserAlbumDao
-import me.knighthat.kreate3.database.dao.UserArtistDao
-import me.knighthat.kreate3.database.dao.UserPlaylistDao
 import me.knighthat.kreate3.database.dao.UserSongDao
 import me.knighthat.kreate3.database.entity.SongArtistMapEntity
-import me.knighthat.kreate3.database.entity.SongPlaylistMapEntity
-import me.knighthat.kreate3.database.entity.UserAlbumEntity
-import me.knighthat.kreate3.database.entity.UserArtistEntity
-import me.knighthat.kreate3.database.entity.UserPlaylistEntity
 import me.knighthat.kreate3.database.entity.UserSongEntity
 import me.knighthat.kreate3.database.inTransaction
-import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Origin
-import me.knighthat.kreate3.database.model.UserPlaylist
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant
 
 /**
@@ -49,9 +41,6 @@ internal class RemoteCatalogRepositoryImpl(
     private val database: AppDatabase,
     private val albumDao: AlbumDao,
     private val artistDao: ArtistDao,
-    private val userAlbumDao: UserAlbumDao,
-    private val userArtistDao: UserArtistDao,
-    private val playlistDao: UserPlaylistDao,
     private val songDao: SongDao,
     private val userSongDao: UserSongDao,
     activeUser: ActiveUser,
@@ -60,73 +49,20 @@ internal class RemoteCatalogRepositoryImpl(
 
     private val scope = UserScope(activeUser)
 
-    override suspend fun syncAlbums(origin: Origin, albums: List<RemoteItem<Album>>) {
-        requireOrigin(origin, albums.map { it.item.origin })
-        val userId = awaitUser()
-
-        database.inTransaction {
-            val incoming = albums.distinctBy { it.item.id }
-            val library = storeAlbums(userId, origin, clock.now(), incoming)
-
-            val kept = incoming.map { it.item.id }.toSet()
-            userAlbumDao.deleteAll(library.filter { it.albumId !in kept })
-        }
-    }
-
-    override suspend fun syncArtists(origin: Origin, artists: List<RemoteItem<Artist>>) {
-        requireOrigin(origin, artists.map { it.item.origin })
-        val userId = awaitUser()
-
-        database.inTransaction {
-            val incoming = artists.distinctBy { it.item.id }
-            val library = storeArtists(userId, origin, clock.now(), incoming)
-
-            val kept = incoming.map { it.item.id }.toSet()
-            userArtistDao.deleteAll(library.filter { it.artistId !in kept })
-        }
-    }
-
-    override suspend fun syncSongs(
+    override suspend fun syncLikedSongs(
         origin: Origin,
         songs: List<RemoteSong>,
-        albums: List<RemoteItem<Album>>,
-        artists: List<RemoteItem<Artist>>,
-        playlistId: Long?,
+        complete: Boolean
     ) {
-        requireOrigin(
-            origin,
-            songs.origins() + albums.map { it.item.origin } + artists.map { it.item.origin },
-        )
-        val userId = awaitUser()
-
-        database.inTransaction {
-            val now = clock.now()
-            val incoming = songs.distinctBy { it.song.id }
-
-            storeAlbums(userId, origin, now, albums.distinctBy { it.item.id })
-            storeArtists(userId, origin, now, artists.distinctBy { it.item.id })
-            storeSongs(userId, origin, now, incoming)
-
-            playlistId?.let { id ->
-                val playlist = requireNotNull(playlistDao.get(id)) { "Playlist $id doesn't exist" }
-                require(playlist.userId == userId) { "Playlist $id belongs to another user" }
-
-                playlistDao.clearSongs(id)
-                playlistDao.addSongs(incoming.map { SongPlaylistMapEntity(it.song.id, id) })
-            }
-        }
-    }
-
-    override suspend fun syncLikedSongs(origin: Origin, songs: List<RemoteSong>) {
         requireOrigin(origin, songs.origins())
         val userId = awaitUser()
 
         database.inTransaction {
             val now = clock.now()
             val incoming = songs.distinctBy { it.song.id }
-                .map { it.copy(starredAt = it.starredAt ?: now) }
             val library = storeSongs(userId, origin, now, incoming)
 
+            if (!complete) return@inTransaction
             // Only the like goes, the song stays in the user's library
             val kept = incoming.map { it.song.id }.toSet()
             userSongDao.upsertAll(
@@ -137,8 +73,8 @@ internal class RemoteCatalogRepositoryImpl(
     }
 
     /**
-     * Upserts [incoming] with what they point at and gives each a row in the user's library, see
-     * [syncSongs].
+     * Upserts [incoming] with what they point at and likes each in the user's library, see
+     * [syncLikedSongs].
      *
      * @return the user's rows of [origin] as they were before
      */
@@ -172,119 +108,26 @@ internal class RemoteCatalogRepositoryImpl(
         (wanted - linked).takeIf { it.isNotEmpty() }?.let { songDao.linkAll(it.toList()) }
 
         val library = userSongDao.withOrigin(userId, origin).associateBy { it.songId }
-        userSongDao.upsertAll(incoming.mapNotNull { remote ->
+        userSongDao.upsertAll(incoming.mapIndexedNotNull { index, remote ->
             val old = library[remote.song.id]
-                ?: return@mapNotNull UserSongEntity(
+            val likedAt = remote.starredAt
+                ?: old?.likedAt?.takeIf { it.isLike }
+                ?: (now - index.milliseconds)
+
+            when {
+                old == null -> UserSongEntity(
                     userId,
                     remote.song.id,
-                    likedAt = remote.starredAt,
+                    likedAt = likedAt,
                     createdAt = now,
                     updatedAt = now,
                 )
-            val likedAt = reaction(remote.starredAt, old.likedAt)
-            if (likedAt == old.likedAt) null else old.copy(likedAt = likedAt, updatedAt = now)
+
+                likedAt == old.likedAt -> null
+                else -> old.copy(likedAt = likedAt, updatedAt = now)
+            }
         })
         return library.values
-    }
-
-    /**
-     * Upserts [incoming] and gives each a row in the user's library, see [syncAlbums].
-     *
-     * @return the user's rows of [origin] as they were before
-     */
-    private suspend fun storeAlbums(
-        userId: String,
-        origin: Origin,
-        now: Instant,
-        incoming: List<RemoteItem<Album>>,
-    ): Collection<UserAlbumEntity> {
-        val stored = albumDao.withOrigin(origin).associateBy { it.id }
-        albumDao.upsertAll(incoming.mapNotNull { (album, _) ->
-            val old = stored[album.id]
-            val new = album.toEntity(old?.createdAt ?: now, now)
-            new.takeUnless { old != null && it.copy(updatedAt = old.updatedAt) == old }
-        })
-
-        val library = userAlbumDao.withOrigin(userId, origin).associateBy { it.albumId }
-        userAlbumDao.upsertAll(incoming.mapNotNull { (album, starredAt) ->
-            val old = library[album.id]
-                ?: return@mapNotNull UserAlbumEntity(
-                    userId,
-                    album.id,
-                    bookmarkedAt = starredAt,
-                    createdAt = now,
-                    updatedAt = now,
-                )
-            val bookmarkedAt = reaction(starredAt, old.bookmarkedAt)
-            if (bookmarkedAt == old.bookmarkedAt) null
-            else old.copy(bookmarkedAt = bookmarkedAt, updatedAt = now)
-        })
-        return library.values
-    }
-
-    /**
-     * Upserts [incoming] and gives each a row in the user's library, see [syncArtists].
-     *
-     * @return the user's rows of [origin] as they were before
-     */
-    private suspend fun storeArtists(
-        userId: String,
-        origin: Origin,
-        now: Instant,
-        incoming: List<RemoteItem<Artist>>,
-    ): Collection<UserArtistEntity> {
-        val stored = artistDao.withOrigin(origin).associateBy { it.id }
-        artistDao.upsertAll(incoming.mapNotNull { (artist, _) ->
-            val old = stored[artist.id]
-            val new = artist.toEntity(old?.createdAt ?: now, now)
-            new.takeUnless { old != null && it.copy(updatedAt = old.updatedAt) == old }
-        })
-
-        val library = userArtistDao.withOrigin(userId, origin).associateBy { it.artistId }
-        userArtistDao.upsertAll(incoming.mapNotNull { (artist, starredAt) ->
-            val old = library[artist.id]
-                ?: return@mapNotNull UserArtistEntity(
-                    userId,
-                    artist.id,
-                    followSince = starredAt,
-                    createdAt = now,
-                    updatedAt = now,
-                )
-            val followSince = reaction(starredAt, old.followSince)
-            if (followSince == old.followSince) null
-            else old.copy(followSince = followSince, updatedAt = now)
-        })
-        return library.values
-    }
-
-    override suspend fun syncPlaylists(origin: Origin, playlists: List<UserPlaylist>) {
-        playlists.forEach { requireNotNull(it.remoteId) { "A playlist of a server needs its remote id" } }
-        requireOrigin(origin, playlists.map { it.origin })
-        val userId = awaitUser()
-
-        database.inTransaction {
-            val now = clock.now()
-            val incoming = playlists.distinctBy { it.remoteId }
-
-            val stored = playlistDao.withRemoteOrigin(userId, origin).associateBy { it.remoteId }
-            playlistDao.upsertAll(incoming.mapNotNull { playlist ->
-                val old = stored[playlist.remoteId]
-                    ?: return@mapNotNull UserPlaylistEntity(
-                        userId = userId,
-                        origin = playlist.origin,
-                        name = playlist.name,
-                        thumbnail = playlist.thumbnail,
-                        createdAt = now,
-                        updatedAt = now,
-                        remoteId = playlist.remoteId,
-                    )
-                if (old.name == playlist.name && old.thumbnail == playlist.thumbnail) null
-                else old.copy(name = playlist.name, thumbnail = playlist.thumbnail, updatedAt = now)
-            })
-
-            val kept = incoming.map { it.remoteId }.toSet()
-            playlistDao.deleteAll(stored.values.filter { it.remoteId !in kept })
-        }
     }
 
     /**
@@ -306,22 +149,11 @@ internal class RemoteCatalogRepositoryImpl(
     private fun requireOrigin(origin: Origin, origins: List<Origin>) =
         require(origins.all { it == origin }) { "Every item must be from $origin" }
 
-    /**
-     * The reaction to keep: a star on the server keeps the like already stored, which tells when
-     * it was first given, or replaces anything else. Without a star a dislike stays and anything
-     * else is cleared, the server is where the star was taken away.
-     */
-    private fun reaction(starredAt: Instant?, stored: Instant?): Instant? = when {
-        starredAt != null -> stored?.takeIf { it.toEpochMilliseconds() != DISLIKED } ?: starredAt
-        stored?.toEpochMilliseconds() == DISLIKED -> stored
-        else -> null
-    }
-
     private companion object {
 
         const val ACTIVE_USER_TIMEOUT = 10_000L
 
-        /** Stored in a reaction column for a dislike, see `UserAlbum.bookmarkedAt`. */
+        /** Stored in a reaction column for a dislike, see `UserSong.likedAt`. */
         const val DISLIKED = -1L
     }
 }

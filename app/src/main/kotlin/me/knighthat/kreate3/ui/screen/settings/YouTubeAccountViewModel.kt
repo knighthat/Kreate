@@ -20,7 +20,6 @@ package me.knighthat.kreate3.ui.screen.settings
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,7 +28,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.provider.LibrarySection
@@ -61,25 +59,27 @@ sealed interface YouTubeAccountState {
 /**
  * Signs the active profile in to YouTube and out of it, and picks which channel of the account it
  * acts as. The session is the cookies the sign in page left, kept in [Secrets.YOUTUBE_COOKIES]
- * and never anywhere else; the channel is [Preferences.YOUTUBE_PAGE_ID].
- *
- * @param scope the app's long lived scope, the library is taken out even if the screen closes
+ * and never anywhere else; the channel is [Preferences.YOUTUBE_PAGE_ID]. The account is only used
+ * while [Preferences.YOUTUBE_ACCOUNT_ENABLED] is on.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class YouTubeAccountViewModel(
     private val provider: YouTubeProvider,
     private val library: YouTubeLibrary,
-    private val scope: CoroutineScope,
 ) : ViewModel() {
 
     private val attempt = MutableStateFlow(0)
 
-    /** Whether a session is saved, and the channel acted as, each change asks YouTube again. */
+    /**
+     * Whether a session is saved and in use, and the channel acted as, each change asks YouTube
+     * again.
+     */
     private val session = combine(
         Secrets.YOUTUBE_COOKIES.state,
+        Preferences.YOUTUBE_ACCOUNT_ENABLED.state,
         Preferences.YOUTUBE_PAGE_ID.state,
         attempt,
-    ) { cookies, pageId, _ -> isYouTubeSession(cookies) to pageId }
+    ) { cookies, enabled, pageId, _ -> (enabled && isYouTubeSession(cookies)) to pageId }
 
     /** Who is signed in, as the channel acted as, asked from YouTube whenever it changes. */
     val account: StateFlow<YouTubeAccountState> =
@@ -112,7 +112,11 @@ class YouTubeAccountViewModel(
      */
     val channels: StateFlow<List<YouTubeChannel>> =
         // The channels are the same whichever is acted as, a switch keeps them
-        combine(Secrets.YOUTUBE_COOKIES.state, attempt) { cookies, _ -> isYouTubeSession(cookies) }
+        combine(
+            Secrets.YOUTUBE_COOKIES.state,
+            Preferences.YOUTUBE_ACCOUNT_ENABLED.state,
+            attempt,
+        ) { cookies, enabled, _ -> enabled && isYouTubeSession(cookies) }
             .transformLatest { signedIn ->
                 emit(if (signedIn) channelsOrNone() else emptyList())
             }
@@ -144,53 +148,46 @@ class YouTubeAccountViewModel(
      */
     suspend fun channelsAfterSignIn(): List<YouTubeChannel> = channelsOrNone()
 
-    /** Acts as [channel], `null` for the account's own, and brings the user's library in. */
+    /** Acts as [channel], `null` for the account's own, and brings the liked songs in. */
     fun finishSignIn(channel: YouTubeChannel?) {
         Preferences.YOUTUBE_PAGE_ID.update(channel?.pageId.orEmpty())
-        library.refreshAll()
+        library.refreshNow()
     }
 
     /**
-     * Acts as [channel] from now on. Its library replaces the one of the channel before.
+     * Acts as [channel] from now on. Its liked songs replace the ones of the channel before.
      */
     fun switchTo(channel: YouTubeChannel) {
         if (channel.pageId.orEmpty() == Preferences.YOUTUBE_PAGE_ID.value) return
         Preferences.YOUTUBE_PAGE_ID.update(channel.pageId.orEmpty())
-        library.refreshAll()
+        library.refreshNow()
     }
 
     /**
-     * Forgets the session and takes the YouTube library out of the profile's library. The
-     * session itself stays valid at Google, only this app forgets it.
+     * Forgets the session. The likes it synced stay, and the session itself stays valid at Google,
+     * only this app forgets it.
      */
     fun signOut() {
         Secrets.YOUTUBE_COOKIES.clear()
         Preferences.YOUTUBE_PAGE_ID.update("")
-        scope.launch {
-            try {
-                library.clear()
-            } catch (e: IllegalStateException) {
-                Log.w(TAG, "Couldn't take the YouTube library out", e)
-            }
-        }
     }
 
     /**
-     * Brings [section] of the YouTube library in from now on, or takes it out of the profile's
-     * library when [on] is `false`.
+     * Uses the account from now on, or sends every request signed out when [on] is `false`. The
+     * session is kept either way, and what was synced stays.
+     */
+    fun setEnabled(on: Boolean) {
+        Preferences.YOUTUBE_ACCOUNT_ENABLED.update(on)
+        if (on) library.refreshNow()
+    }
+
+    /**
+     * Shows [section] of the YouTube library from now on, or hides it when [on] is `false`. The
+     * liked songs are synced instead, turning them off only stops the syncing.
      */
     fun setSyncing(section: LibrarySection, on: Boolean) {
         section.youTubeSyncSetting.update(on)
-        if (on)
-            library.refresh(section)
-        else
-            scope.launch {
-                try {
-                    library.clear(section)
-                } catch (e: IllegalStateException) {
-                    Log.w(TAG, "Couldn't take $section of YouTube out", e)
-                }
-            }
+        if (section == LibrarySection.SONGS && on) library.refreshNow()
     }
 
     private suspend fun channelsOrNone(): List<YouTubeChannel> =

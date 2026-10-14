@@ -32,10 +32,11 @@ import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class SyncDetailViewModelTest {
+class LiveDetailViewModelTest {
 
-    private class Detail(var fetch: suspend () -> Boolean) : SyncDetailViewModel() {
-        override suspend fun fetchAndStore(): Boolean = fetch()
+    private class Detail(var fetch: suspend () -> String?) : LiveDetailViewModel<String>() {
+        override val notFound = "Not here"
+        override suspend fun fetch(): String? = fetch.invoke()
     }
 
     @Before
@@ -44,88 +45,86 @@ class SyncDetailViewModelTest {
     @After
     fun tearDown() = Dispatchers.resetMain()
 
-    private fun failureOf(error: Exception): SyncState =
-        Detail { throw error }.apply { sync() }.state.value
+    private fun failureOf(error: Exception): LiveState<String> =
+        Detail { throw error }.apply { load() }.state.value
 
     @Test
-    fun itIsSyncingUntilTheFetchIsDone() {
-        val done = CompletableDeferred<Boolean>()
+    fun itIsLoadingUntilTheFetchIsDone() {
+        val done = CompletableDeferred<String>()
         val detail = Detail { done.await() }
 
-        assertEquals(SyncState.Syncing, detail.state.value)
-        detail.sync()
-        assertEquals(SyncState.Syncing, detail.state.value)
+        assertEquals(LiveState.Loading, detail.state.value)
+        detail.load()
+        assertEquals(LiveState.Loading, detail.state.value)
 
-        done.complete(true)
-        assertEquals(SyncState.Ready, detail.state.value)
+        done.complete("Album")
+        assertEquals(LiveState.Ready("Album"), detail.state.value)
+    }
+
+    @Test
+    fun nothingFoundSaysSo() {
+        val detail = Detail { null }.apply { load() }
+
+        assertEquals(LiveState.Failed("Not here"), detail.state.value)
     }
 
     @Test
     fun eachServerProblemIsExplained() {
         assertEquals(
-            SyncState.Failed("The server refused: Not found"),
+            LiveState.Failed("The server refused: Not found"),
             failureOf(ServerException(ServerCheck.Rejected(70, "Not found")))
         )
         assertEquals(
-            SyncState.Failed("The server refused: error 40"),
+            LiveState.Failed("The server refused: error 40"),
             failureOf(ServerException(ServerCheck.Rejected(40, "")))
         )
         assertEquals(
-            SyncState.Failed("Can't reach the server: timeout"),
+            LiveState.Failed("Can't reach the server: timeout"),
             failureOf(ServerException(ServerCheck.Unreachable("timeout")))
         )
         assertEquals(
-            SyncState.Failed("The server's certificate isn't trusted"),
+            LiveState.Failed("The server's certificate isn't trusted"),
             failureOf(ServerException(ServerCheck.UntrustedCertificate("no anchor")))
         )
         assertEquals(
-            SyncState.Failed("The server's certificate changed, check it in Network settings"),
+            LiveState.Failed("The server's certificate changed, check it in Network settings"),
             failureOf(ServerException(ServerCheck.CertificateChanged("host", "NEW", "OLD")))
         )
         assertEquals(
-            SyncState.Failed("The server sent something unexpected"),
+            LiveState.Failed("The server sent something unexpected"),
             failureOf(ServerException(ServerCheck.NotSubsonic))
         )
         assertEquals(
-            SyncState.Failed("Sign in to the server in Network settings"),
+            LiveState.Failed("Sign in to the server in Network settings"),
             failureOf(ServerException(ServerCheck.NotConfigured))
         )
     }
 
     @Test
-    fun otherProblemsShowTheirMessage() {
-        assertEquals(SyncState.Failed("Disk full"), failureOf(IllegalStateException("Disk full")))
-        assertEquals(
-            SyncState.Failed("Couldn't load this from the server"),
-            failureOf(IllegalStateException())
-        )
-    }
-
-    @Test
-    fun aFailedSyncCanBeTriedAgain() {
+    fun aFailedLoadCanBeTriedAgain() {
         val detail = Detail { throw ServerException(ServerCheck.NotSubsonic) }
-        detail.sync()
+        detail.load()
 
-        detail.fetch = { true }
-        detail.sync()
+        detail.fetch = { "Album" }
+        detail.load()
 
-        assertEquals(SyncState.Ready, detail.state.value)
+        assertEquals(LiveState.Ready("Album"), detail.state.value)
     }
 
     @Test
-    fun aNewSyncReplacesTheOneRunning() {
-        val first = CompletableDeferred<Boolean>()
+    fun aNewLoadReplacesTheOneRunning() {
+        val first = CompletableDeferred<String>()
         val detail = Detail { first.await() }
-        detail.sync()
+        detail.load()
 
-        val second = CompletableDeferred<Boolean>()
+        val second = CompletableDeferred<String>()
         detail.fetch = { second.await() }
-        detail.sync()
+        detail.load()
         // The first one was cancelled, it can't end the second
-        first.completeExceptionally(IllegalStateException("Too late"))
-        assertEquals(SyncState.Syncing, detail.state.value)
+        first.complete("Too late")
+        assertEquals(LiveState.Loading, detail.state.value)
 
-        second.complete(true)
-        assertEquals(SyncState.Ready, detail.state.value)
+        second.complete("Album")
+        assertEquals(LiveState.Ready("Album"), detail.state.value)
     }
 }
