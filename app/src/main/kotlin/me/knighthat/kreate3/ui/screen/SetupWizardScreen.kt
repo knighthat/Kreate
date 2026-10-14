@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.knighthat.kreate3.screen
+package me.knighthat.kreate3.ui.screen
 
 import android.Manifest
 import android.annotation.SuppressLint

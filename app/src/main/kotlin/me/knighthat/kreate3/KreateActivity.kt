@@ -33,10 +33,10 @@ import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.repository.UserRepository
 import me.knighthat.kreate3.preferences.Preferences
-import me.knighthat.kreate3.screen.SetupWizardScreen
-import me.knighthat.kreate3.screen.setupCompletedFile
 import me.knighthat.kreate3.source.local.LocalMusicScheduler
 import me.knighthat.kreate3.ui.screen.KreateApp
+import me.knighthat.kreate3.ui.screen.SetupWizardScreen
+import me.knighthat.kreate3.ui.screen.setupCompletedFile
 import me.knighthat.kreate3.utils.hasAudioPermission
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject

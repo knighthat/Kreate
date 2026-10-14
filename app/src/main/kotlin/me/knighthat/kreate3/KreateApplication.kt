@@ -36,10 +36,10 @@ import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.preferencesModule
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.providerModule
-import me.knighthat.kreate3.screen.setupCompletedFile
 import me.knighthat.kreate3.source.local.LocalCoverFetcher
 import me.knighthat.kreate3.source.local.LocalCoverKeyer
 import me.knighthat.kreate3.source.opensubsonic.OpenSubsonicCoverFetcher
+import me.knighthat.kreate3.ui.screen.setupCompletedFile
 import okio.Path.Companion.toOkioPath
 import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
