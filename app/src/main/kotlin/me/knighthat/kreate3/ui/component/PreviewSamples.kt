@@ -72,10 +72,7 @@ fun previewItem(
                 .setDurationMs(durationMs)
                 .setExtras(Bundle().apply {
                     origin?.let { putString(EXTRA_ORIGIN, it.name) }
-                    if (explicit) putLong(
-                        MediaConstants.EXTRAS_KEY_IS_EXPLICIT,
-                        MediaConstants.EXTRAS_VALUE_ATTRIBUTE_PRESENT
-                    )
+                    putBoolean(MediaConstants.EXTRAS_KEY_IS_EXPLICIT, explicit)
                 })
                 .build()
         )

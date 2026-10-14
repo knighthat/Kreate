@@ -106,7 +106,7 @@ private fun Duration?.toMillis(): Long? = this?.inWholeMilliseconds
  * Whether [ItemBadges] has anything to show for the item.
  */
 val MediaItem.hasBadges: Boolean
-    get() = isLocal || isExplicit || isLiked || isBookmarked || isFollowed
+    get() = origin != null || isExplicit || isLiked || isBookmarked || isFollowed
 
 /**
  * Whether the item was marked explicit, see [toMediaItem].

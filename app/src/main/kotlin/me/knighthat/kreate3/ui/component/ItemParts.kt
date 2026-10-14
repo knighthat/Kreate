@@ -48,6 +48,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import coil3.compose.AsyncImage
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.source.local.LocalCover
 import me.knighthat.kreate3.source.local.isAlbumArt
 
@@ -128,7 +129,7 @@ fun ItemBadge(
 }
 
 /**
- * The badges that apply to [item]: a file on this device, explicit content, a liked song, a bookmarked album, a followed artist.
+ * The badges that apply to [item]: where it comes from, explicit content, a liked song, a bookmarked album, a followed artist.
  *
  * @param reserveHeight keep the height of the badges when there are none, so items next to each
  * other in a grid keep their titles on the same line
@@ -148,7 +149,16 @@ fun ItemBadges(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.heightIn(min = BADGE_SIZE),
     ) {
-        if (item.isLocal) ItemBadge(R.drawable.mobile, "On this device")
+        when (item.origin) {
+            Origin.LOCAL -> ItemBadge(R.drawable.mobile, "On this device")
+            Origin.YOUTUBE -> ItemBadge(R.drawable.youtube_music, "From YouTube")
+            Origin.OPEN_SUBSONIC -> ItemBadge(
+                R.drawable.open_subsonic,
+                "From the OpenSubsonic server"
+            )
+
+            null -> {}
+        }
         if (item.isExplicit) ItemBadge(
             R.drawable.explicit,
             "Explicit",
