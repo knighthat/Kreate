@@ -156,10 +156,13 @@ class LocalCoverFetcher(
          * over [MAX_SIZE] and the picture still covers [targetWidth] by [targetHeight].
          */
         fun sampleSize(width: Int, height: Int, targetWidth: Int, targetHeight: Int): Int {
+            // A target of 0 is covered by any size, the sample would grow until it overflows
+            val minWidth = targetWidth.coerceAtLeast(1)
+            val minHeight = targetHeight.coerceAtLeast(1)
             var sample = 1
             while (
                 width / sample > MAX_SIZE || height / sample > MAX_SIZE ||
-                (width / (sample * 2) >= targetWidth && height / (sample * 2) >= targetHeight)
+                (width / (sample * 2) >= minWidth && height / (sample * 2) >= minHeight)
             )
                 sample *= 2
             return sample

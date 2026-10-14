@@ -51,6 +51,12 @@ class LocalCoverTest {
     }
 
     @Test
+    fun aZeroTargetIsTreatedAsOnePixel() {
+        // 1000 / 512 = 1 still covers 1, 1000 / 1024 wouldn't
+        assertEquals(512, sampleSize(1000, 1000, 0, 0))
+    }
+
+    @Test
     fun anUnreadablePictureIsNotSampled() {
         // Bounds are -1 when the bytes aren't a picture
         assertEquals(1, sampleSize(-1, -1, 100, 100))
