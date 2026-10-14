@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package me.knighthat.kreate3.ui.screen.detail
 
 import androidx.compose.foundation.layout.Arrangement
@@ -26,15 +27,25 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.QueueAction
+import me.knighthat.kreate3.ui.component.QueueActionRow
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.SongItem
+import me.knighthat.kreate3.ui.component.previewAlbums
+import me.knighthat.kreate3.ui.component.previewSongs
+import me.knighthat.kreate3.ui.component.rememberQueueActions
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -49,16 +60,48 @@ fun OpenSubsonicArtistDetailScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val canShare by viewModel.canShare.collectAsStateWithLifecycle()
+    val snackbar = remember { SnackbarHostState() }
+
+    OpenSubsonicArtistDetailContent(
+        state = state,
+        onRetry = viewModel::load,
+        onBack = onBack,
+        onOpenAlbum = onOpenAlbum,
+        onAction = rememberQueueActions(snackbar) {
+            (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+        },
+        share = if (canShare) viewModel::shareLink else null,
+        snackbar = snackbar,
+        modifier = modifier,
+    )
+}
+
+/**
+ * @param share gives a link to the artist, `null` while the user may not share
+ */
+@Composable
+private fun OpenSubsonicArtistDetailContent(
+    state: LiveState<OpenSubsonicArtistDetail>,
+    onRetry: () -> Unit,
+    onBack: () -> Unit,
+    onOpenAlbum: (MediaItem) -> Unit,
+    onAction: (QueueAction) -> Unit,
+    share: (suspend (name: String?) -> Result<String>)?,
+    snackbar: SnackbarHostState,
+    modifier: Modifier = Modifier,
+) {
     val artist = (state as? LiveState.Ready)?.value
 
     LiveDetailScreen(
         title = artist?.name.orEmpty(),
         onBack = onBack,
-        viewModel = viewModel,
+        state = state,
+        onRetry = onRetry,
         modifier = modifier,
+        snackbar = snackbar,
         actions = {
-            if (canShare && artist != null)
-                ShareAction(artist.name, "artist") { viewModel.shareLink(artist.name) }
+            if (share != null && artist != null)
+                ShareAction(artist.name, "artist") { share(artist.name) }
         },
     ) { detail, innerPadding ->
         LazyColumn(
@@ -74,6 +117,8 @@ fun OpenSubsonicArtistDetailScreen(
                     shape = CircleShape,
                 )
             }
+            if (detail.songs.isNotEmpty())
+                item(key = "queue-actions") { QueueActionRow(onAction) }
             if (detail.albums.isNotEmpty())
                 item(key = "albums") {
                     SectionTitle("Albums")
@@ -96,4 +141,25 @@ fun OpenSubsonicArtistDetailScreen(
             }
         }
     }
+}
+
+@ScreenPreviews
+@Composable
+private fun OpenSubsonicArtistDetailPreview() = PreviewTheme {
+    OpenSubsonicArtistDetailContent(
+        state = LiveState.Ready(
+            OpenSubsonicArtistDetail(
+                name = "Neon Coast",
+                thumbnail = null,
+                albums = previewAlbums(Origin.OPEN_SUBSONIC).take(3),
+                songs = previewSongs(Origin.OPEN_SUBSONIC),
+            )
+        ),
+        onRetry = {},
+        onBack = {},
+        onOpenAlbum = {},
+        onAction = {},
+        share = { Result.success("") },
+        snackbar = remember { SnackbarHostState() },
+    )
 }

@@ -21,6 +21,7 @@ package me.knighthat.kreate3.database.repository
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.model.Artist
+import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.UserArtist
 import me.knighthat.kreate3.database.model.UserArtistView
 import me.knighthat.kreate3.database.paging.SortDirection
@@ -37,8 +38,32 @@ interface UserArtistRepository {
     /**
      * Every artist in the library, a page at a time. Pages load as the list is read,
      * and the list follows changes in the database.
+     *
+     * @param origins only the artists from these, every artist when empty
      */
-    fun all(order: SortOrder<UserArtistSort> = SortOrder(UserArtistSort.NAME)): Flow<PagingData<UserArtistView>>
+    fun all(
+        order: SortOrder<UserArtistSort> = SortOrder(UserArtistSort.NAME),
+        origins: Set<Origin> = emptySet(),
+    ): Flow<PagingData<UserArtistView>>
+
+    /**
+     * How many artists [all] has right now.
+     *
+     * @param origins only the artists from these, every artist when empty
+     */
+    suspend fun count(origins: Set<Origin> = emptySet()): Int
+
+    /**
+     * The origins the library has artists from. It follows changes in the database.
+     */
+    fun origins(): Flow<Set<Origin>>
+
+    /**
+     * One artist of the library picked at random, `null` when there is none.
+     *
+     * @param origins only the artists from these, every artist when empty
+     */
+    suspend fun random(origins: Set<Origin> = emptySet()): UserArtistView?
 
     /**
      * Artists the user follows, a page at a time. Newest follow first unless [order] says otherwise.

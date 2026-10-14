@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -33,7 +35,7 @@ import me.knighthat.kreate3.ui.component.BackButton
 
 /**
  * The frame of a detail screen: a small top bar with a back button, the [title] of the item and
- * its [actions] at the end.
+ * its [actions] at the end. Messages show in [snackbar].
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,9 +44,11 @@ fun DetailScaffold(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit = {},
+    snackbar: SnackbarHostState? = null,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
+        snackbarHost = { snackbar?.let { SnackbarHost(it) } },
         topBar = {
             TopAppBar(
                 title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },

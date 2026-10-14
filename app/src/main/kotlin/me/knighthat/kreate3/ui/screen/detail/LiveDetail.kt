@@ -30,15 +30,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CancellationException
@@ -120,20 +119,22 @@ private fun ServerException.reason(): String = when (val check = check) {
 
 /**
  * A detail screen of an item fetched live: [content] shows once it arrived. Meanwhile there is a
- * spinner, and when it fails the reason with a way to try again.
+ * spinner, and when it fails the reason with a way to try again, [onRetry].
+ *
+ * @param state see [LiveDetailViewModel.state]
  */
 @Composable
 fun <T : Any> LiveDetailScreen(
     title: String,
     onBack: () -> Unit,
-    viewModel: LiveDetailViewModel<T>,
+    state: LiveState<T>,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit = {},
+    snackbar: SnackbarHostState? = null,
     content: @Composable (T, PaddingValues) -> Unit,
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-
-    DetailScaffold(title, onBack, modifier, actions) { innerPadding ->
+    DetailScaffold(title, onBack, modifier, actions, snackbar) { innerPadding ->
         when (val current = state) {
             is LiveState.Ready -> content(current.value, innerPadding)
 
@@ -155,7 +156,7 @@ fun <T : Any> LiveDetailScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
                         )
-                        FilledTonalButton(onClick = viewModel::load) { Text("Try again") }
+                        FilledTonalButton(onClick = onRetry) { Text("Try again") }
                     }
                 else CircularProgressIndicator()
             }

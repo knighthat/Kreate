@@ -27,6 +27,7 @@ import me.knighthat.kreate3.database.dao.UserPlaylistDao
 import me.knighthat.kreate3.database.entity.SongEntity
 import me.knighthat.kreate3.database.entity.SongPlaylistMapEntity
 import me.knighthat.kreate3.database.entity.UserPlaylistEntity
+import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.paging.PlaylistSort
@@ -47,17 +48,45 @@ internal class PlaylistRepositoryImpl(
 
     private val scope = UserScope(activeUser)
 
-    override fun all(order: SortOrder<PlaylistSort>): Flow<PagingData<UserPlaylist>> =
+    override fun all(
+        order: SortOrder<PlaylistSort>,
+        origins: Set<Origin>,
+    ): Flow<PagingData<UserPlaylist>> =
         scope.observe(PagingData.empty()) { userId ->
             pagedFlow(UserPlaylistEntity::toModel) {
                 playlistDao.paged(
                     RoomRawQuery(
-                        sql = "SELECT * FROM user_playlist WHERE user_id = ? ${order.toOrderBy("playlist_id")}",
+                        sql = "SELECT * FROM user_playlist WHERE user_id = ? ${originFilter(origins)} " +
+                                order.toOrderBy("playlist_id"),
                         onBindStatement = { it.bindText(1, userId) },
                     )
                 )
             }
         }
+
+    override fun origins(): Flow<Set<Origin>> =
+        scope.observe(emptySet()) { userId -> playlistDao.origins(userId).map { it.toSet() } }
+
+    override suspend fun count(origins: Set<Origin>): Int {
+        val userId = scope.awaitId()
+        return playlistDao.count(
+            RoomRawQuery(
+                sql = "SELECT COUNT(*) FROM user_playlist WHERE user_id = ? ${originFilter(origins)}",
+                onBindStatement = { it.bindText(1, userId) },
+            )
+        )
+    }
+
+    override suspend fun random(origins: Set<Origin>): UserPlaylist? {
+        val userId = scope.awaitId()
+        return playlistDao.first(
+            RoomRawQuery(
+                sql = "SELECT * FROM user_playlist WHERE user_id = ? ${originFilter(origins)} " +
+                        "ORDER BY RANDOM() LIMIT 1",
+                onBindStatement = { it.bindText(1, userId) },
+            )
+        )?.toModel()
+    }
 
     override fun search(
         query: String,

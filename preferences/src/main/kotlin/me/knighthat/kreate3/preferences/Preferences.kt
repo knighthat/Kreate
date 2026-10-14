@@ -21,6 +21,7 @@ package me.knighthat.kreate3.preferences
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.constant.ThemeMode
+import me.knighthat.kreate3.preferences.Preferences.HOME_SONGS_ORIGINS
 import me.knighthat.kreate3.preferences.Preferences.IMAGE_DISK_CACHE
 import me.knighthat.kreate3.preferences.Preferences.NETWORK_CONNECT_TIMEOUT
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_CERTIFICATE_SHA256
@@ -62,6 +63,23 @@ object Preferences : KoinComponent {
      * It is read at every launch, so it is declared eagerly instead of `by lazy`.
      */
     val TOS_CHECKSUM = string("tos_checksum", "")
+
+    //<editor-fold defaultstate="collapsed" desc="Home">
+    /**
+     * Names of the origins the songs tab shows, every origin while it is empty. The app's
+     * `Origin` isn't known here, so the names are kept as they are.
+     */
+    val HOME_SONGS_ORIGINS by lazy { stringSet("home_songs_origins", emptySet()) }
+
+    /** Like [HOME_SONGS_ORIGINS], for the albums tab. */
+    val HOME_ALBUMS_ORIGINS by lazy { stringSet("home_albums_origins", emptySet()) }
+
+    /** Like [HOME_SONGS_ORIGINS], for the artists tab. */
+    val HOME_ARTISTS_ORIGINS by lazy { stringSet("home_artists_origins", emptySet()) }
+
+    /** Like [HOME_SONGS_ORIGINS], for the playlists tab. */
+    val HOME_PLAYLISTS_ORIGINS by lazy { stringSet("home_playlists_origins", emptySet()) }
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Network">
     /**
@@ -214,6 +232,14 @@ object Preferences : KoinComponent {
 
     private fun double(name: String, default: Double) =
         Preference(name, default, codec<Double, Double>({ it }, { it }), engine)
+
+    private fun stringSet(name: String, default: Set<String>) =
+        Preference(
+            name,
+            default,
+            codec<Set<String>, Set<*>>({ it }, { it.filterIsInstance<String>().toSet() }),
+            engine,
+        )
 
     private inline fun <reified E : Enum<E>> enum(name: String, default: E) =
         Preference(name, default, enumCodec<E>(), engine)

@@ -21,6 +21,7 @@ package me.knighthat.kreate3.ui.screen.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import androidx.paging.cachedIn
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -38,7 +39,7 @@ import me.knighthat.kreate3.ui.navigation.LocalArtist
 class LocalArtistDetailViewModel(
     savedStateHandle: SavedStateHandle,
     repository: ArtistRepository,
-    songRepository: UserSongRepository,
+    private val songRepository: UserSongRepository,
     albumRepository: UserAlbumRepository,
 ) : ViewModel() {
 
@@ -56,6 +57,10 @@ class LocalArtistDetailViewModel(
     val songs = songRepository.ofArtist(artistId)
         .toMediaItems()
         .cachedIn(viewModelScope)
+
+    /** Every song of [songs] right now, in its order, for the quick actions. */
+    suspend fun allSongs(): List<MediaItem> =
+        songRepository.listOfArtist(artistId).mapNotNull { it.toMediaItem() }
 
     private companion object {
         /** Albums shown on the page, the artist may have more. */

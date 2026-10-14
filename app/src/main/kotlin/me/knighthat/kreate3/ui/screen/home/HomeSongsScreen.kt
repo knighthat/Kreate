@@ -20,12 +20,29 @@ package me.knighthat.kreate3.ui.screen.home
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.media3.common.MediaItem
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import kotlinx.coroutines.flow.flowOf
+import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.ui.component.PlayAllButton
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.QueueAction
+import me.knighthat.kreate3.ui.component.QueueMoreButton
+import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.ShuffleButton
 import me.knighthat.kreate3.ui.component.SongItem
+import me.knighthat.kreate3.ui.component.previewSongs
+import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 
@@ -39,12 +56,53 @@ fun HomeSongsScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeSongsViewModel = koinViewModel(),
 ) {
-    val songs = viewModel.songs.collectAsLazyPagingItems()
+    val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
+    val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
+    val snackbar = remember { SnackbarHostState() }
 
     // Each visit to the tab, the songs liked on YouTube are brought up to date
     LaunchedEffect(Unit) { viewModel.refresh() }
 
-    HomeScaffold(Tab.SONGS.label, modifier, onSearch, onSettings) { padding ->
+    HomeSongsContent(
+        songs = viewModel.songs.collectAsLazyPagingItems(),
+        choices = choices,
+        selected = selected,
+        onToggleOrigin = viewModel.filter::toggle,
+        onAction = rememberQueueActions(snackbar, viewModel::allSongs),
+        onSearch = onSearch,
+        onSettings = onSettings,
+        snackbar = snackbar,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun HomeSongsContent(
+    songs: LazyPagingItems<MediaItem>,
+    choices: List<Origin>,
+    selected: Set<Origin>,
+    onToggleOrigin: (Origin) -> Unit,
+    onAction: (QueueAction) -> Unit,
+    onSearch: () -> Unit,
+    onSettings: () -> Unit,
+    snackbar: SnackbarHostState,
+    modifier: Modifier = Modifier,
+) {
+    HomeScaffold(
+        title = Tab.SONGS.label,
+        choices = choices,
+        selected = selected,
+        onToggleOrigin = onToggleOrigin,
+        modifier = modifier,
+        onSearch = onSearch,
+        onSettings = onSettings,
+        snackbar = snackbar,
+        quickActions = {
+            PlayAllButton({ onAction(QueueAction.PLAY) })
+            ShuffleButton({ onAction(QueueAction.SHUFFLE) })
+            QueueMoreButton(onAction)
+        },
+    ) { padding ->
         LazyColumn(
             contentPadding = padding,
             modifier = Modifier.fillMaxSize(),
@@ -57,4 +115,20 @@ fun HomeSongsScreen(
             }
         }
     }
+}
+
+@ScreenPreviews
+@Composable
+private fun HomeSongsPreview() = PreviewTheme {
+    HomeSongsContent(
+        songs = flowOf(PagingData.from(previewSongs() + previewSongs(Origin.YOUTUBE)))
+            .collectAsLazyPagingItems(),
+        choices = Origin.entries,
+        selected = setOf(Origin.LOCAL),
+        onToggleOrigin = {},
+        onAction = {},
+        onSearch = {},
+        onSettings = {},
+        snackbar = remember { SnackbarHostState() },
+    )
 }

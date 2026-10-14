@@ -45,6 +45,12 @@ interface PlaybackController {
      */
     fun play(item: MediaItem)
 
+    /** Replaces the queue with [items] and plays them from the first. */
+    fun playAll(items: List<MediaItem>)
+
+    /** Adds [items] to the end of the queue, without starting to play. */
+    fun enqueue(items: List<MediaItem>)
+
     /**
      * How far into the current item, from `0` to `1`; `0` when unknown. Cheap enough to read
      * every frame, but only from the main thread.

@@ -27,6 +27,7 @@ import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.AppDatabase
 import me.knighthat.kreate3.database.dao.UserAlbumDao
 import me.knighthat.kreate3.database.inTransaction
+import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.UserAlbum
 import me.knighthat.kreate3.database.model.UserAlbumView
 import me.knighthat.kreate3.database.paging.SortOrder
@@ -48,8 +49,34 @@ internal class UserAlbumRepositoryImpl(
 
     private val scope = UserScope(activeUser)
 
-    override fun all(order: SortOrder<UserAlbumSort>): Flow<PagingData<UserAlbumView>> =
-        paged(order, filter = "")
+    override fun all(
+        order: SortOrder<UserAlbumSort>,
+        origins: Set<Origin>,
+    ): Flow<PagingData<UserAlbumView>> = paged(order, filter = originFilter(origins))
+
+    override fun origins(): Flow<Set<Origin>> =
+        scope.observe(emptySet()) { userId -> userAlbumDao.origins(userId).map { it.toSet() } }
+
+    override suspend fun count(origins: Set<Origin>): Int {
+        val userId = scope.awaitId()
+        return userAlbumDao.count(
+            RoomRawQuery(
+                sql = "SELECT COUNT(*) FROM user_album_view WHERE user_id = ? ${originFilter(origins)}",
+                onBindStatement = { it.bindText(1, userId) },
+            )
+        )
+    }
+
+    override suspend fun random(origins: Set<Origin>): UserAlbumView? {
+        val userId = scope.awaitId()
+        return userAlbumDao.first(
+            RoomRawQuery(
+                sql = "SELECT * FROM user_album_view WHERE user_id = ? ${originFilter(origins)} " +
+                        "ORDER BY RANDOM() LIMIT 1",
+                onBindStatement = { it.bindText(1, userId) },
+            )
+        )?.toModel()
+    }
 
     // A bookmark is a time, -1 is a dislike
     override fun bookmarked(order: SortOrder<UserAlbumSort>): Flow<PagingData<UserAlbumView>> =

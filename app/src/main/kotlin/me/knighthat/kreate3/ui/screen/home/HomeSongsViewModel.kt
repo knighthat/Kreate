@@ -20,22 +20,36 @@ package me.knighthat.kreate3.ui.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import androidx.paging.cachedIn
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flatMapLatest
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
 import me.knighthat.kreate3.provider.youtube.YouTubeLibrary
+import me.knighthat.kreate3.ui.component.toMediaItem
 import me.knighthat.kreate3.ui.component.toMediaItems
 
 /**
- * The songs in the active user's library. Pages are kept while the screen lives.
+ * The songs in the active user's library, of the origins the filter shows. Pages are kept while
+ * the screen lives.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class HomeSongsViewModel(
-    songRepository: UserSongRepository,
+    private val songRepository: UserSongRepository,
     private val openSubsonicLibrary: OpenSubsonicLibrary,
     private val youtubeLibrary: YouTubeLibrary,
 ) : ViewModel() {
 
-    val songs = songRepository.all()
+    val filter = OriginFilter(
+        viewModelScope,
+        Preferences.HOME_SONGS_ORIGINS,
+        stored = songRepository.origins(),
+    )
+
+    val songs = filter.selected
+        .flatMapLatest { songRepository.all(origins = it) }
         .toMediaItems()
         .cachedIn(viewModelScope)
 
@@ -47,4 +61,8 @@ class HomeSongsViewModel(
         openSubsonicLibrary.refresh()
         youtubeLibrary.refresh()
     }
+
+    /** Every song of the list right now, in its order, for the quick actions. */
+    suspend fun allSongs(): List<MediaItem> =
+        songRepository.list(origins = filter.selected.value).mapNotNull { it.toMediaItem() }
 }

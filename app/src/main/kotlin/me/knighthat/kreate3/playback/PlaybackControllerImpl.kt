@@ -81,6 +81,19 @@ class PlaybackControllerImpl(
         controller.play()
     }
 
+    override fun playAll(items: List<MediaItem>) = run("play ${items.size} items") { controller ->
+        controller.setMediaItems(items)
+        controller.prepare()
+        controller.play()
+    }
+
+    override fun enqueue(items: List<MediaItem>) = run("queue ${items.size} items") { controller ->
+        val wasEmpty = controller.mediaItemCount == 0
+        controller.addMediaItems(items)
+        // Ready to play, the user starts it
+        if (wasEmpty) controller.prepare()
+    }
+
     /**
      * Runs [action] with the connected controller. It waits for the connection, the actions of
      * calls made meanwhile run in the order of the calls.

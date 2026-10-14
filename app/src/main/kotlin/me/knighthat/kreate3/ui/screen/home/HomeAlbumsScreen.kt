@@ -24,16 +24,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.RandomButton
+import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 
@@ -51,13 +63,64 @@ fun HomeAlbumsScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeAlbumsViewModel = koinViewModel(),
 ) {
-    val albums = viewModel.albums.collectAsLazyPagingItems()
     val live by viewModel.live.collectAsStateWithLifecycle()
+    val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
+    val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
+    val snackbar = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     // Each visit to the tab, the items of the external sources are fetched again
     LaunchedEffect(Unit) { viewModel.refresh() }
 
-    HomeScaffold(Tab.ALBUMS.label, modifier, onSearch, onSettings) { padding ->
+    HomeAlbumsContent(
+        albums = viewModel.albums.collectAsLazyPagingItems(),
+        live = live,
+        choices = choices,
+        selected = selected,
+        onToggleOrigin = viewModel.filter::toggle,
+        onOpen = onOpen,
+        onRandom = {
+            scope.launch {
+                val picked = viewModel.random()
+                if (picked != null) onOpen(picked)
+                else snackbar.showSnackbar("No albums to pick from")
+            }
+        },
+        onSearch = onSearch,
+        onSettings = onSettings,
+        snackbar = snackbar,
+        modifier = modifier,
+    )
+}
+
+/**
+ * @param live the albums of the external sources, after the ones of the database
+ */
+@Composable
+private fun HomeAlbumsContent(
+    albums: LazyPagingItems<MediaItem>,
+    live: List<MediaItem>,
+    choices: List<Origin>,
+    selected: Set<Origin>,
+    onToggleOrigin: (Origin) -> Unit,
+    onOpen: (MediaItem) -> Unit,
+    onRandom: () -> Unit,
+    onSearch: () -> Unit,
+    onSettings: () -> Unit,
+    snackbar: SnackbarHostState,
+    modifier: Modifier = Modifier,
+) {
+    HomeScaffold(
+        title = Tab.ALBUMS.label,
+        choices = choices,
+        selected = selected,
+        onToggleOrigin = onToggleOrigin,
+        modifier = modifier,
+        onSearch = onSearch,
+        onSettings = onSettings,
+        snackbar = snackbar,
+        quickActions = { RandomButton(onRandom) },
+    ) { padding ->
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = ALBUM_ITEM_SIZE.dp),
             contentPadding = padding,
@@ -75,4 +138,21 @@ fun HomeAlbumsScreen(
             }
         }
     }
+}
+
+@ScreenPreviews
+@Composable
+private fun HomeAlbumsPreview() = PreviewTheme {
+    HomeAlbumsContent(
+        albums = flowOf(PagingData.from(previewAlbums())).collectAsLazyPagingItems(),
+        live = previewAlbums(Origin.YOUTUBE).take(3),
+        choices = Origin.entries,
+        selected = emptySet(),
+        onToggleOrigin = {},
+        onOpen = {},
+        onRandom = {},
+        onSearch = {},
+        onSettings = {},
+        snackbar = remember { SnackbarHostState() },
+    )
 }

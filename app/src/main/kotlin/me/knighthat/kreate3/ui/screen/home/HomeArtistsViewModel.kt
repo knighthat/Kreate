@@ -20,10 +20,14 @@ package me.knighthat.kreate3.ui.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import androidx.paging.cachedIn
 import androidx.paging.map
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate3.database.repository.UserArtistRepository
+import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.source.liveArtists
@@ -32,24 +36,41 @@ import me.knighthat.kreate3.ui.component.toMediaItem
 /**
  * The artists in the active user's library, then the ones followed on the external sources. Pages are kept while the screen lives.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class HomeArtistsViewModel(
-    artistRepository: UserArtistRepository,
+    private val artistRepository: UserArtistRepository,
     openSubsonic: OpenSubsonicProvider,
     youTube: YouTubeProvider,
 ) : ViewModel() {
 
     private val remote = LiveItems(viewModelScope) { liveArtists(openSubsonic, youTube) }
 
-    val artists = artistRepository.all()
+    val filter = OriginFilter(
+        viewModelScope,
+        Preferences.HOME_ARTISTS_ORIGINS,
+        stored = artistRepository.origins(),
+        liveItems = remote.items,
+    )
+
+    val artists = filter.selected
+        .flatMapLatest { artistRepository.all(origins = it) }
         .map { page -> page.map { it.toMediaItem() } }
         .cachedIn(viewModelScope)
 
     /** The artists of the server and of YouTube, fetched live and never stored. */
-    val live = remote.items
+    val live = filter.live
 
     /**
      * Fetches the artists of the server and of YouTube again, call it when the tab shows. Each
      * adds nothing while it isn't set up.
      */
     fun refresh() = remote.refresh()
+
+    /** One artist of the list at random, `null` when the list is empty. */
+    suspend fun random(): MediaItem? {
+        val origins = filter.selected.value
+        return pickRandom(artistRepository.count(origins), live.value) {
+            artistRepository.random(origins)?.toMediaItem()
+        }
+    }
 }

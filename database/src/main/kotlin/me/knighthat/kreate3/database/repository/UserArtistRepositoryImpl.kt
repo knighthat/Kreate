@@ -27,6 +27,7 @@ import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.AppDatabase
 import me.knighthat.kreate3.database.dao.UserArtistDao
 import me.knighthat.kreate3.database.inTransaction
+import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.UserArtist
 import me.knighthat.kreate3.database.model.UserArtistView
 import me.knighthat.kreate3.database.paging.SortOrder
@@ -48,8 +49,38 @@ internal class UserArtistRepositoryImpl(
 
     private val scope = UserScope(activeUser)
 
-    override fun all(order: SortOrder<UserArtistSort>): Flow<PagingData<UserArtistView>> =
-        paged(order, filter = "")
+    override fun all(
+        order: SortOrder<UserArtistSort>,
+        origins: Set<Origin>,
+    ): Flow<PagingData<UserArtistView>> = paged(order, filter = originFilter(origins))
+
+    override fun origins(): Flow<Set<Origin>> =
+        scope.observe(emptySet()) { userId -> userArtistDao.origins(userId).map { it.toSet() } }
+
+    override suspend fun count(origins: Set<Origin>): Int {
+        val userId = scope.awaitId()
+        return userArtistDao.count(
+            RoomRawQuery(
+                sql = "SELECT COUNT(*) FROM user_artist_view WHERE user_id = ? ${
+                    originFilter(
+                        origins
+                    )
+                }",
+                onBindStatement = { it.bindText(1, userId) },
+            )
+        )
+    }
+
+    override suspend fun random(origins: Set<Origin>): UserArtistView? {
+        val userId = scope.awaitId()
+        return userArtistDao.first(
+            RoomRawQuery(
+                sql = "SELECT * FROM user_artist_view WHERE user_id = ? ${originFilter(origins)} " +
+                        "ORDER BY RANDOM() LIMIT 1",
+                onBindStatement = { it.bindText(1, userId) },
+            )
+        )?.toModel()
+    }
 
     // A follow is a time, -1 is a dislike
     override fun followed(order: SortOrder<UserArtistSort>): Flow<PagingData<UserArtistView>> =

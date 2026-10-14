@@ -28,6 +28,7 @@ import androidx.room.RoomRawQuery
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.entity.UserAlbumEntity
+import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.view.UserAlbumViewEntity
 
 @Dao
@@ -38,6 +39,21 @@ internal interface UserAlbumDao {
      */
     @RawQuery(observedEntities = [UserAlbumViewEntity::class])
     fun paged(query: RoomRawQuery): PagingSource<Int, UserAlbumViewEntity>
+
+    @Query("SELECT DISTINCT origin FROM user_album_view WHERE user_id = :userId")
+    fun origins(userId: String): Flow<List<Origin>>
+
+    /**
+     * The first album of [query], which must select from `user_album_view`.
+     */
+    @RawQuery
+    suspend fun first(query: RoomRawQuery): UserAlbumViewEntity?
+
+    /**
+     * The number [query] counts, which must select `COUNT(*)`.
+     */
+    @RawQuery
+    suspend fun count(query: RoomRawQuery): Int
 
     @Query("SELECT * FROM user_album_view WHERE user_id = :userId AND album_id = :albumId")
     fun find(userId: String, albumId: String): Flow<UserAlbumViewEntity?>

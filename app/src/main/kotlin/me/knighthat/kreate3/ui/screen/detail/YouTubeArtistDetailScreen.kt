@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package me.knighthat.kreate3.ui.screen.detail
 
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,14 +23,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
-import me.knighthat.kreate3.ui.component.SectionTitle
+import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.QueueAction
+import me.knighthat.kreate3.ui.component.QueueActionRow
+import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.SongItem
+import me.knighthat.kreate3.ui.component.previewAlbums
+import me.knighthat.kreate3.ui.component.previewArtists
+import me.knighthat.kreate3.ui.component.previewSongs
+import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 
@@ -50,14 +62,47 @@ fun YouTubeArtistDetailScreen(
     viewModel: YouTubeArtistDetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbar = remember { SnackbarHostState() }
+
+    YouTubeArtistDetailContent(
+        state = state,
+        onRetry = viewModel::load,
+        onBack = onBack,
+        onOpen = onOpen,
+        onSeeMore = onSeeMore,
+        onOpenPlaylist = onOpenPlaylist,
+        onAction = rememberQueueActions(snackbar) {
+            (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty()
+        },
+        share = viewModel::shareLink,
+        snackbar = snackbar,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun YouTubeArtistDetailContent(
+    state: LiveState<YouTubeArtistDetail>,
+    onRetry: () -> Unit,
+    onBack: () -> Unit,
+    onOpen: (Tab, MediaItem) -> Unit,
+    onSeeMore: (title: String, more: YouTubeBrowse) -> Unit,
+    onOpenPlaylist: (String) -> Unit,
+    onAction: (QueueAction) -> Unit,
+    share: suspend () -> Result<String>,
+    snackbar: SnackbarHostState,
+    modifier: Modifier = Modifier,
+) {
     val artist = (state as? LiveState.Ready)?.value
 
     LiveDetailScreen(
         title = artist?.name.orEmpty(),
         onBack = onBack,
-        viewModel = viewModel,
+        state = state,
+        onRetry = onRetry,
         modifier = modifier,
-        actions = { ShareAction(artist?.name, "artist") { viewModel.shareLink() } },
+        snackbar = snackbar,
+        actions = { ShareAction(artist?.name, "artist", share) },
     ) { detail, innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -73,6 +118,7 @@ fun YouTubeArtistDetailScreen(
                 )
             }
             if (detail.topSongs.isNotEmpty()) {
+                item(key = "queue-actions") { QueueActionRow(onAction) }
                 item(key = "songs-title") {
                     SectionTitle(
                         "Top songs",
@@ -86,4 +132,38 @@ fun YouTubeArtistDetailScreen(
             }
         }
     }
+}
+
+@ScreenPreviews
+@Composable
+private fun YouTubeArtistDetailPreview() = PreviewTheme {
+    YouTubeArtistDetailContent(
+        state = LiveState.Ready(
+            YouTubeArtistDetail(
+                name = "Neon Coast",
+                thumbnail = null,
+                topSongs = previewSongs(Origin.YOUTUBE).take(5),
+                songsPlaylistId = "songs",
+                sections = listOf(
+                    LiveSection(
+                        title = "Albums",
+                        items = previewAlbums(Origin.YOUTUBE).map { Tab.ALBUMS to it },
+                        more = YouTubeBrowse("albums"),
+                    ),
+                    LiveSection(
+                        title = "Fans might also like",
+                        items = previewArtists(Origin.YOUTUBE).map { Tab.ARTISTS to it },
+                    ),
+                ),
+            )
+        ),
+        onRetry = {},
+        onBack = {},
+        onOpen = { _, _ -> },
+        onSeeMore = { _, _ -> },
+        onOpenPlaylist = {},
+        onAction = {},
+        share = { Result.success("") },
+        snackbar = remember { SnackbarHostState() },
+    )
 }

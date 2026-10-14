@@ -75,6 +75,22 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
     }
 
     @Test
+    fun songsAreFilteredByOrigin() = runBlocking {
+        addSong("local", origin = Origin.LOCAL)
+        addSong("tube", origin = Origin.YOUTUBE)
+        addSong("server", origin = Origin.OPEN_SUBSONIC)
+        listOf("local", "tube", "server").forEach { librarySong(it) }
+
+        val remote = setOf(Origin.YOUTUBE, Origin.OPEN_SUBSONIC)
+        assertEquals(
+            listOf("server", "tube"),
+            songs.all(origins = remote).asList().map { it.songId })
+        assertEquals(listOf("server", "tube"), songs.list(origins = remote).map { it.songId })
+        assertEquals(listOf("local", "server", "tube"), songs.list().map { it.songId })
+        assertEquals(Origin.entries.toSet(), songs.origins().first())
+    }
+
+    @Test
     fun anUnavailableSongIsHidden() = runBlocking {
         addSong("here")
         addSong("gone", unavailableSince = EPOCH)
@@ -134,6 +150,9 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
         assertEquals(listOf("onAlbum"), songs.ofAlbum("a1").asList().map { it.songId })
         assertEquals(listOf("byArtist"), songs.ofArtist("r1").asList().map { it.songId })
         assertEquals(listOf("inPlaylist"), songs.ofPlaylist(playlistId).asList().map { it.songId })
+        assertEquals(listOf("onAlbum"), songs.listOfAlbum("a1").map { it.songId })
+        assertEquals(listOf("byArtist"), songs.listOfArtist("r1").map { it.songId })
+        assertEquals(listOf("inPlaylist"), songs.listOfPlaylist(playlistId).map { it.songId })
     }
 
     @Test
@@ -310,6 +329,30 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
 
         assertEquals(listOf("a1"), albums.search("road").asList().map { it.albumId })
         assertEquals(listOf("r1"), artists.search("beatles").asList().map { it.artistId })
+    }
+
+    @Test
+    fun albumsAndArtistsAreFilteredByOrigin() = runBlocking {
+        addAlbum("localAlbum", origin = Origin.LOCAL)
+        addAlbum("tubeAlbum", origin = Origin.YOUTUBE)
+        addArtist("localArtist", origin = Origin.LOCAL)
+        addArtist("tubeArtist", origin = Origin.YOUTUBE)
+        albums.save(UserAlbum("localAlbum"))
+        albums.save(UserAlbum("tubeAlbum"))
+        artists.save(UserArtist("localArtist"))
+        artists.save(UserArtist("tubeArtist"))
+
+        val tube = setOf(Origin.YOUTUBE)
+        assertEquals(listOf("tubeAlbum"), albums.all(origins = tube).asList().map { it.albumId })
+        assertEquals(listOf("tubeArtist"), artists.all(origins = tube).asList().map { it.artistId })
+        assertEquals(1, albums.count(tube))
+        assertEquals(2, artists.count())
+        assertEquals("tubeAlbum", albums.random(tube)?.albumId)
+        assertEquals("localArtist", artists.random(setOf(Origin.LOCAL))?.artistId)
+        assertNull(albums.random(setOf(Origin.OPEN_SUBSONIC)))
+        assertEquals(0, artists.count(setOf(Origin.OPEN_SUBSONIC)))
+        assertEquals(setOf(Origin.LOCAL, Origin.YOUTUBE), albums.origins().first())
+        assertEquals(setOf(Origin.LOCAL, Origin.YOUTUBE), artists.origins().first())
     }
     //</editor-fold>
 }

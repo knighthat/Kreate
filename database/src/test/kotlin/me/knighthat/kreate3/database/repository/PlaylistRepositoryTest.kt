@@ -141,6 +141,21 @@ internal class PlaylistRepositoryTest : DatabaseTest() {
     }
 
     @Test
+    fun playlistsAreFilteredByOrigin() = runBlocking {
+        othersPlaylist()
+        repository.save(playlist("Mine"))
+        repository.save(UserPlaylist(origin = Origin.YOUTUBE, name = "Liked music"))
+
+        val tube = setOf(Origin.YOUTUBE)
+        assertEquals(listOf("Liked music"), repository.all(origins = tube).asList().map { it.name })
+        assertEquals(2, repository.count())
+        assertEquals(1, repository.count(tube))
+        assertEquals("Liked music", repository.random(tube)?.name)
+        assertEquals(null, repository.random(setOf(Origin.OPEN_SUBSONIC)))
+        assertEquals(setOf(Origin.LOCAL, Origin.YOUTUBE), repository.origins().first())
+    }
+
+    @Test
     fun theSongsOfAPlaylistAreSorted() = runBlocking {
         addAlbum("a1")
         addSong("third", albumId = "a1", albumPosition = 3)

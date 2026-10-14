@@ -40,6 +40,15 @@ internal interface UserSongDao {
     @RawQuery(observedEntities = [UserSongViewEntity::class])
     fun paged(query: RoomRawQuery): PagingSource<Int, UserSongViewEntity>
 
+    @Query("SELECT DISTINCT origin FROM user_song_view WHERE user_id = :userId")
+    fun origins(userId: String): Flow<List<Origin>>
+
+    /**
+     * Every song in [query] at once, which must select from `user_song_view`.
+     */
+    @RawQuery
+    suspend fun list(query: RoomRawQuery): List<UserSongViewEntity>
+
     @Query("SELECT * FROM user_song_view WHERE user_id = :userId AND song_id = :songId")
     fun find(userId: String, songId: String): Flow<UserSongViewEntity?>
 

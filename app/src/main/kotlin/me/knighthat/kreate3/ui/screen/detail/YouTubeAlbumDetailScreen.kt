@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package me.knighthat.kreate3.ui.screen.detail
 
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,13 +23,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.QueueAction
+import me.knighthat.kreate3.ui.component.QueueActionRow
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
+import me.knighthat.kreate3.ui.component.previewAlbums
+import me.knighthat.kreate3.ui.component.previewSongs
+import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 
@@ -47,14 +58,45 @@ fun YouTubeAlbumDetailScreen(
     viewModel: YouTubeAlbumDetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbar = remember { SnackbarHostState() }
+
+    YouTubeAlbumDetailContent(
+        state = state,
+        onRetry = viewModel::load,
+        onBack = onBack,
+        onOpen = onOpen,
+        onSeeMore = onSeeMore,
+        onAction = rememberQueueActions(snackbar) {
+            (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+        },
+        share = viewModel::shareLink,
+        snackbar = snackbar,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun YouTubeAlbumDetailContent(
+    state: LiveState<YouTubeAlbumDetail>,
+    onRetry: () -> Unit,
+    onBack: () -> Unit,
+    onOpen: (Tab, MediaItem) -> Unit,
+    onSeeMore: (title: String, more: YouTubeBrowse) -> Unit,
+    onAction: (QueueAction) -> Unit,
+    share: suspend () -> Result<String>,
+    snackbar: SnackbarHostState,
+    modifier: Modifier = Modifier,
+) {
     val album = (state as? LiveState.Ready)?.value
 
     LiveDetailScreen(
         title = album?.name.orEmpty(),
         onBack = onBack,
-        viewModel = viewModel,
+        state = state,
+        onRetry = onRetry,
         modifier = modifier,
-        actions = { ShareAction(album?.name, "album") { viewModel.shareLink() } },
+        snackbar = snackbar,
+        actions = { ShareAction(album?.name, "album", share) },
     ) { detail, innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -69,6 +111,7 @@ fun YouTubeAlbumDetailScreen(
                     shape = MaterialTheme.shapes.medium,
                 )
             }
+            item(key = "queue-actions") { QueueActionRow(onAction) }
             items(detail.songs, key = { it.mediaId }) {
                 SongItem(it, onClick = {}, showThumbnail = false, showAlbum = false)
             }
@@ -77,4 +120,32 @@ fun YouTubeAlbumDetailScreen(
             }
         }
     }
+}
+
+@ScreenPreviews
+@Composable
+private fun YouTubeAlbumDetailPreview() = PreviewTheme {
+    YouTubeAlbumDetailContent(
+        state = LiveState.Ready(
+            YouTubeAlbumDetail(
+                name = "Afterglow",
+                thumbnail = null,
+                subtitle = "Album · Neon Coast · 2021",
+                songs = previewSongs(Origin.YOUTUBE),
+                sections = listOf(
+                    LiveSection(
+                        title = "Other versions",
+                        items = previewAlbums(Origin.YOUTUBE).map { Tab.ALBUMS to it },
+                    )
+                ),
+            )
+        ),
+        onRetry = {},
+        onBack = {},
+        onOpen = { _, _ -> },
+        onSeeMore = { _, _ -> },
+        onAction = {},
+        share = { Result.success("") },
+        snackbar = remember { SnackbarHostState() },
+    )
 }

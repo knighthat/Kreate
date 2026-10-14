@@ -35,10 +35,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import kotlinx.coroutines.flow.flowOf
+import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.ArtistItem
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 
@@ -55,10 +62,29 @@ fun YouTubeMoreScreen(
     modifier: Modifier = Modifier,
     viewModel: YouTubeMoreViewModel = koinViewModel(),
 ) {
-    val items = viewModel.items.collectAsLazyPagingItems()
+    YouTubeMoreContent(
+        title = viewModel.title,
+        items = viewModel.items.collectAsLazyPagingItems(),
+        onBack = onBack,
+        onOpen = onOpen,
+        modifier = modifier,
+    )
+}
+
+/**
+ * @param items each with the [Tab] of its kind
+ */
+@Composable
+private fun YouTubeMoreContent(
+    title: String,
+    items: LazyPagingItems<Pair<Tab, MediaItem>>,
+    onBack: () -> Unit,
+    onOpen: (Tab, MediaItem) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val refresh = items.loadState.refresh
 
-    DetailScaffold(viewModel.title, onBack, modifier) { innerPadding ->
+    DetailScaffold(title, onBack, modifier) { innerPadding ->
         if (items.itemCount == 0) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -111,4 +137,16 @@ fun YouTubeMoreScreen(
             }
         }
     }
+}
+
+@ScreenPreviews
+@Composable
+private fun YouTubeMorePreview() = PreviewTheme {
+    YouTubeMoreContent(
+        title = "Singles & EPs",
+        items = flowOf(PagingData.from(previewAlbums(Origin.YOUTUBE).map { Tab.ALBUMS to it }))
+            .collectAsLazyPagingItems(),
+        onBack = {},
+        onOpen = { _, _ -> },
+    )
 }

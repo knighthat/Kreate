@@ -20,6 +20,7 @@ package me.knighthat.kreate3.database.repository
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.paging.PlaylistSort
@@ -33,8 +34,32 @@ interface PlaylistRepository {
 
     /**
      * The playlists of the active user, a page at a time.
+     *
+     * @param origins only the playlists from these, every playlist when empty
      */
-    fun all(order: SortOrder<PlaylistSort> = SortOrder(PlaylistSort.NAME)): Flow<PagingData<UserPlaylist>>
+    fun all(
+        order: SortOrder<PlaylistSort> = SortOrder(PlaylistSort.NAME),
+        origins: Set<Origin> = emptySet(),
+    ): Flow<PagingData<UserPlaylist>>
+
+    /**
+     * How many playlists [all] has right now.
+     *
+     * @param origins only the playlists from these, every playlist when empty
+     */
+    suspend fun count(origins: Set<Origin> = emptySet()): Int
+
+    /**
+     * The origins the active user has playlists from. It follows changes in the database.
+     */
+    fun origins(): Flow<Set<Origin>>
+
+    /**
+     * One playlist of the active user picked at random, `null` when there is none.
+     *
+     * @param origins only the playlists from these, every playlist when empty
+     */
+    suspend fun random(origins: Set<Origin> = emptySet()): UserPlaylist?
 
     /**
      * Playlists of the active user whose name contains [query], a page at a time.

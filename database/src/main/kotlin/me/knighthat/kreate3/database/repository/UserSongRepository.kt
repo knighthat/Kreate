@@ -20,6 +20,7 @@ package me.knighthat.kreate3.database.repository
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.UserSong
 import me.knighthat.kreate3.database.model.UserSongView
@@ -37,8 +38,23 @@ interface UserSongRepository {
     /**
      * Every song in the library, a page at a time. Pages load as the list is read,
      * and the list follows changes in the database.
+     *
+     * @param origins only the songs from these, every song when empty
      */
-    fun all(order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME)): Flow<PagingData<UserSongView>>
+    fun all(
+        order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME),
+        origins: Set<Origin> = emptySet(),
+    ): Flow<PagingData<UserSongView>>
+
+    /**
+     * Every song in the library right now, all at once, in the order [all] shows them.
+     *
+     * @param origins only the songs from these, every song when empty
+     */
+    suspend fun list(
+        order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME),
+        origins: Set<Origin> = emptySet(),
+    ): List<UserSongView>
 
     /**
      * Songs the user liked, a page at a time. Newest like first unless [order] says otherwise.
@@ -56,6 +72,12 @@ interface UserSongRepository {
         order: SortOrder<UserSongSort> = SortOrder(UserSongSort.ALBUM_POSITION),
     ): Flow<PagingData<UserSongView>>
 
+    /** Every song of [ofAlbum] right now, all at once, in the same order. */
+    suspend fun listOfAlbum(
+        albumId: String,
+        order: SortOrder<UserSongSort> = SortOrder(UserSongSort.ALBUM_POSITION),
+    ): List<UserSongView>
+
     /**
      * Songs of the library that the artist is credited on, a page at a time.
      */
@@ -64,6 +86,12 @@ interface UserSongRepository {
         order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME),
     ): Flow<PagingData<UserSongView>>
 
+    /** Every song of [ofArtist] right now, all at once, in the same order. */
+    suspend fun listOfArtist(
+        artistId: String,
+        order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME),
+    ): List<UserSongView>
+
     /**
      * Songs of the library that are in the playlist, a page at a time.
      */
@@ -71,6 +99,17 @@ interface UserSongRepository {
         playlistId: Long,
         order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME),
     ): Flow<PagingData<UserSongView>>
+
+    /** Every song of [ofPlaylist] right now, all at once, in the same order. */
+    suspend fun listOfPlaylist(
+        playlistId: Long,
+        order: SortOrder<UserSongSort> = SortOrder(UserSongSort.NAME),
+    ): List<UserSongView>
+
+    /**
+     * The origins the library has songs from. It follows changes in the database.
+     */
+    fun origins(): Flow<Set<Origin>>
 
     /**
      * Songs of the library whose title, artists or album contain [query], a page at a time.

@@ -21,11 +21,13 @@ package me.knighthat.kreate3.ui.screen.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import androidx.paging.cachedIn
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.ui.component.toMediaItem
 import me.knighthat.kreate3.ui.component.toMediaItems
 import me.knighthat.kreate3.ui.navigation.LocalPlaylist
 
@@ -35,7 +37,7 @@ import me.knighthat.kreate3.ui.navigation.LocalPlaylist
 class LocalPlaylistDetailViewModel(
     savedStateHandle: SavedStateHandle,
     repository: PlaylistRepository,
-    songRepository: UserSongRepository,
+    private val songRepository: UserSongRepository,
 ) : ViewModel() {
 
     val playlistId: Long = checkNotNull(savedStateHandle[LocalPlaylist.ID]) {
@@ -48,4 +50,8 @@ class LocalPlaylistDetailViewModel(
     val songs = songRepository.ofPlaylist(playlistId)
         .toMediaItems()
         .cachedIn(viewModelScope)
+
+    /** Every song of [songs] right now, in its order, for the quick actions. */
+    suspend fun allSongs(): List<MediaItem> =
+        songRepository.listOfPlaylist(playlistId).mapNotNull { it.toMediaItem() }
 }

@@ -27,6 +27,7 @@ import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.AppDatabase
 import me.knighthat.kreate3.database.dao.UserSongDao
 import me.knighthat.kreate3.database.inTransaction
+import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.UserSong
 import me.knighthat.kreate3.database.model.UserSongView
 import me.knighthat.kreate3.database.paging.SortOrder
@@ -48,8 +49,13 @@ internal class UserSongRepositoryImpl(
 
     private val scope = UserScope(activeUser)
 
-    override fun all(order: SortOrder<UserSongSort>): Flow<PagingData<UserSongView>> =
-        paged(order, filter = "")
+    override fun all(
+        order: SortOrder<UserSongSort>,
+        origins: Set<Origin>,
+    ): Flow<PagingData<UserSongView>> = paged(order, filter = originFilter(origins))
+
+    override suspend fun list(order: SortOrder<UserSongSort>, origins: Set<Origin>) =
+        listed(order, filter = originFilter(origins))
 
     // A like is a time, -1 is a dislike
     override fun liked(order: SortOrder<UserSongSort>): Flow<PagingData<UserSongView>> =
@@ -63,19 +69,25 @@ internal class UserSongRepositoryImpl(
         ) { it.bindText(2, containsPattern(query)) }
 
     override fun ofAlbum(albumId: String, order: SortOrder<UserSongSort>) =
-        paged(order, filter = "AND album_id = ?") { it.bindText(2, albumId) }
+        paged(order, filter = OF_ALBUM) { it.bindText(2, albumId) }
+
+    override suspend fun listOfAlbum(albumId: String, order: SortOrder<UserSongSort>) =
+        listed(order, filter = OF_ALBUM) { it.bindText(2, albumId) }
 
     override fun ofArtist(artistId: String, order: SortOrder<UserSongSort>) =
-        paged(
-            order,
-            filter = "AND song_id IN (SELECT song_id FROM song_artist_map WHERE artist_id = ?)",
-        ) { it.bindText(2, artistId) }
+        paged(order, filter = OF_ARTIST) { it.bindText(2, artistId) }
+
+    override suspend fun listOfArtist(artistId: String, order: SortOrder<UserSongSort>) =
+        listed(order, filter = OF_ARTIST) { it.bindText(2, artistId) }
 
     override fun ofPlaylist(playlistId: Long, order: SortOrder<UserSongSort>) =
-        paged(
-            order,
-            filter = "AND song_id IN (SELECT song_id FROM song_playlist_map WHERE playlist_id = ?)",
-        ) { it.bindLong(2, playlistId) }
+        paged(order, filter = OF_PLAYLIST) { it.bindLong(2, playlistId) }
+
+    override suspend fun listOfPlaylist(playlistId: Long, order: SortOrder<UserSongSort>) =
+        listed(order, filter = OF_PLAYLIST) { it.bindLong(2, playlistId) }
+
+    override fun origins(): Flow<Set<Origin>> =
+        scope.observe(emptySet()) { userId -> userSongDao.origins(userId).map { it.toSet() } }
 
     /**
      * @param filter extra conditions after the user's, its `?` start at position 2
@@ -88,21 +100,31 @@ internal class UserSongRepositoryImpl(
     ): Flow<PagingData<UserSongView>> =
         scope.observe(PagingData.empty()) { userId ->
             pagedFlow(UserSongViewEntity::toModel) {
-                userSongDao.paged(
-                    RoomRawQuery(
-                        sql = "SELECT * FROM user_song_view WHERE user_id = ? $filter ${
-                            order.toOrderBy(
-                                "song_id"
-                            )
-                        }",
-                        onBindStatement = {
-                            it.bindText(1, userId)
-                            bind(it)
-                        },
-                    )
-                )
+                userSongDao.paged(query(userId, order, filter, bind))
             }
         }
+
+    /** Like [paged], every song at once. */
+    private suspend fun listed(
+        order: SortOrder<UserSongSort>,
+        filter: String,
+        bind: (SQLiteStatement) -> Unit = {},
+    ): List<UserSongView> =
+        userSongDao.list(query(scope.awaitId(), order, filter, bind))
+            .map(UserSongViewEntity::toModel)
+
+    private fun query(
+        userId: String,
+        order: SortOrder<UserSongSort>,
+        filter: String,
+        bind: (SQLiteStatement) -> Unit,
+    ) = RoomRawQuery(
+        sql = "SELECT * FROM user_song_view WHERE user_id = ? $filter ${order.toOrderBy("song_id")}",
+        onBindStatement = {
+            it.bindText(1, userId)
+            bind(it)
+        },
+    )
 
     override fun find(songId: String): Flow<UserSongView?> =
         scope.observe(null) { userId ->
@@ -130,4 +152,13 @@ internal class UserSongRepositoryImpl(
 
     override suspend fun remove(songId: String) =
         userSongDao.delete(scope.requireId(), songId)
+
+    private companion object {
+
+        const val OF_ALBUM = "AND album_id = ?"
+        const val OF_ARTIST =
+            "AND song_id IN (SELECT song_id FROM song_artist_map WHERE artist_id = ?)"
+        const val OF_PLAYLIST =
+            "AND song_id IN (SELECT song_id FROM song_playlist_map WHERE playlist_id = ?)"
+    }
 }

@@ -18,18 +18,31 @@
 
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.media3.common.MediaItem
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import kotlinx.coroutines.flow.flowOf
 import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.QueueAction
+import me.knighthat.kreate3.ui.component.QueueActionRow
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
+import me.knighthat.kreate3.ui.component.previewSongs
+import me.knighthat.kreate3.ui.component.rememberQueueActions
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -42,12 +55,36 @@ fun LocalPlaylistDetailScreen(
     viewModel: LocalPlaylistDetailViewModel = koinViewModel(),
 ) {
     val playlist by viewModel.playlist.collectAsState()
-    val songs = viewModel.songs.collectAsLazyPagingItems()
+    val snackbar = remember { SnackbarHostState() }
 
+    LocalPlaylistDetailContent(
+        name = playlist?.name,
+        thumbnail = playlist?.thumbnail,
+        subtitle = playlist?.let { if (it.origin == Origin.LOCAL) "On this device" else it.origin.name },
+        songs = viewModel.songs.collectAsLazyPagingItems(),
+        onBack = onBack,
+        onAction = rememberQueueActions(snackbar, viewModel::allSongs),
+        snackbar = snackbar,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun LocalPlaylistDetailContent(
+    name: String?,
+    thumbnail: Uri?,
+    subtitle: String?,
+    songs: LazyPagingItems<MediaItem>,
+    onBack: () -> Unit,
+    onAction: (QueueAction) -> Unit,
+    snackbar: SnackbarHostState,
+    modifier: Modifier = Modifier,
+) {
     DetailScaffold(
-        title = playlist?.name.orEmpty(),
+        title = name.orEmpty(),
         onBack = onBack,
         modifier = modifier,
+        snackbar = snackbar,
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -56,12 +93,13 @@ fun LocalPlaylistDetailScreen(
         ) {
             item {
                 DetailHeader(
-                    uri = playlist?.thumbnail,
-                    title = playlist?.name,
-                    subtitle = playlist?.let { if (it.origin == Origin.LOCAL) "On this device" else it.origin.name },
+                    uri = thumbnail,
+                    title = name,
+                    subtitle = subtitle,
                     shape = MaterialTheme.shapes.medium,
                 )
             }
+            item(key = "queue-actions") { QueueActionRow(onAction) }
             items(count = songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
                 songs[index]?.let {
                     SongItem(it, onClick = {})
@@ -69,4 +107,18 @@ fun LocalPlaylistDetailScreen(
             }
         }
     }
+}
+
+@ScreenPreviews
+@Composable
+private fun LocalPlaylistDetailPreview() = PreviewTheme {
+    LocalPlaylistDetailContent(
+        name = "Road trip",
+        thumbnail = null,
+        subtitle = "On this device",
+        songs = flowOf(PagingData.from(previewSongs())).collectAsLazyPagingItems(),
+        onBack = {},
+        onAction = {},
+        snackbar = remember { SnackbarHostState() },
+    )
 }

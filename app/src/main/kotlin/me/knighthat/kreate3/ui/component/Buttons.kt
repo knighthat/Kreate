@@ -22,9 +22,16 @@ import android.content.Context
 import android.content.Intent
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import me.knighthat.kreate3.ProfilesActivity
@@ -111,3 +118,37 @@ fun SkipNextButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
 @Composable
 fun ConfigButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
     IconAction(R.drawable.tune, "Config", onClick, modifier)
+
+/** Plays every song of a list, see [QueueAction.PLAY]. */
+@Composable
+fun PlayAllButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
+    IconAction(R.drawable.play_arrow, "Play all", onClick, modifier)
+
+/** Plays every song of a list in a random order, see [QueueAction.SHUFFLE]. */
+@Composable
+fun ShuffleButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
+    IconAction(R.drawable.shuffle, "Shuffle", onClick, modifier)
+
+/** Opens one item of a list picked at random. */
+@Composable
+fun RandomButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
+    IconAction(R.drawable.casino, "Open one at random", onClick, modifier)
+
+/**
+ * Opens a menu of the actions used less often. Each item of [items] should call `close` once
+ * tapped.
+ */
+@Composable
+fun MoreButton(
+    modifier: Modifier = Modifier,
+    items: @Composable ColumnScope.(close: () -> Unit) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(modifier) {
+        IconAction(R.drawable.more_vert, "More", { expanded = true }, Modifier)
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            items { expanded = false }
+        }
+    }
+}

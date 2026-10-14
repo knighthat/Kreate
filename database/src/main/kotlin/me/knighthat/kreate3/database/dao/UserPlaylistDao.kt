@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.entity.SongEntity
 import me.knighthat.kreate3.database.entity.SongPlaylistMapEntity
 import me.knighthat.kreate3.database.entity.UserPlaylistEntity
+import me.knighthat.kreate3.database.model.Origin
 
 @Dao
 internal interface UserPlaylistDao {
@@ -40,6 +41,21 @@ internal interface UserPlaylistDao {
      */
     @RawQuery(observedEntities = [UserPlaylistEntity::class])
     fun paged(query: RoomRawQuery): PagingSource<Int, UserPlaylistEntity>
+
+    @Query("SELECT DISTINCT origin FROM user_playlist WHERE user_id = :userId")
+    fun origins(userId: String): Flow<List<Origin>>
+
+    /**
+     * The first playlist of [query], which must select from `user_playlist`.
+     */
+    @RawQuery
+    suspend fun first(query: RoomRawQuery): UserPlaylistEntity?
+
+    /**
+     * The number [query] counts, which must select `COUNT(*)`.
+     */
+    @RawQuery
+    suspend fun count(query: RoomRawQuery): Int
 
     @Query("SELECT * FROM user_playlist WHERE playlist_id = :playlistId")
     fun find(playlistId: Long): Flow<UserPlaylistEntity?>

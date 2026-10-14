@@ -21,6 +21,7 @@ package me.knighthat.kreate3.database.repository
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.model.Album
+import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.UserAlbum
 import me.knighthat.kreate3.database.model.UserAlbumView
 import me.knighthat.kreate3.database.paging.SortDirection
@@ -37,8 +38,32 @@ interface UserAlbumRepository {
     /**
      * Every album in the library, a page at a time. Pages load as the list is read,
      * and the list follows changes in the database.
+     *
+     * @param origins only the albums from these, every album when empty
      */
-    fun all(order: SortOrder<UserAlbumSort> = SortOrder(UserAlbumSort.NAME)): Flow<PagingData<UserAlbumView>>
+    fun all(
+        order: SortOrder<UserAlbumSort> = SortOrder(UserAlbumSort.NAME),
+        origins: Set<Origin> = emptySet(),
+    ): Flow<PagingData<UserAlbumView>>
+
+    /**
+     * How many albums [all] has right now.
+     *
+     * @param origins only the albums from these, every album when empty
+     */
+    suspend fun count(origins: Set<Origin> = emptySet()): Int
+
+    /**
+     * The origins the library has albums from. It follows changes in the database.
+     */
+    fun origins(): Flow<Set<Origin>>
+
+    /**
+     * One album of the library picked at random, `null` when there is none.
+     *
+     * @param origins only the albums from these, every album when empty
+     */
+    suspend fun random(origins: Set<Origin> = emptySet()): UserAlbumView?
 
     /**
      * Albums the user bookmarked, a page at a time. Newest bookmark first unless [order] says otherwise.

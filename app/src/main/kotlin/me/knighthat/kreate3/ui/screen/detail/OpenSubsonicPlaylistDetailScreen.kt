@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package me.knighthat.kreate3.ui.screen.detail
 
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,14 +24,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.QueueAction
+import me.knighthat.kreate3.ui.component.QueueActionRow
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
+import me.knighthat.kreate3.ui.component.previewSongs
+import me.knighthat.kreate3.ui.component.rememberQueueActions
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -44,16 +54,46 @@ fun OpenSubsonicPlaylistDetailScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val canShare by viewModel.canShare.collectAsStateWithLifecycle()
+    val snackbar = remember { SnackbarHostState() }
+
+    OpenSubsonicPlaylistDetailContent(
+        state = state,
+        onRetry = viewModel::load,
+        onBack = onBack,
+        onAction = rememberQueueActions(snackbar) {
+            (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+        },
+        share = if (canShare) viewModel::shareLink else null,
+        snackbar = snackbar,
+        modifier = modifier,
+    )
+}
+
+/**
+ * @param share gives a link to the playlist, `null` while the user may not share
+ */
+@Composable
+private fun OpenSubsonicPlaylistDetailContent(
+    state: LiveState<OpenSubsonicPlaylistDetail>,
+    onRetry: () -> Unit,
+    onBack: () -> Unit,
+    onAction: (QueueAction) -> Unit,
+    share: (suspend (name: String?) -> Result<String>)?,
+    snackbar: SnackbarHostState,
+    modifier: Modifier = Modifier,
+) {
     val playlist = (state as? LiveState.Ready)?.value
 
     LiveDetailScreen(
         title = playlist?.name.orEmpty(),
         onBack = onBack,
-        viewModel = viewModel,
+        state = state,
+        onRetry = onRetry,
         modifier = modifier,
+        snackbar = snackbar,
         actions = {
-            if (canShare && playlist != null)
-                ShareAction(playlist.name, "playlist") { viewModel.shareLink(playlist.name) }
+            if (share != null && playlist != null)
+                ShareAction(playlist.name, "playlist") { share(playlist.name) }
         },
     ) { detail, innerPadding ->
         LazyColumn(
@@ -69,6 +109,7 @@ fun OpenSubsonicPlaylistDetailScreen(
                     shape = MaterialTheme.shapes.medium,
                 )
             }
+            item(key = "queue-actions") { QueueActionRow(onAction) }
             items(detail.songs, key = { it.mediaId }) { SongItem(it, onClick = {}) }
             if (detail.songs.isEmpty())
                 item(key = "empty") {
@@ -84,4 +125,23 @@ fun OpenSubsonicPlaylistDetailScreen(
                 }
         }
     }
+}
+
+@ScreenPreviews
+@Composable
+private fun OpenSubsonicPlaylistDetailPreview() = PreviewTheme {
+    OpenSubsonicPlaylistDetailContent(
+        state = LiveState.Ready(
+            OpenSubsonicPlaylistDetail(
+                name = "Road trip",
+                thumbnail = null,
+                songs = previewSongs(Origin.OPEN_SUBSONIC),
+            )
+        ),
+        onRetry = {},
+        onBack = {},
+        onAction = {},
+        share = { Result.success("") },
+        snackbar = remember { SnackbarHostState() },
+    )
 }

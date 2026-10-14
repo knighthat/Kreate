@@ -21,6 +21,7 @@ package me.knighthat.kreate3.ui.screen.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import androidx.paging.cachedIn
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import me.knighthat.kreate3.database.repository.AlbumRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.ui.component.toMediaItem
 import me.knighthat.kreate3.ui.component.toMediaItems
 import me.knighthat.kreate3.ui.navigation.LocalAlbum
 
@@ -37,7 +39,7 @@ import me.knighthat.kreate3.ui.navigation.LocalAlbum
 class LocalAlbumDetailViewModel(
     savedStateHandle: SavedStateHandle,
     repository: AlbumRepository,
-    songRepository: UserSongRepository,
+    private val songRepository: UserSongRepository,
 ) : ViewModel() {
 
     val albumId: String = checkNotNull(savedStateHandle[LocalAlbum.ID]) {
@@ -50,6 +52,10 @@ class LocalAlbumDetailViewModel(
     val songs = songRepository.ofAlbum(albumId)
         .toMediaItems()
         .cachedIn(viewModelScope)
+
+    /** Every song of [songs] right now, in its order, for the quick actions. */
+    suspend fun allSongs(): List<MediaItem> =
+        songRepository.listOfAlbum(albumId).mapNotNull { it.toMediaItem() }
 
     /** Whether the album can be shared, it has a link. */
     val canShare: StateFlow<Boolean> = album
