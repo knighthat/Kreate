@@ -1,0 +1,760 @@
+{
+  "responseContext": {
+    "visitorData": "CgtBeU1tRTRKX0EtcyiJ9bvWBjIKCgJVUxIEGgAgEg%3D%3D",
+    "responseId": "IhMI__L-8su4lwMVJidoCB2KrgpA"
+  },
+  "contents": {
+    "singleColumnMusicWatchNextResultsRenderer": {
+      "tabbedRenderer": {
+        "watchNextTabbedResultsRenderer": {
+          "tabs": [
+            {
+              "tabRenderer": {
+                "title": "Up next",
+                "content": {
+                  "musicQueueRenderer": {
+                    "content": {
+                      "playlistPanelRenderer": {
+                        "contents": [
+                          {
+                            "playlistPanelVideoRenderer": {
+                              "title": {
+                                "runs": [
+                                  {
+                                    "text": "Derezzed (From \"TRON: Legacy\"/Score)"
+                                  }
+                                ]
+                              },
+                              "longBylineText": {
+                                "runs": [
+                                  {
+                                    "text": "Daft Punk",
+                                    "navigationEndpoint": {
+                                      "browseEndpoint": {
+                                        "browseId": "UCRr1xG_2WIDs18a6cIiCxeA",
+                                        "browseEndpointContextSupportedConfigs": {
+                                          "browseEndpointContextMusicConfig": {
+                                            "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": " • "
+                                  },
+                                  {
+                                    "text": "TRON: Legacy",
+                                    "navigationEndpoint": {
+                                      "browseEndpoint": {
+                                        "browseId": "MPREb_BQHrCwSBM37",
+                                        "browseEndpointContextSupportedConfigs": {
+                                          "browseEndpointContextMusicConfig": {
+                                            "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": " • "
+                                  },
+                                  {
+                                    "text": "2010"
+                                  }
+                                ]
+                              },
+                              "thumbnail": {
+                                "thumbnails": [
+                                  {
+                                    "url": "https://yt3.googleusercontent.com/wY7kATQ2X8UkxWku6-JuLMCfjoIP4V5Mc9B24wV_bNcombU5iOTEPIgRax9iuIpgGcBbsTuF2lhsSyPO=w60-h60-l90-rj",
+                                    "width": 60,
+                                    "height": 60
+                                  },
+                                  {
+                                    "url": "https://yt3.googleusercontent.com/wY7kATQ2X8UkxWku6-JuLMCfjoIP4V5Mc9B24wV_bNcombU5iOTEPIgRax9iuIpgGcBbsTuF2lhsSyPO=w544-h544-l90-rj",
+                                    "width": 544,
+                                    "height": 544
+                                  }
+                                ]
+                              },
+                              "lengthText": {
+                                "runs": [
+                                  {
+                                    "text": "1:45"
+                                  }
+                                ]
+                              },
+                              "selected": true,
+                              "navigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "a7Wask21bew",
+                                  "playlistId": "RDAMVMa7Wask21bew",
+                                  "index": 0,
+                                  "params": "OAHyAQIIAQ%3D%3D",
+                                  "playerParams": "8AUBygYQNTZCNDRGNkQxMDU1N0NDNrAIAg%3D%3D",
+                                  "playlistSetVideoId": "56B44F6D10557CC6",
+                                  "watchEndpointMusicSupportedConfigs": {
+                                    "watchEndpointMusicConfig": {
+                                      "hasPersistentPlaylistPanel": true,
+                                      "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                    }
+                                  }
+                                }
+                              },
+                              "videoId": "a7Wask21bew",
+                              "shortBylineText": {
+                                "runs": [
+                                  {
+                                    "text": "Daft Punk"
+                                  }
+                                ]
+                              },
+                              "playlistSetVideoId": "56B44F6D10557CC6",
+                              "canReorder": true,
+                              "queueNavigationEndpoint": {
+                                "queueAddEndpoint": {
+                                  "queueTarget": {
+                                    "videoId": "a7Wask21bew"
+                                  },
+                                  "queueInsertPosition": "INSERT_AT_END",
+                                  "params": "Q0FJJTNE"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "playlistPanelVideoRenderer": {
+                              "title": {
+                                "runs": [
+                                  {
+                                    "text": "End of Line (From \"TRON: Legacy\"/Score)"
+                                  }
+                                ]
+                              },
+                              "longBylineText": {
+                                "runs": [
+                                  {
+                                    "text": "Daft Punk",
+                                    "navigationEndpoint": {
+                                      "browseEndpoint": {
+                                        "browseId": "UCRr1xG_2WIDs18a6cIiCxeA",
+                                        "browseEndpointContextSupportedConfigs": {
+                                          "browseEndpointContextMusicConfig": {
+                                            "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": " • "
+                                  },
+                                  {
+                                    "text": "TRON: Legacy",
+                                    "navigationEndpoint": {
+                                      "browseEndpoint": {
+                                        "browseId": "MPREb_BQHrCwSBM37",
+                                        "browseEndpointContextSupportedConfigs": {
+                                          "browseEndpointContextMusicConfig": {
+                                            "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": " • "
+                                  },
+                                  {
+                                    "text": "2010"
+                                  }
+                                ]
+                              },
+                              "thumbnail": {
+                                "thumbnails": [
+                                  {
+                                    "url": "https://yt3.googleusercontent.com/wY7kATQ2X8UkxWku6-JuLMCfjoIP4V5Mc9B24wV_bNcombU5iOTEPIgRax9iuIpgGcBbsTuF2lhsSyPO=w60-h60-l90-rj",
+                                    "width": 60,
+                                    "height": 60
+                                  },
+                                  {
+                                    "url": "https://yt3.googleusercontent.com/wY7kATQ2X8UkxWku6-JuLMCfjoIP4V5Mc9B24wV_bNcombU5iOTEPIgRax9iuIpgGcBbsTuF2lhsSyPO=w544-h544-l90-rj",
+                                    "width": 544,
+                                    "height": 544
+                                  }
+                                ]
+                              },
+                              "lengthText": {
+                                "runs": [
+                                  {
+                                    "text": "2:37"
+                                  }
+                                ]
+                              },
+                              "selected": false,
+                              "navigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "NOMa56y_Was",
+                                  "playlistId": "RDAMVMa7Wask21bew",
+                                  "index": 1,
+                                  "params": "OAHyAQIIAQ%3D%3D",
+                                  "playerParams": "8AUBygYQMjg5RjRBNDZERjBBMzBEMrAIAg%3D%3D",
+                                  "playlistSetVideoId": "289F4A46DF0A30D2",
+                                  "watchEndpointMusicSupportedConfigs": {
+                                    "watchEndpointMusicConfig": {
+                                      "hasPersistentPlaylistPanel": true,
+                                      "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                    }
+                                  }
+                                }
+                              },
+                              "videoId": "NOMa56y_Was",
+                              "shortBylineText": {
+                                "runs": [
+                                  {
+                                    "text": "Daft Punk"
+                                  }
+                                ]
+                              },
+                              "playlistSetVideoId": "289F4A46DF0A30D2",
+                              "canReorder": true,
+                              "queueNavigationEndpoint": {
+                                "queueAddEndpoint": {
+                                  "queueTarget": {
+                                    "videoId": "NOMa56y_Was"
+                                  },
+                                  "queueInsertPosition": "INSERT_AT_END",
+                                  "params": "Q0FJJTNE"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "playlistPanelVideoRenderer": {
+                              "title": {
+                                "runs": [
+                                  {
+                                    "text": "Init"
+                                  }
+                                ]
+                              },
+                              "longBylineText": {
+                                "runs": [
+                                  {
+                                    "text": "Nine Inch Nails",
+                                    "navigationEndpoint": {
+                                      "browseEndpoint": {
+                                        "browseId": "UC8txE2ZyN2Sh8XxH5OkHLSw",
+                                        "browseEndpointContextSupportedConfigs": {
+                                          "browseEndpointContextMusicConfig": {
+                                            "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": " • "
+                                  },
+                                  {
+                                    "text": "TRON: Ares (Original Motion Picture Soundtrack)",
+                                    "navigationEndpoint": {
+                                      "browseEndpoint": {
+                                        "browseId": "MPREb_TfalTTrfNGi",
+                                        "browseEndpointContextSupportedConfigs": {
+                                          "browseEndpointContextMusicConfig": {
+                                            "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": " • "
+                                  },
+                                  {
+                                    "text": "2025"
+                                  }
+                                ]
+                              },
+                              "thumbnail": {
+                                "thumbnails": [
+                                  {
+                                    "url": "https://yt3.googleusercontent.com/oqprL6k2IOJOHJq1hC6oicO4sns1U_j8bWgt27B3KvYQyCy7ZSR8bYEY_CLRFguAwmz5b8AhahIgJcSbnw=w60-h60-l90-rj",
+                                    "width": 60,
+                                    "height": 60
+                                  },
+                                  {
+                                    "url": "https://yt3.googleusercontent.com/oqprL6k2IOJOHJq1hC6oicO4sns1U_j8bWgt27B3KvYQyCy7ZSR8bYEY_CLRFguAwmz5b8AhahIgJcSbnw=w544-h544-l90-rj",
+                                    "width": 544,
+                                    "height": 544
+                                  }
+                                ]
+                              },
+                              "lengthText": {
+                                "runs": [
+                                  {
+                                    "text": "2:08"
+                                  }
+                                ]
+                              },
+                              "selected": false,
+                              "navigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "t0P_K9zb-yo",
+                                  "playlistId": "RDAMVMa7Wask21bew",
+                                  "index": 2,
+                                  "params": "OAHyAQIIAQ%3D%3D",
+                                  "playerParams": "8AUBygYQMDE3MjA4RkFBODUyMzNGObAIAg%3D%3D",
+                                  "playlistSetVideoId": "017208FAA85233F9",
+                                  "watchEndpointMusicSupportedConfigs": {
+                                    "watchEndpointMusicConfig": {
+                                      "hasPersistentPlaylistPanel": true,
+                                      "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                    }
+                                  }
+                                }
+                              },
+                              "videoId": "t0P_K9zb-yo",
+                              "shortBylineText": {
+                                "runs": [
+                                  {
+                                    "text": "Nine Inch Nails"
+                                  }
+                                ]
+                              },
+                              "playlistSetVideoId": "017208FAA85233F9",
+                              "canReorder": true,
+                              "queueNavigationEndpoint": {
+                                "queueAddEndpoint": {
+                                  "queueTarget": {
+                                    "videoId": "t0P_K9zb-yo"
+                                  },
+                                  "queueInsertPosition": "INSERT_AT_END",
+                                  "params": "Q0FJJTNE"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "playlistPanelVideoRenderer": {
+                              "title": {
+                                "runs": [
+                                  {
+                                    "text": "Ghosts 'n' Stuff"
+                                  }
+                                ]
+                              },
+                              "longBylineText": {
+                                "runs": [
+                                  {
+                                    "text": "deadmau5",
+                                    "navigationEndpoint": {
+                                      "browseEndpoint": {
+                                        "browseId": "UCL44WZGVf-BU5N0ymCXrpBg",
+                                        "browseEndpointContextSupportedConfigs": {
+                                          "browseEndpointContextMusicConfig": {
+                                            "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": " • "
+                                  },
+                                  {
+                                    "text": "For Lack of a Better Name",
+                                    "navigationEndpoint": {
+                                      "browseEndpoint": {
+                                        "browseId": "MPREb_Fxpk2gUv2rl",
+                                        "browseEndpointContextSupportedConfigs": {
+                                          "browseEndpointContextMusicConfig": {
+                                            "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": " • "
+                                  },
+                                  {
+                                    "text": "2009"
+                                  }
+                                ]
+                              },
+                              "thumbnail": {
+                                "thumbnails": [
+                                  {
+                                    "url": "https://yt3.googleusercontent.com/Vwlkrvkvvt1sLzJ-I89g9lfIMVHOYYh0OPuL_b9oIwjvaZuNe_-LHchnZR4wtBlIn3ZzHedgw3zfGtaX=w60-h60-l90-rj",
+                                    "width": 60,
+                                    "height": 60
+                                  },
+                                  {
+                                    "url": "https://yt3.googleusercontent.com/Vwlkrvkvvt1sLzJ-I89g9lfIMVHOYYh0OPuL_b9oIwjvaZuNe_-LHchnZR4wtBlIn3ZzHedgw3zfGtaX=w544-h544-l90-rj",
+                                    "width": 544,
+                                    "height": 544
+                                  }
+                                ]
+                              },
+                              "lengthText": {
+                                "runs": [
+                                  {
+                                    "text": "3:15"
+                                  }
+                                ]
+                              },
+                              "selected": false,
+                              "navigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "oz7-7ouXUJU",
+                                  "playlistId": "RDAMVMa7Wask21bew",
+                                  "index": 3,
+                                  "params": "OAHyAQIIAQ%3D%3D",
+                                  "playerParams": "8AUBygYQNTIxNTJCNDk0NkMyRjczRrAIAg%3D%3D",
+                                  "playlistSetVideoId": "52152B4946C2F73F",
+                                  "watchEndpointMusicSupportedConfigs": {
+                                    "watchEndpointMusicConfig": {
+                                      "hasPersistentPlaylistPanel": true,
+                                      "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                    }
+                                  }
+                                }
+                              },
+                              "videoId": "oz7-7ouXUJU",
+                              "shortBylineText": {
+                                "runs": [
+                                  {
+                                    "text": "deadmau5"
+                                  }
+                                ]
+                              },
+                              "playlistSetVideoId": "52152B4946C2F73F",
+                              "canReorder": true,
+                              "queueNavigationEndpoint": {
+                                "queueAddEndpoint": {
+                                  "queueTarget": {
+                                    "videoId": "oz7-7ouXUJU"
+                                  },
+                                  "queueInsertPosition": "INSERT_AT_END",
+                                  "params": "Q0FJJTNE"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "playlistPanelVideoRenderer": {
+                              "title": {
+                                "runs": [
+                                  {
+                                    "text": "Shooting Stars"
+                                  }
+                                ]
+                              },
+                              "longBylineText": {
+                                "runs": [
+                                  {
+                                    "text": "Bag Raiders",
+                                    "navigationEndpoint": {
+                                      "browseEndpoint": {
+                                        "browseId": "UCTeQHMg70EcOb26_h81iAgg",
+                                        "browseEndpointContextSupportedConfigs": {
+                                          "browseEndpointContextMusicConfig": {
+                                            "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": " • "
+                                  },
+                                  {
+                                    "text": "Bag Raiders (Deluxe)",
+                                    "navigationEndpoint": {
+                                      "browseEndpoint": {
+                                        "browseId": "MPREb_E1hM1ZUzzjm",
+                                        "browseEndpointContextSupportedConfigs": {
+                                          "browseEndpointContextMusicConfig": {
+                                            "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": " • "
+                                  },
+                                  {
+                                    "text": "2010"
+                                  }
+                                ]
+                              },
+                              "thumbnail": {
+                                "thumbnails": [
+                                  {
+                                    "url": "https://yt3.googleusercontent.com/-mcHKWWImjY2iWzKCf8VPHJJDYe85FUaC0dQNQVGKCsu-W00yPQG01o7jiutLK6rqHv87vIgD28WeXOMXA=w60-h60-l90-rj",
+                                    "width": 60,
+                                    "height": 60
+                                  },
+                                  {
+                                    "url": "https://yt3.googleusercontent.com/-mcHKWWImjY2iWzKCf8VPHJJDYe85FUaC0dQNQVGKCsu-W00yPQG01o7jiutLK6rqHv87vIgD28WeXOMXA=w544-h544-l90-rj",
+                                    "width": 544,
+                                    "height": 544
+                                  }
+                                ]
+                              },
+                              "lengthText": {
+                                "runs": [
+                                  {
+                                    "text": "3:56"
+                                  }
+                                ]
+                              },
+                              "selected": false,
+                              "navigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "mllzzUjMezU",
+                                  "playlistId": "RDAMVMa7Wask21bew",
+                                  "index": 4,
+                                  "params": "OAHyAQIIAQ%3D%3D",
+                                  "playerParams": "8AUBygYQMDkwNzk2QTc1RDE1MzkzMrAIAg%3D%3D",
+                                  "playlistSetVideoId": "090796A75D153932",
+                                  "watchEndpointMusicSupportedConfigs": {
+                                    "watchEndpointMusicConfig": {
+                                      "hasPersistentPlaylistPanel": true,
+                                      "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                    }
+                                  }
+                                }
+                              },
+                              "videoId": "mllzzUjMezU",
+                              "shortBylineText": {
+                                "runs": [
+                                  {
+                                    "text": "Bag Raiders"
+                                  }
+                                ]
+                              },
+                              "playlistSetVideoId": "090796A75D153932",
+                              "canReorder": true,
+                              "queueNavigationEndpoint": {
+                                "queueAddEndpoint": {
+                                  "queueTarget": {
+                                    "videoId": "mllzzUjMezU"
+                                  },
+                                  "queueInsertPosition": "INSERT_AT_END",
+                                  "params": "Q0FJJTNE"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "playlistPanelVideoRenderer": {
+                              "title": {
+                                "runs": [
+                                  {
+                                    "text": "Alarm"
+                                  }
+                                ]
+                              },
+                              "longBylineText": {
+                                "runs": [
+                                  {
+                                    "text": "Boys Noize",
+                                    "navigationEndpoint": {
+                                      "browseEndpoint": {
+                                        "browseId": "UC94kyeSwyHrR-qnOllG0CbQ",
+                                        "browseEndpointContextSupportedConfigs": {
+                                          "browseEndpointContextMusicConfig": {
+                                            "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": " • "
+                                  },
+                                  {
+                                    "text": "Alarm",
+                                    "navigationEndpoint": {
+                                      "browseEndpoint": {
+                                        "browseId": "MPREb_5F3kS0W6EgI",
+                                        "browseEndpointContextSupportedConfigs": {
+                                          "browseEndpointContextMusicConfig": {
+                                            "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "text": " • "
+                                  },
+                                  {
+                                    "text": "2014"
+                                  }
+                                ]
+                              },
+                              "thumbnail": {
+                                "thumbnails": [
+                                  {
+                                    "url": "https://yt3.googleusercontent.com/QRngNE0reFfmXYP44OH88zEZfxfcy719-8JGcIq0akExwdmBfFysXDMbSZxe8F9rKMl1eV8d-EdDsMM9=w60-h60-l90-rj",
+                                    "width": 60,
+                                    "height": 60
+                                  },
+                                  {
+                                    "url": "https://yt3.googleusercontent.com/QRngNE0reFfmXYP44OH88zEZfxfcy719-8JGcIq0akExwdmBfFysXDMbSZxe8F9rKMl1eV8d-EdDsMM9=w544-h544-l90-rj",
+                                    "width": 544,
+                                    "height": 544
+                                  }
+                                ]
+                              },
+                              "lengthText": {
+                                "runs": [
+                                  {
+                                    "text": "3:15"
+                                  }
+                                ]
+                              },
+                              "selected": false,
+                              "navigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "D6BrBxB-i9o",
+                                  "playlistId": "RDAMVMa7Wask21bew",
+                                  "index": 49,
+                                  "params": "OAHyAQIIAQ%3D%3D",
+                                  "playerParams": "8AUBygYQRDYyNUFCNDAyOTREMzgxRLAIAg%3D%3D",
+                                  "playlistSetVideoId": "D625AB40294D381D",
+                                  "watchEndpointMusicSupportedConfigs": {
+                                    "watchEndpointMusicConfig": {
+                                      "hasPersistentPlaylistPanel": true,
+                                      "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                    }
+                                  }
+                                }
+                              },
+                              "videoId": "D6BrBxB-i9o",
+                              "shortBylineText": {
+                                "runs": [
+                                  {
+                                    "text": "Boys Noize"
+                                  }
+                                ]
+                              },
+                              "playlistSetVideoId": "D625AB40294D381D",
+                              "canReorder": true,
+                              "queueNavigationEndpoint": {
+                                "queueAddEndpoint": {
+                                  "queueTarget": {
+                                    "videoId": "D6BrBxB-i9o"
+                                  },
+                                  "queueInsertPosition": "INSERT_AT_END",
+                                  "params": "Q0FJJTNE"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "playlistId": "RDAMVMa7Wask21bew",
+                        "isInfinite": true,
+                        "continuations": [
+                          {
+                            "nextRadioContinuationData": {
+                              "continuation": "CDISOBILRDZCckJ4Qi1pOW8iEVJEQU1WTWE3V2FzazIxYmV3ODHQAQH6ARBENjI1QUI0MDI5NEQzODFEGAo%3D"
+                            }
+                          }
+                        ],
+                        "numItemsToShow": 25
+                      }
+                    },
+                    "hack": true,
+                    "musicQueueConfig": {},
+                    "header": {
+                      "musicQueueHeaderRenderer": {
+                        "title": {
+                          "runs": [
+                            {
+                              "text": "Playing from"
+                            }
+                          ]
+                        },
+                        "subtitle": {
+                          "runs": [
+                            {
+                              "text": "Derezzed (From \"TRON: Legacy\"/Score) Mix"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "subHeaderChipCloud": {}
+                  }
+                }
+              }
+            },
+            {
+              "tabRenderer": {
+                "endpoint": {
+                  "browseEndpoint": {
+                    "browseId": "MPLYt_BQHrCwSBM37-13",
+                    "browseEndpointContextSupportedConfigs": {
+                      "browseEndpointContextMusicConfig": {
+                        "pageType": "MUSIC_PAGE_TYPE_TRACK_LYRICS"
+                      }
+                    }
+                  }
+                },
+                "title": "Lyrics"
+              }
+            },
+            {
+              "tabRenderer": {
+                "title": "Comments",
+                "content": {
+                  "sectionListRenderer": {
+                    "continuations": [
+                      {
+                        "reloadContinuationData": {
+                          "continuation": "Eg0SC2E3V2FzazIxYmV3GAYyHCINIgthN1dhc2syMWJld0ILYTdXYXNrMjFiZXdqC2E3V2FzazIxYmV3"
+                        }
+                      }
+                    ],
+                    "targetId": "a7Wask21bew"
+                  }
+                }
+              }
+            },
+            {
+              "tabRenderer": {
+                "endpoint": {
+                  "browseEndpoint": {
+                    "browseId": "MPTRt_BQHrCwSBM37-13",
+                    "browseEndpointContextSupportedConfigs": {
+                      "browseEndpointContextMusicConfig": {
+                        "pageType": "MUSIC_PAGE_TYPE_TRACK_RELATED"
+                      }
+                    }
+                  }
+                },
+                "title": "Related"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "currentVideoEndpoint": {
+    "watchEndpoint": {
+      "videoId": "a7Wask21bew",
+      "playlistId": "RDAMVMa7Wask21bew",
+      "index": 0,
+      "playerParams": "ygYQNTZCNDRGNkQxMDU1N0NDNg%3D%3D",
+      "playlistSetVideoId": "56B44F6D10557CC6"
+    }
+  }
+}

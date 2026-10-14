@@ -1,0 +1,27 @@
+{
+  "responseContext": {},
+  "contents": {
+    "sectionListRenderer": {
+      "contents": [
+        {
+          "musicDescriptionShelfRenderer": {
+            "description": {
+              "runs": [
+                {
+                  "text": "First line\nSecond line\n"
+                }
+              ]
+            },
+            "footer": {
+              "runs": [
+                {
+                  "text": "Source: Example Lyrics"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

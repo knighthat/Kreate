@@ -1,0 +1,1203 @@
+{
+  "responseContext": {
+    "visitorData": "CgszM3VreVIzTmE1byiH9bvWBjIKCgJVUxIEGgAgPQ%3D%3D",
+    "responseId": "IhMIm7Oi8su4lwMVjN8_BB1HSTd9"
+  },
+  "contents": {
+    "twoColumnBrowseResultsRenderer": {
+      "secondaryContents": {
+        "sectionListRenderer": {
+          "contents": [
+            {
+              "musicShelfRenderer": {
+                "contents": [
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Overture (From \"TRON: Legacy\"/Score)",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "mGCnOLGwzg0",
+                                      "playlistId": "OLAK5uy_k8XkxQFGZhSX8gENqaH6pg1xz8vOTnzQs",
+                                      "watchEndpointMusicSupportedConfigs": {
+                                        "watchEndpointMusicConfig": {
+                                          "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {}
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "16M plays"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "2:29"
+                                }
+                              ]
+                            },
+                            "size": "MUSIC_RESPONSIVE_LIST_ITEM_FIXED_COLUMN_SIZE_SMALL"
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "playlistSetVideoId": "5D0C7746D95A0440",
+                        "videoId": "mGCnOLGwzg0"
+                      },
+                      "index": {
+                        "runs": [
+                          {
+                            "text": "1"
+                          }
+                        ]
+                      },
+                      "multiSelectCheckbox": {
+                        "checkboxRenderer": {
+                          "onSelectionChangeCommand": {
+                            "updateMultiSelectStateCommand": {
+                              "multiSelectParams": "CAMSKU9MQUs1dXlfazhYa3hRRkdaaFNYOGdFTnFhSDZwZzF4ejh2T1RuelFz",
+                              "multiSelectItem": "Ch8KC21HQ25PTEd3emcwEhA1RDBDNzc0NkQ5NUEwNDQw"
+                            }
+                          },
+                          "checkedState": "CHECKBOX_CHECKED_STATE_UNCHECKED"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "The Grid (From \"TRON: Legacy\"/Score)",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "4-J4duzP8Ng",
+                                      "playlistId": "OLAK5uy_k8XkxQFGZhSX8gENqaH6pg1xz8vOTnzQs",
+                                      "watchEndpointMusicSupportedConfigs": {
+                                        "watchEndpointMusicConfig": {
+                                          "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {}
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "15M plays"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "1:37"
+                                }
+                              ]
+                            },
+                            "size": "MUSIC_RESPONSIVE_LIST_ITEM_FIXED_COLUMN_SIZE_SMALL"
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "playlistSetVideoId": "DE82072277ACFB71",
+                        "videoId": "4-J4duzP8Ng"
+                      },
+                      "index": {
+                        "runs": [
+                          {
+                            "text": "2"
+                          }
+                        ]
+                      },
+                      "multiSelectCheckbox": {
+                        "checkboxRenderer": {
+                          "onSelectionChangeCommand": {
+                            "updateMultiSelectStateCommand": {
+                              "multiSelectParams": "CAMSKU9MQUs1dXlfazhYa3hRRkdaaFNYOGdFTnFhSDZwZzF4ejh2T1RuelFz",
+                              "multiSelectItem": "Ch8KCzQtSjRkdXpQOE5nEhBERTgyMDcyMjc3QUNGQjcx"
+                            }
+                          },
+                          "checkedState": "CHECKBOX_CHECKED_STATE_UNCHECKED"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "The Son of Flynn (From \"TRON: Legacy\"/Score)",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "mqgEYRtWMJU",
+                                      "playlistId": "OLAK5uy_k8XkxQFGZhSX8gENqaH6pg1xz8vOTnzQs",
+                                      "watchEndpointMusicSupportedConfigs": {
+                                        "watchEndpointMusicConfig": {
+                                          "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {}
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "21M plays"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "1:36"
+                                }
+                              ]
+                            },
+                            "size": "MUSIC_RESPONSIVE_LIST_ITEM_FIXED_COLUMN_SIZE_SMALL"
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "playlistSetVideoId": "6F67F7CA959C3ADF",
+                        "videoId": "mqgEYRtWMJU"
+                      },
+                      "index": {
+                        "runs": [
+                          {
+                            "text": "3"
+                          }
+                        ]
+                      },
+                      "multiSelectCheckbox": {
+                        "checkboxRenderer": {
+                          "onSelectionChangeCommand": {
+                            "updateMultiSelectStateCommand": {
+                              "multiSelectParams": "CAMSKU9MQUs1dXlfazhYa3hRRkdaaFNYOGdFTnFhSDZwZzF4ejh2T1RuelFz",
+                              "multiSelectItem": "Ch8KC21xZ0VZUnRXTUpVEhA2RjY3RjdDQTk1OUMzQURG"
+                            }
+                          },
+                          "checkedState": "CHECKBOX_CHECKED_STATE_UNCHECKED"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Recognizer (From \"TRON: Legacy\"/Score)",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "vsD70GAtVac",
+                                      "playlistId": "OLAK5uy_k8XkxQFGZhSX8gENqaH6pg1xz8vOTnzQs",
+                                      "watchEndpointMusicSupportedConfigs": {
+                                        "watchEndpointMusicConfig": {
+                                          "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {}
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "5.8M plays"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "2:38"
+                                }
+                              ]
+                            },
+                            "size": "MUSIC_RESPONSIVE_LIST_ITEM_FIXED_COLUMN_SIZE_SMALL"
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "playlistSetVideoId": "994B91F005EABB56",
+                        "videoId": "vsD70GAtVac"
+                      },
+                      "index": {
+                        "runs": [
+                          {
+                            "text": "4"
+                          }
+                        ]
+                      },
+                      "multiSelectCheckbox": {
+                        "checkboxRenderer": {
+                          "onSelectionChangeCommand": {
+                            "updateMultiSelectStateCommand": {
+                              "multiSelectParams": "CAMSKU9MQUs1dXlfazhYa3hRRkdaaFNYOGdFTnFhSDZwZzF4ejh2T1RuelFz",
+                              "multiSelectItem": "Ch8KC3ZzRDcwR0F0VmFjEhA5OTRCOTFGMDA1RUFCQjU2"
+                            }
+                          },
+                          "checkedState": "CHECKBOX_CHECKED_STATE_UNCHECKED"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Armory (From \"TRON: Legacy\"/Score)",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "i3BpEAV1WnM",
+                                      "playlistId": "OLAK5uy_k8XkxQFGZhSX8gENqaH6pg1xz8vOTnzQs",
+                                      "watchEndpointMusicSupportedConfigs": {
+                                        "watchEndpointMusicConfig": {
+                                          "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {}
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "8.8M plays"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "2:03"
+                                }
+                              ]
+                            },
+                            "size": "MUSIC_RESPONSIVE_LIST_ITEM_FIXED_COLUMN_SIZE_SMALL"
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "playlistSetVideoId": "204F9AA6F7DF3562",
+                        "videoId": "i3BpEAV1WnM"
+                      },
+                      "index": {
+                        "runs": [
+                          {
+                            "text": "5"
+                          }
+                        ]
+                      },
+                      "multiSelectCheckbox": {
+                        "checkboxRenderer": {
+                          "onSelectionChangeCommand": {
+                            "updateMultiSelectStateCommand": {
+                              "multiSelectParams": "CAMSKU9MQUs1dXlfazhYa3hRRkdaaFNYOGdFTnFhSDZwZzF4ejh2T1RuelFz",
+                              "multiSelectItem": "Ch8KC2kzQnBFQVYxV25NEhAyMDRGOUFBNkY3REYzNTYy"
+                            }
+                          },
+                          "checkedState": "CHECKBOX_CHECKED_STATE_UNCHECKED"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Finale (From \"TRON: Legacy\"/Score)",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "oafPcETlgwo",
+                                      "playlistId": "OLAK5uy_k8XkxQFGZhSX8gENqaH6pg1xz8vOTnzQs",
+                                      "watchEndpointMusicSupportedConfigs": {
+                                        "watchEndpointMusicConfig": {
+                                          "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {}
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "4M plays"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "4:23"
+                                }
+                              ]
+                            },
+                            "size": "MUSIC_RESPONSIVE_LIST_ITEM_FIXED_COLUMN_SIZE_SMALL"
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "playlistSetVideoId": "8CD534A1AC7F8A28",
+                        "videoId": "oafPcETlgwo"
+                      },
+                      "index": {
+                        "runs": [
+                          {
+                            "text": "22"
+                          }
+                        ]
+                      },
+                      "multiSelectCheckbox": {
+                        "checkboxRenderer": {
+                          "onSelectionChangeCommand": {
+                            "updateMultiSelectStateCommand": {
+                              "multiSelectParams": "CAMSKU9MQUs1dXlfazhYa3hRRkdaaFNYOGdFTnFhSDZwZzF4ejh2T1RuelFz",
+                              "multiSelectItem": "Ch8KC29hZlBjRVRsZ3dvEhA4Q0Q1MzRBMUFDN0Y4QTI4"
+                            }
+                          },
+                          "checkedState": "CHECKBOX_CHECKED_STATE_UNCHECKED"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "contentsMultiSelectable": true
+              }
+            },
+            {
+              "musicCarouselShelfRenderer": {
+                "header": {
+                  "musicCarouselShelfBasicHeaderRenderer": {
+                    "title": {
+                      "runs": [
+                        {
+                          "text": "Other versions"
+                        }
+                      ]
+                    },
+                    "headerStyle": "MUSIC_CAROUSEL_SHELF_BASIC_HEADER_STYLE_DEFAULT"
+                  }
+                },
+                "contents": [
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "thumbnailRenderer": {
+                        "musicThumbnailRenderer": {
+                          "thumbnail": {
+                            "thumbnails": [
+                              {
+                                "url": "https://yt3.googleusercontent.com/KaJnfZODrFtPLUHqJsoWW5tDXp9LijCKqQv80Vi7Egpq9W5DLomExELyVOIqZcmumvqCsf0LLTOlD457=w226-h226-l90-rj",
+                                "width": 226,
+                                "height": 226
+                              },
+                              {
+                                "url": "https://yt3.googleusercontent.com/KaJnfZODrFtPLUHqJsoWW5tDXp9LijCKqQv80Vi7Egpq9W5DLomExELyVOIqZcmumvqCsf0LLTOlD457=w544-h544-l90-rj",
+                                "width": 544,
+                                "height": 544
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "TRON: Legacy - The Complete Edition (Original Motion Picture Soundtrack)",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_3L0yrk0Vxg5",
+                                "params": "ggMrGilPTEFLNXV5X2xRNmxuZjhhblFBTEJ0d01RTXUteGIycVFUa1M3SkxYdw%3D%3D",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Album"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "Daft Punk",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UCRr1xG_2WIDs18a6cIiCxeA",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_3L0yrk0Vxg5",
+                          "params": "ggMrGilPTEFLNXV5X2xRNmxuZjhhblFBTEJ0d01RTXUteGIycVFUa1M3SkxYdw%3D%3D",
+                          "browseEndpointContextSupportedConfigs": {
+                            "browseEndpointContextMusicConfig": {
+                              "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "itemSize": "COLLECTION_STYLE_ITEM_SIZE_MEDIUM"
+              }
+            },
+            {
+              "musicCarouselShelfRenderer": {
+                "header": {
+                  "musicCarouselShelfBasicHeaderRenderer": {
+                    "title": {
+                      "runs": [
+                        {
+                          "text": "Releases for you"
+                        }
+                      ]
+                    },
+                    "headerStyle": "MUSIC_CAROUSEL_SHELF_BASIC_HEADER_STYLE_DEFAULT"
+                  }
+                },
+                "contents": [
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "thumbnailRenderer": {
+                        "musicThumbnailRenderer": {
+                          "thumbnail": {
+                            "thumbnails": [
+                              {
+                                "url": "https://yt3.googleusercontent.com/zF9J9crLN2xXKbhUAdoawCEv9MD3zOrHQizasparNtce8HRLAoN6Ls-pTl4TPmezQLr6VtKTFYCi6hB8=w226-h226-l90-rj",
+                                "width": 226,
+                                "height": 226
+                              },
+                              {
+                                "url": "https://yt3.googleusercontent.com/zF9J9crLN2xXKbhUAdoawCEv9MD3zOrHQizasparNtce8HRLAoN6Ls-pTl4TPmezQLr6VtKTFYCi6hB8=w544-h544-l90-rj",
+                                "width": 544,
+                                "height": 544
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "The Martian: Original Motion Picture Score",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_qsHccdRZG0n",
+                                "params": "ggMrGilPTEFLNXV5X21rOG0zeGJoMUV0QzdmX1ZSQ3g3c2YyZkZRcDBaeE05bw%3D%3D",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Album"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "Harry Gregson-Williams",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UCSVamMPTtDjREdR7ZbA2rAw",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_qsHccdRZG0n",
+                          "params": "ggMrGilPTEFLNXV5X21rOG0zeGJoMUV0QzdmX1ZSQ3g3c2YyZkZRcDBaeE05bw%3D%3D",
+                          "browseEndpointContextSupportedConfigs": {
+                            "browseEndpointContextMusicConfig": {
+                              "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "thumbnailRenderer": {
+                        "musicThumbnailRenderer": {
+                          "thumbnail": {
+                            "thumbnails": [
+                              {
+                                "url": "https://yt3.googleusercontent.com/A1ilEzXjE5NktS_ngzZoUwhJHaRDXB_JIuxYNieK97yeMUhSfVsJAc_uVJ3bIGxvXU3pmJzeiILdWz_y=w226-h226-l90-rj",
+                                "width": 226,
+                                "height": 226
+                              },
+                              {
+                                "url": "https://yt3.googleusercontent.com/A1ilEzXjE5NktS_ngzZoUwhJHaRDXB_JIuxYNieK97yeMUhSfVsJAc_uVJ3bIGxvXU3pmJzeiILdWz_y=w544-h544-l90-rj",
+                                "width": 544,
+                                "height": 544
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "The Dark Knight Rises (Original Motion Picture Soundtrack) (Deluxe Edition)",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_dL4JscUYbit",
+                                "params": "ggMrGilPTEFLNXV5X24yU3BHemVHZWV3WkpUa0MzbkZ3SFNGZjhGU0NGTF9sdw%3D%3D",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Album"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "Hans Zimmer",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UCfCNL5oajlQBAlyjWv1ChVw",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_dL4JscUYbit",
+                          "params": "ggMrGilPTEFLNXV5X24yU3BHemVHZWV3WkpUa0MzbkZ3SFNGZjhGU0NGTF9sdw%3D%3D",
+                          "browseEndpointContextSupportedConfigs": {
+                            "browseEndpointContextMusicConfig": {
+                              "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "thumbnailRenderer": {
+                        "musicThumbnailRenderer": {
+                          "thumbnail": {
+                            "thumbnails": [
+                              {
+                                "url": "https://yt3.googleusercontent.com/0rvhf91RelzatmuucsmQcxwtCeB7c7UHn2-IzSDva95n_PiQkhC1QtvW6sA9t7zJ_SAju2tclekWR-A=w226-h226-l90-rj",
+                                "width": 226,
+                                "height": 226
+                              },
+                              {
+                                "url": "https://yt3.googleusercontent.com/0rvhf91RelzatmuucsmQcxwtCeB7c7UHn2-IzSDva95n_PiQkhC1QtvW6sA9t7zJ_SAju2tclekWR-A=w544-h544-l90-rj",
+                                "width": 544,
+                                "height": 544
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Oblivion (Original Motion Picture Soundtrack)",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_NKTV1qxoHlu",
+                                "params": "ggMrGilPTEFLNXV5X2xkb2NjOGtLWFNmZGw1WGFXby1xQzQ5X01xRHQzU0RKVQ%3D%3D",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Album"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "M83",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UC0UUzwcmD3s1S7NYAxHfs1w",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_NKTV1qxoHlu",
+                          "params": "ggMrGilPTEFLNXV5X2xkb2NjOGtLWFNmZGw1WGFXby1xQzQ5X01xRHQzU0RKVQ%3D%3D",
+                          "browseEndpointContextSupportedConfigs": {
+                            "browseEndpointContextMusicConfig": {
+                              "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "thumbnailRenderer": {
+                        "musicThumbnailRenderer": {
+                          "thumbnail": {
+                            "thumbnails": [
+                              {
+                                "url": "https://yt3.googleusercontent.com/rhXdH15fQaVDg4z-ZMoDujGxiwPh90hUbgxo9zlC2pP0mdvOGtQjj-aitrY2Ydlz9kJNtwdRQaqy7YhO=w226-h226-l90-rj",
+                                "width": 226,
+                                "height": 226
+                              },
+                              {
+                                "url": "https://yt3.googleusercontent.com/rhXdH15fQaVDg4z-ZMoDujGxiwPh90hUbgxo9zlC2pP0mdvOGtQjj-aitrY2Ydlz9kJNtwdRQaqy7YhO=w544-h544-l90-rj",
+                                "width": 544,
+                                "height": 544
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Aliens: The Deluxe Edition (Original Motion Picture Soundtrack)",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_Lu9WCrEc9mb",
+                                "params": "ggMrGilPTEFLNXV5X2tObmJrNjVuUkZrT3pTazYxaVFwalJtQkxnNHZmc3V6bw%3D%3D",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Album"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "James Horner",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UCttp1DF4y8BMlW9il_V3pcw",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "text": " & "
+                          },
+                          {
+                            "text": "London Symphony Orchestra",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UCIOVBy9xHtGgdw485ZrK04Q",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_Lu9WCrEc9mb",
+                          "params": "ggMrGilPTEFLNXV5X2tObmJrNjVuUkZrT3pTazYxaVFwalJtQkxnNHZmc3V6bw%3D%3D",
+                          "browseEndpointContextSupportedConfigs": {
+                            "browseEndpointContextMusicConfig": {
+                              "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "thumbnailRenderer": {
+                        "musicThumbnailRenderer": {
+                          "thumbnail": {
+                            "thumbnails": [
+                              {
+                                "url": "https://yt3.googleusercontent.com/gr9exbTNbj0XvXY3bHjWR1CmQMp9r7Nh3VqS6evnU281QGPiNCTqnteWNA74w3YGnmZO2BDNriNR68zA=w226-h226-l90-rj",
+                                "width": 226,
+                                "height": 226
+                              },
+                              {
+                                "url": "https://yt3.googleusercontent.com/gr9exbTNbj0XvXY3bHjWR1CmQMp9r7Nh3VqS6evnU281QGPiNCTqnteWNA74w3YGnmZO2BDNriNR68zA=w544-h544-l90-rj",
+                                "width": 544,
+                                "height": 544
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Mad Max: Fury Road (Original Motion Picture Soundtrack)",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_oudiYcgwzt9",
+                                "params": "ggMrGilPTEFLNXV5X24ydWluMUFua2hiOS1ERGhvME9HenJ1ZjhBX0hacEJ0VQ%3D%3D",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Album"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "Junkie XL",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UCTOErcLS8bczDts0vRzE8FQ",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_oudiYcgwzt9",
+                          "params": "ggMrGilPTEFLNXV5X24ydWluMUFua2hiOS1ERGhvME9HenJ1ZjhBX0hacEJ0VQ%3D%3D",
+                          "browseEndpointContextSupportedConfigs": {
+                            "browseEndpointContextMusicConfig": {
+                              "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "thumbnailRenderer": {
+                        "musicThumbnailRenderer": {
+                          "thumbnail": {
+                            "thumbnails": [
+                              {
+                                "url": "https://yt3.googleusercontent.com/MMztKoR6w6CXkrFiO9uhCx2xsJBcQDt09efxbavljxBIh0oJhan60WYoEFtBgurzAENxZRsNnUH1h5I=w226-h226-l90-rj",
+                                "width": 226,
+                                "height": 226
+                              },
+                              {
+                                "url": "https://yt3.googleusercontent.com/MMztKoR6w6CXkrFiO9uhCx2xsJBcQDt09efxbavljxBIh0oJhan60WYoEFtBgurzAENxZRsNnUH1h5I=w544-h544-l90-rj",
+                                "width": 544,
+                                "height": 544
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Songs from The Martian",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_KrMEF4erTTZ",
+                                "params": "ggMrGilPTEFLNXV5X254NnppNG1lMEl5QWVrNHpULTcwcTAtb2FFMGRmdzBvQQ%3D%3D",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Album"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "Various Artists"
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_KrMEF4erTTZ",
+                          "params": "ggMrGilPTEFLNXV5X254NnppNG1lMEl5QWVrNHpULTcwcTAtb2FFMGRmdzBvQQ%3D%3D",
+                          "browseEndpointContextSupportedConfigs": {
+                            "browseEndpointContextMusicConfig": {
+                              "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "itemSize": "COLLECTION_STYLE_ITEM_SIZE_SMALL"
+              }
+            }
+          ]
+        }
+      },
+      "tabs": [
+        {
+          "tabRenderer": {
+            "content": {
+              "sectionListRenderer": {
+                "contents": [
+                  {
+                    "musicResponsiveHeaderRenderer": {
+                      "thumbnail": {
+                        "musicThumbnailRenderer": {
+                          "thumbnail": {
+                            "thumbnails": [
+                              {
+                                "url": "https://yt3.googleusercontent.com/wY7kATQ2X8UkxWku6-JuLMCfjoIP4V5Mc9B24wV_bNcombU5iOTEPIgRax9iuIpgGcBbsTuF2lhsSyPO=w60-h60-l90-rj",
+                                "width": 60,
+                                "height": 60
+                              },
+                              {
+                                "url": "https://yt3.googleusercontent.com/wY7kATQ2X8UkxWku6-JuLMCfjoIP4V5Mc9B24wV_bNcombU5iOTEPIgRax9iuIpgGcBbsTuF2lhsSyPO=w544-h544-l90-rj",
+                                "width": 544,
+                                "height": 544
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "TRON: Legacy"
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Album"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "2010"
+                          }
+                        ]
+                      },
+                      "straplineTextOne": {
+                        "runs": [
+                          {
+                            "text": "Daft Punk",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UCRr1xG_2WIDs18a6cIiCxeA",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "straplineThumbnail": {
+                        "musicThumbnailRenderer": {
+                          "thumbnail": {
+                            "thumbnails": [
+                              {
+                                "url": "https://lh3.googleusercontent.com/qLhu6Py_4_xoBsoubKQsXlhOQGqU9YU1ZRAbFusF0LlrPkXbbpu7bEh-k_ZtE4JwLgubvucAQqcK1hRk=w60-h60-p-l90-rj",
+                                "width": 60,
+                                "height": 60
+                              },
+                              {
+                                "url": "https://lh3.googleusercontent.com/qLhu6Py_4_xoBsoubKQsXlhOQGqU9YU1ZRAbFusF0LlrPkXbbpu7bEh-k_ZtE4JwLgubvucAQqcK1hRk=w544-h544-p-l90-rj",
+                                "width": 544,
+                                "height": 544
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "description": {
+                        "musicDescriptionShelfRenderer": {
+                          "description": {
+                            "runs": [
+                              {
+                                "text": "Tron: Legacy is the soundtrack album to the 2010 film of the same name, with twenty-two tracks featuring music by French electronic music duo Daft Punk. The first film score written by Daft Punk, the music was composed and produced by Thomas Bangalter and Guy-Manuel de Homem-Christo, arranged and orchestrated by Joseph Trapanese, and conducted by Gavin Greenaway.\nWalt Disney Records released the album on December 3, 2010, and has since released several editions of the soundtrack with an additional nine tracks since then. The album also includes \"Derezzed\", which was released as a single on December 8.\nDaft Punk's score received generally positive reviews, receiving praise for its interpolation of orchestral and electronic music. Daft Punk received a nomination for the Grammy Award for Best Score Soundtrack for Visual Media for the score. The album debuted at number 10 on the Billboard 200 chart, peaking at number 4 on the aforementioned chart by its fifth week of release. The album has been certified Platinum by the Recording Industry Association of America.\n\nFrom Wikipedia ("
+                              },
+                              {
+                                "text": "https://en.wikipedia.org/wiki/Tron:_L...",
+                                "navigationEndpoint": {
+                                  "urlEndpoint": {
+                                    "url": "https://en.wikipedia.org/wiki/Tron:_Legacy_(soundtrack)",
+                                    "target": "TARGET_NEW_WINDOW"
+                                  }
+                                }
+                              },
+                              {
+                                "text": ") under Creative Commons Attribution CC-BY-SA 3.0 ("
+                              },
+                              {
+                                "text": "https://creativecommons.org/licenses/...",
+                                "navigationEndpoint": {
+                                  "urlEndpoint": {
+                                    "url": "https://creativecommons.org/licenses/by-sa/3.0/legalcode",
+                                    "target": "TARGET_NEW_WINDOW"
+                                  }
+                                }
+                              },
+                              {
+                                "text": ")"
+                              }
+                            ]
+                          },
+                          "shelfStyle": "MUSIC_SHELF_STYLE_OPEN_DIALOG_ON_CLICK"
+                        }
+                      },
+                      "secondSubtitle": {
+                        "runs": [
+                          {
+                            "text": "22 songs"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "58 minutes"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

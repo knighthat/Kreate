@@ -19,10 +19,17 @@
 package me.knighthat.kreate3.ui.screen.search
 
 import androidx.paging.PagingData
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.client.engine.mock.toByteArray
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -33,12 +40,14 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.PlaybackHistory
 import me.knighthat.kreate3.database.model.SearchHistory
 import me.knighthat.kreate3.database.paging.SearchSort
 import me.knighthat.kreate3.database.paging.SortOrder
 import me.knighthat.kreate3.database.repository.HistoryRepository
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -100,12 +109,27 @@ class SearchViewModelTest {
         } as T
 
     private val history = History()
+
+    /** Bodies of the requests sent to YouTube. */
+    private val youtubeRequests: MutableList<String> = Collections.synchronizedList(mutableListOf())
+
+    // Suggests searches only, items would need Android to be shown
+    private val youtube = YouTubeProvider(
+        HttpClient(MockEngine { request ->
+            youtubeRequests += request.body.toByteArray().decodeToString()
+            respond(
+                content = SUGGESTIONS,
+                headers = Headers.build { append(HttpHeaders.ContentType, "application/json") },
+            )
+        }),
+        Json,
+    )
     private lateinit var viewModel: SearchViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(StandardTestDispatcher())
-        viewModel = SearchViewModel(catalog(), catalog(), catalog(), catalog(), history)
+        viewModel = SearchViewModel(catalog(), catalog(), catalog(), catalog(), history, youtube)
     }
 
     @After
@@ -164,6 +188,24 @@ class SearchViewModelTest {
     }
 
     @Test
+    fun youTubeSuggestsOnlyWhileItIsWhereTheSearchLooks() = runTest {
+        backgroundScope.launch { viewModel.liveSuggestions.collect {} }
+
+        viewModel.setText("abba")
+        advanceUntilIdle()
+        assertTrue(youtubeRequests.isEmpty())
+        assertEquals(LiveSuggestions.EMPTY, viewModel.liveSuggestions.value)
+
+        viewModel.setOrigin(Origin.YOUTUBE)
+        // The answer comes on the client's own thread
+        val found = viewModel.liveSuggestions.first { it != LiveSuggestions.EMPTY }
+        assertEquals(listOf("abba gold", "abba waterloo"), found.queries)
+        assertTrue(youtubeRequests.single().contains("\"input\":\"abba\""))
+        // The library isn't searched meanwhile
+        assertTrue(searched.isEmpty())
+    }
+
+    @Test
     fun aSubmittedSearchIsRememberedTrimmed() = runTest {
         viewModel.setText(" queen ")
         viewModel.submit()
@@ -195,5 +237,12 @@ class SearchViewModelTest {
         viewModel.setCategory(Tab.ALBUMS, true)
 
         assertEquals(setOf(Tab.SONGS, Tab.ALBUMS, Tab.PLAYLISTS), viewModel.categories.value)
+    }
+
+    private companion object {
+        const val SUGGESTIONS = """{"contents":[{"searchSuggestionsSectionRenderer":{"contents":[
+            {"searchSuggestionRenderer":{"navigationEndpoint":{"searchEndpoint":{"query":"abba gold"}}}},
+            {"searchSuggestionRenderer":{"navigationEndpoint":{"searchEndpoint":{"query":"abba waterloo"}}}}
+        ]}}]}"""
     }
 }

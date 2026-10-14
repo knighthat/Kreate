@@ -1,0 +1,688 @@
+{
+  "responseContext": {
+    "visitorData": "Cgt2M1B2YjdxN1JXMCiE9bvWBjIKCgJVUxIEGgAgOA%3D%3D",
+    "maxAgeSeconds": 120,
+    "responseId": "IhMI4rvP8Mu4lwMVB8I_BB2SGxI1"
+  },
+  "continuationContents": {
+    "musicShelfContinuation": {
+      "contents": [
+        {
+          "musicResponsiveListItemRenderer": {
+            "thumbnail": {
+              "musicThumbnailRenderer": {
+                "thumbnail": {
+                  "thumbnails": [
+                    {
+                      "url": "https://yt3.googleusercontent.com/1gXa4i8m_NecS7xNqLqzxy6rdOWBh_L6U91YYv5ULNdmvvYT1Pr6ld7_SyUs5L52pEQheVyfU9SnXUm9=w60-h60-l90-rj",
+                      "width": 60,
+                      "height": 60
+                    },
+                    {
+                      "url": "https://yt3.googleusercontent.com/1gXa4i8m_NecS7xNqLqzxy6rdOWBh_L6U91YYv5ULNdmvvYT1Pr6ld7_SyUs5L52pEQheVyfU9SnXUm9=w120-h120-l90-rj",
+                      "width": 120,
+                      "height": 120
+                    }
+                  ]
+                }
+              }
+            },
+            "flexColumns": [
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "Around the World",
+                        "navigationEndpoint": {
+                          "watchEndpoint": {
+                            "videoId": "Jb6gcoR266U",
+                            "watchEndpointMusicSupportedConfigs": {
+                              "watchEndpointMusicConfig": {
+                                "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "Daft Punk",
+                        "navigationEndpoint": {
+                          "browseEndpoint": {
+                            "browseId": "UCRr1xG_2WIDs18a6cIiCxeA",
+                            "browseEndpointContextSupportedConfigs": {
+                              "browseEndpointContextMusicConfig": {
+                                "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "text": " • "
+                      },
+                      {
+                        "text": "Homework",
+                        "navigationEndpoint": {
+                          "browseEndpoint": {
+                            "browseId": "MPREb_dMHztPsrDgN",
+                            "browseEndpointContextSupportedConfigs": {
+                              "browseEndpointContextMusicConfig": {
+                                "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "text": " • "
+                      },
+                      {
+                        "text": "7:10"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "298M plays"
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "playlistItemData": {
+              "videoId": "Jb6gcoR266U"
+            }
+          }
+        },
+        {
+          "musicResponsiveListItemRenderer": {
+            "thumbnail": {
+              "musicThumbnailRenderer": {
+                "thumbnail": {
+                  "thumbnails": [
+                    {
+                      "url": "https://yt3.googleusercontent.com/DAs2tmTE_l6ACwloA9DZrf1NpA984fFAmQzw27CEqcg0HqdY7kH-BtWBv8fOePSvCVnwlil7D2Udpnw=w60-h60-l90-rj",
+                      "width": 60,
+                      "height": 60
+                    },
+                    {
+                      "url": "https://yt3.googleusercontent.com/DAs2tmTE_l6ACwloA9DZrf1NpA984fFAmQzw27CEqcg0HqdY7kH-BtWBv8fOePSvCVnwlil7D2Udpnw=w120-h120-l90-rj",
+                      "width": 120,
+                      "height": 120
+                    }
+                  ]
+                }
+              }
+            },
+            "flexColumns": [
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "Daft Punk",
+                        "navigationEndpoint": {
+                          "watchEndpoint": {
+                            "videoId": "QiGAy6gp7fA",
+                            "watchEndpointMusicSupportedConfigs": {
+                              "watchEndpointMusicConfig": {
+                                "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "XanMan",
+                        "navigationEndpoint": {
+                          "browseEndpoint": {
+                            "browseId": "UCdJ3842uRBN3ySddvJQkP_Q",
+                            "browseEndpointContextSupportedConfigs": {
+                              "browseEndpointContextMusicConfig": {
+                                "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "text": " • "
+                      },
+                      {
+                        "text": "Xantisocial",
+                        "navigationEndpoint": {
+                          "browseEndpoint": {
+                            "browseId": "MPREb_cKDzGJ1nsCz",
+                            "browseEndpointContextSupportedConfigs": {
+                              "browseEndpointContextMusicConfig": {
+                                "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "text": " • "
+                      },
+                      {
+                        "text": "1:37"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "1.9K plays"
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "badges": [
+              {
+                "musicInlineBadgeRenderer": {
+                  "icon": {
+                    "iconType": "MUSIC_EXPLICIT_BADGE"
+                  }
+                }
+              }
+            ],
+            "playlistItemData": {
+              "videoId": "QiGAy6gp7fA"
+            }
+          }
+        },
+        {
+          "musicResponsiveListItemRenderer": {
+            "thumbnail": {
+              "musicThumbnailRenderer": {
+                "thumbnail": {
+                  "thumbnails": [
+                    {
+                      "url": "https://yt3.googleusercontent.com/_7Haa7wOJkhiTcieqvFnoS1t8F2TmdUXqFpp9ft4xOv2W_IpOfWZZ9AIbJu9nu94PnDjeRYtipVh2pg=w60-h60-l90-rj",
+                      "width": 60,
+                      "height": 60
+                    },
+                    {
+                      "url": "https://yt3.googleusercontent.com/_7Haa7wOJkhiTcieqvFnoS1t8F2TmdUXqFpp9ft4xOv2W_IpOfWZZ9AIbJu9nu94PnDjeRYtipVh2pg=w120-h120-l90-rj",
+                      "width": 120,
+                      "height": 120
+                    }
+                  ]
+                }
+              }
+            },
+            "flexColumns": [
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "Aerodynamic (Slum Village Remix)",
+                        "navigationEndpoint": {
+                          "watchEndpoint": {
+                            "videoId": "OSQXd4K8Gj8",
+                            "playerParams": "0gcJCTMC0OBS9m0t",
+                            "watchEndpointMusicSupportedConfigs": {
+                              "watchEndpointMusicConfig": {
+                                "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "Daft Punk",
+                        "navigationEndpoint": {
+                          "browseEndpoint": {
+                            "browseId": "UCRr1xG_2WIDs18a6cIiCxeA",
+                            "browseEndpointContextSupportedConfigs": {
+                              "browseEndpointContextMusicConfig": {
+                                "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "text": " • "
+                      },
+                      {
+                        "text": "Aerodynamic (Slum Village Remix)",
+                        "navigationEndpoint": {
+                          "browseEndpoint": {
+                            "browseId": "MPREb_7BPCO1NwGoD",
+                            "browseEndpointContextSupportedConfigs": {
+                              "browseEndpointContextMusicConfig": {
+                                "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "text": " • "
+                      },
+                      {
+                        "text": "3:38"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "673K plays"
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "badges": [
+              {
+                "musicInlineBadgeRenderer": {
+                  "icon": {
+                    "iconType": "MUSIC_EXPLICIT_BADGE"
+                  }
+                }
+              }
+            ],
+            "playlistItemData": {
+              "videoId": "OSQXd4K8Gj8"
+            }
+          }
+        },
+        {
+          "musicResponsiveListItemRenderer": {
+            "thumbnail": {
+              "musicThumbnailRenderer": {
+                "thumbnail": {
+                  "thumbnails": [
+                    {
+                      "url": "https://yt3.googleusercontent.com/rTVzNWFTCGiiVYQ2YcYEYlFU4l_lYNZO1aYyd7s3zZF7AmtXNOEvFk8LSSKQqoWND9RNr4PPzR6vjXkVAQ=w60-h60-l90-rj",
+                      "width": 60,
+                      "height": 60
+                    },
+                    {
+                      "url": "https://yt3.googleusercontent.com/rTVzNWFTCGiiVYQ2YcYEYlFU4l_lYNZO1aYyd7s3zZF7AmtXNOEvFk8LSSKQqoWND9RNr4PPzR6vjXkVAQ=w120-h120-l90-rj",
+                      "width": 120,
+                      "height": 120
+                    }
+                  ]
+                }
+              }
+            },
+            "flexColumns": [
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "Derezzed (From TRON: Legacy/Avicii \"So Amazing Mix\") (feat. Negin)",
+                        "navigationEndpoint": {
+                          "watchEndpoint": {
+                            "videoId": "Z9rQJ4SotYo",
+                            "watchEndpointMusicSupportedConfigs": {
+                              "watchEndpointMusicConfig": {
+                                "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "Daft Punk",
+                        "navigationEndpoint": {
+                          "browseEndpoint": {
+                            "browseId": "UCRr1xG_2WIDs18a6cIiCxeA",
+                            "browseEndpointContextSupportedConfigs": {
+                              "browseEndpointContextMusicConfig": {
+                                "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "text": " • "
+                      },
+                      {
+                        "text": "Derezzed ((From “TRON: Legacy”) [Avicii \"So Amazing Mix\"] )",
+                        "navigationEndpoint": {
+                          "browseEndpoint": {
+                            "browseId": "MPREb_iHsLW7vJI2m",
+                            "browseEndpointContextSupportedConfigs": {
+                              "browseEndpointContextMusicConfig": {
+                                "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "text": " • "
+                      },
+                      {
+                        "text": "5:04"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "1.8M plays"
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "playlistItemData": {
+              "videoId": "Z9rQJ4SotYo"
+            }
+          }
+        },
+        {
+          "musicResponsiveListItemRenderer": {
+            "thumbnail": {
+              "musicThumbnailRenderer": {
+                "thumbnail": {
+                  "thumbnails": [
+                    {
+                      "url": "https://yt3.googleusercontent.com/N55arCGj69gtw6thXK8JUPisxoVYiwuIEQ7I6SGlkEyNcSJ7xIWPe76Vuu1SiUqRyx5w9qvR_zV8fV3CWQ=w60-h60-l90-rj",
+                      "width": 60,
+                      "height": 60
+                    },
+                    {
+                      "url": "https://yt3.googleusercontent.com/N55arCGj69gtw6thXK8JUPisxoVYiwuIEQ7I6SGlkEyNcSJ7xIWPe76Vuu1SiUqRyx5w9qvR_zV8fV3CWQ=w120-h120-l90-rj",
+                      "width": 120,
+                      "height": 120
+                    }
+                  ]
+                }
+              }
+            },
+            "flexColumns": [
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "Get Lucky (feat. Pharrell Williams and Nile Rodgers)",
+                        "navigationEndpoint": {
+                          "watchEndpoint": {
+                            "videoId": "4D7u5KF7SP8",
+                            "watchEndpointMusicSupportedConfigs": {
+                              "watchEndpointMusicConfig": {
+                                "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "Daft Punk",
+                        "navigationEndpoint": {
+                          "browseEndpoint": {
+                            "browseId": "UCRr1xG_2WIDs18a6cIiCxeA",
+                            "browseEndpointContextSupportedConfigs": {
+                              "browseEndpointContextMusicConfig": {
+                                "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "text": ", "
+                      },
+                      {
+                        "text": "Pharrell Williams",
+                        "navigationEndpoint": {
+                          "browseEndpoint": {
+                            "browseId": "UCJw8VyO6e3v6S0327AsgwcQ",
+                            "browseEndpointContextSupportedConfigs": {
+                              "browseEndpointContextMusicConfig": {
+                                "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "text": " & "
+                      },
+                      {
+                        "text": "Nile Rodgers",
+                        "navigationEndpoint": {
+                          "browseEndpoint": {
+                            "browseId": "UCThde8ccpEr6sP8dIHZ-ceQ",
+                            "browseEndpointContextSupportedConfigs": {
+                              "browseEndpointContextMusicConfig": {
+                                "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "text": " • "
+                      },
+                      {
+                        "text": "Random Access Memories",
+                        "navigationEndpoint": {
+                          "browseEndpoint": {
+                            "browseId": "MPREb_K8qWMWVqXGi",
+                            "browseEndpointContextSupportedConfigs": {
+                              "browseEndpointContextMusicConfig": {
+                                "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "text": " • "
+                      },
+                      {
+                        "text": "6:10"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "1.9B plays"
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "playlistItemData": {
+              "videoId": "4D7u5KF7SP8"
+            }
+          }
+        },
+        {
+          "musicResponsiveListItemRenderer": {
+            "thumbnail": {
+              "musicThumbnailRenderer": {
+                "thumbnail": {
+                  "thumbnails": [
+                    {
+                      "url": "https://yt3.googleusercontent.com/N55arCGj69gtw6thXK8JUPisxoVYiwuIEQ7I6SGlkEyNcSJ7xIWPe76Vuu1SiUqRyx5w9qvR_zV8fV3CWQ=w60-h60-l90-rj",
+                      "width": 60,
+                      "height": 60
+                    },
+                    {
+                      "url": "https://yt3.googleusercontent.com/N55arCGj69gtw6thXK8JUPisxoVYiwuIEQ7I6SGlkEyNcSJ7xIWPe76Vuu1SiUqRyx5w9qvR_zV8fV3CWQ=w120-h120-l90-rj",
+                      "width": 120,
+                      "height": 120
+                    }
+                  ]
+                }
+              }
+            },
+            "flexColumns": [
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "Contact",
+                        "navigationEndpoint": {
+                          "watchEndpoint": {
+                            "videoId": "UoF1dFWKsVk",
+                            "watchEndpointMusicSupportedConfigs": {
+                              "watchEndpointMusicConfig": {
+                                "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "Daft Punk",
+                        "navigationEndpoint": {
+                          "browseEndpoint": {
+                            "browseId": "UCRr1xG_2WIDs18a6cIiCxeA",
+                            "browseEndpointContextSupportedConfigs": {
+                              "browseEndpointContextMusicConfig": {
+                                "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "text": " • "
+                      },
+                      {
+                        "text": "Random Access Memories",
+                        "navigationEndpoint": {
+                          "browseEndpoint": {
+                            "browseId": "MPREb_K8qWMWVqXGi",
+                            "browseEndpointContextSupportedConfigs": {
+                              "browseEndpointContextMusicConfig": {
+                                "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "text": " • "
+                      },
+                      {
+                        "text": "6:24"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "musicResponsiveListItemFlexColumnRenderer": {
+                  "text": {
+                    "runs": [
+                      {
+                        "text": "23M plays"
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "playlistItemData": {
+              "videoId": "UoF1dFWKsVk"
+            }
+          }
+        }
+      ],
+      "continuations": [
+        {
+          "nextContinuationData": {
+            "continuation": "EqYDEglkYWZ0IHB1bmsamANFZ1dLQVFJSUFVZ29hZ29RQ1JBRkVBb1FBeEFFZ2dFTFNtSTJaMk52VWpJMk5sV0NBUXRSYVVkQmVUWm5jRGRtUVlJQkMwOVRVVmhrTkVzNFIybzRnZ0VMV2pseVVVbzBVMjkwV1ctQ0FRczBSRGQxTlV0R04xTlFPSUlCQzJaaE5VbFhTRVJpWm5SSmdnRUxjV1U0VVRkdGFuaHFhV2VDQVF0cFZUZHZSalJQV0ZwVFJZSUJDMVZTZWs5SFJsOVJSMnh6Z2dFTE16SktOMkphU0haaE9VMkNBUXRhUmxwTk5tcEVWRmRrTklJQkMzZHRVMnRWTmxJNVdtazRnZ0VMY1ZCU1RrbEllRXhvYldPQ0FRdHhXRWs0TjJWTlVDMWljNElCQzFJMWRVaFpRVWxyZW1kVmdnRUxObEZYY0Vob1NHZFVSRFNDQVF0U1VrMWlhRVZrYldoWmQ0SUJDMDlYYVZaS1RXZHRjemxGZ2dFTFMzcE1iRlpMV0V0dWVWV0NBUXRWYjBZeFpFWlhTM05XYXclM0QlM0QY8erQLg%3D%3D"
+          }
+        }
+      ]
+    }
+  },
+  "header": {
+    "musicHeaderRenderer": {
+      "header": {}
+    }
+  }
+}

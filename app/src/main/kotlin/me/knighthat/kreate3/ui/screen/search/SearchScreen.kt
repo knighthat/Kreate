@@ -92,6 +92,7 @@ private val SUGGESTION_PRIORITY = listOf(Tab.SONGS, Tab.PLAYLISTS, Tab.ALBUMS, T
 @Composable
 private fun SearchInputBar(
     text: String,
+    placeholder: String,
     onTextChange: (String) -> Unit,
     onSearch: () -> Unit,
     onConfig: () -> Unit,
@@ -110,7 +111,7 @@ private fun SearchInputBar(
             OutlinedTextField(
                 value = text,
                 onValueChange = onTextChange,
-                placeholder = { Text("Search your library") },
+                placeholder = { Text(placeholder) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { onSearch() }),
@@ -235,6 +236,7 @@ fun SearchScreen(
     val categories by viewModel.categories.collectAsState()
     val origin by viewModel.origin.collectAsState()
     val recent by viewModel.recentSearches.collectAsState()
+    val live by viewModel.liveSuggestions.collectAsState()
     val songs = viewModel.songs.collectAsLazyPagingItems()
     val albums = viewModel.albums.collectAsLazyPagingItems()
     val artists = viewModel.artists.collectAsLazyPagingItems()
@@ -253,14 +255,16 @@ fun SearchScreen(
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
-    val suggestions = suggestionsOf(
-        mapOf(
-            Tab.SONGS to songs,
-            Tab.PLAYLISTS to playlists,
-            Tab.ALBUMS to albums,
-            Tab.ARTISTS to artists,
-        ).filterKeys { it in categories }
-    )
+    val suggestions = if (origin == Origin.LOCAL)
+        suggestionsOf(
+            mapOf(
+                Tab.SONGS to songs,
+                Tab.PLAYLISTS to playlists,
+                Tab.ALBUMS to albums,
+                Tab.ARTISTS to artists,
+            ).filterKeys { it in categories }
+        )
+    else live.items.map { (kind, item) -> Suggestion(kind, item) }
 
     Scaffold(
         topBar = {
@@ -275,6 +279,7 @@ fun SearchScreen(
         bottomBar = {
             SearchInputBar(
                 text = text,
+                placeholder = if (origin == Origin.YOUTUBE) "Search YouTube" else "Search your library",
                 onTextChange = viewModel::setText,
                 onSearch = { search(text) },
                 onConfig = { showConfig = true },
@@ -284,10 +289,10 @@ fun SearchScreen(
         containerColor = MaterialTheme.colorScheme.surfaceDim,
         modifier = modifier,
     ) { innerPadding ->
-        if (suggestions.isEmpty() && recent.isEmpty()) {
+        if (suggestions.isEmpty() && live.queries.isEmpty() && recent.isEmpty()) {
             Text(
                 text = when {
-                    origin != Origin.LOCAL -> "Searching ${origin.name} isn't available yet"
+                    origin == Origin.OPEN_SUBSONIC -> "Searching ${origin.name} isn't available yet"
                     query.isEmpty() -> "Your searches will show up here"
                     else -> "No suggestions for \"$query\""
                 },
@@ -317,8 +322,22 @@ fun SearchScreen(
                         trailing = { KindBadge(it.kind) },
                     )
                 }
-                if (recent.isNotEmpty()) {
+                if (live.queries.isNotEmpty()) {
                     if (suggestions.isNotEmpty())
+                        item(key = "live-title") { SectionTitle("Suggested searches") }
+                    items(live.queries, key = { "live:$it" }) { suggestion ->
+                        ListItem(
+                            headlineContent = { Text(suggestion) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            modifier = Modifier.clickable {
+                                viewModel.setText(suggestion)
+                                search(suggestion)
+                            },
+                        )
+                    }
+                }
+                if (recent.isNotEmpty()) {
+                    if (suggestions.isNotEmpty() || live.queries.isNotEmpty())
                         item(key = "recent-title") {
                             SectionTitle(if (text.isBlank()) "Recent searches" else "Searches")
                         }

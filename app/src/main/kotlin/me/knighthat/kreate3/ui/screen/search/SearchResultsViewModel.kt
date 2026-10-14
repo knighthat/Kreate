@@ -21,6 +21,7 @@ package me.knighthat.kreate3.ui.screen.search
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
@@ -32,12 +33,16 @@ import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.database.repository.UserAlbumRepository
 import me.knighthat.kreate3.database.repository.UserArtistRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.youtube.searchYouTube
 import me.knighthat.kreate3.ui.component.toMediaItem
 import me.knighthat.kreate3.ui.component.toMediaItems
 import me.knighthat.kreate3.ui.navigation.SearchResults
+import me.knighthat.kreate3.ui.navigation.Tab
 
 /**
  * What the search in the saved state found, by kind. Pages are kept while the screen lives.
+ * YouTube's results are fetched live and never stored.
  */
 class SearchResultsViewModel(
     savedStateHandle: SavedStateHandle,
@@ -45,6 +50,7 @@ class SearchResultsViewModel(
     albumRepository: UserAlbumRepository,
     artistRepository: UserArtistRepository,
     playlistRepository: PlaylistRepository,
+    private val youtube: YouTubeProvider,
 ) : ViewModel() {
 
     val query: String = checkNotNull(savedStateHandle[SearchResults.QUERY]) {
@@ -57,22 +63,29 @@ class SearchResultsViewModel(
         }
     )
 
-    val songs = results { songRepository.search(query).toMediaItems() }
+    val songs = results(Tab.SONGS) { songRepository.search(query).toMediaItems() }
 
-    val albums = results {
+    val albums = results(Tab.ALBUMS) {
         albumRepository.search(query).map { page -> page.map { it.toMediaItem() } }
     }
 
-    val artists = results {
+    val artists = results(Tab.ARTISTS) {
         artistRepository.search(query).map { page -> page.map { it.toMediaItem() } }
     }
 
-    val playlists = results {
+    val playlists = results(Tab.PLAYLISTS) {
         playlistRepository.search(query).map { page -> page.map { it.toMediaItem() } }
     }
 
-    private fun <T : Any> results(search: () -> Flow<PagingData<T>>): Flow<PagingData<T>> =
-        // No online catalog is connected yet, so only local searches find anything
-        (if (origin == Origin.LOCAL) search() else flowOf(PagingData.empty()))
-            .cachedIn(viewModelScope)
+    /** @param local searches the library on this device */
+    private fun results(
+        tab: Tab,
+        local: () -> Flow<PagingData<MediaItem>>
+    ): Flow<PagingData<MediaItem>> =
+        when (origin) {
+            Origin.LOCAL -> local()
+            Origin.YOUTUBE -> searchYouTube(youtube, query, tab)
+            // The server isn't searched yet
+            Origin.OPEN_SUBSONIC -> flowOf(PagingData.empty())
+        }.cachedIn(viewModelScope)
 }

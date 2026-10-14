@@ -26,6 +26,7 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
 import me.knighthat.kreate3.ui.component.origin
 
 /**
@@ -142,23 +143,106 @@ data class OpenSubsonicPlaylist(val id: Long) : Route {
 }
 
 /**
+ * An album of YouTube, fetched when it opens and never stored. Its screen reads the album id from
+ * the same argument as [LocalAlbum].
+ */
+@Serializable
+data class YouTubeAlbum(val id: String) : Route {
+
+    override val arguments: Bundle get() = bundleOf(LocalAlbum.ID to id)
+}
+
+/**
+ * An artist of YouTube, fetched when they open and never stored.
+ */
+@Serializable
+data class YouTubeArtist(val id: String) : Route {
+
+    override val arguments: Bundle get() = bundleOf(LocalArtist.ID to id)
+}
+
+/**
+ * A playlist of YouTube by its id there, fetched when it opens and never stored.
+ */
+@Serializable
+data class YouTubePlaylist(val id: String) : Route {
+
+    override val arguments: Bundle get() = bundleOf(ID to id)
+
+    companion object {
+        const val ID = "remotePlaylistId"
+    }
+}
+
+/**
+ * Every item of a row of YouTube titled [title], like all the singles of an artist, from the page
+ * [browseId] with [params]. Fetched as it scrolls and never stored.
+ */
+@Serializable
+data class YouTubeMore(val title: String, val browseId: String, val params: String?) : Route {
+
+    override val arguments: Bundle
+        get() = bundleOf(TITLE to title, BROWSE_ID to browseId, PARAMS to params)
+
+    companion object {
+        const val TITLE = "title"
+        const val BROWSE_ID = "browseId"
+        const val PARAMS = "params"
+    }
+}
+
+/**
+ * The screen with every item of a YouTube row titled [title]. A row whose items are a playlist,
+ * like an artist's videos, opens that playlist.
+ */
+fun youTubeMoreRoute(title: String, more: YouTubeBrowse): Route =
+    if (more.browseId.startsWith(PLAYLIST_PREFIX)) YouTubePlaylist(
+        more.browseId.removePrefix(
+            PLAYLIST_PREFIX
+        )
+    )
+    else YouTubeMore(title, more.browseId, more.params)
+
+/** Browse id of a YouTube playlist is this followed by the playlist's id. */
+private const val PLAYLIST_PREFIX = "VL"
+
+/**
  * The screen of an album, by where it comes from.
  */
-fun albumRoute(item: MediaItem): Route =
-    if (item.origin == Origin.OPEN_SUBSONIC) OpenSubsonicAlbum(item.mediaId) else LocalAlbum(item.mediaId)
+fun albumRoute(item: MediaItem): Route = when (item.origin) {
+    Origin.OPEN_SUBSONIC -> OpenSubsonicAlbum(item.mediaId)
+    Origin.YOUTUBE -> YouTubeAlbum(item.mediaId)
+    else -> LocalAlbum(item.mediaId)
+}
 
 /**
  * The screen of an artist, by where they come from.
  */
-fun artistRoute(item: MediaItem): Route =
-    if (item.origin == Origin.OPEN_SUBSONIC) OpenSubsonicArtist(item.mediaId) else LocalArtist(item.mediaId)
+fun artistRoute(item: MediaItem): Route = when (item.origin) {
+    Origin.OPEN_SUBSONIC -> OpenSubsonicArtist(item.mediaId)
+    Origin.YOUTUBE -> YouTubeArtist(item.mediaId)
+    else -> LocalArtist(item.mediaId)
+}
 
 /**
- * The screen of a playlist, by where it comes from.
+ * The screen of a playlist, by where it comes from. A playlist of YouTube isn't saved, its media
+ * id is its id on YouTube.
  */
-fun playlistRoute(item: MediaItem): Route =
-    if (item.origin == Origin.OPEN_SUBSONIC) OpenSubsonicPlaylist(item.mediaId.toLong())
-    else LocalPlaylist(item.mediaId.toLong())
+fun playlistRoute(item: MediaItem): Route = when (item.origin) {
+    Origin.OPEN_SUBSONIC -> OpenSubsonicPlaylist(item.mediaId.toLong())
+    Origin.YOUTUBE -> YouTubePlaylist(item.mediaId)
+    else -> LocalPlaylist(item.mediaId.toLong())
+}
+
+/**
+ * The screen of an item of a [tab], `null` for a song which has none.
+ */
+fun itemRoute(tab: Tab, item: MediaItem): Route? = when (tab) {
+    Tab.SONGS -> null
+    Tab.ALBUMS -> albumRoute(item)
+    Tab.ARTISTS -> artistRoute(item)
+    Tab.PLAYLISTS -> playlistRoute(item)
+}
 
 /**
  * The destinations that share the library bottom bar, in the order they appear on it.

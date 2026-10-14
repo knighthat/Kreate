@@ -18,8 +18,10 @@
 
 package me.knighthat.kreate3.ui.screen.search
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
@@ -35,6 +37,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -45,13 +48,29 @@ import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.database.repository.UserAlbumRepository
 import me.knighthat.kreate3.database.repository.UserArtistRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.provider.youtube.YouTubeException
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.youtube.tab
+import me.knighthat.kreate3.source.youtube.toMediaItem
 import me.knighthat.kreate3.ui.component.toMediaItem
 import me.knighthat.kreate3.ui.component.toMediaItems
 import me.knighthat.kreate3.ui.navigation.Tab
 
 /**
+ * Suggestions from an online catalog: whole searches, and items that match already, each with the
+ * kind it is.
+ */
+data class LiveSuggestions(val queries: List<String>, val items: List<Pair<Tab, MediaItem>>) {
+
+    companion object {
+        val EMPTY = LiveSuggestions(emptyList(), emptyList())
+    }
+}
+
+/**
  * Suggestions for the [text] being typed: the library items that match it and the earlier
- * searches that start with it. The [origin], chosen in the config, says where to look.
+ * searches that start with it, or what YouTube suggests. The [origin], chosen in the config, says
+ * where to look.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchViewModel(
@@ -60,6 +79,7 @@ class SearchViewModel(
     artistRepository: UserArtistRepository,
     playlistRepository: PlaylistRepository,
     private val historyRepository: HistoryRepository,
+    private val youtube: YouTubeProvider,
 ) : ViewModel() {
 
     private val _text = MutableStateFlow("")
@@ -76,7 +96,7 @@ class SearchViewModel(
         .distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Eagerly, "")
 
-    /** Where the search looks. Only [Origin.LOCAL], the library on this device, finds anything yet. */
+    /** Where the search looks. The OpenSubsonic server isn't searched yet. */
     val origin: StateFlow<Origin> = _origin.asStateFlow()
 
     /** What the results show, each [Tab] stands for the kind of item it lists. */
@@ -95,6 +115,27 @@ class SearchViewModel(
     val playlists = results { query ->
         playlistRepository.search(query).map { page -> page.map { it.toMediaItem() } }
     }
+
+    /**
+     * What YouTube suggests for the [query] while [origin] is YouTube, asked live and never
+     * stored. A failed request suggests nothing.
+     */
+    val liveSuggestions: StateFlow<LiveSuggestions> = combine(query, _origin, ::Pair)
+        .mapLatest { (query, origin) ->
+            if (query.isEmpty() || origin != Origin.YOUTUBE) return@mapLatest LiveSuggestions.EMPTY
+            try {
+                val found = youtube.suggestions(query)
+                LiveSuggestions(
+                    queries = found.queries.distinct(),
+                    items = found.items.map { it.tab to it.toMediaItem(youtube) }
+                        .distinctBy { (tab, item) -> tab to item.mediaId },
+                )
+            } catch (e: YouTubeException) {
+                Log.w(TAG, "Couldn't get suggestions from YouTube", e)
+                LiveSuggestions.EMPTY
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LiveSuggestions.EMPTY)
 
     /** Earlier searches that start with the [text], most recent first. */
     val recentSearches: StateFlow<List<SearchHistory>> = _text
@@ -124,13 +165,14 @@ class SearchViewModel(
     private fun <T : Any> results(search: (String) -> Flow<PagingData<T>>): Flow<PagingData<T>> =
         combine(query, _origin, ::Pair)
             .flatMapLatest { (query, origin) ->
-                // No online catalog is connected yet, so only local searches find anything
+                // Online catalogs suggest through liveSuggestions
                 if (query.isEmpty() || origin != Origin.LOCAL) flowOf(PagingData.empty())
                 else search(query)
             }
             .cachedIn(viewModelScope)
 
     private companion object {
+        const val TAG = "SearchViewModel"
         const val RECENT_LIMIT = 10
         const val QUERY_DELAY_MS = 250L
     }

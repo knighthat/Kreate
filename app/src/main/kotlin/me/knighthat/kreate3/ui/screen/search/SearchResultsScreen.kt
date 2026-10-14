@@ -19,12 +19,15 @@
 package me.knighthat.kreate3.ui.screen.search
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeTopAppBar
@@ -61,6 +64,13 @@ private const val ALBUM_ITEM_SIZE = 120
 private const val ARTIST_ITEM_SIZE = 100
 private const val PLAYLIST_ITEM_SIZE = 220
 
+@Composable
+private fun Notice(text: String) = Text(
+    text = text,
+    style = MaterialTheme.typography.bodyMedium,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+)
+
 /**
  * Items of one kind as a grid, as many to a row as fit.
  */
@@ -88,7 +98,8 @@ private fun ResultsGrid(
 
 /**
  * What a search found, one tab for each kind of item like the library's. A local search shows the
- * library's lists narrowed to the matches.
+ * library's lists narrowed to the matches, a YouTube search shows what YouTube finds, page after
+ * page as the list scrolls.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -142,18 +153,26 @@ fun SearchResultsScreen(
         containerColor = MaterialTheme.colorScheme.surfaceDim,
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { padding ->
-        if (viewModel.origin != Origin.LOCAL || (current.itemCount == 0 &&
-                    current.loadState.refresh !is LoadState.Loading)
-        ) {
-            Text(
-                text = if (viewModel.origin != Origin.LOCAL) "Searching ${viewModel.origin.name} isn't available yet"
-                else "No ${selected.label.lowercase()} found for \"${viewModel.query}\"",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+        val origin = viewModel.origin
+        val refresh = current.loadState.refresh
+        if (origin == Origin.OPEN_SUBSONIC || current.itemCount == 0) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .padding(padding)
                     .padding(16.dp),
-            )
+            ) {
+                when {
+                    origin == Origin.OPEN_SUBSONIC -> Notice("Searching ${origin.name} isn't available yet")
+                    refresh is LoadState.Loading -> CircularProgressIndicator()
+                    refresh is LoadState.Error -> {
+                        Notice("Couldn't search ${origin.name}")
+                        Button(onClick = current::retry) { Text("Try again") }
+                    }
+
+                    else -> Notice("No ${selected.label.lowercase()} found for \"${viewModel.query}\"")
+                }
+            }
             return@Scaffold
         }
 

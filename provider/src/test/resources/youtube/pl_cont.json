@@ -1,0 +1,789 @@
+{
+  "responseContext": {
+    "visitorData": "CgtvSkxWU19PTkowZyjH9bvWBjIKCgJVUxIEGgAgVQ%3D%3D",
+    "responseId": "IhMI0KS7kMy4lwMVptw_BB3XKQiC"
+  },
+  "onResponseReceivedActions": [
+    {
+      "appendContinuationItemsAction": {
+        "continuationItems": [
+          {
+            "musicResponsiveListItemRenderer": {
+              "thumbnail": {
+                "musicThumbnailRenderer": {
+                  "thumbnail": {
+                    "thumbnails": [
+                      {
+                        "url": "https://yt3.googleusercontent.com/YikJNY42l1-Tpvb4OiFLyOL0yczlaIcMaF46eP8GeM2N5QBT-lXIjPaedZSsMUEyPp1ps7TbyfXT0GM=w60-h60-l90-rj",
+                        "width": 60,
+                        "height": 60
+                      },
+                      {
+                        "url": "https://yt3.googleusercontent.com/YikJNY42l1-Tpvb4OiFLyOL0yczlaIcMaF46eP8GeM2N5QBT-lXIjPaedZSsMUEyPp1ps7TbyfXT0GM=w120-h120-l90-rj",
+                        "width": 120,
+                        "height": 120
+                      }
+                    ]
+                  }
+                }
+              },
+              "flexColumns": [
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Robot Rock (Maximum Overdrive Mix)",
+                          "navigationEndpoint": {
+                            "watchEndpoint": {
+                              "videoId": "tLte8wyUYL8",
+                              "playlistId": "OLAK5uy_lNVBcjNtiCwq-n95uoxJ-Gd4vsfMkyZNs",
+                              "watchEndpointMusicSupportedConfigs": {
+                                "watchEndpointMusicConfig": {
+                                  "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Daft Punk",
+                          "navigationEndpoint": {
+                            "browseEndpoint": {
+                              "browseId": "UCRr1xG_2WIDs18a6cIiCxeA",
+                              "browseEndpointContextSupportedConfigs": {
+                                "browseEndpointContextMusicConfig": {
+                                  "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "3.1M plays"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Human After All (Remixes)",
+                          "navigationEndpoint": {
+                            "browseEndpoint": {
+                              "browseId": "MPREb_TP971moS91e",
+                              "browseEndpointContextSupportedConfigs": {
+                                "browseEndpointContextMusicConfig": {
+                                  "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "fixedColumns": [
+                {
+                  "musicResponsiveListItemFixedColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "5:56"
+                        }
+                      ]
+                    },
+                    "size": "MUSIC_RESPONSIVE_LIST_ITEM_FIXED_COLUMN_SIZE_SMALL"
+                  }
+                }
+              ],
+              "playlistItemData": {
+                "playlistSetVideoId": "9EA9FE3F8693C27D",
+                "videoId": "tLte8wyUYL8",
+                "voteSortValue": 1791947027
+              },
+              "multiSelectCheckbox": {
+                "checkboxRenderer": {
+                  "onSelectionChangeCommand": {
+                    "updateMultiSelectStateCommand": {
+                      "multiSelectParams": "CAISKU9MQUs1dXlfbE5WQmNqTnRpQ3dxLW45NXVveEotR2Q0dnNmTWt5Wk5z",
+                      "multiSelectItem": "Ch8KC3RMdGU4d3lVWUw4EhA5RUE5RkUzRjg2OTNDMjdE"
+                    }
+                  },
+                  "checkedState": "CHECKBOX_CHECKED_STATE_UNCHECKED"
+                }
+              }
+            }
+          },
+          {
+            "musicResponsiveListItemRenderer": {
+              "thumbnail": {
+                "musicThumbnailRenderer": {
+                  "thumbnail": {
+                    "thumbnails": [
+                      {
+                        "url": "https://yt3.googleusercontent.com/KaJnfZODrFtPLUHqJsoWW5tDXp9LijCKqQv80Vi7Egpq9W5DLomExELyVOIqZcmumvqCsf0LLTOlD457=w60-h60-l90-rj",
+                        "width": 60,
+                        "height": 60
+                      },
+                      {
+                        "url": "https://yt3.googleusercontent.com/KaJnfZODrFtPLUHqJsoWW5tDXp9LijCKqQv80Vi7Egpq9W5DLomExELyVOIqZcmumvqCsf0LLTOlD457=w120-h120-l90-rj",
+                        "width": 120,
+                        "height": 120
+                      }
+                    ]
+                  }
+                }
+              },
+              "flexColumns": [
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Encom Part I",
+                          "navigationEndpoint": {
+                            "watchEndpoint": {
+                              "videoId": "W_krrkNE-Sc",
+                              "playlistId": "OLAK5uy_lNVBcjNtiCwq-n95uoxJ-Gd4vsfMkyZNs",
+                              "watchEndpointMusicSupportedConfigs": {
+                                "watchEndpointMusicConfig": {
+                                  "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Daft Punk",
+                          "navigationEndpoint": {
+                            "browseEndpoint": {
+                              "browseId": "UCRr1xG_2WIDs18a6cIiCxeA",
+                              "browseEndpointContextSupportedConfigs": {
+                                "browseEndpointContextMusicConfig": {
+                                  "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "2.7M plays"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "TRON: Legacy - The Complete Edition (Original Motion Picture Soundtrack)",
+                          "navigationEndpoint": {
+                            "browseEndpoint": {
+                              "browseId": "MPREb_3L0yrk0Vxg5",
+                              "browseEndpointContextSupportedConfigs": {
+                                "browseEndpointContextMusicConfig": {
+                                  "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "fixedColumns": [
+                {
+                  "musicResponsiveListItemFixedColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "3:52"
+                        }
+                      ]
+                    },
+                    "size": "MUSIC_RESPONSIVE_LIST_ITEM_FIXED_COLUMN_SIZE_SMALL"
+                  }
+                }
+              ],
+              "playlistItemData": {
+                "playlistSetVideoId": "A13A37AFACCB1A2A",
+                "videoId": "W_krrkNE-Sc",
+                "voteSortValue": 1791947027
+              },
+              "multiSelectCheckbox": {
+                "checkboxRenderer": {
+                  "onSelectionChangeCommand": {
+                    "updateMultiSelectStateCommand": {
+                      "multiSelectParams": "CAISKU9MQUs1dXlfbE5WQmNqTnRpQ3dxLW45NXVveEotR2Q0dnNmTWt5Wk5z",
+                      "multiSelectItem": "Ch8KC1dfa3Jya05FLVNjEhBBMTNBMzdBRkFDQ0IxQTJB"
+                    }
+                  },
+                  "checkedState": "CHECKBOX_CHECKED_STATE_UNCHECKED"
+                }
+              }
+            }
+          },
+          {
+            "musicResponsiveListItemRenderer": {
+              "thumbnail": {
+                "musicThumbnailRenderer": {
+                  "thumbnail": {
+                    "thumbnails": [
+                      {
+                        "url": "https://yt3.googleusercontent.com/KaJnfZODrFtPLUHqJsoWW5tDXp9LijCKqQv80Vi7Egpq9W5DLomExELyVOIqZcmumvqCsf0LLTOlD457=w60-h60-l90-rj",
+                        "width": 60,
+                        "height": 60
+                      },
+                      {
+                        "url": "https://yt3.googleusercontent.com/KaJnfZODrFtPLUHqJsoWW5tDXp9LijCKqQv80Vi7Egpq9W5DLomExELyVOIqZcmumvqCsf0LLTOlD457=w120-h120-l90-rj",
+                        "width": 120,
+                        "height": 120
+                      }
+                    ]
+                  }
+                }
+              },
+              "flexColumns": [
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Sea of Simulation",
+                          "navigationEndpoint": {
+                            "watchEndpoint": {
+                              "videoId": "_bz8rU7LdyE",
+                              "playlistId": "OLAK5uy_lNVBcjNtiCwq-n95uoxJ-Gd4vsfMkyZNs",
+                              "watchEndpointMusicSupportedConfigs": {
+                                "watchEndpointMusicConfig": {
+                                  "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Daft Punk",
+                          "navigationEndpoint": {
+                            "browseEndpoint": {
+                              "browseId": "UCRr1xG_2WIDs18a6cIiCxeA",
+                              "browseEndpointContextSupportedConfigs": {
+                                "browseEndpointContextMusicConfig": {
+                                  "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "2M plays"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "TRON: Legacy - The Complete Edition (Original Motion Picture Soundtrack)",
+                          "navigationEndpoint": {
+                            "browseEndpoint": {
+                              "browseId": "MPREb_3L0yrk0Vxg5",
+                              "browseEndpointContextSupportedConfigs": {
+                                "browseEndpointContextMusicConfig": {
+                                  "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "fixedColumns": [
+                {
+                  "musicResponsiveListItemFixedColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "2:41"
+                        }
+                      ]
+                    },
+                    "size": "MUSIC_RESPONSIVE_LIST_ITEM_FIXED_COLUMN_SIZE_SMALL"
+                  }
+                }
+              ],
+              "playlistItemData": {
+                "playlistSetVideoId": "F771B99B8BB28DF6",
+                "videoId": "_bz8rU7LdyE",
+                "voteSortValue": 1791947027
+              },
+              "multiSelectCheckbox": {
+                "checkboxRenderer": {
+                  "onSelectionChangeCommand": {
+                    "updateMultiSelectStateCommand": {
+                      "multiSelectParams": "CAISKU9MQUs1dXlfbE5WQmNqTnRpQ3dxLW45NXVveEotR2Q0dnNmTWt5Wk5z",
+                      "multiSelectItem": "Ch8KC19iejhyVTdMZHlFEhBGNzcxQjk5QjhCQjI4REY2"
+                    }
+                  },
+                  "checkedState": "CHECKBOX_CHECKED_STATE_UNCHECKED"
+                }
+              }
+            }
+          },
+          {
+            "musicResponsiveListItemRenderer": {
+              "thumbnail": {
+                "musicThumbnailRenderer": {
+                  "thumbnail": {
+                    "thumbnails": [
+                      {
+                        "url": "https://yt3.googleusercontent.com/KaJnfZODrFtPLUHqJsoWW5tDXp9LijCKqQv80Vi7Egpq9W5DLomExELyVOIqZcmumvqCsf0LLTOlD457=w60-h60-l90-rj",
+                        "width": 60,
+                        "height": 60
+                      },
+                      {
+                        "url": "https://yt3.googleusercontent.com/KaJnfZODrFtPLUHqJsoWW5tDXp9LijCKqQv80Vi7Egpq9W5DLomExELyVOIqZcmumvqCsf0LLTOlD457=w120-h120-l90-rj",
+                        "width": 120,
+                        "height": 120
+                      }
+                    ]
+                  }
+                }
+              },
+              "flexColumns": [
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Father and Son",
+                          "navigationEndpoint": {
+                            "watchEndpoint": {
+                              "videoId": "Xp6dMCyCB4s",
+                              "playlistId": "OLAK5uy_lNVBcjNtiCwq-n95uoxJ-Gd4vsfMkyZNs",
+                              "watchEndpointMusicSupportedConfigs": {
+                                "watchEndpointMusicConfig": {
+                                  "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Daft Punk",
+                          "navigationEndpoint": {
+                            "browseEndpoint": {
+                              "browseId": "UCRr1xG_2WIDs18a6cIiCxeA",
+                              "browseEndpointContextSupportedConfigs": {
+                                "browseEndpointContextMusicConfig": {
+                                  "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "2.1M plays"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "TRON: Legacy - The Complete Edition (Original Motion Picture Soundtrack)",
+                          "navigationEndpoint": {
+                            "browseEndpoint": {
+                              "browseId": "MPREb_3L0yrk0Vxg5",
+                              "browseEndpointContextSupportedConfigs": {
+                                "browseEndpointContextMusicConfig": {
+                                  "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "fixedColumns": [
+                {
+                  "musicResponsiveListItemFixedColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "3:10"
+                        }
+                      ]
+                    },
+                    "size": "MUSIC_RESPONSIVE_LIST_ITEM_FIXED_COLUMN_SIZE_SMALL"
+                  }
+                }
+              ],
+              "playlistItemData": {
+                "playlistSetVideoId": "29E74C60D5CA2A79",
+                "videoId": "Xp6dMCyCB4s",
+                "voteSortValue": 1791947027
+              },
+              "multiSelectCheckbox": {
+                "checkboxRenderer": {
+                  "onSelectionChangeCommand": {
+                    "updateMultiSelectStateCommand": {
+                      "multiSelectParams": "CAISKU9MQUs1dXlfbE5WQmNqTnRpQ3dxLW45NXVveEotR2Q0dnNmTWt5Wk5z",
+                      "multiSelectItem": "Ch8KC1hwNmRNQ3lDQjRzEhAyOUU3NEM2MEQ1Q0EyQTc5"
+                    }
+                  },
+                  "checkedState": "CHECKBOX_CHECKED_STATE_UNCHECKED"
+                }
+              }
+            }
+          },
+          {
+            "musicResponsiveListItemRenderer": {
+              "thumbnail": {
+                "musicThumbnailRenderer": {
+                  "thumbnail": {
+                    "thumbnails": [
+                      {
+                        "url": "https://yt3.googleusercontent.com/Xjz30fmEYZeh_eM-lscM57_eJqeUJrgJTs-0Zl_NoU1_M0h3hheIaq3qzGAIq9YWX-EiuEWfGjGeLS1E=w60-h60-l90-rj",
+                        "width": 60,
+                        "height": 60
+                      },
+                      {
+                        "url": "https://yt3.googleusercontent.com/Xjz30fmEYZeh_eM-lscM57_eJqeUJrgJTs-0Zl_NoU1_M0h3hheIaq3qzGAIq9YWX-EiuEWfGjGeLS1E=w120-h120-l90-rj",
+                        "width": 120,
+                        "height": 120
+                      }
+                    ]
+                  }
+                }
+              },
+              "flexColumns": [
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Aerodynamite",
+                          "navigationEndpoint": {
+                            "watchEndpoint": {
+                              "videoId": "gdfEIQ7QdLw",
+                              "playlistId": "OLAK5uy_lNVBcjNtiCwq-n95uoxJ-Gd4vsfMkyZNs",
+                              "watchEndpointMusicSupportedConfigs": {
+                                "watchEndpointMusicConfig": {
+                                  "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Daft Punk",
+                          "navigationEndpoint": {
+                            "browseEndpoint": {
+                              "browseId": "UCRr1xG_2WIDs18a6cIiCxeA",
+                              "browseEndpointContextSupportedConfigs": {
+                                "browseEndpointContextMusicConfig": {
+                                  "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "1.5M plays"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Aerodynamic",
+                          "navigationEndpoint": {
+                            "browseEndpoint": {
+                              "browseId": "MPREb_njMdvJ50JEr",
+                              "browseEndpointContextSupportedConfigs": {
+                                "browseEndpointContextMusicConfig": {
+                                  "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "fixedColumns": [
+                {
+                  "musicResponsiveListItemFixedColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "7:49"
+                        }
+                      ]
+                    },
+                    "size": "MUSIC_RESPONSIVE_LIST_ITEM_FIXED_COLUMN_SIZE_SMALL"
+                  }
+                }
+              ],
+              "playlistItemData": {
+                "playlistSetVideoId": "EFCC95EFA5147EF3",
+                "videoId": "gdfEIQ7QdLw",
+                "voteSortValue": 1791947027
+              },
+              "multiSelectCheckbox": {
+                "checkboxRenderer": {
+                  "onSelectionChangeCommand": {
+                    "updateMultiSelectStateCommand": {
+                      "multiSelectParams": "CAISKU9MQUs1dXlfbE5WQmNqTnRpQ3dxLW45NXVveEotR2Q0dnNmTWt5Wk5z",
+                      "multiSelectItem": "Ch8KC2dkZkVJUTdRZEx3EhBFRkNDOTVFRkE1MTQ3RUYz"
+                    }
+                  },
+                  "checkedState": "CHECKBOX_CHECKED_STATE_UNCHECKED"
+                }
+              }
+            }
+          },
+          {
+            "musicResponsiveListItemRenderer": {
+              "thumbnail": {
+                "musicThumbnailRenderer": {
+                  "thumbnail": {
+                    "thumbnails": [
+                      {
+                        "url": "https://yt3.googleusercontent.com/lLzvUfGK8pyp2a-lvc56yEETq5OajUCeFGO2N0XQ4Qo0pKw34-mMn0NplkjPXg62rTLKNw6TB7aepE7oxg=w60-h60-l90-rj",
+                        "width": 60,
+                        "height": 60
+                      },
+                      {
+                        "url": "https://yt3.googleusercontent.com/lLzvUfGK8pyp2a-lvc56yEETq5OajUCeFGO2N0XQ4Qo0pKw34-mMn0NplkjPXg62rTLKNw6TB7aepE7oxg=w120-h120-l90-rj",
+                        "width": 120,
+                        "height": 120
+                      }
+                    ]
+                  }
+                }
+              },
+              "flexColumns": [
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Around the World (Tee's Frozen Sun Mix)",
+                          "navigationEndpoint": {
+                            "watchEndpoint": {
+                              "videoId": "2JXIfuCTelo",
+                              "playlistId": "OLAK5uy_lNVBcjNtiCwq-n95uoxJ-Gd4vsfMkyZNs",
+                              "watchEndpointMusicSupportedConfigs": {
+                                "watchEndpointMusicConfig": {
+                                  "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Daft Punk",
+                          "navigationEndpoint": {
+                            "browseEndpoint": {
+                              "browseId": "UCRr1xG_2WIDs18a6cIiCxeA",
+                              "browseEndpointContextSupportedConfigs": {
+                                "browseEndpointContextMusicConfig": {
+                                  "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "181K plays"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "musicResponsiveListItemFlexColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "Homework (25th Anniversary Edition)",
+                          "navigationEndpoint": {
+                            "browseEndpoint": {
+                              "browseId": "MPREb_DysYPhLwfgT",
+                              "browseEndpointContextSupportedConfigs": {
+                                "browseEndpointContextMusicConfig": {
+                                  "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "fixedColumns": [
+                {
+                  "musicResponsiveListItemFixedColumnRenderer": {
+                    "text": {
+                      "runs": [
+                        {
+                          "text": "7:58"
+                        }
+                      ]
+                    },
+                    "size": "MUSIC_RESPONSIVE_LIST_ITEM_FIXED_COLUMN_SIZE_SMALL"
+                  }
+                }
+              ],
+              "playlistItemData": {
+                "playlistSetVideoId": "335209095D7F8F99",
+                "videoId": "2JXIfuCTelo",
+                "voteSortValue": 1791947027
+              },
+              "multiSelectCheckbox": {
+                "checkboxRenderer": {
+                  "onSelectionChangeCommand": {
+                    "updateMultiSelectStateCommand": {
+                      "multiSelectParams": "CAISKU9MQUs1dXlfbE5WQmNqTnRpQ3dxLW45NXVveEotR2Q0dnNmTWt5Wk5z",
+                      "multiSelectItem": "Ch8KCzJKWElmdUNUZWxvEhAzMzUyMDkwOTVEN0Y4Rjk5"
+                    }
+                  },
+                  "checkedState": "CHECKBOX_CHECKED_STATE_UNCHECKED"
+                }
+              }
+            }
+          }
+        ],
+        "targetId": "OLAK5uy_lNVBcjNtiCwq-n95uoxJ-Gd4vsfMkyZNs"
+      }
+    }
+  ]
+}

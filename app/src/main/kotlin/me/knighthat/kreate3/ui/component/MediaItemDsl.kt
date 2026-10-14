@@ -33,11 +33,14 @@ import androidx.paging.PagingData
 import androidx.paging.flatMap
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import me.knighthat.kreate3.database.model.Album
+import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.UserAlbumView
 import me.knighthat.kreate3.database.model.UserArtistView
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.model.UserSongView
+import me.knighthat.kreate3.database.repository.RemoteSong
 import me.knighthat.kreate3.source.local.albumArtUri
 import kotlin.time.Duration
 import kotlin.time.Instant
@@ -257,3 +260,93 @@ fun UserPlaylist.toMediaItem(): MediaItem =
  */
 fun Flow<PagingData<UserSongView>>.toMediaItems(): Flow<PagingData<MediaItem>> =
     map { page -> page.flatMap { listOfNotNull(it.toMediaItem()) } }
+
+/*
+ * Items fetched live from an online catalog and shown without being stored. Nothing about them
+ * is known to the user's library, so they carry no reaction.
+ */
+
+/**
+ * A song of an online catalog. It isn't played yet, the player can't get its stream.
+ *
+ * @param thumbnail the picture to show, the song's or its album's when it has none
+ */
+fun RemoteSong.toLiveMediaItem(
+    thumbnail: android.net.Uri? = song.thumbnail ?: album?.thumbnail
+): MediaItem {
+    val names = artists.mapNotNull { it.name }
+    return mediaItem(song.id) {
+        setTitle(song.name)
+        setSubtitle(names.joined())
+        setArtist(names.joined())
+        setAlbumArtist(names.firstOrNull())
+        setAlbumTitle(album?.name)
+        setTrackNumber(song.albumPosition)
+        setArtworkUri(thumbnail)
+        setDurationMs(song.duration.toMillis())
+        setMediaType(MediaMetadata.MEDIA_TYPE_MUSIC)
+        setExtras(extras {
+            putString(EXTRA_ORIGIN, song.origin.name)
+            putString(EXTRA_ALBUM_ID, song.albumId)
+            putStringArray(EXTRA_ARTIST_IDS, artists.map { it.id }.toTypedArray())
+            putExplicit(song.isExplicit)
+        })
+        setIsBrowsable(false)
+        setIsPlayable(false)
+    }
+}
+
+/**
+ * An album of an online catalog.
+ */
+fun Album.toLiveMediaItem(thumbnail: android.net.Uri? = this.thumbnail): MediaItem {
+    val names = artists.orEmpty()
+    return mediaItem(id) {
+        setTitle(name)
+        setSubtitle(subtitle(names.joined(), year?.toString()))
+        setArtist(names.joined())
+        setAlbumArtist(names.firstOrNull())
+        setAlbumTitle(name)
+        setReleaseYear(year)
+        setArtworkUri(thumbnail)
+        setMediaType(MediaMetadata.MEDIA_TYPE_ALBUM)
+        setExtras(extras {
+            putString(EXTRA_ORIGIN, origin.name)
+            putString(EXTRA_URL, url)
+            putExplicit(isExplicit)
+        })
+        setIsBrowsable(true)
+        setIsPlayable(false)
+    }
+}
+
+/**
+ * An artist of an online catalog.
+ */
+fun Artist.toLiveMediaItem(thumbnail: android.net.Uri? = this.thumbnail): MediaItem =
+    mediaItem(id) {
+        setTitle(name)
+        setArtist(name)
+        setArtworkUri(thumbnail)
+        setMediaType(MediaMetadata.MEDIA_TYPE_ARTIST)
+        setExtras(extras { putString(EXTRA_ORIGIN, origin.name) })
+        setIsBrowsable(true)
+        setIsPlayable(false)
+    }
+
+/**
+ * A playlist of an online catalog that isn't saved, its media id is [UserPlaylist.remoteId].
+ */
+fun UserPlaylist.toLiveMediaItem(thumbnail: android.net.Uri? = this.thumbnail): MediaItem =
+    mediaItem(checkNotNull(remoteId) { "A playlist of an online catalog has a remote id" }) {
+        setTitle(name)
+        setSubtitle(origin.name)
+        setArtworkUri(thumbnail)
+        setMediaType(MediaMetadata.MEDIA_TYPE_PLAYLIST)
+        setExtras(extras {
+            putString(EXTRA_ORIGIN, origin.name)
+            putBoolean(EXTRA_IS_MONTHLY, false)
+        })
+        setIsBrowsable(true)
+        setIsPlayable(false)
+    }

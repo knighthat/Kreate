@@ -51,6 +51,11 @@ private fun IconAction(
 fun BackButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
     IconAction(R.drawable.arrow_back, "Back", onClick, modifier)
 
+/** Opens every item of a row that shows only some, see [SectionTitle]. */
+@Composable
+fun SeeMoreButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
+    IconAction(R.drawable.arrow_forward, "See more", onClick, modifier)
+
 @Composable
 fun SearchButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
     IconAction(R.drawable.search, "Search", onClick, modifier)

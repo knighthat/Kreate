@@ -55,6 +55,12 @@ import me.knighthat.kreate3.ui.navigation.NetworkSettings
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicAlbum
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicArtist
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicPlaylist
+import me.knighthat.kreate3.ui.navigation.YouTubeAlbum
+import me.knighthat.kreate3.ui.navigation.YouTubeArtist
+import me.knighthat.kreate3.ui.navigation.YouTubePlaylist
+import me.knighthat.kreate3.ui.navigation.YouTubeMore
+import me.knighthat.kreate3.ui.navigation.itemRoute
+import me.knighthat.kreate3.ui.navigation.youTubeMoreRoute
 import me.knighthat.kreate3.ui.navigation.Playlists
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.Search
@@ -77,6 +83,10 @@ import me.knighthat.kreate3.ui.screen.detail.LocalPlaylistDetailViewModel
 import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicAlbumDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicArtistDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicPlaylistDetailScreen
+import me.knighthat.kreate3.ui.screen.detail.YouTubeAlbumDetailScreen
+import me.knighthat.kreate3.ui.screen.detail.YouTubeArtistDetailScreen
+import me.knighthat.kreate3.ui.screen.detail.YouTubeMoreScreen
+import me.knighthat.kreate3.ui.screen.detail.YouTubePlaylistDetailScreen
 import me.knighthat.kreate3.ui.screen.home.HomeAlbumsScreen
 import me.knighthat.kreate3.ui.screen.home.HomeArtistsScreen
 import me.knighthat.kreate3.ui.screen.home.HomePlaylistsScreen
@@ -289,6 +299,48 @@ fun KreateApp() {
                                 viewModel = library,
                             )
                         }
+                    }
+                    // YouTube items are fetched live and never stored
+                    entry<YouTubeAlbum> {
+                        YouTubeAlbumDetailScreen(
+                            onBack = topLevel::pop,
+                            onOpen = { tab, item -> itemRoute(tab, item)?.let(topLevel::push) },
+                            onSeeMore = { title, more ->
+                                topLevel.push(
+                                    youTubeMoreRoute(
+                                        title,
+                                        more
+                                    )
+                                )
+                            },
+                            viewModel = routeViewModel(it),
+                        )
+                    }
+                    entry<YouTubeArtist> {
+                        YouTubeArtistDetailScreen(
+                            onBack = topLevel::pop,
+                            onOpen = { tab, item -> itemRoute(tab, item)?.let(topLevel::push) },
+                            onSeeMore = { title, more ->
+                                topLevel.push(
+                                    youTubeMoreRoute(
+                                        title,
+                                        more
+                                    )
+                                )
+                            },
+                            onOpenPlaylist = { id -> topLevel.push(YouTubePlaylist(id)) },
+                            viewModel = routeViewModel(it),
+                        )
+                    }
+                    entry<YouTubeMore> {
+                        YouTubeMoreScreen(
+                            onBack = topLevel::pop,
+                            onOpen = { tab, item -> itemRoute(tab, item)?.let(topLevel::push) },
+                            viewModel = routeViewModel(it),
+                        )
+                    }
+                    entry<YouTubePlaylist> {
+                        YouTubePlaylistDetailScreen(topLevel::pop, viewModel = routeViewModel(it))
                     }
                     entry<OpenSubsonicPlaylist> {
                         val library = routeViewModel<LocalPlaylistDetailViewModel>(it)
