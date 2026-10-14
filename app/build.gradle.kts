@@ -23,7 +23,7 @@ plugins {
 }
 
 android {
-    namespace = "me.knighthat.kreate"
+    namespace = "me.knighthat.kreate3"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -38,7 +38,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -52,6 +53,16 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging.resources.excludes += listOf(
+        "/META-INF/*.version",
+        "/META-INF/*.kotlin_module",
+        "/META-INF/**/*.kotlin_builtins",
+        "/META-INF/{AL2.0,LGPL2.1}",
+        "/META-INF/LICENSE*",
+        "/META-INF/NOTICE*",
+        "/kotlin/**",
+        "/DebugProbesKt.bin",
+    )
 
     testOptions.unitTests.all {
         // Robolectric sets up Android's file descriptors through JDK internals

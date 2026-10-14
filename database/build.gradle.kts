@@ -23,7 +23,7 @@ plugins {
 }
 
 android {
-    namespace = "me.knighthat.kreate.database"
+    namespace = "me.knighthat.kreate3.database"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

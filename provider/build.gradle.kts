@@ -20,7 +20,7 @@ plugins {
 }
 
 android {
-    namespace = "me.knighthat.kreate.provider"
+    namespace = "me.knighthat.kreate3.provider"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
