@@ -25,11 +25,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.SongItem
@@ -77,6 +79,18 @@ fun YouTubePlaylistDetailScreen(
                 if (index >= songs.size - PREFETCH_DISTANCE) LaunchedEffect(songs.size) { viewModel.loadMore() }
                 SongItem(song, onClick = {})
             }
+            if (songs.isEmpty() && !hasMore)
+                item(key = "empty") {
+                    Text(
+                        text = "This playlist has no songs",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                    )
+                }
             if (hasMore)
                 item(key = "more") {
                     LaunchedEffect(songs.size) { viewModel.loadMore() }

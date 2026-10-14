@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,14 +34,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.provider.LibrarySection
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
+import me.knighthat.kreate3.provider.youtube.YouTubeChannel
+import me.knighthat.kreate3.provider.youtube.youTubeSyncSetting
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
@@ -176,12 +182,116 @@ private fun validateServerUrl(url: String): String? = when {
 /**
  * How requests are made, and the OpenSubsonic server (like Navidrome) to play music from.
  */
+/**
+ * Who is signed in to YouTube, with a way to sign in or out.
+ */
+@Composable
+private fun YouTubeAccountSettings(
+    state: YouTubeAccountState,
+    channels: List<YouTubeChannel>,
+    pageId: String,
+    onSignIn: () -> Unit,
+    onRetry: () -> Unit,
+    onSwitch: (YouTubeChannel) -> Unit,
+    onSyncChange: (LibrarySection, Boolean) -> Unit,
+    onSignOut: () -> Unit,
+) {
+    var askSignOut by remember { mutableStateOf(false) }
+    var pickChannel by remember { mutableStateOf(false) }
+    // A choice only when the account has several channels
+    val canSwitch = channels.size > 1
+
+    SettingsSection("YouTube")
+    when (state) {
+        YouTubeAccountState.SignedOut -> SettingsItem(
+            title = "Sign in",
+            summary = "Brings your albums, artists and playlists, and makes suggestions yours",
+            onClick = onSignIn,
+        )
+
+        YouTubeAccountState.Checking -> SettingsItem(title = "Account", summary = "Checking…")
+        is YouTubeAccountState.SignedIn -> SettingsItem(
+            title = state.account.name,
+            summary = state.account.handle ?: "Signed in",
+            onClick = if (canSwitch) ({ pickChannel = true }) else null,
+            trailing = if (canSwitch) ({
+                Icon(
+                    painterResource(R.drawable.chevron_right),
+                    contentDescription = "Switch channel"
+                )
+            }) else null,
+        )
+
+        YouTubeAccountState.Ended -> SettingsItem(
+            title = "Signed out by YouTube",
+            summary = "The session ended, tap to sign in again",
+            onClick = onSignIn,
+        )
+
+        is YouTubeAccountState.Failed -> SettingsItem(
+            title = "Account",
+            summary = "${state.reason}, tap to try again",
+            onClick = onRetry,
+        )
+    }
+    if (state != YouTubeAccountState.SignedOut) {
+        LibrarySection.entries.forEach { section ->
+            val syncs by section.youTubeSyncSetting.collectAsStateWithLifecycle()
+            val (title, summary) = when (section) {
+                LibrarySection.SONGS -> "Sync liked songs" to "The songs you liked are liked here too"
+                LibrarySection.ALBUMS -> "Sync albums" to "The albums you saved show in your library"
+                LibrarySection.ARTISTS -> "Sync artists" to "The artists you subscribed to show in your library"
+                LibrarySection.PLAYLISTS -> "Sync playlists" to "Your YouTube playlists show in your library"
+            }
+            SwitchSetting(
+                title = title,
+                summary = summary,
+                checked = syncs,
+                onCheckedChange = { onSyncChange(section, it) },
+            )
+        }
+        SettingsItem(
+            title = "Sign out",
+            summary = "Your YouTube library leaves this profile",
+            onClick = { askSignOut = true },
+        )
+    }
+    if (pickChannel && canSwitch)
+        YouTubeChannelPicker(
+            channels = channels,
+            pageId = pageId,
+            onPick = {
+                pickChannel = false
+                onSwitch(it)
+            },
+            onDismiss = { pickChannel = false },
+        )
+    if (askSignOut)
+        AlertDialog(
+            onDismissRequest = { askSignOut = false },
+            title = { Text("Sign out of YouTube?") },
+            text = { Text("Your YouTube albums, artists and playlists leave this profile. You can sign in again any time.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    askSignOut = false
+                    onSignOut()
+                }) { Text("Sign out") }
+            },
+            dismissButton = { TextButton(onClick = { askSignOut = false }) { Text("Cancel") } },
+        )
+}
+
 @Composable
 fun NetworkSettingsScreen(
     onBack: () -> Unit,
+    onSignInToYouTube: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: NetworkSettingsViewModel = koinViewModel(),
+    youtube: YouTubeAccountViewModel = koinViewModel(),
 ) {
+    val youtubeAccount by youtube.account.collectFlowAsState()
+    val youtubeChannels by youtube.channels.collectFlowAsState()
+    val youtubePageId by youtube.pageId.collectFlowAsState()
     val serverCheck by viewModel.server.collectFlowAsState()
     val allowSelfSigned by Preferences.OPEN_SUBSONIC_ALLOW_SELF_SIGNED.collectAsStateWithLifecycle()
     val certificateHost by Preferences.OPEN_SUBSONIC_CERTIFICATE_HOST.collectAsStateWithLifecycle()
@@ -228,6 +338,17 @@ fun NetworkSettingsScreen(
             max = 10,
             onSave = { Preferences.NETWORK_MAX_RETRIES.update(it.toInt()) },
             note = "Requests that got a server error are sent again. $NEXT_LAUNCH",
+        )
+
+        YouTubeAccountSettings(
+            state = youtubeAccount,
+            channels = youtubeChannels,
+            pageId = youtubePageId,
+            onSignIn = onSignInToYouTube,
+            onRetry = youtube::retry,
+            onSwitch = youtube::switchTo,
+            onSyncChange = youtube::setSyncing,
+            onSignOut = youtube::signOut,
         )
 
         SettingsSection("OpenSubsonic")

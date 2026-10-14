@@ -28,19 +28,36 @@ import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
+import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.repository.RemoteSong
+import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.provider.Provider
 import me.knighthat.kreate3.provider.SearchResults
 import me.knighthat.kreate3.provider.youtube.InnerTube.Endpoint
 import me.knighthat.kreate3.provider.youtube.YouTubeItem.AlbumItem
 import me.knighthat.kreate3.provider.youtube.YouTubeItem.ArtistItem
+import me.knighthat.kreate3.provider.youtube.YouTubeItem.PlaylistItem
 import me.knighthat.kreate3.provider.youtube.YouTubeItem.SongItem
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider.Companion.LIBRARY_PAGES
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider.Companion.PLAYLIST_PAGES
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider.Companion.SEARCH_PAGES
 import java.util.Locale
 
 /**
- * YouTube Music, read through InnerTube without a sign in: searching, songs, albums, artists,
- * playlists, the home page, radios, lyrics and related items. What to play is not fetched,
- * [playbackUri] is always `null`.
+ * Whether [cookies], a `Cookie` header of youtube.com, are of a signed in session, like the ones
+ * a sign in page leaves behind.
+ */
+fun isYouTubeSession(cookies: String): Boolean = YouTubeSession.of(cookies) != null
+
+/**
+ * YouTube Music, read through InnerTube: searching, songs, albums, artists, playlists, the home
+ * page, radios, lyrics and related items. What to play is not fetched, [playbackUri] is always
+ * `null`.
+ *
+ * Nobody needs to be signed in. Once the user signed in, with the cookies kept in
+ * `Secrets.YOUTUBE_COOKIES`, every request is sent in their session and the user's library can be
+ * read, see [libraryAlbums].
  *
  * Lists that are long come in parts, a [YouTubePage] hands its continuation to the method that
  * gave it for the next part. Pictures are the addresses YouTube gives, [artworkUri] sizes them.
@@ -54,13 +71,142 @@ class YouTubeProvider internal constructor(
 
     /**
      * @param client the app's client
+     * @param cookies the cookies of the signed in session, empty while nobody is signed in. They
+     * are the active profile's by default.
+     * @param pageId page id of the channel the signed in user acts as, empty for their account's
+     * own. The active profile's choice by default.
      */
-    constructor(client: HttpClient, json: Json) : this(
-        InnerTube(client, json, Locale::getDefault),
+    constructor(
+        client: HttpClient,
+        json: Json,
+        cookies: suspend () -> String = { Secrets.YOUTUBE_COOKIES.current() },
+        pageId: () -> String = { Preferences.YOUTUBE_PAGE_ID.value },
+    ) : this(
+        InnerTube(client, json, Locale::getDefault, cookies, pageId = pageId),
         YouTubeParser { it.toUri() },
     )
 
     override val origin = Origin.YOUTUBE
+
+    /**
+     * Whether cookies of a signed in session are saved. They may still belong to a session that
+     * ended, [account] finds out.
+     */
+    suspend fun isSignedIn(): Boolean = innerTube.session() != null
+
+    /**
+     * Something that tells the saved session apart from others, `null` while nobody is signed in.
+     * Another channel of the same account is another session. It is derived from the cookies,
+     * keep it out of logs too.
+     */
+    suspend fun sessionId(): String? = innerTube.session()?.id
+
+    /**
+     * Every channel of the signed in user's Google account, in the order YouTube lists them. An
+     * account with brand accounts has several, see [YouTubeChannel.pageId].
+     *
+     * @return `null` while nobody is signed in
+     * @throws YouTubeException with [YouTubeException.signedOut] when the session ended
+     */
+    suspend fun channels(): List<YouTubeChannel>? {
+        if (!isSignedIn()) return null
+        return parser.channels(innerTube.accountsList())
+    }
+
+    /**
+     * The signed in user's account.
+     *
+     * @return `null` while nobody is signed in
+     * @throws YouTubeException with [YouTubeException.signedOut] when the session ended
+     */
+    suspend fun account(): YouTubeAccount? {
+        if (!isSignedIn()) return null
+        return parser.account(innerTube.accountMenu())
+            ?: throw YouTubeException("YouTube didn't say who is signed in", signedOut = true)
+    }
+
+    /**
+     * The albums the user saved to their library, most recently added first.
+     *
+     * @return `null` while nobody is signed in
+     * @throws YouTubeException with [YouTubeException.signedOut] when the session ended
+     */
+    suspend fun libraryAlbums(): List<Album>? =
+        library(LIBRARY_ALBUMS)?.filterIsInstance<AlbumItem>()?.map { it.album }
+            ?.distinctBy { it.id }
+
+    /**
+     * The artists the user subscribed to.
+     *
+     * @return `null` while nobody is signed in
+     * @throws YouTubeException with [YouTubeException.signedOut] when the session ended
+     */
+    suspend fun libraryArtists(): List<Artist>? =
+        library(LIBRARY_ARTISTS)?.filterIsInstance<ArtistItem>()?.map { it.artist }
+            ?.distinctBy { it.id }
+
+    /**
+     * The playlists in the user's library, theirs and the ones they saved, with "Liked Music"
+     * whose id is `LM`. Their ids on YouTube are [UserPlaylist.remoteId].
+     *
+     * @return `null` while nobody is signed in
+     * @throws YouTubeException with [YouTubeException.signedOut] when the session ended
+     */
+    suspend fun libraryPlaylists(): List<UserPlaylist>? =
+        library(LIBRARY_PLAYLISTS)?.filterIsInstance<PlaylistItem>()?.map { it.playlist }
+            ?.distinctBy { it.remoteId }
+
+    /**
+     * The songs the user liked, "Liked Music", most recently liked first, fetched part after part
+     * up to [PLAYLIST_PAGES] parts of about 100 songs. YouTube doesn't tell when they were liked.
+     *
+     * @return the songs, with a continuation when more are liked than were fetched, or `null`
+     * while nobody is signed in
+     * @throws YouTubeException with [YouTubeException.signedOut] when the session ended
+     */
+    suspend fun likedSongs(): YouTubePage<RemoteSong>? {
+        if (!isSignedIn()) return null
+
+        // An answer outside the session fails, it would like nothing and take every like away
+        val page = parser.playlistPage(
+            LIKED_SONGS,
+            innerTube.browse(PLAYLIST_BROWSE_PREFIX + LIKED_SONGS, signedIn = true),
+        ) ?: throw YouTubeException("YouTube didn't list the liked songs")
+        val songs = page.songs.toMutableList()
+        var continuation = page.continuation
+        var pages = 1
+        while (continuation != null && pages < PLAYLIST_PAGES) {
+            val next = parser.playlistSongs(
+                innerTube.continuation(Endpoint.BROWSE, continuation, signedIn = true)
+            )
+            songs += next.items
+            continuation = next.continuation
+            pages++
+        }
+        return YouTubePage(songs.distinctBy { it.song.id }, continuation)
+    }
+
+    /**
+     * Every item of a page of the user's library, part after part up to [LIBRARY_PAGES] parts.
+     * An answer outside the session fails, it would list nothing and empty the library.
+     *
+     * @return `null` while nobody is signed in
+     */
+    private suspend fun library(browseId: String): List<YouTubeItem>? {
+        if (!isSignedIn()) return null
+
+        var page = parser.browsePage(innerTube.browse(browseId, signedIn = true))
+        val items = page.items.toMutableList()
+        var pages = 1
+        while (pages < LIBRARY_PAGES) {
+            val token = page.continuation ?: break
+            page =
+                parser.browsePage(innerTube.continuation(Endpoint.BROWSE, token, signedIn = true))
+            items += page.items
+            pages++
+        }
+        return items
+    }
 
     /**
      * One kind of results of a search, best matches first.
@@ -289,5 +435,15 @@ class YouTubeProvider internal constructor(
 
         /** Requests [allPlaylistSongs] may send, about 100 songs each. */
         const val PLAYLIST_PAGES = 50
+
+        /** Id of the "Liked Music" playlist, the same for everyone. */
+        const val LIKED_SONGS = "LM"
+
+        const val LIBRARY_ALBUMS = "FEmusic_liked_albums"
+        const val LIBRARY_ARTISTS = "FEmusic_library_corpus_artists"
+        const val LIBRARY_PLAYLISTS = "FEmusic_liked_playlists"
+
+        /** Requests a page of the library may send, about 25 to 100 items each. */
+        const val LIBRARY_PAGES = 40
     }
 }

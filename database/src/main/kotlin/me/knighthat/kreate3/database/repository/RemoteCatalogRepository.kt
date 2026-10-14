@@ -60,7 +60,8 @@ interface RemoteCatalogRepository {
     /**
      * Stores [albums] in the catalog and the active user's library. The user's own name, cover
      * and artists are kept. The bookmark follows the star on the server, except that an album the
-     * user disliked stays disliked while it isn't starred. Albums of [origin] that are no longer
+     * user disliked stays disliked while it isn't starred, and a bookmark already stored keeps
+     * its time, the one of the star when it was first seen. Albums of [origin] that are no longer
      * on the server leave the user's library.
      *
      * @throws IllegalArgumentException when an album is from another origin
@@ -100,4 +101,16 @@ interface RemoteCatalogRepository {
         artists: List<RemoteItem<Artist>> = emptyList(),
         playlistId: Long? = null,
     )
+
+    /**
+     * Makes [songs] the active user's liked songs of [origin]. Each is stored like with
+     * [syncSongs] and liked at its [RemoteSong.starredAt], or now when the server doesn't tell
+     * when. A song already liked keeps its time, a dislike is replaced by the like.
+     *
+     * A song of [origin] liked in the user's library that isn't in [songs] loses its like, the song
+     * stays in their library. Dislikes of songs not in [songs] stay.
+     *
+     * @throws IllegalArgumentException when an item is from another origin
+     */
+    suspend fun syncLikedSongs(origin: Origin, songs: List<RemoteSong>)
 }

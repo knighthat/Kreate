@@ -28,6 +28,7 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
 import me.knighthat.kreate3.ui.component.origin
+import me.knighthat.kreate3.ui.component.remoteId
 
 /**
  * Every screen the app can show. Entries on the back stack are instances of this.
@@ -68,6 +69,10 @@ data object UiSettings : Route
 
 @Serializable
 data object NetworkSettings : Route
+
+/** Google's sign in page, the session it leaves is kept for YouTube. */
+@Serializable
+data object YouTubeSignIn : Route
 
 /**
  * What [origin] found for [query], by kind. The screen opens on the [tab] of one of them.
@@ -225,12 +230,12 @@ fun artistRoute(item: MediaItem): Route = when (item.origin) {
 }
 
 /**
- * The screen of a playlist, by where it comes from. A playlist of YouTube isn't saved, its media
- * id is its id on YouTube.
+ * The screen of a playlist, by where it comes from. A playlist of YouTube opens by its id there,
+ * whether it is saved, like one of the user's library, or not.
  */
 fun playlistRoute(item: MediaItem): Route = when (item.origin) {
     Origin.OPEN_SUBSONIC -> OpenSubsonicPlaylist(item.mediaId.toLong())
-    Origin.YOUTUBE -> YouTubePlaylist(item.mediaId)
+    Origin.YOUTUBE -> YouTubePlaylist(item.remoteId ?: item.mediaId)
     else -> LocalPlaylist(item.mediaId.toLong())
 }
 

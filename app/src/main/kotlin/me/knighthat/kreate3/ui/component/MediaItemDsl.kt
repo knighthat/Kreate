@@ -55,6 +55,9 @@ const val EXTRA_ALBUM_ID = "album_id"
 const val EXTRA_ARTIST_IDS = "artist_ids"
 const val EXTRA_IS_MONTHLY = "is_monthly"
 
+/** Id of a playlist at its origin, see [UserPlaylist.remoteId]. */
+const val EXTRA_REMOTE_ID = "remote_id"
+
 /**
  * Builds a [MediaItem] whose metadata is described by [block].
  */
@@ -141,6 +144,12 @@ val MediaItem.isLocal: Boolean
     get() = origin == Origin.LOCAL
 
 /**
+ * Id of a playlist at its origin, `null` for a playlist made in the app.
+ */
+val MediaItem.remoteId: String?
+    get() = mediaMetadata.extras?.getString(EXTRA_REMOTE_ID)
+
+/**
  * Where the item comes from, `null` for an item made without one.
  */
 val MediaItem.origin: Origin?
@@ -148,11 +157,11 @@ val MediaItem.origin: Origin?
         ?.let { name -> Origin.entries.firstOrNull { it.name == name } }
 
 /**
- * A song with the values the user sees. A song from an OpenSubsonic server is shown but can't be
- * played yet, its stream needs the sign in, which isn't added to the player yet.
+ * A song with the values the user sees. A song from an OpenSubsonic server or YouTube is shown
+ * but can't be played yet: the server's stream needs the sign in and YouTube's needs a stream
+ * address, neither is added to the player yet.
  *
- * @return `null` when the song can't be shown: a song from YouTube needs a stream address that
- * is not resolved yet, and an unavailable file cannot be read.
+ * @return `null` when the song can't be shown, like an unavailable file that cannot be read
  */
 fun UserSongView.toMediaItem(): MediaItem? {
     if (!isAvailable) return null
@@ -163,8 +172,7 @@ fun UserSongView.toMediaItem(): MediaItem? {
             songId.toLongOrNull() ?: return null,
         )
 
-        Origin.YOUTUBE -> return null
-        Origin.OPEN_SUBSONIC -> null
+        Origin.YOUTUBE, Origin.OPEN_SUBSONIC -> null
     }
 
     return mediaItem(songId, uri) {
@@ -249,6 +257,7 @@ fun UserPlaylist.toMediaItem(): MediaItem =
         setExtras(extras {
             putString(EXTRA_ORIGIN, origin.name)
             putBoolean(EXTRA_IS_MONTHLY, isMonthly)
+            putString(EXTRA_REMOTE_ID, remoteId)
         })
         setIsBrowsable(true)
         setIsPlayable(false)
@@ -346,6 +355,7 @@ fun UserPlaylist.toLiveMediaItem(thumbnail: android.net.Uri? = this.thumbnail): 
         setExtras(extras {
             putString(EXTRA_ORIGIN, origin.name)
             putBoolean(EXTRA_IS_MONTHLY, false)
+            putString(EXTRA_REMOTE_ID, remoteId)
         })
         setIsBrowsable(true)
         setIsPlayable(false)

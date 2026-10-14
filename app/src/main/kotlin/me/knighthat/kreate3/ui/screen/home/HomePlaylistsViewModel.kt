@@ -24,8 +24,9 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate3.database.repository.PlaylistRepository
-import me.knighthat.kreate3.provider.opensubsonic.LibrarySection
+import me.knighthat.kreate3.provider.LibrarySection
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
+import me.knighthat.kreate3.provider.youtube.YouTubeLibrary
 import me.knighthat.kreate3.ui.component.toMediaItem
 
 /**
@@ -34,12 +35,19 @@ import me.knighthat.kreate3.ui.component.toMediaItem
 class HomePlaylistsViewModel(
     playlistRepository: PlaylistRepository,
     private val library: OpenSubsonicLibrary,
+    private val youtubeLibrary: YouTubeLibrary,
 ) : ViewModel() {
 
     val playlists = playlistRepository.all()
         .map { page -> page.map { it.toMediaItem() } }
         .cachedIn(viewModelScope)
 
-    /** Brings the playlists of the server into the library, call it when the tab shows. */
-    fun refresh() = library.refresh(LibrarySection.PLAYLISTS)
+    /**
+     * Brings the playlists of the server and of YouTube into the library, call it when the tab
+     * shows. Each does nothing while it isn't set up.
+     */
+    fun refresh() {
+        library.refresh(LibrarySection.PLAYLISTS)
+        youtubeLibrary.refresh(LibrarySection.PLAYLISTS)
+    }
 }

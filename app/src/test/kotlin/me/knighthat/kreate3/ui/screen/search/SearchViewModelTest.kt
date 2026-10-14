@@ -123,6 +123,9 @@ class SearchViewModelTest {
             )
         }),
         Json,
+        // Nobody is signed in
+        cookies = { "" },
+        pageId = { "" },
     )
     private lateinit var viewModel: SearchViewModel
 

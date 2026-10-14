@@ -64,7 +64,7 @@ class YouTubeProviderTest {
             )
         }
         return YouTubeProvider(
-            InnerTube(HttpClient(engine), Json { ignoreUnknownKeys = true }) { locale },
+            InnerTube(HttpClient(engine), Json { ignoreUnknownKeys = true }, locale = { locale }),
             YouTubeParser { null },
         )
     }

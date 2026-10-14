@@ -95,13 +95,7 @@ internal class RemoteCatalogRepositoryImpl(
     ) {
         requireOrigin(
             origin,
-            songs.flatMap {
-                listOfNotNull(
-                    it.song.origin,
-                    it.album?.origin
-                ) + it.artists.map(Artist::origin)
-            } +
-                    albums.map { it.item.origin } + artists.map { it.item.origin },
+            songs.origins() + albums.map { it.item.origin } + artists.map { it.item.origin },
         )
         val userId = awaitUser()
 
@@ -111,42 +105,7 @@ internal class RemoteCatalogRepositoryImpl(
 
             storeAlbums(userId, origin, now, albums.distinctBy { it.item.id })
             storeArtists(userId, origin, now, artists.distinctBy { it.item.id })
-            // What the songs point at must exist, rows already stored keep their full values
-            albumDao.insertAll(incoming.mapNotNull { it.album }.distinctBy { it.id }
-                .map { it.toEntity(now, now) })
-            artistDao.insertAll(incoming.flatMap { it.artists }.distinctBy { it.id }
-                .map { it.toEntity(now, now) })
-
-            val stored = songDao.withOrigin(origin).associateBy { it.id }
-            songDao.upsertAll(incoming.mapNotNull { (song) ->
-                val old = stored[song.id]
-                // The server has the song, so it is available again
-                val new = song.toEntity(old?.createdAt ?: now, now).copy(unavailableSince = null)
-                new.takeUnless { old != null && it.copy(updatedAt = old.updatedAt) == old }
-            })
-
-            // Each song is credited to exactly the artists the server names
-            val ids = incoming.map { it.song.id }.toSet()
-            val wanted = incoming.flatMap { remote ->
-                remote.artists.map { SongArtistMapEntity(remote.song.id, it.id) }
-            }.toSet()
-            val linked = songDao.linksOfOrigin(origin).filter { it.songId in ids }.toSet()
-            (linked - wanted).takeIf { it.isNotEmpty() }?.let { songDao.unlinkAll(it.toList()) }
-            (wanted - linked).takeIf { it.isNotEmpty() }?.let { songDao.linkAll(it.toList()) }
-
-            val library = userSongDao.withOrigin(userId, origin).associateBy { it.songId }
-            userSongDao.upsertAll(incoming.mapNotNull { remote ->
-                val old = library[remote.song.id]
-                    ?: return@mapNotNull UserSongEntity(
-                        userId,
-                        remote.song.id,
-                        likedAt = remote.starredAt,
-                        createdAt = now,
-                        updatedAt = now,
-                    )
-                val likedAt = reaction(remote.starredAt, old.likedAt)
-                if (likedAt == old.likedAt) null else old.copy(likedAt = likedAt, updatedAt = now)
-            })
+            storeSongs(userId, origin, now, incoming)
 
             playlistId?.let { id ->
                 val playlist = requireNotNull(playlistDao.get(id)) { "Playlist $id doesn't exist" }
@@ -156,6 +115,76 @@ internal class RemoteCatalogRepositoryImpl(
                 playlistDao.addSongs(incoming.map { SongPlaylistMapEntity(it.song.id, id) })
             }
         }
+    }
+
+    override suspend fun syncLikedSongs(origin: Origin, songs: List<RemoteSong>) {
+        requireOrigin(origin, songs.origins())
+        val userId = awaitUser()
+
+        database.inTransaction {
+            val now = clock.now()
+            val incoming = songs.distinctBy { it.song.id }
+                .map { it.copy(starredAt = it.starredAt ?: now) }
+            val library = storeSongs(userId, origin, now, incoming)
+
+            // Only the like goes, the song stays in the user's library
+            val kept = incoming.map { it.song.id }.toSet()
+            userSongDao.upsertAll(
+                library.filter { it.songId !in kept && it.likedAt.isLike }
+                    .map { it.copy(likedAt = null, updatedAt = now) }
+            )
+        }
+    }
+
+    /**
+     * Upserts [incoming] with what they point at and gives each a row in the user's library, see
+     * [syncSongs].
+     *
+     * @return the user's rows of [origin] as they were before
+     */
+    private suspend fun storeSongs(
+        userId: String,
+        origin: Origin,
+        now: Instant,
+        incoming: List<RemoteSong>,
+    ): Collection<UserSongEntity> {
+        // What the songs point at must exist, rows already stored keep their full values
+        albumDao.insertAll(incoming.mapNotNull { it.album }.distinctBy { it.id }
+            .map { it.toEntity(now, now) })
+        artistDao.insertAll(incoming.flatMap { it.artists }.distinctBy { it.id }
+            .map { it.toEntity(now, now) })
+
+        val stored = songDao.withOrigin(origin).associateBy { it.id }
+        songDao.upsertAll(incoming.mapNotNull { (song) ->
+            val old = stored[song.id]
+            // The server has the song, so it is available again
+            val new = song.toEntity(old?.createdAt ?: now, now).copy(unavailableSince = null)
+            new.takeUnless { old != null && it.copy(updatedAt = old.updatedAt) == old }
+        })
+
+        // Each song is credited to exactly the artists the server names
+        val ids = incoming.map { it.song.id }.toSet()
+        val wanted = incoming.flatMap { remote ->
+            remote.artists.map { SongArtistMapEntity(remote.song.id, it.id) }
+        }.toSet()
+        val linked = songDao.linksOfOrigin(origin).filter { it.songId in ids }.toSet()
+        (linked - wanted).takeIf { it.isNotEmpty() }?.let { songDao.unlinkAll(it.toList()) }
+        (wanted - linked).takeIf { it.isNotEmpty() }?.let { songDao.linkAll(it.toList()) }
+
+        val library = userSongDao.withOrigin(userId, origin).associateBy { it.songId }
+        userSongDao.upsertAll(incoming.mapNotNull { remote ->
+            val old = library[remote.song.id]
+                ?: return@mapNotNull UserSongEntity(
+                    userId,
+                    remote.song.id,
+                    likedAt = remote.starredAt,
+                    createdAt = now,
+                    updatedAt = now,
+                )
+            val likedAt = reaction(remote.starredAt, old.likedAt)
+            if (likedAt == old.likedAt) null else old.copy(likedAt = likedAt, updatedAt = now)
+        })
+        return library.values
     }
 
     /**
@@ -266,15 +295,24 @@ internal class RemoteCatalogRepositoryImpl(
         withTimeoutOrNull(ACTIVE_USER_TIMEOUT) { scope.awaitId() }
             ?: throw IllegalStateException("No active user to add the server's library to")
 
+    /** The origin of each song and of everything it points at. */
+    private fun List<RemoteSong>.origins(): List<Origin> =
+        flatMap { listOfNotNull(it.song.origin, it.album?.origin) + it.artists.map(Artist::origin) }
+
+    /** Whether a reaction column holds a like, not a dislike or nothing. */
+    private val Instant?.isLike: Boolean
+        get() = this != null && toEpochMilliseconds() != DISLIKED
+
     private fun requireOrigin(origin: Origin, origins: List<Origin>) =
         require(origins.all { it == origin }) { "Every item must be from $origin" }
 
     /**
-     * The reaction to keep: the server's star when there is one, otherwise a dislike stays and
-     * anything else is cleared, the server is where the star was taken away.
+     * The reaction to keep: a star on the server keeps the like already stored, which tells when
+     * it was first given, or replaces anything else. Without a star a dislike stays and anything
+     * else is cleared, the server is where the star was taken away.
      */
     private fun reaction(starredAt: Instant?, stored: Instant?): Instant? = when {
-        starredAt != null -> starredAt
+        starredAt != null -> stored?.takeIf { it.toEpochMilliseconds() != DISLIKED } ?: starredAt
         stored?.toEpochMilliseconds() == DISLIKED -> stored
         else -> null
     }

@@ -53,6 +53,23 @@ internal fun JsonElement?.path(vararg keys: Any): JsonElement? {
     return current
 }
 
+/** Every value named [key] anywhere in this element, outermost first. */
+internal fun JsonElement?.findAll(key: String): List<JsonElement> {
+    val found = mutableListOf<JsonElement>()
+    val pending = ArrayDeque<JsonElement>(listOfNotNull(this))
+    while (pending.isNotEmpty()) {
+        when (val element = pending.removeFirst()) {
+            is JsonObject -> element.forEach { (name, value) ->
+                if (name == key) found.add(value) else pending.addLast(value)
+            }
+
+            is JsonArray -> pending.addAll(element)
+            else -> Unit
+        }
+    }
+    return found
+}
+
 /**
  * A piece of text, with where tapping it leads.
  *

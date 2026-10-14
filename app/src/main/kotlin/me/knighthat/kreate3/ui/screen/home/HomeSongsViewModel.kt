@@ -22,16 +22,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.provider.LibrarySection
+import me.knighthat.kreate3.provider.youtube.YouTubeLibrary
 import me.knighthat.kreate3.ui.component.toMediaItems
 
 /**
  * The songs in the active user's library. Pages are kept while the screen lives.
  */
 class HomeSongsViewModel(
-    songRepository: UserSongRepository
+    songRepository: UserSongRepository,
+    private val youtubeLibrary: YouTubeLibrary,
 ) : ViewModel() {
 
     val songs = songRepository.all()
         .toMediaItems()
         .cachedIn(viewModelScope)
+
+    /**
+     * Brings the songs liked on YouTube into the library, call it when the tab shows. It does
+     * nothing while nobody is signed in.
+     */
+    fun refresh() = youtubeLibrary.refresh(LibrarySection.SONGS)
 }

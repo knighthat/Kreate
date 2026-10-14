@@ -49,7 +49,7 @@ fun SettingsScreen(
         )
         SettingsItem(
             title = "Network",
-            summary = "Connections and your music server",
+            summary = "Connections, your music server and YouTube account",
             onClick = { onOpen(NetworkSettings) },
         )
     }

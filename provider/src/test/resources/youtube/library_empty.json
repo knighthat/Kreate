@@ -1,0 +1,207 @@
+{
+  "responseContext": {
+    "serviceTrackingParams": [
+      {
+        "service": "GFEEDBACK",
+        "params": [
+          {
+            "key": "logged_in",
+            "value": "1"
+          }
+        ]
+      }
+    ]
+  },
+  "contents": {
+    "singleColumnBrowseResultsRenderer": {
+      "tabs": [
+        {
+          "tabRenderer": {
+            "endpoint": {
+              "commandExecutorCommand": {
+                "commands": [
+                  {
+                    "musicLibraryPersistLaunchNavigationCommand": {
+                      "command": {
+                        "browseEndpoint": {
+                          "browseId": "FEmusic_library_landing"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "browseEndpoint": {
+                      "browseId": "FEmusic_library_landing",
+                      "browseEndpointContextSupportedConfigs": {
+                        "browseEndpointContextMusicConfig": {
+                          "pageType": "MUSIC_PAGE_TYPE_LIBRARY_CONTENT_LANDING_PAGE"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "title": "Library",
+            "selected": true,
+            "content": {
+              "sectionListRenderer": {
+                "contents": [
+                  {
+                    "itemSectionRenderer": {
+                      "contents": [
+                        {
+                          "messageRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "No albums yet"
+                                }
+                              ]
+                            },
+                            "icon": {
+                              "iconType": "ALBUM"
+                            },
+                            "subtext": {
+                              "messageSubtextRenderer": {
+                                "text": {
+                                  "runs": [
+                                    {
+                                      "text": "Albums you save to your library will show here"
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            "style": {
+                              "value": "RENDER_STYLE_VERTICAL_CENTERED"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "header": {
+                  "musicSideAlignedItemRenderer": {
+                    "startItems": [
+                      {
+                        "chipCloudRenderer": {
+                          "chips": [
+                            {
+                              "chipCloudChipRenderer": {
+                                "navigationEndpoint": {
+                                  "commandExecutorCommand": {
+                                    "commands": [
+                                      {
+                                        "browseEndpoint": {
+                                          "browseId": "FEmusic_library_landing"
+                                        }
+                                      },
+                                      {
+                                        "musicLibraryPersistLaunchNavigationCommand": {
+                                          "command": {
+                                            "browseEndpoint": {
+                                              "browseId": "FEmusic_library_landing"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "icon": {
+                                  "iconType": "CLOSE"
+                                },
+                                "isSelected": true,
+                                "onDeselectedCommand": {
+                                  "commandExecutorCommand": {
+                                    "commands": [
+                                      {
+                                        "browseEndpoint": {
+                                          "browseId": "FEmusic_library_landing"
+                                        }
+                                      },
+                                      {
+                                        "musicLibraryPersistLaunchNavigationCommand": {
+                                          "command": {
+                                            "browseEndpoint": {
+                                              "browseId": "FEmusic_library_landing"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "uniqueId": "Clear filters"
+                              }
+                            },
+                            {
+                              "chipCloudChipRenderer": {
+                                "text": {
+                                  "runs": [
+                                    {
+                                      "text": "Albums"
+                                    }
+                                  ]
+                                },
+                                "navigationEndpoint": {
+                                  "commandExecutorCommand": {
+                                    "commands": [
+                                      {
+                                        "browseEndpoint": {
+                                          "browseId": "FEmusic_liked_albums"
+                                        }
+                                      },
+                                      {
+                                        "musicLibraryPersistLaunchNavigationCommand": {
+                                          "command": {
+                                            "browseEndpoint": {
+                                              "browseId": "FEmusic_liked_albums"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "isSelected": true,
+                                "onDeselectedCommand": {
+                                  "commandExecutorCommand": {
+                                    "commands": [
+                                      {
+                                        "browseEndpoint": {
+                                          "browseId": "FEmusic_library_landing"
+                                        }
+                                      },
+                                      {
+                                        "musicLibraryPersistLaunchNavigationCommand": {
+                                          "command": {
+                                            "browseEndpoint": {
+                                              "browseId": "FEmusic_library_landing"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "uniqueId": "Albums"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "tabIdentifier": "FEmusic_library_landing"
+          }
+        }
+      ]
+    }
+  }
+}

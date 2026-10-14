@@ -21,6 +21,7 @@ package me.knighthat.kreate3.ui.screen.home
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -39,6 +40,9 @@ fun HomeSongsScreen(
     viewModel: HomeSongsViewModel = koinViewModel(),
 ) {
     val songs = viewModel.songs.collectAsLazyPagingItems()
+
+    // Each visit to the tab, the songs liked on YouTube are brought up to date
+    LaunchedEffect(Unit) { viewModel.refresh() }
 
     HomeScaffold(Tab.SONGS.label, modifier, onSearch, onSettings) { padding ->
         LazyColumn(

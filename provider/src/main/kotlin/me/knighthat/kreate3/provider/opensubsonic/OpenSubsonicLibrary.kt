@@ -24,19 +24,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
+import me.knighthat.kreate3.provider.LibrarySection
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
-
-/**
- * A part of the library that is listed on its own.
- */
-enum class LibrarySection {
-    ALBUMS,
-    ARTISTS,
-    PLAYLISTS,
-}
 
 /**
  * Brings the server's library into the database, one [LibrarySection] at a time, so its items
@@ -134,6 +126,9 @@ class OpenSubsonicLibrary(
      */
     private suspend fun sync(server: String, section: LibrarySection): Boolean {
         when (section) {
+            // Starred songs are stored with their albums and playlists when those are opened
+            LibrarySection.SONGS -> Unit
+
             LibrarySection.ALBUMS -> {
                 val albums = provider.libraryAlbums() ?: return false
                 if (provider.serverUrl != server) return false

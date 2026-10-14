@@ -55,12 +55,6 @@ import me.knighthat.kreate3.ui.navigation.NetworkSettings
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicAlbum
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicArtist
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicPlaylist
-import me.knighthat.kreate3.ui.navigation.YouTubeAlbum
-import me.knighthat.kreate3.ui.navigation.YouTubeArtist
-import me.knighthat.kreate3.ui.navigation.YouTubePlaylist
-import me.knighthat.kreate3.ui.navigation.YouTubeMore
-import me.knighthat.kreate3.ui.navigation.itemRoute
-import me.knighthat.kreate3.ui.navigation.youTubeMoreRoute
 import me.knighthat.kreate3.ui.navigation.Playlists
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.Search
@@ -69,11 +63,18 @@ import me.knighthat.kreate3.ui.navigation.Settings
 import me.knighthat.kreate3.ui.navigation.Songs
 import me.knighthat.kreate3.ui.navigation.Tab
 import me.knighthat.kreate3.ui.navigation.UiSettings
+import me.knighthat.kreate3.ui.navigation.YouTubeAlbum
+import me.knighthat.kreate3.ui.navigation.YouTubeArtist
+import me.knighthat.kreate3.ui.navigation.YouTubeMore
+import me.knighthat.kreate3.ui.navigation.YouTubePlaylist
+import me.knighthat.kreate3.ui.navigation.YouTubeSignIn
 import me.knighthat.kreate3.ui.navigation.albumRoute
 import me.knighthat.kreate3.ui.navigation.artistRoute
+import me.knighthat.kreate3.ui.navigation.itemRoute
 import me.knighthat.kreate3.ui.navigation.playlistRoute
 import me.knighthat.kreate3.ui.navigation.rememberTopLevelBackStack
 import me.knighthat.kreate3.ui.navigation.routeViewModel
+import me.knighthat.kreate3.ui.navigation.youTubeMoreRoute
 import me.knighthat.kreate3.ui.screen.detail.LocalAlbumDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.LocalAlbumDetailViewModel
 import me.knighthat.kreate3.ui.screen.detail.LocalArtistDetailScreen
@@ -97,6 +98,7 @@ import me.knighthat.kreate3.ui.screen.settings.GeneralSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.NetworkSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.SettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.UiSettingsScreen
+import me.knighthat.kreate3.ui.screen.settings.YouTubeSignInScreen
 import me.knighthat.kreate3.ui.theme.KreateTheme
 import me.knighthat.kreate3.ui.theme.rememberThumbnailSeed
 import org.koin.compose.koinInject
@@ -255,7 +257,15 @@ fun KreateApp() {
                     }
                     entry<GeneralSettings> { GeneralSettingsScreen(topLevel::pop) }
                     entry<UiSettings> { UiSettingsScreen(topLevel::pop) }
-                    entry<NetworkSettings> { NetworkSettingsScreen(topLevel::pop) }
+                    entry<NetworkSettings> {
+                        NetworkSettingsScreen(
+                            onBack = topLevel::pop,
+                            onSignInToYouTube = { topLevel.push(YouTubeSignIn) },
+                        )
+                    }
+                    entry<YouTubeSignIn> {
+                        YouTubeSignInScreen(onBack = topLevel::pop, onSignedIn = topLevel::pop)
+                    }
 
                     entry<LocalAlbum> {
                         LocalAlbumDetailScreen(topLevel::pop, viewModel = routeViewModel(it))

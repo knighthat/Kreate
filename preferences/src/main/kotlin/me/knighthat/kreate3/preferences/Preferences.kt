@@ -24,6 +24,7 @@ import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.preferences.Preferences.IMAGE_DISK_CACHE
 import me.knighthat.kreate3.preferences.Preferences.NETWORK_CONNECT_TIMEOUT
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_CERTIFICATE_SHA256
+import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_SYNC_ALBUMS
 import me.knighthat.kreate3.preferences.Preferences.awaitLoaded
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -119,6 +120,33 @@ object Preferences : KoinComponent {
 
     /** SHA-256 fingerprint of the remembered self-signed certificate, empty when none is. */
     val OPEN_SUBSONIC_CERTIFICATE_SHA256 by lazy { string("open_subsonic_certificate_sha256", "") }
+
+    /**
+     * Page id of the YouTube channel the signed in user acts as, when their Google account has
+     * several (brand accounts). Empty for the account's own channel. It only picks a channel, the
+     * session itself is in `Secrets.YOUTUBE_COOKIES`.
+     */
+    val YOUTUBE_PAGE_ID by lazy { string("youtube_page_id", "") }
+
+    /**
+     * Whether the songs the signed in user liked on YouTube are liked in the profile's library,
+     * and the ones they no longer like aren't. On by default. While it is off they aren't
+     * fetched, and turning it off takes the likes of YouTube songs away, the songs stay.
+     */
+    val YOUTUBE_SYNC_SONGS by lazy { boolean("youtube_sync_songs", true) }
+
+    /**
+     * Whether the albums saved in the signed in user's YouTube library show in the profile's
+     * library. On by default. While it is off they aren't fetched, and turning it off takes them
+     * out.
+     */
+    val YOUTUBE_SYNC_ALBUMS by lazy { boolean("youtube_sync_albums", true) }
+
+    /** Like [YOUTUBE_SYNC_ALBUMS], for the artists the user subscribed to. */
+    val YOUTUBE_SYNC_ARTISTS by lazy { boolean("youtube_sync_artists", true) }
+
+    /** Like [YOUTUBE_SYNC_ALBUMS], for the playlists in the user's library. */
+    val YOUTUBE_SYNC_PLAYLISTS by lazy { boolean("youtube_sync_playlists", true) }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Coil3">

@@ -1,0 +1,339 @@
+{
+  "responseContext": {
+    "serviceTrackingParams": [
+      {
+        "service": "GFEEDBACK",
+        "params": [
+          {
+            "key": "logged_in",
+            "value": "1"
+          }
+        ]
+      }
+    ]
+  },
+  "contents": {
+    "singleColumnBrowseResultsRenderer": {
+      "tabs": [
+        {
+          "tabRenderer": {
+            "endpoint": {
+              "commandExecutorCommand": {
+                "commands": [
+                  {
+                    "musicLibraryPersistLaunchNavigationCommand": {
+                      "command": {
+                        "browseEndpoint": {
+                          "browseId": "FEmusic_library_landing"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "browseEndpoint": {
+                      "browseId": "FEmusic_library_landing",
+                      "browseEndpointContextSupportedConfigs": {
+                        "browseEndpointContextMusicConfig": {
+                          "pageType": "MUSIC_PAGE_TYPE_LIBRARY_CONTENT_LANDING_PAGE"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "title": "Library",
+            "selected": true,
+            "content": {
+              "sectionListRenderer": {
+                "contents": [
+                  {
+                    "gridRenderer": {
+                      "items": [
+                        {
+                          "musicTwoRowItemRenderer": {
+                            "thumbnailRenderer": {
+                              "musicThumbnailRenderer": {
+                                "thumbnail": {
+                                  "thumbnails": [
+                                    {
+                                      "url": "https://www.gstatic.com/youtube/media/ytm/images/pbg/create-playlist-@210.png",
+                                      "width": 210,
+                                      "height": 210
+                                    }
+                                  ]
+                                },
+                                "thumbnailCrop": "MUSIC_THUMBNAIL_CROP_UNSPECIFIED",
+                                "thumbnailScale": "MUSIC_THUMBNAIL_SCALE_ASPECT_FILL"
+                              }
+                            },
+                            "aspectRatio": "MUSIC_TWO_ROW_ITEM_THUMBNAIL_ASPECT_RATIO_SQUARE",
+                            "title": {
+                              "runs": [
+                                {
+                                  "text": "New playlist",
+                                  "navigationEndpoint": {
+                                    "createPlaylistEndpoint": {
+                                      "params": "CAI%3D",
+                                      "createPlaylistDialog": {}
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "subtitle": {},
+                            "navigationEndpoint": {
+                              "createPlaylistEndpoint": {
+                                "params": "CAI%3D",
+                                "createPlaylistDialog": {}
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "musicTwoRowItemRenderer": {
+                            "thumbnailRenderer": {
+                              "musicThumbnailRenderer": {
+                                "thumbnail": {
+                                  "thumbnails": [
+                                    {
+                                      "url": "https://www.gstatic.com/youtube/media/ytm/images/pbg/podcast-queue-delhi-192.png",
+                                      "width": 192,
+                                      "height": 192
+                                    },
+                                    {
+                                      "url": "https://www.gstatic.com/youtube/media/ytm/images/pbg/podcast-queue-delhi-576.png",
+                                      "width": 576,
+                                      "height": 576
+                                    }
+                                  ]
+                                },
+                                "thumbnailCrop": "MUSIC_THUMBNAIL_CROP_UNSPECIFIED",
+                                "thumbnailScale": "MUSIC_THUMBNAIL_SCALE_ASPECT_FILL"
+                              }
+                            },
+                            "aspectRatio": "MUSIC_TWO_ROW_ITEM_THUMBNAIL_ASPECT_RATIO_SQUARE",
+                            "title": {
+                              "runs": [
+                                {
+                                  "text": "Episodes for Later",
+                                  "navigationEndpoint": {
+                                    "browseEndpoint": {
+                                      "browseId": "VLSE",
+                                      "browseEndpointContextSupportedConfigs": {
+                                        "browseEndpointContextMusicConfig": {
+                                          "pageType": "MUSIC_PAGE_TYPE_PLAYLIST"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "subtitle": {
+                              "runs": [
+                                {
+                                  "text": "Your queued episodes"
+                                }
+                              ]
+                            },
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "VLSE",
+                                "browseEndpointContextSupportedConfigs": {
+                                  "browseEndpointContextMusicConfig": {
+                                    "pageType": "MUSIC_PAGE_TYPE_PLAYLIST"
+                                  }
+                                }
+                              }
+                            },
+                            "thumbnailOverlay": {
+                              "musicItemThumbnailOverlayRenderer": {
+                                "background": {
+                                  "verticalGradient": {
+                                    "gradientLayerColors": [
+                                      "2147483648",
+                                      "0",
+                                      "0"
+                                    ]
+                                  }
+                                },
+                                "content": {
+                                  "musicPlayButtonRenderer": {
+                                    "playNavigationEndpoint": {
+                                      "watchPlaylistEndpoint": {
+                                        "playlistId": "SE",
+                                        "params": "wAEB"
+                                      }
+                                    },
+                                    "playIcon": {
+                                      "iconType": "PLAY_ARROW"
+                                    },
+                                    "pauseIcon": {
+                                      "iconType": "PAUSE"
+                                    },
+                                    "iconColor": 4294967295,
+                                    "backgroundColor": 2566914048,
+                                    "activeBackgroundColor": 4278190080,
+                                    "loadingIndicatorColor": 14745645,
+                                    "playingIcon": {
+                                      "iconType": "VOLUME_UP"
+                                    },
+                                    "iconLoadingColor": 1308622847,
+                                    "activeScaleFactor": 1.2,
+                                    "buttonSize": "MUSIC_PLAY_BUTTON_SIZE_MEDIUM",
+                                    "rippleTarget": "MUSIC_PLAY_BUTTON_RIPPLE_TARGET_SELF",
+                                    "accessibilityPlayData": {},
+                                    "accessibilityPauseData": {}
+                                  }
+                                },
+                                "contentPosition": "MUSIC_ITEM_THUMBNAIL_OVERLAY_CONTENT_POSITION_BOTTOM_RIGHT",
+                                "displayStyle": "MUSIC_ITEM_THUMBNAIL_OVERLAY_DISPLAY_STYLE_HOVER"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "itemSize": "COLLECTION_STYLE_ITEM_SIZE_SMALL"
+                    }
+                  }
+                ],
+                "header": {
+                  "musicSideAlignedItemRenderer": {
+                    "startItems": [
+                      {
+                        "chipCloudRenderer": {
+                          "chips": [
+                            {
+                              "chipCloudChipRenderer": {
+                                "navigationEndpoint": {
+                                  "commandExecutorCommand": {
+                                    "commands": [
+                                      {
+                                        "browseEndpoint": {
+                                          "browseId": "FEmusic_library_landing"
+                                        }
+                                      },
+                                      {
+                                        "musicLibraryPersistLaunchNavigationCommand": {
+                                          "command": {
+                                            "browseEndpoint": {
+                                              "browseId": "FEmusic_library_landing"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "icon": {
+                                  "iconType": "CLOSE"
+                                },
+                                "isSelected": true,
+                                "onDeselectedCommand": {
+                                  "commandExecutorCommand": {
+                                    "commands": [
+                                      {
+                                        "browseEndpoint": {
+                                          "browseId": "FEmusic_library_landing"
+                                        }
+                                      },
+                                      {
+                                        "musicLibraryPersistLaunchNavigationCommand": {
+                                          "command": {
+                                            "browseEndpoint": {
+                                              "browseId": "FEmusic_library_landing"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "uniqueId": "Clear filters"
+                              }
+                            },
+                            {
+                              "chipCloudChipRenderer": {
+                                "text": {
+                                  "runs": [
+                                    {
+                                      "text": "Playlists"
+                                    }
+                                  ]
+                                },
+                                "navigationEndpoint": {
+                                  "commandExecutorCommand": {
+                                    "commands": [
+                                      {
+                                        "browseEndpoint": {
+                                          "browseId": "FEmusic_liked_playlists"
+                                        }
+                                      },
+                                      {
+                                        "musicLibraryPersistLaunchNavigationCommand": {
+                                          "command": {
+                                            "browseEndpoint": {
+                                              "browseId": "FEmusic_liked_playlists"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "isSelected": true,
+                                "onDeselectedCommand": {
+                                  "commandExecutorCommand": {
+                                    "commands": [
+                                      {
+                                        "browseEndpoint": {
+                                          "browseId": "FEmusic_library_landing"
+                                        }
+                                      },
+                                      {
+                                        "musicLibraryPersistLaunchNavigationCommand": {
+                                          "command": {
+                                            "browseEndpoint": {
+                                              "browseId": "FEmusic_library_landing"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                "uniqueId": "Playlists"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "endItems": [
+                      {
+                        "musicSortFilterButtonRenderer": {
+                          "title": {
+                            "runs": [
+                              {
+                                "text": "Recently saved"
+                              }
+                            ]
+                          },
+                          "icon": {
+                            "iconType": "CHEVRON_DOWN"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "tabIdentifier": "FEmusic_library_landing"
+          }
+        }
+      ]
+    }
+  }
+}

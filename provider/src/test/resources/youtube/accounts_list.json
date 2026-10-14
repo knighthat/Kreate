@@ -1,0 +1,190 @@
+{
+  "actions": [
+    {
+      "getMultiPageMenuAction": {
+        "menu": {
+          "multiPageMenuRenderer": {
+            "header": {
+              "simpleMenuHeaderRenderer": {
+                "backButton": {
+                  "buttonRenderer": {
+                    "style": "STYLE_BLACK",
+                    "size": "SIZE_DEFAULT",
+                    "isDisabled": false,
+                    "icon": {
+                      "iconType": "BACK"
+                    },
+                    "accessibility": {
+                      "label": "Back"
+                    },
+                    "accessibilityData": {
+                      "accessibilityData": {
+                        "label": "Back"
+                      }
+                    }
+                  }
+                },
+                "title": {
+                  "runs": [
+                    {
+                      "text": "Accounts"
+                    }
+                  ]
+                }
+              }
+            },
+            "sections": [
+              {
+                "accountSectionListRenderer": {
+                  "contents": [
+                    {
+                      "accountItemSectionRenderer": {
+                        "contents": [
+                          {
+                            "accountItem": {
+                              "accountName": {
+                                "runs": [
+                                  {
+                                    "text": "Own Channel"
+                                  }
+                                ]
+                              },
+                              "accountPhoto": {
+                                "thumbnails": [
+                                  {
+                                    "url": "https://yt3.ggpht.com/own=s48",
+                                    "width": 48,
+                                    "height": 48
+                                  }
+                                ]
+                              },
+                              "isSelected": true,
+                              "isDisabled": false,
+                              "hasChannel": true,
+                              "serviceEndpoint": {
+                                "selectActiveIdentityEndpoint": {
+                                  "supportedTokens": [
+                                    {
+                                      "datasyncIdToken": {
+                                        "datasyncIdToken": "2222||"
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "channelHandle": {
+                                "runs": [
+                                  {
+                                    "text": "@own"
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "accountItem": {
+                              "accountName": {
+                                "runs": [
+                                  {
+                                    "text": "Brand Channel"
+                                  }
+                                ]
+                              },
+                              "accountPhoto": {
+                                "thumbnails": [
+                                  {
+                                    "url": "https://yt3.ggpht.com/brand=s48",
+                                    "width": 48,
+                                    "height": 48
+                                  }
+                                ]
+                              },
+                              "isSelected": false,
+                              "isDisabled": false,
+                              "hasChannel": true,
+                              "serviceEndpoint": {
+                                "selectActiveIdentityEndpoint": {
+                                  "supportedTokens": [
+                                    {
+                                      "pageIdToken": {
+                                        "pageId": "1111"
+                                      }
+                                    },
+                                    {
+                                      "datasyncIdToken": {
+                                        "datasyncIdToken": "1111||2222"
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "channelHandle": {
+                                "runs": [
+                                  {
+                                    "text": "@brand"
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "header": {}
+                }
+              }
+            ],
+            "footer": {
+              "multiPageMenuSectionRenderer": {
+                "items": [
+                  {
+                    "compactLinkRenderer": {
+                      "icon": {
+                        "iconType": "PERSON_ADD"
+                      },
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Add account"
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "urlEndpoint": {
+                          "url": "https://accounts.google.com/AddSession?continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fmusic.youtube.com%252F&hl=en&passive=false&service=youtube&uilel=0"
+                        }
+                      },
+                      "style": "COMPACT_LINK_STYLE_TYPE_ACCOUNT_SWITCHER_FOOTER"
+                    }
+                  },
+                  {
+                    "compactLinkRenderer": {
+                      "icon": {
+                        "iconType": "EXIT_TO_APP"
+                      },
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Sign out"
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "signOutEndpoint": {
+                          "hack": true
+                        }
+                      },
+                      "style": "COMPACT_LINK_STYLE_TYPE_ACCOUNT_SWITCHER_FOOTER"
+                    }
+                  }
+                ]
+              }
+            },
+            "style": "MULTI_PAGE_MENU_STYLE_TYPE_SWITCHER"
+          }
+        }
+      }
+    }
+  ]
+}

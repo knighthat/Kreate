@@ -288,7 +288,10 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
 
     private fun JsonElement?.items(): List<YouTubeItem> = asArray.orEmpty().mapNotNull(::item)
 
-    /** Every shelf of a page, in the order of the page, whatever its layout. */
+    /**
+     * Every shelf of a page, in the order of the page, whatever its layout. Shelves grouped in an
+     * item section, like the grid of a library page, count as shelves of the page.
+     */
     private fun shelves(response: JsonElement?): List<JsonElement> {
         val contents = response.path("contents")
         val tabs = contents.path("singleColumnBrowseResultsRenderer", "tabs")
@@ -304,6 +307,7 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
             ),
             contents.path("sectionListRenderer", "contents"),
         ).flatMap { it.asArray.orEmpty() }
+            .flatMap { it.path("itemSectionRenderer", "contents").asArray ?: listOf(it) }
     }
 
     /** The token of the next part of a shelf or list, in the old and the new way of giving it. */
@@ -578,6 +582,36 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
         val text = shelf.path("description").text()?.takeIf { it.isNotBlank() } ?: return null
         return YouTubeLyrics(Lyrics(songId, text), shelf.path("footer").text())
     }
+
+    /** @return `null` when the answer names no account */
+    fun account(response: JsonElement?): YouTubeAccount? {
+        val header = response.path(
+            "actions", 0, "openPopupAction", "popup", "multiPageMenuRenderer", "header",
+            "activeAccountHeaderRenderer",
+        ) ?: return null
+        return YouTubeAccount(
+            name = header.path("accountName").text() ?: return null,
+            handle = header.path("channelHandle").text(),
+            photo = header.path("accountPhoto").thumbnailUrl()?.let(uri),
+        )
+    }
+
+    /**
+     * The channels of the account in an answer of `account/accounts_list`, wherever they are in
+     * it. A channel is acted as by its page id, the account's own has none.
+     */
+    fun channels(response: JsonElement?): List<YouTubeChannel> =
+        response.findAll("accountItem").mapNotNull { item ->
+            val name = item.path("accountName").text() ?: return@mapNotNull null
+            YouTubeChannel(
+                name = name,
+                handle = item.path("channelHandle").text(),
+                photo = item.path("accountPhoto").thumbnailUrl()?.let(uri),
+                pageId = item.path("serviceEndpoint").findAll("pageId")
+                    .firstNotNullOfOrNull { it.asString },
+                isSelected = item.path("isSelected").asString == "true",
+            )
+        }.distinctBy { it.pageId }
 
     fun suggestions(response: JsonElement?): YouTubeSuggestions {
         val entries = response.path("contents").asArray.orEmpty().flatMap {

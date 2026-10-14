@@ -69,6 +69,9 @@ class YouTubeDetailViewModelTest {
             )
         }),
         Json,
+        // Nobody is signed in
+        cookies = { "" },
+        pageId = { "" },
     )
 
     @Before

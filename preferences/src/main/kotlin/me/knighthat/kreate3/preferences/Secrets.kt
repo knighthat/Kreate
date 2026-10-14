@@ -36,4 +36,10 @@ object Secrets : KoinComponent {
 
     /** Replaces the username and password, used when [Preferences.OPEN_SUBSONIC_AUTH] is `API_KEY`. */
     val OPEN_SUBSONIC_API_KEY by lazy { store.secret("open_subsonic_api_key") }
+
+    /**
+     * Cookies of the YouTube session the user signed in to, as a `Cookie` header. Empty while
+     * nobody is signed in. They are a whole Google session, keep them out of logs and addresses.
+     */
+    val YOUTUBE_COOKIES by lazy { store.secret("youtube_cookies") }
 }

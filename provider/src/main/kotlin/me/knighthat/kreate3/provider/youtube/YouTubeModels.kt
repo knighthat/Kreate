@@ -17,6 +17,7 @@
  */
 package me.knighthat.kreate3.provider.youtube
 
+import android.net.Uri
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Lyrics
@@ -143,3 +144,24 @@ data class YouTubePlaylistPage(
  * with them
  */
 data class YouTubeLyrics(val lyrics: Lyrics, val source: String?)
+
+/**
+ * The account of the user signed in to YouTube.
+ *
+ * @property handle the `@name` of their channel, `null` when they have none
+ */
+data class YouTubeAccount(val name: String, val handle: String?, val photo: Uri?)
+
+/**
+ * A channel of the signed in user's Google account, which they can act as on YouTube.
+ *
+ * @property pageId what requests send to act as the channel, `null` for the account's own channel
+ * @property isSelected whether YouTube says it is the one in use
+ */
+data class YouTubeChannel(
+    val name: String,
+    val handle: String?,
+    val photo: Uri?,
+    val pageId: String?,
+    val isSelected: Boolean,
+)

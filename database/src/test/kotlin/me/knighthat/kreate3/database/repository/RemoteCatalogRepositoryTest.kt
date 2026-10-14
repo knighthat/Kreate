@@ -41,6 +41,7 @@ import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
 internal class RemoteCatalogRepositoryTest : DatabaseTest() {
@@ -60,7 +61,8 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
         album: Album? = null,
         artists: List<Artist> = emptyList(),
         starredAt: Instant? = null,
-    ) = RemoteSong(Song(id, server, id, albumId = album?.id), album, artists, starredAt)
+        origin: Origin = server,
+    ) = RemoteSong(Song(id, origin, id, albumId = album?.id), album, artists, starredAt)
 
     @Before
     fun setUp() = runBlocking {
@@ -99,6 +101,14 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
         repository.syncAlbums(server, listOf(RemoteItem(album("a1"), null)))
 
         assertNull(database.userAlbumDao().get(USER, "a1")?.bookmarkedAt)
+    }
+
+    @Test
+    fun aStarSeenAgainKeepsWhenItWasFirstGiven() = runBlocking {
+        repository.syncAlbums(server, listOf(RemoteItem(album("a1"), star)))
+        repository.syncAlbums(server, listOf(RemoteItem(album("a1"), star + 1.hours)))
+
+        assertEquals(star, database.userAlbumDao().get(USER, "a1")?.bookmarkedAt)
     }
 
     @Test
@@ -411,6 +421,67 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
         }
         // All or nothing, the songs aren't stored either
         assertNull(database.songDao().get("s1"))
+    }
+
+    @Test
+    fun likedSongsAreLikedAtTheirTimeOrNow() = runBlocking {
+        repository.syncLikedSongs(server, listOf(song("dated", starredAt = star), song("undated")))
+
+        assertEquals(star, database.userSongDao().get(USER, "dated")?.likedAt)
+        assertEquals(clock.time, database.userSongDao().get(USER, "undated")?.likedAt)
+    }
+
+    @Test
+    fun aLikeAlreadyStoredKeepsItsTime() = runBlocking {
+        repository.syncLikedSongs(server, listOf(song("s1", starredAt = star)))
+        clock.advance(1.hours)
+
+        repository.syncLikedSongs(server, listOf(song("s1")))
+
+        assertEquals(star, database.userSongDao().get(USER, "s1")?.likedAt)
+    }
+
+    @Test
+    fun aLikeTheServerNoLongerHasIsTakenAwayButTheSongStays() = runBlocking {
+        repository.syncLikedSongs(
+            server,
+            listOf(song("kept", starredAt = star), song("gone", starredAt = star))
+        )
+
+        repository.syncLikedSongs(server, listOf(song("kept", starredAt = star)))
+
+        assertEquals(star, database.userSongDao().get(USER, "kept")?.likedAt)
+        val gone = database.userSongDao().get(USER, "gone")
+        assertNotNull(gone)
+        assertNull(gone?.likedAt)
+        assertNotNull(database.songDao().get("gone"))
+    }
+
+    @Test
+    fun aLikeReplacesADislikeAndOtherDislikesStay() = runBlocking {
+        repository.syncSongs(server, listOf(song("liked"), song("disliked")))
+        listOf("liked", "disliked").forEach {
+            database.userSongDao().upsert(
+                UserSongEntity(USER, it, likedAt = DISLIKED, createdAt = EPOCH, updatedAt = EPOCH)
+            )
+        }
+
+        repository.syncLikedSongs(server, listOf(song("liked", starredAt = star)))
+
+        assertEquals(star, database.userSongDao().get(USER, "liked")?.likedAt)
+        assertEquals(DISLIKED, database.userSongDao().get(USER, "disliked")?.likedAt)
+    }
+
+    @Test
+    fun likesOfOtherOriginsStay() = runBlocking {
+        repository.syncLikedSongs(
+            Origin.YOUTUBE,
+            listOf(song("yt", starredAt = star, origin = Origin.YOUTUBE))
+        )
+
+        repository.syncLikedSongs(server, emptyList())
+
+        assertEquals(star, database.userSongDao().get(USER, "yt")?.likedAt)
     }
     //</editor-fold>
 

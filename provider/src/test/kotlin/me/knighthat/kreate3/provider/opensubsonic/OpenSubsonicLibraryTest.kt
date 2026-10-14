@@ -41,6 +41,7 @@ import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
 import me.knighthat.kreate3.database.repository.RemoteItem
 import me.knighthat.kreate3.database.repository.RemoteSong
+import me.knighthat.kreate3.provider.LibrarySection
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -93,6 +94,9 @@ class OpenSubsonicLibraryTest {
             calls += "songs ${songs.map { it.song.id }} albums ${albums.map { it.item.id }} " +
                     "artists ${artists.map { it.item.id }} playlist $playlistId"
         }
+
+        override suspend fun syncLikedSongs(origin: Origin, songs: List<RemoteSong>) =
+            error("Liked songs are not brought on their own")
     }
 
     private class TestClock(var time: Instant = Instant.fromEpochMilliseconds(0)) : Clock {
