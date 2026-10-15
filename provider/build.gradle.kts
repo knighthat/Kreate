@@ -25,6 +25,7 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     compileOptions {
@@ -45,8 +46,12 @@ dependencies {
     // The settings of the providers, see Preferences and Secrets
     implementation(project(":preferences"))
     api(libs.kotlinx.coroutines.core)
+    // Dispatchers.Main, the WebView of PO tokens lives on it
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
+    // What to play from YouTube: clients, PO tokens, deciphering
+    implementation(libs.innertubex)
     implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
 

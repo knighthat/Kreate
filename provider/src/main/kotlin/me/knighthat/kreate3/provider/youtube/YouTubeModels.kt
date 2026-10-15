@@ -23,6 +23,7 @@ import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Lyrics
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.repository.RemoteSong
+import kotlin.time.Instant
 
 /**
  * A page of YouTube Music that isn't one of the kinds this provider knows, like the list behind
@@ -164,4 +165,32 @@ data class YouTubeChannel(
     val photo: Uri?,
     val pageId: String?,
     val isSelected: Boolean,
+)
+
+/**
+ * Audio of a song to play.
+ *
+ * @property url the address to stream it from. It only works for the address the request came
+ * from and until [expiresAt], ask again instead of keeping it.
+ * @property headers to send with every request for [url]
+ * @property mimeType like `audio/webm; codecs="opus"`, `null` when YouTube didn't say
+ * @property bitrate in bits per second, `null` when YouTube didn't say
+ * @property contentLength size in bytes, `null` when YouTube didn't say
+ * @property loudnessDb how much louder than YouTube's reference loudness the song is, negative
+ * when it is quieter, `null` when YouTube didn't say
+ * @property rangeSize when not `null`, [url] only answers requests for a range of bytes, of at
+ * most this many each
+ * @property client the client that found it, like `VISIONOS_0_1__nopo`. When YouTube refuses
+ * [url], ask again with it in `refused`.
+ */
+data class YouTubeStream(
+    val url: String,
+    val headers: Map<String, String>,
+    val mimeType: String?,
+    val bitrate: Int?,
+    val contentLength: Long?,
+    val loudnessDb: Double?,
+    val expiresAt: Instant?,
+    val rangeSize: Long?,
+    val client: String,
 )

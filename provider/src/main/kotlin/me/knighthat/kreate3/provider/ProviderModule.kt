@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.provider
 
+import android.content.Context
 import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.provider.local.LocalProvider
@@ -33,7 +34,7 @@ import org.koin.dsl.module
  */
 val providerModule = module {
     single { LocalProvider(get(), get(), get()) }
-    single { YouTubeProvider(get<HttpClient>(), get<Json>()) }
+    single { YouTubeProvider(get<HttpClient>(), get<Json>(), get<Context>()) }
     single { OpenSubsonicProvider(get(), get()) }
     // The scope is the app's long lived one
     single { OpenSubsonicLibrary(get(), get(), get()) }

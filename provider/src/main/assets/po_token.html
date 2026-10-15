@@ -1,0 +1,131 @@
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<!DOCTYPE html>
+<!--
+  Runs BotGuard and mints PO tokens, driven by PoTokenWebView.
+  From NewPipe's and Metrolist's po_token.html (GPL-3.0).
+-->
+<html lang="en">
+<head><title></title>
+    <script>
+        var bgVmFunctions = null;
+        var poTokenMinter = null;  // made once with the integrity token, then reused for every token
+
+        function loadBotGuard(challengeData) {
+          var bgVm = window[challengeData.globalName];
+          bgVmFunctions = null;
+
+          if (!bgVm)
+            throw new Error('[BotGuardClient]: VM not found in the global object');
+          if (!bgVm.a)
+            throw new Error('[BotGuardClient]: Could not load program');
+
+          var vmFunctionsCallback = function (asyncSnapshotFunction, shutdownFunction, passEventFunction, checkCameraFunction) {
+            bgVmFunctions = {
+              asyncSnapshotFunction: asyncSnapshotFunction,
+              shutdownFunction: shutdownFunction,
+              passEventFunction: passEventFunction,
+              checkCameraFunction: checkCameraFunction
+            };
+          };
+
+          try {
+            bgVm.a(challengeData.program, vmFunctionsCallback, true, undefined, function () {}, [ [], [] ]);
+          } catch (e) {
+            throw new Error('[BotGuardClient]: Failed to execute program: ' + e.message);
+          }
+
+          // The functions are handed over asynchronously
+          return new Promise(function (resolve, reject) {
+            var attempts = 0;
+            var checkInterval = setInterval(function () {
+              if (bgVmFunctions && bgVmFunctions.asyncSnapshotFunction) {
+                clearInterval(checkInterval);
+                resolve({ vmFunctions: bgVmFunctions });
+              } else if (attempts >= 10000) {
+                clearInterval(checkInterval);
+                reject(new Error('[BotGuardClient]: Timeout waiting for asyncSnapshotFunction'));
+              }
+              attempts++;
+            }, 1);
+          });
+        }
+
+        function snapshot(botguard, args) {
+          return new Promise(function (resolve, reject) {
+            try {
+              botguard.vmFunctions.asyncSnapshotFunction(
+                function (response) { resolve(response); },
+                [args.contentBinding, args.signedTimestamp, args.webPoSignalOutput, args.skipPrivacyBuffer]
+              );
+            } catch (e) {
+              reject(new Error('[BotGuardClient]: Snapshot failed: ' + e.message));
+            }
+          });
+        }
+
+        function runBotGuard(challengeData) {
+          var interpreterJavascript = challengeData.interpreterJavascript.privateDoNotAccessOrElseSafeScriptWrappedValue;
+          if (!interpreterJavascript)
+            throw new Error('[BotGuardClient]: Could not load VM - no interpreter JavaScript');
+          new Function(interpreterJavascript)();
+
+          var webPoSignalOutput = [];
+          return loadBotGuard(challengeData).then(function (botguard) {
+            return snapshot(botguard, { webPoSignalOutput: webPoSignalOutput });
+          }).then(function (botguardResponse) {
+            return { webPoSignalOutput: webPoSignalOutput, botguardResponse: botguardResponse };
+          });
+        }
+
+        async function createPoTokenMinter(webPoSignalOutput, integrityToken) {
+          var getMinter = webPoSignalOutput[0];
+          if (typeof getMinter !== 'function')
+            throw new Error('PMD:NotFunction - webPoSignalOutput[0] is ' + typeof getMinter);
+
+          var mintCallback;
+          try {
+            mintCallback = await getMinter(integrityToken);
+          } catch (e) {
+            throw new Error('GMC:Failed - getMinter() threw: ' + e.message);
+          }
+          if (typeof mintCallback !== 'function')
+            throw new Error('APF:NotFunction - mintCallback is ' + typeof mintCallback);
+
+          poTokenMinter = mintCallback;
+        }
+
+        async function obtainPoToken(identifier) {
+          if (!poTokenMinter)
+            throw new Error('MNT:NotInit - poTokenMinter was not initialized');
+
+          var result;
+          try {
+            result = await poTokenMinter(identifier);
+          } catch (e) {
+            throw new Error('MNT:Failed - mintCallback() threw: ' + e.message);
+          }
+          if (!(result instanceof Uint8Array))
+            throw new Error('ODM:Invalid - result is ' + Object.prototype.toString.call(result));
+          return result;
+        }
+    </script>
+</head>
+<body></body>
+</html>

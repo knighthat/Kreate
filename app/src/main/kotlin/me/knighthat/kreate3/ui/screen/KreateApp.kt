@@ -26,6 +26,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -162,6 +164,15 @@ fun KreateApp() {
     val playing by playback.state.collectFlowAsState()
     val seed = rememberThumbnailSeed(playing.current, themeMode == ThemeMode.THUMBNAIL)
 
+    // Whatever screen is open, the user learns why a song stopped
+    val snackbar = remember { SnackbarHostState() }
+    LaunchedEffect(playback) {
+        playback.errors.collect { message ->
+            snackbar.currentSnackbarData?.dismiss()
+            snackbar.showSnackbar(message, withDismissAction = true)
+        }
+    }
+
     KreateTheme(
         themeMode = themeMode,
         contrastLevel = contrastLevel,
@@ -176,6 +187,7 @@ fun KreateApp() {
                         BottomBar(selected = topLevel.currentTab, onSelect = topLevel::switchTab)
                     }
             },
+            snackbarHost = { SnackbarHost(snackbar) },
             containerColor = MaterialTheme.colorScheme.surfaceDim,
             modifier = Modifier.fillMaxSize(),
         ) { barPadding ->

@@ -17,6 +17,7 @@
  */
 package me.knighthat.kreate3.provider.youtube
 
+import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
 import io.ktor.client.HttpClient
@@ -52,8 +53,7 @@ fun isYouTubeSession(cookies: String): Boolean = YouTubeSession.of(cookies) != n
 
 /**
  * YouTube Music, read through InnerTube: searching, songs, albums, artists, playlists, the home
- * page, radios, lyrics and related items. What to play is not fetched, [playbackUri] is always
- * `null`.
+ * page, radios, lyrics, related items and what to play, see [stream].
  *
  * Nobody needs to be signed in. Once the user signed in, with the cookies kept in
  * `Secrets.YOUTUBE_COOKIES`, and while the account is in use, every request is sent in their
@@ -75,16 +75,25 @@ class YouTubeProvider internal constructor(
      * are the active profile's by default, none while [Preferences.YOUTUBE_ACCOUNT_ENABLED] is off.
      * @param pageId page id of the channel the signed in user acts as, empty for their account's
      * own. The active profile's choice by default.
+     * @param context runs the WebView that makes PO tokens, `null` plays without them
      */
     constructor(
         client: HttpClient,
         json: Json,
+        context: Context? = null,
         cookies: suspend () -> String = {
             if (Preferences.YOUTUBE_ACCOUNT_ENABLED.value) Secrets.YOUTUBE_COOKIES.current() else ""
         },
         pageId: () -> String = { Preferences.YOUTUBE_PAGE_ID.value },
     ) : this(
-        InnerTube(client, json, Locale::getDefault, cookies, pageId = pageId),
+        InnerTube(
+            client,
+            json,
+            Locale::getDefault,
+            cookies,
+            pageId = pageId,
+            poTokens = context?.let { WebPoTokenProvider(it, client) },
+        ),
         YouTubeParser { it.toUri() },
     )
 
@@ -417,8 +426,20 @@ class YouTubeProvider internal constructor(
         }.flatten().filterIsInstance<AlbumItem>().map { it.album }.distinctBy { it.id }
     }
 
-    /** Not fetched yet, nothing from YouTube can be played. */
-    override suspend fun playbackUri(songId: String): Uri? = null
+    /**
+     * The audio to play of [songId], the video id of a song or any other video. The visionOS app
+     * is asked first, the website with a PO token after it. It is asked without the user's
+     * session, so what needs one, like videos with an age limit, can't be played.
+     *
+     * @param refused the [YouTubeStream.client]s whose streams YouTube refused for this song,
+     * like one that stopped after its first part. Others are asked instead.
+     * @return `null` when the song can't be played
+     */
+    suspend fun stream(songId: String, refused: Set<String> = emptySet()): YouTubeStream? =
+        innerTube.stream(songId, refused)
+
+    /** The address of [stream]. */
+    override suspend fun playbackUri(songId: String): Uri? = stream(songId)?.url?.toUri()
 
     /**
      * @param artworkId the address of a picture as YouTube gave it, like [Song.thumbnail]

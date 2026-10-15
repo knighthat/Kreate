@@ -23,14 +23,19 @@ import android.content.Context
 import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
@@ -50,6 +55,12 @@ class PlaybackControllerImpl(
     private val _state = MutableStateFlow(PlaybackState())
     override val state: StateFlow<PlaybackState> = _state.asStateFlow()
 
+    private val _errors = MutableSharedFlow<String>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+    override val errors: Flow<String> = _errors.asSharedFlow()
+
     private var connection: ListenableFuture<MediaController>? = null
     private var controller: MediaController? = null
 
@@ -66,7 +77,10 @@ class PlaybackControllerImpl(
     }
 
     override fun togglePlay() = run("toggle play") { controller ->
-        if (controller.isPlaying) controller.pause() else controller.play()
+        if (controller.isPlaying) return@run controller.pause()
+        // A failure leaves the player idle, playing needs it prepared again
+        if (controller.playbackState == Player.STATE_IDLE) controller.prepare()
+        controller.play()
     }
 
     override fun next() = run("skip to next") { it.seekToNext() }
@@ -136,6 +150,11 @@ class PlaybackControllerImpl(
                 connected.addListener(object : Player.Listener {
                     override fun onEvents(player: Player, events: Player.Events) =
                         publish(connected)
+
+                    override fun onPlayerError(error: PlaybackException) {
+                        Log.w(TAG, "Couldn't play ${connected.currentMediaItem?.mediaId}", error)
+                        _errors.tryEmit(error.userMessage(connected.currentMediaItem))
+                    }
                 })
                 publish(connected)
             } catch (e: CancellationException) {

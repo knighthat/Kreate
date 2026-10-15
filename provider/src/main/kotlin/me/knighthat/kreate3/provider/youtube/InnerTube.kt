@@ -17,6 +17,7 @@
  */
 package me.knighthat.kreate3.provider.youtube
 
+import com.metrolist.innertubex.extraction.TokenProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
@@ -38,6 +39,14 @@ import kotlinx.serialization.json.putJsonObject
 import java.security.MessageDigest
 import java.util.Locale
 import kotlin.time.Clock
+
+/** The language YouTube answers in, like `en-US`. */
+internal val Locale.youTubeHl: String
+    get() = language.ifEmpty { "en" } + country.takeIf { it.isNotEmpty() }?.let { "-$it" }.orEmpty()
+
+/** The country of the catalog YouTube answers from. */
+internal val Locale.youTubeGl: String
+    get() = country.ifEmpty { "US" }
 
 /**
  * A request to YouTube failed or got an answer that can't be read.
@@ -110,8 +119,8 @@ internal class YouTubeSession private constructor(
 /**
  * InnerTube, the API the YouTube Music website talks to, as the website (`WEB_REMIX`). While the
  * user is signed in, every request is sent in their session, signed like the website signs it,
- * and answers are their own, like a personal home page. Getting what to play needs more and is
- * not done here.
+ * and answers are their own, like a personal home page. What to play is found by InnerTubeX,
+ * see [stream].
  *
  * The first answer gives a visitor id, which is sent with every request after it: some lists,
  * like the home page, only hand out their next part to the same visitor. It is kept for the run
@@ -123,6 +132,7 @@ internal class YouTubeSession private constructor(
  * nobody is signed in. Read at each request, so signing in or out applies at once.
  * @param pageId gives the page id of the channel the signed in user acts as, empty for their
  * account's own. Read at each request too.
+ * @param poTokens makes the PO tokens [stream] may need, `null` for none
  */
 internal class InnerTube(
     private val client: HttpClient,
@@ -131,6 +141,7 @@ internal class InnerTube(
     private val cookies: suspend () -> String = { "" },
     private val clock: Clock = Clock.System,
     private val pageId: () -> String = { "" },
+    poTokens: TokenProvider? = null,
 ) {
 
     /** The visitor id YouTube gave, with the [YouTubeSession.id] it was given to. */
@@ -138,6 +149,18 @@ internal class InnerTube(
 
     @Volatile
     private var visitor: Visitor? = null
+
+    private val streams = YouTubeStreams(client, locale, poTokens)
+
+    /**
+     * The audio to play of [videoId], never asked in the session.
+     *
+     * @param refused see [YouTubeStreams.stream]
+     * @return `null` when it can't be played
+     * @throws YouTubeException when YouTube can't be reached or what to play couldn't be found
+     */
+    suspend fun stream(videoId: String, refused: Set<String> = emptySet()): YouTubeStream? =
+        streams.stream(videoId, refused)
 
     /** The session requests are sent in now, `null` while nobody is signed in. */
     suspend fun session(): YouTubeSession? = YouTubeSession.of(cookies(), pageId())
@@ -231,9 +254,8 @@ internal class InnerTube(
                     put("clientName", CLIENT_NAME)
                     put("clientVersion", CLIENT_VERSION)
                     val locale = locale()
-                    put("hl", locale.language.ifEmpty { "en" } +
-                            locale.country.takeIf { it.isNotEmpty() }?.let { "-$it" }.orEmpty())
-                    put("gl", locale.country.ifEmpty { "US" })
+                    put("hl", locale.youTubeHl)
+                    put("gl", locale.youTubeGl)
                     visitor?.let { put("visitorData", it) }
                 }
                 session?.pageId?.let { putJsonObject("user") { put("onBehalfOfUser", it) } }

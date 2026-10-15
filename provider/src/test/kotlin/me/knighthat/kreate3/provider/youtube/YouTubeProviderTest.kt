@@ -300,10 +300,4 @@ class YouTubeProviderTest {
         assertEquals(home.continuation, requests[1].json().string("continuation"))
         assertEquals(3, more.items.size)
     }
-
-    @Test
-    fun playbackIsNotFetched() = runBlocking {
-        assertNull(provider().playbackUri("a7Wask21bew"))
-        assertTrue(requests.isEmpty())
-    }
 }
