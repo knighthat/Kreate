@@ -100,7 +100,6 @@ private fun OpenSubsonicAlbumDetailContent(
             item {
                 DetailHeader(
                     uri = detail.thumbnail,
-                    title = detail.name,
                     subtitle = detail.subtitle,
                     shape = MaterialTheme.shapes.medium,
                 )

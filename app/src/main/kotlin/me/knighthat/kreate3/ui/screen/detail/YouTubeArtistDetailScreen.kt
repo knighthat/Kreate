@@ -112,7 +112,6 @@ private fun YouTubeArtistDetailContent(
             item {
                 DetailHeader(
                     uri = detail.thumbnail,
-                    title = detail.name,
                     subtitle = null,
                     shape = CircleShape,
                 )

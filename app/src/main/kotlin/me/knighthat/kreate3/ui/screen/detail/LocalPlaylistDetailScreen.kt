@@ -94,7 +94,6 @@ private fun LocalPlaylistDetailContent(
             item {
                 DetailHeader(
                     uri = thumbnail,
-                    title = name,
                     subtitle = subtitle,
                     shape = MaterialTheme.shapes.medium,
                 )

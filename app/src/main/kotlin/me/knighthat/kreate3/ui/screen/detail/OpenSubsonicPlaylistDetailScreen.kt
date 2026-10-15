@@ -104,7 +104,6 @@ private fun OpenSubsonicPlaylistDetailContent(
             item {
                 DetailHeader(
                     uri = detail.thumbnail,
-                    title = detail.name,
                     subtitle = null,
                     shape = MaterialTheme.shapes.medium,
                 )

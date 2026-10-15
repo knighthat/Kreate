@@ -112,7 +112,6 @@ private fun OpenSubsonicArtistDetailContent(
             item {
                 DetailHeader(
                     uri = detail.thumbnail,
-                    title = detail.name,
                     subtitle = null,
                     shape = CircleShape,
                 )

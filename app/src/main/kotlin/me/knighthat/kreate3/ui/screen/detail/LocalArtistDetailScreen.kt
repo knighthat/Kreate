@@ -106,7 +106,6 @@ private fun LocalArtistDetailContent(
             item {
                 DetailHeader(
                     uri = thumbnail,
-                    title = name,
                     subtitle = null,
                     shape = CircleShape,
                 )

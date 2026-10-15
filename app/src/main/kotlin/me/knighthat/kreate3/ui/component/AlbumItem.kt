@@ -47,7 +47,6 @@ fun AlbumItem(
     Column(modifier = modifier.clickable(onClick = onClick)) {
         Thumbnail(
             uri = metadata.artworkUri,
-            title = metadata.title,
             shape = MaterialTheme.shapes.medium,
             modifier = Modifier
                 .fillMaxWidth()

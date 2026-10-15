@@ -20,6 +20,7 @@ package me.knighthat.kreate3.ui.component
 
 import android.net.Uri
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -72,8 +73,8 @@ val MediaItem.localSongId: Long?
     }
 
 /**
- * Cover or picture of an item. The size comes from [modifier]. While there is no picture, or
- * it cannot be loaded, the first letter of [title] shows on a plain background.
+ * Cover or picture of an item. The size comes from [modifier]. While there is no picture, while
+ * it loads, or when it can't be loaded, a picture of a broken frame shows on a plain background.
  *
  * @param localSongId id in the media index when this is the cover of a song on this device. The
  * picture inside the song's file is shown unless [uri] is something other than an album cover,
@@ -82,7 +83,6 @@ val MediaItem.localSongId: Long?
 @Composable
 fun Thumbnail(
     uri: Uri?,
-    title: CharSequence?,
     shape: Shape,
     modifier: Modifier = Modifier,
     localSongId: Long? = null,
@@ -95,10 +95,11 @@ fun Thumbnail(
             .background(MaterialTheme.colorScheme.surfaceContainerHighest),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = title?.firstOrNull()?.uppercase().orEmpty(),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        Image(
+            painter = painterResource(R.drawable.image_not_available),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.matchParentSize(),
         )
         if (model != null)
             AsyncImage(
@@ -198,7 +199,6 @@ fun ItemRow(
         if (showThumbnail)
             Thumbnail(
                 uri = metadata.artworkUri,
-                title = metadata.title,
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier.size(ROW_THUMBNAIL_SIZE),
                 localSongId = item.localSongId,

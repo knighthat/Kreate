@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="186dp"
+    android:height="150dp"
+    android:viewportWidth="186"
+    android:viewportHeight="150">
+
+    <!-- Left half of the cracked frame -->
+    <path
+        android:pathData="M32,40 L94,40 L104,64 L89,86 L99,112 L32,112 Z"
+        android:strokeWidth="1.5"
+        android:strokeColor="#8A877D"
+        android:strokeLineJoin="round" />
+
+    <!-- Right half of the cracked frame -->
+    <path
+        android:pathData="M112,44 L154,44 L154,116 L104,116 L94,90 L108,68 Z"
+        android:strokeWidth="1.5"
+        android:strokeColor="#8A877D"
+        android:strokeLineJoin="round" />
+
+    <!-- Sun -->
+    <path
+        android:fillColor="#C9C6BB"
+        android:pathData="M46,60 A6,6 0 1 0 58,60 A6,6 0 1 0 46,60 Z" />
+
+    <!-- Hills -->
+    <path
+        android:fillColor="#C9C6BB"
+        android:pathData="M32,112 L54,84 L70,102 L80,90 L94,112 Z" />
+</vector>

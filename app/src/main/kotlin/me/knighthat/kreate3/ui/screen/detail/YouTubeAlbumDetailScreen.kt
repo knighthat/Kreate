@@ -106,7 +106,6 @@ private fun YouTubeAlbumDetailContent(
             item {
                 DetailHeader(
                     uri = detail.thumbnail,
-                    title = detail.name,
                     subtitle = detail.subtitle,
                     shape = MaterialTheme.shapes.medium,
                 )

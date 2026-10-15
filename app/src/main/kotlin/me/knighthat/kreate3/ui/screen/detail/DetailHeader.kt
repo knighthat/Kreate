@@ -36,12 +36,11 @@ import me.knighthat.kreate3.ui.component.Thumbnail
 
 /**
  * The top of a detail screen: a large picture and a line under it, centered. The top bar already
- * shows the name, [title] is only for the letter on the picture while it has none.
+ * shows the name.
  */
 @Composable
 fun DetailHeader(
     uri: Uri?,
-    title: String?,
     subtitle: String?,
     shape: Shape,
     modifier: Modifier = Modifier,
@@ -55,7 +54,6 @@ fun DetailHeader(
     ) {
         Thumbnail(
             uri = uri,
-            title = title,
             shape = shape,
             modifier = Modifier
                 .padding(bottom = 12.dp)

@@ -85,7 +85,6 @@ private fun ChannelRow(channel: YouTubeChannel, selected: Boolean, onClick: () -
     ) {
         Thumbnail(
             uri = channel.photo,
-            title = channel.name,
             shape = CircleShape,
             modifier = Modifier.size(40.dp),
         )

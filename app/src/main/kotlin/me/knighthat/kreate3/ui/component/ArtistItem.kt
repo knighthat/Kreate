@@ -53,7 +53,6 @@ fun ArtistItem(
     ) {
         Thumbnail(
             uri = metadata.artworkUri,
-            title = metadata.title,
             shape = CircleShape,
             modifier = Modifier
                 .fillMaxWidth()
