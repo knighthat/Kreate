@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.KreateApplication
 import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.backup.BackupException
 import me.knighthat.kreate3.preferences.Profile
@@ -82,7 +83,7 @@ class BackupViewModel(
     /** Restores the backup at [uri], the app restarts when it can be restored. */
     fun restore(uri: Uri) = run(BackupTask.RESTORE, "Couldn't read the backup") {
         backup.stage(openStream { context.contentResolver.openInputStream(uri) })
-        Backup.restart(context)
+        (context.applicationContext as KreateApplication).restart()
     }
 
     private fun <T> openStream(open: () -> T?): T =

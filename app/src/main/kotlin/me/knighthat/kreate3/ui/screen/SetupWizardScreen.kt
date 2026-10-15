@@ -105,6 +105,7 @@ import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_DONE_ACTION
 import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_PROFILE_NAME
 import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_THEME_MODE
 import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_TOS_CHECKSUM
+import me.knighthat.kreate3.KreateApplication
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.backup.BackupException
@@ -643,22 +644,15 @@ fun SetupWizardScreen(modifier: Modifier = Modifier) {
 
                         scope.launch {
                             val checksum = withContext(Dispatchers.IO) { context.termsChecksum() }
-                            context.startActivity(
-                                Intent(context, KreateActivity::class.java)
-                                    .setAction(SETUP_WIZARD_DONE_ACTION)
-                                    // Restart the app with
-                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                                    .putExtra(SETUP_WIZARD_TOS_CHECKSUM, checksum)
-                                    .apply {
-                                        // A restored backup brings its own profile and settings
-                                        if (imported) return@apply
-                                        putExtra(SETUP_WIZARD_PROFILE_NAME, profileName)
-                                        putExtra(SETUP_WIZARD_THEME_MODE, themeMode.name)
-                                        putExtra(SETUP_WIZARD_CONTRAST_LEVEL, contrastLevel.name)
-                                    }
-                            )
-                            // The system queued the new start already, a fresh process picks it up
-                            Runtime.getRuntime().exit(0)
+                            (context.applicationContext as KreateApplication).restart {
+                                action = SETUP_WIZARD_DONE_ACTION
+                                putExtra(SETUP_WIZARD_TOS_CHECKSUM, checksum)
+                                // A restored backup brings its own profile and settings
+                                if (imported) return@restart
+                                putExtra(SETUP_WIZARD_PROFILE_NAME, profileName)
+                                putExtra(SETUP_WIZARD_THEME_MODE, themeMode.name)
+                                putExtra(SETUP_WIZARD_CONTRAST_LEVEL, contrastLevel.name)
+                            }
                         }
                     }
                 )

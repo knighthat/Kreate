@@ -18,7 +18,6 @@
 
 package me.knighthat.kreate3
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -75,11 +74,7 @@ class KreateActivity : ComponentActivity() {
             //<editor-fold defaultstate="collapsed" desc="Skip wizard">
             if (savedInstanceState == null && intent.action == SETUP_WIZARD_SKIP_ACTION) {
                 setupCompletedFile().createNewFile()
-                startActivity(
-                    Intent(this, KreateActivity::class.java)
-                )
-                // The system queued the new start already, a fresh process picks it up
-                Runtime.getRuntime().exit(0)
+                (applicationContext as KreateApplication).restart()
             }
             //</editor-fold>
 

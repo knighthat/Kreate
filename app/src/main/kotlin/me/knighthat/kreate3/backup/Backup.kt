@@ -19,7 +19,6 @@
 package me.knighthat.kreate3.backup
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import androidx.core.content.pm.PackageInfoCompat
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +26,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.backup.Backup.Companion.applyPendingRestore
-import me.knighthat.kreate3.backup.Backup.Companion.restart
 import me.knighthat.kreate3.database.DatabaseBackup
 import me.knighthat.kreate3.preferences.PreferencesBackup
 import java.io.File
@@ -70,7 +68,7 @@ class BackupException(message: String) : Exception(message)
  * A restore takes two steps. [stage] checks the zip, unpacks it beside the app's data and backs up
  * what is there now to the cache folder. Then [applyPendingRestore] moves it in place on the next
  * start of the process, before anything opens the files, or rolls back to that backup on the start
- * after when it fails. [restart] starts that process.
+ * after when it fails.
  */
 class Backup(
     private val context: Context,
@@ -184,15 +182,6 @@ class Backup(
             } finally {
                 rollback.delete()
             }
-        }
-
-        /**
-         * Starts the app over in a new process, the current one ends.
-         */
-        fun restart(context: Context) {
-            val launch = context.packageManager.getLaunchIntentForPackage(context.packageName)
-            context.startActivity(Intent.makeRestartActivityTask(requireNotNull(launch).component))
-            Runtime.getRuntime().exit(0)
         }
 
         internal fun currentManifest(context: Context) = BackupManifest(

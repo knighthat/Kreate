@@ -19,6 +19,8 @@
 package me.knighthat.kreate3
 
 import android.app.Application
+import android.content.ComponentName
+import android.content.Intent
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
@@ -49,6 +51,21 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 class KreateApplication : Application(), SingletonImageLoader.Factory {
+
+    /**
+     * Starts the app over in a new process, the current one ends. The task is cleared and started
+     * again the way the launcher starts it, [configure] can add to that start, like an action and
+     * extras for the new [KreateActivity] to read.
+     */
+    internal fun restart(configure: Intent.() -> Unit = {}) {
+        // The enabled launcher icon, see AppIcon
+        val component = packageManager.getLaunchIntentForPackage(packageName)
+            ?.component
+            ?: ComponentName(this, KreateActivity::class.java)
+        startActivity(Intent.makeRestartActivityTask(component).apply(configure))
+        // The system queued the new start already, a fresh process picks it up
+        Runtime.getRuntime().exit(0)
+    }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader =
         ImageLoader.Builder(context)
