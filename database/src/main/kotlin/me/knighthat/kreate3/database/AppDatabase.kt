@@ -76,7 +76,7 @@ import me.knighthat.kreate3.database.view.UserSongViewEntity
         UserArtistViewEntity::class,
         UserSongViewEntity::class,
     ],
-    version = 1,
+    version = DATABASE_VERSION,
 )
 @TypeConverters(Converters::class)
 internal abstract class AppDatabase : RoomDatabase() {

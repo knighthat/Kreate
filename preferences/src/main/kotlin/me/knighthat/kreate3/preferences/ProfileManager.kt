@@ -139,7 +139,7 @@ class ProfileManager internal constructor(
         return true
     }
 
-    private companion object {
+    internal companion object {
 
         const val GLOBAL_FILE_NAME = "global.preferences_pb"
 

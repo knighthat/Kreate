@@ -70,6 +70,9 @@ data object UiSettings : Route
 @Serializable
 data object NetworkSettings : Route
 
+@Serializable
+data object BackupSettings : Route
+
 /** Google's sign in page, the session it leaves is kept for YouTube. */
 @Serializable
 data object YouTubeSignIn : Route

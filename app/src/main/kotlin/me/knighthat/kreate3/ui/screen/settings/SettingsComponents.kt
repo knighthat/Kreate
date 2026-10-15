@@ -35,6 +35,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -54,16 +55,17 @@ import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
 
 /**
  * The frame of a settings page: a top bar named [title] with a back button, and [content]
- * stacked in a column that scrolls.
+ * stacked in a column that scrolls. Messages in [snackbar] show at the bottom.
  */
 @Composable
 fun SettingsPage(
     title: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    snackbar: SnackbarHostState? = null,
     content: @Composable () -> Unit,
 ) {
-    DetailScaffold(title, onBack, modifier) { padding: PaddingValues ->
+    DetailScaffold(title, onBack, modifier, snackbar = snackbar) { padding: PaddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

@@ -27,7 +27,6 @@ import android.provider.Settings
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -43,26 +42,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -90,9 +84,9 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -112,8 +106,11 @@ import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_PROFILE_NAME
 import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_THEME_MODE
 import me.knighthat.kreate3.KreateActivity.Companion.SETUP_WIZARD_TOS_CHECKSUM
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.backup.Backup
+import me.knighthat.kreate3.backup.BackupException
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
+import me.knighthat.kreate3.ui.component.TileButton
 import me.knighthat.kreate3.ui.theme.KreateTheme
 import me.knighthat.kreate3.utils.AUDIO_PERMISSION
 import me.knighthat.kreate3.utils.hasAudioPermission
@@ -121,6 +118,8 @@ import me.knighthat.kreate3.utils.hasNotificationPermission
 import me.knighthat.kreate3.utils.shouldShowRequestPermissionRationale
 import me.knighthat.kreate3.utils.verticalScrollbar
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
 import java.security.MessageDigest
 
 
@@ -139,12 +138,23 @@ private val PAGE_TITLES =
     listOf("Welcome", "Permissions", "Import", "Basic settings", "Terms of service")
 
 /**
- * Imports the chosen backup file. Nothing is imported yet.
+ * Keeps the backup at [uri], it is restored when the app starts after setup.
  *
- * @return whether anything was imported
+ * @return why it can't be restored, `null` when it will be
  */
-// TODO: Implement this
-private suspend fun importOldData(uri: Uri): Boolean = false
+private suspend fun Context.importBackup(uri: Uri): String? =
+    try {
+        val input = withContext(Dispatchers.IO) { contentResolver.openInputStream(uri) }
+            ?: throw FileNotFoundException()
+        Backup.stageWithoutRollback(this, input)
+        null
+    } catch (e: BackupException) {
+        e.message
+    } catch (_: IOException) {
+        "Couldn't read the backup"
+    } catch (_: SecurityException) {
+        "Couldn't read the backup"
+    }
 
 private fun String.prettify() =
     lowercase().replace('_', ' ').replaceFirstChar { it.uppercase() }
@@ -327,115 +337,51 @@ private fun Permissions() {
     }
 }
 
-@Composable
-private fun ImportButton(
-    @DrawableRes icon: Int,
-    title: String,
-    description: String,
-    imported: Boolean,
-    message: String?,
-    onClick: () -> Unit,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        FilledTonalButton(
-            onClick = onClick,
-            shape = RoundedCornerShape(10.dp),
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(
-                    painterResource(icon),
-                    // Not clickable
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp)
-                )
-
-                Spacer(Modifier.height(16.dp))
-
-                Text(title, style = MaterialTheme.typography.titleMedium)
-                Text(
-                    description,
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
-        if (imported)
-            Text("Imported.", color = MaterialTheme.colorScheme.primary)
-        else
-            message?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
-    }
-}
-
 /**
- * @param onImport imports the chosen file, returns whether anything was imported
- * @param onImportedChange tells whether at least one of the files was imported
+ * @param imported whether a backup is kept to be restored
+ * @param importing whether the chosen backup is being read
+ * @param message why the last chosen backup can't be restored
+ * @param onImport called with the backup the user chose
  */
 @Composable
-private fun Import(onImport: suspend (Uri) -> Boolean, onImportedChange: (Boolean) -> Unit) {
-    val scope = rememberCoroutineScope()
-
-    var settingsImported by rememberSaveable { mutableStateOf(false) }
-    var databaseImported by rememberSaveable { mutableStateOf(false) }
-    var settingsMessage by rememberSaveable { mutableStateOf<String?>(null) }
-    var databaseMessage by rememberSaveable { mutableStateOf<String?>(null) }
-
-    val settingsPicker =
+private fun Import(
+    imported: Boolean,
+    importing: Boolean,
+    message: String?,
+    onImport: (Uri) -> Unit,
+) {
+    val picker =
         rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-            if (uri != null)
-                scope.launch {
-                    settingsImported = onImport(uri)
-                    settingsMessage =
-                        if (settingsImported) null else "Importing old data isn't available yet."
-                    onImportedChange(settingsImported || databaseImported)
-                }
-        }
-    val databasePicker =
-        rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-            if (uri != null)
-                scope.launch {
-                    databaseImported = onImport(uri)
-                    databaseMessage =
-                        if (databaseImported) null else "Importing old data isn't available yet."
-                    onImportedChange(settingsImported || databaseImported)
-                }
+            uri?.let(onImport)
         }
 
     StepColumn {
-        Text("Coming from an earlier version? Choose its backup files to bring your data along. You can skip this.")
+        Text("Have a backup of Kreate? Choose it to bring your profiles, settings and library along. You can skip this.")
 
-        ImportButton(
-            icon = R.drawable.settings,
-            title = "Import settings",
-            description = "Choose the settings backup",
-            imported = settingsImported,
-            message = settingsMessage,
-            onClick = {
-                settingsPicker.launch(
-                    arrayOf(
-                        "application/octet-stream",
-                        "application/x-protobuf",
-                        "application/protobuf"
-                    )
-                )
+        val ready = imported && !importing
+        // The theme has no green, so it is picked by how dark the theme is
+        val dark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+        TileButton(
+            icon = if (ready) R.drawable.check else R.drawable.database,
+            title = when {
+                importing -> "Reading the backup…"
+                ready -> "Backup ready"
+                else -> "Restore a backup"
             },
-        )
-        ImportButton(
-            icon = R.drawable.database,
-            title = "Import database",
-            description = "Choose the library backup",
-            imported = databaseImported,
-            message = databaseMessage,
-            onClick = {
-                databasePicker.launch(
-                    arrayOf(
-                        "application/vnd.sqlite3",
-                        "application/x-sqlite3",
-                        "application/octet-stream"
-                    )
+            subtitle = if (ready) "It is restored once setup finishes, tap to choose another"
+            else "Choose a backup made in Settings, Backup",
+            onClick = { picker.launch(arrayOf("application/zip", "application/octet-stream")) },
+            busy = importing,
+            colors = if (ready)
+                ButtonDefaults.filledTonalButtonColors(
+                    containerColor = if (dark) Color(0xFF1E4D24) else Color(0xFFC6EFC0),
+                    contentColor = if (dark) Color(0xFFB8F0B0) else Color(0xFF0A3A12),
                 )
-            },
+            else ButtonDefaults.filledTonalButtonColors(),
+            modifier = Modifier.fillMaxWidth(),
         )
+
+        message?.let { Text(it, color = MaterialTheme.colorScheme.error) }
     }
 }
 
@@ -585,6 +531,7 @@ private fun WizardTopBar(page: Int) {
 @Composable
 private fun WizardBottomBar(
     page: Int,
+    locked: Boolean,
     onBack: () -> Unit,
     onForward: () -> Unit,
     onSkip: () -> Unit,
@@ -605,6 +552,7 @@ private fun WizardBottomBar(
 
             OutlinedButton(
                 onClick = if (canGoBack) onBack else onSkip,
+                enabled = !locked,
                 modifier = Modifier.weight(1f)
             ) {
                 val text = if (canGoBack) "Go back" else "Skip"
@@ -612,6 +560,7 @@ private fun WizardBottomBar(
             }
             Button(
                 onClick = if (canGoForward) onForward else onDone,
+                enabled = !locked,
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
@@ -656,6 +605,8 @@ fun SetupWizardScreen(modifier: Modifier = Modifier) {
     var themeMode by rememberSaveable { mutableStateOf(ThemeMode.AUTOMATIC_DYNAMIC) }
     var contrastLevel by rememberSaveable { mutableStateOf(ContrastLevel.NORMAL) }
     var imported by rememberSaveable { mutableStateOf(false) }
+    var importing by remember { mutableStateOf(false) }
+    var importMessage by rememberSaveable { mutableStateOf<String?>(null) }
 
     // Shown live, so the choices on the profile page can be judged right away
     KreateTheme(themeMode, contrastLevel, Color.Unspecified) {
@@ -670,7 +621,10 @@ fun SetupWizardScreen(modifier: Modifier = Modifier) {
             scope.launch { state.animateScrollToPage(target) }
         }
 
-        BackHandler(enabled = page > PAGE_WELCOME) { goTo(previous) }
+        // Pages stay put while a backup is read, "next" depends on whether it can be restored
+        BackHandler(enabled = page > PAGE_WELCOME || importing) {
+            if (!importing) goTo(previous)
+        }
 
         Scaffold(
             modifier = modifier,
@@ -680,6 +634,7 @@ fun SetupWizardScreen(modifier: Modifier = Modifier) {
             bottomBar = {
                 WizardBottomBar(
                     page = page,
+                    locked = importing,
                     onBack = { goTo(previous) },
                     onForward = { goTo(next) },
                     onSkip = { goTo(PAGE_TERMS) },
@@ -694,9 +649,13 @@ fun SetupWizardScreen(modifier: Modifier = Modifier) {
                                     // Restart the app with
                                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                                     .putExtra(SETUP_WIZARD_TOS_CHECKSUM, checksum)
-                                    .putExtra(SETUP_WIZARD_PROFILE_NAME, profileName)
-                                    .putExtra(SETUP_WIZARD_THEME_MODE, themeMode.name)
-                                    .putExtra(SETUP_WIZARD_CONTRAST_LEVEL, contrastLevel.name)
+                                    .apply {
+                                        // A restored backup brings its own profile and settings
+                                        if (imported) return@apply
+                                        putExtra(SETUP_WIZARD_PROFILE_NAME, profileName)
+                                        putExtra(SETUP_WIZARD_THEME_MODE, themeMode.name)
+                                        putExtra(SETUP_WIZARD_CONTRAST_LEVEL, contrastLevel.name)
+                                    }
                             )
                             // The system queued the new start already, a fresh process picks it up
                             Runtime.getRuntime().exit(0)
@@ -714,7 +673,20 @@ fun SetupWizardScreen(modifier: Modifier = Modifier) {
                 when (page) {
                     PAGE_WELCOME -> Welcome()
                     PAGE_PERMISSIONS -> Permissions()
-                    PAGE_IMPORT -> Import(::importOldData) { done -> imported = done }
+                    PAGE_IMPORT -> Import(
+                        imported = imported,
+                        importing = importing,
+                        message = importMessage,
+                        onImport = { uri ->
+                            importing = true
+                            scope.launch {
+                                importMessage = context.importBackup(uri)
+                                // A failed one leaves the backup chosen before in place
+                                if (importMessage == null) imported = true
+                                importing = false
+                            }
+                        },
+                    )
                     PAGE_PROFILE -> Settings(
                         name = profileName,
                         onNameChange = { profileName = it },

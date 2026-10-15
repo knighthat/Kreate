@@ -29,6 +29,7 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.databaseModule
 import me.knighthat.kreate3.playback.playbackModule
@@ -76,6 +77,9 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
     override fun onCreate() {
         super.onCreate()
 
+        // Before anything opens the files it replaces
+        Backup.applyPendingRestore(this)
+
         startKoin {
             androidContext(this@KreateApplication)
 
@@ -93,6 +97,8 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                             get()
                         )
                     } bind ActiveUser::class
+
+                    single { Backup(get(), get(), get()) }
                 },
                 databaseModule,
                 preferencesModule,

@@ -109,7 +109,7 @@ internal class DataStorePreferenceStorage(private val rootDirectory: File) : Pre
         }
     }
 
-    private companion object {
+    internal companion object {
 
         const val PROFILE_FILE_NAME = "preferences.preferences_pb"
     }

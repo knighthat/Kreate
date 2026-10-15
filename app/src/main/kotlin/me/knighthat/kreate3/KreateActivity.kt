@@ -100,14 +100,15 @@ class KreateActivity : ComponentActivity() {
                     it.name == intent.getStringExtra(SETUP_WIZARD_CONTRAST_LEVEL)
                 }
 
-                // Only apply if all args are provided
-                if (!tosChecksum.isNullOrBlank() && !profileName.isNullOrBlank() && themeMode != null && contrastLevel != null) {
+                // Each one alone, a restored backup brings its own profile and settings
+                if (!tosChecksum.isNullOrBlank())
+                    Preferences.TOS_CHECKSUM.update(tosChecksum)
+                if (!profileName.isNullOrBlank()) {
                     val activeUserId = get<ActiveUser>().id.first { it != null }!!
                     get<UserRepository>().rename(activeUserId, profileName)
-                    Preferences.TOS_CHECKSUM.update(tosChecksum)
-                    Preferences.THEME_MODE.update(themeMode)
-                    Preferences.CONTRAST_LEVEL.update(contrastLevel)
                 }
+                themeMode?.let { Preferences.THEME_MODE.update(it) }
+                contrastLevel?.let { Preferences.CONTRAST_LEVEL.update(it) }
             }
             //</editor-fold>
             isReady = true

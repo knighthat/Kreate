@@ -47,6 +47,7 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.MiniPlayer
 import me.knighthat.kreate3.ui.navigation.Albums
 import me.knighthat.kreate3.ui.navigation.Artists
+import me.knighthat.kreate3.ui.navigation.BackupSettings
 import me.knighthat.kreate3.ui.navigation.GeneralSettings
 import me.knighthat.kreate3.ui.navigation.LocalAlbum
 import me.knighthat.kreate3.ui.navigation.LocalArtist
@@ -91,6 +92,7 @@ import me.knighthat.kreate3.ui.screen.home.HomePlaylistsScreen
 import me.knighthat.kreate3.ui.screen.home.HomeSongsScreen
 import me.knighthat.kreate3.ui.screen.search.SearchResultsScreen
 import me.knighthat.kreate3.ui.screen.search.SearchScreen
+import me.knighthat.kreate3.ui.screen.settings.BackupSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.GeneralSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.NetworkSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.SettingsScreen
@@ -256,6 +258,7 @@ fun KreateApp() {
                             onSignInToYouTube = { topLevel.push(YouTubeSignIn) },
                         )
                     }
+                    entry<BackupSettings> { BackupSettingsScreen(topLevel::pop) }
                     entry<YouTubeSignIn> {
                         YouTubeSignInScreen(onBack = topLevel::pop, onSignedIn = topLevel::pop)
                     }

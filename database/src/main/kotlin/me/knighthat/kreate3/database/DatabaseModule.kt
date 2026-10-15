@@ -54,7 +54,13 @@ import kotlin.time.Clock
 internal const val DATABASE_FILE_NAME = "kreate.db"
 
 /**
- * Pass it to `startKoin` to make the repositories available, `androidContext` must be set.
+ * Schema version of [AppDatabase].
+ */
+internal const val DATABASE_VERSION = 1
+
+/**
+ * Pass it to `startKoin` to make the repositories and [DatabaseBackup] available, `androidContext`
+ * must be set.
  *
  * The app must also provide an [ActiveUser], the repositories read and write that user's data.
  */
@@ -67,6 +73,7 @@ val databaseModule = module {
     }
     // Injected so tests can replace it with a fixed clock and assert created_at / updated_at
     single<Clock> { Clock.System }
+    single { DatabaseBackup(get()) }
 
     single { get<AppDatabase>().albumDao() }
     single { get<AppDatabase>().artistDao() }

@@ -19,11 +19,17 @@
 package me.knighthat.kreate3.ui.screen.settings
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import me.knighthat.kreate3.preferences.Profile
+import me.knighthat.kreate3.preferences.ProfileManager
+import me.knighthat.kreate3.ui.navigation.BackupSettings
 import me.knighthat.kreate3.ui.navigation.GeneralSettings
 import me.knighthat.kreate3.ui.navigation.NetworkSettings
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.UiSettings
+import org.koin.compose.koinInject
 
 /**
  * The settings pages to pick from.
@@ -35,7 +41,10 @@ fun SettingsScreen(
     onBack: () -> Unit,
     onOpen: (Route) -> Unit,
     modifier: Modifier = Modifier,
+    profileManager: ProfileManager = koinInject(),
 ) {
+    val activeId by profileManager.activeId.collectAsStateWithLifecycle()
+
     SettingsPage("Settings", onBack, modifier) {
         SettingsItem(
             title = "General",
@@ -52,5 +61,12 @@ fun SettingsScreen(
             summary = "Connections, your music server and YouTube account",
             onClick = { onOpen(NetworkSettings) },
         )
+        // A backup holds every profile, so only the default one may save or replace them
+        if (activeId == Profile.DEFAULT_ID)
+            SettingsItem(
+                title = "Backup",
+                summary = "Save or restore your profiles, settings and library",
+                onClick = { onOpen(BackupSettings) },
+            )
     }
 }

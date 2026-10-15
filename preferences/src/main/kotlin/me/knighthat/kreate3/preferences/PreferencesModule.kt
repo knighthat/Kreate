@@ -22,10 +22,12 @@ import android.content.Context
 import org.koin.dsl.module
 
 /**
- * Pass it to `initKoin` to make [Preferences], [Secrets] and [ProfileManager] available.
+ * Pass it to `initKoin` to make [Preferences], [Secrets], [ProfileManager] and
+ * [PreferencesBackup] available.
  */
 val preferencesModule = module {
     single { ProfileManager(get(), get()) }
     single { PreferenceEngine(get(), get()) }
     single { SecretStore(get(), get(), get<Context>()) }
+    single { PreferencesBackup(get<Context>()) }
 }
