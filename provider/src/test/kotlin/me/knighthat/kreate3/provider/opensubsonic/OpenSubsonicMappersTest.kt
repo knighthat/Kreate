@@ -25,6 +25,7 @@ import kotlinx.serialization.json.jsonObject
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.database.model.SongFormat
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -151,6 +152,35 @@ class OpenSubsonicMappersTest {
         assertEquals(Instant.parse("2023-01-02T03:04:05Z"), starredAt)
         assertEquals(listOf("ar-1"), covers)
     }
+
+    //<editor-fold desc="Formats">
+    @Test
+    fun formatTakesTheTrackReplayGainAsLoudnessOverTheReference() {
+        val format = json(
+            """{"id":"s1","contentType":"audio/flac","bitRate":1012,"size":31415926,
+                "replayGain":{"trackGain":-7.5,"albumGain":-6,"trackPeak":0.98}}"""
+        ).toSongFormat()
+
+        // -7.5 dB brings it to -18 LUFS, so it is at -10.5 LUFS, 3.5 dB over -14 LUFS
+        assertEquals(
+            SongFormat("s1", "OPEN_SUBSONIC", "audio/flac", 1_012_000, 31_415_926, 3.5f),
+            format,
+        )
+    }
+
+    @Test
+    fun formatFallsBackToTheAlbumGain() {
+        val format = json("""{"id":"s1","replayGain":{"albumGain":-2}}""").toSongFormat()
+        assertEquals(-2f, format.gain!!, 0f)
+    }
+
+    @Test
+    fun formatWithoutReplayGainHasNoGain() {
+        val format = json("""{"id":"s1","replayGain":{}}""").toSongFormat()
+        assertEquals(SongFormat("s1", "OPEN_SUBSONIC", "audio/*"), format)
+        assertNull(json("""{"id":"s1","bitRate":0,"size":0}""").toSongFormat().gain)
+    }
+    //</editor-fold>
 
     @Test
     fun aPlaylistAlwaysHasAName() {

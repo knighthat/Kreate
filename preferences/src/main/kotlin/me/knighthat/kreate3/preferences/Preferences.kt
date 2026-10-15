@@ -23,6 +23,7 @@ import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.preferences.Preferences.HOME_SONGS_ORIGINS
 import me.knighthat.kreate3.preferences.Preferences.IMAGE_DISK_CACHE
+import me.knighthat.kreate3.preferences.Preferences.MEDIA3_CACHE_SIZE
 import me.knighthat.kreate3.preferences.Preferences.NETWORK_CONNECT_TIMEOUT
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_CERTIFICATE_SHA256
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_SYNC_ALBUMS
@@ -178,6 +179,25 @@ object Preferences : KoinComponent {
 
     /** Like [YOUTUBE_SYNC_ALBUMS], for the playlists in the user's library. */
     val YOUTUBE_SYNC_PLAYLISTS by lazy { boolean("youtube_sync_playlists", true) }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Playback">
+    /**
+     * Largest size, in bytes, the cache of streamed songs may grow to. The default is 1 GiB.
+     * Downloads don't count, they have no limit.
+     *
+     * The size is fixed when the player starts, so a new value applies from the next launch.
+     * A smaller value drops the songs read least recently once the next song is cached.
+     */
+    val MEDIA3_CACHE_SIZE by lazy { long("song_cache", 1024L * 1024 * 1024) }
+
+    /**
+     * Largest size, in bytes, the downloaded songs may take together. The default is 4 GiB.
+     * It is separate from [MEDIA3_CACHE_SIZE], downloads are never dropped to make room.
+     *
+     * Nothing downloads songs yet, so nothing reads it yet.
+     */
+    val MEDIA3_DOWNLOAD_SIZE by lazy { long("song_downloads", 4L * 1024 * 1024 * 1024) }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Coil3">

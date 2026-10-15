@@ -22,13 +22,16 @@ import android.net.Uri
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.longOrNull
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
+import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.repository.RemoteItem
 import me.knighthat.kreate3.database.repository.RemoteSong
@@ -105,6 +108,37 @@ internal fun JsonObject.toSong(cover: (String) -> Uri?): RemoteSong {
     }
     return RemoteSong(song, album, artists, starred())
 }
+
+/**
+ * Loudness ReplayGain 2 brings songs to, in LUFS. A ReplayGain is the change that gets a song
+ * there, `-7` for a song 7 dB louder.
+ */
+private const val REPLAY_GAIN_LUFS = -18.0
+
+/** Loudness a gain of [SongFormat] is relative to, in LUFS, the app measures songs against it. */
+private const val GAIN_REFERENCE_LUFS = -14.0
+
+/**
+ * The format of the song's file, `Child` in the API, tagged with the name of the origin: a song
+ * of the server is one file. Its gain comes from the ReplayGain of the track, or of the album
+ * when the track has none, `null` when the file has no ReplayGain tags or the server is plain
+ * Subsonic.
+ */
+internal fun JsonObject.toSongFormat(): SongFormat {
+    val replayGain = get("replayGain") as? JsonObject
+    val adjustment = (replayGain?.number("trackGain") ?: replayGain?.number("albumGain"))
+    return SongFormat(
+        songId = string("id")!!,
+        tag = Origin.OPEN_SUBSONIC.name,
+        mimetype = string("contentType") ?: "audio/*",
+        // In kbps
+        bitrate = get("bitRate")?.jsonPrimitive?.intOrNull?.takeIf { it > 0 }?.times(1000),
+        length = get("size")?.jsonPrimitive?.longOrNull?.takeIf { it > 0 },
+        gain = adjustment?.let { (REPLAY_GAIN_LUFS - it - GAIN_REFERENCE_LUFS).toFloat() },
+    )
+}
+
+private fun JsonObject.number(name: String): Double? = get(name)?.jsonPrimitive?.doubleOrNull
 
 /** An artist as other items credit it, `null` without an id. */
 private fun JsonObject.toArtistOrNull(): Artist? =

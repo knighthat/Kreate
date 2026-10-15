@@ -21,6 +21,7 @@ import android.net.Uri
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Lyrics
+import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.repository.RemoteSong
 import kotlin.time.Instant
@@ -182,6 +183,7 @@ data class YouTubeChannel(
  * most this many each
  * @property client the client that found it, like `VISIONOS_0_1__nopo`. When YouTube refuses
  * [url], ask again with it in `refused`.
+ * @property itag YouTube's id of the format, like `251` for Opus in WebM
  */
 data class YouTubeStream(
     val url: String,
@@ -193,4 +195,19 @@ data class YouTubeStream(
     val expiresAt: Instant?,
     val rangeSize: Long?,
     val client: String,
-)
+    val itag: Int,
+) {
+
+    /**
+     * The format to store for [songId], tagged with [itag]. [loudnessDb] is already relative to
+     * the reference loudness of a gain.
+     */
+    fun toSongFormat(songId: String): SongFormat = SongFormat(
+        songId = songId,
+        tag = itag.toString(),
+        mimetype = mimeType ?: "audio/*",
+        bitrate = bitrate,
+        length = contentLength,
+        gain = loudnessDb?.toFloat(),
+    )
+}

@@ -19,9 +19,7 @@
 package me.knighthat.kreate3.ui.component
 
 
-import android.content.ContentUris
 import android.os.Bundle
-import android.provider.MediaStore
 import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -61,14 +59,9 @@ const val EXTRA_REMOTE_ID = "remote_id"
 /**
  * Builds a [MediaItem] whose metadata is described by [block].
  */
-private inline fun mediaItem(
-    mediaId: String,
-    uri: android.net.Uri? = null,
-    block: MediaMetadata.Builder.() -> Unit,
-): MediaItem =
+private inline fun mediaItem(mediaId: String, block: MediaMetadata.Builder.() -> Unit): MediaItem =
     MediaItem.Builder()
         .setMediaId(mediaId)
-        .setUri(uri)
         .setMediaMetadata(MediaMetadata.Builder().apply(block).build())
         .build()
 
@@ -157,25 +150,15 @@ val MediaItem.origin: Origin?
         ?.let { name -> Origin.entries.firstOrNull { it.name == name } }
 
 /**
- * A song with the values the user sees. A song from an OpenSubsonic server or YouTube is shown
- * but can't be played yet: the server's stream needs the sign in and YouTube's needs a stream
- * address, neither is added to the player yet.
+ * A song with the values the user sees. It has no address to play, the player finds it from the
+ * id and the origin when the song is read, see `DataSourceResolver`.
  *
  * @return `null` when the song can't be shown, like an unavailable file that cannot be read
  */
 fun UserSongView.toMediaItem(): MediaItem? {
     if (!isAvailable) return null
 
-    val uri = when (origin) {
-        Origin.LOCAL -> ContentUris.withAppendedId(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-            songId.toLongOrNull() ?: return null,
-        )
-
-        Origin.YOUTUBE, Origin.OPEN_SUBSONIC -> null
-    }
-
-    return mediaItem(songId, uri) {
+    return mediaItem(songId) {
         setTitle(name)
         setSubtitle(artists.joined())
         setArtist(artists.joined())
@@ -193,7 +176,7 @@ fun UserSongView.toMediaItem(): MediaItem? {
             putExplicit(isExplicit)
         })
         setIsBrowsable(false)
-        setIsPlayable(uri != null)
+        setIsPlayable(true)
     }
 }
 

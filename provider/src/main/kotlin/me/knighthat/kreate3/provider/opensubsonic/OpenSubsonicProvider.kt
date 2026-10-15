@@ -46,12 +46,14 @@ import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
+import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.repository.RemoteItem
 import me.knighthat.kreate3.database.repository.RemoteSong
 import me.knighthat.kreate3.provider.Provider
 import me.knighthat.kreate3.provider.SearchResults
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider.Companion.PAGE_SIZE
+import okhttp3.Call
 import okhttp3.OkHttpClient
 import java.security.MessageDigest
 import java.security.SecureRandom
@@ -75,16 +77,23 @@ class OpenSubsonicProvider internal constructor(
     private val json: Json,
     private val settings: OpenSubsonicSettings,
     private val clock: Clock = Clock.System,
+    private val okHttp: () -> OkHttpClient = { error("No client to stream with") },
 ) : Provider {
 
     /**
      * @param base the app's client, the provider derives its own from it, see [OpenSubsonicClients]
      */
     constructor(base: OkHttpClient, json: Json) : this(
-        OpenSubsonicClients(base, ProfileOpenSubsonicSettings)::current,
+        OpenSubsonicClients(base, ProfileOpenSubsonicSettings),
         json,
         ProfileOpenSubsonicSettings,
     )
+
+    private constructor(
+        clients: OpenSubsonicClients,
+        json: Json,
+        settings: OpenSubsonicSettings,
+    ) : this(clients::current, json, settings, okHttp = clients::currentOkHttp)
 
     override val origin = Origin.OPEN_SUBSONIC
 
@@ -187,6 +196,19 @@ class OpenSubsonicProvider internal constructor(
 
         return call("getPlaylists")["playlists"]?.jsonObject?.array("playlist").orEmpty()
             .map { it.jsonObject.toPlaylist(::coverUri) }
+    }
+
+    /**
+     * The format of the song's file on the server, with its ReplayGain as the gain.
+     *
+     * @return `null` while the server is off or not set up
+     * @throws ServerException when the server can't be used or refuses, like for an id it doesn't have
+     */
+    suspend fun format(songId: String): SongFormat? {
+        serverUrl ?: return null
+
+        return call("getSong", "id" to songId)["song"]?.jsonObject?.toSongFormat()
+            ?: throw ServerException(ServerCheck.NotSubsonic)
     }
 
     /**
@@ -461,7 +483,18 @@ class OpenSubsonicProvider internal constructor(
     override suspend fun albumsOf(artistId: String): List<Album> =
         artistWithSongs(artistId)?.albums?.map { it.item }.orEmpty()
 
+    /**
+     * The address of the song signed in, read it with [streamClient]. It holds the sign in, never
+     * store or log it.
+     */
     override suspend fun playbackUri(songId: String): Uri? = endpoint("stream", "id" to songId)
+
+    /**
+     * The client that trusts what the user chose to trust, like a self-signed certificate, for
+     * the player to read [playbackUri] with. Use it for addresses of this server only, and ask
+     * again for each request, it changes with what is trusted.
+     */
+    fun streamClient(): Call.Factory = okHttp()
 
     /**
      * The cover address stored on items, which [cover] loads. The server scales it to the size

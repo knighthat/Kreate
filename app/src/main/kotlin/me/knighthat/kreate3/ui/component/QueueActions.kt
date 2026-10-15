@@ -62,8 +62,8 @@ enum class QueueAction {
 }
 
 /**
- * Does [action] with the songs of [songs] that can be played, songs of the server and of YouTube
- * can't be yet.
+ * Does [action] with the songs of [songs] that can be played, songs shown live from a server or
+ * YouTube can't be yet.
  *
  * @return what to tell the user, `null` when the player shows the result
  */

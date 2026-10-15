@@ -18,17 +18,37 @@
 
 package me.knighthat.kreate3.playback
 
+import androidx.annotation.OptIn
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.source.MediaSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import me.knighthat.kreate3.database.repository.SongRepository
+import me.knighthat.kreate3.provider.Providers
+import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 
 val playbackModule = module {
+
+    single { SongFormatRecorder(get<SongRepository>(), get<OpenSubsonicProvider>()) }
+    single { SongCaches(androidContext()) }
+    single {
+        DataSourceResolver(
+            get<Providers>(),
+            get<YouTubeProvider>(),
+            get<SongFormatRecorder>(),
+            get<SongCaches>(),
+        )
+    }
 
     single<PlaybackController> {
         PlaybackControllerImpl(
@@ -40,6 +60,7 @@ val playbackModule = module {
     // Not a singleton: PlaybackService owns the player and releases it when the service ends,
     // a released player can't be used again. Screens talk to it through a MediaController.
     factory {
+        val openSubsonic = get<OpenSubsonicProvider>()
         KreatePlayer(
             ExoPlayer.Builder(androidContext())
                 .setAudioAttributes(
@@ -52,9 +73,26 @@ val playbackModule = module {
                 )
                 // Pauses when headphones are unplugged
                 .setHandleAudioBecomingNoisy(true)
-                // Keeps the CPU awake while playing with the screen off
-                .setWakeMode(C.WAKE_MODE_LOCAL)
+                // Keeps the CPU and Wi-Fi awake while playing with the screen off
+                .setWakeMode(C.WAKE_MODE_NETWORK)
+                // Items carry no address, it is found when a song is read
+                .setMediaSourceFactory(
+                    songMediaSourceFactory(
+                        songDataSourceFactory(
+                            context = androidContext(),
+                            client = get(),
+                            // Asked for each request, it changes with what the user trusts
+                            openSubsonic = { openSubsonic.streamClient().newCall(it) },
+                            resolver = get(),
+                            caches = get(),
+                        )
+                    )
+                )
                 .build()
         )
     }
 }
+
+@OptIn(UnstableApi::class)
+private fun songMediaSourceFactory(songs: DataSource.Factory): MediaSource.Factory =
+    DefaultMediaSourceFactory(songs)

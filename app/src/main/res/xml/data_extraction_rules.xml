@@ -25,6 +25,22 @@
    instead, which Android never backs up or transfers. Secrets (secrets.preferences_pb) live there.
 -->
 <data-extraction-rules>
-    <cloud-backup />
-    <device-transfer />
+    <cloud-backup>
+        <!-- Index of the song caches (SongCaches), the songs are in folders never backed up -->
+        <exclude
+            domain="database"
+            path="exoplayer_internal.db" />
+        <exclude
+            domain="database"
+            path="exoplayer_internal.db-journal" />
+    </cloud-backup>
+    <device-transfer>
+        <!-- Index of the song caches (SongCaches), the songs are in folders never backed up -->
+        <exclude
+            domain="database"
+            path="exoplayer_internal.db" />
+        <exclude
+            domain="database"
+            path="exoplayer_internal.db-journal" />
+    </device-transfer>
 </data-extraction-rules>

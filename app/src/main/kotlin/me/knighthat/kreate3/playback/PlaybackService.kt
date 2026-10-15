@@ -21,10 +21,13 @@ package me.knighthat.kreate3.playback
 import android.app.PendingIntent
 import android.content.Intent
 import androidx.annotation.OptIn
+import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
+import com.google.common.util.concurrent.Futures
+import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -63,6 +66,7 @@ class PlaybackService : MediaSessionService(), KoinComponent {
         normalizer = LoudnessNormalizer(player, get(), scope)
 
         mediaSession = MediaSession.Builder(this, player)
+            .setCallback(QueueCallback)
             // Tapping the notification brings the app back instead of opening a second copy
             .setSessionActivity(
                 PendingIntent.getActivity(
@@ -75,6 +79,26 @@ class PlaybackService : MediaSessionService(), KoinComponent {
                 )
             )
             .build()
+    }
+
+    /**
+     * Gives the items added to the queue the address of their song, see [withSongUri]. Items that
+     * don't say where they come from can't be played, adding them fails.
+     */
+    private object QueueCallback : MediaSession.Callback {
+
+        override fun onAddMediaItems(
+            mediaSession: MediaSession,
+            controller: MediaSession.ControllerInfo,
+            mediaItems: List<MediaItem>,
+        ): ListenableFuture<List<MediaItem>> {
+            val queued = mediaItems.map {
+                it.withSongUri() ?: return Futures.immediateFailedFuture(
+                    IllegalArgumentException("${it.mediaId} has no origin")
+                )
+            }
+            return Futures.immediateFuture(queued)
+        }
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? =

@@ -24,4 +24,12 @@
    under a folder with a variable name (like profiles/<id>/) goes in noBackupFilesDir instead,
    which Android never backs up. Secrets (secrets.preferences_pb) live there.
 -->
-<full-backup-content />
+<full-backup-content>
+    <!-- Index of the song caches (SongCaches), the songs are in folders never backed up -->
+    <exclude
+        domain="database"
+        path="exoplayer_internal.db" />
+    <exclude
+        domain="database"
+        path="exoplayer_internal.db-journal" />
+</full-backup-content>

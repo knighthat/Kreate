@@ -21,6 +21,12 @@ package me.knighthat.kreate3.playback
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 
+/** The song's source is off or not set up, like an OpenSubsonic server without a sign in. */
+const val ERROR_CODE_SOURCE_OFF = PlaybackException.CUSTOM_ERROR_CODE_BASE + 1
+
+/** The song's source has nothing to play for it, like a video YouTube doesn't stream. */
+const val ERROR_CODE_NOT_PLAYABLE = PlaybackException.CUSTOM_ERROR_CODE_BASE + 2
+
 /**
  * What to tell the user when [item] failed to play with this error, like
  * `Couldn't play "Song": its file is gone`.
@@ -55,6 +61,10 @@ private fun PlaybackException.reason(): String = when (errorCode) {
     PlaybackException.ERROR_CODE_DECODING_FAILED,
     PlaybackException.ERROR_CODE_AUDIO_TRACK_INIT_FAILED,
     PlaybackException.ERROR_CODE_AUDIO_TRACK_WRITE_FAILED -> "the device couldn't decode it"
+
+    ERROR_CODE_SOURCE_OFF -> "its source is off or not set up"
+
+    ERROR_CODE_NOT_PLAYABLE -> "its source has nothing to play"
 
     else -> "something went wrong"
 }

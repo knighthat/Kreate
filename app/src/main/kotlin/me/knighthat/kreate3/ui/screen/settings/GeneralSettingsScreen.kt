@@ -29,11 +29,13 @@ private const val MIB = 1024L * 1024
 private const val NEXT_LAUNCH = "Applies from the next launch"
 
 /**
- * How the app behaves: scanning the device and keeping images.
+ * How the app behaves: scanning the device and keeping songs and images.
  */
 @Composable
 fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val scanInterval by Preferences.LOCAL_SCAN_INTERVAL.collectAsStateWithLifecycle()
+    val songCache by Preferences.MEDIA3_CACHE_SIZE.collectAsStateWithLifecycle()
+    val songDownloads by Preferences.MEDIA3_DOWNLOAD_SIZE.collectAsStateWithLifecycle()
     val diskCache by Preferences.IMAGE_DISK_CACHE.collectAsStateWithLifecycle()
     val memoryCache by Preferences.IMAGE_MEMORY_CACHE_PERCENT.collectAsStateWithLifecycle()
 
@@ -47,6 +49,26 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             max = 24 * 60,
             onSave = { Preferences.LOCAL_SCAN_INTERVAL.update(it.toInt()) },
             note = "How often the device is searched for new music",
+        )
+
+        SettingsSection("Songs")
+        NumberSetting(
+            title = "Cache",
+            value = songCache / MIB,
+            unit = "MiB",
+            min = 128,
+            max = 32 * 1024,
+            onSave = { Preferences.MEDIA3_CACHE_SIZE.update(it * MIB) },
+            note = "Songs streamed from a server or YouTube. $NEXT_LAUNCH",
+        )
+        NumberSetting(
+            title = "Downloads",
+            value = songDownloads / MIB,
+            unit = "MiB",
+            min = 128,
+            max = 256 * 1024,
+            onSave = { Preferences.MEDIA3_DOWNLOAD_SIZE.update(it * MIB) },
+            note = "Songs kept to play offline, separate from the cache",
         )
 
         SettingsSection("Images")

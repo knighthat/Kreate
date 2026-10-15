@@ -137,5 +137,6 @@ internal fun ExtractedStream.toYouTubeStream(): YouTubeStream? {
         expiresAt = expiresAt,
         rangeSize = rangeChunkSizeBytes.takeIf { requireBoundedRange },
         client = profileId,
+        itag = itag,
     )
 }

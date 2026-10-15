@@ -54,6 +54,18 @@ class PlaybackErrorsTest {
     }
 
     @Test
+    fun sourceErrorsSayWhatIsWrongWithTheSource() {
+        assertEquals(
+            "Couldn't play \"Derezzed\": its source is off or not set up",
+            error(ERROR_CODE_SOURCE_OFF).userMessage(song),
+        )
+        assertEquals(
+            "Couldn't play \"Derezzed\": its source has nothing to play",
+            error(ERROR_CODE_NOT_PLAYABLE).userMessage(song),
+        )
+    }
+
+    @Test
     fun songWithoutTitleAndUnknownErrorStillSaySomething() {
         assertEquals(
             "Couldn't play this song: something went wrong",

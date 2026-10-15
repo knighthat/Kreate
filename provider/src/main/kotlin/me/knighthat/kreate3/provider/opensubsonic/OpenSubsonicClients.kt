@@ -41,25 +41,30 @@ internal class OpenSubsonicClients(
 
     private data class Trust(val allowSelfSigned: Boolean, val pin: CertificatePin?)
 
-    private var trust: Trust? = null
-    private var client: HttpClient? = null
+    private class Clients(val trust: Trust, val okHttp: OkHttpClient, val ktor: HttpClient)
+
+    private var clients: Clients? = null
 
     /**
      * The client for what is trusted now. A replaced client is not closed, requests on it may
      * still run, and closing would stop the dispatcher it shares with [base].
      */
-    @Synchronized
-    fun current(): HttpClient {
-        val wanted = Trust(settings.allowSelfSigned, settings.pinnedCertificate)
-        client?.takeIf { trust == wanted }?.let { return it }
+    fun current(): HttpClient = clients().ktor
 
-        return build(wanted).also {
-            trust = wanted
-            client = it
-        }
+    /** The OkHttp client under [current], for what reads the server without Ktor. */
+    fun currentOkHttp(): OkHttpClient = clients().okHttp
+
+    @Synchronized
+    private fun clients(): Clients {
+        val wanted = Trust(settings.allowSelfSigned, settings.pinnedCertificate)
+        clients?.takeIf { it.trust == wanted }?.let { return it }
+
+        val okHttp = build(wanted)
+        return Clients(wanted, okHttp, HttpClient(OkHttp) { engine { preconfigured = okHttp } })
+            .also { clients = it }
     }
 
-    private fun build(trust: Trust): HttpClient {
+    private fun build(trust: Trust): OkHttpClient {
         val okHttp = base.newBuilder()
             .connectionPool(ConnectionPool())
             .apply {
@@ -76,7 +81,7 @@ internal class OpenSubsonicClients(
             }
             .build()
 
-        return HttpClient(OkHttp) { engine { preconfigured = okHttp } }
+        return okHttp
     }
 
     private fun systemTrustManager(): X509TrustManager =

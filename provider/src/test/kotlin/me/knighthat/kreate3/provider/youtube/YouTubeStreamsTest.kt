@@ -18,6 +18,7 @@
 package me.knighthat.kreate3.provider.youtube
 
 import com.metrolist.innertubex.extraction.ExtractedStream
+import me.knighthat.kreate3.database.model.SongFormat
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -62,6 +63,22 @@ class YouTubeStreamsTest {
         // Any range is answered, the chunk size is only a hint then
         assertNull(stream.rangeSize)
         assertEquals("VISIONOS_0_1__nopo", stream.client)
+        assertEquals(251, stream.itag)
+    }
+
+    @Test
+    fun formatIsTaggedWithItsItagAndTakesTheLoudnessAsGain() {
+        assertEquals(
+            SongFormat(
+                "J7p4bzqLvCw",
+                "251",
+                "audio/webm; codecs=\"opus\"",
+                143_381,
+                3_350_747,
+                7.29f
+            ),
+            extracted().toYouTubeStream()!!.toSongFormat("J7p4bzqLvCw"),
+        )
     }
 
     @Test
