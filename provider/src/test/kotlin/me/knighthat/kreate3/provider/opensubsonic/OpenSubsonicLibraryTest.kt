@@ -54,7 +54,7 @@ class OpenSubsonicLibraryTest {
         override var url: String = "https://music.example.com",
     ) : OpenSubsonicSettings {
         override val auth = OpenSubsonicAuth.API_KEY
-        override val username = ""
+        override suspend fun username() = ""
         override val allowSelfSigned = false
         override val pinnedCertificate: CertificatePin? = null
         override suspend fun password() = ""

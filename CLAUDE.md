@@ -23,9 +23,10 @@ Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper
 - Work that must outlive a screen runs on the global `CoroutineScope` (Koin singleton,
   `SupervisorJob` + `Dispatchers.Default`); in UI code use `rememberCoroutineScope()` /
   `viewModelScope` instead.
-- Passwords, API keys and tokens never go in `Preferences`. Declare them in `Secrets`, which keeps
-  them in `secrets.preferences_pb` in the profile's folder under `noBackupFilesDir`, so they never
-  leave the device.
+- Credentials never go in `Preferences`: passwords, API keys, tokens, cookies, usernames and
+  account or channel ids. Declare them in `Secrets`, which keeps them in `secrets.preferences_pb`
+  in the profile's folder under `noBackupFilesDir`, so they never leave the device. To move an
+  existing preference there, add its name to `SecretStore.MOVED_FROM_PREFERENCES`.
 - External sources sync liked songs, albums, artists and playlists separately. Of the synced data,
   only liked songs are written to the database, and the server wins: `liked_at` is the server's
   like time, or the current time when the song is inserted or newly liked (an already liked song

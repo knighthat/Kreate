@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.preferences.SecretStore.Companion.MOVED_FROM_PREFERENCES
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
@@ -51,6 +52,10 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * Reads and writes run one after another in the order they were asked, so a change made before
  * a profile switch is saved to the profile it was made in.
+ *
+ * Settings that were preferences before they became secrets, [MOVED_FROM_PREFERENCES], are moved
+ * out of every profile's preferences file before anything else is read, so nothing reads a secret
+ * as empty while its value is still on the other side.
  *
  * Create a single instance per process.
  */
@@ -70,6 +75,8 @@ internal class SecretStore(
     private val tasks = Channel<suspend () -> Unit>(Channel.UNLIMITED)
 
     init {
+        // First in the queue, every read waits for it
+        tasks.trySend { moveFromPreferences() }
         scope.launch(Dispatchers.IO) {
             for (task in tasks) {
                 try {
@@ -137,6 +144,35 @@ internal class SecretStore(
         }
     }
 
+    /**
+     * Saves the values of [MOVED_FROM_PREFERENCES] found in each profile's preferences file as
+     * secrets, then takes them out of that file. A profile whose move fails keeps its values
+     * there and is tried again at the next start.
+     */
+    private suspend fun moveFromPreferences() {
+        for (profileId in profiles.ids.first()) {
+            try {
+                val moved = profiles.storage.read(profileId)
+                    .filterKeys { it in MOVED_FROM_PREFERENCES }
+                    .mapValues { it.value.toString() }
+                if (moved.isEmpty()) continue
+
+                storeOf(profileId).edit { secrets ->
+                    moved.forEach { (name, value) ->
+                        val key = stringPreferencesKey(name)
+                        if (value.isEmpty()) secrets.remove(key) else secrets[key] = value
+                    }
+                }
+                // Only once they're saved here, so a failure loses nothing
+                profiles.storage.write(profileId, moved.mapValues { null })
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                // TODO(knighthat): report failed moves
+            }
+        }
+    }
+
     private fun load(profileId: String, name: String, state: MutableStateFlow<String>) {
         tasks.trySend {
             // A profile switched meanwhile has nothing to show
@@ -166,5 +202,11 @@ internal class SecretStore(
         const val FILE_NAME = "secrets.preferences_pb"
 
         val NAME = Regex("[a-z0-9_]+")
+
+        /**
+         * Names of the secrets that were stored in the preferences file before, under the same
+         * name. Never remove one, an old file may still hold it.
+         */
+        val MOVED_FROM_PREFERENCES = setOf("open_subsonic_username", "youtube_page_id")
     }
 }

@@ -59,7 +59,7 @@ sealed interface YouTubeAccountState {
 /**
  * Signs the active profile in to YouTube and out of it, and picks which channel of the account it
  * acts as. The session is the cookies the sign in page left, kept in [Secrets.YOUTUBE_COOKIES]
- * and never anywhere else; the channel is [Preferences.YOUTUBE_PAGE_ID]. The account is only used
+ * and never anywhere else; the channel is [Secrets.YOUTUBE_PAGE_ID]. The account is only used
  * while [Preferences.YOUTUBE_ACCOUNT_ENABLED] is on.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -77,7 +77,7 @@ class YouTubeAccountViewModel(
     private val session = combine(
         Secrets.YOUTUBE_COOKIES.state,
         Preferences.YOUTUBE_ACCOUNT_ENABLED.state,
-        Preferences.YOUTUBE_PAGE_ID.state,
+        Secrets.YOUTUBE_PAGE_ID.state,
         attempt,
     ) { cookies, enabled, pageId, _ -> (enabled && isYouTubeSession(cookies)) to pageId }
 
@@ -123,7 +123,7 @@ class YouTubeAccountViewModel(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     /** Page id of the channel acted as, empty for the account's own. */
-    val pageId: StateFlow<String> = Preferences.YOUTUBE_PAGE_ID.state
+    val pageId: StateFlow<String> = Secrets.YOUTUBE_PAGE_ID.state
 
     /** Asks YouTube again who is signed in. */
     fun retry() = attempt.update { it + 1 }
@@ -137,7 +137,7 @@ class YouTubeAccountViewModel(
      */
     fun signIn(cookies: String): Boolean {
         if (!isYouTubeSession(cookies)) return false
-        Preferences.YOUTUBE_PAGE_ID.update("")
+        Secrets.YOUTUBE_PAGE_ID.update("")
         Secrets.YOUTUBE_COOKIES.update(cookies)
         return true
     }
@@ -150,7 +150,7 @@ class YouTubeAccountViewModel(
 
     /** Acts as [channel], `null` for the account's own, and brings the liked songs in. */
     fun finishSignIn(channel: YouTubeChannel?) {
-        Preferences.YOUTUBE_PAGE_ID.update(channel?.pageId.orEmpty())
+        Secrets.YOUTUBE_PAGE_ID.update(channel?.pageId.orEmpty())
         library.refreshNow()
     }
 
@@ -158,8 +158,8 @@ class YouTubeAccountViewModel(
      * Acts as [channel] from now on. Its liked songs replace the ones of the channel before.
      */
     fun switchTo(channel: YouTubeChannel) {
-        if (channel.pageId.orEmpty() == Preferences.YOUTUBE_PAGE_ID.value) return
-        Preferences.YOUTUBE_PAGE_ID.update(channel.pageId.orEmpty())
+        if (channel.pageId.orEmpty() == Secrets.YOUTUBE_PAGE_ID.value) return
+        Secrets.YOUTUBE_PAGE_ID.update(channel.pageId.orEmpty())
         library.refreshNow()
     }
 
@@ -169,7 +169,7 @@ class YouTubeAccountViewModel(
      */
     fun signOut() {
         Secrets.YOUTUBE_COOKIES.clear()
-        Preferences.YOUTUBE_PAGE_ID.update("")
+        Secrets.YOUTUBE_PAGE_ID.update("")
     }
 
     /**

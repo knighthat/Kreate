@@ -330,7 +330,7 @@ fun NetworkSettingsScreen(
     val enabled by Preferences.OPEN_SUBSONIC_ENABLED.collectAsStateWithLifecycle()
     val auth by Preferences.OPEN_SUBSONIC_AUTH.collectAsStateWithLifecycle()
     val url by Preferences.OPEN_SUBSONIC_URL.collectAsStateWithLifecycle()
-    val username by Preferences.OPEN_SUBSONIC_USERNAME.collectAsStateWithLifecycle()
+    val username by Secrets.OPEN_SUBSONIC_USERNAME.collectAsStateWithLifecycle()
     val password by Secrets.OPEN_SUBSONIC_PASSWORD.collectAsStateWithLifecycle()
     val apiKey by Secrets.OPEN_SUBSONIC_API_KEY.collectAsStateWithLifecycle()
 
@@ -439,7 +439,7 @@ fun NetworkSettingsScreen(
                 TextSetting(
                     title = "Username",
                     value = username,
-                    onSave = { Preferences.OPEN_SUBSONIC_USERNAME.update(it.trim()) },
+                    onSave = { Secrets.OPEN_SUBSONIC_USERNAME.update(it.trim()) },
                 )
                 TextSetting(
                     title = "Password",

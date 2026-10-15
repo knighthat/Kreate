@@ -49,12 +49,14 @@ class OpenSubsonicProviderTest {
         override var enabled: Boolean = true,
         override var url: String = "https://music.example.com",
         override var auth: OpenSubsonicAuth = OpenSubsonicAuth.PASSWORD,
-        override var username: String = "me",
+        var username: String = "me",
         var password: String = "secret",
         var apiKey: String = "key123",
         override var allowSelfSigned: Boolean = false,
         override var pinnedCertificate: CertificatePin? = null,
     ) : OpenSubsonicSettings {
+
+        override suspend fun username() = username
 
         override suspend fun password() = password
 

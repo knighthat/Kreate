@@ -120,8 +120,6 @@ object Preferences : KoinComponent {
     /** Which credentials sign in, see [OpenSubsonicAuth]. */
     val OPEN_SUBSONIC_AUTH by lazy { enum("open_subsonic_auth", OpenSubsonicAuth.PASSWORD) }
 
-    val OPEN_SUBSONIC_USERNAME by lazy { string("open_subsonic_username", "") }
-
     /**
      * Whether a server whose certificate chain ends in a self-signed certificate is trusted.
      * Off by default. The first such certificate seen is remembered in
@@ -151,13 +149,6 @@ object Preferences : KoinComponent {
 
     /** SHA-256 fingerprint of the remembered self-signed certificate, empty when none is. */
     val OPEN_SUBSONIC_CERTIFICATE_SHA256 by lazy { string("open_subsonic_certificate_sha256", "") }
-
-    /**
-     * Page id of the YouTube channel the signed in user acts as, when their Google account has
-     * several (brand accounts). Empty for the account's own channel. It only picks a channel, the
-     * session itself is in `Secrets.YOUTUBE_COOKIES`.
-     */
-    val YOUTUBE_PAGE_ID by lazy { string("youtube_page_id", "") }
 
     /**
      * Whether the YouTube account is in use. Off by default.

@@ -42,6 +42,24 @@ class SecretStoreTest {
         override suspend fun delete(profileId: String) = Unit
     }
 
+    /** Preferences files in memory, by profile. */
+    private class MemoryStorage(val files: MutableMap<String, MutableMap<String, Any>>) :
+        PreferenceStorage {
+        override suspend fun read(profileId: String): Map<String, Any> =
+            files[profileId].orEmpty().toMap()
+
+        override suspend fun write(profileId: String, changes: Map<String, Any?>) {
+            val file = files.getOrPut(profileId) { mutableMapOf() }
+            changes.forEach { (name, value) ->
+                if (value == null) file.remove(name) else file[name] = value
+            }
+        }
+
+        override suspend fun delete(profileId: String) {
+            files.remove(profileId)
+        }
+    }
+
     private lateinit var root: File
     private lateinit var scope: CoroutineScope
     private lateinit var storeScope: CoroutineScope
@@ -169,6 +187,8 @@ class SecretStoreTest {
 
     @Test
     fun deletesSecretsOfProfilesDeletedWhileNotRunning() {
+        // Stopped first, or it may clean the folder up before the file is in it
+        storeScope.cancel()
         val orphan = Profile.directory(root, "gone").apply { mkdirs() }
         File(orphan, "secrets.preferences_pb").writeText("")
         restart()
@@ -179,5 +199,39 @@ class SecretStoreTest {
     @Test(expected = IllegalArgumentException::class)
     fun rejectsNamesThatAreNotFileSafe() {
         store.secret("../escape")
+    }
+
+    @Test
+    fun secretsThatWerePreferencesAreMovedOutOfThePreferencesFile() {
+        val storage = MemoryStorage(
+            mutableMapOf(
+                Profile.DEFAULT_ID to mutableMapOf(
+                    "open_subsonic_username" to "me",
+                    "youtube_page_id" to "page",
+                    "theme_mode" to "DARK",
+                )
+            )
+        )
+        // A folder of its own, two stores can't share the files of setUp's
+        val movedRoot = Files.createTempDirectory("moved").toFile()
+        val movedScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+        val movedProfiles = ProfileManager(movedScope, movedRoot, storage)
+        eventually { movedProfiles.activeId.value == Profile.DEFAULT_ID }
+        val store = SecretStore(movedScope, movedProfiles, movedRoot)
+
+        // Waits for the move, which comes before every read
+        assertEquals("me", runBlocking { store.secret("open_subsonic_username").current() })
+        assertEquals("page", runBlocking { store.secret("youtube_page_id").current() })
+        // Other preferences stay where they are
+        assertEquals(mapOf("theme_mode" to "DARK"), storage.files[Profile.DEFAULT_ID])
+        assertTrue(
+            File(
+                Profile.directory(movedRoot, Profile.DEFAULT_ID),
+                "secrets.preferences_pb"
+            ).isFile
+        )
+
+        movedScope.cancel()
+        movedRoot.deleteRecursively()
     }
 }

@@ -84,7 +84,7 @@ class YouTubeProvider internal constructor(
         cookies: suspend () -> String = {
             if (Preferences.YOUTUBE_ACCOUNT_ENABLED.value) Secrets.YOUTUBE_COOKIES.current() else ""
         },
-        pageId: () -> String = { Preferences.YOUTUBE_PAGE_ID.value },
+        pageId: suspend () -> String = { Secrets.YOUTUBE_PAGE_ID.current() },
     ) : this(
         InnerTube(
             client,

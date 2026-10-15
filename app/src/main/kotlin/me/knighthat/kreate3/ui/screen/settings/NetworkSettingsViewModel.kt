@@ -129,7 +129,7 @@ class NetworkSettingsViewModel(
     private fun credentialsSet(): Flow<List<String>?> =
         combine(
             Preferences.OPEN_SUBSONIC_AUTH.state,
-            Preferences.OPEN_SUBSONIC_USERNAME.state,
+            Secrets.OPEN_SUBSONIC_USERNAME.state,
             Secrets.OPEN_SUBSONIC_PASSWORD.state,
             Secrets.OPEN_SUBSONIC_API_KEY.state,
         ) { auth, username, password, apiKey ->

@@ -140,7 +140,7 @@ internal class InnerTube(
     private val locale: () -> Locale,
     private val cookies: suspend () -> String = { "" },
     private val clock: Clock = Clock.System,
-    private val pageId: () -> String = { "" },
+    private val pageId: suspend () -> String = { "" },
     poTokens: TokenProvider? = null,
 ) {
 

@@ -35,7 +35,8 @@ interface OpenSubsonicSettings {
 
     val auth: OpenSubsonicAuth
 
-    val username: String
+    /** Waits for the saved username to be read, see [Secrets]. */
+    suspend fun username(): String
 
     /** Waits for the saved password to be read, see [Secrets]. */
     suspend fun password(): String
@@ -61,7 +62,7 @@ internal object ProfileOpenSubsonicSettings : OpenSubsonicSettings {
     override val enabled get() = Preferences.OPEN_SUBSONIC_ENABLED.value
     override val url get() = Preferences.OPEN_SUBSONIC_URL.value
     override val auth get() = Preferences.OPEN_SUBSONIC_AUTH.value
-    override val username get() = Preferences.OPEN_SUBSONIC_USERNAME.value
+    override suspend fun username() = Secrets.OPEN_SUBSONIC_USERNAME.current()
     override suspend fun password() = Secrets.OPEN_SUBSONIC_PASSWORD.current()
     override suspend fun apiKey() = Secrets.OPEN_SUBSONIC_API_KEY.current()
     override val allowSelfSigned get() = Preferences.OPEN_SUBSONIC_ALLOW_SELF_SIGNED.value

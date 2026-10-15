@@ -333,12 +333,12 @@ class OpenSubsonicProvider internal constructor(
      */
     suspend fun shareRole(): Boolean? {
         val server = serverUrl ?: return null
-        val key = "$server|${settings.auth}|${settings.username}"
+        val key = "$server|${settings.auth}|${settings.username()}"
         knownShareRole?.takeIf { it.first == key }?.let { return it.second }
 
         return try {
             val username = when (settings.auth) {
-                OpenSubsonicAuth.PASSWORD -> settings.username
+                OpenSubsonicAuth.PASSWORD -> settings.username()
                 OpenSubsonicAuth.API_KEY -> call("tokenInfo")["tokenInfo"]?.jsonObject
                     ?.get("username")?.jsonPrimitive?.contentOrNull
             }
@@ -488,13 +488,14 @@ class OpenSubsonicProvider internal constructor(
      */
     private suspend fun credentials(): List<Pair<String, String>>? = when (settings.auth) {
         OpenSubsonicAuth.PASSWORD -> {
+            val username = settings.username()
             val password = settings.password()
-            if (settings.username.isEmpty() || password.isEmpty()) null
+            if (username.isEmpty() || password.isEmpty()) null
             else {
                 val salt = ByteArray(8).also(SecureRandom()::nextBytes).toHex()
                 val token = MessageDigest.getInstance("MD5")
                     .digest((password + salt).toByteArray()).toHex()
-                listOf("u" to settings.username, "t" to token, "s" to salt)
+                listOf("u" to username, "t" to token, "s" to salt)
             }
         }
 
