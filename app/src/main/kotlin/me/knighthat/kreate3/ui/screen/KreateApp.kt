@@ -50,6 +50,7 @@ import me.knighthat.kreate3.ui.component.MiniPlayer
 import me.knighthat.kreate3.ui.navigation.Albums
 import me.knighthat.kreate3.ui.navigation.Artists
 import me.knighthat.kreate3.ui.navigation.BackupSettings
+import me.knighthat.kreate3.ui.navigation.ExitConfirmation
 import me.knighthat.kreate3.ui.navigation.GeneralSettings
 import me.knighthat.kreate3.ui.navigation.LocalAlbum
 import me.knighthat.kreate3.ui.navigation.LocalArtist
@@ -193,6 +194,8 @@ fun KreateApp() {
             containerColor = MaterialTheme.colorScheme.surfaceDim,
             modifier = Modifier.fillMaxSize(),
         ) { barPadding ->
+            // Before the screens, so their own handling of going back comes first
+            ExitConfirmation(atBottom = topLevel.backStack.size == 1, snackbar = snackbar)
             NavDisplay(
                 backStack = topLevel.backStack,
                 onBack = topLevel::pop,

@@ -21,6 +21,9 @@ package me.knighthat.kreate3.preferences
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.constant.ThemeMode
+import me.knighthat.kreate3.preferences.Preferences.BACK_EXIT_DISABLED
+import me.knighthat.kreate3.preferences.Preferences.EXIT_CONFIRMATION
+import me.knighthat.kreate3.preferences.Preferences.EXIT_CONFIRMATION_TIMEOUT
 import me.knighthat.kreate3.preferences.Preferences.HOME_SONGS_ORIGINS
 import me.knighthat.kreate3.preferences.Preferences.IMAGE_DISK_CACHE
 import me.knighthat.kreate3.preferences.Preferences.MEDIA3_CACHE_SIZE
@@ -46,6 +49,18 @@ object Preferences : KoinComponent {
 
     val THEME_MODE by lazy { enum("theme_mode", ThemeMode.THUMBNAIL) }
     val CONTRAST_LEVEL by lazy { enum("contrast_level", ContrastLevel.NORMAL) }
+
+    /**
+     * Going back from the first screen asks to go back again before the app closes, see
+     * [EXIT_CONFIRMATION_TIMEOUT]. [BACK_EXIT_DISABLED] wins over it.
+     */
+    val EXIT_CONFIRMATION by lazy { boolean("exit_confirmation", true) }
+
+    /** Seconds [EXIT_CONFIRMATION] waits for the second time, it asks again after. */
+    val EXIT_CONFIRMATION_TIMEOUT by lazy { int("exit_confirmation_timeout", 2) }
+
+    /** Going back from the first screen does nothing, the app is never closed that way. */
+    val BACK_EXIT_DISABLED by lazy { boolean("back_exit_disabled", false) }
 
     /**
      * Minutes between two scans of the device's music. The system runs periodic work

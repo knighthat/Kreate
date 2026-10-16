@@ -29,7 +29,7 @@ private const val MIB = 1024L * 1024
 private const val NEXT_LAUNCH = "Applies from the next launch"
 
 /**
- * How the app behaves: scanning the device and keeping songs and images.
+ * How the app behaves: scanning the device, keeping songs and images, and leaving the app.
  */
 @Composable
 fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -38,6 +38,9 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val songDownloads by Preferences.MEDIA3_DOWNLOAD_SIZE.collectAsStateWithLifecycle()
     val diskCache by Preferences.IMAGE_DISK_CACHE.collectAsStateWithLifecycle()
     val memoryCache by Preferences.IMAGE_MEMORY_CACHE_PERCENT.collectAsStateWithLifecycle()
+    val exitDisabled by Preferences.BACK_EXIT_DISABLED.collectAsStateWithLifecycle()
+    val exitConfirmation by Preferences.EXIT_CONFIRMATION.collectAsStateWithLifecycle()
+    val exitTimeout by Preferences.EXIT_CONFIRMATION_TIMEOUT.collectAsStateWithLifecycle()
 
     SettingsPage("General", onBack, modifier) {
         SettingsSection("Library")
@@ -90,5 +93,31 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             onSave = { Preferences.IMAGE_MEMORY_CACHE_PERCENT.update(it / 100.0) },
             note = NEXT_LAUNCH,
         )
+
+        SettingsSection("Navigation")
+        SwitchSetting(
+            title = "Don't exit with back",
+            checked = exitDisabled,
+            onCheckedChange = { Preferences.BACK_EXIT_DISABLED.update(it) },
+            summary = "Going back from the first screen does nothing",
+        )
+        if (!exitDisabled) {
+            SwitchSetting(
+                title = "Confirm exit",
+                checked = exitConfirmation,
+                onCheckedChange = { Preferences.EXIT_CONFIRMATION.update(it) },
+                summary = "Go back twice from the first screen to exit",
+            )
+            if (exitConfirmation)
+                NumberSetting(
+                    title = "Confirmation time",
+                    value = exitTimeout.toLong(),
+                    unit = "seconds",
+                    min = 1,
+                    max = 10,
+                    onSave = { Preferences.EXIT_CONFIRMATION_TIMEOUT.update(it.toInt()) },
+                    note = "How long the second time is waited for",
+                )
+        }
     }
 }
