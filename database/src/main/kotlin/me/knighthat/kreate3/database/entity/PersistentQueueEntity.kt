@@ -24,15 +24,17 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 
 /**
- * A [SongEntity] in the queue one user left behind. A song appears once per user.
+ * A [SongEntity] in the queue one user left behind. A song may be queued more than once.
  *
- * @property songId the queued [SongEntity]
  * @property userId owner of the queue
- * @property position place in the queue, lower plays first
+ * @property ordinal place in the queue, lower plays first
+ * @property songId the queued [SongEntity]
+ * @property position where the song playing was, in milliseconds. Only that one song of the
+ * queue has it, the others are `null`.
  */
 @Entity(
     tableName = "persistent_queue",
-    primaryKeys = ["song_id", "user_id"],
+    primaryKeys = ["user_id", "ordinal"],
     foreignKeys = [
         ForeignKey(
             entity = SongEntity::class,
@@ -47,12 +49,13 @@ import androidx.room.Index
             onDelete = ForeignKey.CASCADE,
         ),
     ],
-    indices = [Index("user_id")],
+    indices = [Index("song_id")],
 )
 internal data class PersistentQueueEntity(
-    @ColumnInfo(name = "song_id")
-    val songId: String,
     @ColumnInfo(name = "user_id")
     val userId: String,
-    val position: Int? = null,
+    val ordinal: Int,
+    @ColumnInfo(name = "song_id")
+    val songId: String,
+    val position: Long? = null,
 )

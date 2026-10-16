@@ -113,7 +113,7 @@ internal class UserRepositoryTest : DatabaseTest() {
             )
         )
         database.searchHistoryDao().upsert(SearchHistoryEntity("query", USER, EPOCH))
-        queue.replace(listOf("s1"))
+        queue.replace(listOf("s1"), 0, 0)
 
         users.delete(USER)
 
@@ -129,16 +129,50 @@ internal class UserRepositoryTest : DatabaseTest() {
     }
 
     @Test
-    fun theQueueKeepsTheFirstPlaceOfEachSong() = runBlocking {
+    fun theQueueKeepsItsOrderAndRepeatedSongs() = runBlocking {
         addUser()
         listOf("a", "b", "c").forEach { addSong(it) }
 
-        queue.replace(listOf("b", "a", "b", "c"))
+        queue.replace(listOf("b", "a", "b", "c"), current = 2, position = 1500)
 
         assertEquals(
-            listOf("b" to 0, "a" to 1, "c" to 2),
+            listOf("b" to null, "a" to null, "b" to 1500L, "c" to null),
             queue.queue().first().map { it.songId to it.position }
         )
+    }
+
+    @Test
+    fun songsThatArentSavedAreLeftOutOfTheQueue() = runBlocking {
+        addUser()
+        listOf("a", "c").forEach { addSong(it) }
+
+        queue.replace(listOf("a", "missing", "c"), current = 2, position = 10)
+
+        assertEquals(
+            listOf("a" to null, "c" to 10L),
+            queue.list().map { it.songId to it.position }
+        )
+    }
+
+    @Test
+    fun onlyOneSongOfTheQueueHasAPosition() = runBlocking {
+        addUser()
+        addUser("other")
+        listOf("a", "b").forEach { addSong(it) }
+        activeUser.id.value = "other"
+        queue.replace(listOf("a"), current = 0, position = 7)
+        activeUser.id.value = USER
+        queue.replace(listOf("a", "b", "a"), current = 0, position = 100)
+
+        queue.setPosition(2, 200)
+        assertEquals(listOf(null, null, 200L), queue.list().map { it.position })
+
+        // Past the end of the queue, nothing keeps one
+        queue.setPosition(5, 300)
+        assertEquals(listOf(null, null, null), queue.list().map { it.position })
+
+        activeUser.id.value = "other"
+        assertEquals(listOf(7L), queue.list().map { it.position })
     }
 
     @Test
@@ -146,9 +180,9 @@ internal class UserRepositoryTest : DatabaseTest() {
         addUser()
         addUser("other")
         listOf("a", "b").forEach { addSong(it) }
-        queue.replace(listOf("a"))
+        queue.replace(listOf("a"), 0, 0)
         activeUser.id.value = "other"
-        queue.replace(listOf("b"))
+        queue.replace(listOf("b"), 0, 0)
 
         queue.clear()
 

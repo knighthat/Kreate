@@ -207,6 +207,18 @@ object Preferences : KoinComponent {
 
     /** Stops adding plays to the playback history while on. Plays already there are kept. */
     val PLAYBACK_HISTORY_PAUSED by lazy { boolean("playback_history_paused", false) }
+
+    /**
+     * Keeps the queue in the database, with where the song playing was, and puts it back in the
+     * player when the player is made again. Turning it off stops saving, the saved queue stays.
+     */
+    val PERSISTENT_QUEUE_ENABLED by lazy { boolean("persistent_queue", true) }
+
+    /**
+     * Seconds between two saves of where the song playing is, while it plays. Changes to the
+     * queue and moving to another song are saved at once.
+     */
+    val PERSISTENT_QUEUE_SAVE_INTERVAL by lazy { int("persistent_queue_interval", 10) }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Coil3">

@@ -29,9 +29,21 @@ interface QueueRepository {
     fun queue(): Flow<List<QueuedSong>>
 
     /**
-     * Swaps the queue for [songIds], in order. A song appears once, the songs must be saved first.
+     * The queue right now, waiting for a user to be active.
      */
-    suspend fun replace(songIds: List<String>)
+    suspend fun list(): List<QueuedSong>
+
+    /**
+     * Swaps the queue for [songIds], in order, a song may appear more than once. The song at
+     * [current] was playing at [position], in milliseconds. Songs that aren't saved are left out.
+     */
+    suspend fun replace(songIds: List<String>, current: Int, position: Long)
+
+    /**
+     * Marks the song at [index] of the queue last saved with [replace] as playing at [position],
+     * in milliseconds. The song that had a position loses it, so only one ever has one.
+     */
+    suspend fun setPosition(index: Int, position: Long)
 
     suspend fun clear()
 }

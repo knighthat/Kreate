@@ -31,8 +31,28 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 fun PlayerSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val historyPaused by Preferences.PLAYBACK_HISTORY_PAUSED.collectAsStateWithLifecycle()
     val historyMinSeconds by Preferences.PLAYBACK_HISTORY_MIN_SECONDS.collectAsStateWithLifecycle()
+    val queuePersisted by Preferences.PERSISTENT_QUEUE_ENABLED.collectAsStateWithLifecycle()
+    val queueSaveInterval by Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL.collectAsStateWithLifecycle()
 
     SettingsPage("Player", onBack, modifier) {
+        SettingsSection("Queue")
+        SwitchSetting(
+            title = "Keep the queue",
+            checked = queuePersisted,
+            onCheckedChange = { Preferences.PERSISTENT_QUEUE_ENABLED.update(it) },
+            summary = "Pick up where you left off after the app closes",
+        )
+        if (queuePersisted)
+            NumberSetting(
+                title = "Save interval",
+                value = queueSaveInterval.toLong(),
+                unit = "seconds",
+                min = 1,
+                max = 5 * 60,
+                onSave = { Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL.update(it.toInt()) },
+                note = "How often the place in the song is saved while it plays",
+            )
+
         SettingsSection("History")
         SwitchSetting(
             title = "Pause history",

@@ -40,12 +40,19 @@ internal class QueueRepositoryImpl(
             queueDao.queue(userId).map { it.map(PersistentQueueEntity::toModel) }
         }
 
-    override suspend fun replace(songIds: List<String>) {
+    override suspend fun list(): List<QueuedSong> =
+        queueDao.list(scope.awaitId()).map(PersistentQueueEntity::toModel)
+
+    override suspend fun replace(songIds: List<String>, current: Int, position: Long) {
         val userId = scope.requireId()
-        val items = songIds.distinct()
-            .mapIndexed { index, songId -> PersistentQueueEntity(songId, userId, index) }
+        val items = songIds.mapIndexed { index, songId ->
+            PersistentQueueEntity(userId, index, songId, position.takeIf { index == current })
+        }
         queueDao.replace(userId, items)
     }
+
+    override suspend fun setPosition(index: Int, position: Long) =
+        queueDao.setPosition(scope.requireId(), index, position)
 
     override suspend fun clear() = queueDao.clear(scope.requireId())
 }

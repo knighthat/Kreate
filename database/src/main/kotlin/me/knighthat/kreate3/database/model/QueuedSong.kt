@@ -22,9 +22,10 @@ package me.knighthat.kreate3.database.model
  * A [Song] in the queue the active user left behind.
  *
  * @property songId the queued [Song]
- * @property position place in the queue, lower plays first
+ * @property position where the song playing was, in milliseconds. Only that one song of the
+ * queue has it, the others are `null`.
  */
 data class QueuedSong(
     val songId: String,
-    val position: Int? = null,
+    val position: Long? = null,
 )

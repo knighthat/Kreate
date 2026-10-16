@@ -48,6 +48,7 @@ class PlaybackService : MediaSessionService(), KoinComponent {
 
     private var mediaSession: MediaSession? = null
     private var normalizer: LoudnessNormalizer? = null
+    private var persistentQueue: PersistentQueue? = null
 
     // The player is used on the main thread, so is everything that follows it
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -66,6 +67,7 @@ class PlaybackService : MediaSessionService(), KoinComponent {
         normalizer = LoudnessNormalizer(player, get(), scope)
         // Its last writes come after the player is released, so it runs in the global scope
         PlaybackHistoryRecorder(player, get(), get<CoroutineScope>())
+        persistentQueue = PersistentQueue(player, get(), get(), scope, get<CoroutineScope>())
 
         mediaSession = MediaSession.Builder(this, player)
             .setCallback(QueueCallback)
@@ -119,6 +121,9 @@ class PlaybackService : MediaSessionService(), KoinComponent {
     override fun onDestroy() {
         normalizer?.release()
         normalizer = null
+        // Before the player is released, it saves where the song is
+        persistentQueue?.release()
+        persistentQueue = null
         scope.cancel()
         mediaSession?.run {
             player.release()

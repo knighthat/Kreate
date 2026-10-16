@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "57b5211630bb3f20870ff7ae9af05640",
+    "identityHash": "0e2065270b3cd7910785fb84653356c7",
     "entities": [
       {
         "tableName": "album",
@@ -167,17 +167,23 @@
       },
       {
         "tableName": "persistent_queue",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`song_id` TEXT NOT NULL, `user_id` TEXT NOT NULL, `position` INTEGER, PRIMARY KEY(`song_id`, `user_id`), FOREIGN KEY(`song_id`) REFERENCES `song`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` TEXT NOT NULL, `ordinal` INTEGER NOT NULL, `song_id` TEXT NOT NULL, `position` INTEGER, PRIMARY KEY(`user_id`, `ordinal`), FOREIGN KEY(`song_id`) REFERENCES `song`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
-            "fieldPath": "songId",
-            "columnName": "song_id",
+            "fieldPath": "userId",
+            "columnName": "user_id",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "userId",
-            "columnName": "user_id",
+            "fieldPath": "ordinal",
+            "columnName": "ordinal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "songId",
+            "columnName": "song_id",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -190,19 +196,19 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "song_id",
-            "user_id"
+            "user_id",
+            "ordinal"
           ]
         },
         "indices": [
           {
-            "name": "index_persistent_queue_user_id",
+            "name": "index_persistent_queue_song_id",
             "unique": false,
             "columnNames": [
-              "user_id"
+              "song_id"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_persistent_queue_user_id` ON `${TABLE_NAME}` (`user_id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_persistent_queue_song_id` ON `${TABLE_NAME}` (`song_id`)"
           }
         ],
         "foreignKeys": [
@@ -1127,7 +1133,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '57b5211630bb3f20870ff7ae9af05640')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0e2065270b3cd7910785fb84653356c7')"
     ]
   }
 }

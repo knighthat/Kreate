@@ -19,7 +19,6 @@
 package me.knighthat.kreate3.database.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
@@ -28,21 +27,60 @@ import me.knighthat.kreate3.database.entity.PersistentQueueEntity
 @Dao
 internal abstract class PersistentQueueDao {
 
-    @Query("SELECT * FROM persistent_queue WHERE user_id = :userId ORDER BY position")
+    @Query("SELECT * FROM persistent_queue WHERE user_id = :userId ORDER BY ordinal")
     abstract fun queue(userId: String): Flow<List<PersistentQueueEntity>>
 
-    @Insert
-    protected abstract suspend fun insertAll(items: List<PersistentQueueEntity>)
+    @Query("SELECT * FROM persistent_queue WHERE user_id = :userId ORDER BY ordinal")
+    abstract suspend fun list(userId: String): List<PersistentQueueEntity>
+
+    /** Inserts the item if its song is saved, an item of a missing song would break the key. */
+    @Query(
+        """
+        INSERT INTO persistent_queue (user_id, ordinal, song_id, position) 
+        SELECT :userId, :ordinal, :songId, :position 
+        WHERE EXISTS (
+            SELECT 1 
+            FROM song 
+            WHERE id = :songId
+        )
+    """
+    )
+    protected abstract suspend fun insertIfSaved(
+        userId: String,
+        ordinal: Int,
+        songId: String,
+        position: Long?,
+    )
+
+    /**
+     * Gives the item at [ordinal] the [position] and takes it from every other item of [userId],
+     * in one statement, so a single item ever has one.
+     */
+    @Query(
+        """
+        UPDATE persistent_queue 
+        SET position = 
+            CASE 
+                WHEN ordinal = :ordinal THEN :position 
+                ELSE NULL 
+            END 
+        WHERE user_id = :userId 
+        AND (ordinal = :ordinal OR position IS NOT NULL)
+    """
+    )
+    abstract suspend fun setPosition(userId: String, ordinal: Int, position: Long)
 
     @Query("DELETE FROM persistent_queue WHERE user_id = :userId")
     abstract suspend fun clear(userId: String)
 
     /**
      * Swaps the whole queue of [userId] in one transaction, a failure keeps the old queue.
+     * Items whose song isn't saved are left out, the others keep their ordinal.
      */
     @Transaction
     open suspend fun replace(userId: String, items: List<PersistentQueueEntity>) {
         clear(userId)
-        insertAll(items)
+        for (item in items)
+            insertIfSaved(userId, item.ordinal, item.songId, item.position)
     }
 }
