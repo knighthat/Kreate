@@ -296,6 +296,58 @@ private fun staticColorScheme(darkTheme: Boolean, contrastLevel: ContrastLevel):
     }
 
 /**
+ * The scheme with white on black only, for [ThemeMode.PITCH_BLACK]: text and accents are white on
+ * a black screen. Containers are a few shades above black, so cards, bars and selected items
+ * still stand out, and their text is white too. Secondary text and outlines are neutral greys that
+ * get lighter with [contrastLevel]. Errors keep their red, so they aren't missed.
+ */
+private fun ColorScheme.pitchBlack(contrastLevel: ContrastLevel): ColorScheme {
+    val container = Color(0xFF2E2E2E)
+
+    return copy(
+        primary = Color.White,
+        onPrimary = Color.Black,
+        primaryContainer = container,
+        onPrimaryContainer = Color.White,
+        inversePrimary = Color.Black,
+        secondary = Color.White,
+        onSecondary = Color.Black,
+        secondaryContainer = container,
+        onSecondaryContainer = Color.White,
+        tertiary = Color.White,
+        onTertiary = Color.Black,
+        tertiaryContainer = container,
+        onTertiaryContainer = Color.White,
+        background = Color.Black,
+        onBackground = Color.White,
+        surface = Color.Black,
+        onSurface = Color.White,
+        surfaceVariant = Color(0xFF1F1F1F),
+        onSurfaceVariant = when (contrastLevel) {
+            ContrastLevel.NORMAL -> Color(0xFFBDBDBD)
+            ContrastLevel.MEDIUM -> Color(0xFFD6D6D6)
+            ContrastLevel.HIGH -> Color(0xFFEEEEEE)
+        },
+        surfaceTint = Color.Black,
+        inverseSurface = Color.White,
+        inverseOnSurface = Color.Black,
+        outline = when (contrastLevel) {
+            ContrastLevel.NORMAL -> Color(0xFF8A8A8A)
+            ContrastLevel.MEDIUM -> Color(0xFFA6A6A6)
+            ContrastLevel.HIGH -> Color(0xFFCCCCCC)
+        },
+        outlineVariant = Color(0xFF3A3A3A),
+        surfaceDim = Color.Black,
+        surfaceBright = Color(0xFF262626),
+        surfaceContainerLowest = Color.Black,
+        surfaceContainerLow = Color(0xFF0A0A0A),
+        surfaceContainer = Color(0xFF121212),
+        surfaceContainerHigh = Color(0xFF1A1A1A),
+        surfaceContainerHighest = Color(0xFF222222),
+    )
+}
+
+/**
  * @param colorSeed color used as primary by [ThemeMode.THUMBNAIL], [Color.Unspecified] means no seed
  * yet and the static scheme is used. It is runtime-only, never store it.
  */
@@ -309,7 +361,7 @@ fun KreateTheme(
     val darkTheme = when (themeMode) {
         ThemeMode.AUTOMATIC, ThemeMode.AUTOMATIC_DYNAMIC, ThemeMode.THUMBNAIL -> isSystemInDarkTheme()
         ThemeMode.LIGHT, ThemeMode.LIGHT_DYNAMIC -> false
-        ThemeMode.DARK, ThemeMode.DARK_DYNAMIC -> true
+        ThemeMode.DARK, ThemeMode.DARK_DYNAMIC, ThemeMode.PITCH_BLACK -> true
     }
     val dynamicColor = themeMode == ThemeMode.AUTOMATIC_DYNAMIC
             || themeMode == ThemeMode.LIGHT_DYNAMIC
@@ -325,6 +377,9 @@ fun KreateTheme(
                 ContrastLevel.HIGH -> 1.0
             },
         )
+
+        themeMode == ThemeMode.PITCH_BLACK ->
+            staticColorScheme(darkTheme = true, contrastLevel).pitchBlack(contrastLevel)
 
         // Dynamic color is available on Android 12+, it has no contrast levels
         dynamicColor && contrastLevel == ContrastLevel.NORMAL && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {

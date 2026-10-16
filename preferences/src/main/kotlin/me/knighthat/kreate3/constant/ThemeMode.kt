@@ -26,6 +26,9 @@ enum class ThemeMode {
     DARK,
     DARK_DYNAMIC,
 
+    /** White text and accents on a black screen. */
+    PITCH_BLACK,
+
     /** Builds the palette from a seed color, using it as the primary color. */
     THUMBNAIL,
 }
