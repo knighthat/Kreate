@@ -26,23 +26,23 @@
     <path
         android:pathData="M32,40 L94,40 L104,64 L89,86 L99,112 L32,112 Z"
         android:strokeWidth="1.5"
-        android:strokeColor="#8A877D"
+        android:strokeColor="#000"
         android:strokeLineJoin="round" />
 
     <!-- Right half of the cracked frame -->
     <path
         android:pathData="M112,44 L154,44 L154,116 L104,116 L94,90 L108,68 Z"
         android:strokeWidth="1.5"
-        android:strokeColor="#8A877D"
+        android:strokeColor="#000"
         android:strokeLineJoin="round" />
 
     <!-- Sun -->
     <path
-        android:fillColor="#C9C6BB"
+        android:fillColor="#000"
         android:pathData="M46,60 A6,6 0 1 0 58,60 A6,6 0 1 0 46,60 Z" />
 
     <!-- Hills -->
     <path
-        android:fillColor="#C9C6BB"
+        android:fillColor="#000"
         android:pathData="M32,112 L54,84 L70,102 L80,90 L94,112 Z" />
 </vector>

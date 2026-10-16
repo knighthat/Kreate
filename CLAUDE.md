@@ -20,6 +20,8 @@ Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper
 - Release builds are minified and resource-shrunk by R8; obfuscation is off (`-dontobfuscate`).
 - Enum values use SCREAMING_SNAKE_CASE (`NORMAL`, `AUTOMATIC_DYNAMIC`), not PascalCase.
 - In a class or object, declare properties before functions.
+- Generated drawables (vector icons) use `#000` as their color unless the image needs a specific
+  color, and are 24dp × 24dp unless another size is asked for.
 - Work that must outlive a screen runs on the global `CoroutineScope` (Koin singleton,
   `SupervisorJob` + `Dispatchers.Default`); in UI code use `rememberCoroutineScope()` /
   `viewModelScope` instead.
