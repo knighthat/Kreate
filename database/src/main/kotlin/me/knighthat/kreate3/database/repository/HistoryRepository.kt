@@ -61,8 +61,16 @@ interface HistoryRepository {
 
     /**
      * Records that the song was played for [timeSpent]. The song must be saved first.
+     *
+     * @return the id of the play, for [updatePlay]
      */
-    suspend fun recordPlay(songId: String, timeSpent: Duration)
+    suspend fun recordPlay(songId: String, timeSpent: Duration): Long
+
+    /**
+     * Changes the time spent of a play recorded earlier, for a session that went on after it was
+     * recorded. The play stays with the user it was recorded for.
+     */
+    suspend fun updatePlay(id: Long, timeSpent: Duration)
 
     suspend fun clearPlays()
 }

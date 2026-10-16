@@ -65,6 +65,9 @@ data object Settings : Route
 data object GeneralSettings : Route
 
 @Serializable
+data object PlayerSettings : Route
+
+@Serializable
 data object UiSettings : Route
 
 @Serializable

@@ -79,7 +79,7 @@ internal class HistoryRepositoryImpl(
             playbackHistoryDao.recent(userId, limit).map { it.map(PlaybackHistoryEntity::toModel) }
         }
 
-    override suspend fun recordPlay(songId: String, timeSpent: Duration) =
+    override suspend fun recordPlay(songId: String, timeSpent: Duration): Long =
         playbackHistoryDao.insert(
             PlaybackHistoryEntity(
                 0,
@@ -89,6 +89,9 @@ internal class HistoryRepositoryImpl(
                 clock.now()
             )
         )
+
+    override suspend fun updatePlay(id: Long, timeSpent: Duration) =
+        playbackHistoryDao.updateTimeSpent(id, timeSpent)
 
     override suspend fun clearPlays() = playbackHistoryDao.clear(scope.requireId())
 }

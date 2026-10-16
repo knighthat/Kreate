@@ -82,7 +82,8 @@ class SearchViewModelTest {
         override suspend fun deleteSearch(query: String) = Unit
         override suspend fun clearSearches() = Unit
         override fun recentPlays(limit: Int): Flow<List<PlaybackHistory>> = flowOf(emptyList())
-        override suspend fun recordPlay(songId: String, timeSpent: Duration) = Unit
+        override suspend fun recordPlay(songId: String, timeSpent: Duration) = 0L
+        override suspend fun updatePlay(id: Long, timeSpent: Duration) = Unit
         override suspend fun clearPlays() = Unit
     }
 

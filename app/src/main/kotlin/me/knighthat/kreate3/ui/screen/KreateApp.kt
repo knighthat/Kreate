@@ -58,6 +58,7 @@ import me.knighthat.kreate3.ui.navigation.NetworkSettings
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicAlbum
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicArtist
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicPlaylist
+import me.knighthat.kreate3.ui.navigation.PlayerSettings
 import me.knighthat.kreate3.ui.navigation.Playlists
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.Search
@@ -97,6 +98,7 @@ import me.knighthat.kreate3.ui.screen.search.SearchScreen
 import me.knighthat.kreate3.ui.screen.settings.BackupSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.GeneralSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.NetworkSettingsScreen
+import me.knighthat.kreate3.ui.screen.settings.PlayerSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.SettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.UiSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.YouTubeSignInScreen
@@ -263,6 +265,7 @@ fun KreateApp() {
                         )
                     }
                     entry<GeneralSettings> { GeneralSettingsScreen(topLevel::pop) }
+                    entry<PlayerSettings> { PlayerSettingsScreen(topLevel::pop) }
                     entry<UiSettings> { UiSettingsScreen(topLevel::pop) }
                     entry<NetworkSettings> {
                         NetworkSettingsScreen(

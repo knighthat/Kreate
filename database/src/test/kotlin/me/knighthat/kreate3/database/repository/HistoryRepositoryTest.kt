@@ -138,4 +138,18 @@ internal class HistoryRepositoryTest : DatabaseTest() {
         repository.clearPlays()
         assertEquals(0, repository.recentPlays(10).first().size)
     }
+
+    @Test
+    fun updatingAPlayChangesOnlyItsTime() = runBlocking {
+        addSong("s1")
+        val first = repository.recordPlay("s1", 10.seconds)
+        clock.advance()
+        repository.recordPlay("s1", 20.seconds)
+
+        repository.updatePlay(first, 45.seconds)
+
+        val plays = repository.recentPlays(10).first()
+        assertEquals(listOf(20.seconds, 45.seconds), plays.map { it.timeSpent })
+        assertEquals(listOf("s1", "s1"), plays.map { it.songId })
+    }
 }

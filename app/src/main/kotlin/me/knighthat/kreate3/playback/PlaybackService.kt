@@ -64,6 +64,8 @@ class PlaybackService : MediaSessionService(), KoinComponent {
 
         val player = get<KreatePlayer>()
         normalizer = LoudnessNormalizer(player, get(), scope)
+        // Its last writes come after the player is released, so it runs in the global scope
+        PlaybackHistoryRecorder(player, get(), get<CoroutineScope>())
 
         mediaSession = MediaSession.Builder(this, player)
             .setCallback(QueueCallback)

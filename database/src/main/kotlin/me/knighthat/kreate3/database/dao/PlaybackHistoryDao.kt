@@ -23,6 +23,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.entity.PlaybackHistoryEntity
+import kotlin.time.Duration
 
 @Dao
 internal interface PlaybackHistoryDao {
@@ -31,7 +32,10 @@ internal interface PlaybackHistoryDao {
     fun recent(userId: String, limit: Int): Flow<List<PlaybackHistoryEntity>>
 
     @Insert
-    suspend fun insert(history: PlaybackHistoryEntity)
+    suspend fun insert(history: PlaybackHistoryEntity): Long
+
+    @Query("UPDATE playback_history SET time_spent = :timeSpent WHERE id = :id")
+    suspend fun updateTimeSpent(id: Long, timeSpent: Duration)
 
     @Query("DELETE FROM playback_history WHERE user_id = :userId")
     suspend fun clear(userId: String)

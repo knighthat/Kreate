@@ -27,6 +27,7 @@ import me.knighthat.kreate3.preferences.ProfileManager
 import me.knighthat.kreate3.ui.navigation.BackupSettings
 import me.knighthat.kreate3.ui.navigation.GeneralSettings
 import me.knighthat.kreate3.ui.navigation.NetworkSettings
+import me.knighthat.kreate3.ui.navigation.PlayerSettings
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.UiSettings
 import org.koin.compose.koinInject
@@ -50,6 +51,11 @@ fun SettingsScreen(
             title = "General",
             summary = "How the app behaves",
             onClick = { onOpen(GeneralSettings) },
+        )
+        SettingsItem(
+            title = "Player",
+            summary = "How songs play and what is kept of them",
+            onClick = { onOpen(PlayerSettings) },
         )
         SettingsItem(
             title = "UI",

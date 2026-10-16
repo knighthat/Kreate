@@ -198,6 +198,15 @@ object Preferences : KoinComponent {
      * Nothing downloads songs yet, so nothing reads it yet.
      */
     val MEDIA3_DOWNLOAD_SIZE by lazy { long("song_downloads", 4L * 1024 * 1024 * 1024) }
+
+    /**
+     * Least time, in seconds, a song has to play before it is added to the playback history.
+     * Only the time actually playing counts, pauses and loading don't.
+     */
+    val PLAYBACK_HISTORY_MIN_SECONDS by lazy { int("playback_history_min_seconds", 1) }
+
+    /** Stops adding plays to the playback history while on. Plays already there are kept. */
+    val PLAYBACK_HISTORY_PAUSED by lazy { boolean("playback_history_paused", false) }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Coil3">
