@@ -196,6 +196,11 @@ fun PlayAllButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
 fun ShuffleButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
     IconAction(R.drawable.shuffle, "Shuffle", onClick, modifier)
 
+/** Makes a new playlist. */
+@Composable
+fun CreatePlaylistButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
+    IconAction(R.drawable.add, "Create playlist", onClick, modifier)
+
 /** Opens one item of a list picked at random. */
 @Composable
 fun RandomButton(onClick: () -> Unit, modifier: Modifier = Modifier) =

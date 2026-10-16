@@ -24,13 +24,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
@@ -41,6 +54,7 @@ import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.ui.component.CreatePlaylistButton
 import me.knighthat.kreate3.ui.component.PlaylistItem
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.RandomButton
@@ -68,6 +82,7 @@ fun HomePlaylistsScreen(
     val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    var creating by rememberSaveable { mutableStateOf(false) }
 
     // Each visit to the tab, the items of the external sources are fetched again
     LaunchedEffect(Unit) { viewModel.refresh() }
@@ -86,10 +101,53 @@ fun HomePlaylistsScreen(
                 else snackbar.showSnackbar("No playlists to pick from")
             }
         },
+        onCreate = { creating = true },
         onSearch = onSearch,
         onSettings = onSettings,
         snackbar = snackbar,
         modifier = modifier,
+    )
+
+    if (creating)
+        CreatePlaylistDialog(
+            onCreate = {
+                viewModel.create(it)
+                creating = false
+            },
+            onDismiss = { creating = false },
+        )
+}
+
+/**
+ * Asks for the name of a new playlist, a name is needed.
+ */
+@Composable
+private fun CreatePlaylistDialog(onCreate: (String) -> Unit, onDismiss: () -> Unit) {
+    var name by rememberSaveable { mutableStateOf("") }
+    val focus = remember { FocusRequester() }
+    LaunchedEffect(Unit) { focus.requestFocus() }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("New playlist") },
+        text = {
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Name") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = ImeAction.Done,
+                ),
+                keyboardActions = KeyboardActions(onDone = { if (name.isNotBlank()) onCreate(name) }),
+                modifier = Modifier.focusRequester(focus),
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = { onCreate(name) }, enabled = name.isNotBlank()) { Text("Create") }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )
 }
 
@@ -105,6 +163,7 @@ private fun HomePlaylistsContent(
     onToggleOrigin: (Origin) -> Unit,
     onOpen: (MediaItem) -> Unit,
     onRandom: () -> Unit,
+    onCreate: () -> Unit,
     onSearch: () -> Unit,
     onSettings: () -> Unit,
     snackbar: SnackbarHostState,
@@ -119,7 +178,10 @@ private fun HomePlaylistsContent(
         onSearch = onSearch,
         onSettings = onSettings,
         snackbar = snackbar,
-        quickActions = { RandomButton(onRandom) },
+        quickActions = {
+            CreatePlaylistButton(onCreate)
+            RandomButton(onRandom)
+        },
     ) { padding ->
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = PLAYLIST_ITEM_SIZE.dp),
@@ -151,6 +213,7 @@ private fun HomePlaylistsPreview() = PreviewTheme {
         onToggleOrigin = {},
         onOpen = {},
         onRandom = {},
+        onCreate = {},
         onSearch = {},
         onSettings = {},
         snackbar = remember { SnackbarHostState() },

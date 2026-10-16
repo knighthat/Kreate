@@ -26,6 +26,9 @@ import androidx.paging.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
@@ -65,6 +68,13 @@ class HomePlaylistsViewModel(
      * adds nothing while it isn't set up.
      */
     fun refresh() = remote.refresh()
+
+    /** Makes an empty playlist called [name] in the app. */
+    fun create(name: String) {
+        viewModelScope.launch {
+            playlistRepository.save(UserPlaylist(origin = Origin.LOCAL, name = name.trim()))
+        }
+    }
 
     /** One playlist of the list at random, `null` when the list is empty. */
     suspend fun random(): MediaItem? {
