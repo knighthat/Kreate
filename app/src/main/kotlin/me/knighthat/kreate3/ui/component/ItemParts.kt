@@ -56,6 +56,14 @@ import me.knighthat.kreate3.source.local.isAlbumArt
 private val BADGE_SIZE = 12.dp
 private val ROW_THUMBNAIL_SIZE = 48.dp
 
+/** The name of the origin shown to the user. */
+internal val Origin.label: String
+    get() = when (this) {
+        Origin.LOCAL -> "Local"
+        Origin.YOUTUBE -> "YouTube"
+        Origin.OPEN_SUBSONIC -> "OpenSubsonic"
+    }
+
 /**
  * What Coil loads for the picture of an item, `null` when it has none. See [Thumbnail] for the
  * parameters.

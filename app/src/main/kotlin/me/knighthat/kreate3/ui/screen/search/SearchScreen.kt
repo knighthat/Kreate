@@ -19,11 +19,18 @@
 package me.knighthat.kreate3.ui.screen.search
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.snapping.SnapPosition
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,8 +38,13 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,35 +52,49 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import androidx.media3.common.MediaItem
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
@@ -77,14 +103,141 @@ import me.knighthat.kreate3.ui.component.ConfigButton
 import me.knighthat.kreate3.ui.component.ItemRow
 import me.knighthat.kreate3.ui.component.SearchButton
 import me.knighthat.kreate3.ui.component.SectionTitle
+import me.knighthat.kreate3.ui.component.label
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
+import kotlin.math.abs
 
 /** How many matches the suggestions list before the searches. */
 private const val SUGGESTION_LIMIT = 3
 
+/** Size and opacity of an item one place away from the middle, the middle one is `1`. */
+private const val SIDE_SCALE = 0.75f
+private const val SIDE_ALPHA = 0.5f
+
 /** Kinds of matches, the first one wins when there is not room for all. */
 private val SUGGESTION_PRIORITY = listOf(Tab.SONGS, Tab.PLAYLISTS, Tab.ALBUMS, Tab.ARTISTS)
+
+/** The middle of the visible part, where offsets of the items are counted from. */
+private val LazyListState.middle: Float
+    get() = layoutInfo.run { (viewportStartOffset + viewportEndOffset) / 2f }
+
+/** Index of the item closest to the middle, `null` before the row is laid out. */
+private fun LazyListState.centeredIndex(): Int? =
+    layoutInfo.visibleItemsInfo.minByOrNull { abs(it.offset + it.size / 2f - middle) }?.index
+
+/** How far the item at [index] is from the middle, `0` there, `1` one place or more away. */
+private fun LazyListState.distanceFromMiddle(index: Int): Float {
+    val item = layoutInfo.visibleItemsInfo.firstOrNull { it.index == index } ?: return 1f
+    return (abs(item.offset + item.size / 2f - middle) / item.size).coerceIn(0f, 1f)
+}
+
+/**
+ * A row that keeps the [selected] item in the middle, with the items before and after it smaller
+ * on either side. Each item shows once, so the first and last have a side to themselves.
+ *
+ * Swiping snaps the nearest item to the middle and selects it; tapping an item slides it there.
+ */
+@Composable
+fun <T> CenteredPicker(
+    items: List<T>,
+    selected: T,
+    onSelect: (T) -> Unit,
+    label: (T) -> String,
+    modifier: Modifier = Modifier,
+) {
+    if (items.isEmpty()) return
+    val selectedIndex = items.indexOf(selected).coerceAtLeast(0)
+    // The padding before the first item lets the first visible one sit in the middle
+    val state = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex)
+    val scope = rememberCoroutineScope()
+    val currentItems by rememberUpdatedState(items)
+    val currentOnSelect by rememberUpdatedState(onSelect)
+
+    // Once a swipe or a tap settles, the item in the middle is the chosen one
+    LaunchedEffect(state) {
+        snapshotFlow { state.isScrollInProgress }
+            .distinctUntilChanged()
+            .filter { !it }
+            .collect {
+                state.centeredIndex()?.let { currentItems.getOrNull(it)?.let(currentOnSelect) }
+            }
+    }
+
+    // Chosen elsewhere: bring it to the middle
+    LaunchedEffect(selectedIndex, items.size) {
+        val centered = state.centeredIndex() ?: return@LaunchedEffect
+        if (centered == selectedIndex || state.isScrollInProgress) return@LaunchedEffect
+        state.animateScrollToItem(selectedIndex)
+    }
+
+    BoxWithConstraints(modifier.fillMaxWidth()) {
+        // Three places across: the middle one and one on each side
+        val itemWidth = maxWidth / 3
+        val fill = MaterialTheme.colorScheme.secondaryContainer
+        val onFill = MaterialTheme.colorScheme.onSecondaryContainer
+
+        LazyRow(
+            state = state,
+            flingBehavior = rememberSnapFlingBehavior(state, SnapPosition.Center),
+            contentPadding = PaddingValues(horizontal = itemWidth),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .selectableGroup(),
+        ) {
+            items(count = items.size) { index ->
+                val item = items[index]
+                val isSelected = index == selectedIndex
+
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .width(itemWidth)
+                        .fillMaxHeight()
+                        .graphicsLayer {
+                            val distance = state.distanceFromMiddle(index)
+                            val scale = lerp(1f, SIDE_SCALE, distance)
+                            scaleX = scale
+                            scaleY = scale
+                            alpha = lerp(1f, SIDE_ALPHA, distance)
+                        }
+                        .padding(horizontal = 4.dp)
+                        // The fill fades in as the item reaches the middle
+                        .drawBehind {
+                            val strength = 1f - state.distanceFromMiddle(index)
+                            drawRoundRect(
+                                color = fill.copy(alpha = fill.alpha * strength),
+                                cornerRadius = CornerRadius(size.height / 2),
+                            )
+                        }
+                        .semantics {
+                            role = Role.RadioButton
+                            this.selected = isSelected
+                        }
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            enabled = true,
+                            onClickLabel = "Select source",
+                            role = Role.RadioButton,
+                            onClick = { scope.launch { state.animateScrollToItem(index) } }
+                        ),
+                ) {
+                    Text(
+                        text = label(item),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = onFill,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                    )
+                }
+            }
+        }
+    }
+}
+
 
 /**
  * The text box with its two buttons, it sits where the bottom bar is on other screens.
@@ -126,7 +279,7 @@ private fun SearchInputBar(
 }
 
 /**
- * Chooses where to search, and for a local search which kinds of items the results show.
+ * Chooses where to search, and which kinds of items the suggestions show.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -138,31 +291,23 @@ private fun ConfigSheet(
     onDismiss: () -> Unit,
 ) {
     ModalBottomSheet(onDismissRequest = onDismiss) {
-        SectionTitle("Search")
-        SingleChoiceSegmentedButtonRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+        SectionTitle("Source")
+        // The server is only offered while it is in use
+        val serverEnabled by Preferences.OPEN_SUBSONIC_ENABLED.collectAsStateWithLifecycle()
+        CenteredPicker(
+            items = Origin.entries.filter { it != Origin.OPEN_SUBSONIC || serverEnabled },
+            selected = origin,
+            onSelect = onOriginChange,
+            label = { it.label },
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        SectionTitle("Look for")
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(horizontal = 16.dp),
         ) {
-            // The server is only offered while it is in use
-            val serverEnabled by Preferences.OPEN_SUBSONIC_ENABLED.collectAsStateWithLifecycle()
-            val origins = Origin.entries.filter { it != Origin.OPEN_SUBSONIC || serverEnabled }
-
-            origins.forEachIndexed { index, entry ->
-                SegmentedButton(
-                    selected = entry == origin,
-                    onClick = { onOriginChange(entry) },
-                    shape = SegmentedButtonDefaults.itemShape(index, origins.size),
-                    label = { Text(entry.name) },
-                )
-            }
-        }
-        if (origin == Origin.LOCAL) {
-            SectionTitle("Look for")
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(horizontal = 16.dp),
-            ) {
+            // Remove ripple effect on select
+            CompositionLocalProvider(LocalRippleConfiguration provides null) {
                 Tab.entries.forEach {
                     FilterChip(
                         selected = it in categories,
@@ -232,6 +377,8 @@ fun SearchScreen(
     viewModel: SearchViewModel = koinViewModel(),
 ) {
     val text by viewModel.text.collectAsState()
+    val savedOrigin by Preferences.SEARCH_ORIGIN.collectAsStateWithLifecycle()
+    val serverEnabled by Preferences.OPEN_SUBSONIC_ENABLED.collectAsStateWithLifecycle()
     val query by viewModel.query.collectAsState()
     val categories by viewModel.categories.collectAsState()
     val origin by viewModel.origin.collectAsState()
@@ -251,6 +398,14 @@ fun SearchScreen(
         }
     }
 
+    // The saved origin, unless it is the server and the server is off now. It stays saved, so
+    // the search goes back to the server once it is on again.
+    LaunchedEffect(savedOrigin, serverEnabled) {
+        val origin = Origin.entries.firstOrNull { it.name == savedOrigin }
+            ?.takeIf { it != Origin.OPEN_SUBSONIC || serverEnabled }
+        viewModel.setOrigin(origin ?: Origin.LOCAL)
+    }
+
     var showConfig by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
@@ -264,7 +419,10 @@ fun SearchScreen(
                 Tab.ARTISTS to artists,
             ).filterKeys { it in categories }
         )
-    else live.items.map { (kind, item) -> Suggestion(kind, item) }
+    else live.items
+        // Online catalogs suggest every kind, only the chosen ones show
+        .filter { (kind, _) -> kind in categories }
+        .map { (kind, item) -> Suggestion(kind, item) }
 
     Scaffold(
         topBar = {
@@ -279,7 +437,11 @@ fun SearchScreen(
         bottomBar = {
             SearchInputBar(
                 text = text,
-                placeholder = if (origin == Origin.YOUTUBE) "Search YouTube" else "Search your library",
+                placeholder = when (origin) {
+                    Origin.LOCAL -> "Search your library"
+                    Origin.YOUTUBE -> "Search YouTube"
+                    Origin.OPEN_SUBSONIC -> "Search your server"
+                },
                 onTextChange = viewModel::setText,
                 onSearch = { search(text) },
                 onConfig = { showConfig = true },
@@ -292,7 +454,6 @@ fun SearchScreen(
         if (suggestions.isEmpty() && live.queries.isEmpty() && recent.isEmpty()) {
             Text(
                 text = when {
-                    origin == Origin.OPEN_SUBSONIC -> "Searching ${origin.name} isn't available yet"
                     query.isEmpty() -> "Your searches will show up here"
                     else -> "No suggestions for \"$query\""
                 },
@@ -358,7 +519,7 @@ fun SearchScreen(
     if (showConfig)
         ConfigSheet(
             origin = origin,
-            onOriginChange = viewModel::setOrigin,
+            onOriginChange = { Preferences.SEARCH_ORIGIN.update(it.name) },
             categories = categories,
             onCategoryChange = viewModel::setCategory,
             onDismiss = { showConfig = false },

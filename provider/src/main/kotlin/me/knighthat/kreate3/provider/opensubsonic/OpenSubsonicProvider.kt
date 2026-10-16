@@ -70,7 +70,7 @@ private const val CLIENT_NAME = "kreate"
  *
  * It is set up by [OpenSubsonicSettings]. While they are off nothing is sent to the server and no
  * address is built, whatever address and credentials are saved. The library can be listed,
- * browsing into an item and searching are not written yet.
+ * browsed into and searched.
  */
 class OpenSubsonicProvider internal constructor(
     private val client: () -> HttpClient,
@@ -196,6 +196,45 @@ class OpenSubsonicProvider internal constructor(
 
         return call("getPlaylists")["playlists"]?.jsonObject?.array("playlist").orEmpty()
             .map { it.jsonObject.toPlaylist(::coverUri) }
+    }
+
+    /**
+     * Searches the server's library for [query]: up to [songs] songs, [albums] albums and
+     * [artists] artists, each kind after its first [offset]. A count of `0` leaves that kind out.
+     * The API doesn't search playlists.
+     *
+     * @return `null` while the server is off or not set up
+     * @throws ServerException when the server can't be used or refuses the request
+     */
+    suspend fun searchLibrary(
+        query: String,
+        songs: Int,
+        albums: Int,
+        artists: Int,
+        offset: Int = 0,
+    ): OpenSubsonicSearch? {
+        serverUrl ?: return null
+
+        val found = call(
+            "search3",
+            "query" to query,
+            "songCount" to songs.toString(),
+            "songOffset" to offset.toString(),
+            "albumCount" to albums.toString(),
+            "albumOffset" to offset.toString(),
+            "artistCount" to artists.toString(),
+            "artistOffset" to offset.toString(),
+        )["searchResult3"]?.jsonObject ?: throw ServerException(ServerCheck.NotSubsonic)
+
+        // A server may still list a kind it was asked none of
+        return OpenSubsonicSearch(
+            songs = found.array("song").orEmpty().take(songs)
+                .map { it.jsonObject.toSong(::coverUri) },
+            albums = found.array("album").orEmpty().take(albums)
+                .map { it.jsonObject.toAlbum(::coverUri) },
+            artists = found.array("artist").orEmpty().take(artists)
+                .map { it.jsonObject.toArtist(::coverUri) },
+        )
     }
 
     /**
@@ -468,8 +507,15 @@ class OpenSubsonicProvider internal constructor(
      */
     fun forgetCertificate() = settings.pin(null)
 
-    override suspend fun search(query: String, limit: Int, offset: Int): SearchResults =
-        TODO(PENDING)
+    override suspend fun search(query: String, limit: Int, offset: Int): SearchResults {
+        if (query.isBlank() || limit <= 0) return SearchResults.EMPTY
+        val found = searchLibrary(query, limit, limit, limit, offset) ?: return SearchResults.EMPTY
+        return SearchResults(
+            songs = found.songs.map { it.song },
+            albums = found.albums.map { it.item },
+            artists = found.artists.map { it.item },
+        )
+    }
 
     override suspend fun song(songId: String): Song? = TODO(PENDING)
 

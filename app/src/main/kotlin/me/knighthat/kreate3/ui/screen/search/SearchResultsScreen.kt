@@ -51,7 +51,6 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.ArtistItem
 import me.knighthat.kreate3.ui.component.BackButton
@@ -155,7 +154,7 @@ fun SearchResultsScreen(
     ) { padding ->
         val origin = viewModel.origin
         val refresh = current.loadState.refresh
-        if (origin == Origin.OPEN_SUBSONIC || current.itemCount == 0) {
+        if (current.itemCount == 0) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
@@ -163,7 +162,6 @@ fun SearchResultsScreen(
                     .padding(16.dp),
             ) {
                 when {
-                    origin == Origin.OPEN_SUBSONIC -> Notice("Searching ${origin.name} isn't available yet")
                     refresh is LoadState.Loading -> CircularProgressIndicator()
                     refresh is LoadState.Error -> {
                         Notice("Couldn't search ${origin.name}")

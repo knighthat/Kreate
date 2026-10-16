@@ -47,8 +47,10 @@ import me.knighthat.kreate3.database.model.SearchHistory
 import me.knighthat.kreate3.database.paging.SearchSort
 import me.knighthat.kreate3.database.paging.SortOrder
 import me.knighthat.kreate3.database.repository.HistoryRepository
+import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.ui.navigation.Tab
+import okhttp3.OkHttpClient
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -128,12 +130,18 @@ class SearchViewModelTest {
         cookies = { "" },
         pageId = { "" },
     )
+
+    // Never asked here: it reads the profile's settings, which tests don't have
+    private val openSubsonic = OpenSubsonicProvider(OkHttpClient(), Json)
+
     private lateinit var viewModel: SearchViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(StandardTestDispatcher())
-        viewModel = SearchViewModel(catalog(), catalog(), catalog(), catalog(), history, youtube)
+        viewModel = SearchViewModel(
+            catalog(), catalog(), catalog(), catalog(), history, youtube, openSubsonic
+        )
     }
 
     @After
@@ -180,7 +188,7 @@ class SearchViewModelTest {
 
         viewModel.setText("   ")
         advanceUntilIdle()
-        viewModel.setOrigin(Origin.OPEN_SUBSONIC)
+        viewModel.setOrigin(Origin.YOUTUBE)
         viewModel.setText("abba")
         advanceUntilIdle()
 

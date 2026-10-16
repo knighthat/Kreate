@@ -31,6 +31,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.provider.SearchResults
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -360,6 +361,42 @@ class OpenSubsonicProviderTest {
         assertNull(server.artistWithSongs("ar1"))
         assertNull(server.playlistWithSongs("p1"))
         assertNull(server.starredSongs())
+        assertNull(server.searchLibrary("abba", 10, 10, 10))
+        assertEquals(SearchResults.EMPTY, server.search("abba"))
+        assertTrue(requests.isEmpty())
+    }
+
+    @Test
+    fun searchingAsksForEachKindFromTheSameOffset() = runBlocking {
+        val found = provider {
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","searchResult3":{
+                "artist":[{"id":"ar1","name":"ABBA"}],
+                "album":[{"id":"al1","name":"Gold","artist":"ABBA"}],
+                "song":[{"id":"s1","title":"Waterloo"},{"id":"s2","title":"SOS"}]}}}"""
+        }.searchLibrary("abba", songs = 20, albums = 0, artists = 5, offset = 40)!!
+
+        val request = requests.single()
+        assertTrue(request.url.encodedPath.endsWith("search3"))
+        val form = request.form()
+        assertEquals("abba", form["query"])
+        assertEquals(
+            listOf("20", "0", "5"),
+            listOf(form["songCount"], form["albumCount"], form["artistCount"])
+        )
+        assertEquals(
+            listOf("40", "40", "40"),
+            listOf(form["songOffset"], form["albumOffset"], form["artistOffset"])
+        )
+
+        assertEquals(listOf("s1", "s2"), found.songs.map { it.song.id })
+        // Asked for none, so the album the server listed anyway is left out
+        assertTrue(found.albums.isEmpty())
+        assertEquals(listOf("ABBA"), found.artists.map { it.item.name })
+    }
+
+    @Test
+    fun aBlankSearchAsksNothing() = runBlocking {
+        assertEquals(SearchResults.EMPTY, provider().search("  "))
         assertTrue(requests.isEmpty())
     }
 

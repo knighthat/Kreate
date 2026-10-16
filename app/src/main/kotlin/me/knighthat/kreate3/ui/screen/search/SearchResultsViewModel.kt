@@ -26,14 +26,15 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.database.repository.UserAlbumRepository
 import me.knighthat.kreate3.database.repository.UserArtistRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.opensubsonic.searchOpenSubsonic
 import me.knighthat.kreate3.source.youtube.searchYouTube
 import me.knighthat.kreate3.ui.component.toMediaItem
 import me.knighthat.kreate3.ui.component.toMediaItems
@@ -42,7 +43,7 @@ import me.knighthat.kreate3.ui.navigation.Tab
 
 /**
  * What the search in the saved state found, by kind. Pages are kept while the screen lives.
- * YouTube's results are fetched live and never stored.
+ * The results of YouTube and of the server are fetched live and never stored.
  */
 class SearchResultsViewModel(
     savedStateHandle: SavedStateHandle,
@@ -51,6 +52,7 @@ class SearchResultsViewModel(
     artistRepository: UserArtistRepository,
     playlistRepository: PlaylistRepository,
     private val youtube: YouTubeProvider,
+    private val openSubsonic: OpenSubsonicProvider,
 ) : ViewModel() {
 
     val query: String = checkNotNull(savedStateHandle[SearchResults.QUERY]) {
@@ -85,7 +87,6 @@ class SearchResultsViewModel(
         when (origin) {
             Origin.LOCAL -> local()
             Origin.YOUTUBE -> searchYouTube(youtube, query, tab)
-            // The server isn't searched yet
-            Origin.OPEN_SUBSONIC -> flowOf(PagingData.empty())
+            Origin.OPEN_SUBSONIC -> searchOpenSubsonic(openSubsonic, query, tab)
         }.cachedIn(viewModelScope)
 }

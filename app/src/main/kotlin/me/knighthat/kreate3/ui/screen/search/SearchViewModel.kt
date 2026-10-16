@@ -48,8 +48,11 @@ import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.database.repository.UserAlbumRepository
 import me.knighthat.kreate3.database.repository.UserArtistRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.opensubsonic.suggestions
 import me.knighthat.kreate3.source.youtube.tab
 import me.knighthat.kreate3.source.youtube.toMediaItem
 import me.knighthat.kreate3.ui.component.toMediaItem
@@ -69,8 +72,8 @@ data class LiveSuggestions(val queries: List<String>, val items: List<Pair<Tab, 
 
 /**
  * Suggestions for the [text] being typed: the library items that match it and the earlier
- * searches that start with it, or what YouTube suggests. The [origin], chosen in the config, says
- * where to look.
+ * searches that start with it, or what YouTube or the server suggests. The [origin], chosen in the
+ * config, says where to look.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchViewModel(
@@ -80,6 +83,7 @@ class SearchViewModel(
     playlistRepository: PlaylistRepository,
     private val historyRepository: HistoryRepository,
     private val youtube: YouTubeProvider,
+    private val openSubsonic: OpenSubsonicProvider,
 ) : ViewModel() {
 
     private val _text = MutableStateFlow("")
@@ -96,7 +100,7 @@ class SearchViewModel(
         .distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Eagerly, "")
 
-    /** Where the search looks. The OpenSubsonic server isn't searched yet. */
+    /** Where the search looks. */
     val origin: StateFlow<Origin> = _origin.asStateFlow()
 
     /** What the results show, each [Tab] stands for the kind of item it lists. */
@@ -117,22 +121,16 @@ class SearchViewModel(
     }
 
     /**
-     * What YouTube suggests for the [query] while [origin] is YouTube, asked live and never
-     * stored. A failed request suggests nothing.
+     * What YouTube or the server suggests for the [query] while [origin] is one of them, asked
+     * live and never stored. The server suggests items only. A failed request suggests nothing.
      */
     val liveSuggestions: StateFlow<LiveSuggestions> = combine(query, _origin, ::Pair)
         .mapLatest { (query, origin) ->
-            if (query.isEmpty() || origin != Origin.YOUTUBE) return@mapLatest LiveSuggestions.EMPTY
-            try {
-                val found = youtube.suggestions(query)
-                LiveSuggestions(
-                    queries = found.queries.distinct(),
-                    items = found.items.map { it.tab to it.toMediaItem(youtube) }
-                        .distinctBy { (tab, item) -> tab to item.mediaId },
-                )
-            } catch (e: YouTubeException) {
-                Log.w(TAG, "Couldn't get suggestions from YouTube", e)
-                LiveSuggestions.EMPTY
+            if (query.isEmpty()) return@mapLatest LiveSuggestions.EMPTY
+            when (origin) {
+                Origin.LOCAL -> LiveSuggestions.EMPTY
+                Origin.YOUTUBE -> youTubeSuggestions(query)
+                Origin.OPEN_SUBSONIC -> serverSuggestions(query)
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LiveSuggestions.EMPTY)
@@ -143,6 +141,27 @@ class SearchViewModel(
         .distinctUntilChanged()
         .flatMapLatest { historyRepository.searchesStartingWith(it, RECENT_LIMIT) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    private suspend fun youTubeSuggestions(query: String): LiveSuggestions =
+        try {
+            val found = youtube.suggestions(query)
+            LiveSuggestions(
+                queries = found.queries.distinct(),
+                items = found.items.map { it.tab to it.toMediaItem(youtube) }
+                    .distinctBy { (tab, item) -> tab to item.mediaId },
+            )
+        } catch (e: YouTubeException) {
+            Log.w(TAG, "Couldn't get suggestions from YouTube", e)
+            LiveSuggestions.EMPTY
+        }
+
+    private suspend fun serverSuggestions(query: String): LiveSuggestions =
+        try {
+            LiveSuggestions(queries = emptyList(), items = openSubsonic.suggestions(query))
+        } catch (e: ServerException) {
+            Log.w(TAG, "Couldn't get suggestions from the server", e)
+            LiveSuggestions.EMPTY
+        }
 
     fun setText(text: String) {
         _text.value = text

@@ -65,6 +65,7 @@ import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.ui.component.ProfileButton
 import me.knighthat.kreate3.ui.component.SearchButton
 import me.knighthat.kreate3.ui.component.SettingsButton
+import me.knighthat.kreate3.ui.component.label
 import kotlin.math.roundToInt
 
 /**
@@ -110,13 +111,6 @@ private fun HomeTopBar(
         scrollBehavior = scrollBehavior,
     )
 }
-
-private val Origin.label: String
-    get() = when (this) {
-        Origin.LOCAL -> "Local"
-        Origin.YOUTUBE -> "YouTube"
-        Origin.OPEN_SUBSONIC -> "OpenSubsonic"
-    }
 
 /**
  * Hides the toolbar as the list scrolls down, and shows it again as soon as it scrolls up. The

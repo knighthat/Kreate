@@ -97,6 +97,14 @@ object Preferences : KoinComponent {
     val HOME_PLAYLISTS_ORIGINS by lazy { stringSet("home_playlists_origins", emptySet()) }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Search">
+    /**
+     * Name of the origin the search looks in, kept from one search to the next. The app's
+     * `Origin` isn't known here, so the name is kept as it is.
+     */
+    val SEARCH_ORIGIN by lazy { string("search_origin", "LOCAL") }
+    //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Network">
     /**
      * Seconds to wait for a connection before giving up. The default is 15.
