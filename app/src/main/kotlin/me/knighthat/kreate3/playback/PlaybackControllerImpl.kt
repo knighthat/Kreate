@@ -205,6 +205,7 @@ class PlaybackControllerImpl(
         _state.value = PlaybackState(
             current = controller.currentMediaItem,
             isPlaying = controller.isPlaying,
+            isEnded = controller.playbackState == Player.STATE_ENDED,
         )
     }
 

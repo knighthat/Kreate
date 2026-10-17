@@ -27,17 +27,66 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
+import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.playback.PlaybackState
 import me.knighthat.kreate3.ui.theme.KreateTheme
+import org.koin.compose.koinInject
 
 private val BUTTON_SIZE = 40.dp
+
+/**
+ * Whether the [MiniPlayer] shows: while the queue has songs and hasn't played to its end.
+ */
+val PlaybackState.hasMiniPlayer: Boolean
+    get() = current != null && !isEnded
+
+/**
+ * The [MiniPlayer] for what [controller] is playing, hidden as [hasMiniPlayer] says.
+ */
+@Composable
+fun PlaybackMiniPlayer(
+    modifier: Modifier = Modifier,
+    controller: PlaybackController = koinInject(),
+) {
+    val state by controller.state.collectAsStateWithLifecycle()
+    val item = state.current?.takeIf { state.hasMiniPlayer } ?: return
+
+    // Re-read every frame while playing, drawing is the only place that depends on it
+    var progress by remember { mutableFloatStateOf(controller.progress()) }
+    LaunchedEffect(item, state.isPlaying) {
+        progress = controller.progress()
+        while (state.isPlaying) {
+            withFrameNanos { }
+            progress = controller.progress()
+        }
+    }
+
+    MiniPlayer(
+        item = item,
+        isPlaying = state.isPlaying,
+        progress = { progress },
+        onTogglePlay = controller::togglePlay,
+        onNext = controller::next,
+        // Expanding to the full player isn't there yet
+        onClick = {},
+        modifier = modifier,
+    )
+}
 
 /**
  * The song that is playing as a row, like a [SongItem] with the play and skip buttons at the

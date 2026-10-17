@@ -18,9 +18,15 @@
 
 package me.knighthat.kreate3.ui.screen
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -28,14 +34,12 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -47,6 +51,8 @@ import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.MiniPlayer
+import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
+import me.knighthat.kreate3.ui.component.hasMiniPlayer
 import me.knighthat.kreate3.ui.navigation.Albums
 import me.knighthat.kreate3.ui.navigation.Artists
 import me.knighthat.kreate3.ui.navigation.BackupSettings
@@ -109,33 +115,16 @@ import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
 /**
- * The [MiniPlayer] for what [controller] is playing, hidden while its queue is empty.
+ * Whether the screen gets the [MiniPlayer] at the bottom of the window while something plays.
+ * Settings pages don't, they aren't about the music. Search places it above its search bar.
  */
-@Composable
-private fun PlaybackMiniPlayer(controller: PlaybackController) {
-    val state by controller.state.collectFlowAsState()
-    val item = state.current ?: return
+private val Route.hasMiniPlayer: Boolean
+    get() = when (this) {
+        Settings, GeneralSettings, PlayerSettings, UiSettings, NetworkSettings, BackupSettings,
+        YouTubeSignIn, Search -> false
 
-    // Re-read every frame while playing, drawing is the only place that depends on it
-    var progress by remember { mutableFloatStateOf(controller.progress()) }
-    LaunchedEffect(item, state.isPlaying) {
-        progress = controller.progress()
-        while (state.isPlaying) {
-            withFrameNanos { }
-            progress = controller.progress()
-        }
+        else -> true
     }
-
-    MiniPlayer(
-        item = item,
-        isPlaying = state.isPlaying,
-        progress = { progress },
-        onTogglePlay = controller::togglePlay,
-        onNext = controller::next,
-        // Expanding to the full player isn't there yet
-        onClick = {},
-    )
-}
 
 /**
  * One button for each [Tab].
@@ -183,12 +172,24 @@ fun KreateApp() {
     ) {
         Scaffold(
             bottomBar = {
-                // Only the tabs have the bar, a detail screen covers the whole window
-                if ((topLevel.backStack.lastOrNull() as? Route)?.let(Tab::of) != null)
-                    Column {
-                        PlaybackMiniPlayer(playback)
+                val route = topLevel.backStack.lastOrNull() as? Route
+                when {
+                    // Only the tabs have the bar
+                    route?.let(Tab::of) != null -> Column {
+                        PlaybackMiniPlayer(controller = playback)
                         BottomBar(selected = topLevel.currentTab, onSelect = topLevel::switchTab)
                     }
+
+                    // Other screens cover the whole window until something plays
+                    route?.hasMiniPlayer == true && playing.hasMiniPlayer -> Surface(
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                    ) {
+                        // Without the bar, the mini player stays clear of the system's
+                        Box(Modifier.windowInsetsPadding(WindowInsets.navigationBars)) {
+                            PlaybackMiniPlayer(controller = playback)
+                        }
+                    }
+                }
             },
             snackbarHost = { SnackbarHost(snackbar) },
             containerColor = MaterialTheme.colorScheme.surfaceDim,
@@ -204,8 +205,11 @@ fun KreateApp() {
                     rememberViewModelStoreNavEntryDecorator(),
                 ),
                 entryProvider = entryProvider {
-                    val paddingModifier =
-                        Modifier.padding(bottom = barPadding.calculateBottomPadding())
+                    // The bar already keeps clear of the system's, the screens don't again
+                    val barBottom = PaddingValues(bottom = barPadding.calculateBottomPadding())
+                    val paddingModifier = Modifier
+                        .padding(barBottom)
+                        .consumeWindowInsets(barBottom)
 
                     entry<Songs> {
                         HomeSongsScreen(
@@ -257,6 +261,7 @@ fun KreateApp() {
                             onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
                             onOpenArtist = { item -> topLevel.push(artistRoute(item)) },
                             onOpenPlaylist = { item -> topLevel.push(playlistRoute(item)) },
+                            modifier = paddingModifier,
                             viewModel = routeViewModel(it),
                         )
                     }
@@ -282,34 +287,49 @@ fun KreateApp() {
                     }
 
                     entry<LocalAlbum> {
-                        LocalAlbumDetailScreen(topLevel::pop, viewModel = routeViewModel(it))
+                        LocalAlbumDetailScreen(
+                            topLevel::pop,
+                            paddingModifier,
+                            viewModel = routeViewModel(it),
+                        )
                     }
                     entry<LocalArtist> {
                         LocalArtistDetailScreen(
                             onBack = topLevel::pop,
                             onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
+                            modifier = paddingModifier,
                             viewModel = routeViewModel(it),
                         )
                     }
                     entry<LocalPlaylist> {
-                        LocalPlaylistDetailScreen(topLevel::pop, viewModel = routeViewModel(it))
+                        LocalPlaylistDetailScreen(
+                            topLevel::pop,
+                            paddingModifier,
+                            viewModel = routeViewModel(it),
+                        )
                     }
 
                     // Items of external sources are fetched live and never stored
                     entry<OpenSubsonicAlbum> {
-                        OpenSubsonicAlbumDetailScreen(topLevel::pop, viewModel = routeViewModel(it))
+                        OpenSubsonicAlbumDetailScreen(
+                            topLevel::pop,
+                            paddingModifier,
+                            viewModel = routeViewModel(it),
+                        )
                     }
                     entry<OpenSubsonicArtist> {
                         OpenSubsonicArtistDetailScreen(
                             onBack = topLevel::pop,
                             onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
+                            modifier = paddingModifier,
                             viewModel = routeViewModel(it),
                         )
                     }
                     entry<OpenSubsonicPlaylist> {
                         OpenSubsonicPlaylistDetailScreen(
                             topLevel::pop,
-                            viewModel = routeViewModel(it)
+                            paddingModifier,
+                            viewModel = routeViewModel(it),
                         )
                     }
                     entry<YouTubeAlbum> {
@@ -324,6 +344,7 @@ fun KreateApp() {
                                     )
                                 )
                             },
+                            modifier = paddingModifier,
                             viewModel = routeViewModel(it),
                         )
                     }
@@ -340,6 +361,7 @@ fun KreateApp() {
                                 )
                             },
                             onOpenPlaylist = { id -> topLevel.push(YouTubePlaylist(id)) },
+                            modifier = paddingModifier,
                             viewModel = routeViewModel(it),
                         )
                     }
@@ -347,11 +369,16 @@ fun KreateApp() {
                         YouTubeMoreScreen(
                             onBack = topLevel::pop,
                             onOpen = { tab, item -> itemRoute(tab, item)?.let(topLevel::push) },
+                            modifier = paddingModifier,
                             viewModel = routeViewModel(it),
                         )
                     }
                     entry<YouTubePlaylist> {
-                        YouTubePlaylistDetailScreen(topLevel::pop, viewModel = routeViewModel(it))
+                        YouTubePlaylistDetailScreen(
+                            topLevel::pop,
+                            paddingModifier,
+                            viewModel = routeViewModel(it),
+                        )
                     }
                 },
             )

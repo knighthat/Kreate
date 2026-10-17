@@ -26,10 +26,13 @@ import kotlinx.coroutines.flow.StateFlow
  * What the player is doing right now.
  *
  * @param current the item the queue is on, `null` when the queue is empty.
+ * @param isEnded whether the queue played to its end. A queue that is only loaded, like after
+ * the app starts, or stopped by a failure, isn't ended.
  */
 data class PlaybackState(
     val current: MediaItem? = null,
     val isPlaying: Boolean = false,
+    val isEnded: Boolean = false,
 )
 
 /**

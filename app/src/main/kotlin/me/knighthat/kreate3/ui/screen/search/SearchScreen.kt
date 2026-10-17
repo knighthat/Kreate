@@ -25,6 +25,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -101,6 +102,7 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.BackButton
 import me.knighthat.kreate3.ui.component.ConfigButton
 import me.knighthat.kreate3.ui.component.ItemRow
+import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
 import me.knighthat.kreate3.ui.component.SearchButton
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.label
@@ -435,18 +437,22 @@ fun SearchScreen(
             )
         },
         bottomBar = {
-            SearchInputBar(
-                text = text,
-                placeholder = when (origin) {
-                    Origin.LOCAL -> "Search your library"
-                    Origin.YOUTUBE -> "Search YouTube"
-                    Origin.OPEN_SUBSONIC -> "Search your server"
-                },
-                onTextChange = viewModel::setText,
-                onSearch = { search(text) },
-                onConfig = { showConfig = true },
-                focusRequester = focusRequester,
-            )
+            // The search bar stays last, next to the keyboard
+            Column {
+                PlaybackMiniPlayer()
+                SearchInputBar(
+                    text = text,
+                    placeholder = when (origin) {
+                        Origin.LOCAL -> "Search your library"
+                        Origin.YOUTUBE -> "Search YouTube"
+                        Origin.OPEN_SUBSONIC -> "Search your server"
+                    },
+                    onTextChange = viewModel::setText,
+                    onSearch = { search(text) },
+                    onConfig = { showConfig = true },
+                    focusRequester = focusRequester,
+                )
+            }
         },
         containerColor = MaterialTheme.colorScheme.surfaceDim,
         modifier = modifier,
