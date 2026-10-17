@@ -21,6 +21,8 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.Shareable
 import me.knighthat.kreate3.ui.component.toLiveMediaItem
@@ -30,12 +32,14 @@ import me.knighthat.kreate3.ui.navigation.LocalAlbum
  * An album of the OpenSubsonic server as its screen shows it.
  *
  * @property songs in the album's order, they show the album's cover so they carry none
+ * @property description the server's notes about the album, `null` when it has none
  */
 data class OpenSubsonicAlbumDetail(
     val name: String?,
     val thumbnail: Uri?,
     val subtitle: String?,
     val songs: List<MediaItem>,
+    val description: String? = null,
 )
 
 /**
@@ -60,15 +64,18 @@ class OpenSubsonicAlbumDetailViewModel(
         load()
     }
 
-    override suspend fun fetch(): OpenSubsonicAlbumDetail? {
-        val (remote, songs) = provider.albumWithSongs(albumId) ?: return null
+    override suspend fun fetch(): OpenSubsonicAlbumDetail? = coroutineScope {
+        // Asked alongside, the album shows without notes when the server has none to give
+        val notes = async { askServerOrNull { provider.albumNotes(albumId) } }
+        val (remote, songs) = provider.albumWithSongs(albumId) ?: return@coroutineScope null
         val album = remote.item
-        return OpenSubsonicAlbumDetail(
+        OpenSubsonicAlbumDetail(
             name = album.name,
             thumbnail = album.thumbnail,
             subtitle = listOfNotNull(album.artists?.joinToString(", "), album.year?.toString())
                 .takeIf { it.isNotEmpty() }?.joinToString(" · "),
             songs = songs.map { it.toLiveMediaItem(thumbnail = null) }.distinctBy { it.mediaId },
+            description = notes.await(),
         )
     }
 

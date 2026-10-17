@@ -395,6 +395,27 @@ class OpenSubsonicProviderTest {
     }
 
     @Test
+    fun albumNotesAndArtistBiographiesArePlainText() = runBlocking {
+        val server = provider { request ->
+            when (request.url.encodedPath.substringAfterLast('/')) {
+                "getAlbumInfo2" ->
+                    """{"subsonic-response":{"status":"ok","version":"1.16.1","albumInfo":{
+                        "notes":"An album.<br/><a href=\"https://last.fm\">Read more</a>"}}}"""
+
+                else ->
+                    """{"subsonic-response":{"status":"ok","version":"1.16.1","artistInfo2":{
+                        "biography":" ","similarArtist":[]}}}"""
+            }
+        }
+
+        assertEquals("An album.\nRead more", server.albumNotes("al1"))
+        assertEquals("al1", requests.single().form()["id"])
+        // A server without a biography gives a blank one
+        assertNull(server.artistBiography("ar1"))
+        assertEquals("0", requests.last().form()["count"])
+    }
+
+    @Test
     fun nothingIsFetchedWhileDisabled() = runBlocking {
         val server = provider(FakeSettings(enabled = false))
 
@@ -404,6 +425,8 @@ class OpenSubsonicProviderTest {
         assertNull(server.starredSongs())
         assertNull(server.similarSongs("s1", 20))
         assertNull(server.songDetails("s1"))
+        assertNull(server.albumNotes("al1"))
+        assertNull(server.artistBiography("ar1"))
         assertNull(server.searchLibrary("abba", 10, 10, 10))
         assertEquals(SearchResults.EMPTY, server.search("abba"))
         assertTrue(requests.isEmpty())

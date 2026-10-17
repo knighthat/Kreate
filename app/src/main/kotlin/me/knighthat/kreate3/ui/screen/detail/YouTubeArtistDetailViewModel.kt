@@ -33,6 +33,7 @@ import me.knighthat.kreate3.ui.navigation.LocalArtist
  *
  * @property songsPlaylistId the playlist of every song of the artist, `null` when there is none
  * @property sections rows like "Albums", "Singles & EPs" and "Fans might also like"
+ * @property description YouTube's description of the artist, `null` when it has none
  */
 data class YouTubeArtistDetail(
     val name: String?,
@@ -40,6 +41,7 @@ data class YouTubeArtistDetail(
     val topSongs: List<MediaItem>,
     val songsPlaylistId: String?,
     val sections: List<LiveSection>,
+    val description: String? = null,
 )
 
 /**
@@ -78,6 +80,7 @@ class YouTubeArtistDetailViewModel(
             songsPlaylistId = page.songsPlaylistId,
             sections = page.sections.map { it.toLiveSection(provider) }
                 .filter { it.items.isNotEmpty() },
+            description = page.description?.trim()?.ifEmpty { null },
         )
     }
 

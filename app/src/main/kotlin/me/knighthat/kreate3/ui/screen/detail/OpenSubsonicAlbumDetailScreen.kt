@@ -111,6 +111,9 @@ private fun OpenSubsonicAlbumDetailContent(
                 )
             }
             item(key = "queue-actions") { QueueActionRow(onAction) }
+            detail.description?.let {
+                item(key = "description") { DetailDescription(it) }
+            }
             items(detail.songs, key = { it.mediaId }) {
                 SongItem(
                     it,
@@ -133,6 +136,9 @@ private fun OpenSubsonicAlbumDetailPreview() = PreviewTheme {
                 thumbnail = null,
                 subtitle = "Neon Coast · 2021",
                 songs = previewSongs(Origin.OPEN_SUBSONIC),
+                description = "Afterglow is the second album of Neon Coast, recorded over one " +
+                        "summer by the sea. Its songs move from bright synths to quiet guitar " +
+                        "pieces, and end where the first album started.",
             )
         ),
         onRetry = {},

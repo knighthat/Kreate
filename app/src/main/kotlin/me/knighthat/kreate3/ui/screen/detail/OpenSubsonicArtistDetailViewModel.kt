@@ -21,6 +21,8 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.Shareable
 import me.knighthat.kreate3.ui.component.toLiveMediaItem
@@ -30,12 +32,14 @@ import me.knighthat.kreate3.ui.navigation.LocalArtist
  * An artist of the OpenSubsonic server as their screen shows them.
  *
  * @property songs the songs of every album of theirs, album after album
+ * @property description the server's biography of the artist, `null` when it has none
  */
 data class OpenSubsonicArtistDetail(
     val name: String?,
     val thumbnail: Uri?,
     val albums: List<MediaItem>,
     val songs: List<MediaItem>,
+    val description: String? = null,
 )
 
 /**
@@ -60,14 +64,17 @@ class OpenSubsonicArtistDetailViewModel(
         load()
     }
 
-    override suspend fun fetch(): OpenSubsonicArtistDetail? {
-        val found = provider.artistWithSongs(artistId) ?: return null
+    override suspend fun fetch(): OpenSubsonicArtistDetail? = coroutineScope {
+        // Asked alongside, the artist shows without one when the server has none to give
+        val biography = async { askServerOrNull { provider.artistBiography(artistId) } }
+        val found = provider.artistWithSongs(artistId) ?: return@coroutineScope null
         val artist = found.artist.item
-        return OpenSubsonicArtistDetail(
+        OpenSubsonicArtistDetail(
             name = artist.name,
             thumbnail = artist.thumbnail,
             albums = found.albums.map { it.item.toLiveMediaItem() }.distinctBy { it.mediaId },
             songs = found.songs.map { it.toLiveMediaItem() }.distinctBy { it.mediaId },
+            description = biography.await(),
         )
     }
 

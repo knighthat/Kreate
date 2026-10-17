@@ -121,8 +121,12 @@ private fun YouTubeArtistDetailContent(
                     shape = CircleShape,
                 )
             }
-            if (detail.topSongs.isNotEmpty()) {
+            if (detail.topSongs.isNotEmpty())
                 item(key = "queue-actions") { QueueActionRow(onAction) }
+            detail.description?.let {
+                item(key = "description") { DetailDescription(it) }
+            }
+            if (detail.topSongs.isNotEmpty()) {
                 item(key = "songs-title") {
                     SectionTitle(
                         "Top songs",

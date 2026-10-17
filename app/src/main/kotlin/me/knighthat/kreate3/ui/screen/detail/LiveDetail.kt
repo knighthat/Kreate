@@ -103,6 +103,17 @@ abstract class LiveDetailViewModel<T : Any> : ViewModel() {
     }
 }
 
+/**
+ * What [block] asks the server, `null` when the server can't or won't answer. For what a screen
+ * shows when there is some and does without otherwise, like an album's notes.
+ */
+internal suspend fun <T> askServerOrNull(block: suspend () -> T?): T? =
+    try {
+        block()
+    } catch (_: ServerException) {
+        null
+    }
+
 /** What a screen of the OpenSubsonic server says when the provider gives nothing. */
 internal const val SERVER_OFF = "The server is turned off, turn it on in Network settings"
 

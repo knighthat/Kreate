@@ -116,6 +116,9 @@ private fun YouTubeAlbumDetailContent(
                 )
             }
             item(key = "queue-actions") { QueueActionRow(onAction) }
+            detail.description?.let {
+                item(key = "description") { DetailDescription(it) }
+            }
             items(detail.songs, key = { it.mediaId }) {
                 SongItem(
                     it,
@@ -141,6 +144,9 @@ private fun YouTubeAlbumDetailPreview() = PreviewTheme {
                 thumbnail = null,
                 subtitle = "Album · Neon Coast · 2021",
                 songs = previewSongs(Origin.YOUTUBE),
+                description = "Afterglow is the second album of Neon Coast, recorded over one " +
+                        "summer by the sea. Its songs move from bright synths to quiet guitar " +
+                        "pieces, and end where the first album started.",
                 sections = listOf(
                     LiveSection(
                         title = "Other versions",

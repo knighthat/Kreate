@@ -47,6 +47,39 @@ internal fun JsonObject.array(name: String): JsonArray? = get(name) as? JsonArra
 
 private fun JsonObject.string(name: String): String? = get(name)?.jsonPrimitive?.contentOrNull
 
+/** Line breaks of HTML: `<br>` and the end of a paragraph. */
+private val HTML_BREAK = Regex("""(?i)<br\s*/?>|</p>""")
+private val HTML_TAG = Regex("""<[^>]*>""")
+private val HTML_NUMBER = Regex("""&#(\d+);""")
+private val BLANK_LINES = Regex("""\n{3,}""")
+
+/**
+ * The plain text of [html], like the notes Last.fm gives a server: tags dropped, a new line for
+ * `<br>` and each paragraph, the common entities decoded. A link keeps its text, like "Read more
+ * on Last.fm", which credits the text.
+ *
+ * @return `null` when nothing but blanks is left
+ */
+internal fun htmlToText(html: String): String? =
+    html.replace(HTML_BREAK, "\n")
+        .replace(HTML_TAG, "")
+        .replace(HTML_NUMBER) { match ->
+            match.groupValues[1].toIntOrNull()?.takeIf(Character::isValidCodePoint)
+                ?.let { String(Character.toChars(it)) }.orEmpty()
+        }
+        .replace("&nbsp;", " ")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&apos;", "'")
+        // Last, so an escaped entity stays as it is written
+        .replace("&amp;", "&")
+        .lines()
+        .joinToString("\n") { it.trim() }
+        .replace(BLANK_LINES, "\n\n")
+        .trim()
+        .ifEmpty { null }
+
 /** When the item was starred, `null` when it isn't or the date can't be read. */
 private fun JsonObject.starred(): Instant? =
     string("starred")?.let { runCatching { Instant.parse(it) }.getOrNull() }

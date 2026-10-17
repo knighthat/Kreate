@@ -123,6 +123,9 @@ private fun OpenSubsonicArtistDetailContent(
             }
             if (detail.songs.isNotEmpty())
                 item(key = "queue-actions") { QueueActionRow(onAction) }
+            detail.description?.let {
+                item(key = "description") { DetailDescription(it) }
+            }
             if (detail.albums.isNotEmpty())
                 item(key = "albums") {
                     SectionTitle("Albums")

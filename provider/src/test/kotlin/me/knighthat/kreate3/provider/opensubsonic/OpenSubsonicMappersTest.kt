@@ -190,4 +190,17 @@ class OpenSubsonicMappersTest {
         assertEquals("p1", playlist.remoteId)
         assertEquals(0L, playlist.id)
     }
+
+    @Test
+    fun htmlBecomesPlainText() {
+        assertEquals(
+            "Aurora is the album's \"best\" of & more.\nSecond line\n\nRead more on Last.fm",
+            htmlToText(
+                "  Aurora is the album&#39;s &quot;best&quot; of &amp; more.<br/>Second line" +
+                        "<p></p><p></p><a href=\"https://www.last.fm/music/x\">Read more on Last.fm</a> "
+            ),
+        )
+        assertEquals("&lt;", htmlToText("&amp;lt;"))
+        assertNull(htmlToText(" <a href=\"x\"></a> "))
+    }
 }

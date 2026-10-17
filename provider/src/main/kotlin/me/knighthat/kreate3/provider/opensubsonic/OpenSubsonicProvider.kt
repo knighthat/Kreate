@@ -35,6 +35,7 @@ import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
@@ -303,6 +304,36 @@ class OpenSubsonicProvider internal constructor(
             albums = albums.map { it.first },
             songs = albums.flatMap { it.second },
         )
+    }
+
+    /**
+     * Notes about the album as plain text, like its description on Last.fm.
+     *
+     * @return `null` while the server is off or not set up, or when it has none
+     * @throws ServerException when the server can't be used or refuses, like one that has no
+     * album info
+     */
+    suspend fun albumNotes(albumId: String): String? {
+        serverUrl ?: return null
+
+        val info = call("getAlbumInfo2", "id" to albumId)["albumInfo"] as? JsonObject
+        return (info?.get("notes") as? JsonPrimitive)?.contentOrNull?.let(::htmlToText)
+    }
+
+    /**
+     * The biography of the artist as plain text, like the one on Last.fm.
+     *
+     * @return `null` while the server is off or not set up, or when it has none
+     * @throws ServerException when the server can't be used or refuses, like one that has no
+     * artist info
+     */
+    suspend fun artistBiography(artistId: String): String? {
+        serverUrl ?: return null
+
+        // Similar artists come with the biography, none are needed
+        val info = call("getArtistInfo2", "id" to artistId, "count" to "0")["artistInfo2"]
+                as? JsonObject
+        return (info?.get("biography") as? JsonPrimitive)?.contentOrNull?.let(::htmlToText)
     }
 
     /**

@@ -34,6 +34,7 @@ import me.knighthat.kreate3.ui.navigation.LocalAlbum
  * An album of YouTube as its screen shows it.
  *
  * @property songs in the album's order, they show the album's cover so they carry none
+ * @property description YouTube's description of the album, `null` when it has none
  */
 data class YouTubeAlbumDetail(
     val name: String?,
@@ -41,6 +42,7 @@ data class YouTubeAlbumDetail(
     val subtitle: String?,
     val songs: List<MediaItem>,
     val sections: List<LiveSection>,
+    val description: String? = null,
 )
 
 /** The row as cards to show, each item once. */
@@ -82,6 +84,7 @@ class YouTubeAlbumDetailViewModel(
                 .distinctBy { it.mediaId },
             sections = page.sections.map { it.toLiveSection(provider) }
                 .filter { it.items.isNotEmpty() },
+            description = page.description?.trim()?.ifEmpty { null },
         )
     }
 
