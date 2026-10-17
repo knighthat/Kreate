@@ -449,10 +449,15 @@ class YouTubeProvider internal constructor(
 
     /**
      * A frame of the song's video, every song has one. A song of an album shows its cover in
-     * the frame, a music video a moment of the video.
+     * the frame, a music video a moment of the video. Larger than [MEDIUM_FRAME], the wide frame
+     * comes first: the others have black bars above and below, but not every video has it.
      */
     override fun songArtworkUris(songId: String, albumId: String?, size: Int?): List<Uri> =
-        listOfNotNull(artworkUri("https://i.ytimg.com/vi/$songId/hqdefault.jpg", size))
+        listOfNotNull(
+            "https://i.ytimg.com/vi/$songId/hq720.jpg".toUri()
+                .takeIf { size == null || size > MEDIUM_FRAME },
+            artworkUri("https://i.ytimg.com/vi/$songId/hqdefault.jpg", size),
+        )
 
     private companion object {
         const val HOME = "FEmusic_home"

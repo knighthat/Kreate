@@ -95,22 +95,30 @@ internal fun memoryCacheKey(model: Any): String? = when (model) {
  * ([me.knighthat.kreate3.provider.Provider.songArtworkUris]), the item's `artworkUri` last: a
  * list may give none, like the songs of an album, or one that doesn't load anymore.
  */
-fun songThumbnailModels(item: MediaItem, providers: Providers): List<Any> {
+fun songThumbnailModels(
+    item: MediaItem,
+    providers: Providers,
+    size: Int = SONG_ARTWORK,
+): List<Any> {
     val metadata = item.mediaMetadata
     item.localSongId?.let { return listOfNotNull(thumbnailModel(metadata.artworkUri, it)) }
     val origin = item.origin ?: return listOfNotNull(metadata.artworkUri)
 
     val albumId = metadata.extras?.getString(EXTRA_ALBUM_ID)
-    val fromIds = providers[origin].songArtworkUris(item.mediaId, albumId, SONG_ARTWORK)
+    val fromIds = providers[origin].songArtworkUris(item.mediaId, albumId, size)
     return (fromIds + listOfNotNull(metadata.artworkUri)).distinct()
 }
 
-/** [songThumbnailModels] of [item], none for no item. */
+/**
+ * [songThumbnailModels] of [item], none for no item.
+ *
+ * @param size edge in pixels the picture shows at, for sources that have several sizes
+ */
 @Composable
-fun rememberSongThumbnails(item: MediaItem?): List<Any> {
+fun rememberSongThumbnails(item: MediaItem?, size: Int = SONG_ARTWORK): List<Any> {
     val providers = koinInject<Providers>()
-    return remember(item, providers) {
-        item?.let { songThumbnailModels(it, providers) }.orEmpty()
+    return remember(item, providers, size) {
+        item?.let { songThumbnailModels(it, providers, size) }.orEmpty()
     }
 }
 

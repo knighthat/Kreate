@@ -57,6 +57,9 @@ class PlaybackControllerImpl(
     private val _state = MutableStateFlow(PlaybackState())
     override val state: StateFlow<PlaybackState> = _state.asStateFlow()
 
+    private val _queue = MutableStateFlow<List<MediaItem>>(emptyList())
+    override val queue: StateFlow<List<MediaItem>> = _queue.asStateFlow()
+
     private val _errors = MutableSharedFlow<String>(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
@@ -86,7 +89,23 @@ class PlaybackControllerImpl(
         controller.play()
     }
 
+    override fun position(): Long = controller?.currentPosition?.coerceAtLeast(0) ?: 0
+
+    override fun duration(): Long? =
+        controller?.duration?.takeIf { it != C.TIME_UNSET && it > 0 }
+
     override fun next() = run("skip to next") { it.seekToNext() }
+
+    override fun skipTo(index: Int) = run("skip to item $index") { controller ->
+        if (index !in 0 until controller.mediaItemCount) return@run
+        controller.seekToDefaultPosition(index)
+        if (controller.playbackState == Player.STATE_IDLE) controller.prepare()
+        controller.play()
+    }
+
+    override fun previous() = run("skip to previous") { it.seekToPrevious() }
+
+    override fun seekTo(positionMs: Long) = run("seek to $positionMs") { it.seekTo(positionMs) }
 
     override fun play(item: MediaItem) = run("play ${item.mediaId}") { controller ->
         val queued = (0 until controller.mediaItemCount)
@@ -173,6 +192,7 @@ class PlaybackControllerImpl(
                     if (controller !== disconnected) return
                     controller = null
                     _state.value = PlaybackState()
+                    _queue.value = emptyList()
                 }
             })
             .buildAsync()
@@ -183,14 +203,17 @@ class PlaybackControllerImpl(
                 val connected = future.await()
                 controller = connected
                 connected.addListener(object : Player.Listener {
-                    override fun onEvents(player: Player, events: Player.Events) =
+                    override fun onEvents(player: Player, events: Player.Events) {
+                        if (events.contains(Player.EVENT_TIMELINE_CHANGED)) publishQueue(connected)
                         publish(connected)
+                    }
 
                     override fun onPlayerError(error: PlaybackException) {
                         Log.w(TAG, "Couldn't play ${connected.currentMediaItem?.mediaId}", error)
                         _errors.tryEmit(error.userMessage(connected.currentMediaItem))
                     }
                 })
+                publishQueue(connected)
                 publish(connected)
             } catch (e: CancellationException) {
                 throw e
@@ -204,9 +227,14 @@ class PlaybackControllerImpl(
     private fun publish(controller: MediaController) {
         _state.value = PlaybackState(
             current = controller.currentMediaItem,
+            index = if (controller.mediaItemCount > 0) controller.currentMediaItemIndex else -1,
             isPlaying = controller.isPlaying,
             isEnded = controller.playbackState == Player.STATE_ENDED,
         )
+    }
+
+    private fun publishQueue(controller: MediaController) {
+        _queue.value = List(controller.mediaItemCount, controller::getMediaItemAt)
     }
 
     private fun ListenableFuture<MediaController>.isUsable(): Boolean =

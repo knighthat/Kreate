@@ -31,19 +31,24 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import kotlinx.coroutines.launch
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.playback.PlaybackState
+import me.knighthat.kreate3.ui.screen.player.LocalPlayerSheet
+import me.knighthat.kreate3.ui.screen.player.playerSheetHandle
 import me.knighthat.kreate3.ui.theme.KreateTheme
 import org.koin.compose.koinInject
 
@@ -56,7 +61,9 @@ val PlaybackState.hasMiniPlayer: Boolean
     get() = current != null && !isEnded
 
 /**
- * The [MiniPlayer] for what [controller] is playing, hidden as [hasMiniPlayer] says.
+ * The [MiniPlayer] for what [controller] is playing, hidden as [hasMiniPlayer] says. A tap
+ * opens the full player of [LocalPlayerSheet], dragging it up pulls the player along, and it
+ * fades as the player covers it.
  */
 @Composable
 fun PlaybackMiniPlayer(
@@ -65,6 +72,8 @@ fun PlaybackMiniPlayer(
 ) {
     val state by controller.state.collectAsStateWithLifecycle()
     val item = state.current?.takeIf { state.hasMiniPlayer } ?: return
+    val sheet = LocalPlayerSheet.current
+    val scope = rememberCoroutineScope()
 
     // Re-read every frame while playing, drawing is the only place that depends on it
     var progress by remember { mutableFloatStateOf(controller.progress()) }
@@ -82,9 +91,10 @@ fun PlaybackMiniPlayer(
         progress = { progress },
         onTogglePlay = controller::togglePlay,
         onNext = controller::next,
-        // Expanding to the full player isn't there yet
-        onClick = {},
-        modifier = modifier,
+        onClick = { sheet?.let { scope.launch { it.expand() } } },
+        modifier = modifier
+            .graphicsLayer { alpha = 1f - (sheet?.fraction ?: 0f) }
+            .playerSheetHandle(sheet),
         thumbnails = rememberSongThumbnails(item),
     )
 }

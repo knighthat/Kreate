@@ -26,11 +26,13 @@ import kotlinx.coroutines.flow.StateFlow
  * What the player is doing right now.
  *
  * @param current the item the queue is on, `null` when the queue is empty.
+ * @param index where [current] is in [PlaybackController.queue], `-1` when the queue is empty.
  * @param isEnded whether the queue played to its end. A queue that is only loaded, like after
  * the app starts, or stopped by a failure, isn't ended.
  */
 data class PlaybackState(
     val current: MediaItem? = null,
+    val index: Int = -1,
     val isPlaying: Boolean = false,
     val isEnded: Boolean = false,
 )
@@ -42,6 +44,9 @@ data class PlaybackState(
 interface PlaybackController {
 
     val state: StateFlow<PlaybackState>
+
+    /** Every item of the queue, in the order they play. */
+    val queue: StateFlow<List<MediaItem>>
 
     /**
      * What to tell the user each time a song fails to play, like `Couldn't play "Song": its file
@@ -82,6 +87,27 @@ interface PlaybackController {
     /** Pauses while playing, plays otherwise. After a failure, it tries the song again. */
     fun togglePlay()
 
+    /**
+     * Where the player is in the current item, in milliseconds, `0` when nothing is. Like
+     * [progress], cheap enough to read every frame from the main thread.
+     */
+    fun position(): Long
+
+    /** Length of the current item in milliseconds, `null` while it isn't known. */
+    fun duration(): Long?
+
     /** Jumps to the next item of the queue, if any. */
     fun next()
+
+    /** Plays the item at [index] of [queue] from its start. */
+    fun skipTo(index: Int)
+
+    /**
+     * Goes back to the start of the current item, or to the item before it when the current one
+     * has only just started.
+     */
+    fun previous()
+
+    /** Moves to [positionMs] milliseconds into the current item. */
+    fun seekTo(positionMs: Long)
 }

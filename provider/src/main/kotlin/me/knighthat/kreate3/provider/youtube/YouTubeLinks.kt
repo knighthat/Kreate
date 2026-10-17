@@ -61,4 +61,4 @@ internal fun resizeArtwork(url: String, size: Int?): String {
 }
 
 /** Width of `mqdefault`, the largest frame smaller than `hqdefault`. */
-private const val MEDIUM_FRAME = 320
+internal const val MEDIUM_FRAME = 320

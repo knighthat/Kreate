@@ -37,6 +37,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -100,6 +101,9 @@ import me.knighthat.kreate3.ui.screen.home.HomeAlbumsScreen
 import me.knighthat.kreate3.ui.screen.home.HomeArtistsScreen
 import me.knighthat.kreate3.ui.screen.home.HomePlaylistsScreen
 import me.knighthat.kreate3.ui.screen.home.HomeSongsScreen
+import me.knighthat.kreate3.ui.screen.player.LocalPlayerSheet
+import me.knighthat.kreate3.ui.screen.player.PlayerSheet
+import me.knighthat.kreate3.ui.screen.player.rememberPlayerSheetState
 import me.knighthat.kreate3.ui.screen.search.SearchResultsScreen
 import me.knighthat.kreate3.ui.screen.search.SearchScreen
 import me.knighthat.kreate3.ui.screen.settings.BackupSettingsScreen
@@ -165,223 +169,244 @@ fun KreateApp() {
         }
     }
 
+    val playerSheet = rememberPlayerSheetState()
+
     KreateTheme(
         themeMode = themeMode,
         contrastLevel = contrastLevel,
         colorSeed = seed,
     ) {
-        Scaffold(
-            bottomBar = {
-                val route = topLevel.backStack.lastOrNull() as? Route
-                when {
-                    // Only the tabs have the bar
-                    route?.let(Tab::of) != null -> Column {
-                        PlaybackMiniPlayer(controller = playback)
-                        BottomBar(selected = topLevel.currentTab, onSelect = topLevel::switchTab)
-                    }
+        CompositionLocalProvider(LocalPlayerSheet provides playerSheet) {
+            Box(Modifier.fillMaxSize()) {
+                Scaffold(
+                    bottomBar = {
+                        val route = topLevel.backStack.lastOrNull() as? Route
+                        when {
+                            // Only the tabs have the bar
+                            route?.let(Tab::of) != null -> Column {
+                                PlaybackMiniPlayer(controller = playback)
+                                BottomBar(
+                                    selected = topLevel.currentTab,
+                                    onSelect = topLevel::switchTab,
+                                )
+                            }
 
-                    // Other screens cover the whole window until something plays
-                    route?.hasMiniPlayer == true && playing.hasMiniPlayer -> Surface(
-                        color = MaterialTheme.colorScheme.surfaceContainer,
-                    ) {
-                        // Without the bar, the mini player stays clear of the system's
-                        Box(Modifier.windowInsetsPadding(WindowInsets.navigationBars)) {
-                            PlaybackMiniPlayer(controller = playback)
+                            // Other screens cover the whole window until something plays
+                            route?.hasMiniPlayer == true && playing.hasMiniPlayer -> Surface(
+                                color = MaterialTheme.colorScheme.surfaceContainer,
+                            ) {
+                                // Without the bar, the mini player stays clear of the system's
+                                Box(Modifier.windowInsetsPadding(WindowInsets.navigationBars)) {
+                                    PlaybackMiniPlayer(controller = playback)
+                                }
+                            }
                         }
-                    }
+                    },
+                    snackbarHost = { SnackbarHost(snackbar) },
+                    containerColor = MaterialTheme.colorScheme.surfaceDim,
+                    modifier = Modifier.fillMaxSize(),
+                ) { barPadding ->
+                    // Before the screens, so their own handling of going back comes first
+                    ExitConfirmation(atBottom = topLevel.backStack.size == 1, snackbar = snackbar)
+                    NavDisplay(
+                        backStack = topLevel.backStack,
+                        onBack = topLevel::pop,
+                        entryDecorators = listOf(
+                            rememberSaveableStateHolderNavEntryDecorator(),
+                            rememberViewModelStoreNavEntryDecorator(),
+                        ),
+                        entryProvider = entryProvider {
+                            // The bar already keeps clear of the system's, the screens don't again
+                            val barBottom =
+                                PaddingValues(bottom = barPadding.calculateBottomPadding())
+                            val paddingModifier = Modifier
+                                .padding(barBottom)
+                                .consumeWindowInsets(barBottom)
+
+                            entry<Songs> {
+                                HomeSongsScreen(
+                                    { topLevel.push(Search) },
+                                    { topLevel.push(Settings) },
+                                    paddingModifier,
+                                )
+                            }
+                            entry<Albums> {
+                                HomeAlbumsScreen(
+                                    { topLevel.push(albumRoute(it)) },
+                                    { topLevel.push(Search) },
+                                    { topLevel.push(Settings) },
+                                    paddingModifier,
+                                )
+                            }
+                            entry<Artists> {
+                                HomeArtistsScreen(
+                                    { topLevel.push(artistRoute(it)) },
+                                    { topLevel.push(Search) },
+                                    { topLevel.push(Settings) },
+                                    paddingModifier,
+                                )
+                            }
+                            entry<Playlists> {
+                                HomePlaylistsScreen(
+                                    { topLevel.push(playlistRoute(it)) },
+                                    { topLevel.push(Search) },
+                                    { topLevel.push(Settings) },
+                                    paddingModifier,
+                                )
+                            }
+
+                            entry<Search> {
+                                SearchScreen(
+                                    onBack = topLevel::pop,
+                                    onOpenAlbum = { topLevel.push(albumRoute(it)) },
+                                    onOpenArtist = { topLevel.push(artistRoute(it)) },
+                                    onOpenPlaylist = { topLevel.push(playlistRoute(it)) },
+                                    onSearch = { query, origin, tab ->
+                                        topLevel.push(SearchResults(query, origin, tab))
+                                    },
+                                )
+                            }
+                            entry<SearchResults> {
+                                SearchResultsScreen(
+                                    initialTab = it.tab,
+                                    onBack = topLevel::pop,
+                                    onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
+                                    onOpenArtist = { item -> topLevel.push(artistRoute(item)) },
+                                    onOpenPlaylist = { item -> topLevel.push(playlistRoute(item)) },
+                                    modifier = paddingModifier,
+                                    viewModel = routeViewModel(it),
+                                )
+                            }
+
+                            entry<Settings> {
+                                SettingsScreen(
+                                    onBack = topLevel::pop,
+                                    onOpen = topLevel::push,
+                                )
+                            }
+                            entry<GeneralSettings> { GeneralSettingsScreen(topLevel::pop) }
+                            entry<PlayerSettings> { PlayerSettingsScreen(topLevel::pop) }
+                            entry<UiSettings> { UiSettingsScreen(topLevel::pop) }
+                            entry<NetworkSettings> {
+                                NetworkSettingsScreen(
+                                    onBack = topLevel::pop,
+                                    onSignInToYouTube = { topLevel.push(YouTubeSignIn) },
+                                )
+                            }
+                            entry<BackupSettings> { BackupSettingsScreen(topLevel::pop) }
+                            entry<YouTubeSignIn> {
+                                YouTubeSignInScreen(
+                                    onBack = topLevel::pop,
+                                    onSignedIn = topLevel::pop,
+                                )
+                            }
+
+                            entry<LocalAlbum> {
+                                LocalAlbumDetailScreen(
+                                    topLevel::pop,
+                                    paddingModifier,
+                                    viewModel = routeViewModel(it),
+                                )
+                            }
+                            entry<LocalArtist> {
+                                LocalArtistDetailScreen(
+                                    onBack = topLevel::pop,
+                                    onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
+                                    modifier = paddingModifier,
+                                    viewModel = routeViewModel(it),
+                                )
+                            }
+                            entry<LocalPlaylist> {
+                                LocalPlaylistDetailScreen(
+                                    topLevel::pop,
+                                    paddingModifier,
+                                    viewModel = routeViewModel(it),
+                                )
+                            }
+
+                            // Items of external sources are fetched live and never stored
+                            entry<OpenSubsonicAlbum> {
+                                OpenSubsonicAlbumDetailScreen(
+                                    topLevel::pop,
+                                    paddingModifier,
+                                    viewModel = routeViewModel(it),
+                                )
+                            }
+                            entry<OpenSubsonicArtist> {
+                                OpenSubsonicArtistDetailScreen(
+                                    onBack = topLevel::pop,
+                                    onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
+                                    modifier = paddingModifier,
+                                    viewModel = routeViewModel(it),
+                                )
+                            }
+                            entry<OpenSubsonicPlaylist> {
+                                OpenSubsonicPlaylistDetailScreen(
+                                    topLevel::pop,
+                                    paddingModifier,
+                                    viewModel = routeViewModel(it),
+                                )
+                            }
+                            entry<YouTubeAlbum> {
+                                YouTubeAlbumDetailScreen(
+                                    onBack = topLevel::pop,
+                                    onOpen = { tab, item ->
+                                        itemRoute(tab, item)?.let(topLevel::push)
+                                    },
+                                    onSeeMore = { title, more ->
+                                        topLevel.push(
+                                            youTubeMoreRoute(
+                                                title,
+                                                more
+                                            )
+                                        )
+                                    },
+                                    modifier = paddingModifier,
+                                    viewModel = routeViewModel(it),
+                                )
+                            }
+                            entry<YouTubeArtist> {
+                                YouTubeArtistDetailScreen(
+                                    onBack = topLevel::pop,
+                                    onOpen = { tab, item ->
+                                        itemRoute(tab, item)?.let(topLevel::push)
+                                    },
+                                    onSeeMore = { title, more ->
+                                        topLevel.push(
+                                            youTubeMoreRoute(
+                                                title,
+                                                more
+                                            )
+                                        )
+                                    },
+                                    onOpenPlaylist = { id -> topLevel.push(YouTubePlaylist(id)) },
+                                    modifier = paddingModifier,
+                                    viewModel = routeViewModel(it),
+                                )
+                            }
+                            entry<YouTubeMore> {
+                                YouTubeMoreScreen(
+                                    onBack = topLevel::pop,
+                                    onOpen = { tab, item ->
+                                        itemRoute(tab, item)?.let(topLevel::push)
+                                    },
+                                    modifier = paddingModifier,
+                                    viewModel = routeViewModel(it),
+                                )
+                            }
+                            entry<YouTubePlaylist> {
+                                YouTubePlaylistDetailScreen(
+                                    topLevel::pop,
+                                    paddingModifier,
+                                    viewModel = routeViewModel(it),
+                                )
+                            }
+                        },
+                    )
                 }
-            },
-            snackbarHost = { SnackbarHost(snackbar) },
-            containerColor = MaterialTheme.colorScheme.surfaceDim,
-            modifier = Modifier.fillMaxSize(),
-        ) { barPadding ->
-            // Before the screens, so their own handling of going back comes first
-            ExitConfirmation(atBottom = topLevel.backStack.size == 1, snackbar = snackbar)
-            NavDisplay(
-                backStack = topLevel.backStack,
-                onBack = topLevel::pop,
-                entryDecorators = listOf(
-                    rememberSaveableStateHolderNavEntryDecorator(),
-                    rememberViewModelStoreNavEntryDecorator(),
-                ),
-                entryProvider = entryProvider {
-                    // The bar already keeps clear of the system's, the screens don't again
-                    val barBottom = PaddingValues(bottom = barPadding.calculateBottomPadding())
-                    val paddingModifier = Modifier
-                        .padding(barBottom)
-                        .consumeWindowInsets(barBottom)
-
-                    entry<Songs> {
-                        HomeSongsScreen(
-                            { topLevel.push(Search) },
-                            { topLevel.push(Settings) },
-                            paddingModifier,
-                        )
-                    }
-                    entry<Albums> {
-                        HomeAlbumsScreen(
-                            { topLevel.push(albumRoute(it)) },
-                            { topLevel.push(Search) },
-                            { topLevel.push(Settings) },
-                            paddingModifier,
-                        )
-                    }
-                    entry<Artists> {
-                        HomeArtistsScreen(
-                            { topLevel.push(artistRoute(it)) },
-                            { topLevel.push(Search) },
-                            { topLevel.push(Settings) },
-                            paddingModifier,
-                        )
-                    }
-                    entry<Playlists> {
-                        HomePlaylistsScreen(
-                            { topLevel.push(playlistRoute(it)) },
-                            { topLevel.push(Search) },
-                            { topLevel.push(Settings) },
-                            paddingModifier,
-                        )
-                    }
-
-                    entry<Search> {
-                        SearchScreen(
-                            onBack = topLevel::pop,
-                            onOpenAlbum = { topLevel.push(albumRoute(it)) },
-                            onOpenArtist = { topLevel.push(artistRoute(it)) },
-                            onOpenPlaylist = { topLevel.push(playlistRoute(it)) },
-                            onSearch = { query, origin, tab ->
-                                topLevel.push(SearchResults(query, origin, tab))
-                            },
-                        )
-                    }
-                    entry<SearchResults> {
-                        SearchResultsScreen(
-                            initialTab = it.tab,
-                            onBack = topLevel::pop,
-                            onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
-                            onOpenArtist = { item -> topLevel.push(artistRoute(item)) },
-                            onOpenPlaylist = { item -> topLevel.push(playlistRoute(item)) },
-                            modifier = paddingModifier,
-                            viewModel = routeViewModel(it),
-                        )
-                    }
-
-                    entry<Settings> {
-                        SettingsScreen(
-                            onBack = topLevel::pop,
-                            onOpen = topLevel::push,
-                        )
-                    }
-                    entry<GeneralSettings> { GeneralSettingsScreen(topLevel::pop) }
-                    entry<PlayerSettings> { PlayerSettingsScreen(topLevel::pop) }
-                    entry<UiSettings> { UiSettingsScreen(topLevel::pop) }
-                    entry<NetworkSettings> {
-                        NetworkSettingsScreen(
-                            onBack = topLevel::pop,
-                            onSignInToYouTube = { topLevel.push(YouTubeSignIn) },
-                        )
-                    }
-                    entry<BackupSettings> { BackupSettingsScreen(topLevel::pop) }
-                    entry<YouTubeSignIn> {
-                        YouTubeSignInScreen(onBack = topLevel::pop, onSignedIn = topLevel::pop)
-                    }
-
-                    entry<LocalAlbum> {
-                        LocalAlbumDetailScreen(
-                            topLevel::pop,
-                            paddingModifier,
-                            viewModel = routeViewModel(it),
-                        )
-                    }
-                    entry<LocalArtist> {
-                        LocalArtistDetailScreen(
-                            onBack = topLevel::pop,
-                            onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
-                            modifier = paddingModifier,
-                            viewModel = routeViewModel(it),
-                        )
-                    }
-                    entry<LocalPlaylist> {
-                        LocalPlaylistDetailScreen(
-                            topLevel::pop,
-                            paddingModifier,
-                            viewModel = routeViewModel(it),
-                        )
-                    }
-
-                    // Items of external sources are fetched live and never stored
-                    entry<OpenSubsonicAlbum> {
-                        OpenSubsonicAlbumDetailScreen(
-                            topLevel::pop,
-                            paddingModifier,
-                            viewModel = routeViewModel(it),
-                        )
-                    }
-                    entry<OpenSubsonicArtist> {
-                        OpenSubsonicArtistDetailScreen(
-                            onBack = topLevel::pop,
-                            onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
-                            modifier = paddingModifier,
-                            viewModel = routeViewModel(it),
-                        )
-                    }
-                    entry<OpenSubsonicPlaylist> {
-                        OpenSubsonicPlaylistDetailScreen(
-                            topLevel::pop,
-                            paddingModifier,
-                            viewModel = routeViewModel(it),
-                        )
-                    }
-                    entry<YouTubeAlbum> {
-                        YouTubeAlbumDetailScreen(
-                            onBack = topLevel::pop,
-                            onOpen = { tab, item -> itemRoute(tab, item)?.let(topLevel::push) },
-                            onSeeMore = { title, more ->
-                                topLevel.push(
-                                    youTubeMoreRoute(
-                                        title,
-                                        more
-                                    )
-                                )
-                            },
-                            modifier = paddingModifier,
-                            viewModel = routeViewModel(it),
-                        )
-                    }
-                    entry<YouTubeArtist> {
-                        YouTubeArtistDetailScreen(
-                            onBack = topLevel::pop,
-                            onOpen = { tab, item -> itemRoute(tab, item)?.let(topLevel::push) },
-                            onSeeMore = { title, more ->
-                                topLevel.push(
-                                    youTubeMoreRoute(
-                                        title,
-                                        more
-                                    )
-                                )
-                            },
-                            onOpenPlaylist = { id -> topLevel.push(YouTubePlaylist(id)) },
-                            modifier = paddingModifier,
-                            viewModel = routeViewModel(it),
-                        )
-                    }
-                    entry<YouTubeMore> {
-                        YouTubeMoreScreen(
-                            onBack = topLevel::pop,
-                            onOpen = { tab, item -> itemRoute(tab, item)?.let(topLevel::push) },
-                            modifier = paddingModifier,
-                            viewModel = routeViewModel(it),
-                        )
-                    }
-                    entry<YouTubePlaylist> {
-                        YouTubePlaylistDetailScreen(
-                            topLevel::pop,
-                            paddingModifier,
-                            viewModel = routeViewModel(it),
-                        )
-                    }
-                },
-            )
+                // Last, so it covers everything and handles going back first
+                PlayerSheet(playerSheet, controller = playback)
+            }
         }
     }
 }
