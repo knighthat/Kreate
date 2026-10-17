@@ -67,6 +67,17 @@ interface Provider {
      */
     fun artworkUri(artworkId: String, size: Int? = null): Uri?
 
+    /**
+     * Addresses the cover of a song may be at, worked out from its ids alone, the most fitting
+     * first. For when the address a list gave is missing or doesn't load, the source may have no
+     * picture at any of them. None by default.
+     *
+     * @param albumId album of the song, `null` when it has none or it isn't known
+     * @param size like for [artworkUri]
+     */
+    fun songArtworkUris(songId: String, albumId: String?, size: Int? = null): List<Uri> =
+        emptyList()
+
     companion object {
         const val DEFAULT_LIMIT = Int.MAX_VALUE
     }

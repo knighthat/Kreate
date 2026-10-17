@@ -73,6 +73,8 @@ class OpenSubsonicLibraryTest {
         ) {
             calls += "liked ${songs.map { it.song.id }} complete $complete"
         }
+
+        override suspend fun savePlayedSong(song: RemoteSong) = error("Not played here")
     }
 
     private class TestClock(var time: Instant = Instant.fromEpochMilliseconds(0)) : Clock {

@@ -238,6 +238,19 @@ class OpenSubsonicProvider internal constructor(
     }
 
     /**
+     * The song with its album and artists, as the server has it now.
+     *
+     * @return `null` while the server is off or not set up
+     * @throws ServerException when the server can't be used or refuses, like for an id it doesn't have
+     */
+    suspend fun songDetails(songId: String): RemoteSong? {
+        serverUrl ?: return null
+
+        return call("getSong", "id" to songId)["song"]?.jsonObject?.toSong(::coverUri)
+            ?: throw ServerException(ServerCheck.NotSubsonic)
+    }
+
+    /**
      * The format of the song's file on the server, with its ReplayGain as the gain.
      *
      * @return `null` while the server is off or not set up
@@ -534,7 +547,7 @@ class OpenSubsonicProvider internal constructor(
         )
     }
 
-    override suspend fun song(songId: String): Song? = TODO(PENDING)
+    override suspend fun song(songId: String): Song? = songDetails(songId)?.song
 
     override suspend fun album(albumId: String): Album? = albumWithSongs(albumId)?.first?.item
 
@@ -565,6 +578,13 @@ class OpenSubsonicProvider internal constructor(
      */
     override fun artworkUri(artworkId: String, size: Int?): Uri? =
         coverUri(artworkId)
+
+    /**
+     * Navidrome takes the id of a song or an album as the id of a cover, other servers may only
+     * take the ids they give as `coverArt`.
+     */
+    override fun songArtworkUris(songId: String, albumId: String?, size: Int?): List<Uri> =
+        listOfNotNull(coverUri(songId), albumId?.let(::coverUri))
 
     private sealed interface Answer {
         class Failure(val check: ServerCheck) : Answer
@@ -696,7 +716,6 @@ class OpenSubsonicProvider internal constructor(
     private fun ByteArray.toHex(): String = joinToString("") { "%02x".format(it) }
 
     private companion object {
-        const val PENDING = "Requests to the server are not written yet"
 
         /** Requests sent at once when one item needs many, like the albums of an artist. */
         const val PARALLEL_REQUESTS = 4

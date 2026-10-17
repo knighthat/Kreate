@@ -35,7 +35,8 @@ import me.knighthat.kreate3.provider.youtube.YouTubeStream
  * - OpenSubsonic: asked to the server once, while the song has no format of the server.
  * - Device: nothing, `LoudnessWorker` measures the files.
  *
- * Only a song in the database gets a format. A failure is logged, the song plays without it.
+ * A song not in the database yet, like one shown live that starts playing, can't have its format
+ * stored: it is kept here until [flush] stores it. A failure is logged, the song plays without it.
  */
 class SongFormatRecorder(
     private val songs: SongRepository,
@@ -45,28 +46,51 @@ class SongFormatRecorder(
     constructor(songs: SongRepository, openSubsonic: OpenSubsonicProvider) :
             this(songs, openSubsonic::format)
 
+    /** Formats of songs not stored yet, by song id, the least recently found first. */
+    private val pending = object : LinkedHashMap<String, SongFormat>() {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, SongFormat>) =
+            size > MAX_PENDING
+    }
+
     /**
      * @param stream the stream just found for a YouTube song, `null` for other origins
      */
     suspend fun record(song: QueuedSong, stream: YouTubeStream?) {
         if (song.origin == Origin.LOCAL) return
         try {
-            // A song shown live isn't stored, its format can't be either
-            if (songs.find(song.id).first() == null) return
-
+            val isStored = songs.find(song.id).first() != null
             val format = when (song.origin) {
                 Origin.YOUTUBE -> stream?.toSongFormat(song.id)
                 Origin.OPEN_SUBSONIC ->
-                    if (hasFormat(song.id, Origin.OPEN_SUBSONIC.name)) null
+                    if (isStored && hasFormat(song.id, Origin.OPEN_SUBSONIC.name)) null
                     else openSubsonic(song.id)
 
                 Origin.LOCAL -> null
             } ?: return
-            songs.saveFormat(format)
+
+            if (isStored) return songs.saveFormat(format)
+            synchronized(pending) { pending[song.id] = format }
+            // Stored meanwhile, the flush may have run before the format was kept
+            if (songs.find(song.id).first() != null) flush(song.id)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             Log.w(TAG, "Couldn't store the format of ${song.id}", e)
+        }
+    }
+
+    /**
+     * Stores the format kept for [songId] while it wasn't stored, call it once the song is.
+     * Nothing happens when there is none.
+     */
+    suspend fun flush(songId: String) {
+        val format = synchronized(pending) { pending.remove(songId) } ?: return
+        try {
+            songs.saveFormat(format)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.w(TAG, "Couldn't store the format of $songId", e)
         }
     }
 
@@ -75,5 +99,8 @@ class SongFormatRecorder(
 
     private companion object {
         const val TAG = "SongFormatRecorder"
+
+        /** Formats kept for songs not stored yet, about a queue's worth. */
+        const val MAX_PENDING = 50
     }
 }

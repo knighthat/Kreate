@@ -259,7 +259,7 @@ fun Flow<PagingData<UserSongView>>.toMediaItems(): Flow<PagingData<MediaItem>> =
  */
 
 /**
- * A song of an online catalog. It isn't played yet, the player can't get its stream.
+ * A song of an online catalog. It is stored once it starts playing, see `PlayedSongRecorder`.
  *
  * @param thumbnail the picture to show, the song's or its album's when it has none
  */
@@ -284,7 +284,7 @@ fun RemoteSong.toLiveMediaItem(
             putExplicit(song.isExplicit)
         })
         setIsBrowsable(false)
-        setIsPlayable(false)
+        setIsPlayable(true)
     }
 }
 

@@ -35,23 +35,33 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
+import coil3.memory.MemoryCache
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.source.local.LocalCover
 import me.knighthat.kreate3.source.local.isAlbumArt
+import me.knighthat.kreate3.source.youtube.SONG_ARTWORK
+import org.koin.compose.koinInject
 
 private val BADGE_SIZE = 12.dp
 private val ROW_THUMBNAIL_SIZE = 48.dp
@@ -71,6 +81,38 @@ internal val Origin.label: String
 fun thumbnailModel(uri: Uri?, localSongId: Long?): Any? =
     if (localSongId != null && (uri == null || uri.isAlbumArt())) LocalCover(localSongId, uri)
     else uri
+
+/** Key a picture of [model] has in Coil's memory cache, `null` when it can't be told. */
+internal fun memoryCacheKey(model: Any): String? = when (model) {
+    is LocalCover -> model.cacheKey
+    is Uri -> model.toString()
+    else -> null
+}
+
+/**
+ * What Coil can load for the cover of the song [item], in the order to try. A song on this
+ * device has its [LocalCover]. Any other song has what its ids lead to at its source first
+ * ([me.knighthat.kreate3.provider.Provider.songArtworkUris]), the item's `artworkUri` last: a
+ * list may give none, like the songs of an album, or one that doesn't load anymore.
+ */
+fun songThumbnailModels(item: MediaItem, providers: Providers): List<Any> {
+    val metadata = item.mediaMetadata
+    item.localSongId?.let { return listOfNotNull(thumbnailModel(metadata.artworkUri, it)) }
+    val origin = item.origin ?: return listOfNotNull(metadata.artworkUri)
+
+    val albumId = metadata.extras?.getString(EXTRA_ALBUM_ID)
+    val fromIds = providers[origin].songArtworkUris(item.mediaId, albumId, SONG_ARTWORK)
+    return (fromIds + listOfNotNull(metadata.artworkUri)).distinct()
+}
+
+/** [songThumbnailModels] of [item], none for no item. */
+@Composable
+fun rememberSongThumbnails(item: MediaItem?): List<Any> {
+    val providers = koinInject<Providers>()
+    return remember(item, providers) {
+        item?.let { songThumbnailModels(it, providers) }.orEmpty()
+    }
+}
 
 /**
  * Id in the media index when this is a song on this device, `null` otherwise.
@@ -94,8 +136,25 @@ fun Thumbnail(
     shape: Shape,
     modifier: Modifier = Modifier,
     localSongId: Long? = null,
-) {
-    val model = thumbnailModel(uri, localSongId)
+) = Thumbnail(listOfNotNull(thumbnailModel(uri, localSongId)), shape, modifier)
+
+/**
+ * Like the other [Thumbnail], with several pictures to try. One that Coil has in memory shows
+ * first, wherever it is in [models], so nothing is loaded for it. The others are loaded in the
+ * order of [models], the next one when one fails.
+ */
+@Composable
+fun Thumbnail(models: List<Any>, shape: Shape, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val order = remember(models) {
+        val memory = SingletonImageLoader.get(context).memoryCache
+        val cached = models.firstOrNull { model ->
+            memoryCacheKey(model)?.let { memory?.get(MemoryCache.Key(it)) } != null
+        }
+        if (cached == null) models else listOf(cached) + (models - cached)
+    }
+    var failed by remember(order) { mutableIntStateOf(0) }
+    val model = order.getOrNull(failed)
 
     Box(
         modifier = modifier
@@ -114,6 +173,7 @@ fun Thumbnail(
                 model = model,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
+                onError = { failed++ },
                 modifier = Modifier.matchParentSize(),
             )
     }
@@ -184,6 +244,8 @@ fun ItemBadges(
  * [overlineEnd] sits on the line of the badges, at its end. [trailing] sits at the end, level
  * with the bottom of the text. The cover is left out when [showThumbnail] is `false`, the text
  * then starts at the edge.
+ *
+ * @param thumbnails pictures to try for the cover, see [Thumbnail], the item's own by default
  */
 @Composable
 fun ItemRow(
@@ -191,6 +253,7 @@ fun ItemRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     showThumbnail: Boolean = true,
+    thumbnails: List<Any>? = null,
     overlineEnd: String? = null,
     trailing: (@Composable () -> Unit)? = null,
 ) {
@@ -206,10 +269,10 @@ fun ItemRow(
     ) {
         if (showThumbnail)
             Thumbnail(
-                uri = metadata.artworkUri,
+                models = thumbnails
+                    ?: listOfNotNull(thumbnailModel(metadata.artworkUri, item.localSongId)),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier.size(ROW_THUMBNAIL_SIZE),
-                localSongId = item.localSongId,
             )
         // The line above the title spans the width of the trailing content too, so what sits
         // at its end lines up with it

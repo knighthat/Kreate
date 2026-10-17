@@ -85,6 +85,7 @@ fun PlaybackMiniPlayer(
         // Expanding to the full player isn't there yet
         onClick = {},
         modifier = modifier,
+        thumbnails = rememberSongThumbnails(item),
     )
 }
 
@@ -96,6 +97,7 @@ fun PlaybackMiniPlayer(
  *
  * @param progress how far into the song, from `0` to `1`. It is read while drawing, so a value
  * that changes every moment doesn't redo the layout.
+ * @param thumbnails pictures to try for the cover, see [Thumbnail], the item's own by default
  */
 @Composable
 fun MiniPlayer(
@@ -106,6 +108,7 @@ fun MiniPlayer(
     onNext: () -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    thumbnails: List<Any>? = null,
 ) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainer,
@@ -122,6 +125,7 @@ fun MiniPlayer(
             ItemRow(
                 item = item,
                 onClick = onClick,
+                thumbnails = thumbnails,
                 trailing = {
                     Row {
                         PlayPauseButton(isPlaying, onTogglePlay, Modifier.size(BUTTON_SIZE))

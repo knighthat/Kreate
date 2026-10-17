@@ -273,4 +273,37 @@ internal class RemoteCatalogRepositoryTest : DatabaseTest() {
         sync.await()
         assertNotNull(database.userSongDao().get(USER, "s1"))
     }
+
+    @Test
+    fun aPlayedSongJoinsTheLibraryWithoutALike() = runBlocking {
+        repository.savePlayedSong(song("s1", album("a1"), listOf(artist("r1"))))
+
+        val row = database.userSongDao().get(USER, "s1")
+        assertNotNull(row)
+        assertNull(row!!.likedAt)
+        assertEquals("a1", database.songDao().get("s1")?.albumId)
+        assertEquals(listOf("r1"), database.songDao().artistsOf("s1").first().map { it.id })
+    }
+
+    @Test
+    fun playingASongOfTheLibraryKeepsItsRowButTakesTheServersValues() = runBlocking {
+        repository.syncLikedSongs(server, listOf(song("s1", starredAt = star)))
+        addSong("s2", origin = server)
+        dislike("s2")
+
+        repository.savePlayedSong(song("s1", artists = listOf(artist("r1"))))
+        repository.savePlayedSong(song("s2"))
+
+        assertEquals(star, likedAt("s1"))
+        assertEquals(DISLIKED, likedAt("s2"))
+        assertEquals(listOf("r1"), database.songDao().artistsOf("s1").first().map { it.id })
+    }
+
+    @Test
+    fun aPlayedSongOfTheDeviceIsRefused() = runBlocking {
+        assertThrows(IllegalArgumentException::class.java) {
+            runBlocking { repository.savePlayedSong(song("s1", origin = Origin.LOCAL)) }
+        }
+        assertNull(database.songDao().get("s1"))
+    }
 }

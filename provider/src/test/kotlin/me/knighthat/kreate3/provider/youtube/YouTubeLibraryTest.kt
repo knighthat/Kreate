@@ -60,6 +60,8 @@ class YouTubeLibraryTest {
             calls += "$origin liked ${songs.map { it.song.id }}" + if (complete) "" else " (partly)"
             this.songs += songs
         }
+
+        override suspend fun savePlayedSong(song: RemoteSong) = error("Not played here")
     }
 
     private class TestClock(var time: Instant = Instant.fromEpochSeconds(1_000)) : Clock {

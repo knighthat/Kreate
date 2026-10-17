@@ -355,6 +355,22 @@ class OpenSubsonicProviderTest {
     }
 
     @Test
+    fun aSongComesWithItsAlbumAndArtists() = runBlocking {
+        val song = provider {
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","song":{
+                "id":"s1","title":"One","albumId":"al1","album":"A",
+                "artists":[{"id":"ar1","name":"Abba"}]}}}"""
+        }.songDetails("s1")!!
+
+        val request = requests.single()
+        assertTrue(request.url.encodedPath.endsWith("getSong"))
+        assertEquals("s1", request.form()["id"])
+        assertEquals("One", song.song.name)
+        assertEquals("al1", song.album?.id)
+        assertEquals(listOf("ar1"), song.artists.map { it.id })
+    }
+
+    @Test
     fun similarSongsAreAskedForByIdAndCount() = runBlocking {
         val server = provider {
             """{"subsonic-response":{"status":"ok","version":"1.16.1","similarSongs2":{
@@ -387,6 +403,7 @@ class OpenSubsonicProviderTest {
         assertNull(server.playlistWithSongs("p1"))
         assertNull(server.starredSongs())
         assertNull(server.similarSongs("s1", 20))
+        assertNull(server.songDetails("s1"))
         assertNull(server.searchLibrary("abba", 10, 10, 10))
         assertEquals(SearchResults.EMPTY, server.search("abba"))
         assertTrue(requests.isEmpty())

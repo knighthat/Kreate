@@ -49,9 +49,9 @@ data class RemoteSong(
 )
 
 /**
- * Keeps the songs a server lists as liked in the shared catalog and the active user's library.
- * Liked songs are the only part of a server's library that is stored, items of other origins are
- * not touched. Ids are the server's own.
+ * Keeps the songs a server lists as liked, and the songs the user played, in the shared catalog
+ * and the active user's library. Nothing else of a server's library is stored, items of other
+ * origins are not touched. Ids are the server's own.
  *
  * Every call waits up to 10 seconds for an active user and throws [IllegalStateException] if there
  * is none.
@@ -77,4 +77,14 @@ interface RemoteCatalogRepository {
      * @throws IllegalArgumentException when an item is from another origin
      */
     suspend fun syncLikedSongs(origin: Origin, songs: List<RemoteSong>, complete: Boolean = true)
+
+    /**
+     * Keeps [song], which the user started playing, in the shared catalog and adds it to the
+     * user's library, with its album and artists like [syncLikedSongs] does. The catalog takes
+     * the source's values. A song already in the library keeps its row as it is, its like
+     * included, and a new one isn't liked.
+     *
+     * @throws IllegalArgumentException when the song or what it points at is from the device
+     */
+    suspend fun savePlayedSong(song: RemoteSong)
 }

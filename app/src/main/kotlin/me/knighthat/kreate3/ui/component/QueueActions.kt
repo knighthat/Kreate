@@ -64,15 +64,14 @@ enum class QueueAction {
 }
 
 /**
- * Does [action] with the songs of [songs] that can be played, songs shown live from a server or
- * YouTube can't be yet.
+ * Does [action] with the songs of [songs] that can be played.
  *
  * @return what to tell the user, `null` when the player shows the result
  */
 fun PlaybackController.queue(action: QueueAction, songs: List<MediaItem>): String? {
     val playable = songs.filter { it.mediaMetadata.isPlayable == true }
     if (playable.isEmpty())
-        return if (songs.isEmpty()) "Nothing to play" else "These songs can't be played yet"
+        return if (songs.isEmpty()) "Nothing to play" else "These songs can't be played"
 
     when (action) {
         QueueAction.PLAY -> playAll(playable)
@@ -100,7 +99,7 @@ fun PlaybackController.playTapped(
     songs: List<MediaItem>,
     radio: Boolean,
 ): String? {
-    if (song.mediaMetadata.isPlayable != true) return "This song can't be played yet"
+    if (song.mediaMetadata.isPlayable != true) return "This song can't be played"
 
     if (radio) {
         radio(song)

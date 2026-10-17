@@ -72,6 +72,22 @@ internal class RemoteCatalogRepositoryImpl(
         }
     }
 
+    override suspend fun savePlayedSong(song: RemoteSong) {
+        val origin = song.song.origin
+        require(origin != Origin.LOCAL) { "${song.song.id} is a song of the device" }
+        requireOrigin(origin, listOf(song).origins())
+        val userId = awaitUser()
+
+        database.inTransaction {
+            val now = clock.now()
+            storeCatalog(origin, now, listOf(song))
+            // Only adds it, a song already in the library keeps its like and overrides
+            userSongDao.insertAll(
+                listOf(UserSongEntity(userId, song.song.id, createdAt = now, updatedAt = now))
+            )
+        }
+    }
+
     /**
      * Upserts [incoming] with what they point at and likes each in the user's library, see
      * [syncLikedSongs].
@@ -84,28 +100,7 @@ internal class RemoteCatalogRepositoryImpl(
         now: Instant,
         incoming: List<RemoteSong>,
     ): Collection<UserSongEntity> {
-        // What the songs point at must exist, rows already stored keep their full values
-        albumDao.insertAll(incoming.mapNotNull { it.album }.distinctBy { it.id }
-            .map { it.toEntity(now, now) })
-        artistDao.insertAll(incoming.flatMap { it.artists }.distinctBy { it.id }
-            .map { it.toEntity(now, now) })
-
-        val stored = songDao.withOrigin(origin).associateBy { it.id }
-        songDao.upsertAll(incoming.mapNotNull { (song) ->
-            val old = stored[song.id]
-            // The server has the song, so it is available again
-            val new = song.toEntity(old?.createdAt ?: now, now).copy(unavailableSince = null)
-            new.takeUnless { old != null && it.copy(updatedAt = old.updatedAt) == old }
-        })
-
-        // Each song is credited to exactly the artists the server names
-        val ids = incoming.map { it.song.id }.toSet()
-        val wanted = incoming.flatMap { remote ->
-            remote.artists.map { SongArtistMapEntity(remote.song.id, it.id) }
-        }.toSet()
-        val linked = songDao.linksOfOrigin(origin).filter { it.songId in ids }.toSet()
-        (linked - wanted).takeIf { it.isNotEmpty() }?.let { songDao.unlinkAll(it.toList()) }
-        (wanted - linked).takeIf { it.isNotEmpty() }?.let { songDao.linkAll(it.toList()) }
+        storeCatalog(origin, now, incoming)
 
         val library = userSongDao.withOrigin(userId, origin).associateBy { it.songId }
         userSongDao.upsertAll(incoming.mapIndexedNotNull { index, remote ->
@@ -128,6 +123,35 @@ internal class RemoteCatalogRepositoryImpl(
             }
         })
         return library.values
+    }
+
+    /**
+     * Upserts [incoming] in the shared catalog with what they point at, see [syncLikedSongs].
+     * The user's library isn't touched.
+     */
+    private suspend fun storeCatalog(origin: Origin, now: Instant, incoming: List<RemoteSong>) {
+        // What the songs point at must exist, rows already stored keep their full values
+        albumDao.insertAll(incoming.mapNotNull { it.album }.distinctBy { it.id }
+            .map { it.toEntity(now, now) })
+        artistDao.insertAll(incoming.flatMap { it.artists }.distinctBy { it.id }
+            .map { it.toEntity(now, now) })
+
+        val stored = songDao.withOrigin(origin).associateBy { it.id }
+        songDao.upsertAll(incoming.mapNotNull { (song) ->
+            val old = stored[song.id]
+            // The server has the song, so it is available again
+            val new = song.toEntity(old?.createdAt ?: now, now).copy(unavailableSince = null)
+            new.takeUnless { old != null && it.copy(updatedAt = old.updatedAt) == old }
+        })
+
+        // Each song is credited to exactly the artists the server names
+        val ids = incoming.map { it.song.id }.toSet()
+        val wanted = incoming.flatMap { remote ->
+            remote.artists.map { SongArtistMapEntity(remote.song.id, it.id) }
+        }.toSet()
+        val linked = songDao.linksOfOrigin(origin).filter { it.songId in ids }.toSet()
+        (linked - wanted).takeIf { it.isNotEmpty() }?.let { songDao.unlinkAll(it.toList()) }
+        (wanted - linked).takeIf { it.isNotEmpty() }?.let { songDao.linkAll(it.toList()) }
     }
 
     /**

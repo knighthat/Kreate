@@ -20,7 +20,6 @@ package me.knighthat.kreate3.ui.theme
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,9 +41,8 @@ import com.materialkolor.quantize.QuantizerCelebi
 import com.materialkolor.score.Score
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.knighthat.kreate3.source.local.LocalCover
-import me.knighthat.kreate3.ui.component.localSongId
-import me.knighthat.kreate3.ui.component.thumbnailModel
+import me.knighthat.kreate3.ui.component.memoryCacheKey
+import me.knighthat.kreate3.ui.component.rememberSongThumbnails
 import kotlin.math.roundToInt
 
 private const val SAMPLE_SIZE = 48
@@ -61,6 +59,7 @@ private const val PALETTE_SIZE = 32
 @Composable
 fun rememberThumbnailSeed(item: MediaItem?, enabled: Boolean): Color {
     val context = LocalContext.current
+    val models = rememberSongThumbnails(item)
     var seed by remember { mutableStateOf(Color.Unspecified) }
 
     LaunchedEffect(item?.mediaId, enabled) {
@@ -69,10 +68,7 @@ fun rememberThumbnailSeed(item: MediaItem?, enabled: Boolean): Color {
             seed = Color.Unspecified
             return@LaunchedEffect
         }
-
-        val metadata = item.mediaMetadata
-        val model = thumbnailModel(metadata.artworkUri, item.localSongId)
-        seed = model?.let { extractSeed(context, it) } ?: Color.Unspecified
+        seed = extractSeed(context, models) ?: Color.Unspecified
     }
 
     return seed
@@ -81,19 +77,15 @@ fun rememberThumbnailSeed(item: MediaItem?, enabled: Boolean): Color {
 /**
  * The picture is most likely in memory already, the item that is playing shows it. It is found
  * by its key, which is what Coil caches it under. A request for the same picture would not use
- * that copy and decode it again, so a request is only made when there is no copy.
+ * that copy and decode it again, so requests are only made when no picture of [models] is in
+ * memory, in their order until one loads.
  */
-private suspend fun extractSeed(context: Context, model: Any): Color? {
+private suspend fun extractSeed(context: Context, models: List<Any>): Color? {
     val loader = SingletonImageLoader.get(context)
-    val key = when (model) {
-        is LocalCover -> model.cacheKey
-        is Uri -> model.toString()
-        else -> null
-    }
-
-    val image = key?.let { loader.memoryCache?.get(MemoryCache.Key(it))?.image }
-        ?: load(context, loader, model)
-        ?: return null
+    val image = models.firstNotNullOfOrNull { model ->
+        memoryCacheKey(model)?.let { loader.memoryCache?.get(MemoryCache.Key(it))?.image }
+    } ?: models.firstNotNullOfOrNull { load(context, loader, it) }
+    ?: return null
 
     return withContext(Dispatchers.Default) {
         // The picture can be much larger than needed. Drawing it small also gives a bitmap whose

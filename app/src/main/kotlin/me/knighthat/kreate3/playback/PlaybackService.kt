@@ -68,6 +68,18 @@ class PlaybackService : MediaSessionService(), KoinComponent {
         // Its last writes come after the player is released, so it runs in the global scope
         PlaybackHistoryRecorder(player, get(), get<CoroutineScope>())
         persistentQueue = PersistentQueue(player, get(), get(), scope, get<CoroutineScope>())
+        // Its writes come after the player is released too
+        PlayedSongRecorder(
+            player = player,
+            library = get(),
+            catalog = get(),
+            formats = get(),
+            youTube = get(),
+            openSubsonic = get(),
+            scope = get<CoroutineScope>(),
+            playerScope = scope,
+            onStored = { persistentQueue?.refresh() },
+        )
 
         mediaSession = MediaSession.Builder(this, player)
             .setCallback(QueueCallback)

@@ -70,4 +70,8 @@ class LocalProvider(
     /** @param artworkId id of the album in the media index, it has no other sizes */
     override fun artworkUri(artworkId: String, size: Int?): Uri? =
         artworkId.toLongOrNull()?.let { ContentUris.withAppendedId(ALBUM_ART, it) }
+
+    /** The cover of the song's album, the picture inside the file isn't an address. */
+    override fun songArtworkUris(songId: String, albumId: String?, size: Int?): List<Uri> =
+        listOfNotNull(albumId?.let { artworkUri(it, size) })
 }

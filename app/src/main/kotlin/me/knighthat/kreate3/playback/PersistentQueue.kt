@@ -109,6 +109,13 @@ class PersistentQueue(
         if (reason == Player.DISCONTINUITY_REASON_SEEK && enabled) savePosition()
     }
 
+    /**
+     * Saves the queue again, like after one of its songs was stored: it was left out until then.
+     */
+    fun refresh() {
+        if (enabled && player.mediaItemCount > 0) saveQueue()
+    }
+
     /** Saves where the song playing is and stops. */
     fun release() {
         following.cancel()

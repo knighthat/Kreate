@@ -447,6 +447,13 @@ class YouTubeProvider internal constructor(
     override fun artworkUri(artworkId: String, size: Int?): Uri? =
         artworkId.takeIf { it.isNotBlank() }?.let { resizeArtwork(it, size).toUri() }
 
+    /**
+     * A frame of the song's video, every song has one. A song of an album shows its cover in
+     * the frame, a music video a moment of the video.
+     */
+    override fun songArtworkUris(songId: String, albumId: String?, size: Int?): List<Uri> =
+        listOfNotNull(artworkUri("https://i.ytimg.com/vi/$songId/hqdefault.jpg", size))
+
     private companion object {
         const val HOME = "FEmusic_home"
 
