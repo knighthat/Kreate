@@ -182,11 +182,6 @@ fun PlayPauseButton(isPlaying: Boolean, onClick: () -> Unit, modifier: Modifier 
 fun SkipNextButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
     IconAction(R.drawable.skip_next, "Next", onClick, modifier)
 
-/** Closes something that covers the screen from below, like the full player. */
-@Composable
-fun CollapseButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconAction(R.drawable.keyboard_arrow_down, "Collapse", onClick, modifier)
-
 @Composable
 fun ConfigButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
     IconAction(R.drawable.tune, "Config", onClick, modifier)

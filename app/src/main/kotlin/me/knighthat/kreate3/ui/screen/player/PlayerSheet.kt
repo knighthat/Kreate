@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -43,18 +44,21 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -105,7 +109,6 @@ import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
-import me.knighthat.kreate3.ui.component.CollapseButton
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
 import me.knighthat.kreate3.ui.component.memoryCacheKey
@@ -149,13 +152,14 @@ private val HEAVY_BLUR = Blur(sampleSize = 16, radius = 64.dp)
 /** The copy over the bottom of the cover. */
 private val COVER_BLUR = Blur(sampleSize = 24, radius = 40.dp)
 
-/** The shade at the top of the cover, behind the collapse button and the logo. */
-private val TOP_SHADE_HEIGHT = 120.dp
-private const val TOP_SHADE_ALPHA = 0.6f
+/** The shades at the top and the bottom of the player, behind the status bar and the tabs. */
+private val SHADE_HEIGHT = 120.dp
 
-/** The row with the collapse button and the tabs, under the status bar. */
-private val TOP_BAR_HEIGHT = 56.dp
-private val COLLAPSE_BUTTON_SIZE = 48.dp
+/** How much the top shade covers, the bottom one turns solid behind the tabs. */
+private const val SHADE_ALPHA = 0.6f
+
+/** The row with the tabs, above the navigation bar. */
+private val TAB_BAR_HEIGHT = 56.dp
 
 /**
  * How much the color covers the blurred cover behind the lyrics and the queue, so their text
@@ -288,7 +292,7 @@ private class PlayerSheetScroll(
 /**
  * The full player, drawn over everything else in the window. Collapsed it waits below the
  * window, the mini player drags it up or opens it with a tap ([LocalPlayerSheet]). Dragging it
- * down, its collapse button and going back close it, the back gesture shrinks it as it goes.
+ * down and going back close it, the back gesture shrinks it as it goes.
  * It closes by itself when there is nothing to play anymore.
  */
 @Composable
@@ -346,7 +350,6 @@ fun PlayerSheet(
                 index = playback.index,
                 isPlaying = playback.isPlaying,
                 controller = controller,
-                onCollapse = { scope.launch { state.collapse() } },
                 modifier = Modifier
                     .offset { IntOffset(0, state.draggable.offset.roundToInt()) }
                     .graphicsLayer {
@@ -363,8 +366,8 @@ fun PlayerSheet(
 
 /**
  * The full player: [PlayerTab.PLAYER] with the song playing in the middle, its lyrics on the
- * left and the queue on the right, as pages to swipe between or pick with the tabs at the top,
- * beside the collapse button. It always opens on the player. The song's cover blurred stays
+ * left and the queue on the right, as pages to swipe between or pick with the tabs at the
+ * bottom. It always opens on the player. The song's cover blurred stays
  * behind every page, more covered by the color away from the player so the text reads.
  *
  * @param index where [item] is in the queue, `-1` when unknown
@@ -375,7 +378,6 @@ private fun FullPlayer(
     index: Int,
     isPlaying: Boolean,
     controller: PlaybackController,
-    onCollapse: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val background = MaterialTheme.colorScheme.surface
@@ -385,10 +387,11 @@ private fun FullPlayer(
         PlayerTab.entries.size
     }
     val scope = rememberCoroutineScope()
-    // Under the tabs and above the navigation bar, the lists scroll behind both
+    val navigationBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    // Under the status bar and above the tabs, the lists scroll behind both
     val pagePadding = PaddingValues(
-        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + TOP_BAR_HEIGHT,
-        bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
+        bottom = navigationBarHeight + TAB_BAR_HEIGHT,
     )
 
     Surface(color = background, modifier = modifier.fillMaxSize()) {
@@ -434,32 +437,70 @@ private fun FullPlayer(
                 }
             }
 
-            // Keeps the tabs readable on a light cover
+            // Keeps the status bar readable on a light cover
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(TOP_SHADE_HEIGHT)
+                    .height(SHADE_HEIGHT)
                     .background(
                         Brush.verticalGradient(
-                            listOf(background.copy(alpha = TOP_SHADE_ALPHA), Color.Transparent)
+                            listOf(background.copy(alpha = SHADE_ALPHA), Color.Transparent)
                         )
                     ),
             )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            // The lyrics and the queue fade out above the tabs, solid color behind them
+            Box(
                 modifier = Modifier
+                    .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.statusBars)
-                    .height(TOP_BAR_HEIGHT)
-                    .padding(horizontal = 8.dp),
+                    .height(SHADE_HEIGHT + navigationBarHeight)
+                    .drawBehind {
+                        drawRect(
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, background),
+                                endY = (SHADE_HEIGHT - TAB_BAR_HEIGHT).toPx(),
+                            )
+                        )
+                    },
+            )
+            SecondaryTabRow(
+                selectedTabIndex = pagerState.currentPage,
+                containerColor = Color.Transparent,
+                indicator = {
+                    // The row places them at its bottom, they fill the height to draw at the top
+                    val atTop = Modifier
+                        .fillMaxHeight()
+                        .wrapContentHeight(Alignment.Top)
+                    // A track across every tab, given one tab's width it overflows to the end
+                    TabRowDefaults.SecondaryIndicator(
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                        modifier = Modifier
+                            .tabIndicatorLayout { measurable, constraints, tabPositions ->
+                                val width = tabPositions.lastOrNull()?.right?.roundToPx() ?: 0
+                                val placeable = measurable.measure(
+                                    constraints.copy(minWidth = width, maxWidth = width)
+                                )
+                                layout(constraints.maxWidth, placeable.height) {
+                                    placeable.place(0, 0)
+                                }
+                            }
+                            .then(atTop),
+                    )
+                    // The selected tab's part of it
+                    TabRowDefaults.SecondaryIndicator(
+                        Modifier
+                            .tabIndicatorOffset(pagerState.currentPage, matchContentSize = false)
+                            .then(atTop)
+                    )
+                },
+                divider = {},
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.navigationBars)
+                    .height(TAB_BAR_HEIGHT)
             ) {
-                CollapseButton(onCollapse)
-                SecondaryTabRow(
-                    selectedTabIndex = pagerState.currentPage,
-                    containerColor = Color.Transparent,
-                    divider = {},
-                    modifier = Modifier.weight(1f),
-                ) {
+                CompositionLocalProvider(LocalRippleConfiguration provides null) {
                     PlayerTab.entries.forEach { tab ->
                         Tab(
                             selected = pagerState.currentPage == tab.ordinal,
@@ -469,8 +510,6 @@ private fun FullPlayer(
                         )
                     }
                 }
-                // As wide as the collapse button, the tabs stay in the middle
-                Spacer(Modifier.width(COLLAPSE_BUTTON_SIZE))
             }
         }
     }
@@ -479,7 +518,7 @@ private fun FullPlayer(
 /**
  * The song playing, large: its cover across the top [COVER_HEIGHT] of the player, fading out
  * into the same cover blurred behind the whole player; under it its name and where it is with a
- * bar to move in it, and the buttons to go back, play or pause and skip near the bottom.
+ * bar to move in it, and the buttons to go back, play or pause and skip above the tabs.
  */
 @Composable
 private fun NowPlayingPage(
@@ -523,6 +562,7 @@ private fun NowPlayingPage(
                 .fillMaxSize()
                 .padding(top = coverHeight)
                 .windowInsetsPadding(WindowInsets.navigationBars)
+                .padding(bottom = TAB_BAR_HEIGHT)
                 .padding(horizontal = 24.dp),
         ) {
             Text(
@@ -559,7 +599,7 @@ private fun NowPlayingPage(
                 )
                 ControlButton(R.drawable.skip_next, "Next", controller::next)
             }
-            Spacer(Modifier.height(48.dp))
+            Spacer(Modifier.height(24.dp))
         }
     }
 }
