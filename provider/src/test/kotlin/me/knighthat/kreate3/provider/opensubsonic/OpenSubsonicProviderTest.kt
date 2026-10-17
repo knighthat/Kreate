@@ -31,6 +31,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.database.repository.RemoteSong
 import me.knighthat.kreate3.provider.SearchResults
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -354,6 +355,30 @@ class OpenSubsonicProviderTest {
     }
 
     @Test
+    fun similarSongsAreAskedForByIdAndCount() = runBlocking {
+        val server = provider {
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","similarSongs2":{
+                "song":[{"id":"s2","title":"Two"},{"id":"s3","title":"Three"}]}}}"""
+        }
+        val songs = server.similarSongs("s1", 20)!!
+
+        val request = requests.single()
+        assertTrue(request.url.encodedPath.endsWith("getSimilarSongs2"))
+        assertEquals("s1", request.form()["id"])
+        assertEquals("20", request.form()["count"])
+        assertEquals(listOf("s2", "s3"), songs.map { it.song.id })
+    }
+
+    @Test
+    fun aServerWithNothingSimilarAnswersEmpty() = runBlocking {
+        val songs = provider {
+            """{"subsonic-response":{"status":"ok","version":"1.16.1"}}"""
+        }.similarSongs("s1", 20)
+
+        assertEquals(emptyList<RemoteSong>(), songs)
+    }
+
+    @Test
     fun nothingIsFetchedWhileDisabled() = runBlocking {
         val server = provider(FakeSettings(enabled = false))
 
@@ -361,6 +386,7 @@ class OpenSubsonicProviderTest {
         assertNull(server.artistWithSongs("ar1"))
         assertNull(server.playlistWithSongs("p1"))
         assertNull(server.starredSongs())
+        assertNull(server.similarSongs("s1", 20))
         assertNull(server.searchLibrary("abba", 10, 10, 10))
         assertEquals(SearchResults.EMPTY, server.search("abba"))
         assertTrue(requests.isEmpty())

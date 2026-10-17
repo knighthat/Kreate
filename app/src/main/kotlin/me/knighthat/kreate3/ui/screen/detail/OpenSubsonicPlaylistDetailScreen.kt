@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
@@ -41,6 +42,7 @@ import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
+import me.knighthat.kreate3.ui.component.rememberSongTap
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -63,6 +65,9 @@ fun OpenSubsonicPlaylistDetailScreen(
         onAction = rememberQueueActions(snackbar) {
             (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
         },
+        onSongClick = rememberSongTap(snackbar, null) {
+            (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+        },
         share = if (canShare) viewModel::shareLink else null,
         snackbar = snackbar,
         modifier = modifier,
@@ -78,6 +83,7 @@ private fun OpenSubsonicPlaylistDetailContent(
     onRetry: () -> Unit,
     onBack: () -> Unit,
     onAction: (QueueAction) -> Unit,
+    onSongClick: (MediaItem) -> Unit,
     share: (suspend (name: String?) -> Result<String>)?,
     snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
@@ -109,7 +115,9 @@ private fun OpenSubsonicPlaylistDetailContent(
                 )
             }
             item(key = "queue-actions") { QueueActionRow(onAction) }
-            items(detail.songs, key = { it.mediaId }) { SongItem(it, onClick = {}) }
+            items(detail.songs, key = { it.mediaId }) {
+                SongItem(it, onClick = { onSongClick(it) })
+            }
             if (detail.songs.isEmpty())
                 item(key = "empty") {
                     Text(
@@ -140,6 +148,7 @@ private fun OpenSubsonicPlaylistDetailPreview() = PreviewTheme {
         onRetry = {},
         onBack = {},
         onAction = {},
+        onSongClick = {},
         share = { Result.success("") },
         snackbar = remember { SnackbarHostState() },
     )

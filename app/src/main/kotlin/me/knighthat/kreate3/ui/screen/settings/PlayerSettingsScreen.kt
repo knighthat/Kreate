@@ -31,11 +31,31 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 fun PlayerSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val historyPaused by Preferences.PLAYBACK_HISTORY_PAUSED.collectAsStateWithLifecycle()
     val historyMinSeconds by Preferences.PLAYBACK_HISTORY_MIN_SECONDS.collectAsStateWithLifecycle()
+    val homeTapRadio by Preferences.HOME_SONGS_TAP_RADIO.collectAsStateWithLifecycle()
+    val searchTapRadio by Preferences.SEARCH_SONGS_TAP_RADIO.collectAsStateWithLifecycle()
     val queuePersisted by Preferences.PERSISTENT_QUEUE_ENABLED.collectAsStateWithLifecycle()
     val queueSaveInterval by Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL.collectAsStateWithLifecycle()
 
     SettingsPage("Player", onBack, modifier) {
         SettingsSection("Queue")
+        SwitchSetting(
+            title = "Radio from Songs",
+            checked = homeTapRadio,
+            onCheckedChange = { Preferences.HOME_SONGS_TAP_RADIO.update(it) },
+            summary = if (homeTapRadio)
+                "A song tapped in Songs plays with songs like it"
+            else
+                "A song tapped in Songs plays with the songs below it",
+        )
+        SwitchSetting(
+            title = "Radio from search",
+            checked = searchTapRadio,
+            onCheckedChange = { Preferences.SEARCH_SONGS_TAP_RADIO.update(it) },
+            summary = if (searchTapRadio)
+                "A song tapped in search results plays with songs like it"
+            else
+                "A song tapped in search results plays with the results below it",
+        )
         SwitchSetting(
             title = "Keep the queue",
             checked = queuePersisted,

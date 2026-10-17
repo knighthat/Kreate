@@ -25,6 +25,7 @@ import me.knighthat.kreate3.preferences.Preferences.BACK_EXIT_DISABLED
 import me.knighthat.kreate3.preferences.Preferences.EXIT_CONFIRMATION
 import me.knighthat.kreate3.preferences.Preferences.EXIT_CONFIRMATION_TIMEOUT
 import me.knighthat.kreate3.preferences.Preferences.HOME_SONGS_ORIGINS
+import me.knighthat.kreate3.preferences.Preferences.HOME_SONGS_TAP_RADIO
 import me.knighthat.kreate3.preferences.Preferences.IMAGE_DISK_CACHE
 import me.knighthat.kreate3.preferences.Preferences.MEDIA3_CACHE_SIZE
 import me.knighthat.kreate3.preferences.Preferences.NETWORK_CONNECT_TIMEOUT
@@ -87,6 +88,13 @@ object Preferences : KoinComponent {
      */
     val HOME_SONGS_ORIGINS by lazy { stringSet("home_songs_origins", emptySet()) }
 
+    /**
+     * What tapping a song in the songs tab starts, both a new queue. Off by default: the song
+     * plays followed by the songs below it in the list. On: the song plays followed by songs
+     * like it, a radio. Albums, artists and playlists always play the list from the song.
+     */
+    val HOME_SONGS_TAP_RADIO by lazy { boolean("home_songs_tap_radio", false) }
+
     /** Like [HOME_SONGS_ORIGINS], for the albums tab. */
     val HOME_ALBUMS_ORIGINS by lazy { stringSet("home_albums_origins", emptySet()) }
 
@@ -103,6 +111,9 @@ object Preferences : KoinComponent {
      * `Origin` isn't known here, so the name is kept as it is.
      */
     val SEARCH_ORIGIN by lazy { string("search_origin", "LOCAL") }
+
+    /** Like [HOME_SONGS_TAP_RADIO], for a song tapped in the search results. */
+    val SEARCH_SONGS_TAP_RADIO by lazy { boolean("search_songs_tap_radio", false) }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Network">

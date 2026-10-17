@@ -45,6 +45,8 @@ import androidx.media3.common.MediaItem
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.preferences.Preference
+import me.knighthat.kreate3.preferences.Preferences
 import org.koin.compose.koinInject
 
 /**
@@ -83,6 +85,62 @@ fun PlaybackController.queue(action: QueueAction, songs: List<MediaItem>): Strin
             else "Added ${playable.size} songs to the queue"
 
         else -> null
+    }
+}
+
+/**
+ * Starts a new queue from [song], tapped in [songs]: with [radio] it plays [song] followed by
+ * songs like it, see [PlaybackController.radio], otherwise [song] followed by the songs below it
+ * in [songs] that can be played.
+ *
+ * @return what to tell the user, `null` when the player shows the result
+ */
+fun PlaybackController.playTapped(
+    song: MediaItem,
+    songs: List<MediaItem>,
+    radio: Boolean,
+): String? {
+    if (song.mediaMetadata.isPlayable != true) return "This song can't be played yet"
+
+    if (radio) {
+        radio(song)
+        return null
+    }
+    val below = songs.dropWhile { it.mediaId != song.mediaId }
+        .drop(1)
+        .filter { it.mediaMetadata.isPlayable == true }
+    playAll(listOf(song) + below)
+    return null
+}
+
+/**
+ * What tapping a song of a list does, as [radio] says at the time: a radio when on, the list
+ * from the song when off, see [playTapped]. [songs] gives the list at the time, it isn't asked
+ * for a radio. What the user should know shows in [snackbar].
+ *
+ * @param radio the setting of the list, like [Preferences.HOME_SONGS_TAP_RADIO], `null` for a
+ * list that always plays from the song, like an album
+ */
+@Composable
+fun rememberSongTap(
+    snackbar: SnackbarHostState,
+    radio: Preference<Boolean>?,
+    songs: suspend () -> List<MediaItem>,
+): (MediaItem) -> Unit {
+    val playback = koinInject<PlaybackController>()
+    val scope = rememberCoroutineScope()
+    val currentSongs by rememberUpdatedState(songs)
+
+    return remember(playback, scope, snackbar, radio) {
+        { song ->
+            scope.launch {
+                val isRadio = radio?.value == true
+                val list = if (isRadio) emptyList() else currentSongs()
+                val message = playback.playTapped(song, list, isRadio) ?: return@launch
+                snackbar.currentSnackbarData?.dismiss()
+                snackbar.showSnackbar(message)
+            }
+        }
     }
 }
 

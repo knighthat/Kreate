@@ -55,6 +55,18 @@ interface PlaybackController {
     /** Replaces the queue with [items] and plays them from the first. */
     fun playAll(items: List<MediaItem>)
 
+    /**
+     * Fills the queue with songs like [seed] once they are found: from the library for a song of
+     * the device, from the source for any other. When nothing is found, or the source can't be
+     * reached, nothing is added. Calling it again drops the songs still being searched for.
+     *
+     * @param append `true` to keep the queue and add the songs found to its end, skipping the
+     * ones already in it, without changing what plays. `false` to replace the queue with [seed]
+     * and play it at once, the songs found then follow it, unless the queue was changed to
+     * something else meanwhile.
+     */
+    fun radio(seed: MediaItem, append: Boolean = false)
+
     /** Adds [items] to the end of the queue, without starting to play. */
     fun enqueue(items: List<MediaItem>)
 

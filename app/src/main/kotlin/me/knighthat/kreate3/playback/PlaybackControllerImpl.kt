@@ -30,6 +30,7 @@ import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -50,6 +51,7 @@ import kotlinx.coroutines.launch
 class PlaybackControllerImpl(
     private val context: Context,
     private val scope: CoroutineScope,
+    private val radio: Radio,
 ) : PlaybackController {
 
     private val _state = MutableStateFlow(PlaybackState())
@@ -63,6 +65,7 @@ class PlaybackControllerImpl(
 
     private var connection: ListenableFuture<MediaController>? = null
     private var controller: MediaController? = null
+    private var radioSearch: Job? = null
 
     init {
         // Connects early so the state is known before anything is played
@@ -99,6 +102,38 @@ class PlaybackControllerImpl(
         controller.setMediaItems(items)
         controller.prepare()
         controller.play()
+    }
+
+    override fun radio(seed: MediaItem, append: Boolean) {
+        radioSearch?.cancel()
+        if (!append) playAll(listOf(seed))
+        radioSearch = scope.launch {
+            val similar = try {
+                radio.after(seed, RADIO_SIZE)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Couldn't find songs like ${seed.mediaId}", e)
+                return@launch
+            }
+            run("queue ${similar.size} songs like ${seed.mediaId}") { controller ->
+                if (append) {
+                    val queued = (0 until controller.mediaItemCount)
+                        .mapTo(HashSet()) { controller.getMediaItemAt(it).mediaId }
+                    val added = similar.filter { it.mediaId !in queued }
+                    val wasEmpty = controller.mediaItemCount == 0
+                    controller.addMediaItems(added)
+                    // Ready to play, the user starts it
+                    if (wasEmpty && added.isNotEmpty()) controller.prepare()
+                    return@run
+                }
+                // The user started something else meanwhile
+                if (controller.mediaItemCount == 0 ||
+                    controller.getMediaItemAt(0).mediaId != seed.mediaId
+                ) return@run
+                controller.addMediaItems(similar)
+            }
+        }
     }
 
     override fun enqueue(items: List<MediaItem>) = run("queue ${items.size} items") { controller ->
@@ -179,5 +214,8 @@ class PlaybackControllerImpl(
     private companion object {
 
         const val TAG = "PlaybackController"
+
+        /** Songs a radio looks for, about two hours of music. */
+        const val RADIO_SIZE = 30
     }
 }

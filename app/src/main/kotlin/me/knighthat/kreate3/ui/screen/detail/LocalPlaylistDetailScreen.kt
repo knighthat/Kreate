@@ -43,6 +43,7 @@ import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
+import me.knighthat.kreate3.ui.component.rememberSongTap
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -64,6 +65,7 @@ fun LocalPlaylistDetailScreen(
         songs = viewModel.songs.collectAsLazyPagingItems(),
         onBack = onBack,
         onAction = rememberQueueActions(snackbar, viewModel::allSongs),
+        onSongClick = rememberSongTap(snackbar, null, viewModel::allSongs),
         snackbar = snackbar,
         modifier = modifier,
     )
@@ -77,6 +79,7 @@ private fun LocalPlaylistDetailContent(
     songs: LazyPagingItems<MediaItem>,
     onBack: () -> Unit,
     onAction: (QueueAction) -> Unit,
+    onSongClick: (MediaItem) -> Unit,
     snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
@@ -101,7 +104,7 @@ private fun LocalPlaylistDetailContent(
             item(key = "queue-actions") { QueueActionRow(onAction) }
             items(count = songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
                 songs[index]?.let {
-                    SongItem(it, onClick = {})
+                    SongItem(it, onClick = { onSongClick(it) })
                 }
             }
         }
@@ -118,6 +121,7 @@ private fun LocalPlaylistDetailPreview() = PreviewTheme {
         songs = flowOf(PagingData.from(previewSongs())).collectAsLazyPagingItems(),
         onBack = {},
         onAction = {},
+        onSongClick = {},
         snackbar = remember { SnackbarHostState() },
     )
 }

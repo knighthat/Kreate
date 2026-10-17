@@ -30,6 +30,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import me.knighthat.kreate3.database.repository.SongRepository
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
@@ -50,9 +51,12 @@ val playbackModule = module {
         )
     }
 
+    single { Radio(get<UserSongRepository>(), get<OpenSubsonicProvider>(), get<YouTubeProvider>()) }
+
     single<PlaybackController> {
         PlaybackControllerImpl(
             context = androidContext(),
+            radio = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         )
     }

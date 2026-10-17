@@ -323,6 +323,23 @@ class OpenSubsonicProvider internal constructor(
     }
 
     /**
+     * Songs the server finds similar to [songId], most similar first. Servers build this from
+     * outside metadata, like Last.fm for Navidrome, so it may be empty.
+     *
+     * @param count how many songs to ask for
+     * @return `null` while the server is off or not set up
+     * @throws ServerException when the server can't be used or refuses, like for an id it doesn't have
+     */
+    suspend fun similarSongs(songId: String, count: Int): List<RemoteSong>? {
+        serverUrl ?: return null
+
+        // A server with nothing similar may leave the object out
+        val response = call("getSimilarSongs2", "id" to songId, "count" to count.toString())
+        val similar = response["similarSongs2"]?.jsonObject ?: return emptyList()
+        return similar.array("song").orEmpty().map { it.jsonObject.toSong(::coverUri) }
+    }
+
+    /**
      * A public link to [item]. Anyone with it can open and play the item without an account,
      * until it is deleted or expires on the server.
      *

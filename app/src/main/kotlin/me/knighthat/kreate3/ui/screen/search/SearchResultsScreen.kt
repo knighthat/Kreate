@@ -35,11 +35,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -51,11 +54,13 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.ArtistItem
 import me.knighthat.kreate3.ui.component.BackButton
 import me.knighthat.kreate3.ui.component.PlaylistItem
 import me.knighthat.kreate3.ui.component.SongItem
+import me.knighthat.kreate3.ui.component.rememberSongTap
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 
@@ -113,11 +118,16 @@ fun SearchResultsScreen(
 ) {
     var selected by rememberSaveable { mutableStateOf(initialTab) }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val snackbar = remember { SnackbarHostState() }
 
     val songs = viewModel.songs.collectAsLazyPagingItems()
     val albums = viewModel.albums.collectAsLazyPagingItems()
     val artists = viewModel.artists.collectAsLazyPagingItems()
     val playlists = viewModel.playlists.collectAsLazyPagingItems()
+    // Only the songs loaded so far are below the one tapped
+    val onSongClick = rememberSongTap(snackbar, Preferences.SEARCH_SONGS_TAP_RADIO) {
+        songs.itemSnapshotList.items
+    }
     val current = when (selected) {
         Tab.SONGS -> songs
         Tab.ALBUMS -> albums
@@ -149,6 +159,7 @@ fun SearchResultsScreen(
                 }
             }
         },
+        snackbarHost = { SnackbarHost(snackbar) },
         containerColor = MaterialTheme.colorScheme.surfaceDim,
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { padding ->
@@ -177,7 +188,7 @@ fun SearchResultsScreen(
         when (selected) {
             Tab.SONGS -> LazyColumn(contentPadding = padding, modifier = Modifier.fillMaxSize()) {
                 items(songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
-                    songs[index]?.let { SongItem(it, onClick = {}) }
+                    songs[index]?.let { SongItem(it, onClick = { onSongClick(it) }) }
                 }
             }
 

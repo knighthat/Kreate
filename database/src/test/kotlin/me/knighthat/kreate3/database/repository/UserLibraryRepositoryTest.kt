@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.database.DatabaseTest
 import me.knighthat.kreate3.database.asList
+import me.knighthat.kreate3.database.entity.PlaybackHistoryEntity
 import me.knighthat.kreate3.database.entity.SongPlaylistMapEntity
 import me.knighthat.kreate3.database.entity.UserPlaylistEntity
 import me.knighthat.kreate3.database.model.Origin
@@ -38,6 +39,7 @@ import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 /**
@@ -153,6 +155,62 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
         assertEquals(listOf("onAlbum"), songs.listOfAlbum("a1").map { it.songId })
         assertEquals(listOf("byArtist"), songs.listOfArtist("r1").map { it.songId })
         assertEquals(listOf("inPlaylist"), songs.listOfPlaylist(playlistId).map { it.songId })
+    }
+
+    private suspend fun play(songId: String, at: Long) = database.playbackHistoryDao().insert(
+        PlaybackHistoryEntity(
+            songId = songId,
+            userId = USER,
+            timeSpent = 10.seconds,
+            createdAt = Instant.fromEpochMilliseconds(at),
+        )
+    )
+
+    @Test
+    fun similarSongsScoreWhatTheyShareWithTheSeed() = runBlocking {
+        addArtist("r1")
+        addAlbum("a1")
+        addSong("seed", albumId = "a1", artists = listOf("r1"))
+        addSong("sameArtist", artists = listOf("r1"))
+        addSong("playedAround")
+        addSong("inPlaylist")
+        addSong("sameAlbum", albumId = "a1")
+        addSong("likedOnly")
+        addSong("unrelated")
+        addSong("disliked", artists = listOf("r1"))
+        addSong("gone", artists = listOf("r1"), unavailableSince = EPOCH)
+        addSong("remote", origin = Origin.YOUTUBE, artists = listOf("r1"))
+        listOf(
+            "seed", "sameArtist", "playedAround", "inPlaylist", "sameAlbum", "unrelated",
+            "gone", "remote",
+        ).forEach { librarySong(it) }
+        librarySong("likedOnly", liked)
+        librarySong("disliked", DISLIKED)
+
+        val hour = 60 * 60 * 1000L
+        play("seed", hour)
+        play("playedAround", hour + 60_000)
+        play("unrelated", 5 * hour)
+        val playlistId = database.userPlaylistDao().upsert(
+            UserPlaylistEntity(
+                userId = USER,
+                origin = Origin.LOCAL,
+                name = "Mix",
+                createdAt = EPOCH,
+                updatedAt = EPOCH
+            )
+        )
+        database.userPlaylistDao().addSong(SongPlaylistMapEntity("seed", playlistId))
+        database.userPlaylistDao().addSong(SongPlaylistMapEntity("inPlaylist", playlistId))
+
+        // Artist 3, then the play and the playlist 2 each, album and like 1 each, nothing last
+        val found = songs.similar("seed", 10).map { it.songId }
+        assertEquals("sameArtist", found[0])
+        assertEquals(setOf("playedAround", "inPlaylist"), found.subList(1, 3).toSet())
+        assertEquals(setOf("sameAlbum", "likedOnly"), found.subList(3, 5).toSet())
+        assertEquals(listOf("unrelated"), found.drop(5))
+        assertEquals(2, songs.similar("seed", 2).size)
+        assertTrue(songs.similar("missing", 10).isEmpty())
     }
 
     @Test

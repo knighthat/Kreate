@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
@@ -37,6 +38,7 @@ import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
+import me.knighthat.kreate3.ui.component.rememberSongTap
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -59,6 +61,9 @@ fun OpenSubsonicAlbumDetailScreen(
         onAction = rememberQueueActions(snackbar) {
             (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
         },
+        onSongClick = rememberSongTap(snackbar, null) {
+            (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+        },
         share = if (canShare) viewModel::shareLink else null,
         snackbar = snackbar,
         modifier = modifier,
@@ -74,6 +79,7 @@ private fun OpenSubsonicAlbumDetailContent(
     onRetry: () -> Unit,
     onBack: () -> Unit,
     onAction: (QueueAction) -> Unit,
+    onSongClick: (MediaItem) -> Unit,
     share: (suspend (name: String?) -> Result<String>)?,
     snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
@@ -106,7 +112,12 @@ private fun OpenSubsonicAlbumDetailContent(
             }
             item(key = "queue-actions") { QueueActionRow(onAction) }
             items(detail.songs, key = { it.mediaId }) {
-                SongItem(it, onClick = {}, showThumbnail = false, showAlbum = false)
+                SongItem(
+                    it,
+                    onClick = { onSongClick(it) },
+                    showThumbnail = false,
+                    showAlbum = false,
+                )
             }
         }
     }
@@ -127,6 +138,7 @@ private fun OpenSubsonicAlbumDetailPreview() = PreviewTheme {
         onRetry = {},
         onBack = {},
         onAction = {},
+        onSongClick = {},
         share = { Result.success("") },
         snackbar = remember { SnackbarHostState() },
     )

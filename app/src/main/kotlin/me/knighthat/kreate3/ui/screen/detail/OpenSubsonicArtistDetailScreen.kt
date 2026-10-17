@@ -46,6 +46,7 @@ import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
+import me.knighthat.kreate3.ui.component.rememberSongTap
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -70,6 +71,9 @@ fun OpenSubsonicArtistDetailScreen(
         onAction = rememberQueueActions(snackbar) {
             (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
         },
+        onSongClick = rememberSongTap(snackbar, null) {
+            (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+        },
         share = if (canShare) viewModel::shareLink else null,
         snackbar = snackbar,
         modifier = modifier,
@@ -86,6 +90,7 @@ private fun OpenSubsonicArtistDetailContent(
     onBack: () -> Unit,
     onOpenAlbum: (MediaItem) -> Unit,
     onAction: (QueueAction) -> Unit,
+    onSongClick: (MediaItem) -> Unit,
     share: (suspend (name: String?) -> Result<String>)?,
     snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
@@ -136,7 +141,9 @@ private fun OpenSubsonicArtistDetailContent(
                 }
             if (detail.songs.isNotEmpty()) {
                 item(key = "songs-title") { SectionTitle("Songs") }
-                items(detail.songs, key = { it.mediaId }) { SongItem(it, onClick = {}) }
+                items(detail.songs, key = { it.mediaId }) {
+                    SongItem(it, onClick = { onSongClick(it) })
+                }
             }
         }
     }
@@ -158,6 +165,7 @@ private fun OpenSubsonicArtistDetailPreview() = PreviewTheme {
         onBack = {},
         onOpenAlbum = {},
         onAction = {},
+        onSongClick = {},
         share = { Result.success("") },
         snackbar = remember { SnackbarHostState() },
     )

@@ -51,6 +51,7 @@ import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
+import me.knighthat.kreate3.ui.component.rememberSongTap
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -75,6 +76,7 @@ fun LocalArtistDetailScreen(
         onBack = onBack,
         onOpenAlbum = onOpenAlbum,
         onAction = rememberQueueActions(snackbar, viewModel::allSongs),
+        onSongClick = rememberSongTap(snackbar, null, viewModel::allSongs),
         snackbar = snackbar,
         modifier = modifier,
     )
@@ -89,6 +91,7 @@ private fun LocalArtistDetailContent(
     onBack: () -> Unit,
     onOpenAlbum: (MediaItem) -> Unit,
     onAction: (QueueAction) -> Unit,
+    onSongClick: (MediaItem) -> Unit,
     snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
@@ -131,7 +134,7 @@ private fun LocalArtistDetailContent(
             item { SectionTitle("Songs") }
             items(count = songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
                 songs[index]?.let {
-                    SongItem(it, onClick = {})
+                    SongItem(it, onClick = { onSongClick(it) })
                 }
             }
         }
@@ -149,6 +152,7 @@ private fun LocalArtistDetailPreview() = PreviewTheme {
         onBack = {},
         onOpenAlbum = {},
         onAction = {},
+        onSongClick = {},
         snackbar = remember { SnackbarHostState() },
     )
 }

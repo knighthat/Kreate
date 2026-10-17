@@ -34,6 +34,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
 import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.PlayAllButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
@@ -43,6 +44,7 @@ import me.knighthat.kreate3.ui.component.ShuffleButton
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
+import me.knighthat.kreate3.ui.component.rememberSongTap
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 
@@ -69,6 +71,11 @@ fun HomeSongsScreen(
         selected = selected,
         onToggleOrigin = viewModel.filter::toggle,
         onAction = rememberQueueActions(snackbar, viewModel::allSongs),
+        onSongClick = rememberSongTap(
+            snackbar,
+            Preferences.HOME_SONGS_TAP_RADIO,
+            viewModel::allSongs
+        ),
         onSearch = onSearch,
         onSettings = onSettings,
         snackbar = snackbar,
@@ -83,6 +90,7 @@ private fun HomeSongsContent(
     selected: Set<Origin>,
     onToggleOrigin: (Origin) -> Unit,
     onAction: (QueueAction) -> Unit,
+    onSongClick: (MediaItem) -> Unit,
     onSearch: () -> Unit,
     onSettings: () -> Unit,
     snackbar: SnackbarHostState,
@@ -111,7 +119,7 @@ private fun HomeSongsContent(
                 count = songs.itemCount,
                 key = songs.itemKey { it.mediaId }
             ) { index ->
-                songs[index]?.let { SongItem(it, onClick = {}) }
+                songs[index]?.let { SongItem(it, onClick = { onSongClick(it) }) }
             }
         }
     }
@@ -127,6 +135,7 @@ private fun HomeSongsPreview() = PreviewTheme {
         selected = setOf(Origin.LOCAL),
         onToggleOrigin = {},
         onAction = {},
+        onSongClick = {},
         onSearch = {},
         onSettings = {},
         snackbar = remember { SnackbarHostState() },

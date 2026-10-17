@@ -40,6 +40,7 @@ import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
+import me.knighthat.kreate3.ui.component.rememberSongTap
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 
@@ -69,6 +70,9 @@ fun YouTubeAlbumDetailScreen(
         onAction = rememberQueueActions(snackbar) {
             (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
         },
+        onSongClick = rememberSongTap(snackbar, null) {
+            (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+        },
         share = viewModel::shareLink,
         snackbar = snackbar,
         modifier = modifier,
@@ -83,6 +87,7 @@ private fun YouTubeAlbumDetailContent(
     onOpen: (Tab, MediaItem) -> Unit,
     onSeeMore: (title: String, more: YouTubeBrowse) -> Unit,
     onAction: (QueueAction) -> Unit,
+    onSongClick: (MediaItem) -> Unit,
     share: suspend () -> Result<String>,
     snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
@@ -112,7 +117,12 @@ private fun YouTubeAlbumDetailContent(
             }
             item(key = "queue-actions") { QueueActionRow(onAction) }
             items(detail.songs, key = { it.mediaId }) {
-                SongItem(it, onClick = {}, showThumbnail = false, showAlbum = false)
+                SongItem(
+                    it,
+                    onClick = { onSongClick(it) },
+                    showThumbnail = false,
+                    showAlbum = false,
+                )
             }
             items(detail.sections.size, key = { "section:$it" }) {
                 LiveSectionRow(detail.sections[it], onOpen, onSeeMore)
@@ -144,6 +154,7 @@ private fun YouTubeAlbumDetailPreview() = PreviewTheme {
         onOpen = { _, _ -> },
         onSeeMore = { _, _ -> },
         onAction = {},
+        onSongClick = {},
         share = { Result.success("") },
         snackbar = remember { SnackbarHostState() },
     )

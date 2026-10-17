@@ -46,6 +46,7 @@ import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
+import me.knighthat.kreate3.ui.component.rememberSongTap
 import org.koin.androidx.compose.koinViewModel
 
 /** Songs from the end of the list at which the next ones are asked for. */
@@ -74,6 +75,7 @@ fun YouTubePlaylistDetailScreen(
         onRetry = viewModel::load,
         onBack = onBack,
         onAction = rememberQueueActions(snackbar) { viewModel.songs.value },
+        onSongClick = rememberSongTap(snackbar, null) { viewModel.songs.value },
         share = viewModel::shareLink,
         snackbar = snackbar,
         modifier = modifier,
@@ -93,6 +95,7 @@ private fun YouTubePlaylistDetailContent(
     onRetry: () -> Unit,
     onBack: () -> Unit,
     onAction: (QueueAction) -> Unit,
+    onSongClick: (MediaItem) -> Unit,
     share: suspend () -> Result<String>,
     snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
@@ -123,7 +126,7 @@ private fun YouTubePlaylistDetailContent(
             item(key = "queue-actions") { QueueActionRow(onAction) }
             itemsIndexed(songs, key = { _, it -> it.mediaId }) { index, song ->
                 if (index >= songs.size - PREFETCH_DISTANCE) LaunchedEffect(songs.size) { onLoadMore() }
-                SongItem(song, onClick = {})
+                SongItem(song, onClick = { onSongClick(song) })
             }
             if (songs.isEmpty() && !hasMore)
                 item(key = "empty") {
@@ -168,6 +171,7 @@ private fun YouTubePlaylistDetailPreview() = PreviewTheme {
         onRetry = {},
         onBack = {},
         onAction = {},
+        onSongClick = {},
         share = { Result.success("") },
         snackbar = remember { SnackbarHostState() },
     )

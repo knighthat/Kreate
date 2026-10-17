@@ -42,6 +42,7 @@ import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.previewArtists
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
+import me.knighthat.kreate3.ui.component.rememberSongTap
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 
@@ -74,6 +75,9 @@ fun YouTubeArtistDetailScreen(
         onAction = rememberQueueActions(snackbar) {
             (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty()
         },
+        onSongClick = rememberSongTap(snackbar, null) {
+            (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty()
+        },
         share = viewModel::shareLink,
         snackbar = snackbar,
         modifier = modifier,
@@ -89,6 +93,7 @@ private fun YouTubeArtistDetailContent(
     onSeeMore: (title: String, more: YouTubeBrowse) -> Unit,
     onOpenPlaylist: (String) -> Unit,
     onAction: (QueueAction) -> Unit,
+    onSongClick: (MediaItem) -> Unit,
     share: suspend () -> Result<String>,
     snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
@@ -124,7 +129,9 @@ private fun YouTubeArtistDetailContent(
                         onSeeMore = detail.songsPlaylistId?.let { id -> { onOpenPlaylist(id) } },
                     )
                 }
-                items(detail.topSongs, key = { it.mediaId }) { SongItem(it, onClick = {}) }
+                items(detail.topSongs, key = { it.mediaId }) {
+                    SongItem(it, onClick = { onSongClick(it) })
+                }
             }
             items(detail.sections.size, key = { "section:$it" }) {
                 LiveSectionRow(detail.sections[it], onOpen, onSeeMore)
@@ -162,6 +169,7 @@ private fun YouTubeArtistDetailPreview() = PreviewTheme {
         onSeeMore = { _, _ -> },
         onOpenPlaylist = {},
         onAction = {},
+        onSongClick = {},
         share = { Result.success("") },
         snackbar = remember { SnackbarHostState() },
     )

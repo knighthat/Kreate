@@ -131,6 +131,20 @@ internal class UserSongRepositoryImpl(
             userSongDao.find(userId, songId).map { it?.toModel() }
         }
 
+    override suspend fun similar(songId: String, limit: Int): List<UserSongView> {
+        val userId = scope.awaitId()
+        return userSongDao.list(
+            RoomRawQuery(
+                sql = SIMILAR,
+                onBindStatement = {
+                    it.bindText(1, userId)
+                    it.bindText(2, songId)
+                    it.bindLong(3, limit.toLong())
+                },
+            )
+        ).map(UserSongViewEntity::toModel)
+    }
+
     override suspend fun save(song: UserSong) {
         val userId = scope.requireId()
         val now = clock.now()
@@ -154,6 +168,38 @@ internal class UserSongRepositoryImpl(
         userSongDao.delete(scope.requireId(), songId)
 
     private companion object {
+
+        /** Plays this close to each other, in milliseconds, were part of one listening session. */
+        const val SESSION_MS = 30 * 60 * 1000
+
+        // ?1 user, ?2 seed song, ?3 limit
+        const val SIMILAR = """
+            SELECT v.* FROM user_song_view v
+            WHERE v.user_id = ?1
+              AND v.song_id != ?2
+              AND v.origin = (SELECT origin FROM song WHERE id = ?2)
+              AND (v.liked_at IS NULL OR v.liked_at >= 0)
+            ORDER BY (
+                3 * (SELECT COUNT(*) FROM song_artist_map a
+                     JOIN song_artist_map b ON b.artist_id = a.artist_id
+                     WHERE a.song_id = ?2 AND b.song_id = v.song_id)
+                + 2 * (SELECT COUNT(*) FROM song_playlist_map a
+                       JOIN song_playlist_map b ON b.playlist_id = a.playlist_id
+                       JOIN user_playlist p ON p.playlist_id = a.playlist_id
+                       WHERE a.song_id = ?2 AND b.song_id = v.song_id AND p.user_id = ?1)
+                + 2 * MIN(5, (SELECT COUNT(*) FROM playback_history s
+                              JOIN playback_history h ON h.user_id = s.user_id
+                                  AND h.song_id = v.song_id
+                                  AND h.created_at BETWEEN s.created_at - $SESSION_MS
+                                                       AND s.created_at + $SESSION_MS
+                              WHERE s.user_id = ?1 AND s.song_id = ?2))
+                + CASE WHEN v.album_id IS NOT NULL
+                        AND v.album_id = (SELECT album_id FROM song WHERE id = ?2)
+                       THEN 1 ELSE 0 END
+                + CASE WHEN v.liked_at >= 0 THEN 1 ELSE 0 END
+            ) DESC, RANDOM()
+            LIMIT ?3
+        """
 
         const val OF_ALBUM = "AND album_id = ?"
         const val OF_ARTIST =

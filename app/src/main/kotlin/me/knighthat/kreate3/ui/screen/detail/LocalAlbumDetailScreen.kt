@@ -44,6 +44,7 @@ import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
+import me.knighthat.kreate3.ui.component.rememberSongTap
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -74,6 +75,7 @@ fun LocalAlbumDetailScreen(
         songs = viewModel.songs.collectAsLazyPagingItems(),
         onBack = onBack,
         onAction = rememberQueueActions(snackbar, viewModel::allSongs),
+        onSongClick = rememberSongTap(snackbar, null, viewModel::allSongs),
         share = if (canShare) viewModel::shareLink else null,
         snackbar = snackbar,
         modifier = modifier,
@@ -91,6 +93,7 @@ private fun LocalAlbumDetailContent(
     songs: LazyPagingItems<MediaItem>,
     onBack: () -> Unit,
     onAction: (QueueAction) -> Unit,
+    onSongClick: (MediaItem) -> Unit,
     share: (suspend () -> Result<String>)?,
     snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
@@ -119,7 +122,12 @@ private fun LocalAlbumDetailContent(
             item(key = "queue-actions") { QueueActionRow(onAction) }
             items(count = songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
                 songs[index]?.let {
-                    SongItem(it, onClick = {}, showThumbnail = false, showAlbum = false)
+                    SongItem(
+                        it,
+                        onClick = { onSongClick(it) },
+                        showThumbnail = false,
+                        showAlbum = false,
+                    )
                 }
             }
         }
@@ -136,6 +144,7 @@ private fun LocalAlbumDetailPreview() = PreviewTheme {
         songs = flowOf(PagingData.from(previewSongs())).collectAsLazyPagingItems(),
         onBack = {},
         onAction = {},
+        onSongClick = {},
         share = { Result.success("") },
         snackbar = remember { SnackbarHostState() },
     )

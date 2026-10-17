@@ -122,6 +122,18 @@ interface UserSongRepository {
     fun find(songId: String): Flow<UserSongView?>
 
     /**
+     * Songs of the library that resemble [songId], most alike first, at most [limit]. Only
+     * songs from the same origin as [songId] are considered, the song itself and disliked songs
+     * are left out. Each candidate scores a weighted sum of what it shares with [songId]:
+     * an artist (3 each), a playlist of the user (2 each), plays close to a play of [songId]
+     * (2 each, at most 5 counted), the album (1) and a like (1). Songs that score the same come
+     * in random order, so a song that shares nothing still fills the list.
+     *
+     * @return empty when [songId] isn't known
+     */
+    suspend fun similar(songId: String, limit: Int): List<UserSongView>
+
+    /**
      * Adds to the library, or replaces the entry. The [Song] must be saved first.
      * Use [update] to change a few fields.
      */
