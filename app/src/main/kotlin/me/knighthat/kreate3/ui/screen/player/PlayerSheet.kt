@@ -47,13 +47,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SecondaryTabRow
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -64,15 +61,12 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -113,10 +107,10 @@ import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
 import me.knighthat.kreate3.ui.component.CollapseButton
 import me.knighthat.kreate3.ui.component.Thumbnail
-import me.knighthat.kreate3.ui.component.formatDuration
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
 import me.knighthat.kreate3.ui.component.memoryCacheKey
 import me.knighthat.kreate3.ui.component.rememberSongThumbnails
+import me.knighthat.kreate3.ui.component.seekbar.SeekBar
 import org.koin.compose.koinInject
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -638,71 +632,4 @@ private fun ControlButton(
     iconSize: Dp = 40.dp,
 ) = IconButton(onClick = onClick, modifier = Modifier.size(iconSize + 24.dp)) {
     Icon(painterResource(icon), contentDescription = description, Modifier.size(iconSize))
-}
-
-/**
- * Where the song is, with its elapsed, remaining and whole time under the bar. Dragging the bar
- * moves the time shown, the song moves once it is let go. The length the song says it has stands
- * in while the player doesn't know it yet.
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SeekBar(item: MediaItem, isPlaying: Boolean, controller: PlaybackController) {
-    var position by remember { mutableLongStateOf(controller.position()) }
-    var duration by remember { mutableStateOf(controller.duration()) }
-    var dragged by remember { mutableStateOf<Float?>(null) }
-
-    // Re-read every frame while playing, once when it pauses or the song changes
-    LaunchedEffect(item, isPlaying) {
-        while (true) {
-            position = controller.position()
-            duration = controller.duration()
-            if (!isPlaying) break
-            withFrameNanos { }
-        }
-    }
-
-    val total = duration ?: item.mediaMetadata.durationMs
-    val shown = dragged?.let { fraction -> total?.let { (fraction * it).toLong() } } ?: position
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Slider(
-            value = dragged ?: total?.let { (position.toFloat() / it).coerceIn(0f, 1f) } ?: 0f,
-            onValueChange = { dragged = it },
-            onValueChangeFinished = {
-                val fraction = dragged
-                if (fraction != null && total != null) {
-                    val target = (fraction * total).toLong()
-                    controller.seekTo(target)
-                    position = target
-                }
-                dragged = null
-            },
-            enabled = total != null,
-            thumb = {},
-            track = { sliderState ->
-                SliderDefaults.Track(
-                    colors = SliderDefaults.colors(),
-                    enabled = total != null,
-                    sliderState = sliderState,
-                    drawStopIndicator = {},
-                    thumbTrackGapSize = Dp.Hairline
-                )
-            }
-        )
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            val style = MaterialTheme.typography.labelMedium
-            val color = MaterialTheme.colorScheme.onSurfaceVariant
-            Text(formatDuration(shown) ?: "0:00", style = style, color = color)
-            Text(
-                text = total?.let { formatDuration(it - shown)?.let { left -> "-$left" } } ?: "",
-                style = style,
-                color = color,
-            )
-            Text(formatDuration(total) ?: "--:--", style = style, color = color)
-        }
-    }
 }

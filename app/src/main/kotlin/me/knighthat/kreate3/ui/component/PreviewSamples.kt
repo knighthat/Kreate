@@ -49,6 +49,17 @@ import me.knighthat.kreate3.ui.theme.KreateTheme
 )
 annotation class ScreenPreviews
 
+/**
+ * A component as large as it is, once light and once dark. Wrap it in [PreviewTheme].
+ */
+@Preview(name = "Light", showBackground = true)
+@Preview(
+    name = "Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
+)
+annotation class ComponentPreviews
+
 /** The app's theme, light or dark like the preview's system. */
 @Composable
 fun PreviewTheme(content: @Composable () -> Unit) =
