@@ -122,7 +122,7 @@ import kotlin.math.roundToInt
 private const val BACK_SCALE = 0.1f
 
 /** Speed per second above which a drag let go goes where it heads, like `anchoredDraggable`. */
-private val SETTLE_VELOCITY = 125.dp
+internal val SETTLE_VELOCITY = 125.dp
 
 /** Share of the player's height the cover covers, from the top. */
 private const val COVER_HEIGHT = 0.6f
@@ -185,7 +185,7 @@ enum class PlayerSheetValue {
 
 /**
  * Where the full player stands, see [PlayerSheet]. It moves between [PlayerSheetValue]s with the
- * finger, dragged up from the mini player ([playerSheetHandle]) or down from the player.
+ * finger, dragged up from the mini player ([dragBy], [settle]) or down from the player.
  */
 @Stable
 class PlayerSheetState(initialValue: PlayerSheetValue) {
@@ -212,6 +212,9 @@ class PlayerSheetState(initialValue: PlayerSheetValue) {
     suspend fun expand() = draggable.animateTo(PlayerSheetValue.EXPANDED)
 
     suspend fun collapse() = draggable.animateTo(PlayerSheetValue.COLLAPSED)
+
+    /** Moves the player by [delta] pixels, down when positive, like a finger does. */
+    internal fun dragBy(delta: Float): Float = draggable.dispatchRawDelta(delta)
 
     /** Whether the player is off its open place, like halfway dragged down. */
     internal val isMoved: Boolean
@@ -248,13 +251,6 @@ fun rememberPlayerSheetState(): PlayerSheetState =
 
 /** The player of the app, for the mini players to open it. `null` where there is none. */
 val LocalPlayerSheet = staticCompositionLocalOf<PlayerSheetState?> { null }
-
-/**
- * Dragging this up opens the player of [state], it follows the finger. Nothing happens without
- * a player.
- */
-fun Modifier.playerSheetHandle(state: PlayerSheetState?): Modifier =
-    if (state == null) this else anchoredDraggable(state.draggable, Orientation.Vertical)
 
 /**
  * Lets a list in the player drag it down once the list is at its top, and back up before the

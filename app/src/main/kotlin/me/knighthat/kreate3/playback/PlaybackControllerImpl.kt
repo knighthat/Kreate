@@ -107,6 +107,15 @@ class PlaybackControllerImpl(
 
     override fun seekTo(positionMs: Long) = run("seek to $positionMs") { it.seekTo(positionMs) }
 
+    override fun stop() {
+        // A radio still looking would queue its songs again
+        radioSearch?.cancel()
+        run("stop") { controller ->
+            controller.stop()
+            controller.clearMediaItems()
+        }
+    }
+
     override fun play(item: MediaItem) = run("play ${item.mediaId}") { controller ->
         val queued = (0 until controller.mediaItemCount)
             .firstOrNull { controller.getMediaItemAt(it).mediaId == item.mediaId }

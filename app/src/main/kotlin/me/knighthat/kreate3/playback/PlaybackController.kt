@@ -110,4 +110,7 @@ interface PlaybackController {
 
     /** Moves to [positionMs] milliseconds into the current item. */
     fun seekTo(positionMs: Long)
+
+    /** Stops playing and empties the queue, nothing is left to resume. */
+    fun stop()
 }

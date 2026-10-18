@@ -18,6 +18,10 @@
 
 package me.knighthat.kreate3.ui.component
 
+import androidx.compose.animation.core.animate
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -37,6 +42,8 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -48,7 +55,7 @@ import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.playback.PlaybackState
 import me.knighthat.kreate3.ui.screen.player.LocalPlayerSheet
-import me.knighthat.kreate3.ui.screen.player.playerSheetHandle
+import me.knighthat.kreate3.ui.screen.player.SETTLE_VELOCITY
 import me.knighthat.kreate3.ui.theme.KreateTheme
 import org.koin.compose.koinInject
 
@@ -64,6 +71,9 @@ val PlaybackState.hasMiniPlayer: Boolean
  * The [MiniPlayer] for what [controller] is playing, hidden as [hasMiniPlayer] says. A tap
  * opens the full player of [LocalPlayerSheet], dragging it up pulls the player along, and it
  * fades as the player covers it.
+ *
+ * Dragged down, it follows the finger and fades out. Let go past half its height, or flung down,
+ * it stops the player ([PlaybackController.stop]), otherwise it comes back.
  */
 @Composable
 fun PlaybackMiniPlayer(
@@ -85,6 +95,21 @@ fun PlaybackMiniPlayer(
         }
     }
 
+    // How far it is dragged down, in pixels
+    var pulled by remember { mutableFloatStateOf(0f) }
+    var height by remember { mutableIntStateOf(0) }
+    val threshold = with(LocalDensity.current) { SETTLE_VELOCITY.toPx() }
+    val drag = rememberDraggableState { delta ->
+        // Down from a closed player, or back up while pulled down
+        if (pulled > 0f || (delta > 0f && (sheet?.fraction ?: 0f) == 0f)) {
+            val next = (pulled + delta).coerceIn(0f, height.toFloat())
+            // What's left of a drag up past the start opens the player
+            if (next == 0f) sheet?.dragBy(delta + pulled)
+            pulled = next
+        } else
+            sheet?.dragBy(delta)
+    }
+
     MiniPlayer(
         item = item,
         isPlaying = state.isPlaying,
@@ -93,8 +118,26 @@ fun PlaybackMiniPlayer(
         onNext = controller::next,
         onClick = { sheet?.let { scope.launch { it.expand() } } },
         modifier = modifier
-            .graphicsLayer { alpha = 1f - (sheet?.fraction ?: 0f) }
-            .playerSheetHandle(sheet),
+            .onSizeChanged { height = it.height }
+            .graphicsLayer {
+                translationY = pulled
+                val gone = if (height > 0) pulled / height else 0f
+                alpha = (1f - (sheet?.fraction ?: 0f)) * (1f - gone)
+            }
+            .draggable(
+                state = drag,
+                orientation = Orientation.Vertical,
+                onDragStopped = { velocity ->
+                    if (pulled == 0f) return@draggable sheet?.settle(velocity, threshold) ?: Unit
+
+                    val stop = velocity > threshold || pulled > height / 2f
+                    animate(pulled, if (stop) height.toFloat() else 0f, velocity) { value, _ ->
+                        pulled = value
+                    }
+                    // Hidden by now, it goes away once the queue is empty
+                    if (stop) controller.stop()
+                },
+            ),
         thumbnails = rememberSongThumbnails(item),
     )
 }

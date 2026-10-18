@@ -171,6 +171,8 @@ private class PreviewController(
     override fun seekTo(positionMs: Long) {
         this.positionMs = positionMs
     }
+
+    override fun stop() = Unit
 }
 
 @ComponentPreviews
