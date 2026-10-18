@@ -125,13 +125,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsSt
 
 /**
  * Whether the screen gets the [MiniPlayer] at the bottom of the window while something plays.
- * Settings pages don't, they aren't about the music. Search places it above its search bar.
+ * Settings pages don't, they aren't about the music. Search places it above its search bar, and
+ * search results above their tabs.
  */
 private val Route.hasMiniPlayer: Boolean
     get() = when (this) {
         Settings, GeneralSettings, PlayerSettings, UiSettings, NetworkSettings, YouTubeSettings,
         OpenSubsonicSettings, BackupSettings, YouTubeSignIn, Search -> false
 
+        is SearchResults -> false
         else -> true
     }
 
@@ -289,7 +291,6 @@ fun KreateApp() {
                                     onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
                                     onOpenArtist = { item -> topLevel.push(artistRoute(item)) },
                                     onOpenPlaylist = { item -> topLevel.push(playlistRoute(item)) },
-                                    modifier = paddingModifier,
                                     viewModel = routeViewModel(it),
                                 )
                             }

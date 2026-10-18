@@ -58,6 +58,7 @@ import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.ArtistItem
 import me.knighthat.kreate3.ui.component.BackButton
+import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
 import me.knighthat.kreate3.ui.component.PlaylistItem
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.rememberSongTap
@@ -145,14 +146,18 @@ fun SearchResultsScreen(
             )
         },
         bottomBar = {
-            NavigationBar {
-                Tab.entries.forEach {
-                    NavigationBarItem(
-                        selected = it == selected,
-                        onClick = { selected = it },
-                        icon = { Icon(painterResource(it.icon), contentDescription = null) },
-                        label = { Text(it.label) },
-                    )
+            // The mini player sits on the tabs, like on the home screens
+            Column {
+                PlaybackMiniPlayer()
+                NavigationBar {
+                    Tab.entries.forEach {
+                        NavigationBarItem(
+                            selected = it == selected,
+                            onClick = { selected = it },
+                            icon = { Icon(painterResource(it.icon), contentDescription = null) },
+                            label = { Text(it.label) },
+                        )
+                    }
                 }
             }
         },
