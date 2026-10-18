@@ -32,6 +32,7 @@ import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheKeyFactory
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import okhttp3.Call
 import okhttp3.OkHttpClient
@@ -40,7 +41,8 @@ import okhttp3.OkHttpClient
  * Reads the songs of the queue. A song on the device is read where it is, no cache is involved.
  * Any other song is read from [SongCaches.downloads] first, then from [SongCaches.cache], and
  * only what neither has is streamed: [resolver] finds the address then, and what is streamed is
- * kept in [SongCaches.cache], never in the downloads.
+ * kept in [SongCaches.cache], never in the downloads. With [Preferences.OPEN_SUBSONIC_DIRECT_PLAY]
+ * on, a song of the server skips [SongCaches.cache]: the downloads, then the stream.
  *
  * Streams go out with the app's [client], or with [openSubsonic] for an OpenSubsonic server.
  *
@@ -61,32 +63,42 @@ fun songDataSourceFactory(
         resolver,
     )
     val keys = CacheKeyFactory { QueuedSong.of(it.uri)?.cacheKey ?: it.key ?: it.uri.toString() }
-    val cached = CacheDataSource.Factory()
+
+    // Read only, downloads are written by the downloader
+    fun downloads(upstream: DataSource.Factory) = CacheDataSource.Factory()
         .setCache(caches.downloads)
         .setCacheKeyFactory(keys)
-        // Read only, downloads are written by the downloader
         .setCacheWriteDataSinkFactory(null)
-        .setUpstreamDataSourceFactory(
-            CacheDataSource.Factory()
-                .setCache(caches.cache)
-                .setCacheKeyFactory(keys)
-                // A cache that can't be read is skipped, the song is streamed instead
-                .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
-                .setUpstreamDataSourceFactory(network)
-        )
+        .setUpstreamDataSourceFactory(upstream)
+
+    val cached = downloads(
+        CacheDataSource.Factory()
+            .setCache(caches.cache)
+            .setCacheKeyFactory(keys)
+            // A cache that can't be read is skipped, the song is streamed instead
+            .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+            .setUpstreamDataSourceFactory(network)
+    )
+    val uncached = downloads(network)
 
     return DataSource.Factory {
-        SongDataSource(cached.createDataSource(), network.createDataSource())
+        SongDataSource(
+            cached = cached.createDataSource(),
+            uncached = uncached.createDataSource(),
+            direct = network.createDataSource(),
+        )
     }
 }
 
 /**
- * Reads a song of the device, or an address that isn't a queued song, with [direct], and any
- * other song with [cached].
+ * Reads a song of the device, or an address that isn't a queued song, with [direct], a song of
+ * the server with [uncached] while [Preferences.OPEN_SUBSONIC_DIRECT_PLAY] is on, and any other
+ * song with [cached].
  */
 @OptIn(UnstableApi::class)
 private class SongDataSource(
     private val cached: DataSource,
+    private val uncached: DataSource,
     private val direct: DataSource,
 ) : DataSource {
 
@@ -94,12 +106,17 @@ private class SongDataSource(
 
     override fun addTransferListener(transferListener: TransferListener) {
         cached.addTransferListener(transferListener)
+        uncached.addTransferListener(transferListener)
         direct.addTransferListener(transferListener)
     }
 
     override fun open(dataSpec: DataSpec): Long {
         val origin = QueuedSong.of(dataSpec.uri)?.origin
-        val source = if (origin == null || origin == Origin.LOCAL) direct else cached
+        val source = when {
+            origin == null || origin == Origin.LOCAL -> direct
+            origin == Origin.OPEN_SUBSONIC && Preferences.OPEN_SUBSONIC_DIRECT_PLAY.value -> uncached
+            else -> cached
+        }
         current = source
         return source.open(dataSpec)
     }

@@ -173,6 +173,13 @@ object Preferences : KoinComponent {
         )
     }
 
+    /**
+     * Songs of the OpenSubsonic server are streamed as they play, never kept in the cache of
+     * streamed songs nor read from it. On by default. Downloaded songs are still played from
+     * the device.
+     */
+    val OPEN_SUBSONIC_DIRECT_PLAY by lazy { boolean("open_subsonic_direct_play", true) }
+
     /** Like [YOUTUBE_SYNC_SONGS], for the songs starred on the OpenSubsonic server. */
     val OPEN_SUBSONIC_SYNC_SONGS by lazy { boolean("open_subsonic_sync_songs", true) }
 

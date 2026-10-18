@@ -318,6 +318,7 @@ fun NetworkSettingsScreen(
     val youtubePageId by youtube.pageId.collectFlowAsState()
     val serverCheck by viewModel.server.collectFlowAsState()
     val allowSelfSigned by Preferences.OPEN_SUBSONIC_ALLOW_SELF_SIGNED.collectAsStateWithLifecycle()
+    val directPlay by Preferences.OPEN_SUBSONIC_DIRECT_PLAY.collectAsStateWithLifecycle()
     val certificateHost by Preferences.OPEN_SUBSONIC_CERTIFICATE_HOST.collectAsStateWithLifecycle()
     val certificate by Preferences.OPEN_SUBSONIC_CERTIFICATE_SHA256.collectAsStateWithLifecycle()
     // Fingerprint of the change the user put off, it isn't asked again until they tap the row
@@ -463,6 +464,14 @@ fun NetworkSettingsScreen(
             credentialsCheck,
             credentialsCheck.credentialsSummary(),
             viewModel::retry
+        )
+
+        SettingsSection("Playback")
+        SwitchSetting(
+            title = "Direct play",
+            summary = "Streams songs from the server without keeping them in the song cache",
+            checked = directPlay,
+            onCheckedChange = Preferences.OPEN_SUBSONIC_DIRECT_PLAY::update,
         )
 
         SettingsSection("Server library")
