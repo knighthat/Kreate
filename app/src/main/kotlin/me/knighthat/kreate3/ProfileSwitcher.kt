@@ -33,8 +33,10 @@ import me.knighthat.kreate3.utils.hasAudioPermission
 /**
  * Changes the active profile with playback stopped, see [PlaybackLifecycle.restartAround]: what
  * the player saves goes to the profile it played in, and the player starts again with the queue
- * of the new profile once its user and settings are in use. The music on the device is scanned
- * again then, the new user's library may be behind it.
+ * of the new profile once its user and settings are in use. Scanning the music on the device
+ * stops the same way, a scan saving meanwhile could land on either user: the scans are cancelled
+ * first, and once the new user is in use a scan runs and the schedule starts again with its
+ * interval, its library may be behind the device.
  *
  * Runs in [scope], so leaving the screen doesn't leave playback stopped halfway.
  */
@@ -54,11 +56,15 @@ class ProfileSwitcher(
         if (profileId == profileManager.activeId.value) return@launch
         if (profileId !in profileManager.ids.first()) return@launch
 
-        playback.restartAround {
-            profileManager.switchTo(profileId)
-            awaitInUse(profileId)
+        try {
+            playback.restartAround {
+                LocalMusicScheduler.cancelScans(context)
+                profileManager.switchTo(profileId)
+                awaitInUse(profileId)
+            }
+        } finally {
+            resumeScans()
         }
-        scanLocalMusic()
     }
 
     /**
@@ -71,18 +77,27 @@ class ProfileSwitcher(
             return@launch
         }
 
-        val deleted = playback.restartAround {
-            if (!profileUserSync.deleteProfile(profileId)) return@restartAround false
-            val next = profileManager.activeId.first { it != null && it != profileId }!!
-            awaitInUse(next)
-            true
+        try {
+            playback.restartAround {
+                LocalMusicScheduler.cancelScans(context)
+                if (!profileUserSync.deleteProfile(profileId)) return@restartAround
+                val next = profileManager.activeId.first { it != null && it != profileId }!!
+                awaitInUse(next)
+            }
+        } finally {
+            // Even when nothing was deleted, the scans were cancelled
+            resumeScans()
         }
-        if (deleted) scanLocalMusic()
     }
 
-    /** Like at start-up, see KreateActivity. Without the permission there is nothing to scan. */
-    private fun scanLocalMusic() {
-        if (context.hasAudioPermission()) LocalMusicScheduler.scanNow(context)
+    /**
+     * Scans now and schedules the scans again, like at start-up, see KreateActivity. Without the
+     * permission there is nothing to scan.
+     */
+    private fun resumeScans() {
+        if (!context.hasAudioPermission()) return
+        LocalMusicScheduler.scanNow(context)
+        LocalMusicScheduler.schedule(context, Preferences.LOCAL_SCAN_INTERVAL.value)
     }
 
     /** Waits until the repositories and the settings follow [profileId]. */

@@ -26,7 +26,9 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.await
 import me.knighthat.kreate3.source.local.LocalMusicScheduler.scanNow
+import me.knighthat.kreate3.source.local.LocalMusicScheduler.schedule
 import java.util.concurrent.TimeUnit
 
 /**
@@ -69,6 +71,20 @@ object LocalMusicScheduler {
                 ExistingWorkPolicy.KEEP,
                 OneTimeWorkRequestBuilder<LocalMusicWorker>().build()
             )
+    }
+
+    /**
+     * Cancels every scan, extra and periodic, waiting or running, which also ends the periodic
+     * schedule: [schedule] it again after.
+     *
+     * Returns once the running scan was told to stop. It stops at its next step, and one cut off
+     * while saving saves nothing, see `LocalCatalogRepository.sync`. Only a save already
+     * finishing may still land, on the user it started with.
+     */
+    suspend fun cancelScans(context: Context) {
+        val workManager = WorkManager.getInstance(context)
+        workManager.cancelUniqueWork(PERIODIC_NAME).await()
+        workManager.cancelUniqueWork(ONCE_NAME).await()
     }
 
     /**
