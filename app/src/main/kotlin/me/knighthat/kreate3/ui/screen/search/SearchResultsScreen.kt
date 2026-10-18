@@ -30,7 +30,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -38,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,8 +46,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.paging.LoadState
@@ -117,7 +117,6 @@ fun SearchResultsScreen(
     viewModel: SearchResultsViewModel = koinViewModel(),
 ) {
     var selected by rememberSaveable { mutableStateOf(initialTab) }
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val snackbar = remember { SnackbarHostState() }
 
     val songs = viewModel.songs.collectAsLazyPagingItems()
@@ -137,14 +136,12 @@ fun SearchResultsScreen(
 
     Scaffold(
         topBar = {
-            LargeTopAppBar(
-                title = { Text(viewModel.query) },
+            TopAppBar(
+                title = { Text(viewModel.query, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = { BackButton(onBack) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surfaceDim,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceDim,
                 ),
-                scrollBehavior = scrollBehavior,
             )
         },
         bottomBar = {
@@ -161,7 +158,7 @@ fun SearchResultsScreen(
         },
         snackbarHost = { SnackbarHost(snackbar) },
         containerColor = MaterialTheme.colorScheme.surfaceDim,
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier,
     ) { padding ->
         val origin = viewModel.origin
         val refresh = current.loadState.refresh
