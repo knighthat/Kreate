@@ -35,7 +35,7 @@ import me.knighthat.kreate3.ui.screen.home.HomeSongsViewModel
 import me.knighthat.kreate3.ui.screen.search.SearchResultsViewModel
 import me.knighthat.kreate3.ui.screen.search.SearchViewModel
 import me.knighthat.kreate3.ui.screen.settings.BackupViewModel
-import me.knighthat.kreate3.ui.screen.settings.NetworkSettingsViewModel
+import me.knighthat.kreate3.ui.screen.settings.OpenSubsonicSettingsViewModel
 import me.knighthat.kreate3.ui.screen.settings.YouTubeAccountViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -62,6 +62,6 @@ val viewModelModule = module {
     viewModelOf(::YouTubeAccountViewModel)
     viewModelOf(::YouTubePlaylistDetailViewModel)
 
-    viewModelOf(::NetworkSettingsViewModel)
+    viewModelOf(::OpenSubsonicSettingsViewModel)
     viewModelOf(::BackupViewModel)
 }

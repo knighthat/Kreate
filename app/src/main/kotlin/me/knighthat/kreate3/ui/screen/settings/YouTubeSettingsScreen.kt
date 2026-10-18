@@ -1,0 +1,137 @@
+/*
+ * Kreate
+ * Copyright (C) 2026 KnightHat
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package me.knighthat.kreate3.ui.screen.settings
+
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import me.knighthat.kreate3.R
+import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.provider.youtube.youTubeSyncSetting
+import org.koin.androidx.compose.koinViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
+
+/**
+ * Whether the YouTube account is used, who is signed in, with a way to sign in or out. Only the
+ * switch shows while it is off.
+ */
+@Composable
+fun YouTubeSettingsScreen(
+    onBack: () -> Unit,
+    onSignIn: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: YouTubeAccountViewModel = koinViewModel(),
+) {
+    val account by viewModel.account.collectFlowAsState()
+    val channels by viewModel.channels.collectFlowAsState()
+    val pageId by viewModel.pageId.collectFlowAsState()
+    val enabled by Preferences.YOUTUBE_ACCOUNT_ENABLED.collectAsStateWithLifecycle()
+    var askSignOut by remember { mutableStateOf(false) }
+    var pickChannel by remember { mutableStateOf(false) }
+    // A choice only when the account has several channels
+    val canSwitch = channels.size > 1
+
+    SettingsPage("YouTube", onBack, modifier) {
+        MainSwitch(
+            title = "Use YouTube account",
+            summary = "YouTube is used signed out while this is off",
+            checked = enabled,
+            onCheckedChange = viewModel::setEnabled,
+        )
+
+        // The session stays when hidden, it is used again once the setting is back on
+        if (!enabled) return@SettingsPage
+
+        SettingsSection("Account")
+        when (val state = account) {
+            YouTubeAccountState.SignedOut -> SettingsItem(
+                title = "Sign in",
+                summary = "Brings your albums, artists and playlists, and makes suggestions yours",
+                onClick = onSignIn,
+            )
+
+            YouTubeAccountState.Checking -> SettingsItem(title = "Account", summary = "Checking…")
+            is YouTubeAccountState.SignedIn -> SettingsItem(
+                title = state.account.name,
+                summary = state.account.handle ?: "Signed in",
+                onClick = if (canSwitch) ({ pickChannel = true }) else null,
+                trailing = if (canSwitch) ({
+                    Icon(
+                        painterResource(R.drawable.chevron_right),
+                        contentDescription = "Switch channel"
+                    )
+                }) else null,
+            )
+
+            YouTubeAccountState.Ended -> SettingsItem(
+                title = "Signed out by YouTube",
+                summary = "The session ended, tap to sign in again",
+                onClick = onSignIn,
+            )
+
+            is YouTubeAccountState.Failed -> SettingsItem(
+                title = "Account",
+                summary = "${state.reason}, tap to try again",
+                onClick = viewModel::retry,
+            )
+        }
+        if (account != YouTubeAccountState.SignedOut) {
+            SettingsItem(
+                title = "Sign out",
+                summary = "Your liked songs stay in this profile",
+                onClick = { askSignOut = true },
+            )
+
+            SettingsSection("Library")
+            LibrarySyncSettings({ it.youTubeSyncSetting }, "on YouTube", viewModel::setSyncing)
+        }
+        if (pickChannel && canSwitch)
+            YouTubeChannelPicker(
+                channels = channels,
+                pageId = pageId,
+                onPick = {
+                    pickChannel = false
+                    viewModel.switchTo(it)
+                },
+                onDismiss = { pickChannel = false },
+            )
+        if (askSignOut)
+            AlertDialog(
+                onDismissRequest = { askSignOut = false },
+                title = { Text("Sign out of YouTube?") },
+                text = { Text("Your YouTube library stops showing here, the songs you liked stay liked. You can sign in again any time.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        askSignOut = false
+                        viewModel.signOut()
+                    }) { Text("Sign out") }
+                },
+                dismissButton = { TextButton(onClick = { askSignOut = false }) { Text("Cancel") } },
+            )
+    }
+}

@@ -67,6 +67,7 @@ import me.knighthat.kreate3.ui.navigation.NetworkSettings
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicAlbum
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicArtist
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicPlaylist
+import me.knighthat.kreate3.ui.navigation.OpenSubsonicSettings
 import me.knighthat.kreate3.ui.navigation.PlayerSettings
 import me.knighthat.kreate3.ui.navigation.Playlists
 import me.knighthat.kreate3.ui.navigation.Route
@@ -80,6 +81,7 @@ import me.knighthat.kreate3.ui.navigation.YouTubeAlbum
 import me.knighthat.kreate3.ui.navigation.YouTubeArtist
 import me.knighthat.kreate3.ui.navigation.YouTubeMore
 import me.knighthat.kreate3.ui.navigation.YouTubePlaylist
+import me.knighthat.kreate3.ui.navigation.YouTubeSettings
 import me.knighthat.kreate3.ui.navigation.YouTubeSignIn
 import me.knighthat.kreate3.ui.navigation.albumRoute
 import me.knighthat.kreate3.ui.navigation.artistRoute
@@ -110,9 +112,11 @@ import me.knighthat.kreate3.ui.screen.search.SearchScreen
 import me.knighthat.kreate3.ui.screen.settings.BackupSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.GeneralSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.NetworkSettingsScreen
+import me.knighthat.kreate3.ui.screen.settings.OpenSubsonicSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.PlayerSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.SettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.UiSettingsScreen
+import me.knighthat.kreate3.ui.screen.settings.YouTubeSettingsScreen
 import me.knighthat.kreate3.ui.screen.settings.YouTubeSignInScreen
 import me.knighthat.kreate3.ui.theme.KreateTheme
 import me.knighthat.kreate3.ui.theme.rememberThumbnailSeed
@@ -125,8 +129,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsSt
  */
 private val Route.hasMiniPlayer: Boolean
     get() = when (this) {
-        Settings, GeneralSettings, PlayerSettings, UiSettings, NetworkSettings, BackupSettings,
-        YouTubeSignIn, Search -> false
+        Settings, GeneralSettings, PlayerSettings, UiSettings, NetworkSettings, YouTubeSettings,
+        OpenSubsonicSettings, BackupSettings, YouTubeSignIn, Search -> false
 
         else -> true
     }
@@ -302,9 +306,16 @@ fun KreateApp() {
                             entry<NetworkSettings> {
                                 NetworkSettingsScreen(
                                     onBack = topLevel::pop,
-                                    onSignInToYouTube = { topLevel.push(YouTubeSignIn) },
+                                    onOpen = topLevel::push,
                                 )
                             }
+                            entry<YouTubeSettings> {
+                                YouTubeSettingsScreen(
+                                    onBack = topLevel::pop,
+                                    onSignIn = { topLevel.push(YouTubeSignIn) },
+                                )
+                            }
+                            entry<OpenSubsonicSettings> { OpenSubsonicSettingsScreen(topLevel::pop) }
                             entry<BackupSettings> { BackupSettingsScreen(topLevel::pop) }
                             entry<YouTubeSignIn> {
                                 YouTubeSignInScreen(

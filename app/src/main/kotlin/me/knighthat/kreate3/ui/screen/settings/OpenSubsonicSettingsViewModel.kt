@@ -58,7 +58,7 @@ sealed interface CheckState {
  * succeeded. Every change of the settings starts the checks over.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-class NetworkSettingsViewModel(
+class OpenSubsonicSettingsViewModel(
     private val provider: OpenSubsonicProvider,
     private val library: OpenSubsonicLibrary,
 ) : ViewModel() {
@@ -107,7 +107,6 @@ class NetworkSettingsViewModel(
         retry()
     }
 
-    /** Forgets the trusted certificate, the next one the server presents is trusted. */
     /**
      * Shows [section] of the server's library from now on, or hides it when [on] is `false`. The
      * starred songs are synced instead, turning them off only stops the syncing.
@@ -117,6 +116,7 @@ class NetworkSettingsViewModel(
         if (section == LibrarySection.SONGS && on) library.refreshNow()
     }
 
+    /** Forgets the trusted certificate, the next one the server presents is trusted. */
     fun forgetCertificate() {
         provider.forgetCertificate()
         retry()

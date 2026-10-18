@@ -36,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -128,6 +129,38 @@ fun SwitchSetting(
         onClick = { onCheckedChange(!checked) },
         trailing = { Switch(checked = checked, onCheckedChange = null) },
     )
+}
+
+/**
+ * The switch at the top of a page that turns on what the page sets up, set apart from the
+ * settings under it, which the page hides while it is off.
+ */
+@Composable
+fun MainSwitch(
+    title: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+) {
+    Surface(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        shape = MaterialTheme.shapes.extraLarge,
+        color =
+            if (checked) MaterialTheme.colorScheme.primaryContainer
+            else MaterialTheme.colorScheme.surfaceContainerHighest,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+    ) {
+        ListItem(
+            headlineContent = { Text(title, style = MaterialTheme.typography.titleMedium) },
+            supportingContent = summary?.let { { Text(it) } },
+            trailingContent = { Switch(checked = checked, onCheckedChange = null) },
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        )
+    }
 }
 
 /**

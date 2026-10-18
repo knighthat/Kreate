@@ -73,6 +73,14 @@ data object UiSettings : Route
 @Serializable
 data object NetworkSettings : Route
 
+/** The YouTube account, opened from [NetworkSettings]. */
+@Serializable
+data object YouTubeSettings : Route
+
+/** The OpenSubsonic server, opened from [NetworkSettings]. */
+@Serializable
+data object OpenSubsonicSettings : Route
+
 @Serializable
 data object BackupSettings : Route
 
