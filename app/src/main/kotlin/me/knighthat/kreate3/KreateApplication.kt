@@ -116,7 +116,7 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                     } bind ActiveUser::class
 
                     single { Backup(get(), get(), get()) }
-                    single { ProfileSwitcher(get(), get(), get(), get(), get()) }
+                    single { ProfileSwitcher(androidContext(), get(), get(), get(), get(), get()) }
                 },
                 databaseModule,
                 preferencesModule,

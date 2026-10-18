@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3
 
+import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
@@ -26,15 +27,19 @@ import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.playback.PlaybackLifecycle
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.ProfileManager
+import me.knighthat.kreate3.source.local.LocalMusicScheduler
+import me.knighthat.kreate3.utils.hasAudioPermission
 
 /**
  * Changes the active profile with playback stopped, see [PlaybackLifecycle.restartAround]: what
  * the player saves goes to the profile it played in, and the player starts again with the queue
- * of the new profile once its user and settings are in use.
+ * of the new profile once its user and settings are in use. The music on the device is scanned
+ * again then, the new user's library may be behind it.
  *
  * Runs in [scope], so leaving the screen doesn't leave playback stopped halfway.
  */
 class ProfileSwitcher(
+    private val context: Context,
     private val profileManager: ProfileManager,
     private val profileUserSync: ProfileUserSync,
     private val activeUser: ActiveUser,
@@ -53,6 +58,7 @@ class ProfileSwitcher(
             profileManager.switchTo(profileId)
             awaitInUse(profileId)
         }
+        scanLocalMusic()
     }
 
     /**
@@ -65,11 +71,18 @@ class ProfileSwitcher(
             return@launch
         }
 
-        playback.restartAround {
-            if (!profileUserSync.deleteProfile(profileId)) return@restartAround
+        val deleted = playback.restartAround {
+            if (!profileUserSync.deleteProfile(profileId)) return@restartAround false
             val next = profileManager.activeId.first { it != null && it != profileId }!!
             awaitInUse(next)
+            true
         }
+        if (deleted) scanLocalMusic()
+    }
+
+    /** Like at start-up, see KreateActivity. Without the permission there is nothing to scan. */
+    private fun scanLocalMusic() {
+        if (context.hasAudioPermission()) LocalMusicScheduler.scanNow(context)
     }
 
     /** Waits until the repositories and the settings follow [profileId]. */
