@@ -20,6 +20,11 @@ package me.knighthat.kreate3.ui.component
 
 import android.net.Uri
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,11 +42,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
@@ -132,8 +141,8 @@ val MediaItem.localSongId: Long?
     }
 
 /**
- * Cover or picture of an item. The size comes from [modifier]. While there is no picture, while
- * it loads, or when it can't be loaded, a picture of a broken frame shows on a plain background.
+ * Cover or picture of an item. The size comes from [modifier]. While it loads, a light band sweeps
+ * across a plain background; when there is no picture or it can't be loaded, a picture of a broken frame shows.
  *
  * @param localSongId id in the media index when this is the cover of a song on this device. The
  * picture inside the song's file is shown unless [uri] is something other than an album cover,
@@ -164,6 +173,7 @@ fun Thumbnail(models: List<Any>, shape: Shape, modifier: Modifier = Modifier) {
     }
     var failed by remember(order) { mutableIntStateOf(0) }
     val model = order.getOrNull(failed)
+    var loaded by remember(model) { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -171,21 +181,53 @@ fun Thumbnail(models: List<Any>, shape: Shape, modifier: Modifier = Modifier) {
             .background(MaterialTheme.colorScheme.surfaceContainerHighest),
         contentAlignment = Alignment.Center,
     ) {
-        Image(
-            painter = painterResource(R.drawable.image_not_available),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.matchParentSize(),
-        )
-        if (model != null)
+        if (model == null)
+            Image(
+                painter = painterResource(R.drawable.image_not_available),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.matchParentSize(),
+            )
+        else {
+            if (!loaded) LoadingShimmer(Modifier.matchParentSize())
             AsyncImage(
                 model = model,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
+                onSuccess = { loaded = true },
                 onError = { failed++ },
                 modifier = Modifier.matchParentSize(),
             )
+        }
     }
+}
+
+/**
+ * Light band that sweeps diagonally across a [Thumbnail] while its picture loads.
+ */
+@Composable
+private fun LoadingShimmer(modifier: Modifier = Modifier) {
+    val highlight = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+    val progress by rememberInfiniteTransition(label = "thumbnail loading").animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(1200, easing = LinearEasing)),
+        label = "thumbnail shimmer progress",
+    )
+    Box(
+        modifier.drawBehind {
+            // How far the band moves sideways to go from fully before the box to fully past it
+            val travel = (size.width * size.width + size.height * size.height) / size.width
+            val x = -travel + progress * 2 * travel
+            drawRect(
+                Brush.linearGradient(
+                    colors = listOf(Color.Transparent, highlight, Color.Transparent),
+                    start = Offset(x, 0f),
+                    end = Offset(x + size.width, size.height),
+                ),
+            )
+        },
+    )
 }
 
 /**
