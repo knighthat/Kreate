@@ -51,6 +51,7 @@ import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.ui.component.LocalIconOnly
 import me.knighthat.kreate3.ui.component.MiniPlayer
 import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
@@ -138,13 +139,20 @@ private fun BottomBar(
     selected: Tab,
     onSelect: (Tab) -> Unit,
 ) {
+    val iconOnly = LocalIconOnly.current
     NavigationBar {
         Tab.entries.forEach {
             NavigationBarItem(
                 selected = it == selected,
                 onClick = { onSelect(it) },
-                icon = { Icon(painterResource(it.icon), contentDescription = null) },
-                label = { Text(it.label) },
+                icon = {
+                    // Without the text, the icon has to name the tab
+                    Icon(
+                        painterResource(it.icon),
+                        contentDescription = if (iconOnly) it.label else null,
+                    )
+                },
+                label = if (iconOnly) null else ({ Text(it.label) }),
             )
         }
     }
@@ -154,6 +162,7 @@ private fun BottomBar(
 fun KreateApp() {
     val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
     val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
+    val iconOnly by Preferences.ICON_ONLY.collectAsStateWithLifecycle()
 
     val topLevel = rememberTopLevelBackStack()
     val playback = koinInject<PlaybackController>()
@@ -176,7 +185,10 @@ fun KreateApp() {
         contrastLevel = contrastLevel,
         colorSeed = seed,
     ) {
-        CompositionLocalProvider(LocalPlayerSheet provides playerSheet) {
+        CompositionLocalProvider(
+            LocalPlayerSheet provides playerSheet,
+            LocalIconOnly provides iconOnly,
+        ) {
             Box(Modifier.fillMaxSize()) {
                 Scaffold(
                     bottomBar = {

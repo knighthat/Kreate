@@ -38,6 +38,7 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
     val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
+    val iconOnly by Preferences.ICON_ONLY.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var appIcon by remember { mutableStateOf(AppIcon.current(context)) }
 
@@ -56,6 +57,14 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             options = ContrastLevel.entries,
             label = ContrastLevel::prettyName,
             onSelect = Preferences.CONTRAST_LEVEL::update,
+        )
+
+        SettingsSection("Layout")
+        SwitchSetting(
+            title = "Icon only",
+            checked = iconOnly,
+            onCheckedChange = Preferences.ICON_ONLY::update,
+            summary = "Hide the text of the bottom bar, origin chips and quick actions",
         )
 
         SettingsSection("Launcher")

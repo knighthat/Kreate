@@ -83,6 +83,15 @@ internal val Origin.label: String
         Origin.OPEN_SUBSONIC -> "OpenSubsonic"
     }
 
+/** The icon of the origin, on item badges and origin chips. */
+@get:DrawableRes
+internal val Origin.icon: Int
+    get() = when (this) {
+        Origin.LOCAL -> R.drawable.mobile
+        Origin.YOUTUBE -> R.drawable.youtube_music
+        Origin.OPEN_SUBSONIC -> R.drawable.open_subsonic
+    }
+
 /**
  * What Coil loads for the picture of an item, `null` when it has none. See [Thumbnail] for the
  * parameters.
@@ -270,10 +279,10 @@ fun ItemBadges(
         modifier = modifier.heightIn(min = BADGE_SIZE),
     ) {
         when (item.origin) {
-            Origin.LOCAL -> ItemBadge(R.drawable.mobile, "On this device")
-            Origin.YOUTUBE -> ItemBadge(R.drawable.youtube_music, "From YouTube")
+            Origin.LOCAL -> ItemBadge(Origin.LOCAL.icon, "On this device")
+            Origin.YOUTUBE -> ItemBadge(Origin.YOUTUBE.icon, "From YouTube")
             Origin.OPEN_SUBSONIC -> ItemBadge(
-                R.drawable.open_subsonic,
+                Origin.OPEN_SUBSONIC.icon,
                 "From the OpenSubsonic server"
             )
 

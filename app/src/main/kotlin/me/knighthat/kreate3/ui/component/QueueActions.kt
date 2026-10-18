@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
@@ -181,8 +182,16 @@ fun QueueActionRow(onAction: (QueueAction) -> Unit, modifier: Modifier = Modifie
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
     ) {
-        LabeledButton("Play", R.drawable.play_arrow) { onAction(QueueAction.PLAY) }
-        LabeledButton("Shuffle", R.drawable.shuffle) { onAction(QueueAction.SHUFFLE) }
+        if (LocalIconOnly.current) {
+            // Play stays the main action, filled like its labeled button
+            FilledIconButton(onClick = { onAction(QueueAction.PLAY) }) {
+                Icon(painterResource(R.drawable.play_arrow), contentDescription = "Play")
+            }
+            ShuffleButton({ onAction(QueueAction.SHUFFLE) })
+        } else {
+            LabeledButton("Play", R.drawable.play_arrow) { onAction(QueueAction.PLAY) }
+            LabeledButton("Shuffle", R.drawable.shuffle) { onAction(QueueAction.SHUFFLE) }
+        }
         QueueMoreButton(onAction)
     }
 }

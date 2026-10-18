@@ -33,8 +33,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -62,11 +64,16 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.ui.component.LocalIconOnly
 import me.knighthat.kreate3.ui.component.ProfileButton
 import me.knighthat.kreate3.ui.component.SearchButton
 import me.knighthat.kreate3.ui.component.SettingsButton
+import me.knighthat.kreate3.ui.component.icon
 import me.knighthat.kreate3.ui.component.label
 import kotlin.math.roundToInt
+
+/** How much of the content color is left on a disabled Material component. */
+private const val DISABLED_ALPHA = .38f
 
 /**
  * The title large under the logo and the actions, shrinking into one row as [content] scrolls.
@@ -169,17 +176,46 @@ private fun HomeToolbar(
                 .horizontalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
         ) {
+            val iconOnly = LocalIconOnly.current
             choices.forEach {
-                FilterChip(
-                    selected = it in selected,
-                    onClick = { onToggleOrigin(it) },
-                    label = { Text(it.label) },
-                )
+                if (iconOnly)
+                    OriginToggle(it, it in selected) { onToggleOrigin(it) }
+                else
+                    FilterChip(
+                        selected = it in selected,
+                        onClick = { onToggleOrigin(it) },
+                        label = { Text(it.label) },
+                        leadingIcon = {
+                            // The label says the same, nothing more for screen readers
+                            Icon(
+                                painter = painterResource(it.icon),
+                                contentDescription = null,
+                                modifier = Modifier.size(FilterChipDefaults.IconSize),
+                            )
+                        },
+                    )
             }
         }
         quickActions()
     }
 }
+
+/**
+ * The icon of [origin] in place of its chip, see [LocalIconOnly]: in the primary color while
+ * [selected], in the disabled color otherwise. It can still be tapped either way.
+ */
+@Composable
+private fun OriginToggle(origin: Origin, selected: Boolean, onToggle: () -> Unit) =
+    IconToggleButton(
+        checked = selected,
+        onCheckedChange = { onToggle() },
+        colors = IconButtonDefaults.iconToggleButtonColors(
+            contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_ALPHA),
+            checkedContentColor = MaterialTheme.colorScheme.primary,
+        ),
+    ) {
+        Icon(painterResource(origin.icon), contentDescription = origin.label)
+    }
 
 /**
  * The frame of a home tab: a large top bar named [title] that collapses when the scrollable

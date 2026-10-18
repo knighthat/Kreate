@@ -52,6 +52,12 @@ object Preferences : KoinComponent {
     val CONTRAST_LEVEL by lazy { enum("contrast_level", ContrastLevel.NORMAL) }
 
     /**
+     * The bottom bar, the origin chips and the quick actions of detail screens show only their
+     * icons, no text.
+     */
+    val ICON_ONLY by lazy { boolean("icon_only", false) }
+
+    /**
      * Going back from the first screen asks to go back again before the app closes, see
      * [EXIT_CONFIRMATION_TIMEOUT]. [BACK_EXIT_DISABLED] wins over it.
      */
