@@ -27,22 +27,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -54,6 +49,7 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.LocalIconOnly
 import me.knighthat.kreate3.ui.component.MiniPlayer
 import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
+import me.knighthat.kreate3.ui.component.TabBar
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
 import me.knighthat.kreate3.ui.navigation.Albums
 import me.knighthat.kreate3.ui.navigation.Artists
@@ -137,33 +133,6 @@ private val Route.hasMiniPlayer: Boolean
         else -> true
     }
 
-/**
- * One button for each [Tab].
- */
-@Composable
-private fun BottomBar(
-    selected: Tab,
-    onSelect: (Tab) -> Unit,
-) {
-    val iconOnly = LocalIconOnly.current
-    NavigationBar {
-        Tab.entries.forEach {
-            NavigationBarItem(
-                selected = it == selected,
-                onClick = { onSelect(it) },
-                icon = {
-                    // Without the text, the icon has to name the tab
-                    Icon(
-                        painterResource(it.icon),
-                        contentDescription = if (iconOnly) it.label else null,
-                    )
-                },
-                label = if (iconOnly) null else ({ Text(it.label) }),
-            )
-        }
-    }
-}
-
 @Composable
 fun KreateApp() {
     val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
@@ -203,7 +172,7 @@ fun KreateApp() {
                             // Only the tabs have the bar
                             route?.let(Tab::of) != null -> Column {
                                 PlaybackMiniPlayer(controller = playback)
-                                BottomBar(
+                                TabBar(
                                     selected = topLevel.currentTab,
                                     onSelect = topLevel::switchTab,
                                 )

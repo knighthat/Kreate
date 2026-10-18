@@ -29,10 +29,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -46,7 +43,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
@@ -61,6 +57,7 @@ import me.knighthat.kreate3.ui.component.BackButton
 import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
 import me.knighthat.kreate3.ui.component.PlaylistItem
 import me.knighthat.kreate3.ui.component.SongItem
+import me.knighthat.kreate3.ui.component.TabBar
 import me.knighthat.kreate3.ui.component.rememberSongTap
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
@@ -149,16 +146,7 @@ fun SearchResultsScreen(
             // The mini player sits on the tabs, like on the home screens
             Column {
                 PlaybackMiniPlayer()
-                NavigationBar {
-                    Tab.entries.forEach {
-                        NavigationBarItem(
-                            selected = it == selected,
-                            onClick = { selected = it },
-                            icon = { Icon(painterResource(it.icon), contentDescription = null) },
-                            label = { Text(it.label) },
-                        )
-                    }
-                }
+                TabBar(selected = selected, onSelect = { selected = it })
             }
         },
         snackbarHost = { SnackbarHost(snackbar) },
