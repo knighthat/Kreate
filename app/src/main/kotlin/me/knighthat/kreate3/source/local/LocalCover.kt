@@ -19,22 +19,23 @@
 package me.knighthat.kreate3.source.local
 
 import android.content.ContentUris
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.core.net.toUri
 import coil3.ImageLoader
-import coil3.asImage
 import coil3.decode.DataSource
+import coil3.disk.DiskCache
 import coil3.fetch.FetchResult
 import coil3.fetch.Fetcher
-import coil3.fetch.ImageFetchResult
 import coil3.key.Keyer
 import coil3.request.Options
-import coil3.size.pxOrElse
-import me.knighthat.kreate3.source.local.LocalCoverFetcher.Companion.MAX_SIZE
+import me.knighthat.kreate3.source.LARGE_COVER
+import me.knighthat.kreate3.source.SMALL_COVER
+import me.knighthat.kreate3.source.coverSize
+import me.knighthat.kreate3.source.encodeCover
+import me.knighthat.kreate3.source.readCover
+import me.knighthat.kreate3.source.saveCover
 import java.io.IOException
 
 private val ALBUM_ART: Uri = "content://media/external/audio/albumart".toUri()
@@ -73,31 +74,51 @@ class LocalCoverKeyer : Keyer<LocalCover> {
  * Loads a [LocalCover]: the picture inside the song's file first, then the album's cover. A song
  * without either has no cover. The folder of the song is never searched, unrelated songs in
  * the same folder would get each other's pictures.
+ *
+ * Reading the picture out of the file is slow, so it is kept in Coil's disk cache in two sizes,
+ * [SMALL_COVER] for rows and cards and [LARGE_COVER] for the player and the detail screens. The
+ * time the file was last changed is part of the key, a picture changed in the file is read again.
  */
 class LocalCoverFetcher(
     private val data: LocalCover,
     private val options: Options,
+    private val diskCache: DiskCache?,
 ) : Fetcher {
 
     override suspend fun fetch(): FetchResult? {
-        val bitmap = embedded() ?: albumArt() ?: return null
+        val size = coverSize(options.size)
+        // Without the time the file changed, a saved picture could be an old one
+        val key = dateModified()?.let { "${data.cacheKey}:$it#$size" }
+        key?.let { diskCache.readCover(it, options) }?.let { return it }
 
-        return ImageFetchResult(
-            image = bitmap.asImage(),
-            isSampled = true,
-            dataSource = DataSource.DISK,
-        )
+        val original = embedded() ?: albumArt() ?: return null
+        val bytes = encodeCover(original, size) ?: return null
+
+        return diskCache.saveCover(key, bytes, options, DataSource.DISK)
     }
 
-    private fun embedded(): Bitmap? {
-        val uri = ContentUris.withAppendedId(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-            data.songId,
-        )
+    /** When the song's file last changed, in seconds, `null` when the song is gone. */
+    private fun dateModified(): Long? = try {
+        options.context.contentResolver.query(
+            songUri(),
+            arrayOf(MediaStore.Audio.Media.DATE_MODIFIED),
+            null,
+            null,
+            null,
+        )?.use { if (it.moveToFirst()) it.getLong(0) else null }
+    } catch (_: SecurityException) {
+        // The permission to read audio was taken back
+        null
+    }
+
+    private fun songUri(): Uri =
+        ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, data.songId)
+
+    private fun embedded(): ByteArray? {
         val retriever = MediaMetadataRetriever()
         return try {
-            retriever.setDataSource(options.context, uri)
-            retriever.embeddedPicture?.let { decode(it) }
+            retriever.setDataSource(options.context, songUri())
+            retriever.embeddedPicture
         } catch (_: RuntimeException) {
             // Raised for a file that is gone or can't be read, there is no picture then
             null
@@ -106,66 +127,18 @@ class LocalCoverFetcher(
         }
     }
 
-    private fun albumArt(): Bitmap? {
+    private fun albumArt(): ByteArray? {
         val uri = data.albumArt ?: return null
         return try {
-            options.context.contentResolver.openInputStream(uri)?.use { stream ->
-                decode(stream.readBytes())
-            }
+            options.context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
         } catch (_: IOException) {
             null
         }
     }
 
-    /**
-     * Decodes at most [MAX_SIZE] pixels per side, the pictures in files can be very large. When
-     * the request has a size, the picture is made no larger than needed to cover it, a small
-     * thumbnail doesn't need to keep a large picture in memory.
-     */
-    private fun decode(bytes: ByteArray): Bitmap? {
-        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
-
-        val sample = sampleSize(
-            width = bounds.outWidth,
-            height = bounds.outHeight,
-            targetWidth = options.size.width.pxOrElse { MAX_SIZE },
-            targetHeight = options.size.height.pxOrElse { MAX_SIZE },
-        )
-
-        return BitmapFactory.decodeByteArray(
-            bytes,
-            0,
-            bytes.size,
-            BitmapFactory.Options().apply { inSampleSize = sample },
-        )
-    }
-
     class Factory : Fetcher.Factory<LocalCover> {
 
         override fun create(data: LocalCover, options: Options, imageLoader: ImageLoader): Fetcher =
-            LocalCoverFetcher(data, options)
-    }
-
-    internal companion object {
-
-        const val MAX_SIZE = 1024
-
-        /**
-         * The power of two to divide a [width] by [height] picture by, so that neither side is
-         * over [MAX_SIZE] and the picture still covers [targetWidth] by [targetHeight].
-         */
-        fun sampleSize(width: Int, height: Int, targetWidth: Int, targetHeight: Int): Int {
-            // A target of 0 is covered by any size, the sample would grow until it overflows
-            val minWidth = targetWidth.coerceAtLeast(1)
-            val minHeight = targetHeight.coerceAtLeast(1)
-            var sample = 1
-            while (
-                width / sample > MAX_SIZE || height / sample > MAX_SIZE ||
-                (width / (sample * 2) >= minWidth && height / (sample * 2) >= minHeight)
-            )
-                sample *= 2
-            return sample
-        }
+            LocalCoverFetcher(data, options, imageLoader.diskCache)
     }
 }

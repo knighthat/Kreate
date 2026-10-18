@@ -38,8 +38,11 @@ const val SONG_ARTWORK = 226
 /** Edge in pixels the picture of an album, artist or playlist is asked at, they show in a grid. */
 const val CARD_ARTWORK = 544
 
-/** Edge in pixels the large picture on top of a detail screen is asked at. */
-const val HEADER_ARTWORK = 720
+/**
+ * Edge in pixels the large picture on top of a detail screen and the player's cover are asked
+ * at, the same size so both share one picture. Like [me.knighthat.kreate3.source.LARGE_COVER].
+ */
+const val HEADER_ARTWORK = 1440
 
 /** The picture YouTube gave at [uri], at [size]. */
 fun YouTubeProvider.artwork(uri: Uri?, size: Int): Uri? =

@@ -483,10 +483,8 @@ class OpenSubsonicProvider internal constructor(
      * @throws ServerException when the server can't be used
      */
     suspend fun cover(uri: Uri, size: Int?): ByteArray? {
+        if (!isCoverOfServer(uri)) return null
         val base = serverUrl ?: return null
-        if (!isCoverUri(uri) || uri.toString()
-                .substringBefore('?') != "$base/rest/getCoverArt"
-        ) return null
         val id = uri.getQueryParameter("id") ?: return null
         val credentials = credentials() ?: return null
 
@@ -524,6 +522,15 @@ class OpenSubsonicProvider internal constructor(
         (uri.scheme == "https" || uri.scheme == "http") &&
                 uri.path.orEmpty().endsWith("/rest/getCoverArt") &&
                 uri.getQueryParameter("id") != null
+
+    /**
+     * Whether [uri] is a cover address of the server set now, `false` while the server is off.
+     * A cover saved from the server is only shown while this holds, like one loaded from it.
+     */
+    fun isCoverOfServer(uri: Uri): Boolean {
+        val base = serverUrl ?: return false
+        return isCoverUri(uri) && uri.toString().substringBefore('?') == "$base/rest/getCoverArt"
+    }
 
     /**
      * Address of a cover of this server without the sign in, which must not be stored. [cover]
@@ -614,7 +621,12 @@ class OpenSubsonicProvider internal constructor(
      * Navidrome takes the id of a song or an album as the id of a cover, other servers may only
      * take the ids they give as `coverArt`.
      */
-    override fun songArtworkUris(songId: String, albumId: String?, size: Int?): List<Uri> =
+    override fun songArtworkUris(
+        songId: String,
+        albumId: String?,
+        size: Int?,
+        artwork: Uri?,
+    ): List<Uri> =
         listOfNotNull(coverUri(songId), albumId?.let(::coverUri))
 
     private sealed interface Answer {

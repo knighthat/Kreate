@@ -74,9 +74,14 @@ interface Provider {
      *
      * @param albumId album of the song, `null` when it has none or it isn't known
      * @param size like for [artworkUri]
+     * @param artwork the picture the song came with, which a source may also give at [size]
      */
-    fun songArtworkUris(songId: String, albumId: String?, size: Int? = null): List<Uri> =
-        emptyList()
+    fun songArtworkUris(
+        songId: String,
+        albumId: String?,
+        size: Int? = null,
+        artwork: Uri? = null,
+    ): List<Uri> = emptyList()
 
     companion object {
         const val DEFAULT_LIMIT = Int.MAX_VALUE

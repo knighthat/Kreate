@@ -43,8 +43,9 @@ private val SIZED_PICTURE =
 
 /**
  * The address of the picture at [url] at another size. Covers and artist pictures are cut to a
- * square of [size], a frame of a video is the closest size YouTube has. Other addresses are left
- * as they are.
+ * square of [size], never larger than the original, as a JPEG of quality 80: a third smaller
+ * than 90 and hard to tell apart. A frame of a video is the closest size YouTube has. Other
+ * addresses are left as they are.
  *
  * @param size edge in pixels, `null` for the largest picture
  */
@@ -55,10 +56,13 @@ internal fun resizeArtwork(url: String, size: Int?): String {
     }
     SIZED_PICTURE.matchEntire(url)?.let {
         val base = it.groupValues[1]
-        return if (size == null) "$base=s0" else "$base=w$size-h$size-p-l90-rj"
+        return if (size == null) "$base=s0" else "$base=w$size-h$size-p-nu-l80-rj"
     }
     return url
 }
+
+/** Whether [url] is a cover or an artist picture, which come at any size, not a frame of a video. */
+internal fun isSizedArtwork(url: String): Boolean = SIZED_PICTURE.matches(url)
 
 /** Width of `mqdefault`, the largest frame smaller than `hqdefault`. */
 internal const val MEDIUM_FRAME = 320

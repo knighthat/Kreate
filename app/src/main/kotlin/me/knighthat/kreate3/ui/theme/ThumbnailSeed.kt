@@ -20,6 +20,7 @@ package me.knighthat.kreate3.ui.theme
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,12 +30,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.MediaItem
+import coil3.BitmapImage
 import coil3.Image
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.memory.MemoryCache
+import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
+import coil3.request.allowHardware
 import coil3.size.Size
 import coil3.toBitmap
 import com.materialkolor.quantize.QuantizerCelebi
@@ -76,20 +80,21 @@ fun rememberThumbnailSeed(item: MediaItem?, enabled: Boolean): Color {
 
 /**
  * The picture is most likely in memory already, the item that is playing shows it. It is found
- * by its key, which is what Coil caches it under. A request for the same picture would not use
- * that copy and decode it again, so requests are only made when no picture of [models] is in
- * memory, in their order until one loads.
+ * by its key, which is what Coil caches it under. Its pixels can't be read when it is a hardware
+ * bitmap, what the screens usually cache, so requests are made when no picture of [models] is
+ * in memory as a software bitmap, in their order until one loads.
  */
 private suspend fun extractSeed(context: Context, models: List<Any>): Color? {
     val loader = SingletonImageLoader.get(context)
     val image = models.firstNotNullOfOrNull { model ->
-        memoryCacheKey(model)?.let { loader.memoryCache?.get(MemoryCache.Key(it))?.image }
+        memoryCacheKey(model)
+            ?.let { loader.memoryCache?.get(MemoryCache.Key(it))?.image }
+            ?.takeUnless { it.isHardware() }
     } ?: models.firstNotNullOfOrNull { load(context, loader, it) }
     ?: return null
 
     return withContext(Dispatchers.Default) {
-        // The picture can be much larger than needed. Drawing it small also gives a bitmap whose
-        // pixels can be read, what the screens cache is often a hardware bitmap.
+        // The picture can be much larger than needed
         val ratio = SAMPLE_SIZE.toFloat() / maxOf(image.width, image.height)
         val bitmap = image.toBitmap(
             width = maxOf(1, (image.width * ratio).roundToInt()),
@@ -112,6 +117,14 @@ private suspend fun load(context: Context, loader: ImageLoader, model: Any): Ima
     val request = ImageRequest.Builder(context)
         .data(model)
         .size(Size(SAMPLE_SIZE, SAMPLE_SIZE))
+        .allowHardware(false)
+        // The tiny picture must not take the place of the one the screens show
+        .memoryCachePolicy(CachePolicy.READ_ONLY)
         .build()
     return (loader.execute(request) as? SuccessResult)?.image
 }
+
+/** Whether this is a hardware bitmap, whose pixels can't be read or drawn on a software canvas. */
+private fun Image.isHardware(): Boolean =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+            (this as? BitmapImage)?.bitmap?.config == Bitmap.Config.HARDWARE

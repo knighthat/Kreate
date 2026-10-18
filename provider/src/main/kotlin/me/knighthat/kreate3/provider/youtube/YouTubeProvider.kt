@@ -451,9 +451,20 @@ class YouTubeProvider internal constructor(
      * A frame of the song's video, every song has one. A song of an album shows its cover in
      * the frame, a music video a moment of the video. Larger than [MEDIUM_FRAME], the wide frame
      * comes first: the others have black bars above and below, but not every video has it.
+     *
+     * Larger than [MEDIUM_FRAME], a cover the song came with comes before the frames: it is
+     * square and comes at any size, the frames are at most 720 high.
      */
-    override fun songArtworkUris(songId: String, albumId: String?, size: Int?): List<Uri> =
+    override fun songArtworkUris(
+        songId: String,
+        albumId: String?,
+        size: Int?,
+        artwork: Uri?,
+    ): List<Uri> =
         listOfNotNull(
+            artwork?.toString()
+                ?.takeIf { (size == null || size > MEDIUM_FRAME) && isSizedArtwork(it) }
+                ?.let { resizeArtwork(it, size).toUri() },
             "https://i.ytimg.com/vi/$songId/hq720.jpg".toUri()
                 .takeIf { size == null || size > MEDIUM_FRAME },
             artworkUri("https://i.ytimg.com/vi/$songId/hqdefault.jpg", size),

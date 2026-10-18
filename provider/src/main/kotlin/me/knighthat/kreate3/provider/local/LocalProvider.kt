@@ -72,6 +72,11 @@ class LocalProvider(
         artworkId.toLongOrNull()?.let { ContentUris.withAppendedId(ALBUM_ART, it) }
 
     /** The cover of the song's album, the picture inside the file isn't an address. */
-    override fun songArtworkUris(songId: String, albumId: String?, size: Int?): List<Uri> =
+    override fun songArtworkUris(
+        songId: String,
+        albumId: String?,
+        size: Int?,
+        artwork: Uri?,
+    ): List<Uri> =
         listOfNotNull(albumId?.let { artworkUri(it, size) })
 }

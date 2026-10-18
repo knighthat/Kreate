@@ -21,14 +21,21 @@ package me.knighthat.kreate3.source.opensubsonic
 import coil3.ImageLoader
 import coil3.Uri
 import coil3.decode.DataSource
-import coil3.decode.ImageSource
+import coil3.disk.DiskCache
 import coil3.fetch.FetchResult
 import coil3.fetch.Fetcher
-import coil3.fetch.SourceFetchResult
 import coil3.request.Options
-import coil3.size.pxOrElse
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
-import okio.Buffer
+import me.knighthat.kreate3.source.LARGE_COVER
+import me.knighthat.kreate3.source.SMALL_COVER
+import me.knighthat.kreate3.source.coverSize
+import me.knighthat.kreate3.source.encodeCover
+import me.knighthat.kreate3.source.pictureSide
+import me.knighthat.kreate3.source.readCover
+import me.knighthat.kreate3.source.saveCover
+import java.io.IOException
 import androidx.core.net.toUri as toAndroidUri
 
 /**
@@ -36,27 +43,41 @@ import androidx.core.net.toUri as toAndroidUri
  * stores on its items without the sign in. They go through the provider, which signs the request
  * in and trusts what the user chose to trust, like a self-signed certificate. Register it before
  * the network fetcher, which would otherwise load them without the sign in.
+ *
+ * A cover comes in two sizes, [SMALL_COVER] for rows and cards and [LARGE_COVER] for the player
+ * and the detail screens, each kept in Coil's disk cache.
  */
 class OpenSubsonicCoverFetcher(
     private val uri: android.net.Uri,
     private val options: Options,
     private val provider: OpenSubsonicProvider,
+    private val diskCache: DiskCache?,
 ) : Fetcher {
 
-    override suspend fun fetch(): FetchResult? {
-        // The largest side the picture is shown at, the server scales it down before sending
-        val size = maxOf(
-            options.size.width.pxOrElse { 0 },
-            options.size.height.pxOrElse { 0 },
-        ).takeIf { it > 0 }
-        val bytes = provider.cover(uri, size) ?: return null
+    override suspend fun fetch(): FetchResult {
+        // Never `null`, the network fetcher would then send the address to the server unsigned,
+        // even while it is off
+        if (!provider.isCoverOfServer(uri)) throw IOException("OpenSubsonic server is off")
 
-        return SourceFetchResult(
-            source = ImageSource(Buffer().write(bytes), options.fileSystem),
-            mimeType = null,
-            dataSource = DataSource.NETWORK,
-        )
+        val size = coverSize(options.size)
+        val key = "$uri#$size"
+        diskCache.readCover(key, options)?.let { return it }
+
+        val served = provider.cover(uri, size) ?: throw IOException("No cover at $uri")
+        val bytes = if (size == LARGE_COVER) shrinkOriginal(served) else served
+        return diskCache.saveCover(key, bytes, options, DataSource.NETWORK)
     }
+
+    /**
+     * A server scales a cover larger than asked down and encodes it itself, a smaller one comes
+     * as it is, often a JPEG of much higher quality than a screen needs. That one is encoded
+     * again, see [encodeCover].
+     */
+    private suspend fun shrinkOriginal(bytes: ByteArray): ByteArray =
+        withContext(Dispatchers.Default) {
+            if (pictureSide(bytes) >= LARGE_COVER) bytes
+            else encodeCover(bytes, LARGE_COVER) ?: bytes
+        }
 
     class Factory(private val provider: OpenSubsonicProvider) : Fetcher.Factory<Uri> {
 
@@ -65,7 +86,8 @@ class OpenSubsonicCoverFetcher(
             return if (provider.isCoverUri(uri)) OpenSubsonicCoverFetcher(
                 uri,
                 options,
-                provider
+                provider,
+                imageLoader.diskCache,
             ) else null
         }
     }

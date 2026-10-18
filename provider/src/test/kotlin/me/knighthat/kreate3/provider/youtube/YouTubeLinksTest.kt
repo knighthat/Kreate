@@ -36,17 +36,17 @@ class YouTubeLinksTest {
         val cover = "https://yt3.googleusercontent.com/abc-DEF_1=w60-h60-l90-rj"
 
         assertEquals(
-            "https://yt3.googleusercontent.com/abc-DEF_1=w300-h300-p-l90-rj",
+            "https://yt3.googleusercontent.com/abc-DEF_1=w300-h300-p-nu-l80-rj",
             resizeArtwork(cover, 300)
         )
         assertEquals("https://yt3.googleusercontent.com/abc-DEF_1=s0", resizeArtwork(cover, null))
         // An address without a size gets one
         assertEquals(
-            "https://lh3.googleusercontent.com/abc=w120-h120-p-l90-rj",
+            "https://lh3.googleusercontent.com/abc=w120-h120-p-nu-l80-rj",
             resizeArtwork("https://lh3.googleusercontent.com/abc", 120),
         )
         assertEquals(
-            "https://yt3.ggpht.com/abc=w88-h88-p-l90-rj",
+            "https://yt3.ggpht.com/abc=w88-h88-p-nu-l80-rj",
             resizeArtwork("https://yt3.ggpht.com/abc=s88-c-k-c0x00ffffff-no-rj", 88),
         )
     }

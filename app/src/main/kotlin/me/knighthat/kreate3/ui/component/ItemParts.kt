@@ -91,8 +91,8 @@ internal fun memoryCacheKey(model: Any): String? = when (model) {
 
 /**
  * What Coil can load for the cover of the song [item], in the order to try. A song on this
- * device has its [LocalCover]. Any other song has what its ids lead to at its source first
- * ([me.knighthat.kreate3.provider.Provider.songArtworkUris]), the item's `artworkUri` last: a
+ * device has its [LocalCover]. Any other song has what its ids and picture lead to at its source
+ * first ([me.knighthat.kreate3.provider.Provider.songArtworkUris]), the item's `artworkUri` last: a
  * list may give none, like the songs of an album, or one that doesn't load anymore.
  */
 fun songThumbnailModels(
@@ -105,7 +105,8 @@ fun songThumbnailModels(
     val origin = item.origin ?: return listOfNotNull(metadata.artworkUri)
 
     val albumId = metadata.extras?.getString(EXTRA_ALBUM_ID)
-    val fromIds = providers[origin].songArtworkUris(item.mediaId, albumId, size)
+    val fromIds =
+        providers[origin].songArtworkUris(item.mediaId, albumId, size, metadata.artworkUri)
     return (fromIds + listOfNotNull(metadata.artworkUri)).distinct()
 }
 
