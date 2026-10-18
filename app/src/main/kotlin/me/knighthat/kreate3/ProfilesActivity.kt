@@ -78,6 +78,7 @@ class ProfilesActivity : ComponentActivity() {
 
     private val profileManager: ProfileManager by inject()
     private val profileUserSync: ProfileUserSync by inject()
+    private val profileSwitcher: ProfileSwitcher by inject()
     private val userRepository: UserRepository by inject()
 
     @Composable
@@ -183,9 +184,10 @@ class ProfilesActivity : ComponentActivity() {
                 ProfileRow(
                     user = user,
                     isActive = user.id == activeId,
-                    onSwitch = { scope.launch { profileManager.switchTo(user.id) } },
+                    // Stops playback around it, so the player saves to the profile it played in
+                    onSwitch = { profileSwitcher.switchTo(user.id) },
                     // Also removes the user from the database, ProfileManager alone would leave it behind
-                    onDelete = { scope.launch { profileUserSync.deleteProfile(user.id) } },
+                    onDelete = { profileSwitcher.delete(user.id) },
                 )
             }
         }

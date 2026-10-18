@@ -28,8 +28,10 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import me.knighthat.kreate3.KreateActivity
@@ -42,16 +44,25 @@ import org.koin.core.component.get
  *
  * Screens don't touch the player, they connect to [mediaSession] with a `MediaController`.
  * The service owns the player: it is created with the session and released with it.
+ *
+ * [PlaybackLifecycle] can release the session before the service ends, see [stop]. A controller
+ * that connects afterwards gets a new one, unless the lifecycle holds playback stopped.
  */
 @OptIn(UnstableApi::class)
 class PlaybackService : MediaSessionService(), KoinComponent {
+
+    private val playbackLifecycle: PlaybackLifecycle = get()
 
     private var mediaSession: MediaSession? = null
     private var normalizer: LoudnessNormalizer? = null
     private var persistentQueue: PersistentQueue? = null
 
-    // The player is used on the main thread, so is everything that follows it
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    // The player is used on the main thread, so is everything that follows it. One per session.
+    private var scope: CoroutineScope? = null
+
+    // Parent of the writes of a session, they come after its player is released, so it is a child
+    // of the global scope. Once the session is released, it ends when the last write is done.
+    private var writes: CompletableJob? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -63,12 +74,22 @@ class PlaybackService : MediaSessionService(), KoinComponent {
             }
         )
 
+        playbackLifecycle.attach(this)
+        if (!playbackLifecycle.isStopped) createSession()
+    }
+
+    private fun createSession(): MediaSession {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+        val global = get<CoroutineScope>()
+        val writes = SupervisorJob(global.coroutineContext[Job])
+        val writeScope = CoroutineScope(global.coroutineContext + writes)
+        this.scope = scope
+        this.writes = writes
+
         val player = get<KreatePlayer>()
         normalizer = LoudnessNormalizer(player, get(), scope)
-        // Its last writes come after the player is released, so it runs in the global scope
-        PlaybackHistoryRecorder(player, get(), get<CoroutineScope>())
-        persistentQueue = PersistentQueue(player, get(), get(), scope, get<CoroutineScope>())
-        // Its writes come after the player is released too
+        PlaybackHistoryRecorder(player, get(), writeScope)
+        persistentQueue = PersistentQueue(player, get(), get(), scope, writeScope)
         PlayedSongRecorder(
             player = player,
             library = get(),
@@ -76,12 +97,12 @@ class PlaybackService : MediaSessionService(), KoinComponent {
             formats = get(),
             youTube = get(),
             openSubsonic = get(),
-            scope = get<CoroutineScope>(),
+            scope = writeScope,
             playerScope = scope,
             onStored = { persistentQueue?.refresh() },
         )
 
-        mediaSession = MediaSession.Builder(this, player)
+        return MediaSession.Builder(this, player)
             .setCallback(QueueCallback)
             // Tapping the notification brings the app back instead of opening a second copy
             .setSessionActivity(
@@ -95,6 +116,37 @@ class PlaybackService : MediaSessionService(), KoinComponent {
                 )
             )
             .build()
+            .also { mediaSession = it }
+    }
+
+    /**
+     * Releases the player and its session, the service ends once nothing is bound to it.
+     *
+     * @return the writes of the session, the job completes when the last one is done; `null` when
+     * there was no session
+     */
+    internal fun stop(): Job? {
+        val writes = releaseSession()
+        stopSelf()
+        return writes
+    }
+
+    private fun releaseSession(): Job? {
+        val session = mediaSession ?: return null
+        mediaSession = null
+
+        normalizer?.release()
+        normalizer = null
+        // Before the player is released, it saves where the song is
+        persistentQueue?.release()
+        persistentQueue = null
+        scope?.cancel()
+        scope = null
+        session.player.release()
+        session.release()
+
+        // No more writes are started, the job ends with the last one
+        return writes?.also { it.complete() }.also { writes = null }
     }
 
     /**
@@ -118,7 +170,7 @@ class PlaybackService : MediaSessionService(), KoinComponent {
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? =
-        mediaSession
+        mediaSession ?: if (playbackLifecycle.isStopped) null else createSession()
 
     /**
      * Swiping the app away stops the service unless it is playing, so music goes on and a paused
@@ -131,17 +183,8 @@ class PlaybackService : MediaSessionService(), KoinComponent {
     }
 
     override fun onDestroy() {
-        normalizer?.release()
-        normalizer = null
-        // Before the player is released, it saves where the song is
-        persistentQueue?.release()
-        persistentQueue = null
-        scope.cancel()
-        mediaSession?.run {
-            player.release()
-            release()
-        }
-        mediaSession = null
+        releaseSession()
+        playbackLifecycle.detach(this)
         super.onDestroy()
     }
 }

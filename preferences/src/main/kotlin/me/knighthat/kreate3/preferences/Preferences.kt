@@ -280,6 +280,11 @@ object Preferences : KoinComponent {
     suspend fun awaitLoaded() = engine.awaitLoaded()
 
     /**
+     * Suspends until the settings of [profileId] are loaded, like after switching to it.
+     */
+    suspend fun awaitProfile(profileId: String) = engine.awaitProfile(profileId)
+
+    /**
      * Saves pending changes now, call it when the app is about to close.
      */
     suspend fun flush() = engine.flush()

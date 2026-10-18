@@ -27,14 +27,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * Everything stored for the active profile. Compared by identity, a new instance
  * means the profile (or its content) changed.
+ *
+ * @param profileId the profile the values belong to, `null` before one is loaded
  */
-internal class Snapshot(val values: Map<String, Any>)
+internal class Snapshot(val values: Map<String, Any>, val profileId: String? = null)
 
 /**
  * Connects [Preference]s with the [PreferenceStorage].
@@ -78,6 +81,13 @@ internal class PreferenceEngine(
      * Suspends until the active profile is loaded for the first time.
      */
     suspend fun awaitLoaded() = loaded.await()
+
+    /**
+     * Suspends until the settings of [profileId] are loaded, like after switching to it.
+     */
+    suspend fun awaitProfile(profileId: String) {
+        snapshot.first { it.profileId == profileId }
+    }
 
     fun markDirty(preference: Preference<*>) {
         commands.trySend(Command.Dirty(preference))
@@ -137,12 +147,12 @@ internal class PreferenceEngine(
 
     private suspend fun load(profileId: String) {
         try {
-            mutableSnapshot.value = Snapshot(profiles.storage.read(profileId))
+            mutableSnapshot.value = Snapshot(profiles.storage.read(profileId), profileId)
         } catch (e: CancellationException) {
             throw e
         } catch (_: Exception) {
             // TODO(knighthat): handle unreadable files, defaults are used meanwhile
-            mutableSnapshot.value = Snapshot(emptyMap())
+            mutableSnapshot.value = Snapshot(emptyMap(), profileId)
         } finally {
             loaded.complete(Unit)
         }

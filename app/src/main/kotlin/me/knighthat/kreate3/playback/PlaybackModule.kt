@@ -35,6 +35,7 @@ import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 
@@ -53,13 +54,14 @@ val playbackModule = module {
 
     single { Radio(get<UserSongRepository>(), get<OpenSubsonicProvider>(), get<YouTubeProvider>()) }
 
-    single<PlaybackController> {
+    single {
         PlaybackControllerImpl(
             context = androidContext(),
             radio = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         )
-    }
+    } bind PlaybackController::class
+    single { PlaybackLifecycle(get()) }
 
     // Not a singleton: PlaybackService owns the player and releases it when the service ends,
     // a released player can't be used again. Screens talk to it through a MediaController.

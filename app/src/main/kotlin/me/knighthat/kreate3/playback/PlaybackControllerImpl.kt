@@ -179,10 +179,23 @@ class PlaybackControllerImpl(
     }
 
     /**
+     * Lets go of the service, so it can end. Nothing plays until the next call, which connects
+     * again, or [connect].
+     */
+    internal fun disconnect() {
+        radioSearch?.cancel()
+        connection?.let(MediaController::releaseFuture)
+        connection = null
+        controller = null
+        _state.value = PlaybackState()
+        _queue.value = emptyList()
+    }
+
+    /**
      * The connection that is running or being made, a new one when there is none or the service
      * went away since, for example after the user swiped the app away.
      */
-    private fun connect(): ListenableFuture<MediaController> {
+    internal fun connect(): ListenableFuture<MediaController> {
         connection?.takeIf { !it.isDone || it.isUsable() }?.let { return it }
 
         val token = SessionToken(context, ComponentName(context, PlaybackService::class.java))
@@ -201,6 +214,8 @@ class PlaybackControllerImpl(
         scope.launch {
             try {
                 val connected = future.await()
+                // Let go of meanwhile, see disconnect
+                if (connection !== future) return@launch
                 controller = connected
                 connected.addListener(object : Player.Listener {
                     override fun onEvents(player: Player, events: Player.Events) {
