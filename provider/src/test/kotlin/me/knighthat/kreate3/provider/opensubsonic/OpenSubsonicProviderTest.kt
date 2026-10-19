@@ -261,6 +261,30 @@ class OpenSubsonicProviderTest {
     }
 
     @Test
+    fun starredAlbumsAreAskedForByType() = runBlocking {
+        val server = provider {
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","albumList2":{"album":[
+                {"id":"a1","name":"Liked","starred":"2024-05-01T10:00:00Z"}]}}}"""
+        }
+
+        val albums = server.libraryAlbums(starredOnly = true)!!
+
+        assertEquals("starred", requests.single().form()["type"])
+        assertEquals(listOf("a1"), albums.map { it.item.id })
+    }
+
+    @Test
+    fun starredArtistsLeaveTheOthersOut() = runBlocking {
+        val server = provider {
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","artists":{"index":[
+                {"name":"A","artist":[{"id":"r1","name":"Abba","starred":"2023-01-02T03:04:05.678Z"}]},
+                {"name":"B","artist":[{"id":"r2","name":"Bjork"}]}]}}}"""
+        }
+
+        assertEquals(listOf("r1"), server.libraryArtists(starredOnly = true)!!.map { it.item.id })
+    }
+
+    @Test
     fun playlistsKeepTheirServerIdApart() = runBlocking {
         val server = provider {
             """{"subsonic-response":{"status":"ok","version":"1.16.1","playlists":{"playlist":[

@@ -22,6 +22,7 @@ import android.util.Log
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
 import me.knighthat.kreate3.preferences.Preferences
@@ -37,14 +38,17 @@ import kotlin.time.Instant
  * fetched each time they show. Turning the server or the syncing off only stops the syncing, the
  * likes stay as they are.
  *
- * @param syncs whether the starred songs are synced, [Preferences.OPEN_SUBSONIC_SYNC_SONGS]
+ * @param syncs whether the starred songs are synced, [Preferences.OPEN_SUBSONIC_SYNC_SONGS] isn't
+ * [SyncMode.OFF]
  */
 class OpenSubsonicLibrary(
     private val provider: OpenSubsonicProvider,
     private val repository: RemoteCatalogRepository,
     private val scope: CoroutineScope,
     private val clock: Clock = Clock.System,
-    private val syncs: () -> Boolean = { LibrarySection.SONGS.openSubsonicSyncSetting.value },
+    private val syncs: () -> Boolean = {
+        LibrarySection.SONGS.openSubsonicSyncSetting.value != SyncMode.OFF
+    },
 ) {
 
     /** When the liked songs of each server address were last brought up to date, or are being now. */
@@ -104,7 +108,7 @@ class OpenSubsonicLibrary(
 }
 
 /**
- * The setting that turns [this] section of the server's library on: the starred songs are synced,
+ * How much of [this] section of the server's library is brought in: the starred songs are synced,
  * the others show on the home screen.
  */
 val LibrarySection.openSubsonicSyncSetting

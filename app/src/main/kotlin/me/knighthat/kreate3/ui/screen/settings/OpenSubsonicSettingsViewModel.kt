@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
+import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.provider.LibrarySection
@@ -108,12 +109,12 @@ class OpenSubsonicSettingsViewModel(
     }
 
     /**
-     * Shows [section] of the server's library from now on, or hides it when [on] is `false`. The
-     * starred songs are synced instead, turning them off only stops the syncing.
+     * Shows [section] of the server's library as [mode] says from now on. The starred songs are
+     * synced instead, turning them off only stops the syncing.
      */
-    fun setSyncing(section: LibrarySection, on: Boolean) {
-        section.openSubsonicSyncSetting.update(on)
-        if (section == LibrarySection.SONGS && on) library.refreshNow()
+    fun setSyncing(section: LibrarySection, mode: SyncMode) {
+        section.openSubsonicSyncSetting.update(mode)
+        if (section == LibrarySection.SONGS && mode != SyncMode.OFF) library.refreshNow()
     }
 
     /** Forgets the trusted certificate, the next one the server presents is trusted. */

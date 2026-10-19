@@ -38,9 +38,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.constant.StreamQuality
+import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.provider.LibrarySection
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
 import me.knighthat.kreate3.provider.opensubsonic.openSubsonicSyncSetting
 import org.koin.androidx.compose.koinViewModel
@@ -98,6 +100,20 @@ private fun StreamQuality.openSubsonicLabel(): String = when (this) {
 }
 
 private fun String.shortFingerprint(): String = split(':').take(8).joinToString(":") + "…"
+
+/** The starred songs are synced, the other sections show in the library. */
+private fun LibrarySection.syncTitle(): String = when (this) {
+    LibrarySection.SONGS -> "Sync songs"
+    LibrarySection.ALBUMS -> "Show albums"
+    LibrarySection.ARTISTS -> "Show artists"
+    LibrarySection.PLAYLISTS -> "Show playlists"
+}
+
+private fun SyncMode.label(): String = when (this) {
+    SyncMode.OFF -> "Off"
+    SyncMode.LIKED -> "Liked only"
+    SyncMode.ALL -> "All"
+}
 
 /**
  * Asks whether to trust the certificate the server presents now in place of the trusted one.
@@ -311,6 +327,15 @@ fun OpenSubsonicSettingsScreen(
         )
 
         SettingsSection("Server library")
-        LibrarySyncSettings({ it.openSubsonicSyncSetting }, "on the server", viewModel::setSyncing)
+        LibrarySection.entries.forEach { section ->
+            val mode by section.openSubsonicSyncSetting.collectAsStateWithLifecycle()
+            ChoiceSetting(
+                title = section.syncTitle(),
+                value = mode,
+                options = SyncMode.entries,
+                label = SyncMode::label,
+                onSelect = { viewModel.setSyncing(section, it) },
+            )
+        }
     }
 }
