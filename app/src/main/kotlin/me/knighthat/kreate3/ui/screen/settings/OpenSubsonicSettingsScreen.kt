@@ -321,12 +321,11 @@ fun OpenSubsonicSettingsScreen(
         )
 
         SettingsSection("Server library")
-        ChoiceSetting(
-            title = "Sync songs",
-            value = syncSongs,
-            options = SyncMode.entries,
-            label = SyncMode::label,
-            onSelect = viewModel::setSongSync,
+        SwitchSetting(
+            title = "Sync liked songs",
+            summary = "The songs you liked on the server are liked here too",
+            checked = syncSongs,
+            onCheckedChange = viewModel::setSongSync,
         )
         ChoiceSetting(
             title = "Show albums",

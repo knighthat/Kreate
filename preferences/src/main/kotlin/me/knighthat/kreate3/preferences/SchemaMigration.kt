@@ -46,14 +46,10 @@ internal fun interface SchemaStep {
  * so the latest version is the number of steps. Never reorder or remove a step.
  */
 internal val PROFILE_STEPS: List<SchemaStep> = listOf(
-    // 0 → 1: the OpenSubsonic sync switches but the playlists' became a SyncMode. Off is kept, on
-    // takes the default
+    // 0 → 1: the OpenSubsonic album and artist switches became a SyncMode. Off is kept, on takes
+    // the default
     SchemaStep { preferences ->
-        listOf(
-            "open_subsonic_sync_songs",
-            "open_subsonic_sync_albums",
-            "open_subsonic_sync_artists",
-        ).forEach { name ->
+        listOf("open_subsonic_sync_albums", "open_subsonic_sync_artists").forEach { name ->
             val key = booleanPreferencesKey(name)
             when (preferences.asMap()[key]) {
                 false -> preferences[stringPreferencesKey(name)] = "OFF"

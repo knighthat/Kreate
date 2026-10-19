@@ -91,16 +91,19 @@ class SchemaMigrationTest {
     fun openSubsonicSyncSwitchesBecomeModes() = runBlocking {
         val songs = booleanPreferencesKey("open_subsonic_sync_songs")
         val albums = booleanPreferencesKey("open_subsonic_sync_albums")
+        val artists = booleanPreferencesKey("open_subsonic_sync_artists")
         val playlists = booleanPreferencesKey("open_subsonic_sync_playlists")
-        val old = preferencesOf(songs to false, albums to true, playlists to false, name to "kept")
+        val old = preferencesOf(
+            songs to false, albums to true, artists to false, playlists to false, name to "kept",
+        )
 
         val migrated = SchemaMigration(PROFILE_STEPS.take(1)).migrate(old)
 
         // Off stays off, on falls back to the default of the mode
-        assertEquals("OFF", migrated[stringPreferencesKey("open_subsonic_sync_songs")])
         assertFalse(migrated.contains(albums))
-        assertFalse(migrated.contains(booleanPreferencesKey("open_subsonic_sync_artists")))
-        // Playlists are still a switch
+        assertEquals("OFF", migrated[stringPreferencesKey("open_subsonic_sync_artists")])
+        // Songs and playlists are still switches
+        assertEquals(false, migrated[songs])
         assertEquals(false, migrated[playlists])
         assertEquals("kept", migrated[name])
     }

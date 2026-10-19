@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
-import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
@@ -107,12 +106,12 @@ class OpenSubsonicSettingsViewModel(
     }
 
     /**
-     * Syncs the starred songs as [mode] says from now on, right away unless it is
-     * [SyncMode.OFF]. Turning them off only stops the syncing.
+     * Syncs the starred songs from now on, right away, or stops when [on] is `false`. Turning
+     * them off only stops the syncing.
      */
-    fun setSongSync(mode: SyncMode) {
-        Preferences.OPEN_SUBSONIC_SYNC_SONGS.update(mode)
-        if (mode != SyncMode.OFF) library.refreshNow()
+    fun setSongSync(on: Boolean) {
+        Preferences.OPEN_SUBSONIC_SYNC_SONGS.update(on)
+        if (on) library.refreshNow()
     }
 
     /** Forgets the trusted certificate, the next one the server presents is trusted. */

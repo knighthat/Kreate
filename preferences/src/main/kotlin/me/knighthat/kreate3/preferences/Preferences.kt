@@ -37,6 +37,7 @@ import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_ACCOUNT_ENABLED
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_QUALITY_WIFI
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_QUALITY_WIFI_PREMIUM
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_SYNC_ALBUMS
+import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_SYNC_SONGS
 import me.knighthat.kreate3.preferences.Preferences.awaitLoaded
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -204,14 +205,8 @@ object Preferences : KoinComponent {
         enum("open_subsonic_quality_mobile", StreamQuality.HIGH)
     }
 
-    /**
-     * Whether the songs starred on the OpenSubsonic server are liked in the profile's library,
-     * and the ones no longer starred aren't. [SyncMode.LIKED] by default, which asks the server
-     * for the starred songs. [SyncMode.ALL] fetches every song on the server, still only the
-     * starred ones are stored. While it is [SyncMode.OFF] they aren't fetched, turning it off
-     * leaves the likes as they are.
-     */
-    val OPEN_SUBSONIC_SYNC_SONGS by lazy { enum("open_subsonic_sync_songs", SyncMode.LIKED) }
+    /** Like [YOUTUBE_SYNC_SONGS], for the songs starred on the OpenSubsonic server. */
+    val OPEN_SUBSONIC_SYNC_SONGS by lazy { boolean("open_subsonic_sync_songs", true) }
 
     /**
      * Which albums of the OpenSubsonic server show in the library: the starred ones
