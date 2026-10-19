@@ -163,12 +163,15 @@ private class PreviewController(
     override fun position(): Long = positionMs
     override fun duration(): Long? = durationMs
     override fun next() = Unit
+    override fun dropCurrent() = Unit
     override fun skipTo(index: Int) = Unit
     override fun previous() = Unit
     override fun seekTo(positionMs: Long) {
         this.positionMs = positionMs
     }
 
+    override fun toggleShuffle() = Unit
+    override fun cycleRepeat() = Unit
     override fun stop() = Unit
 }
 

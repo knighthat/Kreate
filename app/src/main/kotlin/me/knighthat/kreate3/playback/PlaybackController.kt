@@ -21,6 +21,22 @@ package me.knighthat.kreate3.playback
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.flow.StateFlow
 
+/** What plays again once it ends. */
+enum class RepeatMode {
+    /** Nothing, the queue stops after its last item. */
+    OFF,
+
+    /** The current item, over and over. */
+    ONE,
+
+    /** The whole queue, from its first item after its last. */
+    ALL;
+
+    /** The mode after this one when the user cycles through them: off, one, all, off again. */
+    val next: RepeatMode
+        get() = entries[(ordinal + 1) % entries.size]
+}
+
 /**
  * What the player is doing right now.
  *
@@ -28,12 +44,16 @@ import kotlinx.coroutines.flow.StateFlow
  * @param index where [current] is in [PlaybackController.queue], `-1` when the queue is empty.
  * @param isEnded whether the queue played to its end. A queue that is only loaded, like after
  * the app starts, or stopped by a failure, isn't ended.
+ * @param isShuffled whether the queue plays in a random order. [PlaybackController.queue] keeps
+ * its own order.
  */
 data class PlaybackState(
     val current: MediaItem? = null,
     val index: Int = -1,
     val isPlaying: Boolean = false,
     val isEnded: Boolean = false,
+    val repeatMode: RepeatMode = RepeatMode.OFF,
+    val isShuffled: Boolean = false,
 )
 
 /**
@@ -92,6 +112,13 @@ interface PlaybackController {
     /** Jumps to the next item of the queue, if any. */
     fun next()
 
+    /**
+     * Takes the current item out of the queue for good, like one the user disliked: the next item
+     * plays when another one comes next, the queue ends otherwise. Unlike [next], it never stays
+     * on it, nor comes back to it when the queue repeats.
+     */
+    fun dropCurrent()
+
     /** Plays the item at [index] of [queue] from its start. */
     fun skipTo(index: Int)
 
@@ -103,6 +130,15 @@ interface PlaybackController {
 
     /** Moves to [positionMs] milliseconds into the current item. */
     fun seekTo(positionMs: Long)
+
+    /** Turns playing in a random order on or off. Turning it on stops repeating one item. */
+    fun toggleShuffle()
+
+    /**
+     * Moves to the [RepeatMode] after the current one, see [RepeatMode.next]. Repeating one item
+     * turns shuffling off.
+     */
+    fun cycleRepeat()
 
     /** Stops playing and empties the queue, nothing is left to resume. */
     fun stop()

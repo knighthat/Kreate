@@ -90,6 +90,17 @@ class PlaybackControllerImpl(
 
     override fun next() = run("skip to next") { it.seekToNext() }
 
+    override fun dropCurrent() = run("drop the current item") { controller ->
+        val index = controller.currentMediaItemIndex
+        // Counts repeating one as not repeating, and wraps around when repeating all
+        val next = controller.nextMediaItemIndex
+        // Moving on first, removing the current item while repeating one would end the queue
+        // even with items after it: the player looks for what follows it by repeating it
+        if (next != C.INDEX_UNSET && next != index) controller.seekToNextMediaItem()
+        // With nothing else to play, removing it ends the queue
+        controller.removeMediaItem(index)
+    }
+
     override fun skipTo(index: Int) = run("skip to item $index") { controller ->
         if (index !in 0 until controller.mediaItemCount) return@run
         controller.seekToDefaultPosition(index)
@@ -100,6 +111,15 @@ class PlaybackControllerImpl(
     override fun previous() = run("skip to previous") { it.seekToPrevious() }
 
     override fun seekTo(positionMs: Long) = run("seek to $positionMs") { it.seekTo(positionMs) }
+
+    // The player keeps repeating one and shuffling apart, see KreatePlayer
+    override fun toggleShuffle() = run("toggle shuffle") {
+        it.shuffleModeEnabled = !it.shuffleModeEnabled
+    }
+
+    override fun cycleRepeat() = run("change the repeat mode") {
+        it.repeatMode = it.repeatMode.toRepeatMode().next.toPlayerMode()
+    }
 
     override fun stop() {
         // A radio still looking would queue its songs again
@@ -255,6 +275,8 @@ class PlaybackControllerImpl(
             index = if (controller.mediaItemCount > 0) controller.currentMediaItemIndex else -1,
             isPlaying = controller.isPlaying,
             isEnded = controller.playbackState == Player.STATE_ENDED,
+            repeatMode = controller.repeatMode.toRepeatMode(),
+            isShuffled = controller.shuffleModeEnabled,
         )
     }
 
@@ -272,4 +294,16 @@ class PlaybackControllerImpl(
         /** Songs a radio looks for, about two hours of music. */
         const val RADIO_SIZE = 30
     }
+}
+
+private fun @Player.RepeatMode Int.toRepeatMode(): RepeatMode = when (this) {
+    Player.REPEAT_MODE_ONE -> RepeatMode.ONE
+    Player.REPEAT_MODE_ALL -> RepeatMode.ALL
+    else -> RepeatMode.OFF
+}
+
+private fun RepeatMode.toPlayerMode(): @Player.RepeatMode Int = when (this) {
+    RepeatMode.OFF -> Player.REPEAT_MODE_OFF
+    RepeatMode.ONE -> Player.REPEAT_MODE_ONE
+    RepeatMode.ALL -> Player.REPEAT_MODE_ALL
 }

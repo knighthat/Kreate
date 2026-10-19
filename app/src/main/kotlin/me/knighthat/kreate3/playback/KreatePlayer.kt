@@ -19,12 +19,28 @@
 package me.knighthat.kreate3.playback
 
 import androidx.annotation.OptIn
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 
-
+/**
+ * The app's player. Repeating one song and shuffling exclude each other, whoever sets them, the
+ * app or the system's media controls: repeating one turns shuffling off, and shuffling turns
+ * repeating one off. Repeating all and shuffling go together.
+ */
 @OptIn(UnstableApi::class)
 class KreatePlayer(private val player: ExoPlayer) : ExoPlayer by player {
 
     override fun getAudioSessionId(): Int = player.audioSessionId
+
+    override fun setRepeatMode(repeatMode: Int) {
+        if (repeatMode == Player.REPEAT_MODE_ONE) player.shuffleModeEnabled = false
+        player.repeatMode = repeatMode
+    }
+
+    override fun setShuffleModeEnabled(shuffleModeEnabled: Boolean) {
+        if (shuffleModeEnabled && player.repeatMode == Player.REPEAT_MODE_ONE)
+            player.repeatMode = Player.REPEAT_MODE_OFF
+        player.shuffleModeEnabled = shuffleModeEnabled
+    }
 }

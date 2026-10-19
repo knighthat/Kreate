@@ -50,6 +50,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SecondaryTabRow
@@ -89,6 +90,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -108,7 +110,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.playback.RepeatMode
 import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
+import me.knighthat.kreate3.ui.component.ItemBadges
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
 import me.knighthat.kreate3.ui.component.memoryCacheKey
@@ -160,6 +164,15 @@ private const val SHADE_ALPHA = 0.6f
 
 /** The row with the tabs, above the navigation bar. */
 private val TAB_BAR_HEIGHT = 56.dp
+
+/**
+ * How far the slider of the seek bar reaches up under the badges: most of the empty top of its
+ * touch area, so they sit just above its track.
+ */
+private val BADGES_OVERLAP = 12.dp
+
+/** Edge of the song's badges, larger than in lists to go with the large title. */
+private val BADGE_SIZE = 20.dp
 
 /**
  * How much the color covers the blurred cover behind the lyrics and the queue, so their text
@@ -345,6 +358,8 @@ fun PlayerSheet(
                 item = item,
                 index = playback.index,
                 isPlaying = playback.isPlaying,
+                repeatMode = playback.repeatMode,
+                isShuffled = playback.isShuffled,
                 controller = controller,
                 modifier = Modifier
                     .offset { IntOffset(0, state.draggable.offset.roundToInt()) }
@@ -373,6 +388,8 @@ private fun FullPlayer(
     item: MediaItem,
     index: Int,
     isPlaying: Boolean,
+    repeatMode: RepeatMode,
+    isShuffled: Boolean,
     controller: PlaybackController,
     modifier: Modifier = Modifier,
 ) {
@@ -424,6 +441,8 @@ private fun FullPlayer(
                         item = item,
                         covers = covers,
                         isPlaying = isPlaying,
+                        repeatMode = repeatMode,
+                        isShuffled = isShuffled,
                         controller = controller,
                         coverHeight = coverHeight,
                     )
@@ -513,18 +532,22 @@ private fun FullPlayer(
 
 /**
  * The song playing, large: its cover across the top [COVER_HEIGHT] of the player, fading out
- * into the same cover blurred behind the whole player; under it its name and where it is with a
- * bar to move in it, and the buttons to go back, play or pause and skip above the tabs.
+ * into the same cover blurred behind the whole player; under it its name between the dislike
+ * and like buttons, its badges on a bar to move in it, and the buttons to shuffle, go back, play
+ * or pause, skip and repeat above the tabs.
  */
 @Composable
 private fun NowPlayingPage(
     item: MediaItem,
     covers: List<Any>,
     isPlaying: Boolean,
+    repeatMode: RepeatMode,
+    isShuffled: Boolean,
     controller: PlaybackController,
     coverHeight: Dp,
 ) {
     val metadata = item.mediaMetadata
+    val reaction = rememberSongReaction(item.mediaId)
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -561,23 +584,60 @@ private fun NowPlayingPage(
                 .padding(bottom = TAB_BAR_HEIGHT)
                 .padding(horizontal = 24.dp),
         ) {
-            Text(
-                text = metadata.title?.toString().orEmpty(),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                text = (metadata.artist ?: metadata.subtitle)?.toString().orEmpty(),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                ReactionButton(
+                    isSet = reaction.reaction == Reaction.DISLIKED,
+                    enabled = reaction.reaction != null,
+                    setIcon = R.drawable.thumb_down,
+                    unsetIcon = R.drawable.thumb_down_outline,
+                    description = "Dislike",
+                    setDescription = "Remove dislike",
+                    onClick = {
+                        val disliking = reaction.reaction != Reaction.DISLIKED
+                        reaction.toggleDislike()
+                        // A song the user dislikes isn't worth finishing, nor hearing again
+                        if (disliking) controller.dropCurrent()
+                    },
+                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(
+                        text = metadata.title?.toString().orEmpty(),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Text(
+                        text = (metadata.artist ?: metadata.subtitle)?.toString().orEmpty(),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                ReactionButton(
+                    isSet = reaction.reaction == Reaction.LIKED,
+                    enabled = reaction.reaction != null,
+                    setIcon = R.drawable.thumb_up,
+                    unsetIcon = R.drawable.thumb_up_outline,
+                    description = "Like",
+                    setDescription = "Remove like",
+                    onClick = reaction.toggleLike,
+                )
+            }
             Spacer(Modifier.height(16.dp))
+            // Close above the bar, the like buttons show the user's reaction already
+            ItemBadges(
+                item = item,
+                showReactions = false,
+                size = BADGE_SIZE,
+                modifier = Modifier.overlapBelow(BADGES_OVERLAP),
+            )
             SeekBar(item, isPlaying, controller)
 
             Spacer(Modifier.weight(1f))
@@ -586,6 +646,12 @@ private fun NowPlayingPage(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
+                ModeButton(
+                    icon = R.drawable.shuffle,
+                    description = if (isShuffled) "Shuffle on" else "Shuffle off",
+                    isOn = isShuffled,
+                    onClick = controller::toggleShuffle,
+                )
                 ControlButton(R.drawable.skip_previous, "Previous", controller::previous)
                 ControlButton(
                     icon = if (isPlaying) R.drawable.pause else R.drawable.play_arrow,
@@ -594,6 +660,16 @@ private fun NowPlayingPage(
                     iconSize = 56.dp,
                 )
                 ControlButton(R.drawable.skip_next, "Next", controller::next)
+                ModeButton(
+                    icon = if (repeatMode == RepeatMode.ONE) R.drawable.repeat_one else R.drawable.repeat,
+                    description = when (repeatMode) {
+                        RepeatMode.OFF -> "Repeat off"
+                        RepeatMode.ONE -> "Repeat one"
+                        RepeatMode.ALL -> "Repeat all"
+                    },
+                    isOn = repeatMode != RepeatMode.OFF,
+                    onClick = controller::cycleRepeat,
+                )
             }
             Spacer(Modifier.height(24.dp))
         }
@@ -656,6 +732,56 @@ private fun BlurredCover(models: List<Any>, blur: Blur, modifier: Modifier = Mod
         contentScale = ContentScale.Crop,
         onError = { failed++ },
         modifier = modifier.blur(blur.radius),
+    )
+}
+
+/**
+ * Lets the next item in a column start [amount] higher, over the bottom of this one. For room an
+ * item keeps empty at its top, like the slider's touch area above its track.
+ */
+private fun Modifier.overlapBelow(amount: Dp): Modifier = layout { measurable, constraints ->
+    val placeable = measurable.measure(constraints)
+    val height = (placeable.height - amount.roundToPx()).coerceAtLeast(0)
+    layout(placeable.width, height) { placeable.place(0, 0) }
+}
+
+/**
+ * A dislike or like button: [setIcon] in the primary color while [isSet], [unsetIcon] otherwise.
+ * Off while the song can't be rated yet.
+ */
+@Composable
+private fun ReactionButton(
+    isSet: Boolean,
+    enabled: Boolean,
+    @DrawableRes setIcon: Int,
+    @DrawableRes unsetIcon: Int,
+    description: String,
+    setDescription: String,
+    onClick: () -> Unit,
+) = IconButton(onClick = onClick, enabled = enabled) {
+    Icon(
+        painter = painterResource(if (isSet) setIcon else unsetIcon),
+        contentDescription = if (isSet) setDescription else description,
+        tint = if (isSet) MaterialTheme.colorScheme.primary else LocalContentColor.current,
+    )
+}
+
+/**
+ * A small button of the player for a mode, shuffle or repeat: in the primary color while [isOn],
+ * dimmed otherwise, so play stays the main button.
+ */
+@Composable
+private fun ModeButton(
+    @DrawableRes icon: Int,
+    description: String,
+    isOn: Boolean,
+    onClick: () -> Unit,
+) = IconButton(onClick = onClick) {
+    Icon(
+        painter = painterResource(icon),
+        contentDescription = description,
+        tint = if (isOn) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
 

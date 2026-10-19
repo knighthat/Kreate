@@ -58,6 +58,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -248,12 +249,13 @@ fun ItemBadge(
     contentDescription: String,
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    size: Dp = BADGE_SIZE,
 ) {
     Icon(
         painter = painterResource(icon),
         contentDescription = contentDescription,
         tint = tint,
-        modifier = modifier.size(BADGE_SIZE),
+        modifier = modifier.size(size),
     )
 }
 
@@ -263,6 +265,9 @@ fun ItemBadge(
  * @param reserveHeight keep the height of the badges when there are none, so items next to each
  * other in a grid keep their titles on the same line
  * @param horizontalArrangement where the badges sit in the width they are given
+ * @param showReactions whether the user's like, bookmark or follow shows, `false` where buttons
+ * show it already
+ * @param size the edge of each badge, larger where the item is shown large like in the player
  */
 @Composable
 fun ItemBadges(
@@ -270,20 +275,24 @@ fun ItemBadges(
     modifier: Modifier = Modifier,
     reserveHeight: Boolean = false,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(4.dp),
+    showReactions: Boolean = true,
+    size: Dp = BADGE_SIZE,
 ) {
-    if (!item.hasBadges && !reserveHeight) return
+    val hasBadges = if (showReactions) item.hasBadges else item.origin != null || item.isExplicit
+    if (!hasBadges && !reserveHeight) return
 
     Row(
         horizontalArrangement = horizontalArrangement,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.heightIn(min = BADGE_SIZE),
+        modifier = modifier.heightIn(min = size),
     ) {
         when (item.origin) {
-            Origin.LOCAL -> ItemBadge(Origin.LOCAL.icon, "On this device")
-            Origin.YOUTUBE -> ItemBadge(Origin.YOUTUBE.icon, "From YouTube")
+            Origin.LOCAL -> ItemBadge(Origin.LOCAL.icon, "On this device", size = size)
+            Origin.YOUTUBE -> ItemBadge(Origin.YOUTUBE.icon, "From YouTube", size = size)
             Origin.OPEN_SUBSONIC -> ItemBadge(
                 Origin.OPEN_SUBSONIC.icon,
-                "From the OpenSubsonic server"
+                "From the OpenSubsonic server",
+                size = size,
             )
 
             null -> {}
@@ -291,11 +300,13 @@ fun ItemBadges(
         if (item.isExplicit) ItemBadge(
             R.drawable.explicit,
             "Explicit",
-            tint = MaterialTheme.colorScheme.error
+            tint = MaterialTheme.colorScheme.error,
+            size = size,
         )
-        if (item.isLiked) ItemBadge(R.drawable.favorite, "Favorite")
-        if (item.isBookmarked) ItemBadge(R.drawable.bookmark, "Bookmarked")
-        if (item.isFollowed) ItemBadge(R.drawable.notifications, "Following")
+        if (!showReactions) return@Row
+        if (item.isLiked) ItemBadge(R.drawable.favorite, "Favorite", size = size)
+        if (item.isBookmarked) ItemBadge(R.drawable.bookmark, "Bookmarked", size = size)
+        if (item.isFollowed) ItemBadge(R.drawable.notifications, "Following", size = size)
     }
 }
 
