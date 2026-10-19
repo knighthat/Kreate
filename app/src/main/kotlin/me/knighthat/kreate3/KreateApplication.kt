@@ -34,6 +34,7 @@ import kotlinx.coroutines.SupervisorJob
 import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.databaseModule
+import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.playback.playbackModule
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.preferencesModule
@@ -104,6 +105,7 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                 module {
                     // Lives as long as the process; use for work that must outlive any screen
                     single { CoroutineScope(SupervisorJob() + Dispatchers.Default) }
+                    single { Notifier() }
 
                     // Creates the database users of the profiles, and tells the database who is active
                     val isSetup = setupCompletedFile().exists()

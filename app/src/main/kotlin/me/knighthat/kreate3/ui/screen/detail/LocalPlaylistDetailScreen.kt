@@ -23,11 +23,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
@@ -56,7 +54,6 @@ fun LocalPlaylistDetailScreen(
     viewModel: LocalPlaylistDetailViewModel = koinViewModel(),
 ) {
     val playlist by viewModel.playlist.collectAsState()
-    val snackbar = remember { SnackbarHostState() }
 
     LocalPlaylistDetailContent(
         name = playlist?.name,
@@ -64,9 +61,8 @@ fun LocalPlaylistDetailScreen(
         subtitle = playlist?.let { if (it.origin == Origin.LOCAL) "On this device" else it.origin.name },
         songs = viewModel.songs.collectAsLazyPagingItems(),
         onBack = onBack,
-        onAction = rememberQueueActions(snackbar, viewModel::allSongs),
-        onSongClick = rememberSongTap(snackbar, null, viewModel::allSongs),
-        snackbar = snackbar,
+        onAction = rememberQueueActions(viewModel::allSongs),
+        onSongClick = rememberSongTap(null, viewModel::allSongs),
         modifier = modifier,
     )
 }
@@ -80,14 +76,12 @@ private fun LocalPlaylistDetailContent(
     onBack: () -> Unit,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
-    snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     DetailScaffold(
         title = name.orEmpty(),
         onBack = onBack,
         modifier = modifier,
-        snackbar = snackbar,
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -122,6 +116,5 @@ private fun LocalPlaylistDetailPreview() = PreviewTheme {
         onBack = {},
         onAction = {},
         onSongClick = {},
-        snackbar = remember { SnackbarHostState() },
     )
 }

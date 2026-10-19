@@ -31,15 +31,13 @@ import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.notification.Message
+import me.knighthat.kreate3.notification.Notifier
 
 /**
  * [PlaybackController] that talks to [PlaybackService] with a [MediaController]. Connecting also
@@ -52,6 +50,7 @@ class PlaybackControllerImpl(
     private val context: Context,
     private val scope: CoroutineScope,
     private val radio: Radio,
+    private val notifier: Notifier,
 ) : PlaybackController {
 
     private val _state = MutableStateFlow(PlaybackState())
@@ -59,12 +58,6 @@ class PlaybackControllerImpl(
 
     private val _queue = MutableStateFlow<List<MediaItem>>(emptyList())
     override val queue: StateFlow<List<MediaItem>> = _queue.asStateFlow()
-
-    private val _errors = MutableSharedFlow<String>(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
-    override val errors: Flow<String> = _errors.asSharedFlow()
 
     private var connection: ListenableFuture<MediaController>? = null
     private var controller: MediaController? = null
@@ -234,7 +227,13 @@ class PlaybackControllerImpl(
 
                     override fun onPlayerError(error: PlaybackException) {
                         Log.w(TAG, "Couldn't play ${connected.currentMediaItem?.mediaId}", error)
-                        _errors.tryEmit(error.userMessage(connected.currentMediaItem))
+                        // Whatever screen is open, the user learns why a song stopped
+                        notifier.post(
+                            Message(
+                                error.userMessage(connected.currentMediaItem),
+                                dismissable = true,
+                            )
+                        )
                     }
                 })
                 publishQueue(connected)

@@ -27,10 +27,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -61,21 +59,19 @@ fun OpenSubsonicArtistDetailScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val canShare by viewModel.canShare.collectAsStateWithLifecycle()
-    val snackbar = remember { SnackbarHostState() }
 
     OpenSubsonicArtistDetailContent(
         state = state,
         onRetry = viewModel::load,
         onBack = onBack,
         onOpenAlbum = onOpenAlbum,
-        onAction = rememberQueueActions(snackbar) {
+        onAction = rememberQueueActions {
             (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
         },
-        onSongClick = rememberSongTap(snackbar, null) {
+        onSongClick = rememberSongTap(null) {
             (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
         },
         share = if (canShare) viewModel::shareLink else null,
-        snackbar = snackbar,
         modifier = modifier,
     )
 }
@@ -92,7 +88,6 @@ private fun OpenSubsonicArtistDetailContent(
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     share: (suspend (name: String?) -> Result<String>)?,
-    snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     val artist = (state as? LiveState.Ready)?.value
@@ -103,7 +98,6 @@ private fun OpenSubsonicArtistDetailContent(
         state = state,
         onRetry = onRetry,
         modifier = modifier,
-        snackbar = snackbar,
         actions = {
             if (share != null && artist != null)
                 ShareAction(artist.name, "artist") { share(artist.name) }
@@ -170,6 +164,5 @@ private fun OpenSubsonicArtistDetailPreview() = PreviewTheme {
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },
-        snackbar = remember { SnackbarHostState() },
     )
 }

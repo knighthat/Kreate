@@ -29,12 +29,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -43,12 +41,17 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import me.knighthat.kreate3.constant.ThemeMode
+import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.LocalIconOnly
+import me.knighthat.kreate3.ui.component.LocalMessageHost
+import me.knighthat.kreate3.ui.component.LocalNotifier
+import me.knighthat.kreate3.ui.component.MessageHost
 import me.knighthat.kreate3.ui.component.MiniPlayer
 import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
+import me.knighthat.kreate3.ui.component.ShowMessages
 import me.knighthat.kreate3.ui.component.TabBar
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
 import me.knighthat.kreate3.ui.navigation.Albums
@@ -133,6 +136,13 @@ private val Route.hasMiniPlayer: Boolean
         else -> true
     }
 
+/**
+ * Whether the app's scaffold shows the [Notifier]'s messages over the screen. Search and its
+ * results show them above their own bottom bar, see [MessageHost].
+ */
+private val Route.showsMessages: Boolean
+    get() = this != Search && this !is SearchResults
+
 @Composable
 fun KreateApp() {
     val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
@@ -144,14 +154,9 @@ fun KreateApp() {
     val playing by playback.state.collectFlowAsState()
     val seed = rememberThumbnailSeed(playing.current, themeMode == ThemeMode.THUMBNAIL)
 
-    // Whatever screen is open, the user learns why a song stopped
-    val snackbar = remember { SnackbarHostState() }
-    LaunchedEffect(playback) {
-        playback.errors.collect { message ->
-            snackbar.currentSnackbarData?.dismiss()
-            snackbar.showSnackbar(message, withDismissAction = true)
-        }
-    }
+    val notifier = koinInject<Notifier>()
+    val messages = remember { SnackbarHostState() }
+    ShowMessages(notifier, messages)
 
     val playerSheet = rememberPlayerSheetState()
 
@@ -163,6 +168,8 @@ fun KreateApp() {
         CompositionLocalProvider(
             LocalPlayerSheet provides playerSheet,
             LocalIconOnly provides iconOnly,
+            LocalNotifier provides notifier,
+            LocalMessageHost provides messages,
         ) {
             Box(Modifier.fillMaxSize()) {
                 Scaffold(
@@ -189,12 +196,15 @@ fun KreateApp() {
                             }
                         }
                     },
-                    snackbarHost = { SnackbarHost(snackbar) },
+                    snackbarHost = {
+                        val route = topLevel.backStack.lastOrNull() as? Route
+                        if (route?.showsMessages != false) MessageHost()
+                    },
                     containerColor = MaterialTheme.colorScheme.surfaceDim,
                     modifier = Modifier.fillMaxSize(),
                 ) { barPadding ->
                     // Before the screens, so their own handling of going back comes first
-                    ExitConfirmation(atBottom = topLevel.backStack.size == 1, snackbar = snackbar)
+                    ExitConfirmation(atBottom = topLevel.backStack.size == 1, snackbar = messages)
                     NavDisplay(
                         backStack = topLevel.backStack,
                         onBack = topLevel::pop,

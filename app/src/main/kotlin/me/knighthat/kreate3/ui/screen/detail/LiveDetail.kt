@@ -30,7 +30,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -142,10 +141,9 @@ fun <T : Any> LiveDetailScreen(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit = {},
-    snackbar: SnackbarHostState? = null,
     content: @Composable (T, PaddingValues) -> Unit,
 ) {
-    DetailScaffold(title, onBack, modifier, actions, snackbar) { innerPadding ->
+    DetailScaffold(title, onBack, modifier, actions) { innerPadding ->
         when (val current = state) {
             is LiveState.Ready -> content(current.value, innerPadding)
 

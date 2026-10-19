@@ -20,11 +20,9 @@ package me.knighthat.kreate3.ui.screen.home
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
@@ -60,7 +58,6 @@ fun HomeSongsScreen(
 ) {
     val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
     val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
-    val snackbar = remember { SnackbarHostState() }
 
     // Each visit to the tab, the songs liked on YouTube are brought up to date
     LaunchedEffect(Unit) { viewModel.refresh() }
@@ -70,15 +67,13 @@ fun HomeSongsScreen(
         choices = choices,
         selected = selected,
         onToggleOrigin = viewModel.filter::toggle,
-        onAction = rememberQueueActions(snackbar, viewModel::allSongs),
+        onAction = rememberQueueActions(viewModel::allSongs),
         onSongClick = rememberSongTap(
-            snackbar,
             Preferences.HOME_SONGS_TAP_RADIO,
             viewModel::allSongs
         ),
         onSearch = onSearch,
         onSettings = onSettings,
-        snackbar = snackbar,
         modifier = modifier,
     )
 }
@@ -93,7 +88,6 @@ private fun HomeSongsContent(
     onSongClick: (MediaItem) -> Unit,
     onSearch: () -> Unit,
     onSettings: () -> Unit,
-    snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     HomeScaffold(
@@ -104,7 +98,6 @@ private fun HomeSongsContent(
         modifier = modifier,
         onSearch = onSearch,
         onSettings = onSettings,
-        snackbar = snackbar,
         quickActions = {
             PlayAllButton({ onAction(QueueAction.PLAY) })
             ShuffleButton({ onAction(QueueAction.SHUFFLE) })
@@ -138,6 +131,5 @@ private fun HomeSongsPreview() = PreviewTheme {
         onSongClick = {},
         onSearch = {},
         onSettings = {},
-        snackbar = remember { SnackbarHostState() },
     )
 }

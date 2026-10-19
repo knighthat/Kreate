@@ -23,11 +23,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
@@ -58,7 +56,6 @@ fun LocalAlbumDetailScreen(
 ) {
     val album by viewModel.album.collectAsState()
     val canShare by viewModel.canShare.collectAsState()
-    val snackbar = remember { SnackbarHostState() }
 
     LocalAlbumDetailContent(
         name = album?.name,
@@ -74,10 +71,9 @@ fun LocalAlbumDetailScreen(
         },
         songs = viewModel.songs.collectAsLazyPagingItems(),
         onBack = onBack,
-        onAction = rememberQueueActions(snackbar, viewModel::allSongs),
-        onSongClick = rememberSongTap(snackbar, null, viewModel::allSongs),
+        onAction = rememberQueueActions(viewModel::allSongs),
+        onSongClick = rememberSongTap(null, viewModel::allSongs),
         share = if (canShare) viewModel::shareLink else null,
-        snackbar = snackbar,
         modifier = modifier,
     )
 }
@@ -95,14 +91,12 @@ private fun LocalAlbumDetailContent(
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     share: (suspend () -> Result<String>)?,
-    snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     DetailScaffold(
         title = name.orEmpty(),
         onBack = onBack,
         modifier = modifier,
-        snackbar = snackbar,
         actions = {
             if (share != null) ShareAction(name, "album", share)
         },
@@ -146,6 +140,5 @@ private fun LocalAlbumDetailPreview() = PreviewTheme {
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },
-        snackbar = remember { SnackbarHostState() },
     )
 }

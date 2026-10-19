@@ -28,11 +28,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
@@ -66,7 +64,6 @@ fun LocalArtistDetailScreen(
 ) {
     val artist by viewModel.artist.collectAsState()
     val albums by viewModel.albums.collectAsState()
-    val snackbar = remember { SnackbarHostState() }
 
     LocalArtistDetailContent(
         name = artist?.name,
@@ -75,9 +72,8 @@ fun LocalArtistDetailScreen(
         songs = viewModel.songs.collectAsLazyPagingItems(),
         onBack = onBack,
         onOpenAlbum = onOpenAlbum,
-        onAction = rememberQueueActions(snackbar, viewModel::allSongs),
-        onSongClick = rememberSongTap(snackbar, null, viewModel::allSongs),
-        snackbar = snackbar,
+        onAction = rememberQueueActions(viewModel::allSongs),
+        onSongClick = rememberSongTap(null, viewModel::allSongs),
         modifier = modifier,
     )
 }
@@ -92,14 +88,12 @@ private fun LocalArtistDetailContent(
     onOpenAlbum: (MediaItem) -> Unit,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
-    snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     DetailScaffold(
         title = name.orEmpty(),
         onBack = onBack,
         modifier = modifier,
-        snackbar = snackbar,
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -153,6 +147,5 @@ private fun LocalArtistDetailPreview() = PreviewTheme {
         onOpenAlbum = {},
         onAction = {},
         onSongClick = {},
-        snackbar = remember { SnackbarHostState() },
     )
 }

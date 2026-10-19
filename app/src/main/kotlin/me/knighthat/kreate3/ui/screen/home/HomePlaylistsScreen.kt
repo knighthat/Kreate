@@ -28,7 +28,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -55,6 +54,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.ui.component.CreatePlaylistButton
+import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PlaylistItem
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.RandomButton
@@ -80,7 +80,7 @@ fun HomePlaylistsScreen(
     val live by viewModel.live.collectAsStateWithLifecycle()
     val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
     val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
-    val snackbar = remember { SnackbarHostState() }
+    val notifier = LocalNotifier.current
     val scope = rememberCoroutineScope()
     var creating by rememberSaveable { mutableStateOf(false) }
 
@@ -98,13 +98,12 @@ fun HomePlaylistsScreen(
             scope.launch {
                 val picked = viewModel.random()
                 if (picked != null) onOpen(picked)
-                else snackbar.showSnackbar("No playlists to pick from")
+                else notifier.post("No playlists to pick from")
             }
         },
         onCreate = { creating = true },
         onSearch = onSearch,
         onSettings = onSettings,
-        snackbar = snackbar,
         modifier = modifier,
     )
 
@@ -166,7 +165,6 @@ private fun HomePlaylistsContent(
     onCreate: () -> Unit,
     onSearch: () -> Unit,
     onSettings: () -> Unit,
-    snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     HomeScaffold(
@@ -177,7 +175,6 @@ private fun HomePlaylistsContent(
         modifier = modifier,
         onSearch = onSearch,
         onSettings = onSettings,
-        snackbar = snackbar,
         quickActions = {
             CreatePlaylistButton(onCreate)
             RandomButton(onRandom)
@@ -216,6 +213,5 @@ private fun HomePlaylistsPreview() = PreviewTheme {
         onCreate = {},
         onSearch = {},
         onSettings = {},
-        snackbar = remember { SnackbarHostState() },
     )
 }

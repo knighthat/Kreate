@@ -20,7 +20,6 @@ package me.knighthat.kreate3.ui.screen.detail
 
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,10 +33,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.notification.Message
+import me.knighthat.kreate3.notification.MessageDuration
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
 import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.opensubsonic.Shareable
+import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.ShareButton
 
 /** Whether the user may make shares on the server, `false` until that is known. */
@@ -84,13 +86,14 @@ private fun Throwable.shareFailure(kind: String): String =
 /**
  * The share button of a detail screen's top bar. A tap gets the link from [link], which may ask
  * the server, then opens the share sheet titled [title]. It is off while the link is on its way,
- * and a failure is told in a toast.
+ * and a failure is posted to [LocalNotifier].
  *
  * @param kind what is shared, like "album", for the failure message
  */
 @Composable
 fun ShareAction(title: String?, kind: String, link: suspend () -> Result<String>) {
     val context = LocalContext.current
+    val notifier = LocalNotifier.current
     val scope = rememberCoroutineScope()
     var sharing by remember { mutableStateOf(false) }
 
@@ -102,7 +105,7 @@ fun ShareAction(title: String?, kind: String, link: suspend () -> Result<String>
                 link()
                     .onSuccess { context.shareLink(title, it) }
                     .onFailure {
-                        Toast.makeText(context, it.shareFailure(kind), Toast.LENGTH_LONG).show()
+                        notifier.post(Message(it.shareFailure(kind), MessageDuration.LONG))
                     }
                 sharing = false
             }

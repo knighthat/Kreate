@@ -31,15 +31,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -54,6 +51,7 @@ import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.ArtistItem
 import me.knighthat.kreate3.ui.component.BackButton
+import me.knighthat.kreate3.ui.component.MessageHost
 import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
 import me.knighthat.kreate3.ui.component.PlaylistItem
 import me.knighthat.kreate3.ui.component.SongItem
@@ -115,14 +113,13 @@ fun SearchResultsScreen(
     viewModel: SearchResultsViewModel = koinViewModel(),
 ) {
     var selected by rememberSaveable { mutableStateOf(initialTab) }
-    val snackbar = remember { SnackbarHostState() }
 
     val songs = viewModel.songs.collectAsLazyPagingItems()
     val albums = viewModel.albums.collectAsLazyPagingItems()
     val artists = viewModel.artists.collectAsLazyPagingItems()
     val playlists = viewModel.playlists.collectAsLazyPagingItems()
     // Only the songs loaded so far are below the one tapped
-    val onSongClick = rememberSongTap(snackbar, Preferences.SEARCH_SONGS_TAP_RADIO) {
+    val onSongClick = rememberSongTap(Preferences.SEARCH_SONGS_TAP_RADIO) {
         songs.itemSnapshotList.items
     }
     val current = when (selected) {
@@ -149,7 +146,8 @@ fun SearchResultsScreen(
                 TabBar(selected = selected, onSelect = { selected = it })
             }
         },
-        snackbarHost = { SnackbarHost(snackbar) },
+        // Above the tabs, the app's scaffold would put messages over them
+        snackbarHost = { MessageHost() },
         containerColor = MaterialTheme.colorScheme.surfaceDim,
         modifier = modifier,
     ) { padding ->

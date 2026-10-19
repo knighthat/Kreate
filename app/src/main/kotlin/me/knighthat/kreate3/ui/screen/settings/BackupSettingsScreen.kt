@@ -27,11 +27,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,7 +51,6 @@ fun BackupSettingsScreen(
     viewModel: BackupViewModel = koinViewModel(),
 ) {
     val working by viewModel.working.collectAsStateWithLifecycle()
-    val snackbar = remember { SnackbarHostState() }
     var confirmRestore by remember { mutableStateOf(false) }
 
     val exportTo = rememberLauncherForActivityResult(CreateDocument("application/zip")) { uri ->
@@ -63,9 +60,7 @@ fun BackupSettingsScreen(
         uri?.let(viewModel::restore)
     }
 
-    LaunchedEffect(viewModel) { viewModel.messages.collect { snackbar.showSnackbar(it) } }
-
-    SettingsPage("Backup", onBack, modifier, snackbar) {
+    SettingsPage("Backup", onBack, modifier) {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier

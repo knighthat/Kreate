@@ -25,16 +25,14 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.KreateApplication
 import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.backup.BackupException
+import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.preferences.Profile
 import me.knighthat.kreate3.preferences.ProfileManager
 import java.io.FileNotFoundException
@@ -57,16 +55,13 @@ class BackupViewModel(
     private val backup: Backup,
     private val scope: CoroutineScope,
     private val profileManager: ProfileManager,
+    private val notifier: Notifier,
 ) : ViewModel() {
 
     private val _working = MutableStateFlow<BackupTask?>(null)
-    private val _messages = Channel<String>(Channel.BUFFERED)
 
     /** What is being done now, `null` when nothing. */
     val working: StateFlow<BackupTask?> = _working.asStateFlow()
-
-    /** What came of a backup or restore, for the user to read. */
-    val messages: Flow<String> = _messages.receiveAsFlow()
 
     /** Name suggested for a new backup, like `kreate_backup_1.0_2026-10-14_16-44-05.zip`. */
     fun fileName(): String {
@@ -77,7 +72,7 @@ class BackupViewModel(
 
     fun export(uri: Uri) = run(BackupTask.EXPORT, "Couldn't save the backup") {
         backup.export(openStream { context.contentResolver.openOutputStream(uri, "wt") })
-        _messages.send("Backup saved")
+        notifier.post("Backup saved")
     }
 
     /** Restores the backup at [uri], the app restarts when it can be restored. */
@@ -92,7 +87,7 @@ class BackupViewModel(
     private fun run(task: BackupTask, failure: String, work: suspend () -> Unit) {
         if (_working.value != null) return
         if (profileManager.activeId.value != Profile.DEFAULT_ID) {
-            _messages.trySend("Only the default profile can back up or restore")
+            notifier.post("Only the default profile can back up or restore")
             return
         }
         _working.value = task
@@ -103,11 +98,11 @@ class BackupViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: BackupException) {
-                _messages.send(e.message.orEmpty())
+                notifier.post(e.message.orEmpty())
             } catch (_: IOException) {
-                _messages.send(failure)
+                notifier.post(failure)
             } catch (_: SecurityException) {
-                _messages.send(failure)
+                notifier.post(failure)
             } finally {
                 _working.value = null
             }

@@ -58,6 +58,7 @@ val playbackModule = module {
         PlaybackControllerImpl(
             context = androidContext(),
             radio = get(),
+            notifier = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         )
     } bind PlaybackController::class

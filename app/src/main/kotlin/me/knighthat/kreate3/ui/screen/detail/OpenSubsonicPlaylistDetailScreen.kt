@@ -24,11 +24,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -56,20 +54,18 @@ fun OpenSubsonicPlaylistDetailScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val canShare by viewModel.canShare.collectAsStateWithLifecycle()
-    val snackbar = remember { SnackbarHostState() }
 
     OpenSubsonicPlaylistDetailContent(
         state = state,
         onRetry = viewModel::load,
         onBack = onBack,
-        onAction = rememberQueueActions(snackbar) {
+        onAction = rememberQueueActions {
             (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
         },
-        onSongClick = rememberSongTap(snackbar, null) {
+        onSongClick = rememberSongTap(null) {
             (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
         },
         share = if (canShare) viewModel::shareLink else null,
-        snackbar = snackbar,
         modifier = modifier,
     )
 }
@@ -85,7 +81,6 @@ private fun OpenSubsonicPlaylistDetailContent(
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     share: (suspend (name: String?) -> Result<String>)?,
-    snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     val playlist = (state as? LiveState.Ready)?.value
@@ -96,7 +91,6 @@ private fun OpenSubsonicPlaylistDetailContent(
         state = state,
         onRetry = onRetry,
         modifier = modifier,
-        snackbar = snackbar,
         actions = {
             if (share != null && playlist != null)
                 ShareAction(playlist.name, "playlist") { share(playlist.name) }
@@ -150,6 +144,5 @@ private fun OpenSubsonicPlaylistDetailPreview() = PreviewTheme {
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },
-        snackbar = remember { SnackbarHostState() },
     )
 }

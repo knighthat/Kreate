@@ -102,6 +102,7 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.BackButton
 import me.knighthat.kreate3.ui.component.ConfigButton
 import me.knighthat.kreate3.ui.component.ItemRow
+import me.knighthat.kreate3.ui.component.MessageHost
 import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
 import me.knighthat.kreate3.ui.component.SearchButton
 import me.knighthat.kreate3.ui.component.SectionTitle
@@ -454,6 +455,8 @@ fun SearchScreen(
                 )
             }
         },
+        // Above the search bar, the app's scaffold would put messages over it
+        snackbarHost = { MessageHost() },
         containerColor = MaterialTheme.colorScheme.surfaceDim,
         modifier = modifier,
     ) { innerPadding ->

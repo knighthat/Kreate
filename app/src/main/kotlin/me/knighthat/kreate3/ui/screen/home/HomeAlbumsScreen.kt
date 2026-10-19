@@ -24,11 +24,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -42,6 +40,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
+import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.RandomButton
 import me.knighthat.kreate3.ui.component.ScreenPreviews
@@ -66,7 +65,7 @@ fun HomeAlbumsScreen(
     val live by viewModel.live.collectAsStateWithLifecycle()
     val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
     val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
-    val snackbar = remember { SnackbarHostState() }
+    val notifier = LocalNotifier.current
     val scope = rememberCoroutineScope()
 
     // Each visit to the tab, the items of the external sources are fetched again
@@ -83,12 +82,11 @@ fun HomeAlbumsScreen(
             scope.launch {
                 val picked = viewModel.random()
                 if (picked != null) onOpen(picked)
-                else snackbar.showSnackbar("No albums to pick from")
+                else notifier.post("No albums to pick from")
             }
         },
         onSearch = onSearch,
         onSettings = onSettings,
-        snackbar = snackbar,
         modifier = modifier,
     )
 }
@@ -107,7 +105,6 @@ private fun HomeAlbumsContent(
     onRandom: () -> Unit,
     onSearch: () -> Unit,
     onSettings: () -> Unit,
-    snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     HomeScaffold(
@@ -118,7 +115,6 @@ private fun HomeAlbumsContent(
         modifier = modifier,
         onSearch = onSearch,
         onSettings = onSettings,
-        snackbar = snackbar,
         quickActions = { RandomButton(onRandom) },
     ) { padding ->
         LazyVerticalGrid(
@@ -153,6 +149,5 @@ private fun HomeAlbumsPreview() = PreviewTheme {
         onRandom = {},
         onSearch = {},
         onSettings = {},
-        snackbar = remember { SnackbarHostState() },
     )
 }

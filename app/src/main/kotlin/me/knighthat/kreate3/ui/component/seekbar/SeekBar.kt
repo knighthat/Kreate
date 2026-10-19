@@ -45,10 +45,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.emptyFlow
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.playback.PlaybackState
 import me.knighthat.kreate3.ui.component.ComponentPreviews
@@ -155,7 +153,6 @@ private class PreviewController(
 
     override val state: StateFlow<PlaybackState> = MutableStateFlow(PlaybackState())
     override val queue: StateFlow<List<MediaItem>> = MutableStateFlow(emptyList())
-    override val errors: Flow<String> = emptyFlow()
 
     override fun play(item: MediaItem) = Unit
     override fun playAll(items: List<MediaItem>) = Unit

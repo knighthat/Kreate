@@ -40,8 +40,6 @@ import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -235,7 +233,6 @@ fun HomeScaffold(
     modifier: Modifier = Modifier,
     onSearch: () -> Unit = {},
     onSettings: () -> Unit = {},
-    snackbar: SnackbarHostState = remember { SnackbarHostState() },
     quickActions: @Composable RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -249,7 +246,6 @@ fun HomeScaffold(
                 HomeToolbar(choices, selected, onToggleOrigin, toolbarScroll, quickActions)
             }
         },
-        snackbarHost = { SnackbarHost(snackbar) },
         containerColor = MaterialTheme.colorScheme.surfaceDim,
         // The title collapses first, then the toolbar hides
         modifier = modifier

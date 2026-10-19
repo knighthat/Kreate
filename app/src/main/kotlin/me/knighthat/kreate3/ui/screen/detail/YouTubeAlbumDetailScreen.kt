@@ -23,10 +23,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
@@ -59,7 +57,6 @@ fun YouTubeAlbumDetailScreen(
     viewModel: YouTubeAlbumDetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val snackbar = remember { SnackbarHostState() }
 
     YouTubeAlbumDetailContent(
         state = state,
@@ -67,14 +64,13 @@ fun YouTubeAlbumDetailScreen(
         onBack = onBack,
         onOpen = onOpen,
         onSeeMore = onSeeMore,
-        onAction = rememberQueueActions(snackbar) {
+        onAction = rememberQueueActions {
             (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
         },
-        onSongClick = rememberSongTap(snackbar, null) {
+        onSongClick = rememberSongTap(null) {
             (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
         },
         share = viewModel::shareLink,
-        snackbar = snackbar,
         modifier = modifier,
     )
 }
@@ -89,7 +85,6 @@ private fun YouTubeAlbumDetailContent(
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     share: suspend () -> Result<String>,
-    snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
     val album = (state as? LiveState.Ready)?.value
@@ -100,7 +95,6 @@ private fun YouTubeAlbumDetailContent(
         state = state,
         onRetry = onRetry,
         modifier = modifier,
-        snackbar = snackbar,
         actions = { ShareAction(album?.name, "album", share) },
     ) { detail, innerPadding ->
         LazyColumn(
@@ -162,6 +156,5 @@ private fun YouTubeAlbumDetailPreview() = PreviewTheme {
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },
-        snackbar = remember { SnackbarHostState() },
     )
 }

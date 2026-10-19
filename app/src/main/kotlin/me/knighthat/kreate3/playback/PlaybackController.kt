@@ -19,7 +19,6 @@
 package me.knighthat.kreate3.playback
 
 import androidx.media3.common.MediaItem
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -47,12 +46,6 @@ interface PlaybackController {
 
     /** Every item of the queue, in the order they play. */
     val queue: StateFlow<List<MediaItem>>
-
-    /**
-     * What to tell the user each time a song fails to play, like `Couldn't play "Song": its file
-     * is gone`. A failure that nobody collects is dropped.
-     */
-    val errors: Flow<String>
 
     /**
      * Plays [item] now. It is added to the end of the queue, unless it is already in it, and

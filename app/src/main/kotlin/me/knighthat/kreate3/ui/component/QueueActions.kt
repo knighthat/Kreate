@@ -31,7 +31,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -116,54 +115,47 @@ fun PlaybackController.playTapped(
 /**
  * What tapping a song of a list does, as [radio] says at the time: a radio when on, the list
  * from the song when off, see [playTapped]. [songs] gives the list at the time, it isn't asked
- * for a radio. What the user should know shows in [snackbar].
+ * for a radio. What the user should know is posted to [LocalNotifier].
  *
  * @param radio the setting of the list, like [Preferences.HOME_SONGS_TAP_RADIO], `null` for a
  * list that always plays from the song, like an album
  */
 @Composable
 fun rememberSongTap(
-    snackbar: SnackbarHostState,
     radio: Preference<Boolean>?,
     songs: suspend () -> List<MediaItem>,
 ): (MediaItem) -> Unit {
     val playback = koinInject<PlaybackController>()
+    val notifier = LocalNotifier.current
     val scope = rememberCoroutineScope()
     val currentSongs by rememberUpdatedState(songs)
 
-    return remember(playback, scope, snackbar, radio) {
+    return remember(playback, notifier, scope, radio) {
         { song ->
             scope.launch {
                 val isRadio = radio?.value == true
                 val list = if (isRadio) emptyList() else currentSongs()
-                val message = playback.playTapped(song, list, isRadio) ?: return@launch
-                snackbar.currentSnackbarData?.dismiss()
-                snackbar.showSnackbar(message)
+                playback.playTapped(song, list, isRadio)?.let(notifier::post)
             }
         }
     }
 }
 
 /**
- * Runs a [QueueAction] with what [songs] gives at the time, and shows in [snackbar] what the user
- * should know about it.
+ * Runs a [QueueAction] with what [songs] gives at the time, and posts to [LocalNotifier] what the
+ * user should know about it.
  */
 @Composable
-fun rememberQueueActions(
-    snackbar: SnackbarHostState,
-    songs: suspend () -> List<MediaItem>,
-): (QueueAction) -> Unit {
+fun rememberQueueActions(songs: suspend () -> List<MediaItem>): (QueueAction) -> Unit {
     val playback = koinInject<PlaybackController>()
+    val notifier = LocalNotifier.current
     val scope = rememberCoroutineScope()
     val currentSongs by rememberUpdatedState(songs)
 
-    return remember(playback, scope, snackbar) {
+    return remember(playback, notifier, scope) {
         { action ->
             scope.launch {
-                val message = playback.queue(action, currentSongs()) ?: return@launch
-                // A new message replaces the one showing instead of waiting for it
-                snackbar.currentSnackbarData?.dismiss()
-                snackbar.showSnackbar(message)
+                playback.queue(action, currentSongs())?.let(notifier::post)
             }
         }
     }
