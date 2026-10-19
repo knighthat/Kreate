@@ -56,6 +56,7 @@ import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
 import me.knighthat.kreate3.ui.component.PlaylistItem
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.TabBar
+import me.knighthat.kreate3.ui.component.rememberMiniPlayerSpace
 import me.knighthat.kreate3.ui.component.rememberSongTap
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
@@ -140,9 +141,10 @@ fun SearchResultsScreen(
             )
         },
         bottomBar = {
-            // The mini player sits on the tabs, like on the home screens
+            // The mini player sits on the tabs, like on the home screens. The lists run under
+            // the whole bar already, so its room needs no splitting off
             Column {
-                PlaybackMiniPlayer()
+                PlaybackMiniPlayer(rememberMiniPlayerSpace())
                 TabBar(selected = selected, onSelect = { selected = it })
             }
         },

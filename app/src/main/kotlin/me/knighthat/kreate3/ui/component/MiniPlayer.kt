@@ -22,7 +22,9 @@ import androidx.compose.animation.core.animate
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,10 +33,13 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -45,6 +50,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
@@ -62,6 +69,52 @@ import org.koin.compose.koinInject
 private val BUTTON_SIZE = 40.dp
 
 /**
+ * The room the [MiniPlayer] takes at the bottom of a screen, measured by [PlaybackMiniPlayer].
+ *
+ * A screen keeps clear from outside only of the rest of its bottom bar, [outside], and ends its
+ * lists with room for the mini player, [inside]. Its lists then run under the mini player and show
+ * through while it's swiped away, instead of leaving an empty band where it was.
+ */
+@Stable
+class MiniPlayerSpace {
+
+    /**
+     * How tall the mini player is, `0` while it doesn't show.
+     */
+    var height: Dp by mutableStateOf(0.dp)
+        internal set
+
+    /**
+     * Room for the mini player, to add to the end of a list's content padding.
+     */
+    val inside: PaddingValues = object : PaddingValues {
+        override fun calculateLeftPadding(layoutDirection: LayoutDirection) = 0.dp
+        override fun calculateTopPadding() = 0.dp
+        override fun calculateRightPadding(layoutDirection: LayoutDirection) = 0.dp
+        override fun calculateBottomPadding() = height
+    }
+
+    /**
+     * [padding] of a bar that holds the mini player, without the mini player.
+     */
+    fun outside(padding: PaddingValues): PaddingValues = object : PaddingValues {
+        override fun calculateLeftPadding(layoutDirection: LayoutDirection) =
+            padding.calculateLeftPadding(layoutDirection)
+
+        override fun calculateTopPadding() = padding.calculateTopPadding()
+
+        override fun calculateRightPadding(layoutDirection: LayoutDirection) =
+            padding.calculateRightPadding(layoutDirection)
+
+        override fun calculateBottomPadding() =
+            (padding.calculateBottomPadding() - height).coerceAtLeast(0.dp)
+    }
+}
+
+@Composable
+fun rememberMiniPlayerSpace(): MiniPlayerSpace = remember { MiniPlayerSpace() }
+
+/**
  * Whether the [MiniPlayer] shows: while the queue has songs and hasn't played to its end.
  */
 val PlaybackState.hasMiniPlayer: Boolean
@@ -74,12 +127,25 @@ val PlaybackState.hasMiniPlayer: Boolean
  *
  * Dragged down, it follows the finger and fades out. Let go past half its height, or flung down,
  * it stops the player ([PlaybackController.stop]), otherwise it comes back.
+ *
+ * @param space measured as it shows, hides, and leaves the screen
  */
 @Composable
 fun PlaybackMiniPlayer(
+    space: MiniPlayerSpace,
     modifier: Modifier = Modifier,
     controller: PlaybackController = koinInject(),
 ) {
+    val density = LocalDensity.current
+    DisposableEffect(space) { onDispose { space.height = 0.dp } }
+    // Empty while nothing plays, it measures 0 then
+    Box(modifier.onSizeChanged { space.height = with(density) { it.height.toDp() } }) {
+        PlaybackMiniPlayer(controller = controller)
+    }
+}
+
+@Composable
+private fun PlaybackMiniPlayer(controller: PlaybackController) {
     val state by controller.state.collectAsStateWithLifecycle()
     val item = state.current?.takeIf { state.hasMiniPlayer } ?: return
     val sheet = LocalPlayerSheet.current
@@ -117,7 +183,7 @@ fun PlaybackMiniPlayer(
         onTogglePlay = controller::togglePlay,
         onNext = controller::next,
         onClick = { sheet?.let { scope.launch { it.expand() } } },
-        modifier = modifier
+        modifier = Modifier
             .onSizeChanged { height = it.height }
             .graphicsLayer {
                 translationY = pulled

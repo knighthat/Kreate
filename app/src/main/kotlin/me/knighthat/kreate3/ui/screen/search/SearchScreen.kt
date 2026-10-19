@@ -107,6 +107,7 @@ import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
 import me.knighthat.kreate3.ui.component.SearchButton
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.label
+import me.knighthat.kreate3.ui.component.rememberMiniPlayerSpace
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 import kotlin.math.abs
@@ -427,6 +428,7 @@ fun SearchScreen(
         .filter { (kind, _) -> kind in categories }
         .map { (kind, item) -> Suggestion(kind, item) }
 
+    val miniPlayer = rememberMiniPlayerSpace()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -440,7 +442,7 @@ fun SearchScreen(
         bottomBar = {
             // The search bar stays last, next to the keyboard
             Column {
-                PlaybackMiniPlayer()
+                PlaybackMiniPlayer(miniPlayer)
                 SearchInputBar(
                     text = text,
                     placeholder = when (origin) {
@@ -473,10 +475,12 @@ fun SearchScreen(
                     .padding(16.dp),
             )
         } else
+            // Clear of the search bar, but running under the mini player, see MiniPlayerSpace
             LazyColumn(
+                contentPadding = miniPlayer.inside,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
+                    .padding(miniPlayer.outside(innerPadding)),
             ) {
                 items(suggestions, key = { it.kind.name + ":" + it.item.mediaId }) {
                     ItemRow(

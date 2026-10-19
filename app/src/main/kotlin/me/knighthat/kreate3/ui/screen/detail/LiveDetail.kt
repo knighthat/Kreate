@@ -136,6 +136,7 @@ private fun ServerException.reason(): String = when (val check = check) {
  * spinner, and when it fails the reason with a way to try again, [onRetry].
  *
  * @param state see [LiveDetailViewModel.state]
+ * @param contentPadding see [DetailScaffold]
  */
 @Composable
 fun <T : Any> LiveDetailScreen(
@@ -144,10 +145,11 @@ fun <T : Any> LiveDetailScreen(
     state: LiveState<T>,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (T, PaddingValues) -> Unit,
 ) {
-    DetailScaffold(title, onBack, modifier, actions) { innerPadding ->
+    DetailScaffold(title, onBack, modifier, contentPadding, actions) { innerPadding ->
         when (val current = state) {
             is LiveState.Ready -> content(current.value, innerPadding)
 

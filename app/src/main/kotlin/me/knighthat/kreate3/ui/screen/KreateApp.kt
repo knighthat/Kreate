@@ -34,13 +34,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -59,6 +54,7 @@ import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
 import me.knighthat.kreate3.ui.component.ShowMessages
 import me.knighthat.kreate3.ui.component.TabBar
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
+import me.knighthat.kreate3.ui.component.rememberMiniPlayerSpace
 import me.knighthat.kreate3.ui.navigation.Albums
 import me.knighthat.kreate3.ui.navigation.Artists
 import me.knighthat.kreate3.ui.navigation.BackupSettings
@@ -164,7 +160,7 @@ fun KreateApp() {
     ShowMessages(notifier, messages)
 
     val playerSheet = rememberPlayerSheetState()
-    var miniPlayerHeight by remember { mutableIntStateOf(0) }
+    val miniPlayer = rememberMiniPlayerSpace()
 
     KreateTheme(
         themeMode = themeMode,
@@ -184,10 +180,7 @@ fun KreateApp() {
                         when {
                             // Only the tabs have the bar
                             route?.let(Tab::of) != null -> Column {
-                                // Empty while nothing plays, it measures 0 then
-                                Box(Modifier.onSizeChanged { miniPlayerHeight = it.height }) {
-                                    PlaybackMiniPlayer(controller = playback)
-                                }
+                                PlaybackMiniPlayer(miniPlayer, controller = playback)
                                 TabBar(
                                     selected = topLevel.currentTab,
                                     onSelect = topLevel::switchTab,
@@ -200,7 +193,7 @@ fun KreateApp() {
                             ) {
                                 // Without the bar, the mini player stays clear of the system's
                                 Box(Modifier.windowInsetsPadding(WindowInsets.navigationBars)) {
-                                    PlaybackMiniPlayer(controller = playback)
+                                    PlaybackMiniPlayer(miniPlayer, controller = playback)
                                 }
                             }
                         }
@@ -212,7 +205,6 @@ fun KreateApp() {
                     containerColor = MaterialTheme.colorScheme.surfaceDim,
                     modifier = Modifier.fillMaxSize(),
                 ) { barPadding ->
-                    val miniPlayerBottom = with(LocalDensity.current) { miniPlayerHeight.toDp() }
                     // Before the screens, so their own handling of going back comes first
                     ExitConfirmation(atBottom = topLevel.backStack.size == 1, snackbar = messages)
                     NavDisplay(
@@ -223,29 +215,22 @@ fun KreateApp() {
                             rememberViewModelStoreNavEntryDecorator(),
                         ),
                         entryProvider = entryProvider {
-                            // The bar already keeps clear of the system's, the screens don't again
+                            // The bar already keeps clear of the system's, the screens don't again.
+                            // The mini player isn't kept clear of from outside, the lists end with
+                            // room for it instead, see MiniPlayerSpace
                             val barBottom =
                                 PaddingValues(bottom = barPadding.calculateBottomPadding())
                             val paddingModifier = Modifier
-                                .padding(barBottom)
+                                .padding(miniPlayer.outside(barBottom))
                                 .consumeWindowInsets(barBottom)
-                            // The tabs only keep clear of the tab bar, their lists end with room
-                            // for the mini player instead, so they show through as it's swiped away
-                            val tabBarBottom = PaddingValues(
-                                bottom = (barPadding.calculateBottomPadding() - miniPlayerBottom)
-                                    .coerceAtLeast(0.dp)
-                            )
-                            val tabModifier = Modifier
-                                .padding(tabBarBottom)
-                                .consumeWindowInsets(barBottom)
-                            val tabContentPadding = PaddingValues(bottom = miniPlayerBottom)
+                            val contentPadding = miniPlayer.inside
 
                             entry<Songs> {
                                 HomeSongsScreen(
                                     { topLevel.push(Search) },
                                     { topLevel.push(Settings) },
-                                    tabModifier,
-                                    tabContentPadding,
+                                    paddingModifier,
+                                    contentPadding,
                                 )
                             }
                             entry<Albums> {
@@ -253,8 +238,8 @@ fun KreateApp() {
                                     { topLevel.push(albumRoute(it)) },
                                     { topLevel.push(Search) },
                                     { topLevel.push(Settings) },
-                                    tabModifier,
-                                    tabContentPadding,
+                                    paddingModifier,
+                                    contentPadding,
                                 )
                             }
                             entry<Artists> {
@@ -262,8 +247,8 @@ fun KreateApp() {
                                     { topLevel.push(artistRoute(it)) },
                                     { topLevel.push(Search) },
                                     { topLevel.push(Settings) },
-                                    tabModifier,
-                                    tabContentPadding,
+                                    paddingModifier,
+                                    contentPadding,
                                 )
                             }
                             entry<Playlists> {
@@ -271,8 +256,8 @@ fun KreateApp() {
                                     { topLevel.push(playlistRoute(it)) },
                                     { topLevel.push(Search) },
                                     { topLevel.push(Settings) },
-                                    tabModifier,
-                                    tabContentPadding,
+                                    paddingModifier,
+                                    contentPadding,
                                 )
                             }
 
@@ -332,6 +317,7 @@ fun KreateApp() {
                                 LocalAlbumDetailScreen(
                                     topLevel::pop,
                                     paddingModifier,
+                                    contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }
@@ -340,6 +326,7 @@ fun KreateApp() {
                                     onBack = topLevel::pop,
                                     onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
                                     modifier = paddingModifier,
+                                    contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }
@@ -347,6 +334,7 @@ fun KreateApp() {
                                 LocalPlaylistDetailScreen(
                                     topLevel::pop,
                                     paddingModifier,
+                                    contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }
@@ -356,6 +344,7 @@ fun KreateApp() {
                                 OpenSubsonicAlbumDetailScreen(
                                     topLevel::pop,
                                     paddingModifier,
+                                    contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }
@@ -364,6 +353,7 @@ fun KreateApp() {
                                     onBack = topLevel::pop,
                                     onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
                                     modifier = paddingModifier,
+                                    contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }
@@ -371,6 +361,7 @@ fun KreateApp() {
                                 OpenSubsonicPlaylistDetailScreen(
                                     topLevel::pop,
                                     paddingModifier,
+                                    contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }
@@ -389,6 +380,7 @@ fun KreateApp() {
                                         )
                                     },
                                     modifier = paddingModifier,
+                                    contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }
@@ -408,6 +400,7 @@ fun KreateApp() {
                                     },
                                     onOpenPlaylist = { id -> topLevel.push(YouTubePlaylist(id)) },
                                     modifier = paddingModifier,
+                                    contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }
@@ -418,6 +411,7 @@ fun KreateApp() {
                                         itemRoute(tab, item)?.let(topLevel::push)
                                     },
                                     modifier = paddingModifier,
+                                    contentPadding = contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }
@@ -425,6 +419,7 @@ fun KreateApp() {
                                 YouTubePlaylistDetailScreen(
                                     topLevel::pop,
                                     paddingModifier,
+                                    contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }

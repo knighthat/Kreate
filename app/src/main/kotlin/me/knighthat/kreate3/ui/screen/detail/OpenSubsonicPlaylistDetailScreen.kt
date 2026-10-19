@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.ui.screen.detail
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -50,6 +51,7 @@ import org.koin.androidx.compose.koinViewModel
 fun OpenSubsonicPlaylistDetailScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     viewModel: OpenSubsonicPlaylistDetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -67,6 +69,7 @@ fun OpenSubsonicPlaylistDetailScreen(
         },
         share = if (canShare) viewModel::shareLink else null,
         modifier = modifier,
+        contentPadding = contentPadding,
     )
 }
 
@@ -82,6 +85,7 @@ private fun OpenSubsonicPlaylistDetailContent(
     onSongClick: (MediaItem) -> Unit,
     share: (suspend (name: String?) -> Result<String>)?,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val playlist = (state as? LiveState.Ready)?.value
 
@@ -91,15 +95,15 @@ private fun OpenSubsonicPlaylistDetailContent(
         state = state,
         onRetry = onRetry,
         modifier = modifier,
+        contentPadding = contentPadding,
         actions = {
             if (share != null && playlist != null)
                 ShareAction(playlist.name, "playlist") { share(playlist.name) }
         },
     ) { detail, innerPadding ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            contentPadding = innerPadding,
+            modifier = Modifier.fillMaxSize(),
         ) {
             item {
                 DetailHeader(

@@ -20,6 +20,7 @@ package me.knighthat.kreate3.ui.screen.detail
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.plus
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -34,6 +35,9 @@ import me.knighthat.kreate3.ui.component.BackButton
 /**
  * The frame of a detail screen: a small top bar with a back button, the [title] of the item and
  * its [actions] at the end.
+ *
+ * @param contentPadding room [content] adds around its items on top of the bar's, e.g. so the last
+ * one can scroll clear of what floats over the screen
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +45,7 @@ fun DetailScaffold(
     title: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -59,6 +64,5 @@ fun DetailScaffold(
         },
         containerColor = MaterialTheme.colorScheme.surfaceDim,
         modifier = modifier,
-        content = content,
-    )
+    ) { content(it + contentPadding) }
 }

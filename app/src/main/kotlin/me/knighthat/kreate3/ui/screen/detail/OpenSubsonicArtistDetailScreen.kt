@@ -21,7 +21,6 @@ package me.knighthat.kreate3.ui.screen.detail
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -55,6 +54,7 @@ fun OpenSubsonicArtistDetailScreen(
     onBack: () -> Unit,
     onOpenAlbum: (MediaItem) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     viewModel: OpenSubsonicArtistDetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -73,6 +73,7 @@ fun OpenSubsonicArtistDetailScreen(
         },
         share = if (canShare) viewModel::shareLink else null,
         modifier = modifier,
+        contentPadding = contentPadding,
     )
 }
 
@@ -89,6 +90,7 @@ private fun OpenSubsonicArtistDetailContent(
     onSongClick: (MediaItem) -> Unit,
     share: (suspend (name: String?) -> Result<String>)?,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val artist = (state as? LiveState.Ready)?.value
 
@@ -98,15 +100,15 @@ private fun OpenSubsonicArtistDetailContent(
         state = state,
         onRetry = onRetry,
         modifier = modifier,
+        contentPadding = contentPadding,
         actions = {
             if (share != null && artist != null)
                 ShareAction(artist.name, "artist") { share(artist.name) }
         },
     ) { detail, innerPadding ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            contentPadding = innerPadding,
+            modifier = Modifier.fillMaxSize(),
         ) {
             item {
                 DetailHeader(

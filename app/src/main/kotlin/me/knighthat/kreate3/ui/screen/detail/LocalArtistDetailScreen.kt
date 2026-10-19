@@ -22,7 +22,6 @@ import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -60,6 +59,7 @@ fun LocalArtistDetailScreen(
     onBack: () -> Unit,
     onOpenAlbum: (MediaItem) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     viewModel: LocalArtistDetailViewModel = koinViewModel(),
 ) {
     val artist by viewModel.artist.collectAsState()
@@ -75,6 +75,7 @@ fun LocalArtistDetailScreen(
         onAction = rememberQueueActions(viewModel::allSongs),
         onSongClick = rememberSongTap(null, viewModel::allSongs),
         modifier = modifier,
+        contentPadding = contentPadding,
     )
 }
 
@@ -89,16 +90,17 @@ private fun LocalArtistDetailContent(
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     DetailScaffold(
         title = name.orEmpty(),
         onBack = onBack,
         modifier = modifier,
+        contentPadding = contentPadding,
     ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            contentPadding = innerPadding,
+            modifier = Modifier.fillMaxSize(),
         ) {
             item {
                 DetailHeader(
