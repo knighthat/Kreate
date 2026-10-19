@@ -24,7 +24,9 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeItem
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
@@ -124,7 +126,11 @@ private class YouTubeSearchPagingSource(
     // A search can't start in the middle, it starts over
     override fun getRefreshKey(state: PagingState<Key, MediaItem>): Key? = null
 
-    override suspend fun load(params: LoadParams<Key>): LoadResult<Key, MediaItem> {
+    // Paging loads where the pages are collected, the main thread: the items are made off it
+    override suspend fun load(params: LoadParams<Key>): LoadResult<Key, MediaItem> =
+        withContext(Dispatchers.Default) { loadPage(params) }
+
+    private suspend fun loadPage(params: LoadParams<Key>): LoadResult<Key, MediaItem> {
         val key = params.key ?: Key(0, null)
         if (key.filter == 0 && key.continuation == null) shown.clear()
 

@@ -23,9 +23,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.paging.cachedIn
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.database.repository.ArtistRepository
 import me.knighthat.kreate3.database.repository.UserAlbumRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
@@ -60,7 +62,10 @@ class LocalArtistDetailViewModel(
 
     /** Every song of [songs] right now, in its order, for the quick actions. */
     suspend fun allSongs(): List<MediaItem> =
-        songRepository.listOfArtist(artistId).mapNotNull { it.toMediaItem() }
+        // Every song of a large library takes long to turn into items, never on the main thread
+        withContext(Dispatchers.Default) {
+            songRepository.listOfArtist(artistId).mapNotNull { it.toMediaItem() }
+        }
 
     private companion object {
         /** Albums shown on the page, the artist may have more. */

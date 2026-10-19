@@ -20,13 +20,17 @@ package me.knighthat.kreate3.source.local
 
 import android.content.ContentUris
 import android.content.Context
+import android.os.Process
 import android.provider.MediaStore
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapMerge
@@ -36,9 +40,12 @@ import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.repository.SongRepository
 import me.knighthat.kreate3.notification.LocalScanNotifications
+import me.knighthat.kreate3.source.local.LoudnessWorker.Companion.PARALLELISM
 import me.knighthat.kreate3.utils.hasAudioPermission
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Measures the loudness of the songs on the device whose format has no gain yet, and saves it as
@@ -69,6 +76,7 @@ class LoudnessWorker(
         val failed = mutableSetOf<String>()
         val done = mutableSetOf<String>()
 
+        val decoding = lowPriorityDispatcher()
         try {
             // Songs a scan adds while this runs are picked up by asking again
             while (true) {
@@ -82,14 +90,7 @@ class LoudnessWorker(
                 // Several songs are measured at once, the results are handled one by one
                 pending.asFlow()
                     .flatMapMerge(PARALLELISM) { songId ->
-                        flow {
-                            emit(
-                                songId to measure(
-                                    analyzer,
-                                    songId
-                                )
-                            )
-                        }
+                        flow { emit(songId to measure(analyzer, songId, decoding)) }
                     }
                     .collect { (songId, format) ->
                         if (format == null) failed += songId
@@ -104,6 +105,8 @@ class LoudnessWorker(
         } catch (e: CancellationException) {
             notifications.cancelLoudness()
             throw e
+        } finally {
+            decoding.close()
         }
 
         Log.i(TAG, "Measured ${done.size} songs, ${failed.size} couldn't be measured")
@@ -127,17 +130,41 @@ class LoudnessWorker(
             .keys.toList()
     }
 
-    private suspend fun measure(analyzer: LoudnessAnalyzer, songId: String): SongFormat? {
+    /**
+     * @param decoding where the file is decoded, see [lowPriorityDispatcher]
+     */
+    private suspend fun measure(
+        analyzer: LoudnessAnalyzer,
+        songId: String,
+        decoding: CoroutineDispatcher,
+    ): SongFormat? {
         val id = songId.toLongOrNull() ?: return null
         val uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id)
         return try {
-            withContext(Dispatchers.IO) { analyzer.analyze(songId, uri) }
+            withContext(decoding) { analyzer.analyze(songId, uri) }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             Log.w(TAG, "Couldn't measure song $songId", e)
             null
         }
+    }
+
+    /**
+     * [PARALLELISM] threads of background priority, for the decoding. At the default priority it
+     * took the cores the screen needs: right after a scan the new songs showed only after a
+     * stutter, the main thread waited for a core for a third of a long frame. The media services
+     * the decoding calls into, like the one reading the file, run at the caller's priority, so
+     * they give way too. Close it when done.
+     */
+    private fun lowPriorityDispatcher(): ExecutorCoroutineDispatcher {
+        val count = AtomicInteger()
+        return Executors.newFixedThreadPool(PARALLELISM) { task ->
+            Thread({
+                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
+                task.run()
+            }, "Loudness-${count.incrementAndGet()}")
+        }.asCoroutineDispatcher()
     }
 
     private companion object {

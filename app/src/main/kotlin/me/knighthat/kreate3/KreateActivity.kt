@@ -25,6 +25,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.constant.ContrastLevel
@@ -32,6 +33,7 @@ import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.repository.UserRepository
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.source.local.LocalMusicScheduler
 import me.knighthat.kreate3.ui.screen.KreateApp
 import me.knighthat.kreate3.ui.screen.SetupWizardScreen
@@ -81,6 +83,10 @@ class KreateActivity : ComponentActivity() {
             isReady = true
             return
         }
+
+        // Made before a screen asks for them, off the main thread: their HTTP clients take long
+        // to set up. A screen asking meanwhile waits for these instead of making its own.
+        lifecycleScope.launch(Dispatchers.Default) { get<Providers>() }
 
         lifecycleScope.launch {
             Preferences.awaitLoaded()

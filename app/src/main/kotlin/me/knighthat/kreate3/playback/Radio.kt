@@ -19,6 +19,8 @@
 package me.knighthat.kreate3.playback
 
 import androidx.media3.common.MediaItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
@@ -47,7 +49,11 @@ class Radio(
      * @throws me.knighthat.kreate3.provider.opensubsonic.ServerException when the server can't be used
      * @throws me.knighthat.kreate3.provider.youtube.YouTubeException when YouTube can't be reached
      */
-    suspend fun after(seed: MediaItem, limit: Int): List<MediaItem> {
+    suspend fun after(seed: MediaItem, limit: Int): List<MediaItem> =
+        // Called from the controller, on the main thread
+        withContext(Dispatchers.Default) { similar(seed, limit) }
+
+    private suspend fun similar(seed: MediaItem, limit: Int): List<MediaItem> {
         val id = seed.mediaId
         val found = when (seed.origin) {
             Origin.LOCAL -> songs.similar(id, limit).mapNotNull { it.toMediaItem() }

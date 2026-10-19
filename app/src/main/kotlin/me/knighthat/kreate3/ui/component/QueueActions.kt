@@ -42,7 +42,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.preferences.Preference
@@ -135,7 +137,9 @@ fun rememberSongTap(
             scope.launch {
                 val isRadio = radio?.value == true
                 val list = if (isRadio) emptyList() else currentSongs()
-                playback.playTapped(song, list, isRadio)?.let(notifier::post)
+                // The list can be a whole library, the controller can be called from any thread
+                withContext(Dispatchers.Default) { playback.playTapped(song, list, isRadio) }
+                    ?.let(notifier::post)
             }
         }
     }
@@ -155,7 +159,10 @@ fun rememberQueueActions(songs: suspend () -> List<MediaItem>): (QueueAction) ->
     return remember(playback, notifier, scope) {
         { action ->
             scope.launch {
-                playback.queue(action, currentSongs())?.let(notifier::post)
+                val songs = currentSongs()
+                // The list can be a whole library, the controller can be called from any thread
+                withContext(Dispatchers.Default) { playback.queue(action, songs) }
+                    ?.let(notifier::post)
             }
         }
     }

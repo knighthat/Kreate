@@ -40,11 +40,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
 import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
@@ -90,7 +92,9 @@ abstract class LiveDetailViewModel<T : Any> : ViewModel() {
         job = viewModelScope.launch {
             _state.value = LiveState.Loading
             _state.value = try {
-                fetch()?.let { LiveState.Ready(it) } ?: LiveState.Failed(notFound)
+                // Turning the answer into the page takes long, never on the main thread
+                withContext(Dispatchers.Default) { fetch() }?.let { LiveState.Ready(it) }
+                    ?: LiveState.Failed(notFound)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: YouTubeException) {

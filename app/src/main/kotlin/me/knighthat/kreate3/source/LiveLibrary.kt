@@ -21,9 +21,10 @@ package me.knighthat.kreate3.source
 import android.util.Log
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.provider.LibrarySection
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.openSubsonicSyncSetting
@@ -91,13 +92,14 @@ private fun youTubeSection(
 ): suspend () -> List<MediaItem>? = { if (section.youTubeSyncSetting.value) fetch() else null }
 
 /**
- * Every source at once, their items in the order of [sources], each item once.
+ * Every source at once, their items in the order of [sources], each item once. Called from a
+ * screen, so the lists are built off the main thread: a large library takes long.
  *
  * @param sources each gives `null` while it is off or nobody is signed in
  */
 private suspend fun fetchEach(
     vararg sources: suspend () -> List<MediaItem>?,
-): List<MediaItem> = coroutineScope {
+): List<MediaItem> = withContext(Dispatchers.Default) {
     sources.map { source ->
         async {
             try {

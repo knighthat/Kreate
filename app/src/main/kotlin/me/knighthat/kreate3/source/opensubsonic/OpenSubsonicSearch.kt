@@ -24,7 +24,9 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.ui.component.toLiveMediaItem
@@ -88,7 +90,11 @@ private class OpenSubsonicSearchPagingSource(
     // A search can't start in the middle, it starts over
     override fun getRefreshKey(state: PagingState<Int, MediaItem>): Int? = null
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MediaItem> {
+    // Paging loads where the pages are collected, the main thread: the items are made off it
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MediaItem> =
+        withContext(Dispatchers.Default) { loadPage(params) }
+
+    private suspend fun loadPage(params: LoadParams<Int>): LoadResult<Int, MediaItem> {
         val offset = params.key ?: 0
         val size = params.loadSize
 

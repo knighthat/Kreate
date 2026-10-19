@@ -27,11 +27,13 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.contentType
 import io.ktor.http.parameters
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -670,7 +672,9 @@ class OpenSubsonicProvider internal constructor(
         method: String,
         signIn: List<Pair<String, String>>,
         params: List<Pair<String, String>> = emptyList(),
-    ): Answer {
+    ): Answer = withContext(Dispatchers.IO) {
+        // Decoding a large library's answer takes long, never on the caller's thread, which may
+        // be the main one
         val body = try {
             client().submitForm(
                 url = "${settings.url.trimEnd('/')}/rest/$method",
@@ -681,10 +685,10 @@ class OpenSubsonicProvider internal constructor(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            return Answer.Failure(failureOf(e))
+            return@withContext Answer.Failure(failureOf(e))
         }
 
-        return parse(body)
+        parse(body)
     }
 
     /**

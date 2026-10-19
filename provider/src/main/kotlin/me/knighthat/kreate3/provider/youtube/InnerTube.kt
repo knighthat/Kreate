@@ -29,6 +29,8 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.content.TextContent
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectBuilder
@@ -290,24 +292,32 @@ internal class InnerTube(
             throw YouTubeException("Couldn't reach YouTube", cause = e)
         }
 
-        val text = try {
-            response.bodyAsText()
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            throw YouTubeException("Couldn't read the answer of YouTube", response.status.value, e)
-        }
-        if (!response.status.isSuccess())
-            throw YouTubeException("YouTube answered ${response.status}", response.status.value)
+        // Decoding an answer takes long, they are large, never on the caller's thread, which may be
+        // the main one
+        val answer = withContext(Dispatchers.IO) {
+            val text = try {
+                response.bodyAsText()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                throw YouTubeException(
+                    "Couldn't read the answer of YouTube",
+                    response.status.value,
+                    e
+                )
+            }
+            if (!response.status.isSuccess())
+                throw YouTubeException("YouTube answered ${response.status}", response.status.value)
 
-        val answer = try {
-            json.parseToJsonElement(text).jsonObject
-        } catch (e: Exception) {
-            throw YouTubeException(
-                "YouTube answered something else than JSON",
-                response.status.value,
-                e
-            )
+            try {
+                json.parseToJsonElement(text).jsonObject
+            } catch (e: Exception) {
+                throw YouTubeException(
+                    "YouTube answered something else than JSON",
+                    response.status.value,
+                    e
+                )
+            }
         }
         if (signedIn && !answer.isSignedIn())
             throw YouTubeException(

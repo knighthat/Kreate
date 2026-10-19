@@ -23,10 +23,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.paging.cachedIn
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.database.repository.AlbumRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.ui.component.toMediaItem
@@ -55,7 +57,10 @@ class LocalAlbumDetailViewModel(
 
     /** Every song of [songs] right now, in its order, for the quick actions. */
     suspend fun allSongs(): List<MediaItem> =
-        songRepository.listOfAlbum(albumId).mapNotNull { it.toMediaItem() }
+        // Every song of a large library takes long to turn into items, never on the main thread
+        withContext(Dispatchers.Default) {
+            songRepository.listOfAlbum(albumId).mapNotNull { it.toMediaItem() }
+        }
 
     /** Whether the album can be shared, it has a link. */
     val canShare: StateFlow<Boolean> = album

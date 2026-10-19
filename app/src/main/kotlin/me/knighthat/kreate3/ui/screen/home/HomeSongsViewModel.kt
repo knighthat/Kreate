@@ -22,8 +22,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.paging.cachedIn
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
@@ -64,5 +66,8 @@ class HomeSongsViewModel(
 
     /** Every song of the list right now, in its order, for the quick actions. */
     suspend fun allSongs(): List<MediaItem> =
-        songRepository.list(origins = filter.selected.value).mapNotNull { it.toMediaItem() }
+        // Every song of a large library takes long to turn into items, never on the main thread
+        withContext(Dispatchers.Default) {
+            songRepository.list(origins = filter.selected.value).mapNotNull { it.toMediaItem() }
+        }
 }

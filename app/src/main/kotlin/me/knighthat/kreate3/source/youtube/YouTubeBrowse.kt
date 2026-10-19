@@ -23,7 +23,9 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
 import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
@@ -57,7 +59,11 @@ private class YouTubeBrowsePagingSource(
     // A page can't start in the middle, it starts over
     override fun getRefreshKey(state: PagingState<String, Pair<Tab, MediaItem>>): String? = null
 
-    override suspend fun load(params: LoadParams<String>): LoadResult<String, Pair<Tab, MediaItem>> {
+    // Paging loads where the pages are collected, the main thread: the items are made off it
+    override suspend fun load(params: LoadParams<String>): LoadResult<String, Pair<Tab, MediaItem>> =
+        withContext(Dispatchers.Default) { loadPage(params) }
+
+    private suspend fun loadPage(params: LoadParams<String>): LoadResult<String, Pair<Tab, MediaItem>> {
         if (params.key == null) shown.clear()
 
         val page = try {
