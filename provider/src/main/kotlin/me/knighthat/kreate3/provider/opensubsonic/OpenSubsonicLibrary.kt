@@ -26,7 +26,6 @@ import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
 import me.knighthat.kreate3.preferences.Preferences
-import me.knighthat.kreate3.provider.LibrarySection
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
@@ -38,17 +37,16 @@ import kotlin.time.Instant
  * fetched each time they show. Turning the server or the syncing off only stops the syncing, the
  * likes stay as they are.
  *
- * @param syncs whether the starred songs are synced, [Preferences.OPEN_SUBSONIC_SYNC_SONGS] isn't
- * [SyncMode.OFF]
+ * @param mode how the starred songs are synced, [Preferences.OPEN_SUBSONIC_SYNC_SONGS]:
+ * [SyncMode.LIKED] asks the server for the starred ones, [SyncMode.ALL] fetches every song and
+ * keeps the starred ones
  */
 class OpenSubsonicLibrary(
     private val provider: OpenSubsonicProvider,
     private val repository: RemoteCatalogRepository,
     private val scope: CoroutineScope,
     private val clock: Clock = Clock.System,
-    private val syncs: () -> Boolean = {
-        LibrarySection.SONGS.openSubsonicSyncSetting.value != SyncMode.OFF
-    },
+    private val mode: () -> SyncMode = { Preferences.OPEN_SUBSONIC_SYNC_SONGS.value },
 ) {
 
     /** When the liked songs of each server address were last brought up to date, or are being now. */
@@ -59,7 +57,7 @@ class OpenSubsonicLibrary(
      * failure leaves what is stored as it was, and lets the next call try again.
      */
     fun refresh() {
-        if (!syncs()) return
+        if (mode() == SyncMode.OFF) return
         val server = provider.serverUrl ?: return
         val now = clock.now()
 
@@ -93,8 +91,15 @@ class OpenSubsonicLibrary(
      * changed or the syncing was turned off meanwhile
      */
     private suspend fun sync(server: String): Boolean {
-        val songs = provider.starredSongs() ?: return false
-        if (provider.serverUrl != server || !syncs()) return false
+        val songs = when (mode()) {
+            SyncMode.OFF -> return false
+            SyncMode.LIKED -> provider.starredSongs()
+            // Most recently starred first, like getStarred2
+            SyncMode.ALL -> provider.allSongs()
+                ?.filter { it.starredAt != null }
+                ?.sortedByDescending { it.starredAt }
+        } ?: return false
+        if (provider.serverUrl != server || mode() == SyncMode.OFF) return false
         repository.syncLikedSongs(Origin.OPEN_SUBSONIC, songs)
         return true
     }
@@ -106,15 +111,3 @@ class OpenSubsonicLibrary(
         val MIN_INTERVAL = 5.minutes
     }
 }
-
-/**
- * How much of [this] section of the server's library is brought in: the starred songs are synced,
- * the others show on the home screen.
- */
-val LibrarySection.openSubsonicSyncSetting
-    get() = when (this) {
-        LibrarySection.SONGS -> Preferences.OPEN_SUBSONIC_SYNC_SONGS
-        LibrarySection.ALBUMS -> Preferences.OPEN_SUBSONIC_SYNC_ALBUMS
-        LibrarySection.ARTISTS -> Preferences.OPEN_SUBSONIC_SYNC_ARTISTS
-        LibrarySection.PLAYLISTS -> Preferences.OPEN_SUBSONIC_SYNC_PLAYLISTS
-    }

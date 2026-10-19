@@ -206,9 +206,10 @@ object Preferences : KoinComponent {
 
     /**
      * Whether the songs starred on the OpenSubsonic server are liked in the profile's library,
-     * and the ones no longer starred aren't. [SyncMode.LIKED] by default. [SyncMode.ALL] syncs
-     * the starred songs the same way for now. While it is [SyncMode.OFF] they aren't fetched,
-     * turning it off leaves the likes as they are.
+     * and the ones no longer starred aren't. [SyncMode.LIKED] by default, which asks the server
+     * for the starred songs. [SyncMode.ALL] fetches every song on the server, still only the
+     * starred ones are stored. While it is [SyncMode.OFF] they aren't fetched, turning it off
+     * leaves the likes as they are.
      */
     val OPEN_SUBSONIC_SYNC_SONGS by lazy { enum("open_subsonic_sync_songs", SyncMode.LIKED) }
 
@@ -221,14 +222,8 @@ object Preferences : KoinComponent {
     /** Like [OPEN_SUBSONIC_SYNC_ALBUMS], for the artists on the OpenSubsonic server. */
     val OPEN_SUBSONIC_SYNC_ARTISTS by lazy { enum("open_subsonic_sync_artists", SyncMode.ALL) }
 
-    /**
-     * Whether the playlists the user can see on the OpenSubsonic server show in the library.
-     * [SyncMode.ALL] by default. The server can't star playlists, so [SyncMode.LIKED] shows them
-     * all too for now.
-     */
-    val OPEN_SUBSONIC_SYNC_PLAYLISTS by lazy {
-        enum("open_subsonic_sync_playlists", SyncMode.ALL)
-    }
+    /** Like [YOUTUBE_SYNC_ALBUMS], for the playlists on the OpenSubsonic server. */
+    val OPEN_SUBSONIC_SYNC_PLAYLISTS by lazy { boolean("open_subsonic_sync_playlists", true) }
 
     /** Host the remembered certificate belongs to, empty when none is remembered. */
     val OPEN_SUBSONIC_CERTIFICATE_HOST by lazy { string("open_subsonic_certificate_host", "") }

@@ -42,9 +42,7 @@ import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
-import me.knighthat.kreate3.provider.LibrarySection
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
-import me.knighthat.kreate3.provider.opensubsonic.openSubsonicSyncSetting
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
@@ -100,14 +98,6 @@ private fun StreamQuality.openSubsonicLabel(): String = when (this) {
 }
 
 private fun String.shortFingerprint(): String = split(':').take(8).joinToString(":") + "…"
-
-/** The starred songs are synced, the other sections show in the library. */
-private fun LibrarySection.syncTitle(): String = when (this) {
-    LibrarySection.SONGS -> "Sync songs"
-    LibrarySection.ALBUMS -> "Show albums"
-    LibrarySection.ARTISTS -> "Show artists"
-    LibrarySection.PLAYLISTS -> "Show playlists"
-}
 
 private fun SyncMode.label(): String = when (this) {
     SyncMode.OFF -> "Off"
@@ -212,6 +202,10 @@ fun OpenSubsonicSettingsScreen(
     val directPlay by Preferences.OPEN_SUBSONIC_DIRECT_PLAY.collectAsStateWithLifecycle()
     val certificateHost by Preferences.OPEN_SUBSONIC_CERTIFICATE_HOST.collectAsStateWithLifecycle()
     val certificate by Preferences.OPEN_SUBSONIC_CERTIFICATE_SHA256.collectAsStateWithLifecycle()
+    val syncSongs by Preferences.OPEN_SUBSONIC_SYNC_SONGS.collectAsStateWithLifecycle()
+    val syncAlbums by Preferences.OPEN_SUBSONIC_SYNC_ALBUMS.collectAsStateWithLifecycle()
+    val syncArtists by Preferences.OPEN_SUBSONIC_SYNC_ARTISTS.collectAsStateWithLifecycle()
+    val syncPlaylists by Preferences.OPEN_SUBSONIC_SYNC_PLAYLISTS.collectAsStateWithLifecycle()
     // Fingerprint of the change the user put off, it isn't asked again until they tap the row
     var putOff by rememberSaveable { mutableStateOf<String?>(null) }
     var askForget by remember { mutableStateOf(false) }
@@ -327,15 +321,32 @@ fun OpenSubsonicSettingsScreen(
         )
 
         SettingsSection("Server library")
-        LibrarySection.entries.forEach { section ->
-            val mode by section.openSubsonicSyncSetting.collectAsStateWithLifecycle()
-            ChoiceSetting(
-                title = section.syncTitle(),
-                value = mode,
-                options = SyncMode.entries,
-                label = SyncMode::label,
-                onSelect = { viewModel.setSyncing(section, it) },
-            )
-        }
+        ChoiceSetting(
+            title = "Sync songs",
+            value = syncSongs,
+            options = SyncMode.entries,
+            label = SyncMode::label,
+            onSelect = viewModel::setSongSync,
+        )
+        ChoiceSetting(
+            title = "Show albums",
+            value = syncAlbums,
+            options = SyncMode.entries,
+            label = SyncMode::label,
+            onSelect = Preferences.OPEN_SUBSONIC_SYNC_ALBUMS::update,
+        )
+        ChoiceSetting(
+            title = "Show artists",
+            value = syncArtists,
+            options = SyncMode.entries,
+            label = SyncMode::label,
+            onSelect = Preferences.OPEN_SUBSONIC_SYNC_ARTISTS::update,
+        )
+        SwitchSetting(
+            title = "Show playlists",
+            summary = "Your playlists on the server show in your library",
+            checked = syncPlaylists,
+            onCheckedChange = Preferences.OPEN_SUBSONIC_SYNC_PLAYLISTS::update,
+        )
     }
 }

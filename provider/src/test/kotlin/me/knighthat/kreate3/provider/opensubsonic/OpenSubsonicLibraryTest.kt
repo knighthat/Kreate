@@ -34,6 +34,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
+import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
 import me.knighthat.kreate3.database.repository.RemoteSong
@@ -110,11 +111,11 @@ class OpenSubsonicLibraryTest {
         settings,
     )
 
-    /** Whether syncing the starred songs is on. */
+    /** How the starred songs are synced. */
     @Volatile
-    private var syncing = true
+    private var mode = SyncMode.LIKED
 
-    private val library = OpenSubsonicLibrary(provider, repository, scope, clock) { syncing }
+    private val library = OpenSubsonicLibrary(provider, repository, scope, clock) { mode }
 
     private fun ok(content: String) =
         """{"subsonic-response":{"status":"ok","version":"1.16.1",$content}}"""
@@ -135,6 +136,26 @@ class OpenSubsonicLibraryTest {
 
         eventually { repository.calls.size == 1 }
         assertEquals(listOf("liked [s1, s2] complete true"), repository.calls)
+    }
+
+    @Test
+    fun syncingAllFetchesEverySongAndLikesTheStarredOnes() {
+        mode = SyncMode.ALL
+        val methods = Collections.synchronizedList(mutableListOf<String>())
+        answer = { method ->
+            methods += method
+            ok(""""searchResult3":{"song":[
+                {"id":"s1","starred":"2024-01-01T00:00:00Z"},
+                {"id":"s2"},
+                {"id":"s3","starred":"2025-01-01T00:00:00Z"}]}""")
+        }
+
+        library.refresh()
+
+        eventually { repository.calls.size == 1 }
+        assertEquals(listOf("search3"), methods)
+        // Most recently starred first
+        assertEquals(listOf("liked [s3, s1] complete true"), repository.calls)
     }
 
     @Test
@@ -217,7 +238,7 @@ class OpenSubsonicLibraryTest {
 
     @Test
     fun nothingIsSyncedWhileTurnedOff() {
-        syncing = false
+        mode = SyncMode.OFF
 
         library.refresh()
         settle()
@@ -229,7 +250,7 @@ class OpenSubsonicLibraryTest {
     fun aFetchRunningWhenTurnedOffIsDropped() {
         val default = answer
         answer = { method ->
-            syncing = false
+            mode = SyncMode.OFF
             default(method)
         }
 

@@ -388,6 +388,23 @@ class OpenSubsonicProvider internal constructor(
     }
 
     /**
+     * Every song on the server with its star, in pages of [PAGE_SIZE]. Asks `search3` for
+     * everything with an empty query, which OpenSubsonic servers answer with their whole library.
+     *
+     * @return `null` while the server is off or not set up
+     * @throws ServerException when the server can't be used or refuses the request
+     */
+    suspend fun allSongs(): List<RemoteSong>? {
+        val songs = mutableListOf<RemoteSong>()
+        do {
+            val page = searchLibrary("", PAGE_SIZE, 0, 0, songs.size)?.songs ?: return null
+            songs += page
+        } while (page.size == PAGE_SIZE)
+
+        return songs
+    }
+
+    /**
      * Songs the server finds similar to [songId], most similar first. Servers build this from
      * outside metadata, like Last.fm for Navidrome, so it may be empty.
      *
