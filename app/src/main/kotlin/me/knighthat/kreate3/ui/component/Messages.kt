@@ -24,11 +24,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.collectLatest
 import me.knighthat.kreate3.notification.MessageDuration
 import me.knighthat.kreate3.notification.Notifier
@@ -55,26 +56,25 @@ fun MessageHost(modifier: Modifier = Modifier) = SnackbarHost(LocalMessageHost.c
  */
 @Composable
 fun ShowMessages(notifier: Notifier, host: SnackbarHostState) {
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val state by LocalLifecycleOwner.current.lifecycle.currentStateFlow.collectAsState()
+    // Not collected meanwhile, so the notifier sends messages to the system instead
+    if (!state.isAtLeast(Lifecycle.State.STARTED)) return
 
-    LaunchedEffect(notifier, host, lifecycle) {
-        // Not collected meanwhile, so nothing piles up to show when the user is back
-        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            // A message cancelled by the next one is taken off the screen
-            notifier.messages.collectLatest { message ->
-                host.currentSnackbarData?.dismiss()
-                val result = host.showSnackbar(
-                    message = message.text,
-                    actionLabel = message.actionLabel,
-                    withDismissAction = message.dismissable,
-                    duration = when (message.duration) {
-                        MessageDuration.SHORT -> SnackbarDuration.Short
-                        MessageDuration.LONG -> SnackbarDuration.Long
-                        MessageDuration.INDEFINITE -> SnackbarDuration.Indefinite
-                    },
-                )
-                if (result == SnackbarResult.ActionPerformed) message.onAction()
-            }
+    LaunchedEffect(notifier, host) {
+        // A message cancelled by the next one is taken off the screen
+        notifier.messages.collectLatest { message ->
+            host.currentSnackbarData?.dismiss()
+            val result = host.showSnackbar(
+                message = message.text,
+                actionLabel = message.actionLabel,
+                withDismissAction = message.dismissable,
+                duration = when (message.duration) {
+                    MessageDuration.SHORT -> SnackbarDuration.Short
+                    MessageDuration.LONG -> SnackbarDuration.Long
+                    MessageDuration.INDEFINITE -> SnackbarDuration.Indefinite
+                },
+            )
+            if (result == SnackbarResult.ActionPerformed) message.onAction()
         }
     }
 }

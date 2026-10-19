@@ -34,7 +34,10 @@ import kotlinx.coroutines.SupervisorJob
 import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.databaseModule
+import me.knighthat.kreate3.notification.LocalScanNotifications
 import me.knighthat.kreate3.notification.Notifier
+import me.knighthat.kreate3.notification.SystemNotifications
+import me.knighthat.kreate3.notification.createNotificationChannels
 import me.knighthat.kreate3.playback.playbackModule
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.preferencesModule
@@ -98,6 +101,11 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
         // Before anything opens the files it replaces
         Backup.applyPendingRestore(this)
 
+        // Before anything notifies, a notification on a missing channel doesn't show
+        createNotificationChannels()
+        // A scan's progress left by a killed process, before the work starts again
+        LocalScanNotifications(this).clearStale()
+
         startKoin {
             androidContext(this@KreateApplication)
 
@@ -105,7 +113,11 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                 module {
                     // Lives as long as the process; use for work that must outlive any screen
                     single { CoroutineScope(SupervisorJob() + Dispatchers.Default) }
-                    single { Notifier() }
+
+                    // Messages for the user, as system notifications while no screen shows them
+                    single { SystemNotifications(androidContext()) }
+                    single { Notifier(get()) }
+                    single { LocalScanNotifications(androidContext()) }
 
                     // Creates the database users of the profiles, and tells the database who is active
                     val isSetup = setupCompletedFile().exists()

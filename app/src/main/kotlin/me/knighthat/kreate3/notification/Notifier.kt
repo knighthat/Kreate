@@ -32,6 +32,8 @@ enum class MessageDuration { SHORT, LONG, INDEFINITE }
  * @param dismissable whether it has a button to close it
  * @param actionLabel the button next to [text], like "Retry", `null` for none; tapping it runs
  * [onAction] and closes the message
+ * @param channel where it shows as a system notification while no screen shows messages, `null`
+ * to drop it then, like for a reply to a tap
  */
 data class Message(
     val text: String,
@@ -39,29 +41,37 @@ data class Message(
     val dismissable: Boolean = false,
     val actionLabel: String? = null,
     val onAction: () -> Unit = {},
+    val channel: AppChannel? = null,
 )
 
 /**
  * Where any part of the app, a screen or not, tells the user something. The app shows each
  * [Message] at the bottom of whatever screen is open, a new one replaces the one showing.
  *
- * A message posted while the app isn't on screen is dropped.
+ * While no screen shows messages, like when the app is in the background, a message with a
+ * [Message.channel] goes to [system] instead, and one without is dropped.
+ *
+ * @param system `null` where there is nothing but screens, like in previews
  */
-class Notifier {
+class Notifier(private val system: SystemNotifications? = null) {
 
     private val _messages = MutableSharedFlow<Message>(
         extraBufferCapacity = 8,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
 
-    /** Every [Message] posted from now on. */
+    /** Every [Message] posted from now on, for a screen to show. */
     val messages: SharedFlow<Message> = _messages.asSharedFlow()
 
     /** Shows [message]. Safe to call from any thread, it never waits. */
     fun post(message: Message) {
-        _messages.tryEmit(message)
+        // Screens collect only while the app is on screen, see ShowMessages
+        if (_messages.subscriptionCount.value == 0 && message.channel != null)
+            system?.post(message)
+        else
+            _messages.tryEmit(message)
     }
 
-    /** Shows [text] for a short time. */
-    fun post(text: String) = post(Message(text))
+    /** Shows [text] for a short time, see [Message.channel] for [channel]. */
+    fun post(text: String, channel: AppChannel? = null) = post(Message(text, channel = channel))
 }

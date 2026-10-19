@@ -26,6 +26,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.database.repository.LocalCatalogRepository
+import me.knighthat.kreate3.notification.LocalScanNotifications
 import me.knighthat.kreate3.utils.hasAudioPermission
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -42,6 +43,7 @@ class LocalMusicWorker(
 ) : CoroutineWorker(context, params), KoinComponent {
 
     private val catalog: LocalCatalogRepository by inject()
+    private val notifications: LocalScanNotifications by inject()
 
     override suspend fun doWork(): Result {
         if (!applicationContext.hasAudioPermission()) {
@@ -49,18 +51,22 @@ class LocalMusicWorker(
             return Result.success()
         }
 
+        notifications.scanning()
         return try {
             val songs = withContext(Dispatchers.IO) {
                 MediaStoreScanner(applicationContext.contentResolver).scan()
             }
             Log.i(TAG, "Found ${songs.size} songs on the device")
             catalog.sync(songs)
+            notifications.scanned(songs.size)
             LocalMusicScheduler.measureLoudness(applicationContext)
             Result.success()
         } catch (e: CancellationException) {
+            notifications.cancelScan()
             throw e
         } catch (e: Exception) {
             Log.e(TAG, "Scanning local music failed", e)
+            notifications.cancelScan()
             Result.retry()
         }
     }

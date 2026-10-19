@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.notification.AppChannel
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.Notifier
 
@@ -227,11 +228,12 @@ class PlaybackControllerImpl(
 
                     override fun onPlayerError(error: PlaybackException) {
                         Log.w(TAG, "Couldn't play ${connected.currentMediaItem?.mediaId}", error)
-                        // Whatever screen is open, the user learns why a song stopped
+                        // Whatever screen is open, or none, the user learns why a song stopped
                         notifier.post(
                             Message(
                                 error.userMessage(connected.currentMediaItem),
                                 dismissable = true,
+                                channel = AppChannel.PLAYBACK,
                             )
                         )
                     }

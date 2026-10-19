@@ -32,6 +32,7 @@ import kotlinx.coroutines.launch
 import me.knighthat.kreate3.KreateApplication
 import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.backup.BackupException
+import me.knighthat.kreate3.notification.AppChannel
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.preferences.Profile
 import me.knighthat.kreate3.preferences.ProfileManager
@@ -76,7 +77,7 @@ class BackupViewModel(
     }
 
     /** Restores the backup at [uri], the app restarts when it can be restored. */
-    fun restore(uri: Uri) = run(BackupTask.RESTORE, "Couldn't read the backup") {
+    fun restore(uri: Uri) = run(BackupTask.RESTORE, "Couldn't read the backup", AppChannel.OTHER) {
         backup.stage(openStream { context.contentResolver.openInputStream(uri) })
         (context.applicationContext as KreateApplication).restart()
     }
@@ -84,7 +85,15 @@ class BackupViewModel(
     private fun <T> openStream(open: () -> T?): T =
         open() ?: throw FileNotFoundException()
 
-    private fun run(task: BackupTask, failure: String, work: suspend () -> Unit) {
+    /**
+     * @param channel where [failure] goes while no screen shows messages, see `Message.channel`
+     */
+    private fun run(
+        task: BackupTask,
+        failure: String,
+        channel: AppChannel? = null,
+        work: suspend () -> Unit,
+    ) {
         if (_working.value != null) return
         if (profileManager.activeId.value != Profile.DEFAULT_ID) {
             notifier.post("Only the default profile can back up or restore")
@@ -98,11 +107,11 @@ class BackupViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: BackupException) {
-                notifier.post(e.message.orEmpty())
+                notifier.post(e.message.orEmpty(), channel)
             } catch (_: IOException) {
-                notifier.post(failure)
+                notifier.post(failure, channel)
             } catch (_: SecurityException) {
-                notifier.post(failure)
+                notifier.post(failure, channel)
             } finally {
                 _working.value = null
             }

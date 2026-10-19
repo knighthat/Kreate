@@ -28,12 +28,14 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.repository.SongRepository
+import me.knighthat.kreate3.notification.LocalScanNotifications
 import me.knighthat.kreate3.utils.hasAudioPermission
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -53,6 +55,7 @@ class LoudnessWorker(
 ) : CoroutineWorker(context, params), KoinComponent {
 
     private val songs: SongRepository by inject()
+    private val notifications: LocalScanNotifications by inject()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun doWork(): Result {
@@ -66,38 +69,53 @@ class LoudnessWorker(
         val failed = mutableSetOf<String>()
         val done = mutableSetOf<String>()
 
-        // Songs a scan adds while this runs are picked up by asking again
-        while (true) {
-            val pending = (songs.idsWithoutGain(Origin.LOCAL, Origin.LOCAL.name) +
-                    replaced(scanner)).distinct() - failed - done
-            if (pending.isEmpty()) break
+        try {
+            // Songs a scan adds while this runs are picked up by asking again
+            while (true) {
+                val pending = (songs.idsWithoutGain(Origin.LOCAL, Origin.LOCAL.name) +
+                        replaced(scanner)).distinct() - failed - done
+                if (pending.isEmpty()) break
 
-            // Several songs are measured at once, the results are handled one by one
-            pending.asFlow()
-                .flatMapMerge(PARALLELISM) { songId ->
-                    flow {
-                        emit(
-                            songId to measure(
-                                analyzer,
-                                songId
+                val total = done.size + failed.size + pending.size
+                notifications.measuring(done.size + failed.size, total)
+
+                // Several songs are measured at once, the results are handled one by one
+                pending.asFlow()
+                    .flatMapMerge(PARALLELISM) { songId ->
+                        flow {
+                            emit(
+                                songId to measure(
+                                    analyzer,
+                                    songId
+                                )
                             )
-                        )
+                        }
                     }
-                }
-                .collect { (songId, format) ->
-                    if (format == null) {
-                        failed += songId
-                        return@collect
+                    .collect { (songId, format) ->
+                        if (format == null) failed += songId
+                        else {
+                            songs.saveFormat(format)
+                            // Once each run, a file the index and the file system disagree on would repeat forever
+                            done += songId
+                        }
+                        notifications.measuring(done.size + failed.size, total)
                     }
-                    songs.saveFormat(format)
-                    // Once each run, a file the index and the file system disagree on would repeat forever
-                    done += songId
-                }
+            }
+        } catch (e: CancellationException) {
+            notifications.cancelLoudness()
+            throw e
         }
 
         Log.i(TAG, "Measured ${done.size} songs, ${failed.size} couldn't be measured")
+        // Nothing to tell when every song was measured already
+        if (done.isNotEmpty() || failed.isNotEmpty())
+            notifications.measured(done.size, done.size + failed.size, failed.map { nameOf(it) })
         return Result.success()
     }
+
+    /** What the user knows the song as, its id when it has no name. */
+    private suspend fun nameOf(songId: String): String =
+        songs.find(songId).first()?.name ?: "Song $songId"
 
     /**
      * Songs with a gain whose file isn't the size it was when measured.
