@@ -26,6 +26,7 @@ import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.ContentMetadata
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
+import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.preferences.Preferences
 import java.io.File
 
@@ -63,6 +64,18 @@ class SongCaches(context: Context) {
         ContentMetadata.getContentLength(cache.getContentMetadata(song.cacheKey))
             .takeIf { it >= 0 && cache.getCachedSpans(song.cacheKey).isNotEmpty() }
 
-    /** Drops what [cache] keeps of [song]. */
+    /**
+     * The copies [cache] keeps of [song], one for each quality it was read in through the cache
+     * ([QueuedSong.cacheKey]), with whether the whole song is in it.
+     */
+    fun copies(song: QueuedSong): Map<StreamQuality, Boolean> =
+        StreamQuality.entries.mapNotNull { quality ->
+            val key = song.copy(quality = quality).cacheKey
+            if (cache.getCachedSpans(key).isEmpty()) return@mapNotNull null
+            val length = ContentMetadata.getContentLength(cache.getContentMetadata(key))
+            quality to (length >= 0 && cache.isCached(key, 0, length))
+        }.toMap()
+
+    /** Drops what [cache] keeps of [song], of its [QueuedSong.quality]. */
     fun drop(song: QueuedSong) = cache.removeResource(song.cacheKey)
 }

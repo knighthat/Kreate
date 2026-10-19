@@ -22,8 +22,13 @@ import android.net.Uri
 import androidx.core.net.toUri
 import io.ktor.client.HttpClient
 import io.ktor.client.request.forms.submitForm
+import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsBytes
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.content.TextContent
 import io.ktor.http.contentType
 import io.ktor.http.parameters
 import kotlinx.coroutines.CancellationException
@@ -38,13 +43,20 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
+import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Origin
@@ -103,6 +115,10 @@ class OpenSubsonicProvider internal constructor(
     /** The last [shareRole] read, with the server and sign in it is for. */
     @Volatile
     private var knownShareRole: Pair<String, Boolean>? = null
+
+    /** The OpenSubsonic extensions the server last said it has, with the server they are of. */
+    @Volatile
+    private var knownExtensions: Pair<String, Set<String>>? = null
 
     /**
      * Whether a server answers at the address, and what it says about itself. No credentials
@@ -550,10 +566,17 @@ class OpenSubsonicProvider internal constructor(
      * @return the `subsonic-response` of the answer
      * @throws ServerException when the request fails or the server refuses it
      */
-    private suspend fun call(method: String, vararg params: Pair<String, String>): JsonObject {
+    /**
+     * @param body sent as JSON, with the parameters in the address, for methods that take one
+     */
+    private suspend fun call(
+        method: String,
+        vararg params: Pair<String, String>,
+        body: JsonObject? = null,
+    ): JsonObject {
         val credentials = credentials() ?: throw ServerException(ServerCheck.NotConfigured)
 
-        return when (val answer = request(method, credentials, params.toList())) {
+        return when (val answer = request(method, credentials, params.toList(), body)) {
             is Answer.Failure -> throw ServerException(answer.check)
             is Answer.Response ->
                 if (answer.ok) answer.envelope
@@ -604,6 +627,87 @@ class OpenSubsonicProvider internal constructor(
      * store or log it.
      */
     override suspend fun playbackUri(songId: String): Uri? = endpoint("stream", "id" to songId)
+
+    /**
+     * What to stream of [songId] in [quality]. [StreamQuality.ORIGINAL] is the file as it is, the
+     * others are a highest bitrate: songs above it are converted by the server, the others are
+     * sent as they are.
+     *
+     * A server with the `transcoding` extension is asked what it sends first, which gives the
+     * format it converts to and the formats the player reads without converting. Others get the
+     * highest bitrate and pick the format, which the answer to the stream tells, see
+     * [ServerStream.answeredFormat].
+     *
+     * A converted song has an estimated length, so the player can seek in it: until the server
+     * has it all, it answers a part with the song from the start, and the song may end a little
+     * before that length.
+     *
+     * @return `null` while the server is off or not set up
+     * @throws ServerException when the server was asked what it sends and can't be used
+     */
+    suspend fun stream(songId: String, quality: StreamQuality): ServerStream? {
+        val bitrate = quality.maxBitRate
+            ?: return endpoint("stream", "id" to songId, "format" to "raw")
+                ?.let { ServerStream(it, null, null) }
+        serverUrl ?: return null
+
+        if (TRANSCODING in extensions()) decidedStream(songId, bitrate)?.let { return it }
+        return endpoint(
+            "stream",
+            "id" to songId,
+            "maxBitRate" to bitrate.toString(),
+            "estimateContentLength" to "true",
+        )?.let { ServerStream(it, null, bitrate) }
+    }
+
+    /**
+     * What the server decided to send of [songId] at most [bitrate] kbps, `null` when it didn't
+     * decide.
+     */
+    private suspend fun decidedStream(songId: String, bitrate: Int): ServerStream? {
+        val decision = call(
+            "getTranscodeDecision",
+            "mediaId" to songId,
+            "mediaType" to "song",
+            body = clientInfo(bitrate * 1000),
+        )["transcodeDecision"]?.jsonObject ?: return null
+
+        if (decision["canDirectPlay"]?.jsonPrimitive?.booleanOrNull == true)
+            return endpoint("stream", "id" to songId, "format" to "raw")
+                ?.let { ServerStream(it, null, null) }
+        if (decision["canTranscode"]?.jsonPrimitive?.booleanOrNull != true) return null
+
+        val params = decision["transcodeParams"]?.jsonPrimitive?.contentOrNull ?: return null
+        val format = decision["transcodeStream"]?.jsonObject?.toTranscodedFormat(songId)
+            ?: return null
+        return endpoint(
+            "getTranscodeStream",
+            "mediaId" to songId,
+            "mediaType" to "song",
+            "transcodeParams" to params,
+            "estimateContentLength" to "true",
+        )?.let { ServerStream(it, format, null) }
+    }
+
+    /**
+     * The OpenSubsonic extensions the server has, by name, asked once for each server. None
+     * while it can't be asked, it is asked again next time.
+     */
+    private suspend fun extensions(): Set<String> {
+        val server = serverUrl ?: return emptySet()
+        knownExtensions?.takeIf { it.first == server }?.let { return it.second }
+
+        return try {
+            val names = call("getOpenSubsonicExtensions")["openSubsonicExtensions"]
+                ?.jsonArray
+                ?.mapNotNull { it.jsonObject["name"]?.jsonPrimitive?.contentOrNull }
+                ?.toSet()
+                .orEmpty()
+            names.also { knownExtensions = server to it }
+        } catch (_: ServerException) {
+            emptySet()
+        }
+    }
 
     /**
      * The client that trusts what the user chose to trust, like a self-signed certificate, for
@@ -672,23 +776,32 @@ class OpenSubsonicProvider internal constructor(
         method: String,
         signIn: List<Pair<String, String>>,
         params: List<Pair<String, String>> = emptyList(),
+        body: JsonObject? = null,
     ): Answer = withContext(Dispatchers.IO) {
+        val url = "${settings.url.trimEnd('/')}/rest/$method"
+        val values = signIn + common() + params
         // Decoding a large library's answer takes long, never on the caller's thread, which may
         // be the main one
-        val body = try {
-            client().submitForm(
-                url = "${settings.url.trimEnd('/')}/rest/$method",
-                formParameters = parameters {
-                    (signIn + common() + params).forEach { (key, value) -> append(key, value) }
-                },
-            ).bodyAsText()
+        val answer = try {
+            if (body == null)
+                client().submitForm(
+                    url = url,
+                    formParameters = parameters {
+                        values.forEach { (key, value) -> append(key, value) }
+                    },
+                ).bodyAsText()
+            else
+                client().post(url) {
+                    values.forEach { (key, value) -> parameter(key, value) }
+                    setBody(TextContent(body.toString(), ContentType.Application.Json))
+                }.bodyAsText()
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             return@withContext Answer.Failure(failureOf(e))
         }
 
-        parse(body)
+        parse(answer)
     }
 
     /**
@@ -763,11 +876,58 @@ class OpenSubsonicProvider internal constructor(
     private fun ByteArray.toHex(): String = joinToString("") { "%02x".format(it) }
 
     private companion object {
+        /** The extension of servers that tell what they convert a song to. */
+        const val TRANSCODING = "transcoding"
+
+        /** Containers and codecs the player reads on every device, ALAC isn't one. */
+        val DIRECT_PLAY_CONTAINERS =
+            listOf("mp3", "mp4", "m4a", "aac", "flac", "ogg", "oga", "opus", "webm", "wav")
+        val DIRECT_PLAY_CODECS = listOf("mp3", "aac", "flac", "vorbis", "opus", "pcm")
 
         /** Requests sent at once when one item needs many, like the albums of an artist. */
         const val PARALLEL_REQUESTS = 4
 
         /** Largest page `getAlbumList2` accepts. */
         const val PAGE_SIZE = 500
+
+        /** In kbps, `null` for the file as it is. */
+        val StreamQuality.maxBitRate: Int?
+            get() = when (this) {
+                StreamQuality.LOW -> 64
+                StreamQuality.MEDIUM -> 128
+                // Lossy files are rarely above it, only lossless ones are converted
+                StreamQuality.HIGH -> 320
+                StreamQuality.ORIGINAL -> null
+            }
+
+        /**
+         * What the player reads, for a transcode decision: the formats it plays as they are up
+         * to [bitrate] bps, and what to convert the others to, Opus first.
+         */
+        fun clientInfo(bitrate: Int): JsonObject = buildJsonObject {
+            put("name", CLIENT_NAME)
+            put("platform", "Android")
+            put("maxAudioBitrate", bitrate)
+            put("maxTranscodingAudioBitrate", bitrate)
+            putJsonArray("directPlayProfiles") {
+                addJsonObject {
+                    putJsonArray("containers") { DIRECT_PLAY_CONTAINERS.forEach { add(it) } }
+                    putJsonArray("audioCodecs") { DIRECT_PLAY_CODECS.forEach { add(it) } }
+                    putJsonArray("protocols") { add("http") }
+                    put("maxAudioChannels", 8)
+                }
+            }
+            putJsonArray("transcodingProfiles") {
+                listOf("ogg" to "opus", "mp3" to "mp3").forEach { (container, codec) ->
+                    addJsonObject {
+                        put("container", container)
+                        put("audioCodec", codec)
+                        put("protocol", "http")
+                        put("maxAudioChannels", 2)
+                    }
+                }
+            }
+            putJsonArray("codecProfiles") {}
+        }
     }
 }

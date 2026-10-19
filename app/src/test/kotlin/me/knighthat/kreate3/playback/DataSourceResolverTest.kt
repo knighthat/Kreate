@@ -26,13 +26,16 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.datasource.DataSourceException
 import androidx.media3.datasource.DataSpec
+import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
+import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.provider.Provider
 import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.provider.SearchResults
+import me.knighthat.kreate3.provider.opensubsonic.ServerStream
 import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeStream
 import me.knighthat.kreate3.ui.component.EXTRA_ORIGIN
@@ -45,6 +48,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.IOException
 import kotlin.time.Clock
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
@@ -66,8 +70,11 @@ class DataSourceResolverTest {
     }
 
     private val now = Instant.fromEpochSeconds(1_700_000_000)
+
+    /** Time passed since [now]. */
+    private var elapsed = Duration.ZERO
     private val clock = object : Clock {
-        override fun now(): Instant = now
+        override fun now(): Instant = now + elapsed
     }
 
     private var serverUri: Uri? = "https://music.example/rest/stream?id=s1".toUri()
@@ -81,6 +88,22 @@ class DataSourceResolverTest {
     /** Size of the file the cache has parts of, by cache key. */
     private val cached = mutableMapOf<String, Long>()
 
+    /** The quality of every request for a stream, in order. */
+    private val qualities = mutableListOf<StreamQuality>()
+
+    /** The quality of every request for a song of the server, in order. */
+    private val serverAsked = mutableListOf<StreamQuality>()
+
+    /** Every answer told with the stream and the media type, in order. */
+    private val answered = mutableListOf<Triple<QueuedSong, ServerStream, String?>>()
+
+    /** Answers a request for a song of the server, by quality. */
+    private var serverAnswer: (StreamQuality) -> ServerStream? =
+        { serverUri?.let { ServerStream(it, null, null) } }
+
+    /** The quality to stream in now. */
+    private var quality = StreamQuality.HIGH
+
     /** Answers a request for a stream, by the clients refused so far. */
     private var answer: (Set<String>) -> YouTubeStream? = { stream("VISIONOS") }
 
@@ -92,11 +115,14 @@ class DataSourceResolverTest {
                 FakeProvider(Origin.YOUTUBE) { error("YouTube streams are asked directly") },
             )
         ),
-        { _, refused -> asked += refused; answer(refused) },
-        { song, stream -> beforeRead += song to stream?.client },
+        { _, refused, asking -> asked += refused; qualities += asking; answer(refused) },
+        { song, format -> beforeRead += song to format?.tag },
         { song -> cached[song.cacheKey] },
         { song -> cached.remove(song.cacheKey) },
         clock,
+        { quality },
+        { _, asking -> serverAsked += asking; serverAnswer(asking) },
+        { song, stream, type -> answered += Triple(song, stream, type) },
     )
 
     private fun stream(
@@ -117,10 +143,11 @@ class DataSourceResolverTest {
         itag = 251,
     )
 
-    private fun spec(origin: Origin, id: String) =
-        DataSpec.Builder().setUri(QueuedSong(origin, id).uri).setPosition(1024).build()
+    private fun spec(origin: Origin, id: String, position: Long = 1024) =
+        DataSpec.Builder().setUri(QueuedSong(origin, id).uri).setPosition(position).build()
 
-    private fun resolve(origin: Origin, id: String) = resolver.resolveDataSpec(spec(origin, id))
+    private fun resolve(origin: Origin, id: String, position: Long = 1024) =
+        resolver.resolveDataSpec(spec(origin, id, position))
 
     private fun failure(origin: Origin, id: String): Int =
         assertThrows(DataSourceException::class.java) { resolve(origin, id) }.reason
@@ -182,6 +209,53 @@ class DataSourceResolverTest {
     }
 
     @Test
+    fun serverSongGoesOnInTheQualityItStartedIn() {
+        resolve(Origin.OPEN_SUBSONIC, "s1", position = 0)
+        quality = StreamQuality.LOW
+        // A seek reads the same address
+        resolve(Origin.OPEN_SUBSONIC, "s1")
+        // Until it is old, then the same quality is asked again
+        elapsed += 2.hours
+        resolve(Origin.OPEN_SUBSONIC, "s1")
+        // Played again from the start
+        resolve(Origin.OPEN_SUBSONIC, "s1", position = 0)
+
+        assertEquals(listOf(StreamQuality.HIGH, StreamQuality.HIGH, StreamQuality.LOW), serverAsked)
+    }
+
+    @Test
+    fun knownServerFormatIsPassedOnOncePerStream() {
+        val format = SongFormat("s1", "opus-96", "audio/ogg; codecs=\"opus\"", 96_000)
+        serverAnswer = { ServerStream(serverUri!!, format, null) }
+        resolve(Origin.OPEN_SUBSONIC, "s1", position = 0)
+        resolve(Origin.OPEN_SUBSONIC, "s1")
+        resolver.answered(QueuedSong(Origin.OPEN_SUBSONIC, "s1"), "audio/ogg")
+
+        assertEquals(
+            listOf(
+                QueuedSong(Origin.OPEN_SUBSONIC, "s1") to "opus-96",
+                QueuedSong(Origin.OPEN_SUBSONIC, "s1") to null
+            ), beforeRead
+        )
+        // Nothing left to learn from the answer
+        assertEquals(emptyList<Any>(), answered)
+    }
+
+    @Test
+    fun answerToAStreamOfUnknownFormatIsToldOnce() {
+        val song = QueuedSong(Origin.OPEN_SUBSONIC, "s1")
+        serverAnswer = { ServerStream(serverUri!!, null, 128) }
+        resolve(Origin.OPEN_SUBSONIC, "s1", position = 0)
+        resolver.answered(song, "audio/mpeg")
+        resolver.answered(song, "audio/mpeg")
+
+        assertEquals(
+            listOf(Triple(song, ServerStream(serverUri!!, null, 128), "audio/mpeg")),
+            answered
+        )
+    }
+
+    @Test
     fun youTubeStreamIsKeptUntilItExpires() {
         val first = resolve(Origin.YOUTUBE, "v1")
         assertEquals("https://rr1.googlevideo.com/videoplayback?c=VISIONOS", first.uri.toString())
@@ -191,7 +265,7 @@ class DataSourceResolverTest {
         resolve(Origin.YOUTUBE, "v1")
         assertEquals(1, asked.size)
         // Only a new stream is passed on
-        assertEquals(listOf(QueuedSong(Origin.YOUTUBE, "v1", "VISIONOS") to "VISIONOS"), beforeRead)
+        assertEquals(listOf(QueuedSong(Origin.YOUTUBE, "v1", "VISIONOS") to "251"), beforeRead)
 
         answer = { stream("VISIONOS", expiresAt = now + 5.hours) }
         resolve(Origin.YOUTUBE, "v2")
@@ -200,6 +274,65 @@ class DataSourceResolverTest {
         resolve(Origin.YOUTUBE, "v3")
         resolve(Origin.YOUTUBE, "v3")
         assertEquals(4, asked.size)
+    }
+
+    @Test
+    fun streamIsAskedAgainInAnotherQuality() {
+        resolve(Origin.YOUTUBE, "v1", position = 0)
+        resolve(Origin.YOUTUBE, "v1", position = 0)
+        quality = StreamQuality.LOW
+        // A seek goes on with the file of the song's start
+        resolve(Origin.YOUTUBE, "v1")
+        // Played again from the start
+        resolve(Origin.YOUTUBE, "v1", position = 0)
+        resolve(Origin.YOUTUBE, "v1")
+
+        assertEquals(listOf(StreamQuality.HIGH, StreamQuality.LOW), qualities)
+    }
+
+    @Test
+    fun readThroughTheCacheIsInTheQualityOfItsCopy() {
+        quality = StreamQuality.LOW
+        val copy = QueuedSong(Origin.YOUTUBE, "v1", quality = StreamQuality.HIGH)
+        val read = resolver.resolveDataSpec(
+            spec(Origin.YOUTUBE, "v1", position = 0).buildUpon().setCustomData(copy).build()
+        )
+        val server = resolver.resolveDataSpec(
+            spec(Origin.OPEN_SUBSONIC, "s1", position = 0).buildUpon()
+                .setCustomData(
+                    QueuedSong(
+                        Origin.OPEN_SUBSONIC,
+                        "s1",
+                        quality = StreamQuality.MEDIUM
+                    )
+                )
+                .build()
+        )
+
+        assertEquals(listOf(StreamQuality.HIGH), qualities)
+        assertEquals(listOf(StreamQuality.MEDIUM), serverAsked)
+        // The copy is passed on, the cache and the next reads find it
+        assertEquals(copy.copy(client = "VISIONOS"), read.customData)
+        assertEquals(StreamQuality.MEDIUM, (server.customData as QueuedSong).quality)
+    }
+
+    @Test
+    fun cachedPartsOfACopyGetAStreamOfTheSameFile() {
+        val copy = QueuedSong(Origin.YOUTUBE, "v1", quality = StreamQuality.HIGH)
+        cached[copy.cacheKey] = 2_000
+        answer = { refused ->
+            stream(
+                if ("VISIONOS" in refused) "WEB_REMIX" else "VISIONOS",
+                contentLength = if ("VISIONOS" in refused) 2_000 else 3_000
+            )
+        }
+        val read = resolver.resolveDataSpec(
+            spec(Origin.YOUTUBE, "v1").buildUpon().setCustomData(copy).build()
+        )
+
+        assertEquals("WEB_REMIX", (read.customData as QueuedSong).client)
+        // Other copies have their own parts
+        assertEquals(2_000L, cached[copy.cacheKey])
     }
 
     @Test

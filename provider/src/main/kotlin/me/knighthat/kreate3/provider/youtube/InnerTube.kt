@@ -38,6 +38,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
+import me.knighthat.kreate3.constant.StreamQuality
 import java.security.MessageDigest
 import java.util.Locale
 import kotlin.time.Clock
@@ -155,14 +156,20 @@ internal class InnerTube(
     private val streams = YouTubeStreams(client, locale, poTokens)
 
     /**
-     * The audio to play of [videoId], never asked in the session.
+     * The audio to play of [videoId], asked in the session only for [StreamQuality.ORIGINAL].
      *
      * @param refused see [YouTubeStreams.stream]
      * @return `null` when it can't be played
      * @throws YouTubeException when YouTube can't be reached or what to play couldn't be found
      */
-    suspend fun stream(videoId: String, refused: Set<String> = emptySet()): YouTubeStream? =
-        streams.stream(videoId, refused)
+    suspend fun stream(
+        videoId: String,
+        refused: Set<String> = emptySet(),
+        quality: StreamQuality = StreamQuality.HIGH,
+    ): YouTubeStream? {
+        val cookies = if (quality == StreamQuality.ORIGINAL) session()?.cookies else null
+        return streams.stream(videoId, refused, quality, cookies)
+    }
 
     /** The session requests are sent in now, `null` while nobody is signed in. */
     suspend fun session(): YouTubeSession? = YouTubeSession.of(cookies(), pageId())

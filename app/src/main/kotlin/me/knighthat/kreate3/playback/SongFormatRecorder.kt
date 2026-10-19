@@ -25,18 +25,23 @@ import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.repository.SongRepository
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
-import me.knighthat.kreate3.provider.youtube.YouTubeStream
+import me.knighthat.kreate3.provider.opensubsonic.RAW_FORMAT
+import me.knighthat.kreate3.provider.opensubsonic.ServerStream
 
 /**
  * Stores the format of a song when the player is about to read it, so [LoudnessNormalizer] has
  * its gain before it plays. [DataSourceResolver] calls [record] before it gives the address.
  *
  * - YouTube: the format of the stream that was just found, every time a new one is.
- * - OpenSubsonic: asked to the server once, while the song has no format of the server.
+ * - OpenSubsonic: the file on the server ([RAW_FORMAT], with the gain), asked to the server once,
+ *   while the song has none. And the format the server converts it to, every time a new stream
+ *   is found, or once the server answered it ([recordAnswered]) when the server didn't say
+ *   before.
  * - Device: nothing, `LoudnessWorker` measures the files.
  *
- * A song not in the database yet, like one shown live that starts playing, can't have its format
- * stored: it is kept here until [flush] stores it. A failure is logged, the song plays without it.
+ * A song not in the database yet, like one shown live that starts playing, can't have its formats
+ * stored: they are kept here until [flush] stores them. A failure is logged, the song plays
+ * without them.
  */
 class SongFormatRecorder(
     private val songs: SongRepository,
@@ -47,31 +52,22 @@ class SongFormatRecorder(
             this(songs, openSubsonic::format)
 
     /** Formats of songs not stored yet, by song id, the least recently found first. */
-    private val pending = object : LinkedHashMap<String, SongFormat>() {
-        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, SongFormat>) =
+    private val pending = object : LinkedHashMap<String, List<SongFormat>>() {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, List<SongFormat>>) =
             size > MAX_PENDING
     }
 
     /**
-     * @param stream the stream just found for a YouTube song, `null` for other origins
+     * @param format the format of the stream just found, `null` when none was or it isn't known
+     * before reading
      */
-    suspend fun record(song: QueuedSong, stream: YouTubeStream?) {
+    suspend fun record(song: QueuedSong, format: SongFormat?) {
         if (song.origin == Origin.LOCAL) return
         try {
             val isStored = songs.find(song.id).first() != null
-            val format = when (song.origin) {
-                Origin.YOUTUBE -> stream?.toSongFormat(song.id)
-                Origin.OPEN_SUBSONIC ->
-                    if (isStored && hasFormat(song.id, Origin.OPEN_SUBSONIC.name)) null
-                    else openSubsonic(song.id)
-
-                Origin.LOCAL -> null
-            } ?: return
-
-            if (isStored) return songs.saveFormat(format)
-            synchronized(pending) { pending[song.id] = format }
-            // Stored meanwhile, the flush may have run before the format was kept
-            if (songs.find(song.id).first() != null) flush(song.id)
+            if (song.origin == Origin.OPEN_SUBSONIC && !hasFormat(song.id, RAW_FORMAT, isStored))
+                openSubsonic(song.id)?.let { save(song.id, it, isStored) }
+            format?.let { save(song.id, it, isStored) }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -80,13 +76,30 @@ class SongFormatRecorder(
     }
 
     /**
-     * Stores the format kept for [songId] while it wasn't stored, call it once the song is.
-     * Nothing happens when there is none.
+     * Stores the format of [stream] of a song of the server that didn't say what it converts to,
+     * now that it answered with [contentType], see [ServerStream.answeredFormat].
+     */
+    suspend fun recordAnswered(song: QueuedSong, stream: ServerStream, contentType: String?) {
+        try {
+            val isStored = songs.find(song.id).first() != null
+            val source = formatsOf(song.id, isStored).firstOrNull { it.tag == RAW_FORMAT }
+            val format = stream.answeredFormat(song.id, contentType, source?.mimetype) ?: return
+            save(song.id, format, isStored)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.w(TAG, "Couldn't store the format of ${song.id}", e)
+        }
+    }
+
+    /**
+     * Stores the formats kept for [songId] while it wasn't stored, call it once the song is.
+     * Nothing happens when there are none.
      */
     suspend fun flush(songId: String) {
-        val format = synchronized(pending) { pending.remove(songId) } ?: return
+        val formats = synchronized(pending) { pending.remove(songId) } ?: return
         try {
-            songs.saveFormat(format)
+            formats.forEach { songs.saveFormat(it) }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -94,8 +107,21 @@ class SongFormatRecorder(
         }
     }
 
-    private suspend fun hasFormat(songId: String, tag: String): Boolean =
-        songs.formatsOf(songId).first().any { it.tag == tag }
+    private suspend fun save(songId: String, format: SongFormat, isStored: Boolean) {
+        if (isStored) return songs.saveFormat(format)
+        synchronized(pending) {
+            pending[songId] = pending[songId].orEmpty().filter { it.tag != format.tag } + format
+        }
+        // Stored meanwhile, the flush may have run before the format was kept
+        if (songs.find(songId).first() != null) flush(songId)
+    }
+
+    private suspend fun formatsOf(songId: String, isStored: Boolean): List<SongFormat> =
+        if (isStored) songs.formatsOf(songId).first()
+        else synchronized(pending) { pending[songId].orEmpty() }
+
+    private suspend fun hasFormat(songId: String, tag: String, isStored: Boolean): Boolean =
+        formatsOf(songId, isStored).any { it.tag == tag }
 
     private companion object {
         const val TAG = "SongFormatRecorder"

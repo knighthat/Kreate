@@ -83,7 +83,7 @@ class SongDataSourceTest {
         openSubsonic = OkHttpClient(),
         resolver = DataSourceResolver(
             Providers(listOf(local, server, FakeProvider(Origin.YOUTUBE) { null })),
-            { _, _ -> null },
+            { _, _, _ -> null },
         ),
         caches = caches,
     )

@@ -25,6 +25,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
+import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Origin
@@ -429,14 +430,19 @@ class YouTubeProvider internal constructor(
     /**
      * The audio to play of [songId], the video id of a song or any other video. The visionOS app
      * is asked first, the website with a PO token after it. It is asked without the user's
-     * session, so what needs one, like videos with an age limit, can't be played.
+     * session, so what needs one, like videos with an age limit, can't be played. Only
+     * [StreamQuality.ORIGINAL] is asked in it while someone is signed in, for Premium's audio.
      *
      * @param refused the [YouTubeStream.client]s whose streams YouTube refused for this song,
      * like one that stopped after its first part. Others are asked instead.
+     * @param quality how good the audio should be, YouTube gives the nearest it has
      * @return `null` when the song can't be played
      */
-    suspend fun stream(songId: String, refused: Set<String> = emptySet()): YouTubeStream? =
-        innerTube.stream(songId, refused)
+    suspend fun stream(
+        songId: String,
+        refused: Set<String> = emptySet(),
+        quality: StreamQuality = StreamQuality.HIGH,
+    ): YouTubeStream? = innerTube.stream(songId, refused, quality)
 
     /** The address of [stream]. */
     override suspend fun playbackUri(songId: String): Uri? = stream(songId)?.url?.toUri()

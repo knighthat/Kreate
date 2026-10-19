@@ -35,6 +35,7 @@ import com.metrolist.innertubex.extraction.generateClientPlaybackNonce
 import com.metrolist.innertubex.models.YouTubeLocale
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CancellationException
+import me.knighthat.kreate3.constant.StreamQuality
 import java.util.Locale
 import com.metrolist.innertubex.InnerTube as InnerTubeX
 
@@ -43,8 +44,9 @@ import com.metrolist.innertubex.InnerTube as InnerTubeX
  * for, fastest first like the visionOS app, then the website's (`WEB_REMIX`) with a PO token from
  * [poTokens], and deciphers addresses for the clients that need it.
  *
- * Requests are never in the user's session. The library's player configuration isn't fetched
- * from GitHub, the scripts it ships with are used instead.
+ * Requests are in the user's session only for [StreamQuality.ORIGINAL], the only quality an account
+ * changes, see [stream]. The library's player configuration isn't fetched from GitHub, the scripts
+ * it ships with are used instead.
  *
  * @param client needs JSON content negotiation, the library sends and reads objects
  * @param poTokens makes PO tokens, `null` leaves out the clients that need one
@@ -55,11 +57,19 @@ internal class YouTubeStreams(
     poTokens: TokenProvider? = null,
 ) {
 
-    private val innerTube = InnerTubeX(client, logger = LOGGER)
+    private val configs by lazy {
+        RemotePlayerConfigStore(client, PlayerConfigRepository.disabled(), LOGGER)
+    }
+    private val cipher by lazy { YouTubeCipherService(client, configs, LOGGER) }
 
-    private val extractor: InnerTubeExtractor by lazy {
-        val configs = RemotePlayerConfigStore(client, PlayerConfigRepository.disabled(), LOGGER)
-        val cipher = YouTubeCipherService(client, configs, LOGGER)
+    private val innerTube = InnerTubeX(client, logger = LOGGER)
+    private val extractor by lazy { extractor(client, innerTube, poTokens) }
+
+    /** Asks in the user's session, its visitor id is another than the signed out one's. */
+    private val sessionInnerTube = InnerTubeX(client, logger = LOGGER)
+    private val sessionExtractor by lazy { extractor(client, sessionInnerTube, poTokens) }
+
+    private fun extractor(client: HttpClient, innerTube: InnerTubeX, poTokens: TokenProvider?) =
         InnerTubeExtractor(
             configParser = YtConfigParserImpl(client, innerTube, configs, LOGGER, cipher),
             cipherService = cipher,
@@ -67,23 +77,49 @@ internal class YouTubeStreams(
             tokenProvider = poTokens ?: NO_PO_TOKENS,
             logger = LOGGER,
         )
-    }
 
     /**
      * @param refused the [YouTubeStream.client]s whose streams were refused for this song, not
      * asked again
+     * @param cookies the cookies of the signed in session, only used for
+     * [StreamQuality.ORIGINAL]. The library is told the account has Premium, which it can't find
+     * out: an account without it gets what [StreamQuality.HIGH] gets, maybe after a refusal.
      * @return `null` when the song can't be played
      * @throws YouTubeException when YouTube can't be reached or the library failed
      */
-    suspend fun stream(videoId: String, refused: Set<String> = emptySet()): YouTubeStream? {
+    suspend fun stream(
+        videoId: String,
+        refused: Set<String> = emptySet(),
+        quality: StreamQuality = StreamQuality.HIGH,
+        cookies: String? = null,
+    ): YouTubeStream? {
+        val inSession = quality == StreamQuality.ORIGINAL && !cookies.isNullOrBlank()
+        val stream = extract(videoId, refused, quality.audioQuality, inSession, cookies)
+        // Nearly every video has the MP4 audio of 128 kbps, the best is played without it
+        if (stream == null && quality == StreamQuality.MEDIUM)
+            return extract(videoId, refused, AudioQuality.HIGH, false, null)
+        return stream
+    }
+
+    private suspend fun extract(
+        videoId: String,
+        refused: Set<String>,
+        audioQuality: AudioQuality,
+        inSession: Boolean,
+        cookies: String?,
+    ): YouTubeStream? {
+        val innerTube = if (inSession) sessionInnerTube else innerTube
         val locale = locale()
         innerTube.locale = YouTubeLocale(gl = locale.youTubeGl, hl = locale.youTubeHl)
+        // The same cookies change nothing, other ones start another session in the library
+        if (inSession) innerTube.cookie = cookies
+        val hints = ContentHints().withStreamCapabilities(allowHls = false, allowSabr = false)
         val extracted = try {
-            extractor.extract(
+            (if (inSession) sessionExtractor else extractor).extract(
                 videoId = videoId,
-                hints = ContentHints().withStreamCapabilities(allowHls = false, allowSabr = false),
+                hints = if (inSession) hints.withPremium() else hints,
                 excludedClients = refused,
-                audioQuality = AudioQuality.HIGH,
+                audioQuality = audioQuality,
                 clientPlaybackNonce = generateClientPlaybackNonce(),
             )
         } catch (e: CancellationException) {
@@ -105,6 +141,17 @@ internal class YouTubeStreams(
 
     private companion object {
         const val TAG = "InnerTubeX"
+
+        /**
+         * The library's choices: the smallest MP4 (48 kbps AAC), the best MP4 (128 kbps AAC
+         * signed out) and the highest bitrate (160 kbps Opus, 256 kbps AAC with Premium).
+         */
+        val StreamQuality.audioQuality: AudioQuality
+            get() = when (this) {
+                StreamQuality.LOW -> AudioQuality.LOW
+                StreamQuality.MEDIUM -> AudioQuality.MP4
+                StreamQuality.HIGH, StreamQuality.ORIGINAL -> AudioQuality.HIGH
+            }
 
         val NO_PO_TOKENS = object : TokenProvider {
             override suspend fun getPoToken(videoId: String, visitorData: String, cookie: String?) =

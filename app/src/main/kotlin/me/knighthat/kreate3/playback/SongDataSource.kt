@@ -44,6 +44,8 @@ import okhttp3.OkHttpClient
  * kept in [SongCaches.cache], never in the downloads. With [Preferences.OPEN_SUBSONIC_DIRECT_PLAY]
  * on, a song of the server skips [SongCaches.cache]: the downloads, then the stream.
  *
+ * [SongCaches.cache] keeps a copy of a song for each quality, [copies] picks the one read.
+ *
  * Streams go out with the app's [client], or with [openSubsonic] for an OpenSubsonic server.
  *
  * @param openSubsonic the client of the server, see [OpenSubsonicProvider.streamClient]
@@ -55,6 +57,7 @@ fun songDataSourceFactory(
     openSubsonic: Call.Factory,
     resolver: DataSourceResolver,
     caches: SongCaches,
+    copies: CacheCopies,
 ): DataSource.Factory {
     val app = DefaultDataSource.Factory(context, OkHttpDataSource.Factory(client))
     val server = DefaultDataSource.Factory(context, OkHttpDataSource.Factory(openSubsonic))
@@ -62,7 +65,8 @@ fun songDataSourceFactory(
         { StreamDataSource(app.createDataSource(), server.createDataSource(), resolver) },
         resolver,
     )
-    val keys = CacheKeyFactory { QueuedSong.of(it.uri)?.cacheKey ?: it.key ?: it.uri.toString() }
+    // The key of the copy read, set by SongDataSource
+    val keys = CacheKeyFactory { it.key ?: QueuedSong.of(it.uri)?.cacheKey ?: it.uri.toString() }
 
     // Read only, downloads are written by the downloader
     fun downloads(upstream: DataSource.Factory) = CacheDataSource.Factory()
@@ -86,6 +90,7 @@ fun songDataSourceFactory(
             cached = cached.createDataSource(),
             uncached = uncached.createDataSource(),
             direct = network.createDataSource(),
+            copies = copies,
         )
     }
 }
@@ -93,16 +98,21 @@ fun songDataSourceFactory(
 /**
  * Reads a song of the device, or an address that isn't a queued song, with [direct], a song of
  * the server with [uncached] while [Preferences.OPEN_SUBSONIC_DIRECT_PLAY] is on, and any other
- * song with [cached].
+ * song with [cached], from the copy [copies] picked. The read carries that copy as its key and
+ * its `customData`, [copies] hears when it ends.
  */
 @OptIn(UnstableApi::class)
 private class SongDataSource(
     private val cached: DataSource,
     private val uncached: DataSource,
     private val direct: DataSource,
+    private val copies: CacheCopies,
 ) : DataSource {
 
     private var current: DataSource? = null
+
+    /** The copy read through the cache now. */
+    private var copy: QueuedSong? = null
 
     override fun addTransferListener(transferListener: TransferListener) {
         cached.addTransferListener(transferListener)
@@ -111,14 +121,19 @@ private class SongDataSource(
     }
 
     override fun open(dataSpec: DataSpec): Long {
-        val origin = QueuedSong.of(dataSpec.uri)?.origin
+        val song = QueuedSong.of(dataSpec.uri)
+        val origin = song?.origin
         val source = when {
             origin == null || origin == Origin.LOCAL -> direct
             origin == Origin.OPEN_SUBSONIC && Preferences.OPEN_SUBSONIC_DIRECT_PLAY.value -> uncached
             else -> cached
         }
         current = source
-        return source.open(dataSpec)
+        if (source !== cached || song == null) return source.open(dataSpec)
+
+        val copy = song.copy(quality = copies.pick(song, dataSpec.position))
+        this.copy = copy
+        return source.open(dataSpec.buildUpon().setKey(copy.cacheKey).setCustomData(copy).build())
     }
 
     override fun read(buffer: ByteArray, offset: Int, length: Int): Int =
@@ -134,13 +149,15 @@ private class SongDataSource(
             current?.close()
         } finally {
             current = null
+            copy?.let(copies::readEnded)
+            copy = null
         }
     }
 }
 
 /**
  * Reads a song resolved by [resolver] with [app], or with [server] when it is of an OpenSubsonic
- * server, and tells [resolver] when YouTube refuses an address.
+ * server, and tells [resolver] when YouTube refuses an address and what the server answered.
  */
 @OptIn(UnstableApi::class)
 private class StreamDataSource(
@@ -161,13 +178,20 @@ private class StreamDataSource(
         val source = if (song?.origin == Origin.OPEN_SUBSONIC) server else app
         current = source
 
-        return try {
+        val length = try {
             source.open(dataSpec)
         } catch (e: HttpDataSource.InvalidResponseCodeException) {
             // The player retries a failed read, the next one gets another address
             if (e.responseCode == HTTP_FORBIDDEN && song != null) resolver.refused(song)
             throw e
         }
+        if (song?.origin == Origin.OPEN_SUBSONIC) {
+            val contentType = source.responseHeaders.entries
+                .firstOrNull { it.key.equals(CONTENT_TYPE, ignoreCase = true) }
+                ?.value?.firstOrNull()
+            resolver.answered(song, contentType)
+        }
+        return length
     }
 
     override fun read(buffer: ByteArray, offset: Int, length: Int): Int =
@@ -188,5 +212,6 @@ private class StreamDataSource(
 
     private companion object {
         const val HTTP_FORBIDDEN = 403
+        const val CONTENT_TYPE = "Content-Type"
     }
 }

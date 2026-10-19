@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
+import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
@@ -88,6 +89,14 @@ private fun CheckState.credentialsSummary(): String? = when (this) {
 }
 
 /** The first pairs of a fingerprint, enough to tell two apart at a glance. */
+/** The server converts songs above the bitrate, to the format it picked. */
+private fun StreamQuality.openSubsonicLabel(): String = when (this) {
+    StreamQuality.LOW -> "Low, up to 64 kbps"
+    StreamQuality.MEDIUM -> "Medium, up to 128 kbps"
+    StreamQuality.HIGH -> "High, up to 320 kbps, lossless songs are converted"
+    StreamQuality.ORIGINAL -> "Original, the file as it is"
+}
+
 private fun String.shortFingerprint(): String = split(':').take(8).joinToString(":") + "…"
 
 /**
@@ -294,6 +303,11 @@ fun OpenSubsonicSettingsScreen(
             summary = "Streams songs from the server without keeping them in the song cache",
             checked = directPlay,
             onCheckedChange = Preferences.OPEN_SUBSONIC_DIRECT_PLAY::update,
+        )
+        StreamQualitySettings(
+            wifi = Preferences.OPEN_SUBSONIC_QUALITY_WIFI,
+            mobile = Preferences.OPEN_SUBSONIC_QUALITY_MOBILE,
+            label = StreamQuality::openSubsonicLabel,
         )
 
         SettingsSection("Server library")

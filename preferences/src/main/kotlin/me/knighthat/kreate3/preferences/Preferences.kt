@@ -20,6 +20,7 @@ package me.knighthat.kreate3.preferences
 
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
+import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.preferences.Preferences.BACK_EXIT_DISABLED
 import me.knighthat.kreate3.preferences.Preferences.EXIT_CONFIRMATION
@@ -30,6 +31,10 @@ import me.knighthat.kreate3.preferences.Preferences.IMAGE_DISK_CACHE
 import me.knighthat.kreate3.preferences.Preferences.MEDIA3_CACHE_SIZE
 import me.knighthat.kreate3.preferences.Preferences.NETWORK_CONNECT_TIMEOUT
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_CERTIFICATE_SHA256
+import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_QUALITY_WIFI
+import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_ACCOUNT_ENABLED
+import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_QUALITY_WIFI
+import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_QUALITY_WIFI_PREMIUM
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_SYNC_ALBUMS
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_SYNC_SONGS
 import me.knighthat.kreate3.preferences.Preferences.awaitLoaded
@@ -180,6 +185,25 @@ object Preferences : KoinComponent {
      */
     val OPEN_SUBSONIC_DIRECT_PLAY by lazy { boolean("open_subsonic_direct_play", true) }
 
+    /**
+     * How good the songs of the OpenSubsonic server streamed on Wi-Fi and other networks that
+     * aren't metered are. [StreamQuality.ORIGINAL] by default, the file as it is. Other qualities
+     * are a highest bitrate: the server converts the songs above it, in the format it picked.
+     *
+     * A song goes on in the quality it started in, the new one applies from the next song.
+     */
+    val OPEN_SUBSONIC_QUALITY_WIFI by lazy {
+        enum("open_subsonic_quality_wifi", StreamQuality.ORIGINAL)
+    }
+
+    /**
+     * Like [OPEN_SUBSONIC_QUALITY_WIFI], on mobile data and other metered networks.
+     * [StreamQuality.HIGH] by default.
+     */
+    val OPEN_SUBSONIC_QUALITY_MOBILE by lazy {
+        enum("open_subsonic_quality_mobile", StreamQuality.HIGH)
+    }
+
     /** Like [YOUTUBE_SYNC_SONGS], for the songs starred on the OpenSubsonic server. */
     val OPEN_SUBSONIC_SYNC_SONGS by lazy { boolean("open_subsonic_sync_songs", true) }
 
@@ -226,6 +250,38 @@ object Preferences : KoinComponent {
 
     /** Like [YOUTUBE_SYNC_ALBUMS], for the playlists in the user's library. */
     val YOUTUBE_SYNC_PLAYLISTS by lazy { boolean("youtube_sync_playlists", true) }
+
+    /**
+     * How good the YouTube songs streamed on Wi-Fi and other networks that aren't metered are,
+     * while nobody is signed in or [YOUTUBE_ACCOUNT_ENABLED] is off. [StreamQuality.HIGH] by
+     * default. [StreamQuality.ORIGINAL] isn't offered, it plays as [StreamQuality.HIGH].
+     *
+     * It applies to the songs read next, what the cache has plays as it was cached.
+     */
+    val YOUTUBE_QUALITY_WIFI by lazy { enum("youtube_quality_wifi", StreamQuality.HIGH) }
+
+    /**
+     * Like [YOUTUBE_QUALITY_WIFI], on mobile data and other metered networks.
+     * [StreamQuality.MEDIUM] by default.
+     */
+    val YOUTUBE_QUALITY_MOBILE by lazy { enum("youtube_quality_mobile", StreamQuality.MEDIUM) }
+
+    /**
+     * Like [YOUTUBE_QUALITY_WIFI], while someone is signed in. [StreamQuality.HIGH] by default.
+     * [StreamQuality.ORIGINAL] asks in the session, which only Premium gains from: an account
+     * without it gets [StreamQuality.HIGH], maybe after a refused try.
+     */
+    val YOUTUBE_QUALITY_WIFI_PREMIUM by lazy {
+        enum("youtube_quality_wifi_premium", StreamQuality.HIGH)
+    }
+
+    /**
+     * Like [YOUTUBE_QUALITY_WIFI_PREMIUM], on mobile data and other metered networks.
+     * [StreamQuality.MEDIUM] by default.
+     */
+    val YOUTUBE_QUALITY_MOBILE_PREMIUM by lazy {
+        enum("youtube_quality_mobile_premium", StreamQuality.MEDIUM)
+    }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Playback">

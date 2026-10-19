@@ -44,13 +44,18 @@ val playbackModule = module {
     single { SongFormatRecorder(get<SongRepository>(), get<OpenSubsonicProvider>()) }
     single { SongCaches(androidContext()) }
     single {
+        val context = androidContext()
+        val youTube = get<YouTubeProvider>()
         DataSourceResolver(
             get<Providers>(),
-            get<YouTubeProvider>(),
+            youTube,
+            get<OpenSubsonicProvider>(),
             get<SongFormatRecorder>(),
             get<SongCaches>(),
+            { origin -> context.streamQuality(origin, youTube) },
         )
     }
+    single { CacheCopies(get<SongCaches>(), androidContext(), get<YouTubeProvider>()) }
 
     single { Radio(get<UserSongRepository>(), get<OpenSubsonicProvider>(), get<YouTubeProvider>()) }
 
@@ -92,6 +97,7 @@ val playbackModule = module {
                             openSubsonic = { openSubsonic.streamClient().newCall(it) },
                             resolver = get(),
                             caches = get(),
+                            copies = get(),
                         )
                     )
                 )

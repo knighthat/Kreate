@@ -162,7 +162,7 @@ internal fun JsonObject.toSongFormat(): SongFormat {
     val adjustment = (replayGain?.number("trackGain") ?: replayGain?.number("albumGain"))
     return SongFormat(
         songId = string("id")!!,
-        tag = Origin.OPEN_SUBSONIC.name,
+        tag = RAW_FORMAT,
         mimetype = string("contentType") ?: "audio/*",
         // In kbps
         bitrate = get("bitRate")?.jsonPrimitive?.intOrNull?.takeIf { it > 0 }?.times(1000),
@@ -172,6 +172,30 @@ internal fun JsonObject.toSongFormat(): SongFormat {
 }
 
 private fun JsonObject.number(name: String): Double? = get(name)?.jsonPrimitive?.doubleOrNull
+
+/**
+ * The format a `transcodeStream` of a transcode decision describes, tagged `{codec}-{kbps}` like
+ * `opus-96`, its media type the container's with the codec. It has no gain, the song's is on its
+ * [RAW_FORMAT].
+ *
+ * @return `null` without a codec or a bitrate
+ */
+internal fun JsonObject.toTranscodedFormat(songId: String): SongFormat? {
+    val codec = string("codec")?.lowercase()?.takeIf { it.isNotBlank() } ?: return null
+    val bitrate = get("audioBitrate")?.jsonPrimitive?.intOrNull?.takeIf { it > 0 } ?: return null
+    val container = string("container")?.lowercase()?.takeIf { it.isNotBlank() } ?: codec
+    val type = when (container) {
+        "mp3" -> "audio/mpeg"
+        "m4a", "mp4" -> "audio/mp4"
+        else -> "audio/$container"
+    }
+    return SongFormat(
+        songId = songId,
+        tag = transcodedTag(codec, (bitrate + 500) / 1000),
+        mimetype = "$type; codecs=\"$codec\"",
+        bitrate = bitrate,
+    )
+}
 
 /** An artist as other items credit it, `null` without an id. */
 private fun JsonObject.toArtistOrNull(): Artist? =

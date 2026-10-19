@@ -35,12 +35,14 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,6 +54,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
+import kotlin.math.roundToInt
 
 /**
  * The frame of a settings page: a top bar named [title] with a back button, and [content]
@@ -227,6 +230,46 @@ fun <T> ChoiceSetting(
             },
             confirmButton = { TextButton(onClick = { open = false }) { Text("Close") } },
         )
+}
+
+/**
+ * A setting with a few values in order, picked by sliding to one. The row shows the [title] and
+ * the [label] of the value under it, which follows the slider while it is dragged.
+ *
+ * @param value shown as the first of [options] when it isn't one of them
+ */
+@Composable
+fun <T> SliderSetting(
+    title: String,
+    value: T,
+    options: List<T>,
+    label: (T) -> String,
+    onSelect: (T) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val index = options.indexOf(value).coerceAtLeast(0)
+    // Where the slider is while it is dragged, the setting changes when it is let go
+    var position by remember(index, options.size) { mutableFloatStateOf(index.toFloat()) }
+    val shown = options[position.roundToInt().coerceIn(options.indices)]
+
+    ListItem(
+        headlineContent = { Text(title) },
+        supportingContent = {
+            Column {
+                Text(label(shown))
+                Slider(
+                    value = position,
+                    onValueChange = { position = it },
+                    onValueChangeFinished = { if (shown != value) onSelect(shown) },
+                    valueRange = 0f..options.lastIndex.coerceAtLeast(1).toFloat(),
+                    steps = (options.size - 2).coerceAtLeast(0),
+                    enabled = options.size > 1,
+                )
+            }
+        },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        modifier = modifier,
+    )
 }
 
 /**

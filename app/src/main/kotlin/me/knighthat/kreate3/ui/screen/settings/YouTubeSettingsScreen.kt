@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.youtube.youTubeSyncSetting
@@ -37,8 +38,8 @@ import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
 /**
- * Whether the YouTube account is used, who is signed in, with a way to sign in or out. Only the
- * switch shows while it is off.
+ * Whether the YouTube account is used, who is signed in, with a way to sign in or out, and how
+ * good the songs streamed are. Only the switch and the quality show while the account is off.
  */
 @Composable
 fun YouTubeSettingsScreen(
@@ -65,73 +66,110 @@ fun YouTubeSettingsScreen(
         )
 
         // The session stays when hidden, it is used again once the setting is back on
-        if (!enabled) return@SettingsPage
+        if (enabled) {
 
-        SettingsSection("Account")
-        when (val state = account) {
-            YouTubeAccountState.SignedOut -> SettingsItem(
-                title = "Sign in",
-                summary = "Brings your albums, artists and playlists, and makes suggestions yours",
-                onClick = onSignIn,
-            )
+            SettingsSection("Account")
+            when (val state = account) {
+                YouTubeAccountState.SignedOut -> SettingsItem(
+                    title = "Sign in",
+                    summary =
+                        "Brings your albums, artists and playlists, and makes suggestions yours",
+                    onClick = onSignIn,
+                )
 
-            YouTubeAccountState.Checking -> SettingsItem(title = "Account", summary = "Checking…")
-            is YouTubeAccountState.SignedIn -> SettingsItem(
-                title = state.account.name,
-                summary = state.account.handle ?: "Signed in",
-                onClick = if (canSwitch) ({ pickChannel = true }) else null,
-                trailing = if (canSwitch) ({
-                    Icon(
-                        painterResource(R.drawable.chevron_right),
-                        contentDescription = "Switch channel"
-                    )
-                }) else null,
-            )
+                YouTubeAccountState.Checking ->
+                    SettingsItem(title = "Account", summary = "Checking…")
 
-            YouTubeAccountState.Ended -> SettingsItem(
-                title = "Signed out by YouTube",
-                summary = "The session ended, tap to sign in again",
-                onClick = onSignIn,
-            )
+                is YouTubeAccountState.SignedIn -> SettingsItem(
+                    title = state.account.name,
+                    summary = state.account.handle ?: "Signed in",
+                    onClick = if (canSwitch) ({ pickChannel = true }) else null,
+                    trailing = if (canSwitch) ({
+                        Icon(
+                            painterResource(R.drawable.chevron_right),
+                            contentDescription = "Switch channel"
+                        )
+                    }) else null,
+                )
 
-            is YouTubeAccountState.Failed -> SettingsItem(
-                title = "Account",
-                summary = "${state.reason}, tap to try again",
-                onClick = viewModel::retry,
-            )
+                YouTubeAccountState.Ended -> SettingsItem(
+                    title = "Signed out by YouTube",
+                    summary = "The session ended, tap to sign in again",
+                    onClick = onSignIn,
+                )
+
+                is YouTubeAccountState.Failed -> SettingsItem(
+                    title = "Account",
+                    summary = "${state.reason}, tap to try again",
+                    onClick = viewModel::retry,
+                )
+            }
+            if (account != YouTubeAccountState.SignedOut) {
+                SettingsItem(
+                    title = "Sign out",
+                    summary = "Your liked songs stay in this profile",
+                    onClick = { askSignOut = true },
+                )
+
+                SettingsSection("Library")
+                LibrarySyncSettings({ it.youTubeSyncSetting }, "on YouTube", viewModel::setSyncing)
+            }
+            if (pickChannel && canSwitch)
+                YouTubeChannelPicker(
+                    channels = channels,
+                    pageId = pageId,
+                    onPick = {
+                        pickChannel = false
+                        viewModel.switchTo(it)
+                    },
+                    onDismiss = { pickChannel = false },
+                )
+            if (askSignOut)
+                AlertDialog(
+                    onDismissRequest = { askSignOut = false },
+                    title = { Text("Sign out of YouTube?") },
+                    text = { Text("Your YouTube library stops showing here, the songs you liked stay liked. You can sign in again any time.") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            askSignOut = false
+                            viewModel.signOut()
+                        }) { Text("Sign out") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { askSignOut = false }) { Text("Cancel") }
+                    },
+                )
         }
-        if (account != YouTubeAccountState.SignedOut) {
-            SettingsItem(
-                title = "Sign out",
-                summary = "Your liked songs stay in this profile",
-                onClick = { askSignOut = true },
-            )
 
-            SettingsSection("Library")
-            LibrarySyncSettings({ it.youTubeSyncSetting }, "on YouTube", viewModel::setSyncing)
-        }
-        if (pickChannel && canSwitch)
-            YouTubeChannelPicker(
-                channels = channels,
-                pageId = pageId,
-                onPick = {
-                    pickChannel = false
-                    viewModel.switchTo(it)
-                },
-                onDismiss = { pickChannel = false },
-            )
-        if (askSignOut)
-            AlertDialog(
-                onDismissRequest = { askSignOut = false },
-                title = { Text("Sign out of YouTube?") },
-                text = { Text("Your YouTube library stops showing here, the songs you liked stay liked. You can sign in again any time.") },
-                confirmButton = {
-                    TextButton(onClick = {
-                        askSignOut = false
-                        viewModel.signOut()
-                    }) { Text("Sign out") }
-                },
-                dismissButton = { TextButton(onClick = { askSignOut = false }) { Text("Cancel") } },
-            )
+        // YouTube plays signed out too, only Original needs the account
+        SettingsSection("Playback")
+        YouTubeQualitySettings(signedIn = enabled && account is YouTubeAccountState.SignedIn)
     }
+}
+
+/**
+ * The settings of while someone is [signedIn], with Original, or of while nobody is. Each keeps
+ * its values while the other shows.
+ */
+@Composable
+private fun YouTubeQualitySettings(signedIn: Boolean) =
+    if (signedIn)
+        StreamQualitySettings(
+            wifi = Preferences.YOUTUBE_QUALITY_WIFI_PREMIUM,
+            mobile = Preferences.YOUTUBE_QUALITY_MOBILE_PREMIUM,
+            label = StreamQuality::youTubeLabel,
+        )
+    else
+        StreamQualitySettings(
+            wifi = Preferences.YOUTUBE_QUALITY_WIFI,
+            mobile = Preferences.YOUTUBE_QUALITY_MOBILE,
+            label = StreamQuality::youTubeLabel,
+            options = StreamQuality.entries - StreamQuality.ORIGINAL,
+        )
+
+private fun StreamQuality.youTubeLabel(): String = when (this) {
+    StreamQuality.LOW -> "Low, about 48 kbps"
+    StreamQuality.MEDIUM -> "Medium, about 128 kbps"
+    StreamQuality.HIGH -> "High, about 160 kbps"
+    StreamQuality.ORIGINAL -> "Original, 256 kbps with Premium, else High"
 }

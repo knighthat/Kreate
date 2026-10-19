@@ -163,7 +163,7 @@ class OpenSubsonicMappersTest {
 
         // -7.5 dB brings it to -18 LUFS, so it is at -10.5 LUFS, 3.5 dB over -14 LUFS
         assertEquals(
-            SongFormat("s1", "OPEN_SUBSONIC", "audio/flac", 1_012_000, 31_415_926, 3.5f),
+            SongFormat("s1", RAW_FORMAT, "audio/flac", 1_012_000, 31_415_926, 3.5f),
             format,
         )
     }
@@ -177,7 +177,7 @@ class OpenSubsonicMappersTest {
     @Test
     fun formatWithoutReplayGainHasNoGain() {
         val format = json("""{"id":"s1","replayGain":{}}""").toSongFormat()
-        assertEquals(SongFormat("s1", "OPEN_SUBSONIC", "audio/*"), format)
+        assertEquals(SongFormat("s1", RAW_FORMAT, "audio/*"), format)
         assertNull(json("""{"id":"s1","bitRate":0,"size":0}""").toSongFormat().gain)
     }
     //</editor-fold>
