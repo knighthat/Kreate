@@ -34,8 +34,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -159,6 +164,7 @@ fun KreateApp() {
     ShowMessages(notifier, messages)
 
     val playerSheet = rememberPlayerSheetState()
+    var miniPlayerHeight by remember { mutableIntStateOf(0) }
 
     KreateTheme(
         themeMode = themeMode,
@@ -178,7 +184,10 @@ fun KreateApp() {
                         when {
                             // Only the tabs have the bar
                             route?.let(Tab::of) != null -> Column {
-                                PlaybackMiniPlayer(controller = playback)
+                                // Empty while nothing plays, it measures 0 then
+                                Box(Modifier.onSizeChanged { miniPlayerHeight = it.height }) {
+                                    PlaybackMiniPlayer(controller = playback)
+                                }
                                 TabBar(
                                     selected = topLevel.currentTab,
                                     onSelect = topLevel::switchTab,
@@ -203,6 +212,7 @@ fun KreateApp() {
                     containerColor = MaterialTheme.colorScheme.surfaceDim,
                     modifier = Modifier.fillMaxSize(),
                 ) { barPadding ->
+                    val miniPlayerBottom = with(LocalDensity.current) { miniPlayerHeight.toDp() }
                     // Before the screens, so their own handling of going back comes first
                     ExitConfirmation(atBottom = topLevel.backStack.size == 1, snackbar = messages)
                     NavDisplay(
@@ -219,12 +229,23 @@ fun KreateApp() {
                             val paddingModifier = Modifier
                                 .padding(barBottom)
                                 .consumeWindowInsets(barBottom)
+                            // The tabs only keep clear of the tab bar, their lists end with room
+                            // for the mini player instead, so they show through as it's swiped away
+                            val tabBarBottom = PaddingValues(
+                                bottom = (barPadding.calculateBottomPadding() - miniPlayerBottom)
+                                    .coerceAtLeast(0.dp)
+                            )
+                            val tabModifier = Modifier
+                                .padding(tabBarBottom)
+                                .consumeWindowInsets(barBottom)
+                            val tabContentPadding = PaddingValues(bottom = miniPlayerBottom)
 
                             entry<Songs> {
                                 HomeSongsScreen(
                                     { topLevel.push(Search) },
                                     { topLevel.push(Settings) },
-                                    paddingModifier,
+                                    tabModifier,
+                                    tabContentPadding,
                                 )
                             }
                             entry<Albums> {
@@ -232,7 +253,8 @@ fun KreateApp() {
                                     { topLevel.push(albumRoute(it)) },
                                     { topLevel.push(Search) },
                                     { topLevel.push(Settings) },
-                                    paddingModifier,
+                                    tabModifier,
+                                    tabContentPadding,
                                 )
                             }
                             entry<Artists> {
@@ -240,7 +262,8 @@ fun KreateApp() {
                                     { topLevel.push(artistRoute(it)) },
                                     { topLevel.push(Search) },
                                     { topLevel.push(Settings) },
-                                    paddingModifier,
+                                    tabModifier,
+                                    tabContentPadding,
                                 )
                             }
                             entry<Playlists> {
@@ -248,7 +271,8 @@ fun KreateApp() {
                                     { topLevel.push(playlistRoute(it)) },
                                     { topLevel.push(Search) },
                                     { topLevel.push(Settings) },
-                                    paddingModifier,
+                                    tabModifier,
+                                    tabContentPadding,
                                 )
                             }
 

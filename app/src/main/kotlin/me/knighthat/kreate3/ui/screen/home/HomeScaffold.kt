@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -222,6 +223,8 @@ private fun OriginToggle(origin: Origin, selected: Boolean, onToggle: () -> Unit
  *
  * @param choices the origins to offer a chip for, see [OriginFilter.choices]
  * @param selected the origins the tab shows, every origin while empty
+ * @param contentPadding room [content] adds around its items on top of the bars', e.g. so the
+ * last one can scroll clear of what floats over the screen
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -231,6 +234,7 @@ fun HomeScaffold(
     selected: Set<Origin>,
     onToggleOrigin: (Origin) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     onSearch: () -> Unit = {},
     onSettings: () -> Unit = {},
     quickActions: @Composable RowScope.() -> Unit = {},
@@ -251,6 +255,5 @@ fun HomeScaffold(
         modifier = modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection)
             .nestedScroll(toolbarScroll),
-        content = content,
-    )
+    ) { content(it + contentPadding) }
 }
