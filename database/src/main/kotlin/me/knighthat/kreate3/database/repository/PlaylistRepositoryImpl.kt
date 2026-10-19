@@ -23,6 +23,7 @@ import androidx.room.RoomRawQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate3.database.ActiveUser
+import me.knighthat.kreate3.database.AppDatabase
 import me.knighthat.kreate3.database.dao.UserPlaylistDao
 import me.knighthat.kreate3.database.entity.SongEntity
 import me.knighthat.kreate3.database.entity.SongPlaylistMapEntity
@@ -41,6 +42,7 @@ import kotlin.time.Clock
  * Room backed implementation of [PlaylistRepository].
  */
 internal class PlaylistRepositoryImpl(
+    private val database: AppDatabase,
     private val playlistDao: UserPlaylistDao,
     activeUser: ActiveUser,
     private val clock: Clock,
@@ -53,7 +55,7 @@ internal class PlaylistRepositoryImpl(
         origins: Set<Origin>,
     ): Flow<PagingData<UserPlaylist>> =
         scope.observe(PagingData.empty()) { userId ->
-            pagedFlow(UserPlaylistEntity::toModel) {
+            database.pagedFlow(UserPlaylistEntity::toModel, "user_playlist") {
                 playlistDao.paged(
                     RoomRawQuery(
                         sql = "SELECT * FROM user_playlist WHERE user_id = ? ${originFilter(origins)} " +
@@ -93,7 +95,7 @@ internal class PlaylistRepositoryImpl(
         order: SortOrder<PlaylistSort>
     ): Flow<PagingData<UserPlaylist>> =
         scope.observe(PagingData.empty()) { userId ->
-            pagedFlow(UserPlaylistEntity::toModel) {
+            database.pagedFlow(UserPlaylistEntity::toModel, "user_playlist") {
                 playlistDao.paged(
                     RoomRawQuery(
                         sql = "SELECT * FROM user_playlist WHERE user_id = ? AND name LIKE ? ESCAPE '\\' " +
@@ -111,7 +113,7 @@ internal class PlaylistRepositoryImpl(
         playlistDao.find(playlistId).map { it?.toModel() }
 
     override fun songsOf(playlistId: Long, order: SortOrder<SongSort>): Flow<PagingData<Song>> =
-        pagedFlow(SongEntity::toModel) {
+        database.pagedFlow(SongEntity::toModel, "song", "song_playlist_map") {
             playlistDao.pagedSongs(
                 RoomRawQuery(
                     sql = "SELECT song.* FROM song " +

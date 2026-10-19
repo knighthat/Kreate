@@ -46,7 +46,7 @@ internal class AlbumRepositoryImpl(
     override fun find(albumId: String): Flow<Album?> = albumDao.find(albumId).map { it?.toModel() }
 
     override fun songsOf(albumId: String, order: SortOrder<SongSort>): Flow<PagingData<Song>> =
-        pagedFlow(SongEntity::toModel) {
+        database.pagedFlow(SongEntity::toModel, "song") {
             albumDao.pagedSongs(
                 RoomRawQuery(
                     sql = "SELECT * FROM song WHERE album_id = ? ${order.toOrderBy("song.id")}",

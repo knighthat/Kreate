@@ -99,7 +99,7 @@ internal class UserSongRepositoryImpl(
         bind: (SQLiteStatement) -> Unit = {},
     ): Flow<PagingData<UserSongView>> =
         scope.observe(PagingData.empty()) { userId ->
-            pagedFlow(UserSongViewEntity::toModel) {
+            database.pagedFlow(UserSongViewEntity::toModel, "user_song_view") {
                 userSongDao.paged(query(userId, order, filter, bind))
             }
         }

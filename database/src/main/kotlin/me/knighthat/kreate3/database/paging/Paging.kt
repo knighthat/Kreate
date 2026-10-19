@@ -18,13 +18,17 @@
 
 package me.knighthat.kreate3.database.paging
 
+import androidx.paging.InvalidatingPagingSourceFactory
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.map
+import androidx.room.RoomDatabase
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 private const val PAGE_SIZE = 50
 
@@ -44,10 +48,29 @@ private val CONFIG = PagingConfig(
 
 /**
  * Loads [source] page by page and turns every row with [transform]. A new source is made
- * each time the data changes, so the list always follows the database.
+ * each time [tables] change, so the list always follows the database.
+ *
+ * Room's sources do that themselves, but miss a change made while their first page loads: they
+ * act on changes only once it is done, and that page may be read from before the change. Like
+ * the songs a scan adds as the app opens, the list kept showing the library without them. So
+ * the sources are also dropped here on every change.
+ *
+ * @param tables the tables or views [source] reads
  */
-internal fun <E : Any, M : Any> pagedFlow(
+internal fun <E : Any, M : Any> RoomDatabase.pagedFlow(
     transform: (E) -> M,
+    vararg tables: String,
     source: () -> PagingSource<Int, E>,
-): Flow<PagingData<M>> =
-    Pager(CONFIG, pagingSourceFactory = source).flow.map { page -> page.map { transform(it) } }
+): Flow<PagingData<M>> {
+    val sources = InvalidatingPagingSourceFactory(source)
+    val pages = Pager(CONFIG, pagingSourceFactory = sources).flow
+        .map { page -> page.map { transform(it) } }
+
+    return channelFlow {
+        launch {
+            invalidationTracker.createFlow(*tables, emitInitialState = false)
+                .collect { sources.invalidate() }
+        }
+        pages.collect { send(it) }
+    }
+}

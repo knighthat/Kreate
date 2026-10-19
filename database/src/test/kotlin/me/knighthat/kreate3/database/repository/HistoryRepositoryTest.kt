@@ -38,6 +38,7 @@ internal class HistoryRepositoryTest : DatabaseTest() {
         addUser()
         addUser("other")
         repository = HistoryRepositoryImpl(
+            database,
             database.searchHistoryDao(),
             database.playbackHistoryDao(),
             activeUser,

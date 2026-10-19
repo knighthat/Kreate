@@ -98,7 +98,7 @@ internal class UserAlbumRepositoryImpl(
         bind: (SQLiteStatement) -> Unit = {},
     ): Flow<PagingData<UserAlbumView>> =
         scope.observe(PagingData.empty()) { userId ->
-            pagedFlow(UserAlbumViewEntity::toModel) {
+            database.pagedFlow(UserAlbumViewEntity::toModel, "user_album_view") {
                 userAlbumDao.paged(
                     RoomRawQuery(
                         sql = "SELECT * FROM user_album_view WHERE user_id = ? $filter ${

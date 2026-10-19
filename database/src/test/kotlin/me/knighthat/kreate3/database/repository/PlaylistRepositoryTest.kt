@@ -44,7 +44,7 @@ internal class PlaylistRepositoryTest : DatabaseTest() {
     fun setUp() = runBlocking {
         addUser()
         addUser("other")
-        repository = PlaylistRepositoryImpl(database.userPlaylistDao(), activeUser, clock)
+        repository = PlaylistRepositoryImpl(database, database.userPlaylistDao(), activeUser, clock)
     }
 
     private suspend fun othersPlaylist(): Long = database.userPlaylistDao().upsert(

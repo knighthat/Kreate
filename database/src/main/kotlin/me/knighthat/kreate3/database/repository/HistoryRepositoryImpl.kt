@@ -23,6 +23,7 @@ import androidx.room.RoomRawQuery
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate3.database.ActiveUser
+import me.knighthat.kreate3.database.AppDatabase
 import me.knighthat.kreate3.database.dao.PlaybackHistoryDao
 import me.knighthat.kreate3.database.dao.SearchHistoryDao
 import me.knighthat.kreate3.database.entity.PlaybackHistoryEntity
@@ -40,6 +41,7 @@ import kotlin.time.Duration
  * Room backed implementation of [HistoryRepository].
  */
 internal class HistoryRepositoryImpl(
+    private val database: AppDatabase,
     private val searchHistoryDao: SearchHistoryDao,
     private val playbackHistoryDao: PlaybackHistoryDao,
     activeUser: ActiveUser,
@@ -50,7 +52,7 @@ internal class HistoryRepositoryImpl(
 
     override fun searches(order: SortOrder<SearchSort>): Flow<PagingData<SearchHistory>> =
         scope.observe(PagingData.empty()) { userId ->
-            pagedFlow(SearchHistoryEntity::toModel) {
+            database.pagedFlow(SearchHistoryEntity::toModel, "search_history") {
                 searchHistoryDao.paged(
                     RoomRawQuery(
                         sql = "SELECT * FROM search_history WHERE user_id = ? ${order.toOrderBy("query")}",
