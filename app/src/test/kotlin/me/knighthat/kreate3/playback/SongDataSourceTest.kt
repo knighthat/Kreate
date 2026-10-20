@@ -27,6 +27,7 @@ import androidx.media3.datasource.FileDataSource
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheWriter
+import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Song
@@ -46,7 +47,10 @@ import org.robolectric.RuntimeEnvironment
 import java.io.ByteArrayOutputStream
 import java.io.File
 
-/** Where songs are read from: downloads, then the cache, then their address. */
+/**
+ * Where songs are read from: downloads, then the cache, then their address. Songs are set to
+ * [StreamQuality.HIGH], so what is streamed through the cache is its HIGH copy.
+ */
 @RunWith(RobolectricTestRunner::class)
 class SongDataSourceTest {
 
@@ -75,7 +79,10 @@ class SongDataSourceTest {
     private val local = FakeProvider(Origin.LOCAL) { address }
     private val server = FakeProvider(Origin.OPEN_SUBSONIC) { address }
 
-    private val caches = SongCaches(context, 1024 * 1024)
+    /** Whether songs of the server skip the cache. */
+    private var directPlay = false
+
+    private val caches = SongCaches(context, 1024 * 1024, 1024 * 1024)
 
     private val factory = songDataSourceFactory(
         context = context,
@@ -86,6 +93,8 @@ class SongDataSourceTest {
             { _, _, _ -> null },
         ),
         caches = caches,
+        copies = CacheCopies(caches::copies, caches::drop, { StreamQuality.HIGH }, { true }),
+        directPlay = { directPlay },
     )
 
     @After
@@ -111,8 +120,13 @@ class SongDataSourceTest {
         return out.toByteArray()
     }
 
-    private fun cachedIn(cache: Cache, song: QueuedSong): Long =
-        cache.getCachedBytes(song.cacheKey, 0, C.LENGTH_UNSET.toLong())
+    /** Bytes [cache] keeps of [song], of its HIGH copy unless [quality] says otherwise. */
+    private fun cachedIn(
+        cache: Cache,
+        song: QueuedSong,
+        quality: StreamQuality? = StreamQuality.HIGH,
+    ): Long =
+        cache.getCachedBytes(song.copy(quality = quality).cacheKey, 0, C.LENGTH_UNSET.toLong())
 
     @Test
     fun streamedSongIsKeptInTheCacheNotTheDownloads() {
@@ -121,6 +135,20 @@ class SongDataSourceTest {
         assertArrayEquals(audio, read(song))
         assertEquals(audio.size.toLong(), cachedIn(caches.cache, song))
         assertEquals(0L, cachedIn(caches.downloads, song))
+    }
+
+    @Test
+    fun serverSongSkipsTheCacheWithDirectPlay() {
+        directPlay = true
+        val song = QueuedSong(Origin.OPEN_SUBSONIC, "s1")
+
+        assertArrayEquals(audio, read(song))
+        assertEquals(0L, cachedIn(caches.cache, song))
+        assertEquals(0L, cachedIn(caches.cache, song, quality = null))
+
+        // Asked again every time
+        read(song)
+        assertEquals(2, server.asked)
     }
 
     @Test
@@ -139,7 +167,10 @@ class SongDataSourceTest {
         val song = QueuedSong(Origin.OPEN_SUBSONIC, "s1")
         CacheWriter(
             CacheDataSource(caches.downloads, FileDataSource()),
-            DataSpec.Builder().setUri(Uri.fromFile(file)).setKey(song.cacheKey).build(),
+            DataSpec.Builder()
+                .setUri(Uri.fromFile(file))
+                .setKey(song.copy(quality = StreamQuality.HIGH).cacheKey)
+                .build(),
             null,
             null,
         ).cache()
@@ -156,8 +187,8 @@ class SongDataSourceTest {
         val song = QueuedSong(Origin.LOCAL, "42")
 
         assertArrayEquals(audio, read(song))
-        assertEquals(0L, cachedIn(caches.cache, song))
-        assertEquals(0L, cachedIn(caches.downloads, song))
+        assertEquals(0L, cachedIn(caches.cache, song, quality = null))
+        assertEquals(0L, cachedIn(caches.downloads, song, quality = null))
 
         // Read where it is every time
         read(song)

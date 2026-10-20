@@ -62,7 +62,8 @@ class ProfileUserSync(
         combine(profileManager.ids, profileManager.activeId) { ids, active ->
             ids to active
         }.map { (ids, active) ->
-            ids.forEach { id ->
+            // Both are read on their own, the ids can be older than the active profile
+            (ids + listOfNotNull(active)).forEach { id ->
                 if (id in synced) return@forEach
 
                 if (userRepository.find(id).first() == null)

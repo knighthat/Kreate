@@ -34,13 +34,18 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class LiveDetailViewModelTest {
 
-    private class Detail(var fetch: suspend () -> String?) : LiveDetailViewModel<String>() {
+    /** The main thread and the fetch's, so every step happens right away. */
+    private val dispatcher = UnconfinedTestDispatcher()
+
+    private inner class Detail(
+        var fetch: suspend () -> String?,
+    ) : LiveDetailViewModel<String>(dispatcher) {
         override val notFound = "Not here"
         override suspend fun fetch(): String? = fetch.invoke()
     }
 
     @Before
-    fun setUp() = Dispatchers.setMain(UnconfinedTestDispatcher())
+    fun setUp() = Dispatchers.setMain(dispatcher)
 
     @After
     fun tearDown() = Dispatchers.resetMain()

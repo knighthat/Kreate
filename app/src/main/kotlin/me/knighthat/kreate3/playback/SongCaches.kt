@@ -36,9 +36,18 @@ import java.io.File
  * [QueuedSong.cacheKey] in both.
  *
  * Their index is the database `exoplayer_internal.db`, left out of backups like the files.
+ *
+ * @param cacheSize bytes [cache] keeps at most, see [Preferences.MEDIA3_CACHE_SIZE]
+ * @param downloadsSize bytes [downloads] keeps at most, see [Preferences.MEDIA3_DOWNLOAD_SIZE]
  */
 @OptIn(UnstableApi::class)
-class SongCaches(context: Context) {
+class SongCaches internal constructor(context: Context, cacheSize: Long, downloadsSize: Long) {
+
+    constructor(context: Context) : this(
+        context,
+        Preferences.MEDIA3_CACHE_SIZE.value,
+        Preferences.MEDIA3_DOWNLOAD_SIZE.value,
+    )
 
     private val database = StandaloneDatabaseProvider(context)
 
@@ -48,14 +57,14 @@ class SongCaches(context: Context) {
      */
     val cache: Cache = SimpleCache(
         File(context.cacheDir, "exoplayer"),
-        LeastRecentlyUsedCacheEvictor(Preferences.MEDIA3_CACHE_SIZE.value),
+        LeastRecentlyUsedCacheEvictor(cacheSize),
         database,
     )
 
     /** What the user downloaded, kept until it is removed. Playback only reads it. */
     val downloads: Cache = SimpleCache(
         File(context.noBackupFilesDir, "exoplayer"),
-        LeastRecentlyUsedCacheEvictor(Preferences.MEDIA3_DOWNLOAD_SIZE.value),
+        LeastRecentlyUsedCacheEvictor(downloadsSize),
         database,
     )
 

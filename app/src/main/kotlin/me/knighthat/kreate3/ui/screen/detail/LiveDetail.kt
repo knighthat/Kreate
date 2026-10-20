@@ -40,6 +40,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,8 +73,12 @@ sealed interface LiveState<out T> {
 /**
  * Fetches an item of an online catalog when its screen opens, see [LiveDetailScreen]. Subclasses
  * call [load] once from their `init`, after their own properties are set.
+ *
+ * @param background where [fetch] runs, never the main thread
  */
-abstract class LiveDetailViewModel<T : Any> : ViewModel() {
+abstract class LiveDetailViewModel<T : Any>(
+    private val background: CoroutineDispatcher = Dispatchers.Default,
+) : ViewModel() {
 
     private val _state = MutableStateFlow<LiveState<T>>(LiveState.Loading)
     private var job: Job? = null
@@ -93,7 +98,7 @@ abstract class LiveDetailViewModel<T : Any> : ViewModel() {
             _state.value = LiveState.Loading
             _state.value = try {
                 // Turning the answer into the page takes long, never on the main thread
-                withContext(Dispatchers.Default) { fetch() }?.let { LiveState.Ready(it) }
+                withContext(background) { fetch() }?.let { LiveState.Ready(it) }
                     ?: LiveState.Failed(notFound)
             } catch (e: CancellationException) {
                 throw e

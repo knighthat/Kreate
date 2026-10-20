@@ -41,14 +41,16 @@ import okhttp3.OkHttpClient
  * Reads the songs of the queue. A song on the device is read where it is, no cache is involved.
  * Any other song is read from [SongCaches.downloads] first, then from [SongCaches.cache], and
  * only what neither has is streamed: [resolver] finds the address then, and what is streamed is
- * kept in [SongCaches.cache], never in the downloads. With [Preferences.OPEN_SUBSONIC_DIRECT_PLAY]
- * on, a song of the server skips [SongCaches.cache]: the downloads, then the stream.
+ * kept in [SongCaches.cache], never in the downloads. With [directPlay] on, a song of the server
+ * skips [SongCaches.cache]: the downloads, then the stream.
  *
  * [SongCaches.cache] keeps a copy of a song for each quality, [copies] picks the one read.
  *
  * Streams go out with the app's [client], or with [openSubsonic] for an OpenSubsonic server.
  *
  * @param openSubsonic the client of the server, see [OpenSubsonicProvider.streamClient]
+ * @param directPlay whether songs of the server skip the cache now, read at each read, see
+ * [Preferences.OPEN_SUBSONIC_DIRECT_PLAY]
  */
 @OptIn(UnstableApi::class)
 fun songDataSourceFactory(
@@ -58,6 +60,7 @@ fun songDataSourceFactory(
     resolver: DataSourceResolver,
     caches: SongCaches,
     copies: CacheCopies,
+    directPlay: () -> Boolean = { Preferences.OPEN_SUBSONIC_DIRECT_PLAY.value },
 ): DataSource.Factory {
     val app = DefaultDataSource.Factory(context, OkHttpDataSource.Factory(client))
     val server = DefaultDataSource.Factory(context, OkHttpDataSource.Factory(openSubsonic))
@@ -91,13 +94,14 @@ fun songDataSourceFactory(
             uncached = uncached.createDataSource(),
             direct = network.createDataSource(),
             copies = copies,
+            directPlay = directPlay,
         )
     }
 }
 
 /**
  * Reads a song of the device, or an address that isn't a queued song, with [direct], a song of
- * the server with [uncached] while [Preferences.OPEN_SUBSONIC_DIRECT_PLAY] is on, and any other
+ * the server with [uncached] while [directPlay] is on, and any other
  * song with [cached], from the copy [copies] picked. The read carries that copy as its key and
  * its `customData`, [copies] hears when it ends.
  */
@@ -107,6 +111,7 @@ private class SongDataSource(
     private val uncached: DataSource,
     private val direct: DataSource,
     private val copies: CacheCopies,
+    private val directPlay: () -> Boolean,
 ) : DataSource {
 
     private var current: DataSource? = null
@@ -125,7 +130,7 @@ private class SongDataSource(
         val origin = song?.origin
         val source = when {
             origin == null || origin == Origin.LOCAL -> direct
-            origin == Origin.OPEN_SUBSONIC && Preferences.OPEN_SUBSONIC_DIRECT_PLAY.value -> uncached
+            origin == Origin.OPEN_SUBSONIC && directPlay() -> uncached
             else -> cached
         }
         current = source
