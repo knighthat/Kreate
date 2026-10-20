@@ -91,14 +91,15 @@ class PlaybackControllerImpl(
     override fun next() = run("skip to next") { it.seekToNext() }
 
     override fun dropCurrent() = run("drop the current item") { controller ->
-        val index = controller.currentMediaItemIndex
-        // Counts repeating one as not repeating, and wraps around when repeating all
-        val next = controller.nextMediaItemIndex
-        // Moving on first, removing the current item while repeating one would end the queue
-        // even with items after it: the player looks for what follows it by repeating it
-        if (next != C.INDEX_UNSET && next != index) controller.seekToNextMediaItem()
-        // With nothing else to play, removing it ends the queue
-        controller.removeMediaItem(index)
+        controller.removeAt(controller.currentMediaItemIndex)
+    }
+
+    override fun remove(index: Int) = run("remove item $index") { it.removeAt(index) }
+
+    override fun move(from: Int, to: Int) = run("move item $from to $to") { controller ->
+        val count = controller.mediaItemCount
+        if (from !in 0 until count || to !in 0 until count || from == to) return@run
+        controller.moveMediaItem(from, to)
     }
 
     override fun skipTo(index: Int) = run("skip to item $index") { controller ->
@@ -282,6 +283,20 @@ class PlaybackControllerImpl(
 
     private fun publishQueue(controller: MediaController) {
         _queue.value = List(controller.mediaItemCount, controller::getMediaItemAt)
+    }
+
+    /** Takes the item at [index] out of the queue, moving on first when it is the current one. */
+    private fun MediaController.removeAt(index: Int) {
+        if (index !in 0 until mediaItemCount) return
+        if (index == currentMediaItemIndex) {
+            // Counts repeating one as not repeating, and wraps around when repeating all
+            val next = nextMediaItemIndex
+            // Moving on first, removing the current item while repeating one would end the queue
+            // even with items after it: the player looks for what follows it by repeating it
+            if (next != C.INDEX_UNSET && next != index) seekToNextMediaItem()
+        }
+        // With nothing else to play, removing it ends the queue
+        removeMediaItem(index)
     }
 
     private fun ListenableFuture<MediaController>.isUsable(): Boolean =

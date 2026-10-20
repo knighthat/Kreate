@@ -119,6 +119,15 @@ interface PlaybackController {
      */
     fun dropCurrent()
 
+    /**
+     * Takes the item at [index] of [queue] out of it. Removing the current item works like
+     * [dropCurrent].
+     */
+    fun remove(index: Int)
+
+    /** Moves the item at [from] of [queue] to [to], the items between shift over by one. */
+    fun move(from: Int, to: Int)
+
     /** Plays the item at [index] of [queue] from its start. */
     fun skipTo(index: Int)
 

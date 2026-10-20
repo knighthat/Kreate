@@ -46,7 +46,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -66,11 +68,13 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -162,8 +166,14 @@ private val SHADE_HEIGHT = 120.dp
 /** How much the top shade covers, the bottom one turns solid behind the tabs. */
 private const val SHADE_ALPHA = 0.6f
 
-/** The row with the tabs, above the navigation bar. */
+/** The row with the tabs, above the bar of buttons. */
 private val TAB_BAR_HEIGHT = 56.dp
+
+/** The bar under the tabs with the buttons of the page shown, above the navigation bar. */
+private val BUTTON_BAR_HEIGHT = 48.dp
+
+/** Everything below the pages, above the navigation bar: the tabs and the buttons under them. */
+private val BOTTOM_BAR_HEIGHT = TAB_BAR_HEIGHT + BUTTON_BAR_HEIGHT
 
 /**
  * How far the slider of the seek bar reaches up under the badges: most of the empty top of its
@@ -378,7 +388,7 @@ fun PlayerSheet(
 /**
  * The full player: [PlayerTab.PLAYER] with the song playing in the middle, its lyrics on the
  * left and the queue on the right, as pages to swipe between or pick with the tabs at the
- * bottom. It always opens on the player. The song's cover blurred stays
+ * bottom, the buttons of the page shown under them. It always opens on the player. The song's cover blurred stays
  * behind every page, more covered by the color away from the player so the text reads.
  *
  * @param index where [item] is in the queue, `-1` when unknown
@@ -400,11 +410,21 @@ private fun FullPlayer(
         PlayerTab.entries.size
     }
     val scope = rememberCoroutineScope()
+    // Out here for the buttons under the tabs, the page itself goes when swiped away
+    val queueList =
+        rememberLazyListState(initialFirstVisibleItemIndex = (index - 1).coerceAtLeast(0))
+    var queueMode by remember { mutableStateOf(QueueEditMode.NONE) }
+    // The buttons of a page turn back off once another page is shown
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            if (page != PlayerTab.QUEUE.ordinal) queueMode = QueueEditMode.NONE
+        }
+    }
     val navigationBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     // Under the status bar and above the tabs, the lists scroll behind both
     val pagePadding = PaddingValues(
         top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
-        bottom = navigationBarHeight + TAB_BAR_HEIGHT,
+        bottom = navigationBarHeight + BOTTOM_BAR_HEIGHT,
     )
 
     Surface(color = background, modifier = modifier.fillMaxSize()) {
@@ -429,8 +449,7 @@ private fun FullPlayer(
                 modifier = Modifier
                     .matchParentSize()
                     .drawBehind {
-                        val page = pagerState.currentPage + pagerState.currentPageOffsetFraction
-                        val away = abs(page - PlayerTab.PLAYER.ordinal).coerceAtMost(1f)
+                        val away = pagerState.distanceTo(PlayerTab.PLAYER)
                         drawRect(background.copy(alpha = PAGE_SCRIM_ALPHA * away))
                     },
             )
@@ -448,7 +467,13 @@ private fun FullPlayer(
                     )
 
                     PlayerTab.LYRICS -> LyricsPage(item, isPlaying, controller, pagePadding)
-                    PlayerTab.QUEUE -> QueuePage(controller, index, pagePadding)
+                    PlayerTab.QUEUE -> QueuePage(
+                        controller = controller,
+                        currentIndex = index,
+                        mode = queueMode,
+                        listState = queueList,
+                        contentPadding = pagePadding,
+                    )
                 }
             }
 
@@ -468,7 +493,7 @@ private fun FullPlayer(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .height(SHADE_HEIGHT + navigationBarHeight)
+                    .height(SHADE_HEIGHT + BUTTON_BAR_HEIGHT + navigationBarHeight)
                     .drawBehind {
                         drawRect(
                             Brush.verticalGradient(
@@ -513,6 +538,7 @@ private fun FullPlayer(
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .windowInsetsPadding(WindowInsets.navigationBars)
+                    .padding(bottom = BUTTON_BAR_HEIGHT)
                     .height(TAB_BAR_HEIGHT)
             ) {
                 CompositionLocalProvider(LocalRippleConfiguration provides null) {
@@ -526,9 +552,54 @@ private fun FullPlayer(
                     }
                 }
             }
+            PageButtons(
+                pagerState = pagerState,
+                queueMode = queueMode,
+                onQueueModeChange = { queueMode = it },
+                onLocate = {
+                    scope.launch { queueList.animateScrollToItem((index - 1).coerceAtLeast(0)) }
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.navigationBars)
+                    .height(BUTTON_BAR_HEIGHT),
+            )
         }
     }
 }
+
+/**
+ * The bar under the tabs, with the buttons of the page shown. They fade in and out with the
+ * finger between the pages. Only the queue has buttons for now, the bar stays empty but keeps
+ * its room on the other pages, so the tabs don't move.
+ */
+@Composable
+private fun PageButtons(
+    pagerState: PagerState,
+    queueMode: QueueEditMode,
+    onQueueModeChange: (QueueEditMode) -> Unit,
+    onLocate: () -> Unit,
+    modifier: Modifier = Modifier,
+) = Box(contentAlignment = Alignment.Center, modifier = modifier) {
+    // Composed only while some of the queue shows, no one taps buttons that can't be seen
+    val queueShown by remember(pagerState) {
+        derivedStateOf { pagerState.distanceTo(PlayerTab.QUEUE) < 1f }
+    }
+    if (queueShown)
+        QueueButtons(
+            mode = queueMode,
+            onModeChange = onQueueModeChange,
+            onLocate = onLocate,
+            modifier = Modifier.graphicsLayer {
+                alpha = 1f - pagerState.distanceTo(PlayerTab.QUEUE)
+            },
+        )
+}
+
+/** How many pages [tab] is from the page shown, up to `1`. It changes with the finger. */
+private fun PagerState.distanceTo(tab: PlayerTab): Float =
+    abs(currentPage + currentPageOffsetFraction - tab.ordinal).coerceAtMost(1f)
 
 /**
  * The song playing, large: its cover across the top [COVER_HEIGHT] of the player, fading out
@@ -581,7 +652,7 @@ private fun NowPlayingPage(
                 .fillMaxSize()
                 .padding(top = coverHeight)
                 .windowInsetsPadding(WindowInsets.navigationBars)
-                .padding(bottom = TAB_BAR_HEIGHT)
+                .padding(bottom = BOTTOM_BAR_HEIGHT)
                 .padding(horizontal = 24.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -767,11 +838,11 @@ private fun ReactionButton(
 }
 
 /**
- * A small button of the player for a mode, shuffle or repeat: in the primary color while [isOn],
- * dimmed otherwise, so play stays the main button.
+ * A small button of the player for a mode, like shuffle or repeat: in the primary color while
+ * [isOn], dimmed otherwise, so play stays the main button.
  */
 @Composable
-private fun ModeButton(
+internal fun ModeButton(
     @DrawableRes icon: Int,
     description: String,
     isOn: Boolean,

@@ -95,6 +95,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.material3)
+    implementation(libs.reorderable)
 
     // Navigation
     implementation(libs.androidx.navigation3.runtime)

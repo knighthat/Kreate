@@ -164,6 +164,8 @@ private class PreviewController(
     override fun duration(): Long? = durationMs
     override fun next() = Unit
     override fun dropCurrent() = Unit
+    override fun remove(index: Int) = Unit
+    override fun move(from: Int, to: Int) = Unit
     override fun skipTo(index: Int) = Unit
     override fun previous() = Unit
     override fun seekTo(positionMs: Long) {

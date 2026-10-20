@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.ui.component
 
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +38,7 @@ fun SongItem(
     modifier: Modifier = Modifier,
     showThumbnail: Boolean = true,
     showAlbum: Boolean = true,
+    thumbnailOverlay: (@Composable BoxScope.() -> Unit)? = null,
 ) {
     val duration = formatDuration(item.mediaMetadata.durationMs)
 
@@ -46,6 +48,7 @@ fun SongItem(
         modifier = modifier,
         showThumbnail = showThumbnail,
         overlineEnd = item.mediaMetadata.albumTitle?.toString()?.takeIf { showAlbum },
+        thumbnailOverlay = thumbnailOverlay,
         trailing = duration?.let {
             { Text(it, style = MaterialTheme.typography.labelSmall) }
         },

@@ -30,6 +30,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -317,6 +318,7 @@ fun ItemBadges(
  * then starts at the edge.
  *
  * @param thumbnails pictures to try for the cover, see [Thumbnail], the item's own by default
+ * @param thumbnailOverlay drawn over the cover, in a box of its size
  */
 @Composable
 fun ItemRow(
@@ -326,6 +328,7 @@ fun ItemRow(
     showThumbnail: Boolean = true,
     thumbnails: List<Any>? = null,
     overlineEnd: String? = null,
+    thumbnailOverlay: (@Composable BoxScope.() -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
 ) {
     val metadata = item.mediaMetadata
@@ -339,12 +342,15 @@ fun ItemRow(
             .padding(horizontal = 16.dp, vertical = 6.dp),
     ) {
         if (showThumbnail)
-            Thumbnail(
-                models = thumbnails
-                    ?: listOfNotNull(thumbnailModel(metadata.artworkUri, item.localSongId)),
-                shape = MaterialTheme.shapes.small,
-                modifier = Modifier.size(ROW_THUMBNAIL_SIZE),
-            )
+            Box(modifier = Modifier.size(ROW_THUMBNAIL_SIZE)) {
+                Thumbnail(
+                    models = thumbnails
+                        ?: listOfNotNull(thumbnailModel(metadata.artworkUri, item.localSongId)),
+                    shape = MaterialTheme.shapes.small,
+                    modifier = Modifier.matchParentSize(),
+                )
+                thumbnailOverlay?.invoke(this)
+            }
         // The line above the title spans the width of the trailing content too, so what sits
         // at its end lines up with it
         Column(modifier = Modifier.weight(1f)) {
