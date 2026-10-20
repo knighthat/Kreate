@@ -18,11 +18,11 @@
 
 package me.knighthat.kreate3.database.repository
 
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.model.UserSong
 import me.knighthat.kreate3.database.view.UserSongViewEntity
+import me.knighthat.kreate3.model.Origin
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import kotlin.time.Duration.Companion.seconds

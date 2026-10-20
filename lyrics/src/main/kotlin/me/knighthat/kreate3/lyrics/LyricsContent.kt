@@ -18,7 +18,7 @@
 
 package me.knighthat.kreate3.lyrics
 
-import me.knighthat.kreate3.database.model.LyricsSync
+import me.knighthat.kreate3.model.LyricsSync
 import kotlin.time.Duration
 
 /** The lyrics of a song, read from the text a source gave, see [parseLyrics]. */

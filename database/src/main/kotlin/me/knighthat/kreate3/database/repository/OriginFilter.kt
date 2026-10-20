@@ -18,7 +18,7 @@
 
 package me.knighthat.kreate3.database.repository
 
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 
 /**
  * The condition that keeps rows from [origins], to put after a `WHERE`. Nothing when [origins]

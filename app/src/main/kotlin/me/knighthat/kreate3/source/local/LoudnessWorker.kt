@@ -36,9 +36,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.repository.SongRepository
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.LocalScanNotifications
 import me.knighthat.kreate3.source.local.LoudnessWorker.Companion.PARALLELISM
 import me.knighthat.kreate3.utils.hasAudioPermission

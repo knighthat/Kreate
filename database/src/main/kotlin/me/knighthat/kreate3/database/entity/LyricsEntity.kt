@@ -22,7 +22,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import me.knighthat.kreate3.database.model.LyricsSync
+import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.model.LyricsSync
 import kotlin.time.Instant
 
 /**
@@ -31,7 +32,7 @@ import kotlin.time.Instant
  * @property songId the [SongEntity] the lyrics belong to
  * @property lyrics the lyrics as the source gave them: plain text, LRC, TTML…
  * @property sync how finely [lyrics] are timed
- * @property source id of the lyrics source that found them
+ * @property source the provider of the lyrics
  * @property credit who the source names as the provider of the lyrics, `null` when it names no one
  * @property createdAt when the lyrics was first stored
  * @property updatedAt when the lyrics was last changed
@@ -53,7 +54,7 @@ internal data class LyricsEntity(
     val songId: String,
     val lyrics: String,
     val sync: LyricsSync,
-    val source: String,
+    val source: LyricsProvider,
     val credit: String?,
     @ColumnInfo(name = "created_at")
     val createdAt: Instant,

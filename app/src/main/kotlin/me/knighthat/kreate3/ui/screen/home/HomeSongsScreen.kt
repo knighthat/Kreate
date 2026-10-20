@@ -31,7 +31,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.PlayAllButton
 import me.knighthat.kreate3.ui.component.PreviewTheme

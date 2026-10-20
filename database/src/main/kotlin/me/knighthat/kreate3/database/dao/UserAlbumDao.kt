@@ -28,8 +28,8 @@ import androidx.room.RoomRawQuery
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.entity.UserAlbumEntity
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.view.UserAlbumViewEntity
+import me.knighthat.kreate3.model.Origin
 
 @Dao
 internal interface UserAlbumDao {

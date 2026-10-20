@@ -18,7 +18,7 @@
 
 package me.knighthat.kreate3.provider
 
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 
 /**
  * Finds the [Provider] of an [Origin].

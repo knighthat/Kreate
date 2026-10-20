@@ -25,11 +25,11 @@ import androidx.core.net.toUri
 import kotlinx.coroutines.flow.first
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.repository.AlbumRepository
 import me.knighthat.kreate3.database.repository.ArtistRepository
 import me.knighthat.kreate3.database.repository.SongRepository
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.Provider
 import me.knighthat.kreate3.provider.SearchResults
 

@@ -21,8 +21,8 @@ package me.knighthat.kreate3.playback
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.source.youtube.toMediaItem

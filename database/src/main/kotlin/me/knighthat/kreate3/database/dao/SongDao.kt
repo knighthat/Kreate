@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.entity.ArtistEntity
 import me.knighthat.kreate3.database.entity.SongArtistMapEntity
 import me.knighthat.kreate3.database.entity.SongEntity
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 
 @Dao
 internal interface SongDao {

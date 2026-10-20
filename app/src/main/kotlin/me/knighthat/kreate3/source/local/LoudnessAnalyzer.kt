@@ -27,8 +27,8 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.SongFormat
+import me.knighthat.kreate3.model.Origin
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder

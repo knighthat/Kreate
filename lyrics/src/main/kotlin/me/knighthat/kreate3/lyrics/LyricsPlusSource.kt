@@ -33,7 +33,8 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import me.knighthat.kreate3.database.model.LyricsSync
+import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.model.LyricsSync
 import java.io.IOException
 
 /**
@@ -51,7 +52,7 @@ class LyricsPlusSource(
     private val mirrors: List<String> = MIRRORS,
 ) : LyricsSource {
 
-    override val id: String = ID
+    override val provider: LyricsProvider = LyricsProvider.LYRICS_PLUS
     override val name: String = "LyricsPlus"
 
     /** A mirror that found nothing ends the search only when no other mirror answers. */
@@ -98,12 +99,10 @@ class LyricsPlusSource(
             else -> LyricsSync.NONE
         }
         val credit = answer["metadata"]?.jsonObject?.get("source")?.jsonPrimitive?.contentOrNull
-        return FoundLyrics(body, sync, id, credit)
+        return FoundLyrics(body, sync, provider, credit)
     }
 
     companion object {
-        const val ID = "lyricsplus"
-
         val MIRRORS = listOf(
             "https://lyricsplus.prjktla.my.id",
             "https://lyricsplus.binimum.org",

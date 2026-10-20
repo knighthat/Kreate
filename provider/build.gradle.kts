@@ -43,6 +43,8 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     // Providers hand out the models of the database
     api(project(":database"))
+    // Origin, which every provider tags its items with
+    api(project(":model"))
     // The settings of the providers, see Preferences and Secrets
     implementation(project(":preferences"))
     api(libs.kotlinx.coroutines.core)

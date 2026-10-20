@@ -21,12 +21,11 @@ package me.knighthat.kreate3.ui.screen.settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import me.knighthat.kreate3.database.model.LyricsSync
 import me.knighthat.kreate3.lyrics.LyricsFinder
+import me.knighthat.kreate3.model.LyricsSync
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.screen.player.label
-import me.knighthat.kreate3.ui.screen.player.lyricsSyncOf
 import org.koin.compose.koinInject
 
 /**
@@ -109,14 +108,14 @@ fun PlayerSettingsScreen(
             value = lyrics.source(lyricsSource) ?: lyrics.sources.first(),
             options = lyrics.sources,
             label = { it.name },
-            onSelect = { Preferences.LYRICS_SOURCE.update(it.id) },
+            onSelect = { Preferences.LYRICS_SOURCE.update(it.provider) },
         )
         ChoiceSetting(
             title = "Preferred timing",
-            value = lyricsSyncOf(lyricsSync),
+            value = lyricsSync,
             options = LyricsSync.entries.reversed(),
             label = { it.label },
-            onSelect = { Preferences.LYRICS_SYNC.update(it.name) },
+            onSelect = { Preferences.LYRICS_SYNC.update(it) },
         )
         SwitchSetting(
             title = "Always fetch lyrics",

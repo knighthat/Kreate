@@ -30,7 +30,7 @@ import me.knighthat.kreate3.database.entity.ArtistEntity
 import me.knighthat.kreate3.database.entity.SongArtistMapEntity
 import me.knighthat.kreate3.database.entity.SongEntity
 import me.knighthat.kreate3.database.entity.UserEntity
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith

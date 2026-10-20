@@ -50,6 +50,8 @@ room {
 }
 
 dependencies {
+    // Origin, LyricsSync and the other words models are made of
+    api(project(":model"))
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.androidx.room.runtime)

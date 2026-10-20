@@ -18,7 +18,8 @@
 
 package me.knighthat.kreate3.lyrics
 
-import me.knighthat.kreate3.database.model.LyricsSync
+import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.model.LyricsSync
 
 /**
  * Somewhere lyrics can be found, like a lyrics service or the song's own origin. Ask them all
@@ -28,11 +29,8 @@ import me.knighthat.kreate3.database.model.LyricsSync
  */
 interface LyricsSource {
 
-    /**
-     * Names the source in [FoundLyrics.source], which is stored, so never change it. Short and
-     * lowercase, like `lrclib`.
-     */
-    val id: String
+    /** Which provider this source fetches from, each has at most one source. */
+    val provider: LyricsProvider
 
     /** Shown to the user, like "LRCLIB". */
     val name: String
@@ -49,13 +47,13 @@ interface LyricsSource {
  *
  * @property text the lyrics as the source gave them: plain text, LRC, TTML or the source's JSON
  * @property sync how finely [text] is timed
- * @property source [LyricsSource.id] of the source that found them
+ * @property source the provider of the source that found them
  * @property credit who the source names as the provider of the lyrics, as it words it, like
  * "Source: Musixmatch"; show it with the lyrics. `null` when it names no one
  */
 data class FoundLyrics(
     val text: String,
     val sync: LyricsSync,
-    val source: String,
+    val source: LyricsProvider,
     val credit: String? = null,
 )

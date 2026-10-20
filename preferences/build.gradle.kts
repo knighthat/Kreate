@@ -34,6 +34,8 @@ android {
 }
 
 dependencies {
+    // Settings that hold one of the shared words, like LyricsSync
+    api(project(":model"))
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.androidx.datastore.preferences.core)

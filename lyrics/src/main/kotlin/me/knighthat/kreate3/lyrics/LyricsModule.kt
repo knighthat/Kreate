@@ -20,22 +20,19 @@ package me.knighthat.kreate3.lyrics
 
 import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
+import me.knighthat.kreate3.model.LyricsProvider
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 /**
- * Pass it to `initKoin` to make [LyricsFinder] available. A new [LyricsSource] is added to its
- * list, which is the order the sources are asked in: the ones timed per word first, so a search
- * stops sooner.
+ * Pass it to `initKoin` to make [LyricsFinder] available, with the sources of this module. A
+ * source of another module, like one needing a music provider, is declared where that module is
+ * known, bound to [LyricsSource]: the finder takes every one, in the order of [LyricsProvider].
  */
 val lyricsModule = module {
-    single {
-        LyricsFinder(
-            listOf(
-                BetterLyricsSource(get<HttpClient>(), get<Json>()),
-                LyricsPlusSource(get(), get()),
-                LrcLibSource(get(), get()),
-                YouTubeLyricsSource(get()),
-            )
-        )
-    }
+    single { BetterLyricsSource(get<HttpClient>(), get<Json>()) } bind LyricsSource::class
+    single { LyricsPlusSource(get(), get()) } bind LyricsSource::class
+    single { LrcLibSource(get(), get()) } bind LyricsSource::class
+
+    single { LyricsFinder(getAll<LyricsSource>().sortedBy { it.provider }) }
 }

@@ -29,9 +29,9 @@ import androidx.media3.datasource.DataSpec
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.SongFormat
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.Provider
 import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.provider.SearchResults

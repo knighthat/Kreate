@@ -30,9 +30,9 @@ import me.knighthat.kreate3.database.entity.SongFormatEntity
 import me.knighthat.kreate3.database.inTransaction
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Lyrics
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.SongFormat
+import me.knighthat.kreate3.model.Origin
 import kotlin.time.Clock
 
 /**

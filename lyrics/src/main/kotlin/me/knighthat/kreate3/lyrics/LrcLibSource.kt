@@ -35,7 +35,8 @@ import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import me.knighthat.kreate3.database.model.LyricsSync
+import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.model.LyricsSync
 import java.io.IOException
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -46,7 +47,7 @@ import kotlin.time.Duration.Companion.seconds
  */
 class LrcLibSource(private val client: HttpClient, private val json: Json) : LyricsSource {
 
-    override val id: String = ID
+    override val provider: LyricsProvider = LyricsProvider.LRCLIB
     override val name: String = "LRCLIB"
 
     override suspend fun find(query: LyricsQuery): FoundLyrics? = withContext(Dispatchers.Default) {
@@ -81,17 +82,15 @@ class LrcLibSource(private val client: HttpClient, private val json: Json) : Lyr
         val synced = string("syncedLyrics")
         if (synced != null) {
             val sync = if (WORD_TIME.containsMatchIn(synced)) LyricsSync.WORD else LyricsSync.LINE
-            return FoundLyrics(synced, sync, id)
+            return FoundLyrics(synced, sync, provider)
         }
-        return string("plainLyrics")?.let { FoundLyrics(it, LyricsSync.NONE, id) }
+        return string("plainLyrics")?.let { FoundLyrics(it, LyricsSync.NONE, provider) }
     }
 
     private fun JsonObject.string(key: String): String? =
         this[key]?.jsonPrimitive?.contentOrNull?.takeIf { it.isNotBlank() }
 
     companion object {
-        const val ID = "lrclib"
-
         private const val BASE_URL = "https://lrclib.net"
         private const val USER_AGENT = "Kreate"
         private val DURATION_TOLERANCE = 2.seconds

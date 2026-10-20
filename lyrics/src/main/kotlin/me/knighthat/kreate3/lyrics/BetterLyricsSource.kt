@@ -30,7 +30,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import me.knighthat.kreate3.database.model.LyricsSync
+import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.model.LyricsSync
 import java.io.IOException
 
 /**
@@ -42,7 +43,7 @@ import java.io.IOException
  */
 class BetterLyricsSource(private val client: HttpClient, private val json: Json) : LyricsSource {
 
-    override val id: String = ID
+    override val provider: LyricsProvider = LyricsProvider.BETTER_LYRICS
     override val name: String = "Better Lyrics"
 
     override suspend fun find(query: LyricsQuery): FoundLyrics? = withContext(Dispatchers.Default) {
@@ -62,7 +63,7 @@ class BetterLyricsSource(private val client: HttpClient, private val json: Json)
         val ttml = json.parseToJsonElement(response.bodyAsText()).jsonObject["ttml"]
             ?.jsonPrimitive?.contentOrNull?.trim()?.takeIf { it.isNotEmpty() }
             ?: return@withContext null
-        FoundLyrics(ttml, ttml.sync(), id)
+        FoundLyrics(ttml, ttml.sync(), provider)
     }
 
     /** From the `itunes:timing` of the TTML, timed per line when it doesn't say. */
@@ -74,8 +75,6 @@ class BetterLyricsSource(private val client: HttpClient, private val json: Json)
         }
 
     companion object {
-        const val ID = "betterlyrics"
-
         private const val BASE_URL = "https://lyrics-api.boidu.dev"
         private val TIMING = Regex("""itunes:timing="(\w+)"""")
     }

@@ -19,7 +19,7 @@
 package me.knighthat.kreate3.lyrics
 
 import kotlinx.coroutines.runBlocking
-import me.knighthat.kreate3.database.model.LyricsSync
+import me.knighthat.kreate3.model.LyricsSync
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue

@@ -43,13 +43,13 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.SearchHistory
 import me.knighthat.kreate3.database.repository.HistoryRepository
 import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.database.repository.UserAlbumRepository
 import me.knighthat.kreate3.database.repository.UserArtistRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.youtube.YouTubeException

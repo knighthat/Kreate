@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.ui.component.origin
 import kotlin.random.Random

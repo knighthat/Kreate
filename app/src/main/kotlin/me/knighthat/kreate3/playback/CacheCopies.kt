@@ -21,7 +21,7 @@ import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.constant.StreamQuality
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 
 /**

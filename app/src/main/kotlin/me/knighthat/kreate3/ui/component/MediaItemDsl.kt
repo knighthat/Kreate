@@ -33,12 +33,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.UserAlbumView
 import me.knighthat.kreate3.database.model.UserArtistView
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.model.UserSongView
 import me.knighthat.kreate3.database.repository.RemoteSong
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.source.local.albumArtUri
 import kotlin.time.Duration
 import kotlin.time.Instant

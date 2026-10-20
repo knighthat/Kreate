@@ -27,7 +27,6 @@ import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.AppDatabase
 import me.knighthat.kreate3.database.dao.UserArtistDao
 import me.knighthat.kreate3.database.inTransaction
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.UserArtist
 import me.knighthat.kreate3.database.model.UserArtistView
 import me.knighthat.kreate3.database.paging.SortOrder
@@ -35,6 +34,7 @@ import me.knighthat.kreate3.database.paging.UserArtistSort
 import me.knighthat.kreate3.database.paging.pagedFlow
 import me.knighthat.kreate3.database.paging.toOrderBy
 import me.knighthat.kreate3.database.view.UserArtistViewEntity
+import me.knighthat.kreate3.model.Origin
 import kotlin.time.Clock
 
 /**

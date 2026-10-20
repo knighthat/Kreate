@@ -30,8 +30,8 @@ import io.ktor.http.Parameters
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.repository.RemoteSong
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.SearchResults
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

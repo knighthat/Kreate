@@ -18,13 +18,16 @@
 
 package me.knighthat.kreate3.database.model
 
+import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.model.LyricsSync
+
 /**
  * Lyrics of a [Song].
  *
  * @property songId the [Song] the lyrics belong to
  * @property lyrics the lyrics as the source gave them: plain text, LRC, TTML…
  * @property sync how finely [lyrics] are timed
- * @property source id of the lyrics source that found them, like `lrclib`
+ * @property source the provider of the lyrics
  * @property credit who the source names as the provider of the lyrics, as it words it, like
  * "Source: Musixmatch"; show it with the lyrics. `null` when it names no one
  */
@@ -32,6 +35,6 @@ data class Lyrics(
     val songId: String,
     val lyrics: String,
     val sync: LyricsSync,
-    val source: String,
+    val source: LyricsProvider,
     val credit: String? = null,
 )

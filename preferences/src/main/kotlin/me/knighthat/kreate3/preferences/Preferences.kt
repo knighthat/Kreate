@@ -22,6 +22,8 @@ import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.constant.ThemeMode
+import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.model.LyricsSync
 import me.knighthat.kreate3.preferences.Preferences.BACK_EXIT_DISABLED
 import me.knighthat.kreate3.preferences.Preferences.EXIT_CONFIRMATION
 import me.knighthat.kreate3.preferences.Preferences.EXIT_CONFIRMATION_TIMEOUT
@@ -326,17 +328,17 @@ object Preferences : KoinComponent {
 
     //<editor-fold defaultstate="collapsed" desc="Lyrics">
     /**
-     * Id of the lyrics source asked first, the only one asked until the user wants the others.
-     * LRCLIB by default. The app's sources aren't known here, so the id is kept as it is.
+     * The lyrics provider asked first, the only one asked until the user wants the others.
+     * [LyricsProvider.LRCLIB] by default.
      */
-    val LYRICS_SOURCE by lazy { string("lyrics_source", "lrclib") }
+    val LYRICS_SOURCE by lazy { enum("lyrics_source", LyricsProvider.LRCLIB) }
 
     /**
-     * Name of the `LyricsSync` the user wants, word by word by default. Stored lyrics timed this
-     * way, from any source, are shown without asking one. The app's `LyricsSync` isn't known
-     * here, so the name is kept as it is.
+     * How finely the user wants lyrics timed, [LyricsSync.WORD] by default. Stored lyrics timed
+     * this way, from any provider, are shown without asking one, and no lyrics are shown more
+     * finely timed than this.
      */
-    val LYRICS_SYNC by lazy { string("lyrics_sync", "WORD") }
+    val LYRICS_SYNC by lazy { enum("lyrics_sync", LyricsSync.WORD) }
 
     /**
      * Lyrics are fetched from the source every time they show, never read from or saved to the

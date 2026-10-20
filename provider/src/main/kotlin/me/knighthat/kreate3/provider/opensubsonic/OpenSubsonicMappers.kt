@@ -29,12 +29,12 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.repository.RemoteItem
 import me.knighthat.kreate3.database.repository.RemoteSong
+import me.knighthat.kreate3.model.Origin
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 

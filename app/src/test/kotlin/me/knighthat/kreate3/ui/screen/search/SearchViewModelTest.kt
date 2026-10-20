@@ -41,12 +41,12 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.serialization.json.Json
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.PlaybackHistory
 import me.knighthat.kreate3.database.model.SearchHistory
 import me.knighthat.kreate3.database.paging.SearchSort
 import me.knighthat.kreate3.database.paging.SortOrder
 import me.knighthat.kreate3.database.repository.HistoryRepository
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.ui.navigation.Tab

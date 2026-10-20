@@ -66,7 +66,7 @@ import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
 import coil3.memory.MemoryCache
 import me.knighthat.kreate3.R
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.source.local.LocalCover
 import me.knighthat.kreate3.source.local.isAlbumArt

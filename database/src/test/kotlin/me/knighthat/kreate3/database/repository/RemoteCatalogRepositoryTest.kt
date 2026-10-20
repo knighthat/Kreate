@@ -26,8 +26,8 @@ import me.knighthat.kreate3.database.DatabaseTest
 import me.knighthat.kreate3.database.entity.UserSongEntity
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
+import me.knighthat.kreate3.model.Origin
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull

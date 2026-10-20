@@ -21,8 +21,8 @@ package me.knighthat.kreate3.provider
 import android.net.Uri
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
+import me.knighthat.kreate3.model.Origin
 
 /**
  * Where music comes from. Every [Origin] has exactly one implementation, find it with [Providers].

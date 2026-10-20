@@ -29,8 +29,8 @@ import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheWriter
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.Provider
 import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.provider.SearchResults

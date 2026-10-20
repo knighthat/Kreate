@@ -16,18 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.knighthat.kreate3.database.model
+package me.knighthat.kreate3.model
 
 /**
- * Where an item comes from. Room stores the [name], so never rename a value.
+ * Where lyrics are fetched from. The database and the settings store the [name], so never rename
+ * a value.
+ *
+ * The order is the one sources are asked in when every source is searched: the ones that time
+ * lyrics per word first, so a search stops sooner.
  */
-enum class Origin {
-    /** Fetched from YouTube. */
+enum class LyricsProvider {
+    /** The server of the Better Lyrics extension: Apple Music's lyrics, mostly per word. */
+    BETTER_LYRICS,
+
+    /** LyricsPlus, the server of the YouLy+ extension: mostly per word. */
+    LYRICS_PLUS,
+
+    /** LRCLIB, a free database of lyrics: plain or per line. */
+    LRCLIB,
+
+    /** YouTube Music, for its own songs: plain. */
     YOUTUBE,
-
-    /** Found on the device. */
-    LOCAL,
-
-    /** Streamed from an OpenSubsonic server, like Navidrome. */
-    OPEN_SUBSONIC,
 }

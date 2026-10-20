@@ -30,7 +30,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaConstants
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.theme.KreateTheme
 
 /*

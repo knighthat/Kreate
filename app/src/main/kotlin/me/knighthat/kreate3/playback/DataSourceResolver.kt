@@ -30,8 +30,8 @@ import androidx.media3.datasource.ResolvingDataSource
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.constant.StreamQuality
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.SongFormat
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.playback.DataSourceResolver.Companion.SERVER_ADDRESS_LIFE
 import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider

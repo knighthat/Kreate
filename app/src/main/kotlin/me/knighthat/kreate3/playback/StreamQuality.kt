@@ -23,7 +23,7 @@ import android.net.NetworkCapabilities
 import androidx.core.content.getSystemService
 import androidx.core.net.ConnectivityManagerCompat
 import me.knighthat.kreate3.constant.StreamQuality
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 

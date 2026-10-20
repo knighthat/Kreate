@@ -21,12 +21,12 @@ package me.knighthat.kreate3.database.repository
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.model.Album
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.UserAlbum
 import me.knighthat.kreate3.database.model.UserAlbumView
 import me.knighthat.kreate3.database.paging.SortDirection
 import me.knighthat.kreate3.database.paging.SortOrder
 import me.knighthat.kreate3.database.paging.UserAlbumSort
+import me.knighthat.kreate3.model.Origin
 
 /**
  * The albums the active user keeps in their library, as the user sees them: the user's own

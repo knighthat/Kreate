@@ -16,28 +16,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.knighthat.kreate3.lyrics
+package me.knighthat.kreate3.source.youtube
 
-import me.knighthat.kreate3.database.model.LyricsSync
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.lyrics.FoundLyrics
+import me.knighthat.kreate3.lyrics.LyricsQuery
+import me.knighthat.kreate3.lyrics.LyricsSource
+import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.model.LyricsSync
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 
 /**
  * The lyrics YouTube Music shows for its own songs, never timed. Songs of other origins have none
  * here.
+ *
+ * It lives in the app, which knows both the lyrics and the providers, so neither module has to
+ * know the other.
  */
 class YouTubeLyricsSource(private val youTube: YouTubeProvider) : LyricsSource {
 
-    override val id: String = ID
+    override val provider: LyricsProvider = LyricsProvider.YOUTUBE
     override val name: String = "YouTube Music"
 
     override suspend fun find(query: LyricsQuery): FoundLyrics? {
         if (query.origin != Origin.YOUTUBE) return null
         val lyrics = youTube.lyrics(query.songId) ?: return null
-        return FoundLyrics(lyrics.text, LyricsSync.NONE, id, lyrics.credit)
-    }
-
-    companion object {
-        const val ID = "youtube"
+        return FoundLyrics(lyrics.text, LyricsSync.NONE, provider, lyrics.credit)
     }
 }

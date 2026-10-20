@@ -28,8 +28,8 @@ import androidx.room.RoomRawQuery
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.entity.UserSongEntity
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.view.UserSongViewEntity
+import me.knighthat.kreate3.model.Origin
 
 @Dao
 internal interface UserSongDao {

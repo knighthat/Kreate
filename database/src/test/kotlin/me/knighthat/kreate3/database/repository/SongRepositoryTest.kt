@@ -22,9 +22,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.database.DatabaseTest
 import me.knighthat.kreate3.database.model.Lyrics
-import me.knighthat.kreate3.database.model.LyricsSync
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.SongFormat
+import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.model.LyricsSync
+import me.knighthat.kreate3.model.Origin
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
@@ -119,7 +120,7 @@ internal class SongRepositoryTest : DatabaseTest() {
     fun deletingASongDeletesItsFormatsAndLyrics() = runBlocking {
         addSong("s1")
         repository.saveFormat(format("s1"))
-        repository.saveLyrics(Lyrics("s1", "la la", LyricsSync.NONE, "youtube"))
+        repository.saveLyrics(Lyrics("s1", "la la", LyricsSync.NONE, LyricsProvider.YOUTUBE))
 
         repository.delete("s1")
 

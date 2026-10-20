@@ -25,7 +25,7 @@ import androidx.media3.common.MediaItem
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import me.knighthat.kreate3.R
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
 import me.knighthat.kreate3.ui.component.origin
 import me.knighthat.kreate3.ui.component.remoteId

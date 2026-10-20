@@ -27,11 +27,11 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.database.repository.UserAlbumRepository
 import me.knighthat.kreate3.database.repository.UserArtistRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.source.opensubsonic.searchOpenSubsonic

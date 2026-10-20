@@ -36,7 +36,7 @@ import me.knighthat.kreate3.database.entity.UserArtistEntity
 import me.knighthat.kreate3.database.entity.UserSongEntity
 import me.knighthat.kreate3.database.inTransaction
 import me.knighthat.kreate3.database.model.LocalSong
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 import kotlin.time.Clock
 
 /**

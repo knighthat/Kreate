@@ -34,6 +34,7 @@ import kotlinx.coroutines.SupervisorJob
 import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.databaseModule
+import me.knighthat.kreate3.lyrics.LyricsSource
 import me.knighthat.kreate3.lyrics.lyricsModule
 import me.knighthat.kreate3.notification.LocalScanNotifications
 import me.knighthat.kreate3.notification.Notifier
@@ -47,6 +48,7 @@ import me.knighthat.kreate3.provider.providerModule
 import me.knighthat.kreate3.source.local.LocalCoverFetcher
 import me.knighthat.kreate3.source.local.LocalCoverKeyer
 import me.knighthat.kreate3.source.opensubsonic.OpenSubsonicCoverFetcher
+import me.knighthat.kreate3.source.youtube.YouTubeLyricsSource
 import me.knighthat.kreate3.ui.screen.setupCompletedFile
 import okio.Path.Companion.toOkioPath
 import org.koin.android.ext.android.get
@@ -129,6 +131,9 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                             get()
                         )
                     } bind ActiveUser::class
+
+                    // Lyrics of YouTube songs, the app knows both the lyrics and the providers
+                    single { YouTubeLyricsSource(get()) } bind LyricsSource::class
 
                     single { Backup(get(), get(), get()) }
                     single { ProfileSwitcher(androidContext(), get(), get(), get(), get(), get()) }

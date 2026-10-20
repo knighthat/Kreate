@@ -19,6 +19,7 @@
 package me.knighthat.kreate3.database.model
 
 import android.net.Uri
+import me.knighthat.kreate3.model.Origin
 
 /**
  * A playlist of the active user.

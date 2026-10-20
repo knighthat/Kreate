@@ -19,8 +19,13 @@
 package me.knighthat.kreate3.lyrics
 
 import kotlinx.coroutines.runBlocking
-import me.knighthat.kreate3.database.model.LyricsSync
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.model.LyricsProvider.BETTER_LYRICS
+import me.knighthat.kreate3.model.LyricsProvider.LRCLIB
+import me.knighthat.kreate3.model.LyricsProvider.LYRICS_PLUS
+import me.knighthat.kreate3.model.LyricsProvider.YOUTUBE
+import me.knighthat.kreate3.model.LyricsSync
+import me.knighthat.kreate3.model.Origin
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
@@ -35,35 +40,35 @@ class LyricsFinderTest {
 
     /** Answers lyrics timed by [sync], or throws [error]; counts how often it was asked. */
     private class FakeSource(
-        override val id: String,
+        override val provider: LyricsProvider,
         private val sync: LyricsSync? = null,
         private val error: Exception? = null,
     ) : LyricsSource {
 
-        override val name: String = id
+        override val name: String = provider.name
         var asked = 0
 
         override suspend fun find(query: LyricsQuery): FoundLyrics? {
             asked++
             error?.let { throw it }
-            return sync?.let { FoundLyrics("la la", it, id) }
+            return sync?.let { FoundLyrics("la la", it, provider) }
         }
     }
 
     @Test
     fun stopsAtTheFirstWordSyncedLyrics() = runBlocking {
-        val later = FakeSource("later", LyricsSync.WORD)
+        val later = FakeSource(LYRICS_PLUS, LyricsSync.WORD)
         val finder = LyricsFinder(
             listOf(
-                FakeSource("plain", LyricsSync.NONE),
-                FakeSource("words", LyricsSync.WORD),
-                later
+                FakeSource(YOUTUBE, LyricsSync.NONE),
+                FakeSource(BETTER_LYRICS, LyricsSync.WORD),
+                later,
             )
         )
 
         val found = finder.find(query)
 
-        assertEquals("words", found?.source)
+        assertEquals(BETTER_LYRICS, found?.source)
         assertEquals(0, later.asked)
     }
 
@@ -71,45 +76,48 @@ class LyricsFinderTest {
     fun givesTheMostFinelyTimedWhenNoneHasWords() = runBlocking {
         val finder = LyricsFinder(
             listOf(
-                FakeSource("plain", LyricsSync.NONE),
-                FakeSource("line1", LyricsSync.LINE),
-                FakeSource("line2", LyricsSync.LINE),
+                FakeSource(YOUTUBE, LyricsSync.NONE),
+                FakeSource(LRCLIB, LyricsSync.LINE),
+                FakeSource(LYRICS_PLUS, LyricsSync.LINE),
             )
         )
 
-        assertEquals("line1", finder.find(query)?.source)
+        assertEquals(LRCLIB, finder.find(query)?.source)
     }
 
     @Test
     fun stopsAtWhatIsWanted() = runBlocking {
-        val later = FakeSource("words", LyricsSync.WORD)
-        val finder = LyricsFinder(listOf(FakeSource("plain", LyricsSync.NONE), later))
+        val later = FakeSource(BETTER_LYRICS, LyricsSync.WORD)
+        val finder = LyricsFinder(listOf(FakeSource(YOUTUBE, LyricsSync.NONE), later))
 
-        assertEquals("plain", finder.find(query, LyricsSync.NONE)?.source)
+        assertEquals(YOUTUBE, finder.find(query, LyricsSync.NONE)?.source)
         assertEquals(0, later.asked)
     }
 
     @Test
     fun excludedSourcesAreNotAsked() = runBlocking {
-        val excluded = FakeSource("words", LyricsSync.WORD)
-        val finder = LyricsFinder(listOf(excluded, FakeSource("line", LyricsSync.LINE)))
+        val excluded = FakeSource(BETTER_LYRICS, LyricsSync.WORD)
+        val finder = LyricsFinder(listOf(excluded, FakeSource(LRCLIB, LyricsSync.LINE)))
 
-        assertEquals("line", finder.find(query, exclude = setOf("words"))?.source)
+        assertEquals(LRCLIB, finder.find(query, exclude = setOf(BETTER_LYRICS))?.source)
         assertEquals(0, excluded.asked)
     }
 
     @Test
     fun skipsASourceThatFails() = runBlocking {
         val finder = LyricsFinder(
-            listOf(FakeSource("down", error = IOException()), FakeSource("line", LyricsSync.LINE))
+            listOf(
+                FakeSource(BETTER_LYRICS, error = IOException()),
+                FakeSource(LRCLIB, LyricsSync.LINE),
+            )
         )
 
-        assertEquals("line", finder.find(query)?.source)
+        assertEquals(LRCLIB, finder.find(query)?.source)
     }
 
     @Test
     fun nothingFoundIsNull() = runBlocking {
-        assertNull(LyricsFinder(listOf(FakeSource("a"), FakeSource("b"))).find(query))
+        assertNull(LyricsFinder(listOf(FakeSource(LRCLIB), FakeSource(YOUTUBE))).find(query))
         assertNull(LyricsFinder(emptyList()).find(query))
     }
 
@@ -119,9 +127,9 @@ class LyricsFinderTest {
         val second = IOException("second")
         val finder = LyricsFinder(
             listOf(
-                FakeSource("a", error = first),
-                FakeSource("b"),
-                FakeSource("c", error = second),
+                FakeSource(BETTER_LYRICS, error = first),
+                FakeSource(LYRICS_PLUS),
+                FakeSource(LRCLIB, error = second),
             )
         )
 
@@ -136,11 +144,11 @@ class LyricsFinderTest {
     }
 
     @Test
-    fun findsASourceById() {
-        val source = FakeSource("lrclib")
+    fun findsASourceByItsProvider() {
+        val source = FakeSource(LRCLIB)
         val finder = LyricsFinder(listOf(source))
 
-        assertSame(source, finder.source("lrclib"))
-        assertNull(finder.source("missing"))
+        assertSame(source, finder.source(LRCLIB))
+        assertNull(finder.source(YOUTUBE))
     }
 }

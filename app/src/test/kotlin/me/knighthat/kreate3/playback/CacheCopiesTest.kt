@@ -22,7 +22,7 @@ import me.knighthat.kreate3.constant.StreamQuality.HIGH
 import me.knighthat.kreate3.constant.StreamQuality.LOW
 import me.knighthat.kreate3.constant.StreamQuality.MEDIUM
 import me.knighthat.kreate3.constant.StreamQuality.ORIGINAL
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith

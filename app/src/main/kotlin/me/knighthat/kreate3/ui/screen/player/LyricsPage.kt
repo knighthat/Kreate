@@ -52,7 +52,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.model.Lyrics
-import me.knighthat.kreate3.database.model.LyricsSync
 import me.knighthat.kreate3.database.repository.SongRepository
 import me.knighthat.kreate3.lyrics.FoundLyrics
 import me.knighthat.kreate3.lyrics.LyricsContent
@@ -61,9 +60,12 @@ import me.knighthat.kreate3.lyrics.LyricsQuery
 import me.knighthat.kreate3.lyrics.SyncedLyrics
 import me.knighthat.kreate3.lyrics.coarsenedTo
 import me.knighthat.kreate3.lyrics.parseLyrics
+import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.model.LyricsSync
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.origin
+import me.knighthat.kreate3.ui.screen.settings.prettyName
 import org.koin.compose.koinInject
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -100,12 +102,12 @@ internal sealed interface LyricsState {
 /**
  * The lyrics settings, read when the page loads.
  *
- * @property source id of the source asked first, see [Preferences.LYRICS_SOURCE]
+ * @property source the provider asked first, see [Preferences.LYRICS_SOURCE]
  * @property sync the timing the user wants, see [Preferences.LYRICS_SYNC]
  * @property alwaysLive see [Preferences.LYRICS_ALWAYS_LIVE]
  */
 internal data class LyricsSettings(
-    val source: String,
+    val source: LyricsProvider,
     val sync: LyricsSync,
     val alwaysLive: Boolean,
 ) {
@@ -114,15 +116,11 @@ internal data class LyricsSettings(
 
         fun current() = LyricsSettings(
             Preferences.LYRICS_SOURCE.value,
-            lyricsSyncOf(Preferences.LYRICS_SYNC.value),
+            Preferences.LYRICS_SYNC.value,
             Preferences.LYRICS_ALWAYS_LIVE.value,
         )
     }
 }
-
-/** The [LyricsSync] named [name], word by word when no value has that name. */
-internal fun lyricsSyncOf(name: String): LyricsSync =
-    LyricsSync.entries.firstOrNull { it.name == name } ?: LyricsSync.WORD
 
 /** How [LyricsSync] is shown to the user. */
 internal val LyricsSync.label: String
@@ -174,7 +172,7 @@ internal suspend fun loadLyrics(
     val chosen = finder.source(settings.source) ?: finder.sources.first()
     val found: FoundLyrics? = try {
         if (everywhere)
-            finder.find(query, exclude = setOf(chosen.id))
+            finder.find(query, exclude = setOf(chosen.provider))
         else
             chosen.find(query) ?: return LyricsState.Unavailable(chosen.name)
     } catch (e: CancellationException) {
@@ -197,8 +195,9 @@ private suspend fun Lyrics.toState(finder: LyricsFinder, settings: LyricsSetting
 private suspend fun shown(text: String, source: String, credit: String?, settings: LyricsSettings) =
     LyricsState.Found(text, parseLyrics(text).coarsenedTo(settings.sync), source, credit)
 
-/** Name of the source with this [id], the id when the source is gone. */
-private fun LyricsFinder.nameOf(id: String): String = source(id)?.name ?: id
+/** Name of the source of [provider], the provider's own when it has no source anymore. */
+private fun LyricsFinder.nameOf(provider: LyricsProvider): String =
+    source(provider)?.name ?: provider.prettyName()
 
 /**
  * The lyrics of [item], with who provides them under them. Timed lyrics follow the song, see

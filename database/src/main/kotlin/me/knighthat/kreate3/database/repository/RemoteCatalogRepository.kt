@@ -20,8 +20,8 @@ package me.knighthat.kreate3.database.repository
 
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
+import me.knighthat.kreate3.model.Origin
 import kotlin.time.Instant
 
 /**

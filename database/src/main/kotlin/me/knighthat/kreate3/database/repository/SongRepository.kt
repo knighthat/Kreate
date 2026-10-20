@@ -21,9 +21,9 @@ package me.knighthat.kreate3.database.repository
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Lyrics
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.SongFormat
+import me.knighthat.kreate3.model.Origin
 
 /**
  * Songs with their formats, lyrics and artists, shared by every user.

@@ -20,13 +20,13 @@ package me.knighthat.kreate3.database.repository
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.UserSong
 import me.knighthat.kreate3.database.model.UserSongView
 import me.knighthat.kreate3.database.paging.SortDirection
 import me.knighthat.kreate3.database.paging.SortOrder
 import me.knighthat.kreate3.database.paging.UserSongSort
+import me.knighthat.kreate3.model.Origin
 
 /**
  * The songs the active user keeps in their library, as the user sees them: the user's own

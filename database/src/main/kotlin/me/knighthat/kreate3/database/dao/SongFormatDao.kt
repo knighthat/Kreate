@@ -24,7 +24,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.entity.SongFormatEntity
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 
 @Dao
 internal interface SongFormatDao {

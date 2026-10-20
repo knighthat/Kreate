@@ -40,10 +40,8 @@ android {
 dependencies {
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
-    // Queries name the song by its id and Origin, answers are timed by LyricsSync
-    api(project(":database"))
-    // The lyrics of YouTube
-    implementation(project(":provider"))
+    // Queries name the song by its Origin, answers are timed by LyricsSync and name their LyricsProvider
+    api(project(":model"))
     api(libs.kotlinx.coroutines.core)
     implementation(libs.ktor.client.core)
     implementation(libs.kotlinx.serialization.json)

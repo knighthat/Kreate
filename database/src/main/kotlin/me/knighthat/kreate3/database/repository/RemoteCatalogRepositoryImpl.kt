@@ -29,7 +29,7 @@ import me.knighthat.kreate3.database.entity.SongArtistMapEntity
 import me.knighthat.kreate3.database.entity.UserSongEntity
 import me.knighthat.kreate3.database.inTransaction
 import me.knighthat.kreate3.database.model.Artist
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant

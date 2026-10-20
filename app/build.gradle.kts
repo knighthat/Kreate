@@ -74,6 +74,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":model"))
     implementation(project(":database"))
     implementation(project(":preferences"))
     implementation(project(":provider"))

@@ -21,7 +21,7 @@ import android.net.Uri
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import me.knighthat.kreate3.database.model.Artist
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeItem.AlbumItem
 import me.knighthat.kreate3.provider.youtube.YouTubeItem.ArtistItem
 import me.knighthat.kreate3.provider.youtube.YouTubeItem.PlaylistItem

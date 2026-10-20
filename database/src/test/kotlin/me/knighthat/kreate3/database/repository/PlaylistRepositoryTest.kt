@@ -23,10 +23,10 @@ import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.database.DatabaseTest
 import me.knighthat.kreate3.database.asList
 import me.knighthat.kreate3.database.entity.UserPlaylistEntity
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.paging.SongSort
 import me.knighthat.kreate3.database.paging.SortOrder
+import me.knighthat.kreate3.model.Origin
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull

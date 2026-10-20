@@ -26,8 +26,9 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
-import me.knighthat.kreate3.database.model.LyricsSync
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.model.LyricsSync
+import me.knighthat.kreate3.model.Origin
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
@@ -77,7 +78,7 @@ class LyricsSourcesTest {
 
         assertEquals("[00:01.00]line", found.text)
         assertEquals(LyricsSync.LINE, found.sync)
-        assertEquals("lrclib", found.source)
+        assertEquals(LyricsProvider.LRCLIB, found.source)
         assertEquals("Song", requests.single().url.parameters["track_name"])
         assertEquals("Artist", requests.single().url.parameters["artist_name"])
     }
@@ -115,7 +116,7 @@ class LyricsSourcesTest {
 
         assertEquals(ttml, found.text)
         assertEquals(LyricsSync.WORD, found.sync)
-        assertEquals("betterlyrics", found.source)
+        assertEquals(LyricsProvider.BETTER_LYRICS, found.source)
         assertEquals("200", requests.single().url.parameters["d"])
     }
 

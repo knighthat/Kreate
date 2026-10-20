@@ -16,19 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.knighthat.kreate3.database.model
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-/**
- * How finely lyrics are timed, from none to every word. Later values are finer. Room stores the
- * [name], so never rename a value.
+/*
+ * Words the other modules share without knowing each other, like Origin. A type belongs here only
+ * when modules that must stay apart both need it, and it is just vocabulary: enums, ids, small
+ * data classes. Plain Kotlin on purpose, so nothing of Android, storage or logic can creep in.
+ * Shared behaviour doesn't go here: the module that needs it declares an interface, and the app
+ * connects it to the implementation.
  */
-enum class LyricsSync {
-    /** No timing, only the text. */
-    NONE,
+plugins {
+    alias(libs.plugins.kotlin.jvm)
+}
 
-    /** Every line starts at a known time. */
-    LINE,
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
 
-    /** Every word of a line starts at a known time, like karaoke. */
-    WORD,
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_21
+    }
 }

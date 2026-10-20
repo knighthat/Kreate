@@ -25,13 +25,13 @@ import me.knighthat.kreate3.database.asList
 import me.knighthat.kreate3.database.entity.PlaybackHistoryEntity
 import me.knighthat.kreate3.database.entity.SongPlaylistMapEntity
 import me.knighthat.kreate3.database.entity.UserPlaylistEntity
-import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.UserAlbum
 import me.knighthat.kreate3.database.model.UserArtist
 import me.knighthat.kreate3.database.model.UserSong
 import me.knighthat.kreate3.database.paging.SortDirection
 import me.knighthat.kreate3.database.paging.SortOrder
 import me.knighthat.kreate3.database.paging.UserSongSort
+import me.knighthat.kreate3.model.Origin
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull

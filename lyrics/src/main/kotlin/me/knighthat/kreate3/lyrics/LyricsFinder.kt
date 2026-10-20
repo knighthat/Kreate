@@ -20,7 +20,8 @@ package me.knighthat.kreate3.lyrics
 
 import android.util.Log
 import kotlinx.coroutines.CancellationException
-import me.knighthat.kreate3.database.model.LyricsSync
+import me.knighthat.kreate3.model.LyricsProvider
+import me.knighthat.kreate3.model.LyricsSync
 
 private const val TAG = "LyricsFinder"
 
@@ -38,35 +39,36 @@ class LyricsException(cause: Throwable) : Exception("Couldn't reach every lyrics
  */
 class LyricsFinder(val sources: List<LyricsSource>) {
 
-    /** @return the source with this [LyricsSource.id], `null` when there is none */
-    fun source(id: String): LyricsSource? = sources.firstOrNull { it.id == id }
+    /** @return the source of [provider], `null` when there is none */
+    fun source(provider: LyricsProvider): LyricsSource? =
+        sources.firstOrNull { it.provider == provider }
 
     /**
      * Stops at the first lyrics timed at least as finely as [wanted]. When no source has those, it
      * gives the most finely timed lyrics found, from the earliest source among equals. A source
      * that fails is skipped.
      *
-     * @param exclude ids of the sources not to ask, like one already asked
+     * @param exclude providers whose sources aren't asked, like one already asked
      * @return `null` when no source has lyrics for the song
      * @throws LyricsException when nothing was found and a source failed
      */
     suspend fun find(
         query: LyricsQuery,
         wanted: LyricsSync = LyricsSync.WORD,
-        exclude: Set<String> = emptySet(),
+        exclude: Set<LyricsProvider> = emptySet(),
     ): FoundLyrics? {
         var best: FoundLyrics? = null
         var failure: Throwable? = null
 
         for (source in sources) {
-            if (source.id in exclude) continue
+            if (source.provider in exclude) continue
 
             val found = try {
                 source.find(query)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Log.w(TAG, "${source.id} couldn't look up ${query.songId}", e)
+                Log.w(TAG, "${source.provider} couldn't look up ${query.songId}", e)
                 failure?.addSuppressed(e) ?: run { failure = e }
                 null
             } ?: continue

@@ -21,7 +21,7 @@ package me.knighthat.kreate3.database.view
 import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
-import me.knighthat.kreate3.database.model.Origin
+import me.knighthat.kreate3.model.Origin
 import kotlin.time.Instant
 
 /**
