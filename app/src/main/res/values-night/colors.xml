@@ -18,4 +18,5 @@
 
 <resources>
     <color name="splash_icon">@color/on_background_dark</color>
+    <color name="notification_icon">@color/on_surface_dark</color>
 </resources>

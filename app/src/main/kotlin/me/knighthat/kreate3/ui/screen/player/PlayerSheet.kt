@@ -568,6 +568,7 @@ private fun FullPlayer(
             PageButtons(
                 pagerState = pagerState,
                 item = item,
+                controller = controller,
                 lyricsControls = lyricsControls,
                 queueMode = queueMode,
                 onQueueModeChange = { queueMode = it },
@@ -586,13 +587,13 @@ private fun FullPlayer(
 
 /**
  * The bar under the tabs, with the buttons of the page shown. They fade in and out with the
- * finger between the pages. The player has none, the bar stays empty but keeps its room there,
- * so the tabs don't move.
+ * finger between the pages.
  */
 @Composable
 private fun PageButtons(
     pagerState: PagerState,
     item: MediaItem,
+    controller: PlaybackController,
     lyricsControls: LyricsControls,
     queueMode: QueueEditMode,
     onQueueModeChange: (QueueEditMode) -> Unit,
@@ -600,12 +601,23 @@ private fun PageButtons(
     modifier: Modifier = Modifier,
 ) = Box(contentAlignment = Alignment.Center, modifier = modifier) {
     // Composed only while some of their page shows, no one taps buttons that can't be seen
+    val playerShown by remember(pagerState) {
+        derivedStateOf { pagerState.distanceTo(PlayerTab.PLAYER) < 1f }
+    }
     val lyricsShown by remember(pagerState) {
         derivedStateOf { pagerState.distanceTo(PlayerTab.LYRICS) < 1f }
     }
     val queueShown by remember(pagerState) {
         derivedStateOf { pagerState.distanceTo(PlayerTab.QUEUE) < 1f }
     }
+    if (playerShown)
+        PlayerButtons(
+            item = item,
+            controller = controller,
+            modifier = Modifier.graphicsLayer {
+                alpha = 1f - pagerState.distanceTo(PlayerTab.PLAYER)
+            },
+        )
     if (lyricsShown)
         LyricsButtons(
             item = item,

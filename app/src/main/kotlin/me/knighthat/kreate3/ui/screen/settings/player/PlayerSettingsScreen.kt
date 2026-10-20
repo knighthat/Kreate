@@ -21,6 +21,7 @@ package me.knighthat.kreate3.ui.screen.settings.player
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import me.knighthat.kreate3.constant.SleepTimerStep
 import me.knighthat.kreate3.lyrics.LyricsFinder
 import me.knighthat.kreate3.model.LyricsSync
 import me.knighthat.kreate3.preferences.Preferences
@@ -55,6 +56,8 @@ fun PlayerSettingsScreen(
     val lyricsSync by Preferences.LYRICS_SYNC.collectAsStateWithLifecycle()
     val lyricsAlwaysLive by Preferences.LYRICS_ALWAYS_LIVE.collectAsStateWithLifecycle()
     val lyricsTextSize by Preferences.LYRICS_TEXT_SIZE.collectAsStateWithLifecycle()
+    val sleepTimerRemove by Preferences.SLEEP_TIMER_REMOVE_STEP.collectAsStateWithLifecycle()
+    val sleepTimerAdd by Preferences.SLEEP_TIMER_ADD_STEP.collectAsStateWithLifecycle()
 
     SettingsPage("Player", onBack, modifier) {
         SettingsSection("Queue")
@@ -92,6 +95,22 @@ fun PlayerSettingsScreen(
                 onSave = { Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL.update(it.toInt()) },
                 note = "How often the place in the song is saved while it plays",
             )
+
+        SettingsSection("Sleep timer")
+        ChoiceSetting(
+            title = "Remove button",
+            value = sleepTimerRemove,
+            options = SleepTimerStep.entries,
+            label = { it.label },
+            onSelect = { Preferences.SLEEP_TIMER_REMOVE_STEP.update(it) },
+        )
+        ChoiceSetting(
+            title = "Add button",
+            value = sleepTimerAdd,
+            options = SleepTimerStep.entries,
+            label = { it.label },
+            onSelect = { Preferences.SLEEP_TIMER_ADD_STEP.update(it) },
+        )
 
         SettingsSection("History")
         SwitchSetting(
@@ -143,3 +162,11 @@ fun PlayerSettingsScreen(
         )
     }
 }
+
+/** How a [SleepTimerStep] reads in the settings. */
+private val SleepTimerStep.label: String
+    get() = when (val minutes = minutes) {
+        null -> "Until the song ends"
+        1 -> "1 minute"
+        else -> "$minutes minutes"
+    }

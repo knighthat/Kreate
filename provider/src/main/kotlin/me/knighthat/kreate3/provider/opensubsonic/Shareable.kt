@@ -25,6 +25,8 @@ sealed interface Shareable {
 
     val id: String
 
+    data class Song(override val id: String) : Shareable
+
     data class Album(override val id: String) : Shareable
 
     /** Shared as all of the artist's albums. */

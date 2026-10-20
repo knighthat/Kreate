@@ -237,4 +237,7 @@
     <color name="white">#FFFF</color>
 
     <color name="splash_icon">@color/on_background_light</color>
+
+    <!-- Icons of custom notifications, light on the dark shade of the night theme -->
+    <color name="notification_icon">@color/on_surface_light</color>
 </resources>

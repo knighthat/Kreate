@@ -20,6 +20,7 @@ package me.knighthat.kreate3.preferences
 
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
+import me.knighthat.kreate3.constant.SleepTimerStep
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.constant.ThemeMode
@@ -329,6 +330,20 @@ object Preferences : KoinComponent {
      * queue and moving to another song are saved at once.
      */
     val PERSISTENT_QUEUE_SAVE_INTERVAL by lazy { int("persistent_queue_interval", 10) }
+
+    /**
+     * What the remove button of the sleep timer, in the full player and its notification, takes
+     * off the time left. [SleepTimerStep.FIVE_MINUTES] by default.
+     */
+    val SLEEP_TIMER_REMOVE_STEP by lazy {
+        enum("sleep_timer_remove_step", SleepTimerStep.FIVE_MINUTES)
+    }
+
+    /**
+     * What the add button of the sleep timer, in the full player and its notification, adds to
+     * the time left. [SleepTimerStep.FIVE_MINUTES] by default.
+     */
+    val SLEEP_TIMER_ADD_STEP by lazy { enum("sleep_timer_add_step", SleepTimerStep.FIVE_MINUTES) }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Lyrics">

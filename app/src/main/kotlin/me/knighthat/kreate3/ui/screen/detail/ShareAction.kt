@@ -62,7 +62,7 @@ internal suspend fun OpenSubsonicProvider.shareLinkOf(
 }
 
 /** Opens the system's share sheet with [link], titled [title]. */
-private fun Context.shareLink(title: String?, link: String) {
+internal fun Context.shareLink(title: String?, link: String) {
     val send = Intent(Intent.ACTION_SEND)
         .setType("text/plain")
         .putExtra(Intent.EXTRA_TEXT, link)
@@ -71,7 +71,7 @@ private fun Context.shareLink(title: String?, link: String) {
 }
 
 /** What to tell the user when no link could be made for a [kind], like "album". */
-private fun Throwable.shareFailure(kind: String): String =
+internal fun Throwable.shareFailure(kind: String): String =
     when (val check = (this as? ServerException)?.check) {
         // The button only shows to an account that may share, so the server doesn't share this
         is ServerCheck.Rejected -> "This server doesn't support sharing this $kind"

@@ -1,0 +1,85 @@
+<!--
+  ~ Kreate
+  ~ Copyright (C) 2026 KnightHat
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<!-- The sleep timer's notification: the time left, then remove, pause/resume, add and stop.
+     The system draws it without AppCompat, so the plain android:tint, and the buttons' content
+     descriptions follow the timer, SleepTimerNotification sets them. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    tools:ignore="UseAppTint,ContentDescription">
+
+    <Chronometer
+        android:id="@+id/sleep_timer_left"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.Compat.Notification.Title"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/sleep_timer_song_end"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.Compat.Notification.Title"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/sleep_timer_remove"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:gravity="center"
+        android:minWidth="48dp"
+        android:paddingHorizontal="6dp"
+        android:textAppearance="@style/TextAppearance.Compat.Notification.Title" />
+
+    <ImageView
+        android:id="@+id/sleep_timer_toggle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:padding="8dp"
+        android:src="@drawable/pause"
+        android:tint="@color/notification_icon" />
+
+    <TextView
+        android:id="@+id/sleep_timer_add"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:gravity="center"
+        android:minWidth="48dp"
+        android:paddingHorizontal="6dp"
+        android:textAppearance="@style/TextAppearance.Compat.Notification.Title" />
+
+    <ImageView
+        android:id="@+id/sleep_timer_stop"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:padding="8dp"
+        android:src="@drawable/stop"
+        android:tint="@color/notification_icon" />
+</LinearLayout>

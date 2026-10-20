@@ -38,7 +38,8 @@ internal fun Context.canPostNotifications(): Boolean =
 
 /**
  * A notification on [channel] that opens the app when tapped, as the launcher would, through the
- * launcher icon the user picked.
+ * launcher icon the user picked. On a [AppChannel.isSilent] channel it is silent, even when the
+ * user raised the channel's importance.
  */
 internal fun Context.notificationBuilder(channel: AppChannel): NotificationCompat.Builder {
     val openApp = packageManager.getLaunchIntentForPackage(packageName)?.let {
@@ -59,6 +60,7 @@ internal fun Context.notificationBuilder(channel: AppChannel): NotificationCompa
                 NotificationCompat.PRIORITY_DEFAULT
             else NotificationCompat.PRIORITY_LOW
         )
+        .setSilent(channel.isSilent)
 }
 
 /** Shows [notification] as [id], in place of the one showing with it. */

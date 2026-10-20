@@ -49,11 +49,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.playback.PlaybackState
+import me.knighthat.kreate3.playback.SleepTimer
+import me.knighthat.kreate3.playback.SleepTimerAction
 import me.knighthat.kreate3.ui.component.ComponentPreviews
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.formatDuration
 import me.knighthat.kreate3.ui.component.previewItem
 import me.knighthat.kreate3.ui.component.previewSongs
+import kotlin.time.Duration
 
 
 /**
@@ -153,6 +156,7 @@ private class PreviewController(
 
     override val state: StateFlow<PlaybackState> = MutableStateFlow(PlaybackState())
     override val queue: StateFlow<List<MediaItem>> = MutableStateFlow(emptyList())
+    override val sleepTimer: StateFlow<SleepTimer?> = MutableStateFlow(null)
 
     override fun play(item: MediaItem) = Unit
     override fun playAll(items: List<MediaItem>) = Unit
@@ -175,6 +179,9 @@ private class PreviewController(
     override fun toggleShuffle() = Unit
     override fun cycleRepeat() = Unit
     override fun stop() = Unit
+    override fun startSleepTimer(duration: Duration?) = Unit
+    override fun changeSleepTimer(action: SleepTimerAction) = Unit
+    override fun audioSessionId(): Int? = null
 }
 
 @ComponentPreviews

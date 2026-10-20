@@ -432,11 +432,11 @@ class OpenSubsonicProvider internal constructor(
     }
 
     /**
-     * Ids of what a share of [item] holds: the album itself, every album of the artist, or every
-     * song of the playlist.
+     * Ids of what a share of [item] holds: the song or the album itself, every album of the
+     * artist, or every song of the playlist.
      */
     private suspend fun entriesOf(item: Shareable): Set<String> = when (item) {
-        is Shareable.Album -> setOf(item.id)
+        is Shareable.Song, is Shareable.Album -> setOf(item.id)
         is Shareable.Artist -> call("getArtist", "id" to item.id)["artist"]?.jsonObject
             ?.array("album").orEmpty().ids()
 

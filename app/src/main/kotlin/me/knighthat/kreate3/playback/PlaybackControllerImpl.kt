@@ -20,11 +20,14 @@ package me.knighthat.kreate3.playback
 
 import android.content.ComponentName
 import android.content.Context
+import android.os.Bundle
 import android.util.Log
+import androidx.annotation.OptIn
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
@@ -39,6 +42,7 @@ import kotlinx.coroutines.launch
 import me.knighthat.kreate3.notification.AppChannel
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.Notifier
+import kotlin.time.Duration
 
 /**
  * [PlaybackController] that talks to [PlaybackService] with a [MediaController]. Connecting also
@@ -59,6 +63,9 @@ class PlaybackControllerImpl(
 
     private val _queue = MutableStateFlow<List<MediaItem>>(emptyList())
     override val queue: StateFlow<List<MediaItem>> = _queue.asStateFlow()
+
+    private val _sleepTimer = MutableStateFlow<SleepTimer?>(null)
+    override val sleepTimer: StateFlow<SleepTimer?> = _sleepTimer.asStateFlow()
 
     private var connection: ListenableFuture<MediaController>? = null
     private var controller: MediaController? = null
@@ -130,6 +137,19 @@ class PlaybackControllerImpl(
             controller.clearMediaItems()
         }
     }
+
+    override fun startSleepTimer(duration: Duration?) = run("start a sleep timer") {
+        it.sendCustomCommand(SleepTimerCommands.START, SleepTimerCommands.startArgs(duration))
+    }
+
+    override fun changeSleepTimer(action: SleepTimerAction) = run("$action the sleep timer") {
+        it.sendCustomCommand(SleepTimerCommands.of(action), Bundle.EMPTY)
+    }
+
+    @OptIn(UnstableApi::class)
+    override fun audioSessionId(): Int? = controller?.sessionExtras
+        ?.getInt(EXTRA_AUDIO_SESSION_ID, C.AUDIO_SESSION_ID_UNSET)
+        ?.takeIf { it != C.AUDIO_SESSION_ID_UNSET }
 
     override fun play(item: MediaItem) = run("play ${item.mediaId}") { controller ->
         val queued = (0 until controller.mediaItemCount)
@@ -213,6 +233,7 @@ class PlaybackControllerImpl(
         controller = null
         _state.value = PlaybackState()
         _queue.value = emptyList()
+        _sleepTimer.value = null
     }
 
     /**
@@ -230,6 +251,13 @@ class PlaybackControllerImpl(
                     controller = null
                     _state.value = PlaybackState()
                     _queue.value = emptyList()
+                    _sleepTimer.value = null
+                }
+
+                // The service keeps the sleep timer, see SleepTimerRunner
+                override fun onExtrasChanged(controller: MediaController, extras: Bundle) {
+                    if (controller === this@PlaybackControllerImpl.controller)
+                        _sleepTimer.value = extras.sleepTimer()
                 }
             })
             .buildAsync()
@@ -261,6 +289,7 @@ class PlaybackControllerImpl(
                 })
                 publishQueue(connected)
                 publish(connected)
+                _sleepTimer.value = connected.sessionExtras.sleepTimer()
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

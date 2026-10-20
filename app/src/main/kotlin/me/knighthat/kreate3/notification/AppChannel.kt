@@ -30,12 +30,15 @@ import androidx.core.app.NotificationManagerCompat
  *
  * @param importance one of the `NotificationManagerCompat.IMPORTANCE_*`, only the first time
  * the channel is made, the user's choice wins after that
+ * @param isSilent whether its notifications never make a sound or vibrate, whatever the user
+ * sets the channel to, see [notificationBuilder]
  */
 enum class AppChannel(
     val id: String,
     val title: String,
     val description: String,
     val importance: Int,
+    val isSilent: Boolean = false,
 ) {
     PLAYBACK(
         id = "playback",
@@ -57,11 +60,21 @@ enum class AppChannel(
         title = "Music on this device",
         description = "Progress of reading the device's music and measuring its loudness",
         importance = NotificationManagerCompat.IMPORTANCE_LOW,
+    ),
+
+    /** It stays while the timer runs. Silent, the user may be asleep. */
+    SLEEP_TIMER(
+        id = "sleep_timer",
+        title = "Sleep timer",
+        description = "Time left until the music pauses, with buttons to change it",
+        importance = NotificationManagerCompat.IMPORTANCE_LOW,
+        isSilent = true,
     );
 
     /** The id of a [Message]'s notification, a new one replaces the one already showing. */
     val notificationId: Int
-        // Clear of Media3's media notification, 1001, and LocalScanNotifications' 3000s
+        // Clear of Media3's media notification, 1001, LocalScanNotifications' 3000s and the
+        // sleep timer's 4000
         get() = 2000 + ordinal
 }
 
@@ -72,6 +85,12 @@ internal fun Context.createNotificationChannels() =
             NotificationChannelCompat.Builder(it.id, it.importance)
                 .setName(it.title)
                 .setDescription(it.description)
+                .apply {
+                    if (it.isSilent) {
+                        setSound(null, null)
+                        setVibrationEnabled(false)
+                    }
+                }
                 .build()
         }
     )

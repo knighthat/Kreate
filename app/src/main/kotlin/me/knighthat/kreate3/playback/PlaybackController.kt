@@ -20,6 +20,7 @@ package me.knighthat.kreate3.playback
 
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.flow.StateFlow
+import kotlin.time.Duration
 
 /** What plays again once it ends. */
 enum class RepeatMode {
@@ -66,6 +67,9 @@ interface PlaybackController {
 
     /** Every item of the queue, in the order they play. */
     val queue: StateFlow<List<MediaItem>>
+
+    /** When playback pauses by itself, `null` while the sleep timer is off. */
+    val sleepTimer: StateFlow<SleepTimer?>
 
     /**
      * Plays [item] now. It is added to the end of the queue, unless it is already in it, and
@@ -151,4 +155,19 @@ interface PlaybackController {
 
     /** Stops playing and empties the queue, nothing is left to resume. */
     fun stop()
+
+    /**
+     * Starts a sleep timer that pauses playback in [duration], or as the song playing ends when
+     * `null`, in place of the one running. Emptying the queue turns it off.
+     */
+    fun startSleepTimer(duration: Duration?)
+
+    /** Does [action] to the sleep timer running, nothing without one. */
+    fun changeSleepTimer(action: SleepTimerAction)
+
+    /**
+     * Id of the player's audio session, for an equalizer to work on, `null` while it isn't
+     * known. Only from the main thread.
+     */
+    fun audioSessionId(): Int?
 }

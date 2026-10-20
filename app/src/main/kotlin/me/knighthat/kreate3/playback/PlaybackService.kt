@@ -18,14 +18,22 @@
 
 package me.knighthat.kreate3.playback
 
+import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.ServiceInfo
+import android.os.Build
+import android.os.Bundle
+import android.util.Log
 import androidx.annotation.OptIn
+import androidx.core.app.ServiceCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
+import androidx.media3.session.SessionCommand
+import androidx.media3.session.SessionResult
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.CompletableJob
@@ -56,6 +64,8 @@ class PlaybackService : MediaSessionService(), KoinComponent {
     private var mediaSession: MediaSession? = null
     private var normalizer: LoudnessNormalizer? = null
     private var persistentQueue: PersistentQueue? = null
+    private var audioEffects: AudioEffectSession? = null
+    private var sleepTimer: SleepTimerRunner? = null
 
     // The player is used on the main thread, so is everything that follows it. One per session.
     private var scope: CoroutineScope? = null
@@ -103,7 +113,7 @@ class PlaybackService : MediaSessionService(), KoinComponent {
         )
 
         return MediaSession.Builder(this, player)
-            .setCallback(QueueCallback)
+            .setCallback(SessionCallback())
             // Tapping the notification brings the app back instead of opening a second copy
             .setSessionActivity(
                 PendingIntent.getActivity(
@@ -116,7 +126,20 @@ class PlaybackService : MediaSessionService(), KoinComponent {
                 )
             )
             .build()
-            .also { mediaSession = it }
+            .also {
+                mediaSession = it
+                audioEffects = AudioEffectSession(this, player, it)
+                sleepTimer = SleepTimerRunner(
+                    player = player,
+                    session = it,
+                    notification = SleepTimerNotification(this),
+                    scope = scope,
+                    startForeground = ::startForegroundWith,
+                    stopForeground = {
+                        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+                    },
+                )
+            }
     }
 
     /**
@@ -137,6 +160,10 @@ class PlaybackService : MediaSessionService(), KoinComponent {
 
         normalizer?.release()
         normalizer = null
+        audioEffects?.release()
+        audioEffects = null
+        sleepTimer?.release()
+        sleepTimer = null
         // Before the player is released, it saves where the song is
         persistentQueue?.release()
         persistentQueue = null
@@ -152,8 +179,43 @@ class PlaybackService : MediaSessionService(), KoinComponent {
     /**
      * Gives the items added to the queue the address of their song, see [withSongUri]. Items that
      * don't say where they come from can't be played, adding them fails.
+     *
+     * The app's own controllers may also set the sleep timer, see [SleepTimerCommands].
      */
-    private object QueueCallback : MediaSession.Callback {
+    private inner class SessionCallback : MediaSession.Callback {
+
+        override fun onConnect(
+            session: MediaSession,
+            controller: MediaSession.ControllerInfo,
+        ): MediaSession.ConnectionResult {
+            if (controller.packageName != packageName) return super.onConnect(session, controller)
+
+            val commands = MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.buildUpon()
+                .apply { SleepTimerCommands.all.forEach(::add) }
+                .build()
+            return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
+                .setAvailableSessionCommands(commands)
+                .build()
+        }
+
+        override fun onCustomCommand(
+            session: MediaSession,
+            controller: MediaSession.ControllerInfo,
+            customCommand: SessionCommand,
+            args: Bundle,
+        ): ListenableFuture<SessionResult> {
+            val timer = sleepTimer
+            val action = SleepTimerCommands.actionOf(customCommand.customAction)
+            when {
+                timer == null -> Unit
+                customCommand == SleepTimerCommands.START ->
+                    timer.start(SleepTimerCommands.durationOf(args))
+
+                action != null -> timer.change(action)
+                else -> return super.onCustomCommand(session, controller, customCommand, args)
+            }
+            return Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+        }
 
         override fun onAddMediaItems(
             mediaSession: MediaSession,
@@ -166,6 +228,48 @@ class PlaybackService : MediaSessionService(), KoinComponent {
                 )
             }
             return Futures.immediateFuture(queued)
+        }
+    }
+
+    /**
+     * The sleep timer's notification buttons come here, see [SleepTimerNotification], also the
+     * Restart of a timer that finished, which may start the service again.
+     */
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == SleepTimerCommands.RESTART) {
+            val extras = intent.extras ?: Bundle.EMPTY
+            sleepTimer?.restart(
+                duration = SleepTimerCommands.durationOf(extras),
+                endedSong = SleepTimerCommands.endedSongOf(extras),
+            ) ?: SleepTimerNotification(this).cancel()
+            return START_NOT_STICKY
+        }
+        val action = SleepTimerCommands.actionOf(intent?.action)
+            ?: return super.onStartCommand(intent, flags, startId)
+        // Without a session, there is no timer either, its notification was left behind
+        sleepTimer?.change(action) ?: SleepTimerNotification(this).cancel()
+        return START_NOT_STICKY
+    }
+
+    /**
+     * Puts the service in the foreground with a copy of the sleep timer's [notification], until
+     * the media notification takes over once music plays, see
+     * [SleepTimerNotification.FOREGROUND_ID]. Allowed for a while after a notification's button
+     * was tapped; when it isn't, playing is tried all the same.
+     */
+    private fun startForegroundWith(notification: Notification) {
+        try {
+            ServiceCompat.startForeground(
+                this,
+                SleepTimerNotification.FOREGROUND_ID,
+                notification,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+                else 0,
+            )
+        } catch (e: IllegalStateException) {
+            // ForegroundServiceStartNotAllowedException, from Android 12 on
+            Log.w(TAG, "Couldn't go in the foreground for the sleep timer", e)
         }
     }
 
@@ -186,5 +290,10 @@ class PlaybackService : MediaSessionService(), KoinComponent {
         releaseSession()
         playbackLifecycle.detach(this)
         super.onDestroy()
+    }
+
+    private companion object {
+
+        const val TAG = "PlaybackService"
     }
 }

@@ -530,6 +530,21 @@ class OpenSubsonicProviderTest {
     }
 
     @Test
+    fun aSongIsSharedAlone() = runBlocking {
+        val server = shareServer(share("two", "s-1", "s-2") + "," + share("one", "s-1"))
+
+        assertEquals(
+            "https://music.example.com/share/one",
+            server.shareLink(Shareable.Song("s-1"), "Mockingbird"),
+        )
+        assertEquals(
+            "https://music.example.com/share/new",
+            server.shareLink(Shareable.Song("s-2"), "Lose Yourself"),
+        )
+        assertEquals("s-2", createdShares().single().form()["id"])
+    }
+
+    @Test
     fun anExpiredShareIsNotUsedAgain() = runBlocking {
         val link = shareServer(share("old", "al-1", expires = "2000-01-01T00:00:00Z"))
             .shareLink(Shareable.Album("al-1"), null)
