@@ -36,8 +36,24 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Credentials come from the environment, never from files in the repo
+    val productionStorePassword = providers.environmentVariable("PRODUCTION_STORE_PASSWORD")
+    val productionKeyPassword = providers.environmentVariable("PRODUCTION_KEY_PASSWORD")
+
+    signingConfigs {
+        create("production") {
+            storeFile = rootProject.file(".ignore.d/keystores/production.jks")
+            keyAlias = "kreate"
+            storePassword = productionStorePassword.orNull
+            keyPassword = productionKeyPassword.orNull
+        }
+    }
+
     buildTypes {
         release {
+            // Without the credentials, release builds stay unsigned
+            if (listOf(productionStorePassword, productionKeyPassword).all { it.isPresent })
+                signingConfig = signingConfigs.getByName("production")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
