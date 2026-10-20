@@ -134,7 +134,7 @@ private const val BACK_SCALE = 0.1f
 internal val SETTLE_VELOCITY = 125.dp
 
 /** Share of the player's height the cover covers, from the top. */
-private const val COVER_HEIGHT = 0.6f
+private const val COVER_HEIGHT = 0.55f
 
 /**
  * Share of the cover's height, from its bottom, that blurs more and more and fades out into the
@@ -782,7 +782,7 @@ private fun NowPlayingPage(
                     onClick = controller::cycleRepeat,
                 )
             }
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.weight(1f))
         }
     }
 }
