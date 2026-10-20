@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/database" />
+            <option value="$PROJECT_DIR$/lyrics" />
             <option value="$PROJECT_DIR$/preferences" />
             <option value="$PROJECT_DIR$/provider" />
           </set>

@@ -20,7 +20,6 @@ package me.knighthat.kreate3.provider.youtube
 import android.net.Uri
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
-import me.knighthat.kreate3.database.model.Lyrics
 import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.repository.RemoteSong
@@ -142,10 +141,11 @@ data class YouTubePlaylistPage(
 )
 
 /**
- * @property source who provides the lyrics, like "Source: Musixmatch", which should be shown
+ * @property text the lyrics, without timing
+ * @property credit who provides the lyrics, like "Source: Musixmatch", which should be shown
  * with them
  */
-data class YouTubeLyrics(val lyrics: Lyrics, val source: String?)
+data class YouTubeLyrics(val text: String, val credit: String?)
 
 /**
  * The account of the user signed in to YouTube.

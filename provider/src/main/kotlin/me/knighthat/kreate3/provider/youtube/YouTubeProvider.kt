@@ -389,7 +389,7 @@ class YouTubeProvider internal constructor(
     suspend fun lyrics(songId: String): YouTubeLyrics? {
         val browseId =
             parser.tabBrowseId(innerTube.next(songId, null), LYRICS_PREFIX) ?: return null
-        return parser.lyrics(songId, innerTube.browse(browseId))
+        return parser.lyrics(innerTube.browse(browseId))
     }
 
     /** Rows of songs, playlists, artists and albums like [songId]. */

@@ -447,7 +447,7 @@ private fun FullPlayer(
                         coverHeight = coverHeight,
                     )
 
-                    PlayerTab.LYRICS -> LyricsPage(item, pagePadding)
+                    PlayerTab.LYRICS -> LyricsPage(item, isPlaying, controller, pagePadding)
                     PlayerTab.QUEUE -> QueuePage(controller, index, pagePadding)
                 }
             }

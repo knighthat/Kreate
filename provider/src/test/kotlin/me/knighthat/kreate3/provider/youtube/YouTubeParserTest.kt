@@ -300,11 +300,10 @@ class YouTubeParserTest {
 
     @Test
     fun lyricsComeWithTheirSource() {
-        val lyrics = parser.lyrics("s1", fixture("lyrics"))!!
+        val lyrics = parser.lyrics(fixture("lyrics"))!!
 
-        assertEquals("s1", lyrics.lyrics.songId)
-        assertEquals("First line\nSecond line\n", lyrics.lyrics.lyrics)
-        assertEquals("Source: Example Lyrics", lyrics.source)
+        assertEquals("First line\nSecond line\n", lyrics.text)
+        assertEquals("Source: Example Lyrics", lyrics.credit)
     }
 
     @Test
@@ -314,7 +313,7 @@ class YouTubeParserTest {
         assertNull(parser.albumPage("MPREb_x", empty))
         assertNull(parser.artistPage("UCx", empty))
         assertNull(parser.playlistPage("PLx", empty))
-        assertNull(parser.lyrics("x", empty))
+        assertNull(parser.lyrics(empty))
         assertTrue(parser.searchPage(empty).items.isEmpty())
         assertTrue(parser.queue(empty).items.isEmpty())
     }

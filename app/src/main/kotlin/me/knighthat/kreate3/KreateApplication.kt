@@ -34,6 +34,7 @@ import kotlinx.coroutines.SupervisorJob
 import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.databaseModule
+import me.knighthat.kreate3.lyrics.lyricsModule
 import me.knighthat.kreate3.notification.LocalScanNotifications
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.notification.SystemNotifications
@@ -135,6 +136,7 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                 databaseModule,
                 preferencesModule,
                 providerModule,
+                lyricsModule,
                 networkModule,
                 playbackModule,
                 viewModelModule

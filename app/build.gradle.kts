@@ -77,6 +77,7 @@ dependencies {
     implementation(project(":database"))
     implementation(project(":preferences"))
     implementation(project(":provider"))
+    implementation(project(":lyrics"))
 
     // Core
     implementation(libs.androidx.core.ktx)

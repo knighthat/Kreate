@@ -237,8 +237,7 @@ class YouTubeProviderTest {
 
         val lyrics = provider.lyrics("khnokW3Mw24")!!
 
-        assertEquals("First line\nSecond line\n", lyrics.lyrics.lyrics)
-        assertEquals("khnokW3Mw24", lyrics.lyrics.songId)
+        assertEquals("First line\nSecond line\n", lyrics.text)
     }
 
     @Test

@@ -22,7 +22,6 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
-import me.knighthat.kreate3.database.model.Lyrics
 import me.knighthat.kreate3.database.model.Origin
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.UserPlaylist
@@ -575,12 +574,12 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
         }
 
     /** @return `null` when the page has no lyrics */
-    fun lyrics(songId: String, response: JsonElement?): YouTubeLyrics? {
+    fun lyrics(response: JsonElement?): YouTubeLyrics? {
         val shelf =
             shelves(response).firstNotNullOfOrNull { it.path("musicDescriptionShelfRenderer") }
                 ?: return null
         val text = shelf.path("description").text()?.takeIf { it.isNotBlank() } ?: return null
-        return YouTubeLyrics(Lyrics(songId, text), shelf.path("footer").text())
+        return YouTubeLyrics(text, shelf.path("footer").text())
     }
 
     /** @return `null` when the answer names no account */

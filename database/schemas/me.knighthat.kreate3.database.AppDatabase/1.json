@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0e2065270b3cd7910785fb84653356c7",
+    "identityHash": "4e8214b33e218a63c3b3c8e1cc82ff5e",
     "entities": [
       {
         "tableName": "album",
@@ -118,7 +118,7 @@
       },
       {
         "tableName": "lyrics",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`song_id` TEXT NOT NULL, `lyrics` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`song_id`), FOREIGN KEY(`song_id`) REFERENCES `song`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`song_id` TEXT NOT NULL, `lyrics` TEXT NOT NULL, `sync` TEXT NOT NULL, `source` TEXT NOT NULL, `credit` TEXT, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`song_id`), FOREIGN KEY(`song_id`) REFERENCES `song`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "songId",
@@ -131,6 +131,23 @@
             "columnName": "lyrics",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "sync",
+            "columnName": "sync",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "credit",
+            "columnName": "credit",
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "createdAt",
@@ -1133,7 +1150,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0e2065270b3cd7910785fb84653356c7')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4e8214b33e218a63c3b3c8e1cc82ff5e')"
     ]
   }
 }

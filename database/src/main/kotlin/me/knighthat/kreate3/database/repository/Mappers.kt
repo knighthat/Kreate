@@ -135,10 +135,10 @@ internal fun SongFormatEntity.toModel() = SongFormat(songId, tag, mimetype, bitr
 internal fun SongFormat.toEntity(createdAt: Instant, updatedAt: Instant) =
     SongFormatEntity(songId, tag, mimetype, bitrate, length, gain, createdAt, updatedAt)
 
-internal fun LyricsEntity.toModel() = Lyrics(songId, lyrics)
+internal fun LyricsEntity.toModel() = Lyrics(songId, lyrics, sync, source, credit)
 
 internal fun Lyrics.toEntity(createdAt: Instant, updatedAt: Instant) =
-    LyricsEntity(songId, lyrics, createdAt, updatedAt)
+    LyricsEntity(songId, lyrics, sync, source, credit, createdAt, updatedAt)
 
 internal fun SearchHistoryEntity.toModel() = SearchHistory(query, lastUsed)
 

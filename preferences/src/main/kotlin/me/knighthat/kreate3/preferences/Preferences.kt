@@ -324,6 +324,27 @@ object Preferences : KoinComponent {
     val PERSISTENT_QUEUE_SAVE_INTERVAL by lazy { int("persistent_queue_interval", 10) }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Lyrics">
+    /**
+     * Id of the lyrics source asked first, the only one asked until the user wants the others.
+     * LRCLIB by default. The app's sources aren't known here, so the id is kept as it is.
+     */
+    val LYRICS_SOURCE by lazy { string("lyrics_source", "lrclib") }
+
+    /**
+     * Name of the `LyricsSync` the user wants, word by word by default. Stored lyrics timed this
+     * way, from any source, are shown without asking one. The app's `LyricsSync` isn't known
+     * here, so the name is kept as it is.
+     */
+    val LYRICS_SYNC by lazy { string("lyrics_sync", "WORD") }
+
+    /**
+     * Lyrics are fetched from the source every time they show, never read from or saved to the
+     * library. Off by default. Lyrics already saved stay.
+     */
+    val LYRICS_ALWAYS_LIVE by lazy { boolean("lyrics_always_live", false) }
+    //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Coil3">
     /**
      * Largest size, in bytes, the image disk cache may grow to. The default is 128 MiB.
