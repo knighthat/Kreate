@@ -25,7 +25,6 @@ import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
-import me.knighthat.kreate3.provider.LibrarySection
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
@@ -44,7 +43,7 @@ class OpenSubsonicLibrary(
     private val repository: RemoteCatalogRepository,
     private val scope: CoroutineScope,
     private val clock: Clock = Clock.System,
-    private val syncs: () -> Boolean = { LibrarySection.SONGS.openSubsonicSyncSetting.value },
+    private val syncs: () -> Boolean = { Preferences.OPEN_SUBSONIC_SYNC_SONGS.value },
 ) {
 
     /** When the liked songs of each server address were last brought up to date, or are being now. */
@@ -102,15 +101,3 @@ class OpenSubsonicLibrary(
         val MIN_INTERVAL = 5.minutes
     }
 }
-
-/**
- * The setting that turns [this] section of the server's library on: the starred songs are synced,
- * the others show on the home screen.
- */
-val LibrarySection.openSubsonicSyncSetting
-    get() = when (this) {
-        LibrarySection.SONGS -> Preferences.OPEN_SUBSONIC_SYNC_SONGS
-        LibrarySection.ALBUMS -> Preferences.OPEN_SUBSONIC_SYNC_ALBUMS
-        LibrarySection.ARTISTS -> Preferences.OPEN_SUBSONIC_SYNC_ARTISTS
-        LibrarySection.PLAYLISTS -> Preferences.OPEN_SUBSONIC_SYNC_PLAYLISTS
-    }

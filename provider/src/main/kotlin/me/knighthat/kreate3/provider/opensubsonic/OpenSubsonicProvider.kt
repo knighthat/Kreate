@@ -170,17 +170,18 @@ class OpenSubsonicProvider internal constructor(
     /**
      * Every album on the server with its star, in pages of [PAGE_SIZE].
      *
+     * @param starredOnly only the albums the user starred
      * @return `null` while the server is off or not set up
      * @throws ServerException when the server can't be used or refuses the request
      */
-    suspend fun libraryAlbums(): List<RemoteItem<Album>>? {
+    suspend fun libraryAlbums(starredOnly: Boolean = false): List<RemoteItem<Album>>? {
         serverUrl ?: return null
 
         val albums = mutableListOf<RemoteItem<Album>>()
         do {
             val page = call(
                 "getAlbumList2",
-                "type" to "alphabeticalByName",
+                "type" to if (starredOnly) "starred" else "alphabeticalByName",
                 "size" to PAGE_SIZE.toString(),
                 "offset" to albums.size.toString(),
             )["albumList2"]?.jsonObject?.array("album").orEmpty()
@@ -193,15 +194,17 @@ class OpenSubsonicProvider internal constructor(
     /**
      * Every artist on the server with its star.
      *
+     * @param starredOnly only the artists the user starred
      * @return `null` while the server is off or not set up
      * @throws ServerException when the server can't be used or refuses the request
      */
-    suspend fun libraryArtists(): List<RemoteItem<Artist>>? {
+    suspend fun libraryArtists(starredOnly: Boolean = false): List<RemoteItem<Artist>>? {
         serverUrl ?: return null
 
         return call("getArtists")["artists"]?.jsonObject?.array("index").orEmpty()
             .flatMap { it.jsonObject.array("artist").orEmpty() }
             .map { it.jsonObject.toArtist(::coverUri) }
+            .filter { !starredOnly || it.starredAt != null }
     }
 
     /**

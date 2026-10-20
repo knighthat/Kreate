@@ -25,9 +25,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
+import me.knighthat.kreate3.constant.SyncMode
+import me.knighthat.kreate3.preferences.Preference
+import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.LibrarySection
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
-import me.knighthat.kreate3.provider.opensubsonic.openSubsonicSyncSetting
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.provider.youtube.youTubeSyncSetting
 import me.knighthat.kreate3.source.youtube.CARD_ARTWORK
@@ -45,8 +47,8 @@ private const val TAG = "LiveLibrary"
 
 /** The albums saved on each source. */
 suspend fun liveAlbums(openSubsonic: OpenSubsonicProvider, youTube: YouTubeProvider) = fetchEach(
-    openSubsonicSection(LibrarySection.ALBUMS) {
-        openSubsonic.libraryAlbums()?.map { it.item.toLiveMediaItem() }
+    openSubsonicSection(Preferences.OPEN_SUBSONIC_SYNC_ALBUMS) { starredOnly ->
+        openSubsonic.libraryAlbums(starredOnly)?.map { it.item.toLiveMediaItem() }
     },
     youTubeSection(LibrarySection.ALBUMS) {
         youTube.libraryAlbums()?.map {
@@ -57,8 +59,8 @@ suspend fun liveAlbums(openSubsonic: OpenSubsonicProvider, youTube: YouTubeProvi
 
 /** The artists followed on each source. */
 suspend fun liveArtists(openSubsonic: OpenSubsonicProvider, youTube: YouTubeProvider) = fetchEach(
-    openSubsonicSection(LibrarySection.ARTISTS) {
-        openSubsonic.libraryArtists()?.map { it.item.toLiveMediaItem() }
+    openSubsonicSection(Preferences.OPEN_SUBSONIC_SYNC_ARTISTS) { starredOnly ->
+        openSubsonic.libraryArtists(starredOnly)?.map { it.item.toLiveMediaItem() }
     },
     youTubeSection(LibrarySection.ARTISTS) {
         youTube.libraryArtists()?.map {
@@ -69,8 +71,10 @@ suspend fun liveArtists(openSubsonic: OpenSubsonicProvider, youTube: YouTubeProv
 
 /** The playlists of the user on each source. */
 suspend fun livePlaylists(openSubsonic: OpenSubsonicProvider, youTube: YouTubeProvider) = fetchEach(
-    openSubsonicSection(LibrarySection.PLAYLISTS) {
-        openSubsonic.libraryPlaylists()?.map { it.toLiveMediaItem() }
+    {
+        if (Preferences.OPEN_SUBSONIC_SYNC_PLAYLISTS.value)
+            openSubsonic.libraryPlaylists()?.map { it.toLiveMediaItem() }
+        else null
     },
     youTubeSection(LibrarySection.PLAYLISTS) {
         youTube.libraryPlaylists()?.map {
@@ -79,11 +83,21 @@ suspend fun livePlaylists(openSubsonic: OpenSubsonicProvider, youTube: YouTubePr
     },
 )
 
-/** [fetch], unless [section] of the server's library is turned off. */
+/**
+ * [fetch], unless [setting] turns this part of the server's library off.
+ *
+ * @param fetch gets whether only the starred items show, [SyncMode.LIKED]
+ */
 private fun openSubsonicSection(
-    section: LibrarySection,
-    fetch: suspend () -> List<MediaItem>?,
-): suspend () -> List<MediaItem>? = { if (section.openSubsonicSyncSetting.value) fetch() else null }
+    setting: Preference<SyncMode>,
+    fetch: suspend (starredOnly: Boolean) -> List<MediaItem>?,
+): suspend () -> List<MediaItem>? = {
+    when (setting.value) {
+        SyncMode.OFF -> null
+        SyncMode.LIKED -> fetch(true)
+        SyncMode.ALL -> fetch(false)
+    }
+}
 
 /** [fetch], unless [section] of the YouTube library is turned off. */
 private fun youTubeSection(

@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.preferences
 
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.preferencesOf
@@ -84,6 +85,27 @@ class SchemaMigrationTest {
     @Test
     fun aFileFromANewerAppIsLeftAlone() = runBlocking {
         assertFalse(migration.shouldMigrate(preferencesOf(version to 7, name to "future")))
+    }
+
+    @Test
+    fun openSubsonicSyncSwitchesBecomeModes() = runBlocking {
+        val songs = booleanPreferencesKey("open_subsonic_sync_songs")
+        val albums = booleanPreferencesKey("open_subsonic_sync_albums")
+        val artists = booleanPreferencesKey("open_subsonic_sync_artists")
+        val playlists = booleanPreferencesKey("open_subsonic_sync_playlists")
+        val old = preferencesOf(
+            songs to false, albums to true, artists to false, playlists to false, name to "kept",
+        )
+
+        val migrated = SchemaMigration(PROFILE_STEPS.take(1)).migrate(old)
+
+        // Off stays off, on falls back to the default of the mode
+        assertFalse(migrated.contains(albums))
+        assertEquals("OFF", migrated[stringPreferencesKey("open_subsonic_sync_artists")])
+        // Songs and playlists are still switches
+        assertEquals(false, migrated[songs])
+        assertEquals(false, migrated[playlists])
+        assertEquals("kept", migrated[name])
     }
 
     @Test

@@ -21,6 +21,7 @@ package me.knighthat.kreate3.preferences
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.constant.StreamQuality
+import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.LyricsSync
@@ -209,11 +210,14 @@ object Preferences : KoinComponent {
     /** Like [YOUTUBE_SYNC_SONGS], for the songs starred on the OpenSubsonic server. */
     val OPEN_SUBSONIC_SYNC_SONGS by lazy { boolean("open_subsonic_sync_songs", true) }
 
-    /** Like [YOUTUBE_SYNC_ALBUMS], for the albums on the OpenSubsonic server. */
-    val OPEN_SUBSONIC_SYNC_ALBUMS by lazy { boolean("open_subsonic_sync_albums", true) }
+    /**
+     * Which albums of the OpenSubsonic server show in the library: the starred ones
+     * ([SyncMode.LIKED]), every one ([SyncMode.ALL], by default) or none.
+     */
+    val OPEN_SUBSONIC_SYNC_ALBUMS by lazy { enum("open_subsonic_sync_albums", SyncMode.ALL) }
 
-    /** Like [YOUTUBE_SYNC_ALBUMS], for the artists on the OpenSubsonic server. */
-    val OPEN_SUBSONIC_SYNC_ARTISTS by lazy { boolean("open_subsonic_sync_artists", true) }
+    /** Like [OPEN_SUBSONIC_SYNC_ALBUMS], for the artists on the OpenSubsonic server. */
+    val OPEN_SUBSONIC_SYNC_ARTISTS by lazy { enum("open_subsonic_sync_artists", SyncMode.ALL) }
 
     /** Like [YOUTUBE_SYNC_ALBUMS], for the playlists on the OpenSubsonic server. */
     val OPEN_SUBSONIC_SYNC_PLAYLISTS by lazy { boolean("open_subsonic_sync_playlists", true) }

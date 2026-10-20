@@ -21,7 +21,9 @@ package me.knighthat.kreate3.preferences
 import androidx.datastore.core.DataMigration
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 
 /**
  * Key that stores the schema version of a file, reserved for the storage layer.
@@ -43,7 +45,19 @@ internal fun interface SchemaStep {
  * Steps applied to profile files. Step `n` upgrades version `n` to `n + 1`,
  * so the latest version is the number of steps. Never reorder or remove a step.
  */
-internal val PROFILE_STEPS: List<SchemaStep> = emptyList()
+internal val PROFILE_STEPS: List<SchemaStep> = listOf(
+    // 0 → 1: the OpenSubsonic album and artist switches became a SyncMode. Off is kept, on takes
+    // the default
+    SchemaStep { preferences ->
+        listOf("open_subsonic_sync_albums", "open_subsonic_sync_artists").forEach { name ->
+            val key = booleanPreferencesKey(name)
+            when (preferences.asMap()[key]) {
+                false -> preferences[stringPreferencesKey(name)] = "OFF"
+                true -> preferences.remove(key)
+            }
+        }
+    },
+)
 
 /**
  * Same as [PROFILE_STEPS] but for the secrets file of a profile.
