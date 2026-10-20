@@ -51,6 +51,13 @@ const val EXTRA_ORIGIN = "origin"
 const val EXTRA_URL = "url"
 const val EXTRA_ALBUM_ID = "album_id"
 const val EXTRA_ARTIST_IDS = "artist_ids"
+
+/**
+ * Names of the artists of [EXTRA_ARTIST_IDS] as a `StringArray` in the same order, empty for a
+ * name that isn't known. Only songs fetched live have it, the library's songs keep names and ids
+ * in no matching order.
+ */
+const val EXTRA_ARTIST_NAMES = "artist_names"
 const val EXTRA_IS_MONTHLY = "is_monthly"
 
 /** Id of a playlist at its origin, see [UserPlaylist.remoteId]. */
@@ -281,6 +288,7 @@ fun RemoteSong.toLiveMediaItem(
             putString(EXTRA_ORIGIN, song.origin.name)
             putString(EXTRA_ALBUM_ID, song.albumId)
             putStringArray(EXTRA_ARTIST_IDS, artists.map { it.id }.toTypedArray())
+            putStringArray(EXTRA_ARTIST_NAMES, artists.map { it.name.orEmpty() }.toTypedArray())
             putExplicit(song.isExplicit)
         })
         setIsBrowsable(false)

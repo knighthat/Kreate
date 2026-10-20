@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
@@ -33,12 +34,15 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.QueueActionRow
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
+import me.knighthat.kreate3.ui.component.SongMenuAction
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
@@ -55,6 +59,7 @@ fun LocalPlaylistDetailScreen(
     viewModel: LocalPlaylistDetailViewModel = koinViewModel(),
 ) {
     val playlist by viewModel.playlist.collectAsState()
+    val notifier = LocalNotifier.current
 
     LocalPlaylistDetailContent(
         name = playlist?.name,
@@ -64,6 +69,14 @@ fun LocalPlaylistDetailScreen(
         onBack = onBack,
         onAction = rememberQueueActions(viewModel::allSongs),
         onSongClick = rememberSongTap(null, viewModel::allSongs),
+        onRemoveSong = { song ->
+            viewModel.removeSong(song.mediaId) { removed ->
+                notifier.post(
+                    if (removed) "Removed from ${playlist?.name ?: "the playlist"}"
+                    else "Couldn't remove it from the playlist"
+                )
+            }
+        },
         modifier = modifier,
         contentPadding = contentPadding,
     )
@@ -78,6 +91,7 @@ private fun LocalPlaylistDetailContent(
     onBack: () -> Unit,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
+    onRemoveSong: (MediaItem) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -101,7 +115,12 @@ private fun LocalPlaylistDetailContent(
             item(key = "queue-actions") { QueueActionRow(onAction) }
             items(count = songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
                 songs[index]?.let {
-                    SongItem(it, onClick = { onSongClick(it) })
+                    val remove = remember(it, onRemoveSong) {
+                        SongMenuAction("Remove from playlist", R.drawable.playlist_remove) {
+                            onRemoveSong(it)
+                        }
+                    }
+                    SongItem(it, onClick = { onSongClick(it) }, menuActions = listOf(remove))
                 }
             }
         }
@@ -119,5 +138,6 @@ private fun LocalPlaylistDetailPreview() = PreviewTheme {
         onBack = {},
         onAction = {},
         onSongClick = {},
+        onRemoveSong = {},
     )
 }

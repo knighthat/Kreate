@@ -18,14 +18,17 @@
 
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.paging.cachedIn
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.database.repository.PlaylistRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
@@ -33,12 +36,14 @@ import me.knighthat.kreate3.ui.component.toMediaItem
 import me.knighthat.kreate3.ui.component.toMediaItems
 import me.knighthat.kreate3.ui.navigation.LocalPlaylist
 
+private const val TAG = "LocalPlaylistDetail"
+
 /**
  * The playlist whose id is in the saved state, `null` while it loads or when it doesn't exist, and its songs.
  */
 class LocalPlaylistDetailViewModel(
     savedStateHandle: SavedStateHandle,
-    repository: PlaylistRepository,
+    private val repository: PlaylistRepository,
     private val songRepository: UserSongRepository,
 ) : ViewModel() {
 
@@ -59,4 +64,20 @@ class LocalPlaylistDetailViewModel(
         withContext(Dispatchers.Default) {
             songRepository.listOfPlaylist(playlistId).mapNotNull { it.toMediaItem() }
         }
+
+    /** Takes the song [songId] out of the playlist, [onDone] tells whether it worked. */
+    fun removeSong(songId: String, onDone: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val removed = try {
+                repository.removeSong(playlistId, songId)
+                true
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Couldn't remove $songId from playlist $playlistId", e)
+                false
+            }
+            onDone(removed)
+        }
+    }
 }

@@ -18,29 +18,40 @@
 
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.content.ClipData
+import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
+import android.provider.MediaStore
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.MessageDuration
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
 import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.opensubsonic.Shareable
+import me.knighthat.kreate3.provider.youtube.YouTubeLinks
 import me.knighthat.kreate3.ui.component.LocalNotifier
 import me.knighthat.kreate3.ui.component.ShareButton
+import me.knighthat.kreate3.ui.component.localSongId
+import me.knighthat.kreate3.ui.component.origin
+import org.koin.compose.koinInject
 
 /** Whether the user may make shares on the server, `false` until that is known. */
 internal fun OpenSubsonicProvider.canShare(scope: CoroutineScope): StateFlow<Boolean> =
@@ -111,4 +122,88 @@ fun ShareAction(title: String?, kind: String, link: suspend () -> Result<String>
             }
         },
     )
+}
+
+/** Sharing a song, see [rememberSongShare]. */
+@Stable
+class SongShare(
+    /** `false` for an account of the server that may not share, and while a link is on its way. */
+    val enabled: Boolean,
+    private val start: (then: () -> Unit) -> Unit,
+) {
+
+    /** Opens the share sheet, [then] runs once it opened or the link couldn't be made. */
+    fun share(then: () -> Unit = {}) = start(then)
+}
+
+/**
+ * Shares the song [item]: its link on YouTube Music, a share of the server for OpenSubsonic, which
+ * may be asked for first, or the file itself for a song of the device. A failure is posted to
+ * [LocalNotifier].
+ */
+@Composable
+fun rememberSongShare(
+    item: MediaItem,
+    openSubsonic: OpenSubsonicProvider = koinInject(),
+): SongShare {
+    val context = LocalContext.current
+    val notifier = LocalNotifier.current
+    val scope = rememberCoroutineScope()
+    val origin = item.origin
+    val serverShares by remember(openSubsonic) { openSubsonic.canShare(scope) }
+        .collectAsStateWithLifecycle()
+    var sharing by remember { mutableStateOf(false) }
+    val title = item.mediaMetadata.title?.toString()
+
+    val enabled = !sharing && when (origin) {
+        Origin.OPEN_SUBSONIC -> serverShares
+        null -> false
+        else -> true
+    }
+    return SongShare(enabled) { then ->
+        when (origin) {
+            Origin.LOCAL -> {
+                item.localSongId?.let { context.shareSongFile(title, it) }
+                then()
+            }
+
+            Origin.YOUTUBE -> {
+                context.shareLink(title, YouTubeLinks.song(item.mediaId))
+                then()
+            }
+
+            Origin.OPEN_SUBSONIC -> {
+                sharing = true
+                scope.launch {
+                    openSubsonic.shareLinkOf(Shareable.Song(item.mediaId), title)
+                        .onSuccess { context.shareLink(title, it) }
+                        .onFailure {
+                            notifier.post(Message(it.shareFailure("song"), MessageDuration.LONG))
+                        }
+                    sharing = false
+                    then()
+                }
+            }
+
+            null -> then()
+        }
+    }
+}
+
+/**
+ * Opens the system's share sheet with the file of the device's song [songId], titled [title].
+ * The app it goes to may read it, only that file.
+ */
+private fun Context.shareSongFile(title: String?, songId: Long) {
+    val file = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songId)
+    val send = Intent(Intent.ACTION_SEND)
+        .setType("audio/*")
+        .putExtra(Intent.EXTRA_STREAM, file)
+        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        .apply {
+            // The share sheet passes the permission on with it
+            clipData = ClipData.newRawUri(title, file)
+            title?.let { putExtra(Intent.EXTRA_TITLE, it) }
+        }
+    startActivity(Intent.createChooser(send, null))
 }

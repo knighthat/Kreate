@@ -162,6 +162,7 @@ private class PreviewController(
     override fun playAll(items: List<MediaItem>) = Unit
     override fun radio(seed: MediaItem, append: Boolean) = Unit
     override fun enqueue(items: List<MediaItem>) = Unit
+    override fun playNext(items: List<MediaItem>) = Unit
     override fun progress(): Float = durationMs?.let { positionMs.toFloat() / it } ?: 0f
     override fun togglePlay() = Unit
     override fun position(): Long = positionMs

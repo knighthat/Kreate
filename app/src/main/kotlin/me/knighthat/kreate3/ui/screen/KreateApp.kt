@@ -48,10 +48,13 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.LocalIconOnly
 import me.knighthat.kreate3.ui.component.LocalMessageHost
 import me.knighthat.kreate3.ui.component.LocalNotifier
+import me.knighthat.kreate3.ui.component.LocalSongMenuHost
 import me.knighthat.kreate3.ui.component.MessageHost
 import me.knighthat.kreate3.ui.component.MiniPlayer
 import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
 import me.knighthat.kreate3.ui.component.ShowMessages
+import me.knighthat.kreate3.ui.component.SongMenuHost
+import me.knighthat.kreate3.ui.component.SongMenuOverlay
 import me.knighthat.kreate3.ui.component.TabBar
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
 import me.knighthat.kreate3.ui.component.rememberMiniPlayerSpace
@@ -62,7 +65,9 @@ import me.knighthat.kreate3.ui.navigation.ExitConfirmation
 import me.knighthat.kreate3.ui.navigation.GeneralSettings
 import me.knighthat.kreate3.ui.navigation.LocalAlbum
 import me.knighthat.kreate3.ui.navigation.LocalArtist
+import me.knighthat.kreate3.ui.navigation.LocalNavigator
 import me.knighthat.kreate3.ui.navigation.LocalPlaylist
+import me.knighthat.kreate3.ui.navigation.Navigator
 import me.knighthat.kreate3.ui.navigation.NetworkSettings
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicAlbum
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicArtist
@@ -161,6 +166,9 @@ fun KreateApp() {
 
     val playerSheet = rememberPlayerSheetState()
     val miniPlayer = rememberMiniPlayerSpace()
+    val currentRoute = topLevel.backStack.lastOrNull() as? Route
+    val navigator = remember(topLevel, currentRoute) { Navigator(currentRoute, topLevel::push) }
+    val songMenu = remember { SongMenuHost() }
 
     KreateTheme(
         themeMode = themeMode,
@@ -172,6 +180,8 @@ fun KreateApp() {
             LocalIconOnly provides iconOnly,
             LocalNotifier provides notifier,
             LocalMessageHost provides messages,
+            LocalNavigator provides navigator,
+            LocalSongMenuHost provides songMenu,
         ) {
             Box(Modifier.fillMaxSize()) {
                 Scaffold(
@@ -428,6 +438,7 @@ fun KreateApp() {
                 }
                 // Last, so it covers everything and handles going back first
                 PlayerSheet(playerSheet, controller = playback)
+                SongMenuOverlay(songMenu)
             }
         }
     }

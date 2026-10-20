@@ -206,6 +206,15 @@ class PlaybackControllerImpl(
         if (wasEmpty) controller.prepare()
     }
 
+    override fun playNext(items: List<MediaItem>) =
+        run("queue ${items.size} items next") { controller ->
+            val wasEmpty = controller.mediaItemCount == 0
+            val index = if (wasEmpty) 0 else controller.currentMediaItemIndex + 1
+            controller.addMediaItems(index, items)
+            // Ready to play, the user starts it
+            if (wasEmpty) controller.prepare()
+        }
+
     /**
      * Runs [action] with the connected controller. It waits for the connection, the actions of
      * calls made meanwhile run in the order of the calls.

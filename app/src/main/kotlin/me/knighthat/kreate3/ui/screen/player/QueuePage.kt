@@ -136,6 +136,7 @@ internal fun QueuePage(
                     item = entry.item,
                     onClick = { controller.skipTo(index) },
                     modifier = background,
+                    hasMenu = false,
                     thumbnailOverlay = {
                         Crossfade(mode, Modifier.matchParentSize(), label = "cover") { shown ->
                             when (shown) {

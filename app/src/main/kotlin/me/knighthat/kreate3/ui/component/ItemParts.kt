@@ -27,7 +27,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -319,6 +319,7 @@ fun ItemBadges(
  *
  * @param thumbnails pictures to try for the cover, see [Thumbnail], the item's own by default
  * @param thumbnailOverlay drawn over the cover, in a box of its size
+ * @param onLongClick what a long press does, nothing when `null`
  */
 @Composable
 fun ItemRow(
@@ -330,6 +331,7 @@ fun ItemRow(
     overlineEnd: String? = null,
     thumbnailOverlay: (@Composable BoxScope.() -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
 ) {
     val metadata = item.mediaMetadata
     val subtitle = metadata.subtitle ?: metadata.artist
@@ -338,7 +340,7 @@ fun ItemRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .clickable(onClick = onClick)
+            .combinedClickable(onLongClick = onLongClick, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 6.dp),
     ) {
         if (showThumbnail)

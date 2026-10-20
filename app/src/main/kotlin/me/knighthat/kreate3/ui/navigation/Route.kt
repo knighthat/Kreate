@@ -231,19 +231,25 @@ private const val PLAYLIST_PREFIX = "VL"
 /**
  * The screen of an album, by where it comes from.
  */
-fun albumRoute(item: MediaItem): Route = when (item.origin) {
-    Origin.OPEN_SUBSONIC -> OpenSubsonicAlbum(item.mediaId)
-    Origin.YOUTUBE -> YouTubeAlbum(item.mediaId)
-    else -> LocalAlbum(item.mediaId)
+fun albumRoute(item: MediaItem): Route = albumRoute(item.origin, item.mediaId)
+
+/** The screen of the album [id] of [origin], like the album of a song. */
+fun albumRoute(origin: Origin?, id: String): Route = when (origin) {
+    Origin.OPEN_SUBSONIC -> OpenSubsonicAlbum(id)
+    Origin.YOUTUBE -> YouTubeAlbum(id)
+    else -> LocalAlbum(id)
 }
 
 /**
  * The screen of an artist, by where they come from.
  */
-fun artistRoute(item: MediaItem): Route = when (item.origin) {
-    Origin.OPEN_SUBSONIC -> OpenSubsonicArtist(item.mediaId)
-    Origin.YOUTUBE -> YouTubeArtist(item.mediaId)
-    else -> LocalArtist(item.mediaId)
+fun artistRoute(item: MediaItem): Route = artistRoute(item.origin, item.mediaId)
+
+/** The screen of the artist [id] of [origin], like an artist of a song. */
+fun artistRoute(origin: Origin?, id: String): Route = when (origin) {
+    Origin.OPEN_SUBSONIC -> OpenSubsonicArtist(id)
+    Origin.YOUTUBE -> YouTubeArtist(id)
+    else -> LocalArtist(id)
 }
 
 /**

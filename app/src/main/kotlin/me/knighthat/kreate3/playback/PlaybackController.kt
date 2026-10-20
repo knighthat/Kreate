@@ -96,6 +96,12 @@ interface PlaybackController {
     fun enqueue(items: List<MediaItem>)
 
     /**
+     * Adds [items] right after the current item, in their order, without starting to play. With
+     * an empty queue they become the queue.
+     */
+    fun playNext(items: List<MediaItem>)
+
+    /**
      * How far into the current item, from `0` to `1`; `0` when unknown. Cheap enough to read
      * every frame, but only from the main thread.
      */

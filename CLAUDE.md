@@ -34,6 +34,7 @@ Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper
   empty band: they pad only for the rest of the bottom bar (`MiniPlayerSpace.outside`) and end
   their lists with room for it as content padding (`MiniPlayerSpace.inside`). `PlaybackMiniPlayer`
   measures into the `MiniPlayerSpace` it's given.
+- Menus of list items open by long-press; rows have no trailing ⋮ (more) button.
 - Credentials never go in `Preferences`: passwords, API keys, tokens, cookies, usernames and
   account or channel ids. Declare them in `Secrets`, which keeps them in `secrets.preferences_pb`
   in the profile's folder under `noBackupFilesDir`, so they never leave the device. To move an
