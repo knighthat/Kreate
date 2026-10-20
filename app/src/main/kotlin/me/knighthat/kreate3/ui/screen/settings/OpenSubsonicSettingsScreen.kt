@@ -327,6 +327,12 @@ fun OpenSubsonicSettingsScreen(
             checked = syncSongs,
             onCheckedChange = viewModel::setSongSync,
         )
+        SwitchSetting(
+            title = "Show playlists",
+            summary = "Your playlists on the server show in your library",
+            checked = syncPlaylists,
+            onCheckedChange = Preferences.OPEN_SUBSONIC_SYNC_PLAYLISTS::update,
+        )
         ChoiceSetting(
             title = "Show albums",
             value = syncAlbums,
@@ -340,12 +346,6 @@ fun OpenSubsonicSettingsScreen(
             options = SyncMode.entries,
             label = SyncMode::label,
             onSelect = Preferences.OPEN_SUBSONIC_SYNC_ARTISTS::update,
-        )
-        SwitchSetting(
-            title = "Show playlists",
-            summary = "Your playlists on the server show in your library",
-            checked = syncPlaylists,
-            onCheckedChange = Preferences.OPEN_SUBSONIC_SYNC_PLAYLISTS::update,
         )
     }
 }
