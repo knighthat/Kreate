@@ -16,19 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.knighthat.kreate3.ui.screen.settings
+package me.knighthat.kreate3.ui.screen.settings.network
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
-import me.knighthat.kreate3.provider.LibrarySection
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicSettings
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.YouTubeSettings
+import me.knighthat.kreate3.ui.screen.settings.NumberSetting
+import me.knighthat.kreate3.ui.screen.settings.SettingsItem
+import me.knighthat.kreate3.ui.screen.settings.SettingsPage
+import me.knighthat.kreate3.ui.screen.settings.SettingsSection
+import me.knighthat.kreate3.ui.screen.settings.network.opensubsonic.CheckState
+import me.knighthat.kreate3.ui.screen.settings.network.opensubsonic.OpenSubsonicSettingsViewModel
+import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeAccountState
+import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeAccountViewModel
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
@@ -59,33 +65,6 @@ private fun CheckState.serverName(): String = when (this) {
         // Not what a ping returns
         ServerCheck.Disabled, ServerCheck.NotConfigured, is ServerCheck.Rejected -> "Online"
     }
-}
-
-/**
- * A switch for each [LibrarySection] of a source: the liked songs are synced, the others show.
- *
- * @param setting the setting of a section, like `youTubeSyncSetting`
- * @param where what the user's library is called on the source, like "on YouTube"
- */
-@Composable
-internal fun LibrarySyncSettings(
-    setting: (LibrarySection) -> Preference<Boolean>,
-    where: String,
-    onSyncChange: (LibrarySection, Boolean) -> Unit,
-) = LibrarySection.entries.forEach { section ->
-    val syncs by setting(section).collectAsStateWithLifecycle()
-    val (title, summary) = when (section) {
-        LibrarySection.SONGS -> "Sync liked songs" to "The songs you liked $where are liked here too"
-        LibrarySection.ALBUMS -> "Show albums" to "The albums you saved $where show in your library"
-        LibrarySection.ARTISTS -> "Show artists" to "The artists you follow $where show in your library"
-        LibrarySection.PLAYLISTS -> "Show playlists" to "Your playlists $where show in your library"
-    }
-    SwitchSetting(
-        title = title,
-        summary = summary,
-        checked = syncs,
-        onCheckedChange = { onSyncChange(section, it) },
-    )
 }
 
 /**

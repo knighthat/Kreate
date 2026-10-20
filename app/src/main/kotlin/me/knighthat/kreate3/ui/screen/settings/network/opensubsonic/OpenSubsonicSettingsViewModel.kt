@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.knighthat.kreate3.ui.screen.settings
+package me.knighthat.kreate3.ui.screen.settings.network.opensubsonic
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

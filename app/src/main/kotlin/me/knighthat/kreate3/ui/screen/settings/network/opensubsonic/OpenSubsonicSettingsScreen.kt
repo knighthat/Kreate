@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.knighthat.kreate3.ui.screen.settings
+package me.knighthat.kreate3.ui.screen.settings.network.opensubsonic
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,6 +43,15 @@ import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
+import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
+import me.knighthat.kreate3.ui.screen.settings.MainSwitch
+import me.knighthat.kreate3.ui.screen.settings.RadioSetting
+import me.knighthat.kreate3.ui.screen.settings.SettingsItem
+import me.knighthat.kreate3.ui.screen.settings.SettingsPage
+import me.knighthat.kreate3.ui.screen.settings.SettingsSection
+import me.knighthat.kreate3.ui.screen.settings.StreamQualitySettings
+import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
+import me.knighthat.kreate3.ui.screen.settings.TextSetting
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 

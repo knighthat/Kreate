@@ -34,9 +34,9 @@ import me.knighthat.kreate3.ui.screen.home.HomePlaylistsViewModel
 import me.knighthat.kreate3.ui.screen.home.HomeSongsViewModel
 import me.knighthat.kreate3.ui.screen.search.SearchResultsViewModel
 import me.knighthat.kreate3.ui.screen.search.SearchViewModel
-import me.knighthat.kreate3.ui.screen.settings.BackupViewModel
-import me.knighthat.kreate3.ui.screen.settings.OpenSubsonicSettingsViewModel
-import me.knighthat.kreate3.ui.screen.settings.YouTubeAccountViewModel
+import me.knighthat.kreate3.ui.screen.settings.backup.BackupViewModel
+import me.knighthat.kreate3.ui.screen.settings.network.opensubsonic.OpenSubsonicSettingsViewModel
+import me.knighthat.kreate3.ui.screen.settings.network.youtube.YouTubeAccountViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 

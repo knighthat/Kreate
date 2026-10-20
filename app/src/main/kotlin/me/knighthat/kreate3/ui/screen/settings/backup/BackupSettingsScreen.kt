@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.knighthat.kreate3.ui.screen.settings
+package me.knighthat.kreate3.ui.screen.settings.backup
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.ui.component.TileButton
+import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import org.koin.androidx.compose.koinViewModel
 
 /**

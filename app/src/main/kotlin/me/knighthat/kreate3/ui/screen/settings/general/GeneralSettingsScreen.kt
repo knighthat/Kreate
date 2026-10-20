@@ -16,13 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.knighthat.kreate3.ui.screen.settings
+package me.knighthat.kreate3.ui.screen.settings.general
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.ui.screen.settings.NumberSetting
+import me.knighthat.kreate3.ui.screen.settings.SettingsPage
+import me.knighthat.kreate3.ui.screen.settings.SettingsSection
+import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 
 private const val MIB = 1024L * 1024
 

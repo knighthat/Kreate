@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.knighthat.kreate3.ui.screen.settings
+package me.knighthat.kreate3.ui.screen.settings.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,6 +30,11 @@ import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
+import me.knighthat.kreate3.ui.screen.settings.SettingsPage
+import me.knighthat.kreate3.ui.screen.settings.SettingsSection
+import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
+import me.knighthat.kreate3.ui.screen.settings.prettyName
 
 /**
  * What the user sees and touches: the theme and the app icon.
