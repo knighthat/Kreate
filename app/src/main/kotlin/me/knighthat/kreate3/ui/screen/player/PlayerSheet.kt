@@ -71,6 +71,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -189,6 +190,9 @@ private val BADGE_SIZE = 20.dp
  * reads on any cover.
  */
 private const val PAGE_SCRIM_ALPHA = 0.6f
+
+/** Opacity of a button of the player that can't be used, like Material's disabled content. */
+private const val DISABLED_ALPHA = 0.38f
 
 /** Pages of the full player, in the order of its tabs: the player between the other two. */
 private enum class PlayerTab(val label: String) {
@@ -414,10 +418,13 @@ private fun FullPlayer(
     val queueList =
         rememberLazyListState(initialFirstVisibleItemIndex = (index - 1).coerceAtLeast(0))
     var queueMode by remember { mutableStateOf(QueueEditMode.NONE) }
+    val lyricsControls = remember(item.mediaId) { LyricsControls() }
+    val latestLyricsControls by rememberUpdatedState(lyricsControls)
     // The buttons of a page turn back off once another page is shown
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
             if (page != PlayerTab.QUEUE.ordinal) queueMode = QueueEditMode.NONE
+            if (page != PlayerTab.LYRICS.ordinal) latestLyricsControls.reset()
         }
     }
     val navigationBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
@@ -466,7 +473,13 @@ private fun FullPlayer(
                         coverHeight = coverHeight,
                     )
 
-                    PlayerTab.LYRICS -> LyricsPage(item, isPlaying, controller, pagePadding)
+                    PlayerTab.LYRICS -> LyricsPage(
+                        item = item,
+                        isPlaying = isPlaying,
+                        controller = controller,
+                        controls = lyricsControls,
+                        contentPadding = pagePadding,
+                    )
                     PlayerTab.QUEUE -> QueuePage(
                         controller = controller,
                         currentIndex = index,
@@ -554,6 +567,8 @@ private fun FullPlayer(
             }
             PageButtons(
                 pagerState = pagerState,
+                item = item,
+                lyricsControls = lyricsControls,
                 queueMode = queueMode,
                 onQueueModeChange = { queueMode = it },
                 onLocate = {
@@ -571,21 +586,34 @@ private fun FullPlayer(
 
 /**
  * The bar under the tabs, with the buttons of the page shown. They fade in and out with the
- * finger between the pages. Only the queue has buttons for now, the bar stays empty but keeps
- * its room on the other pages, so the tabs don't move.
+ * finger between the pages. The player has none, the bar stays empty but keeps its room there,
+ * so the tabs don't move.
  */
 @Composable
 private fun PageButtons(
     pagerState: PagerState,
+    item: MediaItem,
+    lyricsControls: LyricsControls,
     queueMode: QueueEditMode,
     onQueueModeChange: (QueueEditMode) -> Unit,
     onLocate: () -> Unit,
     modifier: Modifier = Modifier,
 ) = Box(contentAlignment = Alignment.Center, modifier = modifier) {
-    // Composed only while some of the queue shows, no one taps buttons that can't be seen
+    // Composed only while some of their page shows, no one taps buttons that can't be seen
+    val lyricsShown by remember(pagerState) {
+        derivedStateOf { pagerState.distanceTo(PlayerTab.LYRICS) < 1f }
+    }
     val queueShown by remember(pagerState) {
         derivedStateOf { pagerState.distanceTo(PlayerTab.QUEUE) < 1f }
     }
+    if (lyricsShown)
+        LyricsButtons(
+            item = item,
+            controls = lyricsControls,
+            modifier = Modifier.graphicsLayer {
+                alpha = 1f - pagerState.distanceTo(PlayerTab.LYRICS)
+            },
+        )
     if (queueShown)
         QueueButtons(
             mode = queueMode,
@@ -847,12 +875,15 @@ internal fun ModeButton(
     description: String,
     isOn: Boolean,
     onClick: () -> Unit,
-) = IconButton(onClick = onClick) {
+    enabled: Boolean = true,
+) = IconButton(onClick = onClick, enabled = enabled) {
+    val tint = if (isOn) MaterialTheme.colorScheme.primary
+    else MaterialTheme.colorScheme.onSurfaceVariant
     Icon(
         painter = painterResource(icon),
         contentDescription = description,
-        tint = if (isOn) MaterialTheme.colorScheme.primary
-        else MaterialTheme.colorScheme.onSurfaceVariant,
+        // A tint of its own, the button can't dim it while it is off
+        tint = if (enabled) tint else tint.copy(alpha = DISABLED_ALPHA),
     )
 }
 

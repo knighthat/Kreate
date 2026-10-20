@@ -32,6 +32,7 @@ import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Lyrics
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.SongFormat
+import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.Origin
 import kotlin.time.Clock
 
@@ -82,12 +83,12 @@ internal class SongRepositoryImpl(
 
     override suspend fun deleteFormats(songId: String) = songFormatDao.deleteAll(songId)
 
-    override fun lyricsOf(songId: String): Flow<Lyrics?> =
-        lyricsDao.find(songId).map { it?.toModel() }
+    override fun lyricsOf(songId: String, source: LyricsProvider): Flow<Lyrics?> =
+        lyricsDao.find(songId, source).map { it?.toModel() }
 
     override suspend fun saveLyrics(lyrics: Lyrics) {
         val now = clock.now()
-        val createdAt = lyricsDao.get(lyrics.songId)?.createdAt ?: now
+        val createdAt = lyricsDao.get(lyrics.songId, lyrics.source)?.createdAt ?: now
         lyricsDao.upsert(lyrics.toEntity(createdAt, now))
     }
 

@@ -21,13 +21,12 @@ package me.knighthat.kreate3.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
 import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.LyricsSync
 import kotlin.time.Instant
 
 /**
- * Lyrics of a [SongEntity].
+ * Lyrics of a [SongEntity] from one [source], a song has at most one row per source.
  *
  * @property songId the [SongEntity] the lyrics belong to
  * @property lyrics the lyrics as the source gave them: plain text, LRC, TTML…
@@ -39,6 +38,7 @@ import kotlin.time.Instant
  */
 @Entity(
     tableName = "lyrics",
+    primaryKeys = ["song_id", "source"],
     foreignKeys = [
         ForeignKey(
             entity = SongEntity::class,
@@ -49,12 +49,11 @@ import kotlin.time.Instant
     ],
 )
 internal data class LyricsEntity(
-    @PrimaryKey
     @ColumnInfo(name = "song_id")
     val songId: String,
+    val source: LyricsProvider,
     val lyrics: String,
     val sync: LyricsSync,
-    val source: LyricsProvider,
     val credit: String?,
     @ColumnInfo(name = "created_at")
     val createdAt: Instant,

@@ -138,7 +138,7 @@ internal fun SongFormat.toEntity(createdAt: Instant, updatedAt: Instant) =
 internal fun LyricsEntity.toModel() = Lyrics(songId, lyrics, sync, source, credit)
 
 internal fun Lyrics.toEntity(createdAt: Instant, updatedAt: Instant) =
-    LyricsEntity(songId, lyrics, sync, source, credit, createdAt, updatedAt)
+    LyricsEntity(songId, source, lyrics, sync, credit, createdAt, updatedAt)
 
 internal fun SearchHistoryEntity.toModel() = SearchHistory(query, lastUsed)
 

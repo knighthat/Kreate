@@ -25,11 +25,13 @@ import me.knighthat.kreate3.lyrics.LyricsFinder
 import me.knighthat.kreate3.model.LyricsSync
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.ui.screen.player.LYRICS_TEXT_SIZES
 import me.knighthat.kreate3.ui.screen.player.label
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
+import me.knighthat.kreate3.ui.screen.settings.SliderSetting
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 import org.koin.compose.koinInject
 
@@ -52,6 +54,7 @@ fun PlayerSettingsScreen(
     val lyricsSource by Preferences.LYRICS_SOURCE.collectAsStateWithLifecycle()
     val lyricsSync by Preferences.LYRICS_SYNC.collectAsStateWithLifecycle()
     val lyricsAlwaysLive by Preferences.LYRICS_ALWAYS_LIVE.collectAsStateWithLifecycle()
+    val lyricsTextSize by Preferences.LYRICS_TEXT_SIZE.collectAsStateWithLifecycle()
 
     SettingsPage("Player", onBack, modifier) {
         SettingsSection("Queue")
@@ -129,7 +132,14 @@ fun PlayerSettingsScreen(
             summary = if (lyricsAlwaysLive)
                 "Lyrics are fetched each time they show, and not saved"
             else
-                "Saved lyrics timed as preferred show without fetching",
+                "Saved lyrics of the source show without fetching",
+        )
+        SliderSetting(
+            title = "Text size",
+            value = lyricsTextSize,
+            options = LYRICS_TEXT_SIZES.toList(),
+            label = { "$it%" },
+            onSelect = { Preferences.LYRICS_TEXT_SIZE.update(it) },
         )
     }
 }

@@ -23,6 +23,7 @@ import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Lyrics
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.SongFormat
+import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.Origin
 
 /**
@@ -77,9 +78,12 @@ interface SongRepository {
 
     suspend fun deleteFormats(songId: String)
 
-    fun lyricsOf(songId: String): Flow<Lyrics?>
+    /** The lyrics of the song from [source], `null` when that source's aren't stored. */
+    fun lyricsOf(songId: String, source: LyricsProvider): Flow<Lyrics?>
 
+    /** Stores [lyrics], replacing the ones of the same song from the same source. */
     suspend fun saveLyrics(lyrics: Lyrics)
 
+    /** Removes the lyrics of the song from every source. */
     suspend fun deleteLyrics(songId: String)
 }

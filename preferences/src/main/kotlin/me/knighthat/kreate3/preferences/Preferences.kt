@@ -35,6 +35,7 @@ import me.knighthat.kreate3.preferences.Preferences.MEDIA3_CACHE_SIZE
 import me.knighthat.kreate3.preferences.Preferences.NETWORK_CONNECT_TIMEOUT
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_CERTIFICATE_SHA256
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_QUALITY_WIFI
+import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_SYNC_ALBUMS
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_ACCOUNT_ENABLED
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_QUALITY_WIFI
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_QUALITY_WIFI_PREMIUM
@@ -332,15 +333,15 @@ object Preferences : KoinComponent {
 
     //<editor-fold defaultstate="collapsed" desc="Lyrics">
     /**
-     * The lyrics provider asked first, the only one asked until the user wants the others.
-     * [LyricsProvider.LRCLIB] by default.
+     * The lyrics provider whose lyrics show, its stored ones when there are, until the user picks
+     * another on the lyrics page. [LyricsProvider.LRCLIB] by default.
      */
     val LYRICS_SOURCE by lazy { enum("lyrics_source", LyricsProvider.LRCLIB) }
 
     /**
-     * How finely the user wants lyrics timed, [LyricsSync.WORD] by default. Stored lyrics timed
-     * this way, from any provider, are shown without asking one, and no lyrics are shown more
-     * finely timed than this.
+     * How finely the user wants lyrics timed, [LyricsSync.WORD] by default. No lyrics are shown
+     * more finely timed than this, and a search of every source stops at the first lyrics timed
+     * this way.
      */
     val LYRICS_SYNC by lazy { enum("lyrics_sync", LyricsSync.WORD) }
 
@@ -349,6 +350,9 @@ object Preferences : KoinComponent {
      * library. Off by default. Lyrics already saved stay.
      */
     val LYRICS_ALWAYS_LIVE by lazy { boolean("lyrics_always_live", false) }
+
+    /** Size of the lyrics' text in percent of its normal size, `100` by default. */
+    val LYRICS_TEXT_SIZE by lazy { int("lyrics_text_size", 100) }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Coil3">

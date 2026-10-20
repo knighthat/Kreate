@@ -23,15 +23,16 @@ import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.entity.LyricsEntity
+import me.knighthat.kreate3.model.LyricsProvider
 
 @Dao
 internal interface LyricsDao {
 
-    @Query("SELECT * FROM lyrics WHERE song_id = :songId")
-    fun find(songId: String): Flow<LyricsEntity?>
+    @Query("SELECT * FROM lyrics WHERE song_id = :songId AND source = :source")
+    fun find(songId: String, source: LyricsProvider): Flow<LyricsEntity?>
 
-    @Query("SELECT * FROM lyrics WHERE song_id = :songId")
-    suspend fun get(songId: String): LyricsEntity?
+    @Query("SELECT * FROM lyrics WHERE song_id = :songId AND source = :source")
+    suspend fun get(songId: String, source: LyricsProvider): LyricsEntity?
 
     @Upsert
     suspend fun upsert(lyrics: LyricsEntity)

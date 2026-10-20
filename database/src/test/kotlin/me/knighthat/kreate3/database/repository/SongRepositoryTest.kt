@@ -125,7 +125,28 @@ internal class SongRepositoryTest : DatabaseTest() {
         repository.delete("s1")
 
         assertEquals(emptyList<SongFormat>(), repository.formatsOf("s1").first())
-        assertNull(repository.lyricsOf("s1").first())
+        assertNull(repository.lyricsOf("s1", LyricsProvider.YOUTUBE).first())
+    }
+
+    @Test
+    fun lyricsAreStoredPerSource() = runBlocking {
+        addSong("s1")
+        repository.saveLyrics(Lyrics("s1", "youtube", LyricsSync.NONE, LyricsProvider.YOUTUBE))
+        repository.saveLyrics(Lyrics("s1", "lrclib", LyricsSync.LINE, LyricsProvider.LRCLIB))
+        // Replaces the ones of the same source only
+        repository.saveLyrics(Lyrics("s1", "lrclib again", LyricsSync.LINE, LyricsProvider.LRCLIB))
+
+        assertEquals("youtube", repository.lyricsOf("s1", LyricsProvider.YOUTUBE).first()?.lyrics)
+        assertEquals(
+            "lrclib again",
+            repository.lyricsOf("s1", LyricsProvider.LRCLIB).first()?.lyrics
+        )
+        assertNull(repository.lyricsOf("s1", LyricsProvider.BETTER_LYRICS).first())
+
+        repository.deleteLyrics("s1")
+
+        assertNull(repository.lyricsOf("s1", LyricsProvider.YOUTUBE).first())
+        assertNull(repository.lyricsOf("s1", LyricsProvider.LRCLIB).first())
     }
 
     @Test

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "4e8214b33e218a63c3b3c8e1cc82ff5e",
+    "identityHash": "775b420c559884b44401b197389e16be",
     "entities": [
       {
         "tableName": "album",
@@ -118,11 +118,17 @@
       },
       {
         "tableName": "lyrics",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`song_id` TEXT NOT NULL, `lyrics` TEXT NOT NULL, `sync` TEXT NOT NULL, `source` TEXT NOT NULL, `credit` TEXT, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`song_id`), FOREIGN KEY(`song_id`) REFERENCES `song`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`song_id` TEXT NOT NULL, `source` TEXT NOT NULL, `lyrics` TEXT NOT NULL, `sync` TEXT NOT NULL, `credit` TEXT, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`song_id`, `source`), FOREIGN KEY(`song_id`) REFERENCES `song`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "songId",
             "columnName": "song_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -135,12 +141,6 @@
           {
             "fieldPath": "sync",
             "columnName": "sync",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "source",
-            "columnName": "source",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -165,7 +165,8 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "song_id"
+            "song_id",
+            "source"
           ]
         },
         "foreignKeys": [
@@ -1150,7 +1151,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4e8214b33e218a63c3b3c8e1cc82ff5e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '775b420c559884b44401b197389e16be')"
     ]
   }
 }

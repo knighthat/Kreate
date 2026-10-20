@@ -29,7 +29,6 @@ import me.knighthat.kreate3.lyrics.SyncedLyrics
 import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.LyricsSync
 import me.knighthat.kreate3.model.Origin
-import me.knighthat.kreate3.ui.screen.settings.prettyName
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -41,13 +40,12 @@ import java.io.IOException
 @RunWith(RobolectricTestRunner::class)
 class LoadLyricsTest {
 
-    private val query = LyricsQuery("s1", Origin.YOUTUBE, "Song")
+    private val query = LyricsQuery("s1", Origin.YOUTUBE, "Song", listOf("Singer"), "Album")
     private val saved = mutableListOf<Lyrics>()
 
-    // The provider the user chose, two others, and the one stored lyrics come from
+    // The provider the user chose, another one, and one without a source in the tests
     private val chosen = LyricsProvider.LRCLIB
     private val other = LyricsProvider.BETTER_LYRICS
-    private val third = LyricsProvider.LYRICS_PLUS
     private val old = LyricsProvider.YOUTUBE
 
     /** Answers lyrics timed by [sync], none when it is `null`, or throws [error]. */
@@ -59,9 +57,11 @@ class LoadLyricsTest {
 
         override val name: String = provider.name
         var asked = 0
+        var lastQuery: LyricsQuery? = null
 
         override suspend fun find(query: LyricsQuery): FoundLyrics? {
             asked++
+            lastQuery = query
             error?.let { throw it }
             return sync?.let { FoundLyrics("$provider lyrics", it, provider, "Credit") }
         }
@@ -73,66 +73,120 @@ class LoadLyricsTest {
         alwaysLive: Boolean = false,
     ) = LyricsSettings(source, sync, alwaysLive)
 
-    private fun stored(sync: LyricsSync) = Lyrics("s1", "stored lyrics", sync, old, null)
+    /** Lyrics of [source] in the library, [sync] tells them apart from the fetched ones. */
+    private fun stored(source: LyricsProvider, sync: LyricsSync = LyricsSync.NONE) =
+        Lyrics("s1", "$source stored", sync, source, null)
 
     private fun load(
         finder: LyricsFinder,
         settings: LyricsSettings = settings(),
-        everywhere: Boolean = false,
-        stored: Lyrics? = null,
+        request: LyricsRequest? = null,
+        remote: Boolean = false,
+        stored: List<Lyrics> = emptyList(),
     ) = runBlocking {
-        loadLyrics(query, settings, everywhere, finder, { stored }) { saved += it }
+        loadLyrics(
+            query = query,
+            request = request,
+            settings = settings,
+            remote = remote,
+            finder = finder,
+            stored = { provider -> stored.firstOrNull { it.source == provider } },
+        ) { saved += it }
     }
 
     @Test
-    fun storedLyricsTimedAsWantedAreShownWithoutAsking() {
+    fun storedLyricsOfTheChosenSourceShowWithoutAskingWhateverTheirTiming() {
         val chosenSource = FakeSource(chosen, LyricsSync.WORD)
 
-        val state = load(LyricsFinder(listOf(chosenSource)), stored = stored(LyricsSync.WORD))
+        val state = load(LyricsFinder(listOf(chosenSource)), stored = listOf(stored(chosen)))
 
-        assertEquals("stored lyrics", (state as LyricsState.Found).text)
-        assertEquals(old.prettyName(), state.source)
+        assertEquals("$chosen stored", (state as LyricsState.Found).text)
+        assertEquals(chosen.name, state.source)
         assertEquals(0, chosenSource.asked)
+        assertTrue(saved.isEmpty())
     }
 
     @Test
-    fun storedLyricsTimedMoreFinelyThanWantedAskTheChosenSource() {
+    fun storedLyricsOfAnotherSourceDontShow() {
         val state = load(
-            LyricsFinder(listOf(FakeSource(chosen, LyricsSync.LINE))),
-            settings(sync = LyricsSync.LINE),
-            stored = stored(LyricsSync.WORD),
-        )
-
-        assertEquals("$chosen lyrics", (state as LyricsState.Found).text)
-        // Timed the way the user wants, so they replace the stored ones
-        assertEquals(LyricsSync.LINE, saved.single().sync)
-    }
-
-    @Test
-    fun storedLyricsTimedTooCoarselyAskTheChosenSource() {
-        val state = load(
-            LyricsFinder(
-                listOf(
-                    FakeSource(other, LyricsSync.WORD),
-                    FakeSource(chosen, LyricsSync.LINE)
-                )
-            ),
-            stored = stored(LyricsSync.NONE),
+            LyricsFinder(listOf(FakeSource(chosen, LyricsSync.LINE), FakeSource(other))),
+            stored = listOf(stored(other, LyricsSync.WORD)),
         )
 
         assertEquals("$chosen lyrics", (state as LyricsState.Found).text)
         assertEquals(chosen.name, state.source)
         assertEquals("Credit", state.credit)
-        assertEquals(LyricsSync.LINE, saved.single().sync)
         assertEquals(chosen, saved.single().source)
+        assertEquals(LyricsSync.LINE, saved.single().sync)
+    }
+
+    @Test
+    fun aPickedSourceShowsItsStoredLyrics() {
+        val chosenSource = FakeSource(chosen, LyricsSync.WORD)
+        val otherSource = FakeSource(other, LyricsSync.WORD)
+
+        val state = load(
+            LyricsFinder(listOf(chosenSource, otherSource)),
+            request = LyricsRequest(provider = other),
+            stored = listOf(stored(chosen), stored(other)),
+        )
+
+        assertEquals("$other stored", (state as LyricsState.Found).text)
+        assertEquals(0, chosenSource.asked)
+        assertEquals(0, otherSource.asked)
+    }
+
+    @Test
+    fun aPickedSourceWithoutStoredLyricsFetchesAndSavesThem() {
+        val chosenSource = FakeSource(chosen, LyricsSync.WORD)
+        val otherSource = FakeSource(other, LyricsSync.LINE)
+
+        val state = load(
+            LyricsFinder(listOf(chosenSource, otherSource)),
+            request = LyricsRequest(provider = other),
+            stored = listOf(stored(chosen)),
+        )
+
+        assertEquals("$other lyrics", (state as LyricsState.Found).text)
+        assertEquals(0, chosenSource.asked)
+        assertEquals(query, otherSource.lastQuery)
+        // Coarser than wanted, but they are the source's
+        assertEquals(other, saved.single().source)
+        assertEquals(LyricsSync.LINE, saved.single().sync)
+    }
+
+    @Test
+    fun aPickedSourceWithoutLyricsIsUnavailable() {
+        val state = load(
+            LyricsFinder(listOf(FakeSource(chosen, LyricsSync.WORD), FakeSource(other))),
+            request = LyricsRequest(provider = other),
+        )
+
+        assertEquals(LyricsState.Unavailable(other.name), state)
+        assertTrue(saved.isEmpty())
+    }
+
+    @Test
+    fun reloadingFetchesTheStoredOnesAgain() {
+        val chosenSource = FakeSource(chosen, LyricsSync.WORD)
+
+        val state = load(
+            LyricsFinder(listOf(chosenSource)),
+            remote = true,
+            stored = listOf(stored(chosen)),
+        )
+
+        assertEquals("$chosen lyrics", (state as LyricsState.Found).text)
+        assertEquals(1, chosenSource.asked)
+        assertEquals("$chosen lyrics", saved.single().lyrics)
     }
 
     @Test
     fun alwaysLiveNeitherReadsNorSaves() {
         val state = load(
             LyricsFinder(listOf(FakeSource(chosen, LyricsSync.NONE))),
-            settings(sync = LyricsSync.NONE, alwaysLive = true),
-            stored = stored(LyricsSync.WORD),
+            settings(alwaysLive = true),
+            stored = listOf(stored(chosen)),
         )
 
         assertEquals("$chosen lyrics", (state as LyricsState.Found).text)
@@ -140,7 +194,7 @@ class LoadLyricsTest {
     }
 
     @Test
-    fun onlyTheChosenSourceIsAskedFirst() {
+    fun onlyTheChosenSourceIsAsked() {
         val otherSource = FakeSource(other, LyricsSync.WORD)
 
         val state = load(LyricsFinder(listOf(otherSource, FakeSource(chosen))))
@@ -158,45 +212,35 @@ class LoadLyricsTest {
     }
 
     @Test
-    fun lookingElsewhereGivesTheMostFinelyTimedOfTheOthers() {
-        val chosenSource = FakeSource(chosen, LyricsSync.WORD)
-        val finder = LyricsFinder(
-            listOf(
-                chosenSource,
-                FakeSource(third, LyricsSync.NONE),
-                FakeSource(other, LyricsSync.LINE)
-            )
+    fun aSearchAsksEverySourceWithTheTypedWordsAndSkipsTheStoredOnes() {
+        val lineSource = FakeSource(chosen, LyricsSync.LINE)
+        val wordSource = FakeSource(other, LyricsSync.WORD)
+
+        val state = load(
+            LyricsFinder(listOf(lineSource, wordSource)),
+            request = LyricsRequest(title = "Typed", artist = " "),
+            stored = listOf(stored(chosen), stored(other)),
         )
 
-        val state = load(finder, everywhere = true)
-
+        // Until one timed as the user wants
         assertEquals("$other lyrics", (state as LyricsState.Found).text)
-        assertEquals(0, chosenSource.asked)
+        assertEquals(other, saved.single().source)
+        val asked = wordSource.lastQuery!!
+        assertEquals("Typed", asked.title)
+        assertEquals(emptyList<String>(), asked.artists)
+        assertEquals(null, asked.album)
+        assertEquals(query.songId, asked.songId)
+        assertEquals(query.duration, asked.duration)
     }
 
     @Test
-    fun lookingElsewhereKeepsStoredLyricsTimedMoreFinely() {
-        val finder =
-            LyricsFinder(listOf(FakeSource(chosen), FakeSource(third, LyricsSync.NONE)))
-
-        val state = load(finder, everywhere = true, stored = stored(LyricsSync.LINE))
-
-        assertEquals("$third lyrics", (state as LyricsState.Found).text)
-        assertTrue(saved.isEmpty())
-    }
-
-    @Test
-    fun nothingElsewhereShowsTheStoredOnes() {
-        val finder = LyricsFinder(listOf(FakeSource(chosen), FakeSource(other)))
-
-        assertEquals(LyricsState.Missing, load(finder, everywhere = true))
+    fun aSearchThatFindsNothingIsMissing() {
         assertEquals(
-            "stored lyrics",
-            (load(
-                finder,
-                everywhere = true,
-                stored = stored(LyricsSync.NONE)
-            ) as LyricsState.Found).text,
+            LyricsState.Missing,
+            load(
+                LyricsFinder(listOf(FakeSource(chosen), FakeSource(other))),
+                request = LyricsRequest(title = "Typed"),
+            ),
         )
     }
 
@@ -225,11 +269,12 @@ class LoadLyricsTest {
         val down = LyricsFinder(listOf(FakeSource(chosen, error = IOException())))
 
         assertEquals(LyricsState.Failed, load(down))
+        assertEquals(LyricsState.Failed, load(down, remote = true, stored = listOf(stored(chosen))))
         assertEquals(
             LyricsState.Failed,
             load(
-                LyricsFinder(listOf(FakeSource(chosen), FakeSource(other, error = IOException()))),
-                everywhere = true
+                LyricsFinder(listOf(FakeSource(other, error = IOException()))),
+                request = LyricsRequest(title = "Typed"),
             ),
         )
     }
