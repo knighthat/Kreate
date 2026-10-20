@@ -19,6 +19,7 @@
 package me.knighthat.kreate3.ui.screen.detail
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -58,6 +59,7 @@ private const val PREFETCH_DISTANCE = 10
 fun YouTubePlaylistDetailScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     viewModel: YouTubePlaylistDetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -75,6 +77,7 @@ fun YouTubePlaylistDetailScreen(
         onSongClick = rememberSongTap(null) { viewModel.songs.value },
         share = viewModel::shareLink,
         modifier = modifier,
+        contentPadding = contentPadding,
     )
 }
 
@@ -94,6 +97,7 @@ private fun YouTubePlaylistDetailContent(
     onSongClick: (MediaItem) -> Unit,
     share: suspend () -> Result<String>,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val playlist = (state as? LiveState.Ready)?.value
 
@@ -103,12 +107,12 @@ private fun YouTubePlaylistDetailContent(
         state = state,
         onRetry = onRetry,
         modifier = modifier,
+        contentPadding = contentPadding,
         actions = { ShareAction(playlist?.name, "playlist", share) },
     ) { detail, innerPadding ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            contentPadding = innerPadding,
+            modifier = Modifier.fillMaxSize(),
         ) {
             item {
                 DetailHeader(

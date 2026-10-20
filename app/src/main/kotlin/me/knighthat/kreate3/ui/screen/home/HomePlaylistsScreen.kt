@@ -19,6 +19,7 @@
 package me.knighthat.kreate3.ui.screen.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -75,6 +76,7 @@ fun HomePlaylistsScreen(
     onSearch: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     viewModel: HomePlaylistsViewModel = koinViewModel(),
 ) {
     val live by viewModel.live.collectAsStateWithLifecycle()
@@ -105,6 +107,7 @@ fun HomePlaylistsScreen(
         onSearch = onSearch,
         onSettings = onSettings,
         modifier = modifier,
+        contentPadding = contentPadding,
     )
 
     if (creating)
@@ -166,6 +169,7 @@ private fun HomePlaylistsContent(
     onSearch: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     HomeScaffold(
         title = Tab.PLAYLISTS.label,
@@ -173,6 +177,7 @@ private fun HomePlaylistsContent(
         selected = selected,
         onToggleOrigin = onToggleOrigin,
         modifier = modifier,
+        contentPadding = contentPadding,
         onSearch = onSearch,
         onSettings = onSettings,
         quickActions = {

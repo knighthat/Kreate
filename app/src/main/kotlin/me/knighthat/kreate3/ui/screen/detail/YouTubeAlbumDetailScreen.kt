@@ -18,8 +18,8 @@
 
 package me.knighthat.kreate3.ui.screen.detail
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -54,6 +54,7 @@ fun YouTubeAlbumDetailScreen(
     onOpen: (Tab, MediaItem) -> Unit,
     onSeeMore: (title: String, more: YouTubeBrowse) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     viewModel: YouTubeAlbumDetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -72,6 +73,7 @@ fun YouTubeAlbumDetailScreen(
         },
         share = viewModel::shareLink,
         modifier = modifier,
+        contentPadding = contentPadding,
     )
 }
 
@@ -86,6 +88,7 @@ private fun YouTubeAlbumDetailContent(
     onSongClick: (MediaItem) -> Unit,
     share: suspend () -> Result<String>,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val album = (state as? LiveState.Ready)?.value
 
@@ -95,12 +98,12 @@ private fun YouTubeAlbumDetailContent(
         state = state,
         onRetry = onRetry,
         modifier = modifier,
+        contentPadding = contentPadding,
         actions = { ShareAction(album?.name, "album", share) },
     ) { detail, innerPadding ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            contentPadding = innerPadding,
+            modifier = Modifier.fillMaxSize(),
         ) {
             item {
                 DetailHeader(

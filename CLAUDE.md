@@ -30,6 +30,10 @@ Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper
   `withContext(Dispatchers.Default)` (a custom `PagingSource.load` too, Paging calls it on the
   collector's thread); long CPU work in the background runs on threads at
   `THREAD_PRIORITY_BACKGROUND`.
+- Screens with the mini player never pad around it from outside, or swiping it away leaves an
+  empty band: they pad only for the rest of the bottom bar (`MiniPlayerSpace.outside`) and end
+  their lists with room for it as content padding (`MiniPlayerSpace.inside`). `PlaybackMiniPlayer`
+  measures into the `MiniPlayerSpace` it's given.
 - Credentials never go in `Preferences`: passwords, API keys, tokens, cookies, usernames and
   account or channel ids. Declare them in `Secrets`, which keeps them in `secrets.preferences_pb`
   in the profile's folder under `noBackupFilesDir`, so they never leave the device. To move an

@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.ui.screen.home
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -54,6 +55,7 @@ fun HomeSongsScreen(
     onSearch: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     viewModel: HomeSongsViewModel = koinViewModel(),
 ) {
     val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
@@ -75,6 +77,7 @@ fun HomeSongsScreen(
         onSearch = onSearch,
         onSettings = onSettings,
         modifier = modifier,
+        contentPadding = contentPadding,
     )
 }
 
@@ -89,6 +92,7 @@ private fun HomeSongsContent(
     onSearch: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     HomeScaffold(
         title = Tab.SONGS.label,
@@ -96,6 +100,7 @@ private fun HomeSongsContent(
         selected = selected,
         onToggleOrigin = onToggleOrigin,
         modifier = modifier,
+        contentPadding = contentPadding,
         onSearch = onSearch,
         onSettings = onSettings,
         quickActions = {

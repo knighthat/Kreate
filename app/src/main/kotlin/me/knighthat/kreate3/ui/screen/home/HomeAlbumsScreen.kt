@@ -19,6 +19,7 @@
 package me.knighthat.kreate3.ui.screen.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -60,6 +61,7 @@ fun HomeAlbumsScreen(
     onSearch: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     viewModel: HomeAlbumsViewModel = koinViewModel(),
 ) {
     val live by viewModel.live.collectAsStateWithLifecycle()
@@ -88,6 +90,7 @@ fun HomeAlbumsScreen(
         onSearch = onSearch,
         onSettings = onSettings,
         modifier = modifier,
+        contentPadding = contentPadding,
     )
 }
 
@@ -106,6 +109,7 @@ private fun HomeAlbumsContent(
     onSearch: () -> Unit,
     onSettings: () -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     HomeScaffold(
         title = Tab.ALBUMS.label,
@@ -113,6 +117,7 @@ private fun HomeAlbumsContent(
         selected = selected,
         onToggleOrigin = onToggleOrigin,
         modifier = modifier,
+        contentPadding = contentPadding,
         onSearch = onSearch,
         onSettings = onSettings,
         quickActions = { RandomButton(onRandom) },

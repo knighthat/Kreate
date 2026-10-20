@@ -19,8 +19,8 @@
 package me.knighthat.kreate3.ui.screen.detail
 
 import android.net.Uri
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -51,6 +51,7 @@ import org.koin.androidx.compose.koinViewModel
 fun LocalPlaylistDetailScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     viewModel: LocalPlaylistDetailViewModel = koinViewModel(),
 ) {
     val playlist by viewModel.playlist.collectAsState()
@@ -64,6 +65,7 @@ fun LocalPlaylistDetailScreen(
         onAction = rememberQueueActions(viewModel::allSongs),
         onSongClick = rememberSongTap(null, viewModel::allSongs),
         modifier = modifier,
+        contentPadding = contentPadding,
     )
 }
 
@@ -77,16 +79,17 @@ private fun LocalPlaylistDetailContent(
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     DetailScaffold(
         title = name.orEmpty(),
         onBack = onBack,
         modifier = modifier,
+        contentPadding = contentPadding,
     ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            contentPadding = innerPadding,
+            modifier = Modifier.fillMaxSize(),
         ) {
             item {
                 DetailHeader(

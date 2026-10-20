@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CircularProgressIndicator
@@ -60,6 +61,7 @@ fun YouTubeMoreScreen(
     onBack: () -> Unit,
     onOpen: (Tab, MediaItem) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
     viewModel: YouTubeMoreViewModel = koinViewModel(),
 ) {
     YouTubeMoreContent(
@@ -68,6 +70,7 @@ fun YouTubeMoreScreen(
         onBack = onBack,
         onOpen = onOpen,
         modifier = modifier,
+        contentPadding = contentPadding,
     )
 }
 
@@ -81,10 +84,11 @@ private fun YouTubeMoreContent(
     onBack: () -> Unit,
     onOpen: (Tab, MediaItem) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val refresh = items.loadState.refresh
 
-    DetailScaffold(title, onBack, modifier) { innerPadding ->
+    DetailScaffold(title, onBack, modifier, contentPadding) { innerPadding ->
         if (items.itemCount == 0) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -119,12 +123,10 @@ private fun YouTubeMoreContent(
 
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = ITEM_SIZE.dp),
-            contentPadding = PaddingValues(12.dp),
+            contentPadding = innerPadding + PaddingValues(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            modifier = Modifier.fillMaxSize(),
         ) {
             items(
                 count = items.itemCount,
