@@ -88,11 +88,11 @@ private const val CLIENT_NAME = "kreate"
  * browsed into and searched.
  */
 class OpenSubsonicProvider internal constructor(
-    private val client: () -> HttpClient,
+    private val client: suspend () -> HttpClient,
     private val json: Json,
     private val settings: OpenSubsonicSettings,
     private val clock: Clock = Clock.System,
-    private val okHttp: () -> OkHttpClient = { error("No client to stream with") },
+    private val okHttp: suspend () -> OkHttpClient = { error("No client to stream with") },
 ) : Provider {
 
     /**
@@ -715,9 +715,9 @@ class OpenSubsonicProvider internal constructor(
     /**
      * The client that trusts what the user chose to trust, like a self-signed certificate, for
      * the player to read [playbackUri] with. Use it for addresses of this server only, and ask
-     * again for each request, it changes with what is trusted.
+     * again for each request, it changes with what is trusted and with the proxy.
      */
-    fun streamClient(): Call.Factory = okHttp()
+    suspend fun streamClient(): Call.Factory = okHttp()
 
     /**
      * The cover address stored on items, which [cover] loads. The server scales it to the size

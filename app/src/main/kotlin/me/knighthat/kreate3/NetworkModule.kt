@@ -29,6 +29,9 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.provider.HttpClientFactory
+import me.knighthat.kreate3.provider.networkProxy
+import me.knighthat.kreate3.provider.proxy
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
 import java.util.concurrent.TimeUnit
@@ -40,8 +43,12 @@ import java.util.concurrent.TimeUnit
  * - [OkHttpClient]: the one client, so connections and threads are pooled. Derive a variant
  *   with `client.newBuilder()`, it shares the pool. It has no HTTP cache on purpose.
  * - [Json]: the one configuration for reading and writing JSON.
- * - [HttpClient]: Ktor on top of that same [OkHttpClient], with JSON bodies, retries on server
+ * - [HttpClientFactory]: Ktor on top of an [OkHttpClient], with JSON bodies, retries on server
  *   errors and a one line log per request. Compression needs no plugin, OkHttp handles gzip.
+ *   Sources make theirs with it on the client they derive, like one going through a proxy.
+ * - [HttpClient]: the factory's client, for what isn't a source, on a variant of that same
+ *   [OkHttpClient] going through the proxy of [Preferences.NETWORK_PROXY_ENABLED]. Sources go
+ *   through it too, unless they have a proxy of their own.
  */
 val networkModule = module {
     single {
@@ -59,21 +66,29 @@ val networkModule = module {
     }
 
     single {
-        HttpClient(OkHttp) {
-            engine { preconfigured = get<OkHttpClient>() }
+        val json = get<Json>()
+        HttpClientFactory { okHttp ->
+            HttpClient(OkHttp) {
+                engine { preconfigured = okHttp }
 
-            install(ContentNegotiation) { json(get<Json>()) }
+                install(ContentNegotiation) { json(json) }
 
-            install(HttpRequestRetry) {
-                retryOnServerErrors(Preferences.NETWORK_MAX_RETRIES.value)
-                exponentialDelay()
-            }
+                install(HttpRequestRetry) {
+                    retryOnServerErrors(Preferences.NETWORK_MAX_RETRIES.value)
+                    exponentialDelay()
+                }
 
-            // Url and status only, no headers or bodies, they may hold personal data
-            install(Logging) {
-                logger = Logger.ANDROID
-                level = LogLevel.INFO
+                // Url and status only, no headers or bodies, they may hold personal data
+                install(Logging) {
+                    logger = Logger.ANDROID
+                    level = LogLevel.INFO
+                }
             }
         }
+    }
+
+    single {
+        val okHttp = get<OkHttpClient>().newBuilder().proxy("network", ::networkProxy).build()
+        get<HttpClientFactory>().create(okHttp)
     }
 }

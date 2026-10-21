@@ -20,6 +20,8 @@ package me.knighthat.kreate3.provider.opensubsonic
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import me.knighthat.kreate3.provider.SourceProxy
+import me.knighthat.kreate3.provider.proxy
 import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
 import java.security.KeyStore
@@ -29,19 +31,24 @@ import javax.net.ssl.X509TrustManager
 
 /**
  * The HTTP client used for the OpenSubsonic server, and only for it, so trusting a self-signed
- * certificate never reaches other requests. It has no logging, the sign in may be in addresses.
+ * certificate or its proxy never reaches other requests. It has no logging, the sign in may be in
+ * addresses.
  *
- * The client is built again whenever what is trusted changes, with new connections and a new
- * TLS session cache, so an old connection or a resumed session can't skip the new rules.
+ * The client is built again whenever what is trusted or the proxy changes, with new connections
+ * and a new TLS session cache, so an old connection or a resumed session can't skip the new rules.
  */
 internal class OpenSubsonicClients(
     private val base: OkHttpClient,
     private val settings: OpenSubsonicSettings,
 ) {
 
-    private data class Trust(val allowSelfSigned: Boolean, val pin: CertificatePin?)
+    private data class Setup(
+        val allowSelfSigned: Boolean,
+        val pin: CertificatePin?,
+        val proxy: SourceProxy,
+    )
 
-    private class Clients(val trust: Trust, val okHttp: OkHttpClient, val ktor: HttpClient)
+    private class Clients(val setup: Setup, val okHttp: OkHttpClient, val ktor: HttpClient)
 
     private var clients: Clients? = null
 
@@ -49,26 +56,29 @@ internal class OpenSubsonicClients(
      * The client for what is trusted now. A replaced client is not closed, requests on it may
      * still run, and closing would stop the dispatcher it shares with [base].
      */
-    fun current(): HttpClient = clients().ktor
+    suspend fun current(): HttpClient = clients(wanted()).ktor
 
     /** The OkHttp client under [current], for what reads the server without Ktor. */
-    fun currentOkHttp(): OkHttpClient = clients().okHttp
+    suspend fun currentOkHttp(): OkHttpClient = clients(wanted()).okHttp
+
+    private suspend fun wanted() =
+        Setup(settings.allowSelfSigned, settings.pinnedCertificate, settings.proxy())
 
     @Synchronized
-    private fun clients(): Clients {
-        val wanted = Trust(settings.allowSelfSigned, settings.pinnedCertificate)
-        clients?.takeIf { it.trust == wanted }?.let { return it }
+    private fun clients(wanted: Setup): Clients {
+        clients?.takeIf { it.setup == wanted }?.let { return it }
 
         val okHttp = build(wanted)
         return Clients(wanted, okHttp, HttpClient(OkHttp) { engine { preconfigured = okHttp } })
             .also { clients = it }
     }
 
-    private fun build(trust: Trust): OkHttpClient {
+    private fun build(setup: Setup): OkHttpClient {
         val okHttp = base.newBuilder()
             .connectionPool(ConnectionPool())
+            .proxy(SOURCE, setup.proxy)
             .apply {
-                if (!trust.allowSelfSigned) return@apply
+                if (!setup.allowSelfSigned) return@apply
 
                 val trustManager = SelfSignedTrustManager(
                     system = systemTrustManager(),
@@ -90,4 +100,8 @@ internal class OpenSubsonicClients(
             .trustManagers
             .filterIsInstance<X509TrustManager>()
             .first()
+
+    private companion object {
+        const val SOURCE = "open_subsonic"
+    }
 }

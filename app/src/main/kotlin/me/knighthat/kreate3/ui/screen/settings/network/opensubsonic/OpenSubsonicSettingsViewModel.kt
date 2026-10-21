@@ -31,7 +31,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
+import me.knighthat.kreate3.constant.ProxyType
+import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.Secret
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicLibrary
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
@@ -53,7 +56,7 @@ sealed interface CheckState {
 /**
  * Checks the OpenSubsonic server as the user sets it up. The server is pinged as soon as it is
  * on and has an address, and the credentials are checked once they are set and the ping
- * succeeded. Every change of the settings starts the checks over.
+ * succeeded. Every change of the settings, the proxy too, starts the checks over.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class OpenSubsonicSettingsViewModel(
@@ -69,8 +72,9 @@ class OpenSubsonicSettingsViewModel(
             Preferences.OPEN_SUBSONIC_ENABLED.state,
             Preferences.OPEN_SUBSONIC_URL.state,
             Preferences.OPEN_SUBSONIC_ALLOW_SELF_SIGNED.state,
+            proxy(),
             attempt,
-        ) { enabled, url, _, _ -> enabled && url.isNotBlank() }
+        ) { enabled, url, _, _, _ -> enabled && url.isNotBlank() }
             .transformLatest { ready ->
                 if (!ready) emit(CheckState.Idle)
                 else {
@@ -119,6 +123,51 @@ class OpenSubsonicSettingsViewModel(
         provider.forgetCertificate()
         retry()
     }
+
+    /**
+     * Everything of the server's proxy and of the app's, which it falls back to. A change of any
+     * is a new value, which starts a new check.
+     */
+    private fun proxy(): Flow<List<Any>> =
+        combine(
+            proxySettings(
+                Preferences.OPEN_SUBSONIC_PROXY_ENABLED,
+                Preferences.OPEN_SUBSONIC_PROXY_TYPE,
+                Preferences.OPEN_SUBSONIC_PROXY_HOST,
+                Preferences.OPEN_SUBSONIC_PROXY_PORT,
+                Secrets.OPEN_SUBSONIC_PROXY_USERNAME,
+                Secrets.OPEN_SUBSONIC_PROXY_PASSWORD,
+            ),
+            proxySettings(
+                Preferences.NETWORK_PROXY_ENABLED,
+                Preferences.NETWORK_PROXY_TYPE,
+                Preferences.NETWORK_PROXY_HOST,
+                Preferences.NETWORK_PROXY_PORT,
+                Secrets.NETWORK_PROXY_USERNAME,
+                Secrets.NETWORK_PROXY_PASSWORD,
+            ),
+        ) { own, app -> own + app }
+
+    private fun proxySettings(
+        enabled: Preference<Boolean>,
+        type: Preference<ProxyType>,
+        host: Preference<String>,
+        port: Preference<Int>,
+        username: Secret,
+        password: Secret,
+    ): Flow<List<Any>> =
+        combine(
+            combine(
+                enabled.state,
+                type.state,
+                host.state,
+                port.state
+            ) { on, kind, address, number ->
+                listOf(on, kind, address, number)
+            },
+            username.state,
+            password.state,
+        ) { settings, user, secret -> settings + user + secret }
 
     /**
      * The credentials of the chosen method, `null` while any of them is missing. A change of

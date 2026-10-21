@@ -94,9 +94,7 @@ class YouTubeLibraryTest {
     @Volatile
     private var onRequest: () -> Unit = {}
 
-    private val provider = YouTubeProvider(
-        InnerTube(
-            client = HttpClient(MockEngine { request ->
+    private val client = HttpClient(MockEngine { request ->
                 requests.incrementAndGet()
                 onRequest()
                 val body = Json.parseToJsonElement(request.body.toByteArray().decodeToString())
@@ -105,7 +103,11 @@ class YouTubeLibraryTest {
                     else answer(body.path("browseId").asString),
                     headers = Headers.build { append(HttpHeaders.ContentType, "application/json") },
                 )
-            }),
+    })
+
+    private val provider = YouTubeProvider(
+        InnerTube(
+            client = { client },
             json = Json,
             locale = { Locale.US },
             cookies = { cookies },

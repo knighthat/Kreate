@@ -22,12 +22,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicSettings
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.YouTubeSettings
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
+import me.knighthat.kreate3.ui.screen.settings.ProxySettings
 import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
@@ -117,6 +119,17 @@ fun NetworkSettingsScreen(
             max = 10,
             onSave = { Preferences.NETWORK_MAX_RETRIES.update(it.toInt()) },
             note = "Requests that got a server error are sent again. $NEXT_LAUNCH",
+        )
+
+        // A source's own proxy, on its page, overrides this one
+        ProxySettings(
+            source = null,
+            enabled = Preferences.NETWORK_PROXY_ENABLED,
+            type = Preferences.NETWORK_PROXY_TYPE,
+            host = Preferences.NETWORK_PROXY_HOST,
+            port = Preferences.NETWORK_PROXY_PORT,
+            username = Secrets.NETWORK_PROXY_USERNAME,
+            password = Secrets.NETWORK_PROXY_PASSWORD,
         )
 
         SettingsSection("Sources")

@@ -21,6 +21,8 @@ package me.knighthat.kreate3.provider.opensubsonic
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
+import me.knighthat.kreate3.provider.SourceProxy
+import me.knighthat.kreate3.provider.sourceProxy
 
 /**
  * What the user set up for the server, read at the time of each request so a change applies at once.
@@ -52,6 +54,9 @@ interface OpenSubsonicSettings {
 
     /** Trusts [pin] from now on, `null` forgets the trusted certificate. */
     fun pin(pin: CertificatePin?)
+
+    /** The proxy every request to the server goes through, waits for its sign in to be read. */
+    suspend fun proxy(): SourceProxy = SourceProxy.Off
 }
 
 /**
@@ -81,4 +86,13 @@ internal object ProfileOpenSubsonicSettings : OpenSubsonicSettings {
         Preferences.OPEN_SUBSONIC_CERTIFICATE_HOST.update(pin?.host.orEmpty())
         Preferences.OPEN_SUBSONIC_CERTIFICATE_SHA256.update(pin?.fingerprint.orEmpty())
     }
+
+    override suspend fun proxy() = sourceProxy(
+        Preferences.OPEN_SUBSONIC_PROXY_ENABLED,
+        Preferences.OPEN_SUBSONIC_PROXY_TYPE,
+        Preferences.OPEN_SUBSONIC_PROXY_HOST,
+        Preferences.OPEN_SUBSONIC_PROXY_PORT,
+        Secrets.OPEN_SUBSONIC_PROXY_USERNAME,
+        Secrets.OPEN_SUBSONIC_PROXY_PASSWORD,
+    )
 }

@@ -78,7 +78,7 @@ import kotlin.time.Instant
 @SuppressLint("SetJavaScriptEnabled")
 internal class PoTokenWebView private constructor(
     context: Context,
-    private val client: HttpClient,
+    private val client: suspend () -> HttpClient,
     // Resumed exactly once, when the minter is made or making it failed
     private val created: Continuation<PoTokenWebView>,
 ) {
@@ -284,7 +284,7 @@ internal class PoTokenWebView private constructor(
     private fun askBotGuard(url: String, body: String, handle: (String) -> Unit) {
         scope.launch(exceptionHandler) {
             val answer = withContext(Dispatchers.IO) {
-                val response = client.post(url) {
+                val response = client().post(url) {
                     header(HttpHeaders.UserAgent, USER_AGENT)
                     header(HttpHeaders.Accept, "application/json")
                     header("x-goog-api-key", API_KEY)
@@ -368,7 +368,7 @@ internal class PoTokenWebView private constructor(
          *
          * @throws PoTokenException when BotGuard can't be run, see [PoTokenException.badWebView]
          */
-        suspend fun create(context: Context, client: HttpClient): PoTokenWebView {
+        suspend fun create(context: Context, client: suspend () -> HttpClient): PoTokenWebView {
             var webView: PoTokenWebView? = null
             try {
                 return withTimeout(CREATE_TIMEOUT) {

@@ -135,16 +135,17 @@ internal class YouTubeSession private constructor(
  * nobody is signed in. Read at each request, so signing in or out applies at once.
  * @param pageId gives the page id of the channel the signed in user acts as, empty for their
  * account's own. Read at each request too.
+ * @param client gives the client to send with, read at each request: it changes with the proxy
  * @param poTokens makes the PO tokens [stream] may need, `null` for none
  */
 internal class InnerTube(
-    private val client: HttpClient,
+    private val client: suspend () -> HttpClient,
     private val json: Json,
     private val locale: () -> Locale,
     private val cookies: suspend () -> String = { "" },
     private val clock: Clock = Clock.System,
     private val pageId: suspend () -> String = { "" },
-    poTokens: TokenProvider? = null,
+    private val poTokens: TokenProvider? = null,
 ) {
 
     /** The visitor id YouTube gave, with the [YouTubeSession.id] it was given to. */
@@ -153,7 +154,11 @@ internal class InnerTube(
     @Volatile
     private var visitor: Visitor? = null
 
-    private val streams = YouTubeStreams(client, locale, poTokens)
+    /** What [stream] asks, with the client it asks with. */
+    private class Streams(val client: HttpClient, val streams: YouTubeStreams)
+
+    @Volatile
+    private var streams: Streams? = null
 
     /**
      * The audio to play of [videoId], asked in the session only for [StreamQuality.ORIGINAL].
@@ -168,7 +173,14 @@ internal class InnerTube(
         quality: StreamQuality = StreamQuality.HIGH,
     ): YouTubeStream? {
         val cookies = if (quality == StreamQuality.ORIGINAL) session()?.cookies else null
-        return streams.stream(videoId, refused, quality, cookies)
+        return streams().stream(videoId, refused, quality, cookies)
+    }
+
+    /** What finds the streams with the client now, made again when the client changes. */
+    private suspend fun streams(): YouTubeStreams {
+        val client = client()
+        streams?.takeIf { it.client === client }?.let { return it.streams }
+        return YouTubeStreams(client, locale, poTokens).also { streams = Streams(client, it) }
     }
 
     /** The session requests are sent in now, `null` while nobody is signed in. */
@@ -273,7 +285,7 @@ internal class InnerTube(
         }
 
         val response = try {
-            client.post("$BASE_URL/$path") {
+            client().post("$BASE_URL/$path") {
                 parameter("prettyPrint", false)
                 header(HttpHeaders.UserAgent, USER_AGENT)
                 header(HttpHeaders.Origin, ORIGIN)

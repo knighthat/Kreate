@@ -58,10 +58,8 @@ class YouTubeSignInTest {
                 "{}"
             )
         }
-    ) =
-        YouTubeProvider(
-            InnerTube(
-                client = HttpClient(MockEngine { request ->
+    ): YouTubeProvider {
+        val client = HttpClient(MockEngine { request ->
                     requests += request
                     respond(
                         content = answer(
@@ -75,7 +73,10 @@ class YouTubeSignInTest {
                             )
                         },
                     )
-                }),
+        })
+        return YouTubeProvider(
+            InnerTube(
+                client = { client },
                 json = Json,
                 locale = { Locale.US },
                 cookies = { cookies },
@@ -86,6 +87,7 @@ class YouTubeSignInTest {
             ),
             YouTubeParser { null },
         )
+    }
 
     private fun HttpRequestData.json(): JsonObject = runBlocking {
         Json.parseToJsonElement(body.toByteArray().decodeToString()).jsonObject

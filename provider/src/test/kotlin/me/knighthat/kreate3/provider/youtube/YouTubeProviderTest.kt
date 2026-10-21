@@ -63,8 +63,9 @@ class YouTubeProviderTest {
                 headers = Headers.build { append(HttpHeaders.ContentType, "application/json") },
             )
         }
+        val client = HttpClient(engine)
         return YouTubeProvider(
-            InnerTube(HttpClient(engine), Json { ignoreUnknownKeys = true }, locale = { locale }),
+            InnerTube({ client }, Json { ignoreUnknownKeys = true }, locale = { locale }),
             YouTubeParser { null },
         )
     }

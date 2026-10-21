@@ -32,10 +32,12 @@ import androidx.compose.ui.res.painterResource
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.youtube.youTubeSyncSetting
 import me.knighthat.kreate3.ui.screen.settings.LibrarySyncSettings
 import me.knighthat.kreate3.ui.screen.settings.MainSwitch
+import me.knighthat.kreate3.ui.screen.settings.ProxySettings
 import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
@@ -44,8 +46,9 @@ import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle as collectFlowAsState
 
 /**
- * Whether the YouTube account is used, who is signed in, with a way to sign in or out, and how
- * good the songs streamed are. Only the switch and the quality show while the account is off.
+ * Whether the YouTube account is used, who is signed in, with a way to sign in or out, how good
+ * the songs streamed are and the proxy. Only the switch, the quality and the proxy show while the
+ * account is off.
  */
 @Composable
 fun YouTubeSettingsScreen(
@@ -150,6 +153,17 @@ fun YouTubeSettingsScreen(
         // YouTube plays signed out too, only Original needs the account
         SettingsSection("Playback")
         YouTubeQualitySettings(signedIn = enabled && account is YouTubeAccountState.SignedIn)
+
+        // Signed out requests go through it too
+        ProxySettings(
+            source = "YouTube",
+            enabled = Preferences.YOUTUBE_PROXY_ENABLED,
+            type = Preferences.YOUTUBE_PROXY_TYPE,
+            host = Preferences.YOUTUBE_PROXY_HOST,
+            port = Preferences.YOUTUBE_PROXY_PORT,
+            username = Secrets.YOUTUBE_PROXY_USERNAME,
+            password = Secrets.YOUTUBE_PROXY_PASSWORD,
+        )
     }
 }
 

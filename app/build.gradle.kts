@@ -101,6 +101,8 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.work.runtime)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    // The proxy of the YouTube sign in page
+    implementation(libs.androidx.webkit)
 
     // Compose
     implementation(libs.androidx.activity.compose)
@@ -118,7 +120,7 @@ dependencies {
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
-    // Images, remote ones go through the app's Ktor client
+    // Images, remote ones go through the Ktor client of their source
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor)
 
@@ -131,7 +133,7 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.kotlinx.serialization.json)
 
-    // Playback, remote audio goes through the app's OkHttp client
+    // Playback, remote audio goes through the OkHttp client of its source
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.session)
     implementation(libs.androidx.media3.datasource.okhttp)

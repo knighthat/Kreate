@@ -18,7 +18,10 @@
 
 package me.knighthat.kreate3.preferences
 
+import me.knighthat.kreate3.preferences.Secrets.NETWORK_PROXY_USERNAME
+import me.knighthat.kreate3.preferences.Secrets.OPEN_SUBSONIC_PROXY_USERNAME
 import me.knighthat.kreate3.preferences.Secrets.YOUTUBE_COOKIES
+import me.knighthat.kreate3.preferences.Secrets.YOUTUBE_PROXY_USERNAME
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -54,4 +57,25 @@ object Secrets : KoinComponent {
      * session itself is [YOUTUBE_COOKIES].
      */
     val YOUTUBE_PAGE_ID by lazy { store.secret("youtube_page_id") }
+
+    /**
+     * Username on the proxy of [Preferences.YOUTUBE_PROXY_ENABLED], empty for a proxy that
+     * needs no sign in.
+     */
+    val YOUTUBE_PROXY_USERNAME by lazy { store.secret("youtube_proxy_username") }
+
+    /** Password of [YOUTUBE_PROXY_USERNAME]. */
+    val YOUTUBE_PROXY_PASSWORD by lazy { store.secret("youtube_proxy_password") }
+
+    /** Like [YOUTUBE_PROXY_USERNAME], for [Preferences.OPEN_SUBSONIC_PROXY_ENABLED]. */
+    val OPEN_SUBSONIC_PROXY_USERNAME by lazy { store.secret("open_subsonic_proxy_username") }
+
+    /** Password of [OPEN_SUBSONIC_PROXY_USERNAME]. */
+    val OPEN_SUBSONIC_PROXY_PASSWORD by lazy { store.secret("open_subsonic_proxy_password") }
+
+    /** Like [YOUTUBE_PROXY_USERNAME], for [Preferences.NETWORK_PROXY_ENABLED]. */
+    val NETWORK_PROXY_USERNAME by lazy { store.secret("network_proxy_username") }
+
+    /** Password of [NETWORK_PROXY_USERNAME]. */
+    val NETWORK_PROXY_PASSWORD by lazy { store.secret("network_proxy_password") }
 }

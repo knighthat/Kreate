@@ -20,6 +20,7 @@ package me.knighthat.kreate3.preferences
 
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
+import me.knighthat.kreate3.constant.ProxyType
 import me.knighthat.kreate3.constant.SleepTimerStep
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.constant.SyncMode
@@ -34,10 +35,22 @@ import me.knighthat.kreate3.preferences.Preferences.HOME_SONGS_TAP_RADIO
 import me.knighthat.kreate3.preferences.Preferences.IMAGE_DISK_CACHE
 import me.knighthat.kreate3.preferences.Preferences.MEDIA3_CACHE_SIZE
 import me.knighthat.kreate3.preferences.Preferences.NETWORK_CONNECT_TIMEOUT
+import me.knighthat.kreate3.preferences.Preferences.NETWORK_PROXY_ENABLED
+import me.knighthat.kreate3.preferences.Preferences.NETWORK_PROXY_HOST
+import me.knighthat.kreate3.preferences.Preferences.NETWORK_PROXY_PORT
+import me.knighthat.kreate3.preferences.Preferences.NETWORK_PROXY_TYPE
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_CERTIFICATE_SHA256
+import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_PROXY_ENABLED
+import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_PROXY_HOST
+import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_PROXY_PORT
+import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_PROXY_TYPE
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_QUALITY_WIFI
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_SYNC_ALBUMS
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_ACCOUNT_ENABLED
+import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_PROXY_ENABLED
+import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_PROXY_HOST
+import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_PROXY_PORT
+import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_PROXY_TYPE
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_QUALITY_WIFI
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_QUALITY_WIFI_PREMIUM
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_SYNC_ALBUMS
@@ -155,6 +168,25 @@ object Preferences : KoinComponent {
     val NETWORK_MAX_RETRIES by lazy { int("network_max_retries", 3) }
 
     /**
+     * Whether the app's requests, lyrics and sources alike, go through the proxy set by
+     * [NETWORK_PROXY_TYPE], [NETWORK_PROXY_HOST] and [NETWORK_PROXY_PORT], signed in with
+     * `Secrets.NETWORK_PROXY_USERNAME` when it is set. A source with its own proxy on, like
+     * [YOUTUBE_PROXY_ENABLED], goes through that one instead. Off by default. While it is on and
+     * the proxy isn't complete, none of the requests it covers is sent. A change applies to the
+     * next request.
+     */
+    val NETWORK_PROXY_ENABLED by lazy { boolean("network_proxy_enabled", false) }
+
+    /** Like [YOUTUBE_PROXY_TYPE], for [NETWORK_PROXY_ENABLED]. */
+    val NETWORK_PROXY_TYPE by lazy { enum("network_proxy_type", ProxyType.HTTP) }
+
+    /** Like [YOUTUBE_PROXY_HOST], for [NETWORK_PROXY_ENABLED]. */
+    val NETWORK_PROXY_HOST by lazy { string("network_proxy_host", "") }
+
+    /** Like [YOUTUBE_PROXY_PORT], for [NETWORK_PROXY_ENABLED]. */
+    val NETWORK_PROXY_PORT by lazy { int("network_proxy_port", 0) }
+
+    /**
      * Whether the OpenSubsonic server is in use. Off by default.
      *
      * While it is off nothing may contact the server, however complete the address and
@@ -231,6 +263,24 @@ object Preferences : KoinComponent {
     val OPEN_SUBSONIC_CERTIFICATE_SHA256 by lazy { string("open_subsonic_certificate_sha256", "") }
 
     /**
+     * Whether every request to the OpenSubsonic server, streams and covers too, goes through the
+     * proxy set by [OPEN_SUBSONIC_PROXY_TYPE], [OPEN_SUBSONIC_PROXY_HOST] and
+     * [OPEN_SUBSONIC_PROXY_PORT], in place of [NETWORK_PROXY_ENABLED]'s. Off by default, the
+     * server then goes through the app's proxy. While it is on and the proxy isn't complete,
+     * nothing is sent to the server. A change applies to the next request.
+     */
+    val OPEN_SUBSONIC_PROXY_ENABLED by lazy { boolean("open_subsonic_proxy_enabled", false) }
+
+    /** Like [YOUTUBE_PROXY_TYPE], for [OPEN_SUBSONIC_PROXY_ENABLED]. */
+    val OPEN_SUBSONIC_PROXY_TYPE by lazy { enum("open_subsonic_proxy_type", ProxyType.HTTP) }
+
+    /** Like [YOUTUBE_PROXY_HOST], for [OPEN_SUBSONIC_PROXY_ENABLED]. */
+    val OPEN_SUBSONIC_PROXY_HOST by lazy { string("open_subsonic_proxy_host", "") }
+
+    /** Like [YOUTUBE_PROXY_PORT], for [OPEN_SUBSONIC_PROXY_ENABLED]. */
+    val OPEN_SUBSONIC_PROXY_PORT by lazy { int("open_subsonic_proxy_port", 0) }
+
+    /**
      * Whether the YouTube account is in use. Off by default.
      *
      * While it is off every request to YouTube is sent signed out, whatever session is saved:
@@ -290,6 +340,24 @@ object Preferences : KoinComponent {
     val YOUTUBE_QUALITY_MOBILE_PREMIUM by lazy {
         enum("youtube_quality_mobile_premium", StreamQuality.MEDIUM)
     }
+
+    /**
+     * Whether every request to YouTube, streams and pictures too, goes through the proxy set by
+     * [YOUTUBE_PROXY_TYPE], [YOUTUBE_PROXY_HOST] and [YOUTUBE_PROXY_PORT], signed in with
+     * `Secrets.YOUTUBE_PROXY_USERNAME` when it is set, in place of [NETWORK_PROXY_ENABLED]'s. Off
+     * by default, YouTube then goes through the app's proxy. While it is on and the proxy isn't
+     * complete, nothing is sent to YouTube. A change applies to the next request.
+     */
+    val YOUTUBE_PROXY_ENABLED by lazy { boolean("youtube_proxy_enabled", false) }
+
+    /** The kind of proxy of [YOUTUBE_PROXY_ENABLED], [ProxyType.HTTP] by default. */
+    val YOUTUBE_PROXY_TYPE by lazy { enum("youtube_proxy_type", ProxyType.HTTP) }
+
+    /** Host name or IP address of the proxy of [YOUTUBE_PROXY_ENABLED], empty until set. */
+    val YOUTUBE_PROXY_HOST by lazy { string("youtube_proxy_host", "") }
+
+    /** Port of the proxy of [YOUTUBE_PROXY_ENABLED], `0` until set. */
+    val YOUTUBE_PROXY_PORT by lazy { int("youtube_proxy_port", 0) }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Playback">

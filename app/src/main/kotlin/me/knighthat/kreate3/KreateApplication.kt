@@ -26,7 +26,7 @@ import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.disk.DiskCache
 import coil3.memory.MemoryCache
-import coil3.network.ktor3.KtorNetworkFetcherFactory
+import coil3.network.NetworkFetcher
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +45,8 @@ import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.preferencesModule
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.providerModule
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.SourceNetworkClient
 import me.knighthat.kreate3.source.local.LocalCoverFetcher
 import me.knighthat.kreate3.source.local.LocalCoverKeyer
 import me.knighthat.kreate3.source.opensubsonic.OpenSubsonicCoverFetcher
@@ -79,7 +81,16 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
             .components {
                 // Before the network fetcher, server covers look like any address but need the sign in
                 add(OpenSubsonicCoverFetcher.Factory(get<OpenSubsonicProvider>()))
-                add(KtorNetworkFetcherFactory(httpClient = { get<HttpClient>() }))
+                add(
+                    NetworkFetcher.Factory(
+                        networkClient = {
+                            SourceNetworkClient(
+                                get<HttpClient>(),
+                                get<YouTubeProvider>()
+                            )
+                        }
+                    )
+                )
                 add(LocalCoverKeyer())
                 add(LocalCoverFetcher.Factory())
             }

@@ -45,6 +45,7 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
 import me.knighthat.kreate3.ui.screen.settings.MainSwitch
+import me.knighthat.kreate3.ui.screen.settings.ProxySettings
 import me.knighthat.kreate3.ui.screen.settings.RadioSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
@@ -197,8 +198,8 @@ private fun validateServerUrl(url: String): String? = when {
 }
 
 /**
- * The OpenSubsonic server: whether it is used, where it is, how to sign in and what of it is
- * used. Only the switch shows while it is off.
+ * The OpenSubsonic server: whether it is used, where it is, how to sign in, what of it is used and
+ * the proxy to reach it through. Only the switch shows while it is off.
  */
 @Composable
 fun OpenSubsonicSettingsScreen(
@@ -355,6 +356,16 @@ fun OpenSubsonicSettingsScreen(
             options = SyncMode.entries,
             label = SyncMode::label,
             onSelect = Preferences.OPEN_SUBSONIC_SYNC_ARTISTS::update,
+        )
+
+        ProxySettings(
+            source = "the server",
+            enabled = Preferences.OPEN_SUBSONIC_PROXY_ENABLED,
+            type = Preferences.OPEN_SUBSONIC_PROXY_TYPE,
+            host = Preferences.OPEN_SUBSONIC_PROXY_HOST,
+            port = Preferences.OPEN_SUBSONIC_PROXY_PORT,
+            username = Secrets.OPEN_SUBSONIC_PROXY_USERNAME,
+            password = Secrets.OPEN_SUBSONIC_PROXY_PASSWORD,
         )
     }
 }

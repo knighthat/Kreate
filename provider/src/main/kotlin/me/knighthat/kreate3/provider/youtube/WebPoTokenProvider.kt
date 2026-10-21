@@ -44,7 +44,10 @@ import kotlin.time.Duration.Companion.seconds
  *
  * From NewPipe's and Metrolist's `PoTokenGenerator` (GPL-3.0).
  */
-internal class WebPoTokenProvider(context: Context, private val client: HttpClient) :
+internal class WebPoTokenProvider(
+    context: Context,
+    private val client: suspend () -> HttpClient,
+) :
     TokenProvider {
 
     private val context = context.applicationContext

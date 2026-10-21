@@ -34,6 +34,7 @@ import me.knighthat.kreate3.database.repository.RemoteSong
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
+import me.knighthat.kreate3.provider.HttpClientFactory
 import me.knighthat.kreate3.provider.Provider
 import me.knighthat.kreate3.provider.SearchResults
 import me.knighthat.kreate3.provider.youtube.InnerTube.Endpoint
@@ -44,6 +45,8 @@ import me.knighthat.kreate3.provider.youtube.YouTubeItem.SongItem
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider.Companion.LIBRARY_PAGES
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider.Companion.PLAYLIST_PAGES
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider.Companion.SEARCH_PAGES
+import okhttp3.Call
+import okhttp3.OkHttpClient
 import java.util.Locale
 
 /**
@@ -68,10 +71,12 @@ fun isYouTubeSession(cookies: String): Boolean = YouTubeSession.of(cookies) != n
 class YouTubeProvider internal constructor(
     private val innerTube: InnerTube,
     private val parser: YouTubeParser,
+    private val clients: YouTubeClients? = null,
 ) : Provider {
 
     /**
-     * @param client the app's client
+     * Sends every request with [client], without a proxy.
+     *
      * @param cookies the cookies of the signed in session, empty while nobody is signed in. They
      * are the active profile's by default, none while [Preferences.YOUTUBE_ACCOUNT_ENABLED] is off.
      * @param pageId page id of the channel the signed in user acts as, empty for their account's
@@ -82,20 +87,25 @@ class YouTubeProvider internal constructor(
         client: HttpClient,
         json: Json,
         context: Context? = null,
-        cookies: suspend () -> String = {
-            if (Preferences.YOUTUBE_ACCOUNT_ENABLED.value) Secrets.YOUTUBE_COOKIES.current() else ""
-        },
-        pageId: suspend () -> String = { Secrets.YOUTUBE_PAGE_ID.current() },
-    ) : this(
-        InnerTube(
-            client,
-            json,
-            Locale::getDefault,
-            cookies,
-            pageId = pageId,
-            poTokens = context?.let { WebPoTokenProvider(it, client) },
-        ),
+        cookies: suspend () -> String = ::profileCookies,
+        pageId: suspend () -> String = ::profilePageId,
+    ) : this(innerTube({ client }, json, context, cookies, pageId), YouTubeParser { it.toUri() })
+
+    /**
+     * Sends every request with a client derived from [base], through the active profile's proxy,
+     * see [youTubeProxy], in the active profile's session.
+     *
+     * @param base the app's client
+     * @param factory sets up the Ktor clients like the app's
+     * @param context runs the WebView that makes PO tokens, `null` plays without them
+     */
+    constructor(base: OkHttpClient, factory: HttpClientFactory, json: Json, context: Context?) :
+            this(YouTubeClients(base, factory), json, context)
+
+    private constructor(clients: YouTubeClients, json: Json, context: Context?) : this(
+        innerTube(clients::current, json, context, ::profileCookies, ::profilePageId),
         YouTubeParser { it.toUri() },
+        clients,
     )
 
     override val origin = Origin.YOUTUBE
@@ -448,6 +458,22 @@ class YouTubeProvider internal constructor(
     override suspend fun playbackUri(songId: String): Uri? = stream(songId)?.url?.toUri()
 
     /**
+     * The client going through YouTube's proxy now, for the player to read the addresses of
+     * [stream] with: YouTube refuses a stream read from another network than the one that asked
+     * for it. Ask again for each request, it changes with the proxy.
+     */
+    suspend fun streamClient(): Call.Factory = clients().currentOkHttp()
+
+    /**
+     * Like [streamClient], for what reads pictures and other addresses of YouTube with Ktor,
+     * see [isYouTubeHost].
+     */
+    suspend fun httpClient(): HttpClient = clients().current()
+
+    private fun clients(): YouTubeClients =
+        checkNotNull(clients) { "Made with a client of its own, it has no proxy" }
+
+    /**
      * @param artworkId the address of a picture as YouTube gave it, like [Song.thumbnail]
      */
     override fun artworkUri(artworkId: String, size: Int?): Uri? =
@@ -477,6 +503,26 @@ class YouTubeProvider internal constructor(
         )
 
     private companion object {
+        fun innerTube(
+            client: suspend () -> HttpClient,
+            json: Json,
+            context: Context?,
+            cookies: suspend () -> String,
+            pageId: suspend () -> String,
+        ) = InnerTube(
+            client,
+            json,
+            Locale::getDefault,
+            cookies,
+            pageId = pageId,
+            poTokens = context?.let { WebPoTokenProvider(it, client) },
+        )
+
+        suspend fun profileCookies(): String =
+            if (Preferences.YOUTUBE_ACCOUNT_ENABLED.value) Secrets.YOUTUBE_COOKIES.current() else ""
+
+        suspend fun profilePageId(): String = Secrets.YOUTUBE_PAGE_ID.current()
+
         const val HOME = "FEmusic_home"
 
         /** Playlist id of the radio of a song is this followed by the song's id. */

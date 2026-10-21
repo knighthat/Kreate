@@ -34,6 +34,7 @@ import androidx.media3.datasource.okhttp.OkHttpDataSource
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import okhttp3.Call
 import okhttp3.OkHttpClient
 
@@ -46,9 +47,11 @@ import okhttp3.OkHttpClient
  *
  * [SongCaches.cache] keeps a copy of a song for each quality, [copies] picks the one read.
  *
- * Streams go out with the app's [client], or with [openSubsonic] for an OpenSubsonic server.
+ * Streams go out with the client of their source, [openSubsonic] or [youTube], the app's [client]
+ * for any other address.
  *
  * @param openSubsonic the client of the server, see [OpenSubsonicProvider.streamClient]
+ * @param youTube the client of YouTube, see [YouTubeProvider.streamClient]
  * @param directPlay whether songs of the server skip the cache now, read at each read, see
  * [Preferences.OPEN_SUBSONIC_DIRECT_PLAY]
  */
@@ -57,6 +60,7 @@ fun songDataSourceFactory(
     context: Context,
     client: OkHttpClient,
     openSubsonic: Call.Factory,
+    youTube: Call.Factory,
     resolver: DataSourceResolver,
     caches: SongCaches,
     copies: CacheCopies,
@@ -64,8 +68,16 @@ fun songDataSourceFactory(
 ): DataSource.Factory {
     val app = DefaultDataSource.Factory(context, OkHttpDataSource.Factory(client))
     val server = DefaultDataSource.Factory(context, OkHttpDataSource.Factory(openSubsonic))
+    val youTubeStreams = DefaultDataSource.Factory(context, OkHttpDataSource.Factory(youTube))
     val network = ResolvingDataSource.Factory(
-        { StreamDataSource(app.createDataSource(), server.createDataSource(), resolver) },
+        {
+            StreamDataSource(
+                app = app.createDataSource(),
+                server = server.createDataSource(),
+                youTube = youTubeStreams.createDataSource(),
+                resolver = resolver,
+            )
+        },
         resolver,
     )
     // The key of the copy read, set by SongDataSource
@@ -161,13 +173,15 @@ private class SongDataSource(
 }
 
 /**
- * Reads a song resolved by [resolver] with [app], or with [server] when it is of an OpenSubsonic
- * server, and tells [resolver] when YouTube refuses an address and what the server answered.
+ * Reads a song resolved by [resolver] with the client of its source, [server] for an OpenSubsonic
+ * server, [youTube] for YouTube, [app] for anything else, and tells [resolver] when YouTube
+ * refuses an address and what the server answered.
  */
 @OptIn(UnstableApi::class)
 private class StreamDataSource(
     private val app: DataSource,
     private val server: DataSource,
+    private val youTube: DataSource,
     private val resolver: DataSourceResolver,
 ) : DataSource {
 
@@ -176,11 +190,16 @@ private class StreamDataSource(
     override fun addTransferListener(transferListener: TransferListener) {
         app.addTransferListener(transferListener)
         server.addTransferListener(transferListener)
+        youTube.addTransferListener(transferListener)
     }
 
     override fun open(dataSpec: DataSpec): Long {
         val song = dataSpec.customData as? QueuedSong
-        val source = if (song?.origin == Origin.OPEN_SUBSONIC) server else app
+        val source = when (song?.origin) {
+            Origin.OPEN_SUBSONIC -> server
+            Origin.YOUTUBE -> youTube
+            else -> app
+        }
         current = source
 
         val length = try {

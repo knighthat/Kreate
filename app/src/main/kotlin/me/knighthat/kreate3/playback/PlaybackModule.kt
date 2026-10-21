@@ -29,6 +29,7 @@ import androidx.media3.exoplayer.source.MediaSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.database.repository.SongRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.provider.Providers
@@ -73,6 +74,7 @@ val playbackModule = module {
     // a released player can't be used again. Screens talk to it through a MediaController.
     factory {
         val openSubsonic = get<OpenSubsonicProvider>()
+        val youTube = get<YouTubeProvider>()
         KreatePlayer(
             ExoPlayer.Builder(androidContext())
                 .setAudioAttributes(
@@ -93,8 +95,11 @@ val playbackModule = module {
                         songDataSourceFactory(
                             context = androidContext(),
                             client = get(),
-                            // Asked for each request, it changes with what the user trusts
-                            openSubsonic = { openSubsonic.streamClient().newCall(it) },
+                            // Asked for each request, they change with what the user trusts and
+                            // the proxies. Called on the loader's thread, which waits for the
+                            // stream anyway: the proxy's sign in may still be read from disk
+                            openSubsonic = { runBlocking { openSubsonic.streamClient() }.newCall(it) },
+                            youTube = { runBlocking { youTube.streamClient() }.newCall(it) },
                             resolver = get(),
                             caches = get(),
                             copies = get(),
