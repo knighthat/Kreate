@@ -272,7 +272,7 @@ ui/theme/ — `Theme.kt` (`KreateTheme`, color schemes, contrast), `ThumbnailSee
 utils/ — `PermUtil.kt` (audio/notification permission helpers), `ScrollbarModifier.kt` (
 `Modifier.verticalScrollbar`).
 
-res: `res/raw/terms_of_service.txt`, `res/font/inter*.ttf`; source SVGs for launcher/splash in
+res: `res/raw/terms_of_service.txt`, `res/font/inter.ttf`; source SVGs for launcher/splash in
 repo-root `assets/`.
 
 ## :model

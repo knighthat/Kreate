@@ -41,20 +41,12 @@ private val weights = listOf(
 
 @OptIn(ExperimentalTextApi::class)
 val interFontFamily = FontFamily(
-    weights.flatMap { weight ->
-        listOf(
-            Font(
-                resId = R.font.inter,
-                weight = weight,
-                style = FontStyle.Normal,
-                variationSettings = FontVariation.Settings(FontVariation.weight(weight.weight)),
-            ),
-            Font(
-                resId = R.font.inter_italic,
-                weight = weight,
-                style = FontStyle.Italic,
-                variationSettings = FontVariation.Settings(FontVariation.weight(weight.weight)),
-            ),
+    weights.map { weight ->
+        Font(
+            resId = R.font.inter,
+            weight = weight,
+            style = FontStyle.Normal,
+            variationSettings = FontVariation.Settings(FontVariation.weight(weight.weight)),
         )
     }
 )
