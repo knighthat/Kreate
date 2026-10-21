@@ -24,20 +24,22 @@ import androidx.media3.common.C
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.database.repository.SongRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
+import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import kotlin.time.Duration.Companion.seconds
 
 
 val playbackModule = module {
@@ -111,6 +113,21 @@ val playbackModule = module {
     }
 }
 
+/**
+ * Bytes a song loads between two checks of whether to go on. Media3's 1 MiB is a minute of a
+ * 128 kbps stream, so a preload of a few seconds would load that much anyway: this lets it stop
+ * within about 8 seconds of what [Preferences.PLAYBACK_PRELOAD_SECONDS] asks.
+ */
+private const val LOADING_CHECK_INTERVAL_BYTES = 128 * 1024
+
+/** Every song is a single file or stream, none is DASH, HLS or another manifest. */
 @OptIn(UnstableApi::class)
 private fun songMediaSourceFactory(songs: DataSource.Factory): MediaSource.Factory =
-    DefaultMediaSourceFactory(songs)
+    ProgressiveMediaSource.Factory(songs)
+        .setContinueLoadingCheckIntervalBytes(LOADING_CHECK_INTERVAL_BYTES)
+
+/** Loads [seconds] of the next song ahead, nothing when it isn't positive. */
+@OptIn(UnstableApi::class)
+internal fun preloadConfiguration(seconds: Int): ExoPlayer.PreloadConfiguration =
+    if (seconds <= 0) ExoPlayer.PreloadConfiguration.DEFAULT
+    else ExoPlayer.PreloadConfiguration(seconds.seconds.inWholeMicroseconds)

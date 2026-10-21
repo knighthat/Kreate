@@ -16,6 +16,15 @@ open items are at the end.
   self-signed cert). A server song's address is reused for seeks for 1 h (`SERVER_ADDRESS_LIFE`).
 - Failures map to `ERROR_CODE_SOURCE_OFF` / `ERROR_CODE_NOT_PLAYABLE` (`PlaybackErrors.kt`).
 - Wake mode is NETWORK.
+- Preload: `PLAYBACK_PRELOAD_SECONDS` (Player settings → Queue, 0 = off, default 5 s) →
+  `ExoPlayer.PreloadConfiguration`, applied by `PlaybackService`. Media3 preloads one item, the one
+  after the period being loaded (shuffle/repeat order), once the current one stops loading
+  (`DefaultLoadControl.shouldContinuePreloading`). Opening it runs the resolver, so the format and
+  gain are recorded before the song starts. Songs use `ProgressiveMediaSource` with a 128 KiB
+  check interval (Media3's 1 MiB would overshoot a short preload by about a minute of audio).
+  The setting applies live: off drops the preloaded song at once, but a new length only applies
+  from the following song (each preload keeps the length it started with,
+  `MediaPeriodHolder.targetPreloadBufferDurationUs` is final and the pool reuses it).
 - A remote song not yet in the DB is stored when it starts playing (`PlayedSongRecorder`), then
   `SongFormatRecorder.flush` stores the format found while it loaded and `PersistentQueue.refresh`
   re-saves the queue (unstored songs are left out of the saved queue).

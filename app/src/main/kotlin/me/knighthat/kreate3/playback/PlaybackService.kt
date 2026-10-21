@@ -42,8 +42,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import me.knighthat.kreate3.KreateActivity
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.preferences.Preferences
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
@@ -97,6 +99,12 @@ class PlaybackService : MediaSessionService(), KoinComponent {
         this.writes = writes
 
         val player = get<KreatePlayer>()
+        // How much of the next song loads ahead follows the setting
+        scope.launch {
+            Preferences.PLAYBACK_PRELOAD_SECONDS.state.collect {
+                player.preloadConfiguration = preloadConfiguration(it)
+            }
+        }
         normalizer = LoudnessNormalizer(player, get(), get(), scope)
         PlaybackHistoryRecorder(player, get(), writeScope)
         persistentQueue = PersistentQueue(player, get(), get(), scope, writeScope)

@@ -63,7 +63,7 @@ playback/
 - `PlaybackErrors.kt` — `PlaybackException.userMessage(item)`; `PlaybackControllerImpl` posts them
   to `Notifier` (dismissable); `togglePlay` re-prepares after a failure.
 - `PlaybackService.kt` — `MediaSessionService`, owns the player + notification; `QueueCallback` adds
-  `withSongUri` to queued items.
+  `withSongUri` to queued items; follows `PLAYBACK_PRELOAD_SECONDS` into the player's preload.
 - `PlaybackController.kt` / `PlaybackControllerImpl.kt` — `PlaybackState` (incl.
   `repeatMode: RepeatMode` OFF/ONE/ALL, `isShuffled`) + interface screens use (`toggleShuffle`,
   `cycleRepeat`, `sleepTimer` (read from session extras), `startSleepTimer`/`changeSleepTimer` (
@@ -127,7 +127,8 @@ playback/
 - `PlaybackLifecycle.kt` — `restartAround { }`: disconnects the controller,
   `PlaybackService.stop()` (session released, its write job joined, 5 s cap then cancelled), runs
   the block, reconnects; service makes no session while `isStopped`.
-- `PlaybackModule.kt` — Koin for player/controller.
+- `PlaybackModule.kt` — Koin for player/controller; `ProgressiveMediaSource` (128 KiB check
+  interval), `preloadConfiguration(seconds)`.
 
 preferences/`PreferenceDsl.kt` — `Preference<T>`/`Secret` `.collectAsStateWithLifecycle()` for
 Compose.
@@ -258,7 +259,8 @@ ui/screen/
   Switch/Choice/Radio/Number/Text/Slider settings, `prettyName`), `StreamQualitySettings.kt` (
   Wi-Fi + mobile quality sliders), `LibrarySyncSettings.kt` (per-section sync/show switches of a
   source). `general/GeneralSettingsScreen.kt`, `player/PlayerSettingsScreen.kt` (player behavior/UI
-  only: History), `ui/UiSettingsScreen.kt`, `network/NetworkSettingsScreen.kt` (timeouts/retries + "
+  only: Queue incl. preload slider, History), `ui/UiSettingsScreen.kt`,
+  `network/NetworkSettingsScreen.kt` (timeouts/retries + "
   Configure YouTube/OpenSubsonic" rows), `network/youtube/` (`YouTubeSettingsScreen.kt` account
   page + always-shown Playback quality sliders, `YouTubeAccountViewModel.kt`,
   `YouTubeSignInScreen.kt` WebView sign-in, `YouTubeChannelPicker.kt`), `network/opensubsonic/` (

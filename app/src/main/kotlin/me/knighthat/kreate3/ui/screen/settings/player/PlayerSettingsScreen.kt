@@ -52,6 +52,7 @@ fun PlayerSettingsScreen(
     val searchTapRadio by Preferences.SEARCH_SONGS_TAP_RADIO.collectAsStateWithLifecycle()
     val queuePersisted by Preferences.PERSISTENT_QUEUE_ENABLED.collectAsStateWithLifecycle()
     val queueSaveInterval by Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL.collectAsStateWithLifecycle()
+    val preloadSeconds by Preferences.PLAYBACK_PRELOAD_SECONDS.collectAsStateWithLifecycle()
     val lyricsSource by Preferences.LYRICS_SOURCE.collectAsStateWithLifecycle()
     val lyricsSync by Preferences.LYRICS_SYNC.collectAsStateWithLifecycle()
     val lyricsAlwaysLive by Preferences.LYRICS_ALWAYS_LIVE.collectAsStateWithLifecycle()
@@ -95,6 +96,13 @@ fun PlayerSettingsScreen(
                 onSave = { Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL.update(it.toInt()) },
                 note = "How often the place in the song is saved while it plays",
             )
+        SliderSetting(
+            title = "Load the next song ahead",
+            value = preloadSeconds,
+            options = PRELOAD_SECONDS,
+            label = { if (it == 0) "Off" else "$it seconds" },
+            onSelect = { Preferences.PLAYBACK_PRELOAD_SECONDS.update(it) },
+        )
 
         SettingsSection("Sleep timer")
         ChoiceSetting(
@@ -162,6 +170,9 @@ fun PlayerSettingsScreen(
         )
     }
 }
+
+/** Seconds of the next song that can be loaded ahead, `0` for none. */
+private val PRELOAD_SECONDS = listOf(0, 5, 10, 15, 30, 60)
 
 /** How a [SleepTimerStep] reads in the settings. */
 private val SleepTimerStep.label: String

@@ -388,6 +388,14 @@ object Preferences : KoinComponent {
     val PLAYBACK_HISTORY_PAUSED by lazy { boolean("playback_history_paused", false) }
 
     /**
+     * Seconds of the next song the player loads while the one before it plays, `0` to load
+     * nothing ahead. Loading it finds its stream, so its format and gain are known before it
+     * starts; the rest loads once the player gets to it. `PlaybackService` applies it to the
+     * player.
+     */
+    val PLAYBACK_PRELOAD_SECONDS by lazy { int("playback_preload_seconds", 5) }
+
+    /**
      * Keeps the queue in the database, with where the song playing was, and puts it back in the
      * player when the player is made again. Turning it off stops saving, the saved queue stays.
      */
