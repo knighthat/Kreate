@@ -24,6 +24,7 @@ import me.knighthat.kreate3.provider.youtube.YouTubeLinks
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeSection
 import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
+import me.knighthat.kreate3.source.youtube.SONG_ARTWORK
 import me.knighthat.kreate3.source.youtube.artwork
 import me.knighthat.kreate3.source.youtube.tab
 import me.knighthat.kreate3.source.youtube.toMediaItem
@@ -33,7 +34,7 @@ import me.knighthat.kreate3.ui.navigation.LocalAlbum
 /**
  * An album of YouTube as its screen shows it.
  *
- * @property songs in the album's order, they show the album's cover so they carry none
+ * @property songs in the album's order, each with its cover (the album's when it has none) for the queue
  * @property description YouTube's description of the album, `null` when it has none
  */
 data class YouTubeAlbumDetail(
@@ -80,8 +81,11 @@ class YouTubeAlbumDetailViewModel(
             thumbnail = provider.artwork(album.thumbnail, HEADER_ARTWORK),
             subtitle = listOfNotNull(album.artists?.joinToString(", "), album.year?.toString())
                 .takeIf { it.isNotEmpty() }?.joinToString(" · "),
-            songs = page.songs.map { it.toLiveMediaItem(thumbnail = null) }
-                .distinctBy { it.mediaId },
+            songs = page.songs.map {
+                it.toLiveMediaItem(
+                    provider.artwork(it.song.thumbnail ?: album.thumbnail, SONG_ARTWORK)
+                )
+            }.distinctBy { it.mediaId },
             sections = page.sections.map { it.toLiveSection(provider) }
                 .filter { it.items.isNotEmpty() },
             description = page.description?.trim()?.ifEmpty { null },

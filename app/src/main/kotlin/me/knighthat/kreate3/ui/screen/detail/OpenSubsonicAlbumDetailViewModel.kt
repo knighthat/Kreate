@@ -31,7 +31,7 @@ import me.knighthat.kreate3.ui.navigation.LocalAlbum
 /**
  * An album of the OpenSubsonic server as its screen shows it.
  *
- * @property songs in the album's order, they show the album's cover so they carry none
+ * @property songs in the album's order, each with its cover for the queue and the player
  * @property description the server's notes about the album, `null` when it has none
  */
 data class OpenSubsonicAlbumDetail(
@@ -74,7 +74,7 @@ class OpenSubsonicAlbumDetailViewModel(
             thumbnail = album.thumbnail,
             subtitle = listOfNotNull(album.artists?.joinToString(", "), album.year?.toString())
                 .takeIf { it.isNotEmpty() }?.joinToString(" · "),
-            songs = songs.map { it.toLiveMediaItem(thumbnail = null) }.distinctBy { it.mediaId },
+            songs = songs.map { it.toLiveMediaItem() }.distinctBy { it.mediaId },
             description = notes.await(),
         )
     }

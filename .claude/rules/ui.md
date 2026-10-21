@@ -30,6 +30,9 @@ paths:
 - Coil images are usually hardware bitmaps; `Image.toBitmap(w, h, config)` throws on them. To read
   pixels, request with `allowHardware(false)` or copy to `ARGB_8888`. See
   `.claude/docs/cover-cache.md`.
+- Song `MediaItem`s always carry `artworkUri`, even in lists whose rows hide covers
+  (`showThumbnail = false`): the same items go into the queue, the notification and the saved
+  queue, which show only that address.
 
 ## Menus and hints
 
