@@ -80,7 +80,7 @@ class PlaybackService : MediaSessionService(), KoinComponent {
         setMediaNotificationProvider(
             DefaultMediaNotificationProvider.Builder(this).build().apply {
                 // The icon in the status bar and at the top of the notification
-                setSmallIcon(R.drawable.ic_splash)
+                setSmallIcon(R.drawable.ic_monochrome)
             }
         )
 

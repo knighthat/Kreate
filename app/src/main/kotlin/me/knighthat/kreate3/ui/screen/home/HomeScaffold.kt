@@ -89,7 +89,7 @@ private fun HomeTopBar(
         title = { Text(title) },
         navigationIcon = {
             Icon(
-                painter = painterResource(R.drawable.ic_splash),
+                painter = painterResource(R.drawable.ic_monochrome),
                 contentDescription = null,
                 tint = IconButtonDefaults.iconButtonColors().contentColor,
                 modifier = Modifier

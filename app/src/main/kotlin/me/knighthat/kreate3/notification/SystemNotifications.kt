@@ -52,7 +52,7 @@ internal fun Context.notificationBuilder(channel: AppChannel): NotificationCompa
     }
     return NotificationCompat.Builder(this, channel.id)
         // The media notification's icon
-        .setSmallIcon(R.drawable.ic_splash)
+        .setSmallIcon(R.drawable.ic_monochrome)
         .setContentIntent(openApp)
         // Channels decide this from Android 8 on, before that the notification does
         .setPriority(
