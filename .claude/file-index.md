@@ -94,7 +94,8 @@ playback/
   `answered` (Content-Type) (`.claude/docs/playback-pipeline.md`).
 - `SongFormatRecorder.kt` — stores YouTube/OpenSubsonic `SongFormat` (gain) before a song is read,
   called by the resolver; OpenSubsonic: `raw` row from getSong once + transcoded `{codec}-{kbps}`
-  rows, `recordAnswered` tags from Content-Type.
+  rows, `recordAnswered` tags from Content-Type; formats of unstored songs kept in memory
+  (`pendingFormatsOf`/`pendingFormats`) until `flush`.
 - `StreamQuality.kt` — `Context.streamQuality(origin, youTube)` (Wi-Fi/mobile by metered network,
   YouTube `_PREMIUM` pair while signed in, LOCAL = ORIGINAL), `Context.isOnline()`.
 - `CacheCopies.kt` — picks the per-quality cache copy at song start (best whole ≥ setting → part ≥
@@ -107,7 +108,7 @@ playback/
 - `SongCaches.kt` — the two SimpleCaches (streamed cache in cacheDir, downloads in
   noBackupFilesDir); `copies(song)` (quality → whole?), `drop`, `cachedLength`.
 - `LoudnessNormalizer.kt` — volume change in dB from a song's gain (`normalizationDb`,
-  `cutToVolume`).
+  `cutToVolume`), from the recorder's in-memory formats first, then the DB.
 - `PlaybackHistoryRecorder.kt` — AnalyticsListener created in `PlaybackService`:
   `PlaybackStatsListener` play time (no pauses/loading, wall-clock) → `recordPlay` per session ≥
   `Preferences.PLAYBACK_HISTORY_MIN_SECONDS` (Player settings → History, default 1 s), nothing while

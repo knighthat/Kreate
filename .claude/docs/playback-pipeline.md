@@ -60,7 +60,9 @@ open items are at the end.
 - OpenSubsonic: `raw` row (from `getSong`, holds the gain: −4 − trackGain, album gain as fallback)
   and `{codec}-{kbps}` rows (e.g. `opus-96`) per transcoded output, without gain. Non-transcoding
   servers: tag from the response Content-Type (`recordAnswered`).
-- Songs not in the DB are skipped (FK).
+- Songs not in the DB can't hold rows (FK): their formats wait in memory (`pending`, 50 songs)
+  until `flush` stores them. `LoudnessNormalizer` reads `pendingFormatsOf` at the song change and
+  follows `pendingFormats` + the DB, keeping a found gain while the formats move to the DB.
 
 ## Navidrome observations
 

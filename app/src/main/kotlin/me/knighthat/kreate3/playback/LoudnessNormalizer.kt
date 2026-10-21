@@ -28,7 +28,9 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.repository.SongRepository
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -53,6 +55,8 @@ internal fun cutToVolume(db: Float): Float = 10f.pow(db.coerceAtMost(0f) / 20f)
 /**
  * Evens out the loudness of songs by changing the volume of the player to suit the song playing.
  * The gain comes from the formats of the song, so a song that hasn't been measured plays as it is.
+ * A song not stored yet has its formats in [formats] until it is, they are looked up there first,
+ * so the gain is applied as soon as the song starts instead of once it is stored.
  *
  * A cut is made with the volume of the player. A boost is made by a [LoudnessEnhancer], which is
  * attached to the audio session of the player. The gain is followed while the song plays, so a
@@ -64,6 +68,7 @@ internal fun cutToVolume(db: Float): Float = 10f.pow(db.coerceAtMost(0f) / 20f)
 class LoudnessNormalizer(
     private val player: ExoPlayer,
     private val songs: SongRepository,
+    private val formats: SongFormatRecorder,
     private val scope: CoroutineScope,
 ) : Player.Listener {
 
@@ -90,16 +95,23 @@ class LoudnessNormalizer(
 
     private fun follow(item: MediaItem?) {
         following?.cancel()
-        // Don't carry the last song's gain over while this one's is looked up
-        adjust(0f)
+        val songId = item?.mediaId
+        // Never the last song's gain, the one of this song when it's in memory already, like
+        // when it was read ahead of the song before
+        adjust(normalizationDb(songId?.let { gainOf(formats.pendingFormatsOf(it)) }))
 
-        val songId = item?.mediaId ?: return
+        songId ?: return
         following = scope.launch {
-            songs.formatsOf(songId).collect { formats ->
-                adjust(normalizationDb(formats.firstOrNull { it.gain != null }?.gain))
+            // Its formats move from memory to the database once it is stored, for a moment it
+            // has neither: a gain found stays until another one is
+            merge(songs.formatsOf(songId), formats.pendingFormats(songId)).collect { found ->
+                gainOf(found)?.let { adjust(normalizationDb(it)) }
             }
         }
     }
+
+    private fun gainOf(formats: List<SongFormat>): Float? =
+        formats.firstOrNull { it.gain != null }?.gain
 
     /**
      * Changes the volume by [db]. A cut goes through the player's volume and a boost through

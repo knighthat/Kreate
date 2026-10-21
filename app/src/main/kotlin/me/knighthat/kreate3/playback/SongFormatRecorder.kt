@@ -20,7 +20,12 @@ package me.knighthat.kreate3.playback
 
 import android.util.Log
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.repository.SongRepository
 import me.knighthat.kreate3.model.Origin
@@ -40,8 +45,8 @@ import me.knighthat.kreate3.provider.opensubsonic.ServerStream
  * - Device: nothing, `LoudnessWorker` measures the files.
  *
  * A song not in the database yet, like one shown live that starts playing, can't have its formats
- * stored: they are kept here until [flush] stores them. A failure is logged, the song plays
- * without them.
+ * stored: they are kept here until [flush] stores them, and [pendingFormatsOf] gives them
+ * meanwhile. A failure is logged, the song plays without them.
  */
 class SongFormatRecorder(
     private val songs: SongRepository,
@@ -56,6 +61,23 @@ class SongFormatRecorder(
         override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, List<SongFormat>>) =
             size > MAX_PENDING
     }
+
+    /** Changes each time [pending] does, for [pendingFormats]. */
+    private val pendingChanges = MutableStateFlow(0L)
+
+    /**
+     * The formats kept for [songId] while it isn't stored, empty when there are none. A lookup in
+     * memory, quick enough for the main thread.
+     */
+    fun pendingFormatsOf(songId: String): List<SongFormat> =
+        synchronized(pending) { pending[songId].orEmpty() }
+
+    /**
+     * [pendingFormatsOf] now and each time it changes, like when the song is read and its format
+     * found. Empty again once [flush] moved them to the database.
+     */
+    fun pendingFormats(songId: String): Flow<List<SongFormat>> =
+        pendingChanges.map { pendingFormatsOf(songId) }.distinctUntilChanged()
 
     /**
      * @param format the format of the stream just found, `null` when none was or it isn't known
@@ -98,6 +120,7 @@ class SongFormatRecorder(
      */
     suspend fun flush(songId: String) {
         val formats = synchronized(pending) { pending.remove(songId) } ?: return
+        pendingChanges.update { it + 1 }
         try {
             formats.forEach { songs.saveFormat(it) }
         } catch (e: CancellationException) {
@@ -112,13 +135,14 @@ class SongFormatRecorder(
         synchronized(pending) {
             pending[songId] = pending[songId].orEmpty().filter { it.tag != format.tag } + format
         }
+        pendingChanges.update { it + 1 }
         // Stored meanwhile, the flush may have run before the format was kept
         if (songs.find(songId).first() != null) flush(songId)
     }
 
     private suspend fun formatsOf(songId: String, isStored: Boolean): List<SongFormat> =
         if (isStored) songs.formatsOf(songId).first()
-        else synchronized(pending) { pending[songId].orEmpty() }
+        else pendingFormatsOf(songId)
 
     private suspend fun hasFormat(songId: String, tag: String, isStored: Boolean): Boolean =
         formatsOf(songId, isStored).any { it.tag == tag }

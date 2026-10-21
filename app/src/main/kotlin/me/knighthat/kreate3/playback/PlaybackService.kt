@@ -97,7 +97,7 @@ class PlaybackService : MediaSessionService(), KoinComponent {
         this.writes = writes
 
         val player = get<KreatePlayer>()
-        normalizer = LoudnessNormalizer(player, get(), scope)
+        normalizer = LoudnessNormalizer(player, get(), get(), scope)
         PlaybackHistoryRecorder(player, get(), writeScope)
         persistentQueue = PersistentQueue(player, get(), get(), scope, writeScope)
         PlayedSongRecorder(
