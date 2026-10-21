@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.preferences
 
+import me.knighthat.kreate3.constant.AutoTapAction
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
 import me.knighthat.kreate3.constant.ProxyType
@@ -27,6 +28,7 @@ import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.LyricsSync
+import me.knighthat.kreate3.preferences.Preferences.AUTO_ALBUM_TAP
 import me.knighthat.kreate3.preferences.Preferences.BACK_EXIT_DISABLED
 import me.knighthat.kreate3.preferences.Preferences.EXIT_CONFIRMATION
 import me.knighthat.kreate3.preferences.Preferences.EXIT_CONFIRMATION_TIMEOUT
@@ -420,6 +422,20 @@ object Preferences : KoinComponent {
      * the time left. [SleepTimerStep.FIVE_MINUTES] by default.
      */
     val SLEEP_TIMER_ADD_STEP by lazy { enum("sleep_timer_add_step", SleepTimerStep.FIVE_MINUTES) }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="Android Auto">
+    /**
+     * What tapping an album in Android Auto's Albums tab does, read by the library the playback
+     * service shows there. [AutoTapAction.OPEN] by default, like the app.
+     */
+    val AUTO_ALBUM_TAP by lazy { enum("auto_album_tap", AutoTapAction.OPEN) }
+
+    /** Like [AUTO_ALBUM_TAP], for an artist in the Artists tab. */
+    val AUTO_ARTIST_TAP by lazy { enum("auto_artist_tap", AutoTapAction.OPEN) }
+
+    /** Like [AUTO_ALBUM_TAP], for a playlist in the Playlists tab. */
+    val AUTO_PLAYLIST_TAP by lazy { enum("auto_playlist_tap", AutoTapAction.OPEN) }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Lyrics">

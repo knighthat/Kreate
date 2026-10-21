@@ -48,6 +48,9 @@ import kotlin.time.Duration.Companion.seconds
  *
  * Use it on the main thread, [scope] has to run there. The writes run in [writeScope], which has
  * to outlive the player: [release] sends the last one, call it before releasing the player.
+ *
+ * @param queued a saved song as the player queues it, like the session does with the songs added
+ * to it; `null` leaves it out
  */
 class PersistentQueue(
     private val player: Player,
@@ -55,6 +58,7 @@ class PersistentQueue(
     private val songs: UserSongRepository,
     scope: CoroutineScope,
     writeScope: CoroutineScope,
+    private val queued: (MediaItem) -> MediaItem? = { it.withSongUri() },
 ) : Player.Listener {
 
     private val writes = Channel<Write>(Channel.UNLIMITED)
@@ -142,7 +146,7 @@ class PersistentQueue(
         var start = 0
         var position = 0L
         for (song in saved) {
-            val item = songs.find(song.songId).first()?.toMediaItem()?.withSongUri() ?: continue
+            val item = songs.find(song.songId).first()?.toMediaItem()?.let(queued) ?: continue
             song.position?.let {
                 start = items.size
                 position = it

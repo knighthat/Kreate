@@ -43,6 +43,16 @@ interface PlaylistRepository {
     ): Flow<PagingData<UserPlaylist>>
 
     /**
+     * Every playlist of the active user right now, all at once, in the order [all] shows them.
+     *
+     * @param origins only the playlists from these, every playlist when empty
+     */
+    suspend fun list(
+        order: SortOrder<PlaylistSort> = SortOrder(PlaylistSort.NAME),
+        origins: Set<Origin> = emptySet(),
+    ): List<UserPlaylist>
+
+    /**
      * How many playlists [all] has right now.
      *
      * @param origins only the playlists from these, every playlist when empty

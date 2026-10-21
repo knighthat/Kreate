@@ -62,8 +62,11 @@ playback/
 
 - `PlaybackErrors.kt` — `PlaybackException.userMessage(item)`; `PlaybackControllerImpl` posts them
   to `Notifier` (dismissable); `togglePlay` re-prepares after a failure.
-- `PlaybackService.kt` — `MediaSessionService`, owns the player + notification; `QueueCallback` adds
-  `withSongUri` to queued items; follows `PLAYBACK_PRELOAD_SECONDS` into the player's preload.
+- `PlaybackService.kt` — `MediaLibraryService`, owns the player + notification; `SessionCallback`
+  adds `withSongUri` to queued items, answers Android Auto's browsing from `AutoLibrary`
+  (`onGetLibraryRoot`/`onGetChildren`/`onSubscribe`, no recent root) and turns a tapped Auto node
+  into its queue in `onSetMediaItems` (items without `EXTRA_ORIGIN` whose id parses); follows
+  `PLAYBACK_PRELOAD_SECONDS` into the player's preload.
 - `PlaybackController.kt` / `PlaybackControllerImpl.kt` — `PlaybackState` (incl.
   `repeatMode: RepeatMode` OFF/ONE/ALL, `isShuffled`) + interface screens use (`toggleShuffle`,
   `cycleRepeat`, `sleepTimer` (read from session extras), `startSleepTimer`/`changeSleepTimer` (
@@ -117,7 +120,7 @@ playback/
 - `PlayedSongRecorder.kt` — stores a YouTube/server song once it starts playing (catalog + library,
   no like), asking its source again; then `SongFormatRecorder.flush` and `onStored` (queue re-save).
 - `Radio.kt` — songs like a song, per origin: local ones scored from the user's library (
-  `UserSongRepository.similar`), others asked from their source; nothing stored.
+  `UserSongRepository.similar`), others asked from their source; nothing stored. `RADIO_SIZE` (30).
 - `PersistentQueue.kt` — saves the player queue to `persistent_queue` (whole queue on playlist
   change; position on transition/pause/seek and every `PERSISTENT_QUEUE_SAVE_INTERVAL` s while
   playing) when `PERSISTENT_QUEUE_ENABLED`; restores it unprepared in `PlaybackService.onCreate` if
@@ -127,8 +130,32 @@ playback/
 - `PlaybackLifecycle.kt` — `restartAround { }`: disconnects the controller,
   `PlaybackService.stop()` (session released, its write job joined, 5 s cap then cancelled), runs
   the block, reconnects; service makes no session while `isStopped`.
-- `PlaybackModule.kt` — Koin for player/controller; `ProgressiveMediaSource` (128 KiB check
-  interval), `preloadConfiguration(seconds)`.
+- `PlaybackModule.kt` — Koin for player/controller and `AutoLibrary`;
+  `ProgressiveMediaSource` (128 KiB check interval), `preloadConfiguration(seconds)`.
+
+auto/ (Android Auto, browsed through `PlaybackService`)
+
+- `AutoNode.kt` — media ids of the browse tree, `auto:`-prefixed: `Root`, `Section(Tab)`,
+  `Collection(tab, origin, key)` (key = id at the origin, DB id for an app playlist),
+  `Song(list, songId)`; `parse` returns `null` for anything else (source song ids).
+- `AutoLibrary.kt` — root → the 4 home tabs (albums/artists as grids), same items and order as
+  the home tabs with their `HOME_*_ORIGINS` filters (DB `list()` + `live*` from `LiveLibrary.kt`);
+  albums/artists/playlists browsable or playable by `AUTO_*_TAP`; `queue(id)`: collection songs
+  (shuffled for PLAY_RANDOMLY) or a song + those below it (Songs tab: radio while
+  `HOME_SONGS_TAP_RADIO`). Collection songs like the detail screens (YouTube artist = top songs,
+  YouTube playlist = every continuation). Auto's song rows (only those, not the app's items or the
+  queue) have the subtitle `{artists} • {album}` (`songSubtitle`, no dot when one part is missing);
+  an album's songs show only the artists, an artist's only the album.
+- `ArtworkProvider.kt` — non-exported `ContentProvider` (`<applicationId>.artwork`) serving covers
+  as JPEG through the app's Coil loader (`SMALL_COVER`, http/https/content only);
+  `Context.autoArtworkUri` (`content://<pkg>.artwork/cover?source=…`, idempotent),
+  `Context.grantArtwork(package)` (prefix read grant to the browser), `MediaItem.withServedArtwork`
+  (queued songs, applied by `PlaybackService.queued` and `PersistentQueue`'s restore, so Auto's
+  player, the notification and the lock screen load covers here), `Uri.coverSource()` (unwrap,
+  used by `thumbnailModel`/`songThumbnailModels`).
+  Manifest: service actions `MediaLibraryService` + `MediaBrowserService`,
+  `com.google.android.gms.car.application` → `res/xml/automotive_app_desc.xml`; voice search
+  (`MEDIA_PLAY_FROM_SEARCH`) not supported, its lint check is ignored.
 
 preferences/`PreferenceDsl.kt` — `Preference<T>`/`Secret` `.collectAsStateWithLifecycle()` for
 Compose.
@@ -259,7 +286,8 @@ ui/screen/
   Switch/Choice/Radio/Number/Text/Slider settings, `prettyName`), `StreamQualitySettings.kt` (
   Wi-Fi + mobile quality sliders), `LibrarySyncSettings.kt` (per-section sync/show switches of a
   source). `general/GeneralSettingsScreen.kt`, `player/PlayerSettingsScreen.kt` (player behavior/UI
-  only: Queue incl. preload slider, History), `ui/UiSettingsScreen.kt`,
+  only: Queue incl. preload slider, History; Android Auto section with the three
+  `AUTO_*_TAP` choices), `ui/UiSettingsScreen.kt`,
   `network/NetworkSettingsScreen.kt` (timeouts/retries + "
   Configure YouTube/OpenSubsonic" rows), `network/youtube/` (`YouTubeSettingsScreen.kt` account
   page + always-shown Playback quality sliders, `YouTubeAccountViewModel.kt`,
@@ -333,7 +361,8 @@ Pure Kotlin/JVM (`kotlin("jvm")`), package `me.knighthat.kreate3.model`, rules i
   `SchemaMigration.kt` (GLOBAL/PROFILE/SECRET steps), `PreferencesModule.kt`.
 - constant/ — `ThemeMode`, `ContrastLevel`, `OpenSubsonicAuth`, `StreamQuality` (
   LOW/MEDIUM/HIGH/ORIGINAL, order = ordinal), `SyncMode` (OFF/LIKED/ALL), `SleepTimerStep` (sleep
-  timer add/remove amounts), `ProxyType` (HTTP/SOCKS) enums.
+  timer add/remove amounts), `ProxyType` (HTTP/SOCKS), `AutoTapAction`
+  (OPEN/PLAY_FROM_START/PLAY_RANDOMLY, Android Auto) enums.
 
 ## :provider
 
@@ -396,7 +425,8 @@ Depends only on `:model` (api) plus Ktor/serialization/Koin.
 
 ## Tests
 
-- app: `ProfileUserSyncTest`, backup/`BackupTest`, playback/`DataSourceResolverTest`,
+- app: `ProfileUserSyncTest`, auto/`AutoNodeTest`, `SongSubtitleTest`, `ServedArtworkTest`, backup/
+  `BackupTest`, playback/`DataSourceResolverTest`,
   `CacheCopiesTest` (Robolectric), `SongDataSourceTest`, `LoudnessNormalizerTest`,
   `PlaybackErrorsTest`, source/`CoverCacheTest`, `LoudnessMeterTest`, `MediaStoreScannerTest`,
   ui/navigation/`TopLevelBackStackTest`, ui/screen/detail/`LiveDetailViewModelTest`,

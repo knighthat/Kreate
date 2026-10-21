@@ -33,6 +33,9 @@ paths:
 - Song `MediaItem`s always carry `artworkUri`, even in lists whose rows hide covers
   (`showThumbnail = false`): the same items go into the queue, the notification and the saved
   queue, which show only that address.
+- Queued songs carry their cover as an `ArtworkProvider` address (`withServedArtwork`), because
+  Android Auto's player reads only `content://` covers. App code reading a song's `artworkUri`
+  goes through `thumbnailModel`/`songThumbnailModels`, or `coverSource()`, to load the original.
 
 ## Menus and hints
 

@@ -16,7 +16,8 @@
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Reads the music on the device to build the local catalog -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -31,7 +32,9 @@
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
+    <!-- Android Auto's voice search ("play … on Kreate") isn't supported yet -->
     <application
+        tools:ignore="MissingIntentFilterForMediaSearch"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -77,15 +80,29 @@
             android:name=".ProfilesActivity"
             android:exported="false" />
 
-        <!-- Exported so media controllers, like the system's and Bluetooth devices, can connect -->
+        <!-- Exported so media controllers, like the system's, Bluetooth devices and Android Auto,
+             can connect. Auto browses the library through the legacy MediaBrowserService -->
         <service
             android:name=".playback.PlaybackService"
             android:exported="true"
             android:foregroundServiceType="mediaPlayback">
             <intent-filter>
-                <action android:name="androidx.media3.session.MediaSessionService" />
+                <action android:name="androidx.media3.session.MediaLibraryService" />
+                <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
+
+        <!-- Covers for Android Auto, readable only by the apps the library is browsed from -->
+        <provider
+            android:name=".auto.ArtworkProvider"
+            android:authorities="${applicationId}.artwork"
+            android:exported="false"
+            android:grantUriPermissions="true" />
+
+        <!-- Lists the app as a media app in Android Auto -->
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
     </application>
 
 </manifest>

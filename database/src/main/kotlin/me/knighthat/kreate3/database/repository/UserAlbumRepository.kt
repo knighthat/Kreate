@@ -47,6 +47,16 @@ interface UserAlbumRepository {
     ): Flow<PagingData<UserAlbumView>>
 
     /**
+     * Every album in the library right now, all at once, in the order [all] shows them.
+     *
+     * @param origins only the albums from these, every album when empty
+     */
+    suspend fun list(
+        order: SortOrder<UserAlbumSort> = SortOrder(UserAlbumSort.NAME),
+        origins: Set<Origin> = emptySet(),
+    ): List<UserAlbumView>
+
+    /**
      * How many albums [all] has right now.
      *
      * @param origins only the albums from these, every album when empty

@@ -66,6 +66,20 @@ internal class PlaylistRepositoryImpl(
             }
         }
 
+    override suspend fun list(
+        order: SortOrder<PlaylistSort>,
+        origins: Set<Origin>,
+    ): List<UserPlaylist> {
+        val userId = scope.awaitId()
+        return playlistDao.list(
+            RoomRawQuery(
+                sql = "SELECT * FROM user_playlist WHERE user_id = ? ${originFilter(origins)} " +
+                        order.toOrderBy("playlist_id"),
+                onBindStatement = { it.bindText(1, userId) },
+            )
+        ).map(UserPlaylistEntity::toModel)
+    }
+
     override fun origins(): Flow<Set<Origin>> =
         scope.observe(emptySet()) { userId -> playlistDao.origins(userId).map { it.toSet() } }
 

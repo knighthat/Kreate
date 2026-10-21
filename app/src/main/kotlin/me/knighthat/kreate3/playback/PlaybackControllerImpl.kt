@@ -343,9 +343,6 @@ class PlaybackControllerImpl(
     private companion object {
 
         const val TAG = "PlaybackController"
-
-        /** Songs a radio looks for, about two hours of music. */
-        const val RADIO_SIZE = 30
     }
 }
 

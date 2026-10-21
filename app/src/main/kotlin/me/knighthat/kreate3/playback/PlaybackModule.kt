@@ -30,6 +30,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.runBlocking
+import me.knighthat.kreate3.auto.AutoLibrary
 import me.knighthat.kreate3.database.repository.SongRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.preferences.Preferences
@@ -61,6 +62,18 @@ val playbackModule = module {
     single { CacheCopies(get<SongCaches>(), androidContext(), get<YouTubeProvider>()) }
 
     single { Radio(get<UserSongRepository>(), get<OpenSubsonicProvider>(), get<YouTubeProvider>()) }
+    single {
+        AutoLibrary(
+            context = androidContext(),
+            songs = get(),
+            albums = get(),
+            artists = get(),
+            playlists = get(),
+            openSubsonic = get(),
+            youTube = get(),
+            radio = get(),
+        )
+    }
 
     single {
         PlaybackControllerImpl(

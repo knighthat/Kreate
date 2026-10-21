@@ -21,6 +21,7 @@ package me.knighthat.kreate3.ui.screen.settings.player
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import me.knighthat.kreate3.constant.AutoTapAction
 import me.knighthat.kreate3.constant.SleepTimerStep
 import me.knighthat.kreate3.lyrics.LyricsFinder
 import me.knighthat.kreate3.model.LyricsSync
@@ -37,8 +38,8 @@ import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 import org.koin.compose.koinInject
 
 /**
- * How the player behaves and looks, what it keeps of the songs played, and where its lyrics come
- * from.
+ * How the player behaves and looks, what it keeps of the songs played, where its lyrics come
+ * from, and what tapping an item in Android Auto does.
  */
 @Composable
 fun PlayerSettingsScreen(
@@ -59,6 +60,9 @@ fun PlayerSettingsScreen(
     val lyricsTextSize by Preferences.LYRICS_TEXT_SIZE.collectAsStateWithLifecycle()
     val sleepTimerRemove by Preferences.SLEEP_TIMER_REMOVE_STEP.collectAsStateWithLifecycle()
     val sleepTimerAdd by Preferences.SLEEP_TIMER_ADD_STEP.collectAsStateWithLifecycle()
+    val autoAlbumTap by Preferences.AUTO_ALBUM_TAP.collectAsStateWithLifecycle()
+    val autoArtistTap by Preferences.AUTO_ARTIST_TAP.collectAsStateWithLifecycle()
+    val autoPlaylistTap by Preferences.AUTO_PLAYLIST_TAP.collectAsStateWithLifecycle()
 
     SettingsPage("Player", onBack, modifier) {
         SettingsSection("Queue")
@@ -168,11 +172,42 @@ fun PlayerSettingsScreen(
             label = { "$it%" },
             onSelect = { Preferences.LYRICS_TEXT_SIZE.update(it) },
         )
+
+        SettingsSection("Android Auto")
+        ChoiceSetting(
+            title = "Tapping an album",
+            value = autoAlbumTap,
+            options = AutoTapAction.entries,
+            label = { it.label },
+            onSelect = { Preferences.AUTO_ALBUM_TAP.update(it) },
+        )
+        ChoiceSetting(
+            title = "Tapping an artist",
+            value = autoArtistTap,
+            options = AutoTapAction.entries,
+            label = { it.label },
+            onSelect = { Preferences.AUTO_ARTIST_TAP.update(it) },
+        )
+        ChoiceSetting(
+            title = "Tapping a playlist",
+            value = autoPlaylistTap,
+            options = AutoTapAction.entries,
+            label = { it.label },
+            onSelect = { Preferences.AUTO_PLAYLIST_TAP.update(it) },
+        )
     }
 }
 
 /** Seconds of the next song that can be loaded ahead, `0` for none. */
 private val PRELOAD_SECONDS = listOf(0, 5, 10, 15, 30, 60)
+
+/** How an [AutoTapAction] reads in the settings. */
+private val AutoTapAction.label: String
+    get() = when (this) {
+        AutoTapAction.OPEN -> "Show its songs"
+        AutoTapAction.PLAY_FROM_START -> "Play from the start"
+        AutoTapAction.PLAY_RANDOMLY -> "Play in random order"
+    }
 
 /** How a [SleepTimerStep] reads in the settings. */
 private val SleepTimerStep.label: String

@@ -30,6 +30,9 @@ import me.knighthat.kreate3.ui.component.origin
 import me.knighthat.kreate3.ui.component.toLiveMediaItem
 import me.knighthat.kreate3.ui.component.toMediaItem
 
+/** Songs a radio looks for, about two hours of music. */
+internal const val RADIO_SIZE = 30
+
 /**
  * Finds songs like a song, each origin its own way: songs of the device are scored from what the
  * user keeps ([UserSongRepository.similar]), the other origins are asked from their source.

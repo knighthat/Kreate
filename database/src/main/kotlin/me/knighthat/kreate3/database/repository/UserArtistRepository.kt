@@ -47,6 +47,16 @@ interface UserArtistRepository {
     ): Flow<PagingData<UserArtistView>>
 
     /**
+     * Every artist in the library right now, all at once, in the order [all] shows them.
+     *
+     * @param origins only the artists from these, every artist when empty
+     */
+    suspend fun list(
+        order: SortOrder<UserArtistSort> = SortOrder(UserArtistSort.NAME),
+        origins: Set<Origin> = emptySet(),
+    ): List<UserArtistView>
+
+    /**
      * How many artists [all] has right now.
      *
      * @param origins only the artists from these, every artist when empty

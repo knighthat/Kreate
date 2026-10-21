@@ -44,6 +44,12 @@ internal interface UserAlbumDao {
     fun origins(userId: String): Flow<List<Origin>>
 
     /**
+     * Every album in [query] at once, which must select from `user_album_view`.
+     */
+    @RawQuery
+    suspend fun list(query: RoomRawQuery): List<UserAlbumViewEntity>
+
+    /**
      * The first album of [query], which must select from `user_album_view`.
      */
     @RawQuery

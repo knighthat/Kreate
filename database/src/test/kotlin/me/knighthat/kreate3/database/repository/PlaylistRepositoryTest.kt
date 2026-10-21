@@ -136,6 +136,7 @@ internal class PlaylistRepositoryTest : DatabaseTest() {
         repository.save(playlist("Gym"))
 
         assertEquals(listOf("Gym", "Road trip"), repository.all().asList().map { it.name })
+        assertEquals(listOf("Gym", "Road trip"), repository.list().map { it.name })
         assertEquals(listOf("Road trip"), repository.search("trip").asList().map { it.name })
         assertEquals(emptyList<String>(), repository.search("Theirs").asList().map { it.name })
     }
@@ -148,6 +149,7 @@ internal class PlaylistRepositoryTest : DatabaseTest() {
 
         val tube = setOf(Origin.YOUTUBE)
         assertEquals(listOf("Liked music"), repository.all(origins = tube).asList().map { it.name })
+        assertEquals(listOf("Liked music"), repository.list(origins = tube).map { it.name })
         assertEquals(2, repository.count())
         assertEquals(1, repository.count(tube))
         assertEquals("Liked music", repository.random(tube)?.name)

@@ -17,6 +17,35 @@ Seen on API 36, targetSdk 37, building the sleep timer's Restart button:
 - Implemented in `SleepTimerRunner.restart` + `PlaybackService.startForegroundWith`. Media3 sources
   for reading internals are in the Gradle cache (`media3-session-<version>-sources.jar`).
 
+## Android Auto through a Media3 `MediaLibraryService`
+
+Learned building `auto/` and `PlaybackService`'s library callback (media3 1.11.1, read from the
+sources jar; not yet checked in Auto or the Desktop Head Unit):
+
+- Auto is a **legacy** browser (`MediaBrowserCompat`): its taps arrive as `playFromMediaId`, which
+  Media3 turns into `onSetMediaItems` with a single item holding only the media id. So the id must
+  say how to find the item again (`AutoNode`), and the callback tells it apart from the app's own
+  items (which carry `EXTRA_ORIGIN`).
+- The default `onSubscribe` asks `onGetItem` for the parent and rejects it unless that returns a
+  browsable item, and Auto subscribes to every list it opens. Either answer `onGetItem` for every
+  parent or override `onSubscribe` (done: accept any parsable parent).
+- Artwork must be a local `content://` or `android.resource://` URI, for browse rows (`iconUri`)
+  **and** the playing item (`ART_URI`/`ALBUM_ART_URI`/`DISPLAY_ICON_URI`), per Google's "Display
+  media artwork" page. Web, OpenSubsonic and MediaStore addresses show nothing, so covers go through
+  `ArtworkProvider` (not exported; `grantUriPermission` with `FLAG_GRANT_PREFIX_URI_PERMISSION` to
+  the browsing package).
+- Media3 has no per-controller hook for metadata: the playing item's `artworkUri` goes to Auto
+  as-is, and the app's own `MediaController` sees the same items. Anything Auto needs on the playing
+  item lands in the shared queue items (hence `withServedArtwork` + `coverSource()`).
+- Large browse results are cut by Media3 to fit the binder limit (`truncateListBySize`); Auto
+  usually asks for page 0 with `Int.MAX_VALUE` items.
+- Media3 decodes a bitmap for a browse row only when it carries `artworkData`; with only
+  `artworkUri`, nothing is decoded in the service.
+- Root children become Auto's tabs (up to 4); `EXTRAS_KEY_CONTENT_STYLE_BROWSABLE`/`_PLAYABLE` on
+  a browsable item set its children's list or grid layout.
+- Lint's `MissingIntentFilterForMediaSearch` fires once the app is an Auto media app; it's ignored
+  in the manifest until voice search exists.
+
 ## Custom (RemoteViews) notifications
 
 Learned on `SleepTimerNotification` (DecoratedCustomViewStyle +

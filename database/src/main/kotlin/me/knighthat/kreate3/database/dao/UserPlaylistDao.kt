@@ -46,6 +46,12 @@ internal interface UserPlaylistDao {
     fun origins(userId: String): Flow<List<Origin>>
 
     /**
+     * Every playlist in [query] at once, which must select from `user_playlist`.
+     */
+    @RawQuery
+    suspend fun list(query: RoomRawQuery): List<UserPlaylistEntity>
+
+    /**
      * The first playlist of [query], which must select from `user_playlist`.
      */
     @RawQuery

@@ -27,25 +27,37 @@ import android.os.Bundle
 import android.util.Log
 import androidx.annotation.OptIn
 import androidx.core.app.ServiceCompat
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.DefaultMediaNotificationProvider
+import androidx.media3.session.LibraryResult
+import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
-import androidx.media3.session.MediaSessionService
+import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import androidx.media3.session.SessionCommand
+import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
+import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.KreateActivity
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.auto.AutoLibrary
+import me.knighthat.kreate3.auto.AutoNode
+import me.knighthat.kreate3.auto.grantArtwork
+import me.knighthat.kreate3.auto.withServedArtwork
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.ui.component.origin
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
@@ -55,15 +67,17 @@ import org.koin.core.component.get
  * Screens don't touch the player, they connect to [mediaSession] with a `MediaController`.
  * The service owns the player: it is created with the session and released with it.
  *
+ * Android Auto browses the library through the session too, see [AutoLibrary].
+ *
  * [PlaybackLifecycle] can release the session before the service ends, see [stop]. A controller
  * that connects afterwards gets a new one, unless the lifecycle holds playback stopped.
  */
 @OptIn(UnstableApi::class)
-class PlaybackService : MediaSessionService(), KoinComponent {
+class PlaybackService : MediaLibraryService(), KoinComponent {
 
     private val playbackLifecycle: PlaybackLifecycle = get()
 
-    private var mediaSession: MediaSession? = null
+    private var mediaSession: MediaLibrarySession? = null
     private var normalizer: LoudnessNormalizer? = null
     private var persistentQueue: PersistentQueue? = null
     private var audioEffects: AudioEffectSession? = null
@@ -90,7 +104,7 @@ class PlaybackService : MediaSessionService(), KoinComponent {
         if (!playbackLifecycle.isStopped) createSession()
     }
 
-    private fun createSession(): MediaSession {
+    private fun createSession(): MediaLibrarySession {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         val global = get<CoroutineScope>()
         val writes = SupervisorJob(global.coroutineContext[Job])
@@ -107,7 +121,14 @@ class PlaybackService : MediaSessionService(), KoinComponent {
         }
         normalizer = LoudnessNormalizer(player, get(), get(), scope)
         PlaybackHistoryRecorder(player, get(), writeScope)
-        persistentQueue = PersistentQueue(player, get(), get(), scope, writeScope)
+        persistentQueue = PersistentQueue(
+            player = player,
+            queue = get(),
+            songs = get(),
+            scope = scope,
+            writeScope = writeScope,
+            queued = { it.queued() },
+        )
         PlayedSongRecorder(
             player = player,
             library = get(),
@@ -120,8 +141,7 @@ class PlaybackService : MediaSessionService(), KoinComponent {
             onStored = { persistentQueue?.refresh() },
         )
 
-        return MediaSession.Builder(this, player)
-            .setCallback(SessionCallback())
+        return MediaLibrarySession.Builder(this, player, SessionCallback(scope))
             // Tapping the notification brings the app back instead of opening a second copy
             .setSessionActivity(
                 PendingIntent.getActivity(
@@ -185,12 +205,27 @@ class PlaybackService : MediaSessionService(), KoinComponent {
     }
 
     /**
-     * Gives the items added to the queue the address of their song, see [withSongUri]. Items that
-     * don't say where they come from can't be played, adding them fails.
+     * The song as the player queues it: with the address of its song ([withSongUri]) and its
+     * cover read through the app ([withServedArtwork]), `null` when it doesn't say where it comes
+     * from.
+     */
+    private fun MediaItem.queued(): MediaItem? =
+        withSongUri()?.withServedArtwork(this@PlaybackService)
+
+    /**
+     * Gives the items added to the queue the address of their song and of their cover, see
+     * [queued]. Items that don't say where they come from can't be played, adding them fails,
+     * except what Android Auto taps: [AutoLibrary] gives the songs to play for it.
      *
      * The app's own controllers may also set the sleep timer, see [SleepTimerCommands].
+     *
+     * @param scope the player's, Auto's requests are answered in it
      */
-    private inner class SessionCallback : MediaSession.Callback {
+    private inner class SessionCallback(
+        private val scope: CoroutineScope,
+    ) : MediaLibrarySession.Callback {
+
+        private val library: AutoLibrary = get()
 
         override fun onConnect(
             session: MediaSession,
@@ -198,7 +233,8 @@ class PlaybackService : MediaSessionService(), KoinComponent {
         ): MediaSession.ConnectionResult {
             if (controller.packageName != packageName) return super.onConnect(session, controller)
 
-            val commands = MediaSession.ConnectionResult.DEFAULT_SESSION_COMMANDS.buildUpon()
+            val commands = MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS
+                .buildUpon()
                 .apply { SleepTimerCommands.all.forEach(::add) }
                 .build()
             return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
@@ -231,11 +267,107 @@ class PlaybackService : MediaSessionService(), KoinComponent {
             mediaItems: List<MediaItem>,
         ): ListenableFuture<List<MediaItem>> {
             val queued = mediaItems.map {
-                it.withSongUri() ?: return Futures.immediateFailedFuture(
+                it.queued() ?: return Futures.immediateFailedFuture(
                     IllegalArgumentException("${it.mediaId} has no origin")
                 )
             }
             return Futures.immediateFuture(queued)
+        }
+
+        override fun onSetMediaItems(
+            mediaSession: MediaSession,
+            controller: MediaSession.ControllerInfo,
+            mediaItems: List<MediaItem>,
+            startIndex: Int,
+            startPositionMs: Long,
+        ): ListenableFuture<MediaItemsWithStartPosition> {
+            // The app's items say their origin, what Auto taps carries only the id of its node
+            val tapped = mediaItems.singleOrNull()?.takeIf { it.origin == null }?.mediaId
+            if (tapped == null || AutoNode.parse(tapped) == null)
+                return super.onSetMediaItems(
+                    mediaSession,
+                    controller,
+                    mediaItems,
+                    startIndex,
+                    startPositionMs
+                )
+
+            return scope.future {
+                val queue = library.queue(tapped)?.mapNotNull { it.queued() }
+                require(!queue.isNullOrEmpty()) { "Nothing to play for $tapped" }
+                MediaItemsWithStartPosition(queue, 0, C.TIME_UNSET)
+            }
+        }
+
+        override fun onGetLibraryRoot(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            params: LibraryParams?,
+        ): ListenableFuture<LibraryResult<MediaItem>> {
+            // Recent songs to resume from aren't offered
+            if (params?.isRecent == true)
+                return Futures.immediateFuture(LibraryResult.ofError(SessionError.ERROR_NOT_SUPPORTED))
+
+            grantArtwork(browser.packageName)
+            return Futures.immediateFuture(LibraryResult.ofItem(library.root(), params))
+        }
+
+        override fun onGetItem(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            mediaId: String,
+        ): ListenableFuture<LibraryResult<MediaItem>> = Futures.immediateFuture(
+            library.item(mediaId)?.let { LibraryResult.ofItem(it, null) }
+                ?: LibraryResult.ofError(SessionError.ERROR_BAD_VALUE)
+        )
+
+        /**
+         * Accepts every node that holds items. The default asks [onGetItem], which knows only
+         * the root and the tabs, so albums couldn't be opened.
+         */
+        override fun onSubscribe(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            parentId: String,
+            params: LibraryParams?,
+        ): ListenableFuture<LibraryResult<Void>> {
+            val node = AutoNode.parse(parentId)
+            if (node == null || node is AutoNode.Song)
+                return Futures.immediateFuture(LibraryResult.ofError(SessionError.ERROR_BAD_VALUE))
+
+            // Legacy browsers, like Auto, are sent the children by the platform already
+            if (browser.controllerVersion != MediaSession.ControllerInfo.LEGACY_CONTROLLER_VERSION)
+                session.notifyChildrenChanged(browser, parentId, Int.MAX_VALUE, params)
+            return Futures.immediateFuture(LibraryResult.ofVoid())
+        }
+
+        override fun onGetChildren(
+            session: MediaLibrarySession,
+            browser: MediaSession.ControllerInfo,
+            parentId: String,
+            page: Int,
+            pageSize: Int,
+            params: LibraryParams?,
+        ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> = scope.future {
+            grantArtwork(browser.packageName)
+            val children = try {
+                library.children(parentId)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Couldn't list $parentId", e)
+                return@future LibraryResult.ofError(SessionError.ERROR_IO)
+            }
+            if (children == null) return@future LibraryResult.ofError(SessionError.ERROR_BAD_VALUE)
+
+            // Auto usually asks for everything at once, the session cuts what doesn't fit
+            val from = page.toLong() * pageSize
+            val shown = if (from >= children.size) emptyList()
+            else children.subList(
+                from.toInt(),
+                minOf(children.size.toLong(), from + pageSize).toInt()
+            )
+            LibraryResult.ofItemList(shown, params)
         }
     }
 
@@ -281,7 +413,7 @@ class PlaybackService : MediaSessionService(), KoinComponent {
         }
     }
 
-    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? =
+    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession? =
         mediaSession ?: if (playbackLifecycle.isStopped) null else createSession()
 
     /**

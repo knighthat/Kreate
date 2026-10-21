@@ -54,6 +54,20 @@ internal class UserArtistRepositoryImpl(
         origins: Set<Origin>,
     ): Flow<PagingData<UserArtistView>> = paged(order, filter = originFilter(origins))
 
+    override suspend fun list(
+        order: SortOrder<UserArtistSort>,
+        origins: Set<Origin>,
+    ): List<UserArtistView> {
+        val userId = scope.awaitId()
+        return userArtistDao.list(
+            RoomRawQuery(
+                sql = "SELECT * FROM user_artist_view WHERE user_id = ? ${originFilter(origins)} " +
+                        order.toOrderBy("artist_id"),
+                onBindStatement = { it.bindText(1, userId) },
+            )
+        ).map(UserArtistViewEntity::toModel)
+    }
+
     override fun origins(): Flow<Set<Origin>> =
         scope.observe(emptySet()) { userId -> userArtistDao.origins(userId).map { it.toSet() } }
 

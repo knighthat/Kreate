@@ -403,6 +403,12 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
         val tube = setOf(Origin.YOUTUBE)
         assertEquals(listOf("tubeAlbum"), albums.all(origins = tube).asList().map { it.albumId })
         assertEquals(listOf("tubeArtist"), artists.all(origins = tube).asList().map { it.artistId })
+        assertEquals(listOf("tubeAlbum"), albums.list(origins = tube).map { it.albumId })
+        assertEquals(listOf("tubeArtist"), artists.list(origins = tube).map { it.artistId })
+        assertEquals(
+            listOf("localArtist", "tubeArtist"),
+            artists.list().map { it.artistId },
+        )
         assertEquals(1, albums.count(tube))
         assertEquals(2, artists.count())
         assertEquals("tubeAlbum", albums.random(tube)?.albumId)

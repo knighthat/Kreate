@@ -67,6 +67,7 @@ import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
 import coil3.memory.MemoryCache
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.auto.coverSource
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.Providers
 import me.knighthat.kreate3.source.local.LocalCover
@@ -96,11 +97,15 @@ internal val Origin.icon: Int
 
 /**
  * What Coil loads for the picture of an item, `null` when it has none. See [Thumbnail] for the
- * parameters.
+ * parameters. A queued song's cover read through [me.knighthat.kreate3.auto.ArtworkProvider] is
+ * loaded from where it really is, see [coverSource].
  */
-fun thumbnailModel(uri: Uri?, localSongId: Long?): Any? =
-    if (localSongId != null && (uri == null || uri.isAlbumArt())) LocalCover(localSongId, uri)
-    else uri
+fun thumbnailModel(uri: Uri?, localSongId: Long?): Any? {
+    val cover = uri?.coverSource()
+    return if (localSongId != null && (cover == null || cover.isAlbumArt()))
+        LocalCover(localSongId, cover)
+    else cover
+}
 
 /** Key a picture of [model] has in Coil's memory cache, `null` when it can't be told. */
 internal fun memoryCacheKey(model: Any): String? = when (model) {
@@ -121,13 +126,14 @@ fun songThumbnailModels(
     size: Int = SONG_ARTWORK,
 ): List<Any> {
     val metadata = item.mediaMetadata
-    item.localSongId?.let { return listOfNotNull(thumbnailModel(metadata.artworkUri, it)) }
-    val origin = item.origin ?: return listOfNotNull(metadata.artworkUri)
+    // Queued songs carry the provider's address of their cover, the app reads the original
+    val cover = metadata.artworkUri?.coverSource()
+    item.localSongId?.let { return listOfNotNull(thumbnailModel(cover, it)) }
+    val origin = item.origin ?: return listOfNotNull(cover)
 
     val albumId = metadata.extras?.getString(EXTRA_ALBUM_ID)
-    val fromIds =
-        providers[origin].songArtworkUris(item.mediaId, albumId, size, metadata.artworkUri)
-    return (fromIds + listOfNotNull(metadata.artworkUri)).distinct()
+    val fromIds = providers[origin].songArtworkUris(item.mediaId, albumId, size, cover)
+    return (fromIds + listOfNotNull(cover)).distinct()
 }
 
 /**
