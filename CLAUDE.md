@@ -6,11 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper. Dependencies come from the version catalog at `gradle/libs.versions.toml` (`libs.*` aliases); repositories are declared only in `settings.gradle.kts` (`FAIL_ON_PROJECT_REPOS`), so don't add them to module build files.
 
-- Build debug APK: `./gradlew assembleDebug`
+- Build debug APK: `./gradlew assembleGithubUniversalDebug` (flavors: `platform` × `abi`)
 - Unit tests: `./gradlew test` (JVM, `app/src/test`)
 - Single unit test:
-  `./gradlew :app:testDebugUnitTest --tests "me.knighthat.kreate3.ExampleUnitTest"`
-- Instrumented tests (needs device/emulator): `./gradlew connectedDebugAndroidTest`
+  `./gradlew :app:testGithubUniversalDebugUnitTest --tests "me.knighthat.kreate3.ExampleUnitTest"`
+- Instrumented tests (needs device/emulator): `./gradlew connectedGithubUniversalDebugAndroidTest`
 - Lint: `./gradlew lint`
 
 ## Notes

@@ -16,6 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import com.android.build.api.variant.DeviceTestBuilder
+import com.android.build.api.variant.HostTestBuilder
+import com.android.build.api.variant.impl.VariantOutputImpl
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -62,6 +66,44 @@ android {
             )
         }
     }
+
+    flavorDimensions += listOf("platform", "abi")
+    productFlavors {
+        create("github") {
+            dimension = "platform"
+            isDefault = true
+        }
+        create("fdroid") {
+            dimension = "platform"
+        }
+        create("patreon") {
+            dimension = "platform"
+        }
+
+        // Each one ships the native libraries of a single CPU architecture. Stores like F-Droid
+        // need a different version code per APK, so the last digit tells the architecture,
+        // universal being 0 so an APK made for the device always wins over it
+        val baseVersionCode = libs.versions.versionCode.get().toInt() * 10
+        listOf(
+            "armv7" to "armeabi-v7a",
+            "arm64" to "arm64-v8a",
+            "x86" to "x86",
+            "x86_64" to "x86_64",
+        ).forEachIndexed { index, (name, abi) ->
+            create(name) {
+                dimension = "abi"
+                //noinspection ChromeOsAbiSupport
+                ndk.abiFilters += abi
+                versionCode = baseVersionCode + index + 1
+            }
+        }
+        // Ships every architecture
+        create("universal") {
+            dimension = "abi"
+            isDefault = true
+            versionCode = baseVersionCode
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
@@ -86,6 +128,22 @@ android {
             "--add-exports=java.base/jdk.internal.access=ALL-UNNAMED",
             "--add-opens=java.base/java.io=ALL-UNNAMED",
         )
+    }
+}
+
+androidComponents {
+    // Flavors only change packaging, so tests run on one of them
+    beforeVariants { variant ->
+        if (variant.productFlavors.toMap() != mapOf("abi" to "universal", "platform" to "github")) {
+            variant.hostTests[HostTestBuilder.UNIT_TEST_TYPE]?.enable = false
+            variant.deviceTests[DeviceTestBuilder.ANDROID_TEST_TYPE]?.enable = false
+        }
+    }
+
+    onVariants { variant ->
+        val abi = variant.productFlavors.toMap().getValue("abi")
+        // The public API has no way to rename an APK yet
+        variant.outputs.forEach { (it as VariantOutputImpl).outputFileName.set("kreate-$abi.apk") }
     }
 }
 
