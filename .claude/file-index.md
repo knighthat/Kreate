@@ -46,7 +46,8 @@ notification/
   channel goes to `SystemNotifications`, one without is dropped.
 - `AppChannel.kt` — notification channels (PLAYBACK default importance, OTHER default (one-off
   notices only, e.g. a failed restore — not every backup), LOCAL_SCAN low, SLEEP_TIMER low +
-  `isSilent` (no sound/vibration, `notificationBuilder` sets `setSilent`); message ids 2000+ordinal,
+  `isSilent` (no sound/vibration, `notificationBuilder` sets `setSilent`), RESUME low + silent
+  (brief foreground notification of playback resumption); message ids 2000+ordinal,
   newest replaces), `Context.createNotificationChannels()` called in `KreateApplication.onCreate`.
 - `LocalScanNotifications.kt` — LOCAL_SCAN's two notifications (Koin single): scan (3000:
   indeterminate bar → "N songs scanned") and loudness (3001: `measured/total` bar, ≤1 update/s → "
@@ -66,7 +67,11 @@ playback/
   adds `withSongUri` to queued items, answers Android Auto's browsing from `AutoLibrary`
   (`onGetLibraryRoot`/`onGetChildren`/`onSubscribe`, no recent root) and turns a tapped Auto node
   into its queue in `onSetMediaItems` (items without `EXTRA_ORIGIN` whose id parses); follows
-  `PLAYBACK_PRELOAD_SECONDS` into the player's preload.
+  `PLAYBACK_PRELOAD_SECONDS` into the player's preload. `onPlaybackResumption` plays
+  `PersistentQueue.saved()` again when play comes with nothing queued (headphones, system media
+  controls; `MediaButtonReceiver` in the manifest), going foreground first under
+  `RESUME_FOREGROUND_ID` 5000 (`AppChannel.RESUME`); for System UI's card after a reboot only the
+  playing song, cover as `artworkData`.
 - `PlaybackController.kt` / `PlaybackControllerImpl.kt` — `PlaybackState` (incl.
   `repeatMode: RepeatMode` OFF/ONE/ALL, `isShuffled`) + interface screens use (`toggleShuffle`,
   `cycleRepeat`, `sleepTimer` (read from session extras), `startSleepTimer`/`changeSleepTimer` (
@@ -124,7 +129,8 @@ playback/
 - `PersistentQueue.kt` — saves the player queue to `persistent_queue` (whole queue on playlist
   change; position on transition/pause/seek and every `PERSISTENT_QUEUE_SAVE_INTERVAL` s while
   playing) when `PERSISTENT_QUEUE_ENABLED`; restores it unprepared in `PlaybackService.onCreate` if
-  the player is empty; `release()` before the player's. Table: PK (user_id, ordinal), `position` =
+  the player is empty; `saved()` (also for playback resumption) gives the queue as items;
+  `release()` before the player's. Table: PK (user_id, ordinal), `position` =
   ms of the one playing row (single-statement CASE update keeps it unique), songs missing from
   `song` skipped on insert.
 - `PlaybackLifecycle.kt` — `restartAround { }`: disconnects the controller,
@@ -152,7 +158,8 @@ auto/ (Android Auto, browsed through `PlaybackService`)
   `Context.grantArtwork(package)` (prefix read grant to the browser), `MediaItem.withServedArtwork`
   (queued songs, applied by `PlaybackService.queued` and `PersistentQueue`'s restore, so Auto's
   player, the notification and the lock screen load covers here), `Uri.coverSource()` (unwrap,
-  used by `thumbnailModel`/`songThumbnailModels`).
+  used by `thumbnailModel`/`songThumbnailModels`), `Context.smallCoverJpeg` (same load as bytes,
+  for the resumption card's `artworkData`). Manifest also declares Media3's `MediaButtonReceiver`.
   Manifest: service actions `MediaLibraryService` + `MediaBrowserService`,
   `com.google.android.gms.car.application` → `res/xml/automotive_app_desc.xml`; voice search
   (`MEDIA_PLAY_FROM_SEARCH`) not supported, its lint check is ignored.

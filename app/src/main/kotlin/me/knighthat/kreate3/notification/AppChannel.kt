@@ -69,6 +69,18 @@ enum class AppChannel(
         description = "Time left until the music pauses, with buttons to change it",
         importance = NotificationManagerCompat.IMPORTANCE_LOW,
         isSilent = true,
+    ),
+
+    /**
+     * Shows for a moment while the last queue plays again from headphones or the system's media
+     * controls, until the media notification takes over.
+     */
+    RESUME(
+        id = "resume",
+        title = "Resuming music",
+        description = "Shows for a moment while headphones or the system's media controls play the last queue again",
+        importance = NotificationManagerCompat.IMPORTANCE_LOW,
+        isSilent = true,
     );
 
     /** The id of a [Message]'s notification, a new one replaces the one already showing. */

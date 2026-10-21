@@ -92,6 +92,16 @@
             </intent-filter>
         </service>
 
+        <!-- Play on headphones or in the system's media controls while the app isn't running
+             starts the service, which plays the saved queue again -->
+        <receiver
+            android:name="androidx.media3.session.MediaButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+
         <!-- Covers for Android Auto, readable only by the apps the library is browsed from -->
         <provider
             android:name=".auto.ArtworkProvider"

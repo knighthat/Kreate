@@ -129,23 +129,29 @@ class PersistentQueue(
     }
 
     /**
-     * Queues the saved songs, at the song that was playing and where it was. Songs that can't be
-     * played anymore are left out. Nothing is restored if something was queued meanwhile.
+     * The saved songs as the player queues them, at the song that was playing and where it was.
+     * Songs that can't be played anymore are left out.
+     *
+     * @param currentOnly whether to give only the song that was playing
+     * @return `null` while [Preferences.PERSISTENT_QUEUE_ENABLED] is off, or when nothing saved
+     * can be played
      */
-    private suspend fun restore() {
+    suspend fun saved(currentOnly: Boolean = false): Saved? {
+        if (!enabled) return null
         val saved = try {
             queue.list()
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             Log.w(TAG, "Couldn't read the saved queue", e)
-            return
+            return null
         }
 
-        val items = ArrayList<MediaItem>(saved.size)
+        val items = ArrayList<MediaItem>(if (currentOnly) 1 else saved.size)
         var start = 0
         var position = 0L
         for (song in saved) {
+            if (currentOnly && song.position == null) continue
             val item = songs.find(song.songId).first()?.toMediaItem()?.let(queued) ?: continue
             song.position?.let {
                 start = items.size
@@ -153,12 +159,20 @@ class PersistentQueue(
             }
             items += item
         }
-
-        if (items.isEmpty() || player.mediaItemCount > 0) return
-        // Not prepared, nothing loads until the user plays
-        player.setMediaItems(items, start, position)
-        Log.d(TAG, "Restored ${items.size} of ${saved.size} songs")
+        return if (items.isEmpty()) null else Saved(items, start, position)
     }
+
+    /** Queues the [saved] songs. Nothing is restored if something was queued meanwhile. */
+    private suspend fun restore() {
+        val saved = saved() ?: return
+        if (player.mediaItemCount > 0) return
+        // Not prepared, nothing loads until the user plays
+        player.setMediaItems(saved.items, saved.start, saved.position)
+        Log.d(TAG, "Restored ${saved.items.size} songs")
+    }
+
+    /** Songs to queue, starting at [start] from [position] ms. */
+    class Saved(val items: List<MediaItem>, val start: Int, val position: Long)
 
     private fun saveQueue() {
         val songIds = List(player.mediaItemCount) { player.getMediaItemAt(it).mediaId }

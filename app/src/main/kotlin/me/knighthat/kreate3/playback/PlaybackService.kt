@@ -29,6 +29,7 @@ import androidx.annotation.OptIn
 import androidx.core.app.ServiceCompat
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.LibraryResult
@@ -48,18 +49,27 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import me.knighthat.kreate3.KreateActivity
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.auto.ArtworkProvider
 import me.knighthat.kreate3.auto.AutoLibrary
 import me.knighthat.kreate3.auto.AutoNode
+import me.knighthat.kreate3.auto.coverSource
 import me.knighthat.kreate3.auto.grantArtwork
+import me.knighthat.kreate3.auto.smallCoverJpeg
 import me.knighthat.kreate3.auto.withServedArtwork
+import me.knighthat.kreate3.notification.AppChannel
+import me.knighthat.kreate3.notification.notificationBuilder
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.origin
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Plays music in the background and shows the playback notification.
@@ -68,6 +78,9 @@ import org.koin.core.component.get
  * The service owns the player: it is created with the session and released with it.
  *
  * Android Auto browses the library through the session too, see [AutoLibrary].
+ *
+ * Play with nothing queued, like from headphones after the app was closed, plays the saved queue
+ * again, see [SessionCallback.onPlaybackResumption].
  *
  * [PlaybackLifecycle] can release the session before the service ends, see [stop]. A controller
  * that connects afterwards gets a new one, unless the lifecycle holds playback stopped.
@@ -162,7 +175,9 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
                     session = it,
                     notification = SleepTimerNotification(this),
                     scope = scope,
-                    startForeground = ::startForegroundWith,
+                    startForeground = {
+                        startForegroundWith(SleepTimerNotification.FOREGROUND_ID, it)
+                    },
                     stopForeground = {
                         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
                     },
@@ -213,9 +228,37 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         withSongUri()?.withServedArtwork(this@PlaybackService)
 
     /**
+     * The song with its cover inside: the system's media controls can't read [ArtworkProvider]'s
+     * after the device restarted. As it is when the cover can't be loaded, like before there is a
+     * network.
+     */
+    private suspend fun MediaItem.withArtworkData(): MediaItem {
+        val cover = mediaMetadata.artworkUri?.coverSource() ?: return this
+        val data = withTimeoutOrNull(COVER_WAIT) { smallCoverJpeg(cover) } ?: return this
+        return buildUpon()
+            .setMediaMetadata(
+                mediaMetadata.buildUpon()
+                    .setArtworkData(data, MediaMetadata.PICTURE_TYPE_FRONT_COVER)
+                    .build()
+            )
+            .build()
+    }
+
+    /**
+     * Takes the service out of the foreground [onPlaybackResumption][SessionCallback] put it in,
+     * unless the media notification took it over.
+     */
+    private fun leaveResumeForeground() {
+        if (!isPlaybackOngoing)
+            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+    }
+
+    /**
      * Gives the items added to the queue the address of their song and of their cover, see
      * [queued]. Items that don't say where they come from can't be played, adding them fails,
      * except what Android Auto taps: [AutoLibrary] gives the songs to play for it.
+     *
+     * Play with nothing queued plays the saved queue again, see [onPlaybackResumption].
      *
      * The app's own controllers may also set the sleep timer, see [SleepTimerCommands].
      *
@@ -299,12 +342,61 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             }
         }
 
+        /**
+         * Plays the saved queue again ([PersistentQueue.saved]) when play is asked with nothing
+         * queued, from headphones or the system's media controls. They may start the service for
+         * it, through the `MediaButtonReceiver` of the manifest.
+         *
+         * Without [isForPlayback], the system only wants the song it would play, to show in its
+         * media controls after the device restarted: it gets that song, with its cover inside.
+         */
+        override fun onPlaybackResumption(
+            mediaSession: MediaSession,
+            controller: MediaSession.ControllerInfo,
+            isForPlayback: Boolean,
+        ): ListenableFuture<MediaItemsWithStartPosition> {
+            if (!isForPlayback) return scope.future {
+                val saved = persistentQueue?.saved(currentOnly = true)
+                    ?: error("Nothing saved to resume")
+                MediaItemsWithStartPosition(
+                    saved.items.map { it.withArtworkData() },
+                    saved.start,
+                    saved.position,
+                )
+            }
+
+            // A service started by a media button has to go in the foreground in time. And
+            // Android 16 gives audio focus to an app in the background only while its service is
+            // in the foreground, which the media notification makes it only once playing.
+            startForegroundWith(
+                RESUME_FOREGROUND_ID,
+                notificationBuilder(AppChannel.RESUME).setContentTitle("Resuming music").build(),
+            )
+            return scope.future {
+                val saved = try {
+                    persistentQueue?.saved() ?: error("Nothing saved to resume")
+                } catch (e: Exception) {
+                    leaveResumeForeground()
+                    throw e
+                }
+                // Played once this returns, the media notification takes the foreground over
+                scope.launch {
+                    withTimeoutOrNull(HANDOVER_WAIT) {
+                        while (!isPlaybackOngoing) delay(HANDOVER_CHECK)
+                    }
+                    leaveResumeForeground()
+                }
+                MediaItemsWithStartPosition(saved.items, saved.start, saved.position)
+            }
+        }
+
         override fun onGetLibraryRoot(
             session: MediaLibrarySession,
             browser: MediaSession.ControllerInfo,
             params: LibraryParams?,
         ): ListenableFuture<LibraryResult<MediaItem>> {
-            // Recent songs to resume from aren't offered
+            // Other apps aren't offered recent songs. The system's media controls are, Media3
+            // answers them from onPlaybackResumption before this is called.
             if (params?.isRecent == true)
                 return Futures.immediateFuture(LibraryResult.ofError(SessionError.ERROR_NOT_SUPPORTED))
 
@@ -392,16 +484,17 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
     }
 
     /**
-     * Puts the service in the foreground with a copy of the sleep timer's [notification], until
-     * the media notification takes over once music plays, see
-     * [SleepTimerNotification.FOREGROUND_ID]. Allowed for a while after a notification's button
-     * was tapped; when it isn't, playing is tried all the same.
+     * Puts the service in the foreground with [notification] as [id], until the media
+     * notification takes over once music plays: the system then takes [notification] away, so
+     * [id] mustn't be one that has to stay, see [SleepTimerNotification.FOREGROUND_ID]. Allowed
+     * for a while after a notification's button was tapped or a media button pressed; when it
+     * isn't, playing is tried all the same.
      */
-    private fun startForegroundWith(notification: Notification) {
+    private fun startForegroundWith(id: Int, notification: Notification) {
         try {
             ServiceCompat.startForeground(
                 this,
-                SleepTimerNotification.FOREGROUND_ID,
+                id,
                 notification,
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
                     ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
@@ -409,7 +502,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             )
         } catch (e: IllegalStateException) {
             // ForegroundServiceStartNotAllowedException, from Android 12 on
-            Log.w(TAG, "Couldn't go in the foreground for the sleep timer", e)
+            Log.w(TAG, "Couldn't go in the foreground", e)
         }
     }
 
@@ -435,5 +528,20 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
     private companion object {
 
         const val TAG = "PlaybackService"
+
+        /**
+         * The service goes in the foreground with this to play the saved queue again. Clear of
+         * Media3's media notification, 1001, the messages' 2000s, the scans' 3000s and the sleep
+         * timer's 4000s.
+         */
+        const val RESUME_FOREGROUND_ID = 5000
+
+        /** How long the media notification has to take the foreground over. */
+        val HANDOVER_WAIT = 5.seconds
+
+        val HANDOVER_CHECK = 100.milliseconds
+
+        /** How long the cover of the song to resume may load, the system waits for it. */
+        val COVER_WAIT = 3.seconds
     }
 }

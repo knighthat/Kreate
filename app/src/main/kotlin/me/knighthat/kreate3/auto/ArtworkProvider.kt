@@ -39,9 +39,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.source.SMALL_COVER
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.io.IOException
 
@@ -81,7 +83,7 @@ class ArtworkProvider : ContentProvider(), KoinComponent {
             ?.takeIf { it.scheme in LOADED_SCHEMES && it.authority != context.artworkAuthority }
             ?: throw FileNotFoundException("$uri has no cover")
         // Called on a binder thread, which waits for the answer anyway
-        val bitmap = runBlocking { load(context, source) }
+        val bitmap = runBlocking { context.smallCover(source) }
             ?: throw FileNotFoundException("Couldn't load $source")
 
         val (read, write) = ParcelFileDescriptor.createPipe()
@@ -97,17 +99,6 @@ class ArtworkProvider : ContentProvider(), KoinComponent {
             }
         }
         return read
-    }
-
-    private suspend fun load(context: Context, source: Uri): Bitmap? {
-        val request = ImageRequest.Builder(context)
-            .data(source)
-            .size(SMALL_COVER)
-            // Compressed below, a hardware bitmap can't be read
-            .allowHardware(false)
-            .build()
-        val result = SingletonImageLoader.get(context).execute(request)
-        return (result as? SuccessResult)?.image?.toBitmap()
     }
 
     override fun getType(uri: Uri): String = "image/jpeg"
@@ -135,6 +126,34 @@ class ArtworkProvider : ContentProvider(), KoinComponent {
 
         /** Covers come from these, the app's other files are never handed out. */
         val LOADED_SCHEMES = setOf("http", "https", ContentResolver.SCHEME_CONTENT)
+    }
+}
+
+/**
+ * The cover at [source], drawn small, loaded like [ArtworkProvider] does; `null` when it can't
+ * be loaded.
+ */
+private suspend fun Context.smallCover(source: Uri): Bitmap? {
+    val request = ImageRequest.Builder(this)
+        .data(source)
+        .size(SMALL_COVER)
+        // Compressed afterwards, a hardware bitmap can't be read
+        .allowHardware(false)
+        .build()
+    val result = SingletonImageLoader.get(this).execute(request)
+    return (result as? SuccessResult)?.image?.toBitmap()
+}
+
+/**
+ * The cover at [source] as a small JPEG, for what can't read [ArtworkProvider], like the system's
+ * media controls after a restart; `null` when it can't be loaded.
+ */
+internal suspend fun Context.smallCoverJpeg(source: Uri): ByteArray? {
+    val bitmap = smallCover(source) ?: return null
+    return withContext(Dispatchers.Default) {
+        ByteArrayOutputStream().also {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, QUALITY, it)
+        }.toByteArray()
     }
 }
 

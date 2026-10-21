@@ -46,6 +46,27 @@ sources jar; not yet checked in Auto or the Desktop Head Unit):
 - Lint's `MissingIntentFilterForMediaSearch` fires once the app is an Auto media app; it's ignored
   in the manifest until voice search exists.
 
+## Media3 playback resumption
+
+Learned adding `onPlaybackResumption` (media3 1.11.1, read from the sources jar; not yet checked on
+a device):
+
+- It's on only while `androidx.media3.session.MediaButtonReceiver` is in the manifest
+  (`MediaSessionLegacyStub.canResumePlaybackOnStart`). Without it, Media3 refuses System UI's
+  recent root, so the system's media controls have no card to resume from.
+- System UI's `isRecent` root and its children are answered by Media3 before the library
+  callback's `onGetLibraryRoot`/`onGetChildren`, from `onPlaybackResumption(isForPlayback = false)`
+  (first item at the start index). The callback's own `isRecent` answer only reaches other apps.
+- That item reaches System UI as a legacy `MediaDescription`: a cover in `artworkData` is decoded
+  in the app and sent as a bitmap, while an `artworkUri` would have to be readable by System UI,
+  whose package never reaches `grantArtwork`.
+- The receiver accepts only play/play-pause/headset-hook keys on API 26+ and starts the service
+  with `startForegroundService`, so the service must call `startForeground` in time even when
+  nothing gets played. Media3 does so only once the player is buffering, after `play()`: too late
+  for Android 16's audio focus rule (see the first section), so `PlaybackService` goes foreground
+  itself first (`RESUME_FOREGROUND_ID`) and leaves it if Media3 hasn't taken over
+  (`isPlaybackOngoing`).
+
 ## Custom (RemoteViews) notifications
 
 Learned on `SleepTimerNotification` (DecoratedCustomViewStyle +
