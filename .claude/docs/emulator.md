@@ -1,0 +1,116 @@
+# Running, inspecting and tracing on the emulator
+
+The emulator holds the maintainer's data and they may use it at the same time. Ask once whether
+you may change its state yourself (install your own build over theirs, clear the app's data or
+wipe its DB, grant or revoke permissions). State that changes between your own actions may be
+theirs: compare logcat times with your actions before suspecting the code, and don't restore what
+they changed. Never mention or save which account or channel it's signed in as.
+
+## Launching
+
+- Launcher activity: `adb shell am start -n me.knighthat.kreate3/.KreateActivity`.
+- Install your own build before judging a device result:
+  `./gradlew :app:installGithubUniversalDebug`.
+  The installed app may be an older Android Studio build (a `code_cache/.studio` agent in logcat).
+- After clearing data (`pm clear`, reinstall, deleted DB), skip the setup wizard with
+  `adb shell am start -n me.knighthat.kreate3/.KreateActivity -a me.knighthat.kreate3.SETUP_WIZARD_SKIP_ACTION`
+  (only on a fresh launch). `pm clear` also revokes permissions: grant them again with
+  `adb shell pm grant me.knighthat.kreate3 android.permission.READ_MEDIA_AUDIO`.
+- Permissions change between sessions: check `dumpsys package me.knighthat.kreate3 | grep granted=`
+  before blaming the code for a scan that does nothing. `LocalMusicWorker` logs
+  `Found N songs on the device`; WorkManager's `WM-*` tags log the work ids.
+
+## Database
+
+- Debug builds allow `run-as`, and the emulator ships `sqlite3`:
+  `adb shell run-as me.knighthat.kreate3 sqlite3 databases/kreate.db "\"SELECT …;\""` (the inner
+  quotes are escaped because the query goes through two shells). The default profile's user id is
+  `default`; library rows are in `user_song`/`user_album`/…, and the Songs tab reads
+  `user_song_view`.
+- Reads while the app runs can be stale (recent commits sit in the WAL). Force-stop before trusting
+  a read; write only after `adb shell am force-stop me.knighthat.kreate3`.
+- Wiping only the DB (keeps preferences, secrets and sign-ins, unlike `pm clear`): force-stop, then
+  `adb shell run-as me.knighthat.kreate3 rm -f databases/<file>` once per file (`kreate.db`, `-wal`,
+  `-shm`, `.lck`; a single `sh -c 'rm -f a b c'` fails), then launch with the skip-wizard action.
+- Native crashes or "file is not a database" on a valid file: Android Studio's Database Inspector,
+  see `android-gotchas.md`.
+
+## Driving the UI
+
+- `uiautomator dump /sdcard/ui.xml`, pull it, find the node by `text=`/`content-desc=`, tap the
+  centre of its `bounds`. uiautomator's `enabled=` on Compose `IconButton`s isn't reliable; check a
+  screenshot and a tap.
+- Long-press: `adb shell input swipe x y x y 800`.
+- The 5-minute library throttle is in memory: force-stop + relaunch makes a tab sync again at once.
+- Killing the app for cold paths: `am kill` does nothing while `PlaybackService` is foreground. Use
+  `adb shell run-as me.knighthat.kreate3 kill -9 $(adb shell pidof me.knighthat.kreate3)`; the
+  service usually restarts (START_STICKY) and the queue comes back.
+- adb sometimes reports the emulator `offline` for a moment; retry.
+
+## Previews and animations
+
+- Render a `@Preview` without Studio: install the debug build, then
+  `adb shell am start -S -W -n me.knighthat.kreate3/androidx.compose.ui.tooling.PreviewActivity --es composable <package>.<File>Kt.<Preview>`
+  and `adb exec-out screencap -p`. Private previews work; keep `-S` or the previous preview stays.
+- Animations: `adb shell screenrecord --time-limit 4 /sdcard/x.mp4` in the background while doing
+  the gesture, pull it, then tile the frames that changed:
+  `ffmpeg -i x.mp4 -vf "mpdecimate,setpts=N/FRAME_RATE/TB,scale=300:-1,tile=10x3" -frames:v 1 out.png`.
+  screenrecord only writes changed frames, so frame numbers don't map to time. A temporary `Log.d`
+  of the values driving the animation often finds the cause faster.
+
+## In-app instrumented tests
+
+They run inside the app's process, so Koin, Preferences and Secrets are live:
+`./gradlew :app:assembleGithubUniversalDebug :app:assembleGithubUniversalDebugAndroidTest`,
+`adb install -r` both APKs, then
+`adb shell am instrument -w -e class <fqcn> me.knighthat.kreate3.test/androidx.test.runner.AndroidJUnitRunner`,
+afterwards `adb uninstall me.knighthat.kreate3.test` (test APK only). **Never**
+`connectedGithubUniversalDebugAndroidTest`: it uninstalls the app and wipes its data. Log results
+with a `LIVE` tag and read `adb logcat -d -s LIVE:I`. Read secrets inside the test, never copy them
+off the device. A player failure can be triggered with `PlaybackController.playAll` on a `file://`
+URI that doesn't exist.
+
+Image benchmarks the same way: time `SingletonImageLoader.get(context).execute(…)` with
+`memoryCachePolicy(DISABLED)`. The emulator's hardware bitmap upload is slow, so compare decode
+paths with hardware bitmaps off.
+
+## Release builds
+
+- The release APK (`app/build/outputs/apk/githubUniversal/release/kreate-universal.apk`) is
+  unsigned without the production key env vars. Sign it with the debug key to install over a debug
+  build: `zipalign -f 4`, then
+  `apksigner sign --ks ~/.android/debug.keystore --ks-pass pass:android`,
+  then `adb install -r`.
+- `apkanalyzer` may be missing: use `unzip -v`, `dexdump` and `aapt2` from
+  `$sdk.dir/build-tools/<latest>/`. Classes keep their names (`-dontobfuscate`), so grouping dexdump
+  class sizes by package gives code size per library.
+- R8 reports in `app/build/outputs/mapping/release/`: `seeds.txt`, `usage.txt`, `configuration.txt`
+  (merged rules tagged by library), `resources.txt`.
+- To try build changes without touching the repo, `rsync` the project (minus `build`, `.gradle`,
+  `.git`, `.kotlin`) to a scratch dir and build there.
+
+## Test audio
+
+Generate tracks with `ffmpeg -f lavfi -i "sine=frequency=440:duration=20"` plus
+`-metadata title=…` (Opus needs `-ar 48000`), push to `/sdcard/Music/<dir>/`, then rescan with
+`adb shell content call --method scan_volume --uri content://media --arg external_primary`.
+MediaStore files `.webm` as video and the scanner skips WAV. Delete the files and rescan afterwards.
+Check playback with `adb logcat | grep onSessionPlaybackStateChanged` (`state=PLAYING(3)` and a
+rising position), not `dumpsys media_session`.
+
+## Jank tracing with Perfetto
+
+- The emulator has `/system/bin/perfetto`. Push a text config to `/data/misc/perfetto-configs/`
+  (via `/data/local/tmp`), run
+  `perfetto --txt -c <cfg> -o /data/misc/perfetto-traces/x.pftrace --background`, then launch.
+- Useful sources: `linux.ftrace` (sched_switch/wakeup + atrace gfx/view/dalvik, `atrace_apps` =
+  package), `android.surfaceflinger.frametimeline` (real per-frame jank, works on release builds),
+  `linux.perf` callstack sampling (debug only; Java stacks didn't unwind on x86_64). Use
+  `fill_policy: DISCARD` for a launch trace (RING_BUFFER overwrites the launch).
+- Analyse on the host with the `perfetto` pip package (+ pandas) in a throwaway venv. What worked:
+  main-thread `thread_state` Running vs `R` (runnable = starved of a core), per-thread `sched` CPU
+  during a frame, `Choreographer#doFrame` slices (debug only).
+- Release build on a fresh DB: install debug, wipe the DB, `pm revoke` READ_MEDIA_AUDIO (installing
+  over debug auto-starts the app), install the signed release, force-stop, `pm grant`, trace,
+  launch; reinstall debug after. The emulator has 4 cores and its graphics HAL makes cover uploads
+  look slow.

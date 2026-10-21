@@ -10,7 +10,8 @@ Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper
 - Unit tests: `./gradlew test` (JVM, `app/src/test`)
 - Single unit test:
   `./gradlew :app:testGithubUniversalDebugUnitTest --tests "me.knighthat.kreate3.ExampleUnitTest"`
-- Instrumented tests (needs device/emulator): `./gradlew connectedGithubUniversalDebugAndroidTest`
+- Instrumented tests (needs device/emulator): `./gradlew connectedGithubUniversalDebugAndroidTest`;
+  it uninstalls the app and wipes its data, read `.claude/rules/testing.md` before running it
 - Lint: `./gradlew lint`
 
 ## Notes
@@ -46,6 +47,7 @@ Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper
   `liked_at = NULL`, while dislikes (`-1`) are left alone. Albums, artists and playlists are never
   stored: lists and detail screens show only what the server returns, live. Signing out or turning
   off a source or its sync only stops syncing, it never clears synced likes.
+- More rules load from `.claude/rules/` by path. Read `.claude/docs/` when a rule points there.
 
 ## License
 
