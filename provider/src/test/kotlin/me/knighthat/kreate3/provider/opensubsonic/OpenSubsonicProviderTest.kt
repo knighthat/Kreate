@@ -351,6 +351,77 @@ class OpenSubsonicProviderTest {
     }
 
     @Test
+    fun anArtistComesWithTheirAlbumsAlone() = runBlocking {
+        val (artist, albums) = provider {
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","artist":{
+                "id":"ar1","name":"NF","album":[{"id":"al1","name":"A"},{"id":"al2","name":"B"}]}}}"""
+        }.artistWithAlbums("ar1")!!
+
+        assertEquals("NF", artist.item.name)
+        assertEquals(listOf("al1", "al2"), albums.map { it.item.id })
+        assertTrue(requests.single().url.encodedPath.endsWith("getArtist"))
+    }
+
+    @Test
+    fun topSongsAreTheServersRankingWhenItHasEnough() = runBlocking {
+        val songs = provider {
+            """{"subsonic-response":{"status":"ok","version":"1.16.1","topSongs":{"song":[
+                {"id":"s1","title":"One","artistId":"ar1"},
+                {"id":"x1","title":"Other","artistId":"ar9"},
+                {"id":"s2","title":"Two","artistId":"ar1"},
+                {"id":"s3","title":"Three","artistId":"ar1"}]}}}"""
+        }.topSongs("ar1", "NF", 2)!!
+
+        val form = requests.single().form()
+        assertTrue(requests.single().url.encodedPath.endsWith("getTopSongs"))
+        assertEquals("NF", form["artist"])
+        assertEquals("2", form["count"])
+        assertEquals(listOf("s1", "s2"), songs.map { it.song.id })
+    }
+
+    @Test
+    fun topSongsAreFilledFromASearchOfTheArtistsName() = runBlocking {
+        val songs = provider { request ->
+            when (request.url.encodedPath.substringAfterLast('/')) {
+                "getTopSongs" ->
+                    """{"subsonic-response":{"status":"ok","version":"1.16.1","topSongs":{"song":[
+                        {"id":"s1","title":"One","artistId":"ar1"}]}}}"""
+
+                else ->
+                    """{"subsonic-response":{"status":"ok","version":"1.16.1","searchResult3":{"song":[
+                        {"id":"x1","title":"NF tribute","artistId":"ar9"},
+                        {"id":"s1","title":"One","artistId":"ar1"},
+                        {"id":"s2","title":"Two","artists":[{"id":"ar9","name":"mgk"},{"id":"ar1","name":"NF"}]},
+                        {"id":"s3","title":"Three","artistId":"ar1"},
+                        {"id":"s4","title":"Four","artistId":"ar1"}]}}}"""
+            }
+        }.topSongs("ar1", "NF", 3)!!
+
+        assertEquals(listOf("s1", "s2", "s3"), songs.map { it.song.id })
+        val search = requests.last().form()
+        assertEquals("NF", search["query"])
+        assertEquals("50", search["songCount"])
+        assertEquals(listOf("0", "0"), listOf(search["albumCount"], search["artistCount"]))
+    }
+
+    @Test
+    fun aServerWithoutTopSongsHasThemFromTheSearch() = runBlocking {
+        val songs = provider { request ->
+            when (request.url.encodedPath.substringAfterLast('/')) {
+                "getTopSongs" ->
+                    """{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":0,"message":"Not implemented"}}}"""
+
+                else ->
+                    """{"subsonic-response":{"status":"ok","version":"1.16.1","searchResult3":{"song":[
+                        {"id":"s1","title":"One","artistId":"ar1"}]}}}"""
+            }
+        }.topSongs("ar1", "NF", 10)!!
+
+        assertEquals(listOf("s1"), songs.map { it.song.id })
+        assertEquals(2, requests.size)
+    }
+
+    @Test
     fun aPlaylistComesWithItsEntries() = runBlocking {
         val (playlist, songs) = provider {
             """{"subsonic-response":{"status":"ok","version":"1.16.1","playlist":{"id":"p1","name":"Mix","entry":[
@@ -488,6 +559,8 @@ class OpenSubsonicProviderTest {
 
         assertNull(server.albumWithSongs("al1"))
         assertNull(server.artistWithSongs("ar1"))
+        assertNull(server.artistWithAlbums("ar1"))
+        assertNull(server.topSongs("ar1", "NF", 10))
         assertNull(server.playlistWithSongs("p1"))
         assertNull(server.starredSongs())
         assertFalse(server.setStarred("s1", true))

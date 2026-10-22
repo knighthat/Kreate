@@ -22,8 +22,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
@@ -35,20 +37,26 @@ import me.knighthat.kreate3.ui.navigation.LocalArtist
 /**
  * An artist of the OpenSubsonic server as their screen shows them.
  *
- * @property songs the songs of every album of theirs, album after album
+ * @property topSongs up to [TOP_SONGS] of their songs, see [OpenSubsonicProvider.topSongs]
+ * @property hasMoreSongs whether [topSongs] may be only some of their songs, so the screen links to
+ * every song: `false` when fewer than [TOP_SONGS] were found
  * @property description the server's biography of the artist, `null` when it has none
  */
 data class OpenSubsonicArtistDetail(
     val name: String?,
     val thumbnail: Uri?,
     val albums: List<MediaItem>,
-    val songs: List<MediaItem>,
+    val topSongs: List<MediaItem>,
+    val hasMoreSongs: Boolean,
     val description: String? = null,
 )
 
+/** Songs the screen of an artist shows, the rest are a tap away. */
+const val TOP_SONGS = 10
+
 /**
- * Fetches the artist whose id is in the saved state, their albums and the songs on them, from the
- * server. Nothing is stored.
+ * Fetches the artist whose id is in the saved state, their albums and top songs, from the server.
+ * Every song of theirs is fetched only when asked for, see [allSongs]. Nothing is stored.
  *
  * @param scope the app's, where a follow is sent
  */
@@ -64,6 +72,10 @@ class OpenSubsonicArtistDetailViewModel(
     }
 
     override val notFound = SERVER_OFF
+
+    /** Every song of the artist once [allSongs] got them, they're asked for once. */
+    @Volatile
+    private var everySong: List<MediaItem>? = null
 
     /** Whether the user may make shares on the server, `false` until that is known. */
     val canShare = provider.canShare(viewModelScope)
@@ -89,17 +101,31 @@ class OpenSubsonicArtistDetailViewModel(
     override suspend fun fetch(): OpenSubsonicArtistDetail? = coroutineScope {
         // Asked alongside, the artist shows without one when the server has none to give
         val biography = async { askServerOrNull { provider.artistBiography(artistId) } }
-        val found = provider.artistWithSongs(artistId) ?: return@coroutineScope null
-        val artist = found.artist.item
-        follow.known(found.artist.starredAt != null)
+        val (found, albums) = provider.artistWithAlbums(artistId) ?: return@coroutineScope null
+        val artist = found.item
+        follow.known(found.starredAt != null)
+        val top = artist.name?.let { provider.topSongs(artistId, it, TOP_SONGS) }.orEmpty()
         OpenSubsonicArtistDetail(
             name = artist.name,
             thumbnail = artist.thumbnail,
-            albums = found.albums.map { it.item.toLiveMediaItem() }.distinctBy { it.mediaId },
-            songs = found.songs.map { it.toLiveMediaItem() }.distinctBy { it.mediaId },
+            albums = albums.map { it.item.toLiveMediaItem() }.distinctBy { it.mediaId },
+            topSongs = top.map { it.toLiveMediaItem() }.distinctBy { it.mediaId },
+            hasMoreSongs = top.size >= TOP_SONGS,
             description = biography.await(),
         )
     }
+
+    /**
+     * Every song of the artist, album after album, fetched the first time, like for Play.
+     *
+     * @return `null` when the server can't give them
+     */
+    suspend fun allSongs(): List<MediaItem>? = everySong ?: withContext(Dispatchers.Default) {
+        askServerOrNull { provider.artistWithSongs(artistId) }
+            ?.songs
+            ?.map { it.toLiveMediaItem() }
+            ?.distinctBy { it.mediaId }
+    }?.also { everySong = it }
 
     /**
      * A link to the artist, as all of their albums, that anyone can open. See

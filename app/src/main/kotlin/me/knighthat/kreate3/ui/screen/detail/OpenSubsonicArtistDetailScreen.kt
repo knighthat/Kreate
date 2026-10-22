@@ -43,17 +43,20 @@ import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.previewSongs
-import me.knighthat.kreate3.ui.component.rememberQueueActions
+import me.knighthat.kreate3.ui.component.rememberQuickQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
 import org.koin.androidx.compose.koinViewModel
 
 /**
  * An artist of the OpenSubsonic server, fetched when the screen opens and never stored.
+ *
+ * @param onOpenSongs opens every song of the artist, named as given
  */
 @Composable
 fun OpenSubsonicArtistDetailScreen(
     onBack: () -> Unit,
     onOpenAlbum: (MediaItem) -> Unit,
+    onOpenSongs: (name: String?) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: OpenSubsonicArtistDetailViewModel = koinViewModel(),
@@ -67,11 +70,13 @@ fun OpenSubsonicArtistDetailScreen(
         onRetry = viewModel::load,
         onBack = onBack,
         onOpenAlbum = onOpenAlbum,
-        onAction = rememberQueueActions {
-            (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
-        },
+        onOpenSongs = onOpenSongs,
+        onAction = rememberQuickQueueActions(
+            shown = { (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty() },
+            songs = viewModel::allSongs,
+        ),
         onSongClick = rememberSongTap(null) {
-            (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
+            (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty()
         },
         share = if (canShare) viewModel::shareLink else null,
         isFollowed = isFollowed,
@@ -91,6 +96,7 @@ private fun OpenSubsonicArtistDetailContent(
     onRetry: () -> Unit,
     onBack: () -> Unit,
     onOpenAlbum: (MediaItem) -> Unit,
+    onOpenSongs: (name: String?) -> Unit,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     share: (suspend (name: String?) -> Result<String>)?,
@@ -126,7 +132,7 @@ private fun OpenSubsonicArtistDetailContent(
                     origin = Origin.OPEN_SUBSONIC,
                 )
             }
-            if (detail.songs.isNotEmpty())
+            if (detail.topSongs.isNotEmpty())
                 item(key = "queue-actions") { QueueActionRow(onAction) }
             detail.description?.let {
                 item(key = "description") { DetailDescription(it) }
@@ -147,9 +153,14 @@ private fun OpenSubsonicArtistDetailContent(
                         }
                     }
                 }
-            if (detail.songs.isNotEmpty()) {
-                item(key = "songs-title") { SectionTitle("Songs") }
-                items(detail.songs, key = { it.mediaId }) {
+            if (detail.topSongs.isNotEmpty()) {
+                item(key = "songs-title") {
+                    SectionTitle(
+                        "Top songs",
+                        onSeeMore = if (detail.hasMoreSongs) ({ onOpenSongs(detail.name) }) else null,
+                    )
+                }
+                items(detail.topSongs, key = { it.mediaId }) {
                     SongItem(it, onClick = { onSongClick(it) })
                 }
             }
@@ -166,12 +177,14 @@ private fun OpenSubsonicArtistDetailPreview() = PreviewTheme {
                 name = "Neon Coast",
                 thumbnail = null,
                 albums = previewAlbums(Origin.OPEN_SUBSONIC).take(3),
-                songs = previewSongs(Origin.OPEN_SUBSONIC),
+                topSongs = previewSongs(Origin.OPEN_SUBSONIC),
+                hasMoreSongs = true,
             )
         ),
         onRetry = {},
         onBack = {},
         onOpenAlbum = {},
+        onOpenSongs = {},
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },

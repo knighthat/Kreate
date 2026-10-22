@@ -152,6 +152,19 @@ data class OpenSubsonicArtist(val id: String) : Route {
 }
 
 /**
+ * Every song of the OpenSubsonic artist [id] named [name], fetched when they open and never stored.
+ */
+@Serializable
+data class OpenSubsonicArtistSongs(val id: String, val name: String?) : Route {
+
+    override val arguments: Bundle get() = bundleOf(LocalArtist.ID to id, NAME to name)
+
+    companion object {
+        const val NAME = "artistName"
+    }
+}
+
+/**
  * A playlist of the OpenSubsonic server by its id there, fetched when it opens and never stored.
  */
 @Serializable

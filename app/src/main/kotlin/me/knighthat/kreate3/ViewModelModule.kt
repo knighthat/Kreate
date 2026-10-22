@@ -23,6 +23,7 @@ import me.knighthat.kreate3.ui.screen.detail.LocalArtistDetailViewModel
 import me.knighthat.kreate3.ui.screen.detail.LocalPlaylistDetailViewModel
 import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicAlbumDetailViewModel
 import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicArtistDetailViewModel
+import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicArtistSongsViewModel
 import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicPlaylistDetailViewModel
 import me.knighthat.kreate3.ui.screen.detail.YouTubeAlbumDetailViewModel
 import me.knighthat.kreate3.ui.screen.detail.YouTubeArtistDetailViewModel
@@ -55,6 +56,7 @@ val viewModelModule = module {
     viewModelOf(::LocalPlaylistDetailViewModel)
     viewModelOf(::OpenSubsonicAlbumDetailViewModel)
     viewModelOf(::OpenSubsonicArtistDetailViewModel)
+    viewModelOf(::OpenSubsonicArtistSongsViewModel)
     viewModelOf(::OpenSubsonicPlaylistDetailViewModel)
     viewModelOf(::YouTubeAlbumDetailViewModel)
     viewModelOf(::YouTubeArtistDetailViewModel)

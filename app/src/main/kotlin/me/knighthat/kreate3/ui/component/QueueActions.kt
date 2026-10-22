@@ -177,6 +177,57 @@ fun rememberQueueActions(songs: suspend () -> List<MediaItem>): (QueueAction) ->
 }
 
 /**
+ * Like [rememberQueueActions], for a list that shows only some of the songs, like the top songs
+ * of an artist. Play and Shuffle start at once with a random song of [shown], then the rest of
+ * what [songs] gives follows it, in its order or a random one, unless the queue was changed
+ * meanwhile. The other actions wait for [songs].
+ *
+ * @param songs every song, `null` when they can't be had, the song started then plays alone
+ */
+@Composable
+fun rememberQuickQueueActions(
+    shown: () -> List<MediaItem>,
+    songs: suspend () -> List<MediaItem>?,
+): (QueueAction) -> Unit {
+    val playback = koinInject<PlaybackController>()
+    val notifier = LocalNotifier.current
+    val scope = rememberCoroutineScope()
+    val currentShown by rememberUpdatedState(shown)
+    val currentSongs by rememberUpdatedState(songs)
+
+    return remember(playback, notifier, scope) {
+        { action ->
+            scope.launch {
+                val first = currentShown()
+                    .filter { it.mediaMetadata.isPlayable == true }
+                    .takeIf { action == QueueAction.PLAY || action == QueueAction.SHUFFLE }
+                    ?.randomOrNull()
+                first?.let { playback.playAll(listOf(it)) }
+
+                val all = currentSongs()
+                if (all == null) {
+                    notifier.post("Couldn't get every song")
+                    return@launch
+                }
+                // The list can be a whole library, the controller can be called from any thread
+                withContext(Dispatchers.Default) {
+                    if (first == null) return@withContext playback.queue(action, all)
+
+                    val rest = all.filter {
+                        it.mediaId != first.mediaId && it.mediaMetadata.isPlayable == true
+                    }
+                    playback.follow(
+                        first,
+                        if (action == QueueAction.SHUFFLE) rest.shuffled() else rest
+                    )
+                    null
+                }?.let(notifier::post)
+            }
+        }
+    }
+}
+
+/**
  * Play and shuffle buttons with the rest of the [QueueAction]s in a menu, centered in a row, like
  * under the header of a detail screen.
  */

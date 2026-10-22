@@ -308,23 +308,66 @@ class OpenSubsonicProvider internal constructor(
      * @throws ServerException when the server can't be used or refuses
      */
     suspend fun artistWithSongs(artistId: String): ArtistWithSongs? {
+        val (artist, listed) = artistWithAlbums(artistId) ?: return null
+
+        val gate = Semaphore(PARALLEL_REQUESTS)
+        val albums = coroutineScope {
+            listed.map { async { gate.withPermit { albumWithSongs(it.item.id) } } }.awaitAll()
+                .filterNotNull()
+        }
+        return ArtistWithSongs(
+            artist = artist,
+            albums = albums.map { it.first },
+            songs = albums.flatMap { it.second },
+        )
+    }
+
+    /**
+     * An artist of the server with their albums, without the songs on them.
+     *
+     * @return `null` while the server is off or not set up
+     * @throws ServerException when the server can't be used or refuses, like for an id it doesn't have
+     */
+    suspend fun artistWithAlbums(artistId: String): Pair<RemoteItem<Artist>, List<RemoteItem<Album>>>? {
         serverUrl ?: return null
 
         val artist = call("getArtist", "id" to artistId)["artist"]?.jsonObject
             ?: throw ServerException(ServerCheck.NotSubsonic)
-        val albumIds = artist.array("album").orEmpty()
-            .mapNotNull { it.jsonObject["id"]?.jsonPrimitive?.contentOrNull }
+        return artist.toArtist(::coverUri) to artist.array("album").orEmpty()
+            .map { it.jsonObject.toAlbum(::coverUri) }
+    }
 
-        val gate = Semaphore(PARALLEL_REQUESTS)
-        val albums = coroutineScope {
-            albumIds.map { async { gate.withPermit { albumWithSongs(it) } } }.awaitAll()
-                .filterNotNull()
+    /**
+     * Up to [count] songs of the artist [artistId], the most popular first as the server ranks
+     * them with `getTopSongs`, which servers build from outside metadata, like Last.fm or
+     * ListenBrainz for Navidrome. When it ranks fewer, or none, the rest come from a search of
+     * [name], in the search's order. Songs of other artists either finds are left out.
+     *
+     * @param name the artist's name, `getTopSongs` asks by name
+     * @return `null` while the server is off or not set up
+     * @throws ServerException when the server can't be used or refuses the search
+     */
+    suspend fun topSongs(artistId: String, name: String, count: Int): List<RemoteSong>? {
+        serverUrl ?: return null
+
+        fun List<RemoteSong>.theirs() = filter { song -> song.artists.any { it.id == artistId } }
+
+        // A server without the method refuses it, one without outside metadata ranks none
+        val top = try {
+            val found = call("getTopSongs", "artist" to name, "count" to count.toString())
+            (found["topSongs"] as? JsonObject)?.array("song").orEmpty()
+                .map { it.jsonObject.toSong(::coverUri) }
+                .theirs()
+        } catch (e: ServerException) {
+            if (e.check !is ServerCheck.Rejected) throw e
+            emptyList()
         }
-        return ArtistWithSongs(
-            artist = artist.toArtist(::coverUri),
-            albums = albums.map { it.first },
-            songs = albums.flatMap { it.second },
-        )
+        if (top.size >= count) return top.take(count)
+
+        val found = searchLibrary(name, songs = TOP_SONGS_SEARCH, albums = 0, artists = 0)
+            ?.songs.orEmpty()
+            .theirs()
+        return (top + found).distinctBy { it.song.id }.take(count)
     }
 
     /**
@@ -925,6 +968,12 @@ class OpenSubsonicProvider internal constructor(
 
         /** Requests sent at once when one item needs many, like the albums of an artist. */
         const val PARALLEL_REQUESTS = 4
+
+        /**
+         * Songs searched for to fill an artist's top songs, a search also finds songs of other
+         * artists that are left out.
+         */
+        const val TOP_SONGS_SEARCH = 50
 
         /** Largest page `getAlbumList2` accepts. */
         const val PAGE_SIZE = 500

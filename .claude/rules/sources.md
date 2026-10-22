@@ -28,6 +28,10 @@ paths:
   is pinned per host and a changed one prompts before it's trusted (`SelfSignedTrustManager`).
 - Volume levelling needs ReplayGain tags on the server; songs without them aren't levelled.
   Measuring server songs in the app was dropped, don't propose it.
+- `getTopSongs` ranks by outside metadata (Last.fm/ListenBrainz on Navidrome) and is uneven: on
+  one server it gave anywhere from 10 down to 0 songs per artist, and some servers don't implement
+  it. Never rely on it alone: fill from `search3` by the artist's name, keeping only songs of that
+  artist id (`OpenSubsonicProvider.topSongs`).
 
 ## YouTube
 

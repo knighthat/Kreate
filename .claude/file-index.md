@@ -301,7 +301,11 @@ ui/screen/
   `{Local,OpenSubsonic,YouTube}{Album,Artist,Playlist}DetailScreen/ViewModel.kt` (album screens
   have Bookmark, artist screens Follow: local columns, the server's star, YouTube's library save /
   subscription, or local columns while signed out of YouTube);
-  `YouTubeMoreScreen/ViewModel.kt` (grid behind "See more").
+  `YouTubeMoreScreen/ViewModel.kt` (grid behind "See more");
+  `OpenSubsonicArtistSongsScreen/ViewModel.kt` (every song of a server artist, behind "See more" of
+  the artist screen's 10 top songs: `getTopSongs` filled from `search3`; Play/Shuffle there start
+  a random top song at once and the rest follow, `rememberQuickQueueActions` +
+  `PlaybackController.follow`).
 - player/ — `PlayerSheet.kt` (full player sheet: anchoredDraggable over the window, nested scroll
   lets lists drag it down; pager of Player/Lyrics/Queue tabs at the bottom over the blurred cover,
   indicator on top with a full-width track; no collapse button; its own `MessageHost` above the

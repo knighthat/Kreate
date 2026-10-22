@@ -224,6 +224,15 @@ class PlaybackControllerImpl(
         if (wasEmpty) controller.prepare()
     }
 
+    override fun follow(seed: MediaItem, items: List<MediaItem>) =
+        run("queue ${items.size} items after ${seed.mediaId}") { controller ->
+            // The user started something else meanwhile
+            if (controller.mediaItemCount == 0 ||
+                controller.getMediaItemAt(0).mediaId != seed.mediaId
+            ) return@run
+            controller.addMediaItems(items)
+        }
+
     override fun playNext(items: List<MediaItem>) =
         run("queue ${items.size} items next") { controller ->
             val wasEmpty = controller.mediaItemCount == 0

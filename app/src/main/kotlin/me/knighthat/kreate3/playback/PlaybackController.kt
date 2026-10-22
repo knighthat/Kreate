@@ -103,6 +103,13 @@ interface PlaybackController {
     fun enqueue(items: List<MediaItem>)
 
     /**
+     * Adds [items] to the end of a queue started from [seed] with [playAll], like the rest of a
+     * list fetched while [seed] already plays. Nothing is added when the queue was changed to
+     * something else meanwhile.
+     */
+    fun follow(seed: MediaItem, items: List<MediaItem>)
+
+    /**
      * Adds [items] right after the current item, in their order, without starting to play. With
      * an empty queue they become the queue.
      */

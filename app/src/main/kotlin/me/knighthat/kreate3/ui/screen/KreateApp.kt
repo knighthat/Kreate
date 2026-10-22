@@ -71,6 +71,7 @@ import me.knighthat.kreate3.ui.navigation.Navigator
 import me.knighthat.kreate3.ui.navigation.NetworkSettings
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicAlbum
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicArtist
+import me.knighthat.kreate3.ui.navigation.OpenSubsonicArtistSongs
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicPlaylist
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicSettings
 import me.knighthat.kreate3.ui.navigation.PlayerSettings
@@ -100,6 +101,7 @@ import me.knighthat.kreate3.ui.screen.detail.LocalArtistDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.LocalPlaylistDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicAlbumDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicArtistDetailScreen
+import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicArtistSongsScreen
 import me.knighthat.kreate3.ui.screen.detail.OpenSubsonicPlaylistDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.YouTubeAlbumDetailScreen
 import me.knighthat.kreate3.ui.screen.detail.YouTubeArtistDetailScreen
@@ -362,8 +364,19 @@ fun KreateApp() {
                                 OpenSubsonicArtistDetailScreen(
                                     onBack = topLevel::pop,
                                     onOpenAlbum = { item -> topLevel.push(albumRoute(item)) },
+                                    onOpenSongs = { name ->
+                                        topLevel.push(OpenSubsonicArtistSongs(it.id, name))
+                                    },
                                     modifier = paddingModifier,
                                     contentPadding = contentPadding,
+                                    viewModel = routeViewModel(it),
+                                )
+                            }
+                            entry<OpenSubsonicArtistSongs> {
+                                OpenSubsonicArtistSongsScreen(
+                                    topLevel::pop,
+                                    paddingModifier,
+                                    contentPadding,
                                     viewModel = routeViewModel(it),
                                 )
                             }
