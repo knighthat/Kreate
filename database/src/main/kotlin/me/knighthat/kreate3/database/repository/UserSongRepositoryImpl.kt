@@ -178,6 +178,36 @@ internal class UserSongRepositoryImpl(
     override suspend fun remove(songId: String) =
         userSongDao.delete(scope.requireId(), songId)
 
+    override suspend fun moveInAlbum(albumId: String, songId: String, after: String?) {
+        val userId = scope.requireId()
+        database.inTransaction {
+            // Ids, not indices: the view leaves out songs that aren't in the library
+            val order = userSongDao.list(
+                query(userId, SortOrder(UserSongSort.ALBUM_POSITION).toOrderBy(), OF_ALBUM) {
+                    it.bindText(2, albumId)
+                }
+            ).map { it.songId }.toMutableList()
+            val from = order.indexOf(songId)
+            require(from >= 0) { "Song $songId isn't on album $albumId" }
+            order.removeAt(from)
+            val to = if (after == null) 0 else order.indexOf(after) + 1
+            require(to > 0 || after == null) { "Song $after isn't on album $albumId" }
+            order.add(to, songId)
+
+            // Every song gets the user's own position, so the shared ones no longer mix in
+            val rows = userSongDao.onAlbum(userId, albumId).associateBy { it.songId }
+            val now = clock.now()
+            val changed = order.mapIndexedNotNull { index, id ->
+                rows[id]?.takeIf { it.albumPosition != index }
+                    ?.copy(albumPosition = index, updatedAt = now)
+            }
+            userSongDao.upsertAll(changed)
+        }
+    }
+
+    override suspend fun resetAlbumOrder(albumId: String) =
+        userSongDao.clearAlbumPositions(scope.requireId(), albumId, clock.now())
+
     private companion object {
 
         /** Plays this close to each other, in milliseconds, were part of one listening session. */

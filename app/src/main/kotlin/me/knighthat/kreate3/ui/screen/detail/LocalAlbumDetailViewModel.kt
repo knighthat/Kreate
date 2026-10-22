@@ -27,11 +27,16 @@ import androidx.paging.cachedIn
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.database.repository.AlbumRepository
 import me.knighthat.kreate3.database.repository.UserAlbumRepository
@@ -44,6 +49,7 @@ import kotlin.time.Instant
 
 /**
  * The album whose id is in the saved state, `null` while it loads or when it doesn't exist, and its songs.
+ * The user can put its songs in another order, see [reorder], and back, see [resetOrder].
  *
  * @param scope the app's, where a bookmark is saved
  */
@@ -71,12 +77,90 @@ class LocalAlbumDetailViewModel(
         .map { it?.bookmarkedAt.isPositive }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
+    private val _isReordering = MutableStateFlow(false)
+
+    /** Whether the covers of [songs] are handles to move them, see [reorder]. */
+    val isReordering = _isReordering.asStateFlow()
+
+    private val _arranged = MutableStateFlow<List<MediaItem>?>(null)
+
+    /**
+     * Every song of the album in its order while [isReordering], `null` otherwise and while they
+     * load. A page of [songs] can't be dragged around, its songs move in this list instead.
+     */
+    val arranged = _arranged.asStateFlow()
+
+    private var arranging: Job? = null
+
+    // A move is relative to another song, they are made in the order the user made them
+    private val moves = Mutex()
+
     /** Every song of [songs] right now, in its order, for the quick actions. */
     suspend fun allSongs(): List<MediaItem> =
         // Every song of a large library takes long to turn into items, never on the main thread
         withContext(Dispatchers.Default) {
             songRepository.listOfAlbum(albumId).mapNotNull { it.toMediaItem() }
         }
+
+    /** Turns [isReordering] on or off, loading [arranged] when on. */
+    fun reorder(on: Boolean) {
+        if (on == _isReordering.value) return
+        _isReordering.value = on
+        arranging?.cancel()
+        _arranged.value = null
+        if (on) arrange()
+    }
+
+    private fun arrange() {
+        arranging = viewModelScope.launch { _arranged.value = allSongs() }
+    }
+
+    /**
+     * Moves the song [songId] to right after [after], to the start when it is `null`. [arranged]
+     * is expected to show it there already. [onDone] tells whether it worked, when it didn't
+     * [arranged] loads again to show the order the album kept.
+     */
+    fun moveSong(songId: String, after: String?, onDone: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val moved = try {
+                moves.withLock { songRepository.moveInAlbum(albumId, songId, after) }
+                true
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Couldn't move $songId after $after in album $albumId", e)
+                false
+            }
+            if (!moved && _isReordering.value) {
+                arranging?.cancel()
+                arrange()
+            }
+            onDone(moved)
+        }
+    }
+
+    /**
+     * Puts the songs back in the album's own order, [onDone] tells whether it worked. [arranged]
+     * loads again in that order.
+     */
+    fun resetOrder(onDone: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val reset = try {
+                moves.withLock { songRepository.resetAlbumOrder(albumId) }
+                true
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Couldn't reset the order of album $albumId", e)
+                false
+            }
+            if (_isReordering.value) {
+                arranging?.cancel()
+                arrange()
+            }
+            onDone(reset)
+        }
+    }
 
     /** Whether the album can be shared, it has a link. */
     val canShare: StateFlow<Boolean> = album

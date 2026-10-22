@@ -26,7 +26,8 @@ import androidx.room.Index
 import kotlin.time.Instant
 
 /**
- * What one user keeps about a [SongEntity]. [name], [artists] and [thumbnail] override the shared values.
+ * What one user keeps about a [SongEntity]. [name], [artists], [thumbnail] and [albumPosition]
+ * override the shared values.
  *
  * @property userId owner of this row
  * @property songId the [SongEntity] this row is about
@@ -34,6 +35,8 @@ import kotlin.time.Instant
  * @property artists artist names preferred by the user, `null` to use the shared ones
  * @property thumbnail image preferred by the user, `null` to use the shared one
  * @property likedAt when the user liked the song, `null` if not liked
+ * @property albumPosition where the user put the song in its album, lowest first, `null` to use
+ * the shared position
  * @property createdAt when the row was first stored
  * @property updatedAt when the row was last changed
  */
@@ -66,6 +69,8 @@ internal data class UserSongEntity(
     val thumbnail: Uri? = null,
     @ColumnInfo(name = "liked_at")
     val likedAt: Instant? = null,
+    @ColumnInfo(name = "album_position")
+    val albumPosition: Int? = null,
     @ColumnInfo(name = "created_at")
     val createdAt: Instant,
     @ColumnInfo(name = "updated_at")

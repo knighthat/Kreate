@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b2fd771706624b11e8211824c505e37a",
+    "identityHash": "b065d794379c776b7085bef6feb569ad",
     "entities": [
       {
         "tableName": "album",
@@ -1041,7 +1041,7 @@
       },
       {
         "tableName": "user_song",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` TEXT NOT NULL, `song_id` TEXT NOT NULL, `name` TEXT, `artists` TEXT, `thumbnail` TEXT, `liked_at` INTEGER, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`user_id`, `song_id`), FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`song_id`) REFERENCES `song`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` TEXT NOT NULL, `song_id` TEXT NOT NULL, `name` TEXT, `artists` TEXT, `thumbnail` TEXT, `liked_at` INTEGER, `album_position` INTEGER, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`user_id`, `song_id`), FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`song_id`) REFERENCES `song`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "userId",
@@ -1073,6 +1073,11 @@
           {
             "fieldPath": "likedAt",
             "columnName": "liked_at",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "albumPosition",
+            "columnName": "album_position",
             "affinity": "INTEGER"
           },
           {
@@ -1153,12 +1158,12 @@
       },
       {
         "viewName": "user_song_view",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n    us.user_id AS user_id,\n    s.id AS song_id,\n    s.origin AS origin,\n    COALESCE(us.name, s.name) AS name,\n    COALESCE(\n        us.artists,\n        (SELECT json_group_array(COALESCE(ua.name, ar.name)) FILTER (WHERE COALESCE(ua.name, ar.name) IS NOT NULL)\n            FROM song_artist_map m\n            JOIN artist ar ON ar.id = m.artist_id\n            LEFT JOIN user_artist ua ON ua.artist_id = ar.id AND ua.user_id = us.user_id\n            WHERE m.song_id = s.id)\n    ) AS artists,\n    (SELECT json_group_array(m.artist_id) FROM song_artist_map m WHERE m.song_id = s.id) AS artist_ids,\n    COALESCE(us.thumbnail, s.thumbnail, ual.thumbnail, al.thumbnail) AS thumbnail,\n    s.duration AS duration,\n    s.is_explicit AS is_explicit,\n    s.album_id AS album_id,\n    COALESCE(ual.name, al.name) AS album_name,\n    s.album_position AS album_position,\n    s.unavailable_since AS unavailable_since,\n    us.liked_at AS liked_at\nFROM user_song us\nJOIN song s ON s.id = us.song_id\nLEFT JOIN album al ON al.id = s.album_id\nLEFT JOIN user_album ual ON ual.album_id = s.album_id AND ual.user_id = us.user_id\nWHERE s.unavailable_since IS NULL"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n    us.user_id AS user_id,\n    s.id AS song_id,\n    s.origin AS origin,\n    COALESCE(us.name, s.name) AS name,\n    COALESCE(\n        us.artists,\n        (SELECT json_group_array(COALESCE(ua.name, ar.name)) FILTER (WHERE COALESCE(ua.name, ar.name) IS NOT NULL)\n            FROM song_artist_map m\n            JOIN artist ar ON ar.id = m.artist_id\n            LEFT JOIN user_artist ua ON ua.artist_id = ar.id AND ua.user_id = us.user_id\n            WHERE m.song_id = s.id)\n    ) AS artists,\n    (SELECT json_group_array(m.artist_id) FROM song_artist_map m WHERE m.song_id = s.id) AS artist_ids,\n    COALESCE(us.thumbnail, s.thumbnail, ual.thumbnail, al.thumbnail) AS thumbnail,\n    s.duration AS duration,\n    s.is_explicit AS is_explicit,\n    s.album_id AS album_id,\n    COALESCE(ual.name, al.name) AS album_name,\n    COALESCE(us.album_position, s.album_position) AS album_position,\n    s.unavailable_since AS unavailable_since,\n    us.liked_at AS liked_at\nFROM user_song us\nJOIN song s ON s.id = us.song_id\nLEFT JOIN album al ON al.id = s.album_id\nLEFT JOIN user_album ual ON ual.album_id = s.album_id AND ual.user_id = us.user_id\nWHERE s.unavailable_since IS NULL"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b2fd771706624b11e8211824c505e37a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b065d794379c776b7085bef6feb569ad')"
     ]
   }
 }

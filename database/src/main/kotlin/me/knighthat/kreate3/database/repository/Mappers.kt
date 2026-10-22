@@ -109,10 +109,21 @@ internal fun UserAlbumEntity.toModel() = UserAlbum(albumId, name, thumbnail, art
 internal fun UserAlbum.toEntity(userId: String, createdAt: Instant, updatedAt: Instant) =
     UserAlbumEntity(userId, albumId, name, thumbnail, artists, bookmarkedAt, createdAt, updatedAt)
 
-internal fun UserSongEntity.toModel() = UserSong(songId, name, artists, thumbnail, likedAt)
+internal fun UserSongEntity.toModel() =
+    UserSong(songId, name, artists, thumbnail, likedAt, albumPosition)
 
 internal fun UserSong.toEntity(userId: String, createdAt: Instant, updatedAt: Instant) =
-    UserSongEntity(userId, songId, name, artists, thumbnail, likedAt, createdAt, updatedAt)
+    UserSongEntity(
+        userId,
+        songId,
+        name,
+        artists,
+        thumbnail,
+        likedAt,
+        albumPosition,
+        createdAt,
+        updatedAt
+    )
 
 internal fun UserPlaylistEntity.toModel() =
     UserPlaylist(playlistId, origin, name, thumbnail, isMonthly, remoteId)

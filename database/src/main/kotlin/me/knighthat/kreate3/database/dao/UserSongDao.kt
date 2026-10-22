@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.entity.UserSongEntity
 import me.knighthat.kreate3.database.view.UserSongViewEntity
 import me.knighthat.kreate3.model.Origin
+import kotlin.time.Instant
 
 @Dao
 internal interface UserSongDao {
@@ -75,6 +76,25 @@ internal interface UserSongDao {
 
     @Upsert
     suspend fun upsertAll(songs: List<UserSongEntity>)
+
+    /**
+     * The user's rows about songs on the album [albumId].
+     */
+    @Query(
+        "SELECT us.* FROM user_song us JOIN song s ON s.id = us.song_id " +
+                "WHERE us.user_id = :userId AND s.album_id = :albumId"
+    )
+    suspend fun onAlbum(userId: String, albumId: String): List<UserSongEntity>
+
+    /**
+     * Takes the user's own album positions off the songs of the album [albumId].
+     */
+    @Query(
+        "UPDATE user_song SET album_position = NULL, updated_at = :now " +
+                "WHERE user_id = :userId AND album_position IS NOT NULL " +
+                "AND song_id IN (SELECT id FROM song WHERE album_id = :albumId)"
+    )
+    suspend fun clearAlbumPositions(userId: String, albumId: String, now: Instant)
 
     @Query("DELETE FROM user_song WHERE user_id = :userId AND song_id = :songId")
     suspend fun delete(userId: String, songId: String)

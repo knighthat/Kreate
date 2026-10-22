@@ -51,6 +51,26 @@ enum class CoverEditMode {
 }
 
 /**
+ * A handle to drag a song, alone where the cover would be, for [SongItem]'s `thumbnailOverlay` in
+ * rows that leave the cover out, like an album's.
+ *
+ * @param handle the item's `draggableHandle` of sh.calvin.reorderable
+ */
+@Composable
+internal fun BoxScope.DragHandle(handle: Modifier) = Box(
+    contentAlignment = Alignment.Center,
+    modifier = Modifier
+        .matchParentSize()
+        .then(handle),
+) {
+    Icon(
+        painterResource(R.drawable.drag_handle),
+        contentDescription = "Drag to move",
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
+/**
  * What [mode] puts over a song's cover, for [SongItem]'s `thumbnailOverlay`: nothing, a drag
  * handle that [handle] makes one, or a button that calls [onRemove].
  *

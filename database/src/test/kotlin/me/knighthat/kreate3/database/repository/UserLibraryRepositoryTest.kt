@@ -184,6 +184,40 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
         )
     }
 
+    @Test
+    fun songsOfAnAlbumMoveInTheUsersOrder() = runBlocking {
+        addAlbum("a1")
+        listOf("a", "b", "c", "d").forEachIndexed { index, id ->
+            addSong(id, albumId = "a1", albumPosition = index + 1)
+        }
+        // "d" isn't in the library yet, it neither shows nor counts in the order
+        listOf("a", "b", "c").forEach { librarySong(it) }
+
+        songs.moveInAlbum("a1", "c", after = null)
+        assertEquals(listOf("c", "a", "b"), songs.listOfAlbum("a1").map { it.songId })
+        songs.moveInAlbum("a1", "c", after = "b")
+        assertEquals(listOf("a", "b", "c"), songs.ofAlbum("a1").asList().map { it.songId })
+        songs.moveInAlbum("a1", "a", after = "c")
+        assertEquals(
+            listOf(2, 0, 1),
+            listOf("a", "b", "c").map { database.userSongDao().get(USER, it)?.albumPosition },
+        )
+
+        // A scan numbering the album again doesn't change what the user picked
+        addSong("a", albumId = "a1", albumPosition = 9)
+        addSong("c", albumId = "a1", albumPosition = 0)
+        librarySong("d")
+        assertEquals(listOf("b", "c", "a", "d"), songs.listOfAlbum("a1").map { it.songId })
+        assertThrows(IllegalArgumentException::class.java) {
+            runBlocking { songs.moveInAlbum("a1", "e", after = null) }
+        }
+
+        songs.resetAlbumOrder("a1")
+        assertNull(database.userSongDao().get(USER, "a")?.albumPosition)
+        assertEquals(listOf("c", "b", "d", "a"), songs.listOfAlbum("a1").map { it.songId })
+        Unit
+    }
+
     private suspend fun play(songId: String, at: Long) = database.playbackHistoryDao().insert(
         PlaybackHistoryEntity(
             songId = songId,

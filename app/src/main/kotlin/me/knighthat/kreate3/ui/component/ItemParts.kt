@@ -334,7 +334,8 @@ fun ExplicitBadge(size: Dp = BADGE_SIZE) = ItemBadge(
  * then starts at the edge.
  *
  * @param thumbnails pictures to try for the cover, see [Thumbnail], the item's own by default
- * @param thumbnailOverlay drawn over the cover, in a box of its size
+ * @param thumbnailOverlay drawn over the cover, in a box of its size; alone in that box when the
+ * cover is left out
  * @param onLongClick what a long press does, nothing when `null`
  */
 @Composable
@@ -369,6 +370,8 @@ fun ItemRow(
                 )
                 thumbnailOverlay?.invoke(this)
             }
+        else if (thumbnailOverlay != null)
+            Box(modifier = Modifier.size(ROW_THUMBNAIL_SIZE), content = thumbnailOverlay)
         // The line above the title spans the width of the trailing content too, so what sits
         // at its end lines up with it
         Column(modifier = Modifier.weight(1f)) {

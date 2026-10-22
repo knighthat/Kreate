@@ -153,4 +153,17 @@ interface UserSongRepository {
      * Removes the song from the library. The shared song stays.
      */
     suspend fun remove(songId: String)
+
+    /**
+     * Moves the song [songId] of the album [albumId] to right after the song [after], to the start
+     * when it is `null`, in the active user's album order. The whole order of [listOfAlbum] is
+     * kept as the user's then (`UserSong.albumPosition`), a scan that changes the shared positions
+     * doesn't change it.
+     *
+     * @throws IllegalArgumentException when [songId] or [after] isn't in [listOfAlbum]
+     */
+    suspend fun moveInAlbum(albumId: String, songId: String, after: String?)
+
+    /** Puts the songs of the album [albumId] back in the album's own order for the active user. */
+    suspend fun resetAlbumOrder(albumId: String)
 }

@@ -20,6 +20,7 @@ package me.knighthat.kreate3.ui.component
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -228,28 +229,28 @@ fun rememberQuickQueueActions(
 }
 
 /**
- * Play and shuffle buttons with the rest of the [QueueAction]s in a menu, centered in a row, like
- * under the header of a detail screen.
+ * Play, then shuffle, play next and add to queue as icons, centered in a row, like under the
+ * header of a detail screen.
+ *
+ * @param menu items of a more button at the end, see [MoreButton], `null` for no button
  */
 @Composable
-fun QueueActionRow(onAction: (QueueAction) -> Unit, modifier: Modifier = Modifier) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-    ) {
-        QueuePlayButton({ onAction(QueueAction.PLAY) })
-        if (LocalIconOnly.current)
-            ShuffleButton({ onAction(QueueAction.SHUFFLE) })
-        else
-            LabeledButton(
-                "Shuffle",
-                R.drawable.shuffle,
-                onClick = { onAction(QueueAction.SHUFFLE) })
-        QueueMoreButton(onAction)
-    }
+fun QueueActionRow(
+    onAction: (QueueAction) -> Unit,
+    modifier: Modifier = Modifier,
+    menu: (@Composable ColumnScope.(close: () -> Unit) -> Unit)? = null,
+) = Row(
+    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+) {
+    QueuePlayButton({ onAction(QueueAction.PLAY) })
+    ShuffleButton({ onAction(QueueAction.SHUFFLE) })
+    PlayNextButton({ onAction(QueueAction.PLAY_NEXT) })
+    AddToQueueButton({ onAction(QueueAction.ENQUEUE) })
+    menu?.let { MoreButton(items = it) }
 }
 
 /**

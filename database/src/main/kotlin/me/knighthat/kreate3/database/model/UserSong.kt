@@ -22,13 +22,16 @@ import android.net.Uri
 import kotlin.time.Instant
 
 /**
- * What the active user keeps about a [Song]. [name], [artists] and [thumbnail] override the shared values.
+ * What the active user keeps about a [Song]. [name], [artists], [thumbnail] and [albumPosition]
+ * override the shared values.
  *
  * @property songId the [Song] this is about
  * @property name title preferred by the user, `null` to use the shared one
  * @property artists artist names preferred by the user, `null` to use the shared ones
  * @property thumbnail image preferred by the user, `null` to use the shared one
  * @property likedAt when the user liked the song, `null` if not liked
+ * @property albumPosition where the user put the song in its album, lowest first, `null` to use
+ * the shared position
  */
 data class UserSong(
     val songId: String,
@@ -36,4 +39,5 @@ data class UserSong(
     val artists: List<String>? = null,
     val thumbnail: Uri? = null,
     val likedAt: Instant? = null,
+    val albumPosition: Int? = null,
 )

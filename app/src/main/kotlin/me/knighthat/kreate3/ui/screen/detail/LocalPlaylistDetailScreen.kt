@@ -21,12 +21,8 @@ package me.knighthat.kreate3.ui.screen.detail
 import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -42,12 +38,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -56,17 +50,13 @@ import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
-import me.knighthat.kreate3.ui.component.AddToQueueButton
 import me.knighthat.kreate3.ui.component.CoverEditMode
 import me.knighthat.kreate3.ui.component.CoverEditOverlay
 import me.knighthat.kreate3.ui.component.LocalNotifier
-import me.knighthat.kreate3.ui.component.MoreButton
-import me.knighthat.kreate3.ui.component.PlayNextButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
-import me.knighthat.kreate3.ui.component.QueuePlayButton
+import me.knighthat.kreate3.ui.component.QueueActionRow
 import me.knighthat.kreate3.ui.component.ScreenPreviews
-import me.knighthat.kreate3.ui.component.ShuffleButton
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.SongMenuAction
 import me.knighthat.kreate3.ui.component.previewSongs
@@ -277,9 +267,8 @@ private fun PlaylistSong(
 }
 
 /**
- * Play, then shuffle, play next and add to queue as icons, centered in a row under the header.
- * Its more menu switches [mode], to move songs and to take them out, like the queue's buttons: at
- * most one is on, turning one on turns the other off.
+ * A [QueueActionRow] whose more menu switches [mode], to move songs and to take them out, like the
+ * queue's buttons: at most one is on, turning one on turns the other off.
  *
  * @param canEdit whether the switches can be used
  */
@@ -290,21 +279,11 @@ private fun PlaylistActionRow(
     onModeChange: (CoverEditMode) -> Unit,
     canEdit: Boolean,
     modifier: Modifier = Modifier,
-) = Row(
-    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
 ) {
     val reordering = mode == CoverEditMode.REORDER
     val removing = mode == CoverEditMode.REMOVE
 
-    QueuePlayButton({ onAction(QueueAction.PLAY) })
-    ShuffleButton({ onAction(QueueAction.SHUFFLE) })
-    PlayNextButton({ onAction(QueueAction.PLAY_NEXT) })
-    AddToQueueButton({ onAction(QueueAction.ENQUEUE) })
-    MoreButton { close ->
+    QueueActionRow(onAction, modifier) { close ->
         EditMenuItem(
             label = if (reordering) "Lock the order" else "Unlock to move songs",
             icon = if (reordering) R.drawable.lock_open else R.drawable.lock,

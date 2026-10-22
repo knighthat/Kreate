@@ -54,7 +54,7 @@ import kotlin.time.Instant
                 "    s.is_explicit AS is_explicit,\n" +
                 "    s.album_id AS album_id,\n" +
                 "    COALESCE(ual.name, al.name) AS album_name,\n" +
-                "    s.album_position AS album_position,\n" +
+                "    COALESCE(us.album_position, s.album_position) AS album_position,\n" +
                 "    s.unavailable_since AS unavailable_since,\n" +
                 "    us.liked_at AS liked_at\n" +
                 "FROM user_song us\n" +

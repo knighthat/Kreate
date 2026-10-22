@@ -227,14 +227,15 @@ ui/component/ (shared composables)
   `MediaItem.localSongId`.
 - `MediaItemDsl.kt` — model → `MediaItem` conversions (`toMediaItem`, `toLiveMediaItem`), `EXTRA_*`
   keys, `isExplicit`/`isBookmarked`/`hasBadges`.
-- `QueueActions.kt` — `QueueAction` enum (PLAY/SHUFFLE/ENQUEUE/PLAY_NEXT), `QueueActionRow`,
-  `QueuePlayButton` (labeled, filled icon when icon-only), `QueueMoreButton`,
-  `PlaybackController.queue` (quick actions). The app's playlists have their own row
-  (`PlaylistActionRow` in `LocalPlaylistDetailScreen.kt`: play, shuffle, play next, add to queue,
-  more menu with the move/remove switches).
+- `QueueActions.kt` — `QueueAction` enum (PLAY/SHUFFLE/ENQUEUE/PLAY_NEXT), `QueueActionRow`
+  (detail screens: Play, then Shuffle / Play next / Add to queue icon buttons, optional `menu` for a
+  more button), `QueuePlayButton` (labeled, filled icon when icon-only), `QueueMoreButton`,
+  `PlaybackController.queue` (quick actions). The app's playlists pass the move/remove switches as
+  its menu (`PlaylistActionRow` in `LocalPlaylistDetailScreen.kt`), device albums a Reorder switch.
 - `CoverEdit.kt` — `CoverEditMode` NONE/REORDER/REMOVE and `CoverEditOverlay` (drag handle or X
   button over a `SongItem` cover, the handle being the caller's reorderable `draggableHandle`), for
-  the queue and the app's playlists.
+  the queue and the app's playlists; `DragHandle` (the handle alone in the cover's place, for
+  cover-less rows: device albums; `ItemRow` draws `thumbnailOverlay` alone without the cover).
 - `CenteredPicker` (now in `ui/screen/search/SearchScreen.kt`) — generic LazyRow picker, each value
   once (no looping — the maintainer rejected a pseudo-infinite list): selected item centered (snap),
   neighbours scaled 0.75 / faded, ends have one side empty, tap slides an item to the middle; used
@@ -254,7 +255,7 @@ ui/component/ (shared composables)
   Screens no longer have their own SnackbarHostState.
 - `IconOnly.kt` — `LocalIconOnly` (provided in `KreateApp` from `Preferences.ICON_ONLY`, false in
   previews): bottom bar drops its text, home origin chips become `OriginToggle` icon toggles (
-  primary on / 38% onSurface off), `QueueActionRow` becomes FilledIconButton Play + ShuffleButton;
+  primary on / 38% onSurface off), `QueuePlayButton` becomes a FilledIconButton;
   icons carry the content description.
 - `PreviewSamples.kt` (sample data, `PreviewTheme`, `@ScreenPreviews` phone-sized light+dark,
   `@ComponentPreviews` wrap-content light+dark), `ItemPreviews.kt` (@Previews).
@@ -300,7 +301,11 @@ ui/screen/
   scope, flipped back with a message on failure; `serverFailure`/`youTubeFailure` texts);
   `{Local,OpenSubsonic,YouTube}{Album,Artist,Playlist}DetailScreen/ViewModel.kt` (album screens
   have Bookmark, artist screens Follow: local columns, the server's star, YouTube's library save /
-  subscription, or local columns while signed out of YouTube);
+  subscription, or local columns while signed out of YouTube; the album screen of a `LOCAL`
+  album (not stored remote ones, they keep the server's order) has a more menu with Reorder: the
+  whole album loaded in `arranged`, `DragHandle`s where covers would be, a drop calls
+  `moveInAlbum` serialized by a `Mutex`, like the app's playlists; a long press on Reorder
+  (`ReorderMenuItem`, a menu row that takes long presses) asks to reset to the album's order);
   `YouTubeMoreScreen/ViewModel.kt` (grid behind "See more");
   `OpenSubsonicArtistSongsScreen/ViewModel.kt` (every song of a server artist, behind "See more" of
   the artist screen's 10 top songs: `getTopSongs` filled from `search3`; Play/Shuffle there start
@@ -378,7 +383,9 @@ Pure Kotlin/JVM (`kotlin("jvm")`), package `me.knighthat.kreate3.model`, rules i
   `Converters.kt` — Instant/Duration/list/Uri.
 - entity/ — shared tables `Song`, `Album`, `Artist`, `SongFormat` (gain), `Lyrics`, `SongArtistMap`,
   `SongPlaylistMap` (`position` = playlist order, gaps left by removals); per-user `User`,
-  `UserSong`, `UserAlbum`, `UserArtist`, `UserPlaylist`,
+  `UserSong` (`album_position` = the user's album order over `song.album_position`, set for
+  every song of the album by `UserSongRepository.moveInAlbum`, cleared by `resetAlbumOrder`),
+  `UserAlbum`, `UserArtist`, `UserPlaylist`,
   `PlaybackHistory`, `SearchHistory`, `PersistentQueue`.
 - view/ — `UserSongViewEntity`, `UserAlbumViewEntity`, `UserArtistViewEntity` (user override ?:
   shared value; songs with `unavailable_since` hidden).
