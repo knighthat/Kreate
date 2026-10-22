@@ -1,10 +1,13 @@
 # Running, inspecting and tracing on the emulator
 
-The emulator holds the maintainer's data and they may use it at the same time. Ask once whether
-you may change its state yourself (install your own build over theirs, clear the app's data or
-wipe its DB, grant or revoke permissions). State that changes between your own actions may be
-theirs: compare logcat times with your actions before suspecting the code, and don't restore what
-they changed. Never mention or save which account or channel it's signed in as.
+Ask the maintainer before using any device, emulated or real: installing or launching builds,
+running tests, driving the UI, reading its logs, settings, screen or database, and changing its
+state (installing over their build, clearing the app's data, wiping the DB, granting or revoking
+permissions). A maintainer may allow some of it on their own machine; keep that answer in your
+local memory, never in the repo. Devices hold the maintainer's data and they may use them at the
+same time. State that changes between your own actions may be theirs: compare logcat times with
+your actions before suspecting the code, and don't restore what they changed. Never mention or
+save which account or channel a device is signed in as.
 
 ## Launching
 
@@ -37,9 +40,12 @@ they changed. Never mention or save which account or channel it's signed in as.
 
 ## Driving the UI
 
-- `uiautomator dump /sdcard/ui.xml`, pull it, find the node by `text=`/`content-desc=`, tap the
-  centre of its `bounds`. uiautomator's `enabled=` on Compose `IconButton`s isn't reliable; check a
-  screenshot and a tap.
+- `.claude/scripts/ui.sh dump [pattern]` lists the screen as `text | content-desc | bounds`;
+  `ui.sh tap <label> [long]` taps (or long-presses) the node whose text or description is exactly
+  `<label>`. It picks the attached emulator and refuses any other device. Tapping a filter chip
+  that is already on turns it off, dump before tapping. Under it: `uiautomator dump
+  /sdcard/ui.xml`, find the node by `text=`/`content-desc=`, tap the centre of its `bounds`.
+  uiautomator's `enabled=` on Compose `IconButton`s isn't reliable; check a screenshot and a tap.
 - Long-press: `adb shell input swipe x y x y 800`.
 - The 5-minute library throttle is in memory: force-stop + relaunch makes a tab sync again at once.
 - Killing the app for cold paths: `am kill` does nothing while `PlaybackService` is foreground. Use
@@ -114,3 +120,10 @@ rising position), not `dumpsys media_session`.
   over debug auto-starts the app), install the signed release, force-stop, `pm grant`, trace,
   launch; reinstall debug after. The emulator has 4 cores and its graphics HAL makes cover uploads
   look slow.
+
+## Sign-ins
+
+YouTube's account switch is off by default, so the emulator is usually signed out of YouTube and
+signed-in screens (library save, subscribe, likes sent) don't show. When a test needs a sign-in the
+emulator lacks, ask the maintainer to sign in there first, and undo what the test changed on the
+real account afterwards.
