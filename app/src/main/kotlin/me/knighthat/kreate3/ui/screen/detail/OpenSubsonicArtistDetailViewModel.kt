@@ -26,11 +26,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
 import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.opensubsonic.Shareable
+import me.knighthat.kreate3.source.withoutDisliked
 import me.knighthat.kreate3.ui.component.toLiveMediaItem
 import me.knighthat.kreate3.ui.navigation.LocalArtist
 
@@ -63,9 +65,10 @@ const val TOP_SONGS = 10
 class OpenSubsonicArtistDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val provider: OpenSubsonicProvider,
+    library: UserSongRepository,
     scope: CoroutineScope,
     notifier: Notifier,
-) : LiveDetailViewModel<OpenSubsonicArtistDetail>() {
+) : LiveDetailViewModel<OpenSubsonicArtistDetail>(library.dislikedIds()) {
 
     val artistId: String = checkNotNull(savedStateHandle[LocalArtist.ID]) {
         "LocalArtist.ID is missing from the saved state"
@@ -115,17 +118,21 @@ class OpenSubsonicArtistDetailViewModel(
         )
     }
 
+    override fun OpenSubsonicArtistDetail.withoutSongs(disliked: Set<String>) =
+        copy(topSongs = topSongs.withoutDisliked(disliked))
+
     /**
-     * Every song of the artist, album after album, fetched the first time, like for Play.
+     * Every song of the artist, album after album, fetched the first time, like for Play. The
+     * ones the user disliked are left out.
      *
      * @return `null` when the server can't give them
      */
-    suspend fun allSongs(): List<MediaItem>? = everySong ?: withContext(Dispatchers.Default) {
+    suspend fun allSongs(): List<MediaItem>? = (everySong ?: withContext(Dispatchers.Default) {
         askServerOrNull { provider.artistWithSongs(artistId) }
             ?.songs
             ?.map { it.toLiveMediaItem() }
             ?.distinctBy { it.mediaId }
-    }?.also { everySong = it }
+    }?.also { everySong = it })?.withoutDisliked(disliked.value)
 
     /**
      * A link to the artist, as all of their albums, that anyone can open. See

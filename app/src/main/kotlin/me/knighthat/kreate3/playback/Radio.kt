@@ -25,6 +25,7 @@ import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.withoutDisliked
 import me.knighthat.kreate3.source.youtube.toMediaItem
 import me.knighthat.kreate3.ui.component.origin
 import me.knighthat.kreate3.ui.component.toLiveMediaItem
@@ -36,7 +37,7 @@ internal const val RADIO_SIZE = 30
 /**
  * Finds songs like a song, each origin its own way: songs of the device are scored from what the
  * user keeps ([UserSongRepository.similar]), the other origins are asked from their source.
- * Nothing is stored.
+ * Songs the user disliked are left out. Nothing is stored.
  */
 class Radio(
     private val songs: UserSongRepository,
@@ -69,6 +70,9 @@ class Radio(
 
             null -> emptyList()
         }
-        return found.filter { it.mediaId != id }.distinctBy { it.mediaId }.take(limit)
+        return found.filter { it.mediaId != id }
+            .withoutDisliked(songs.listDislikedIds())
+            .distinctBy { it.mediaId }
+            .take(limit)
     }
 }

@@ -21,6 +21,9 @@ package me.knighthat.kreate3.ui.screen.detail
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -37,11 +40,15 @@ class LiveDetailViewModelTest {
     /** The main thread and the fetch's, so every step happens right away. */
     private val dispatcher = UnconfinedTestDispatcher()
 
+    /** An item of songs, their ids between commas. */
     private inner class Detail(
+        disliked: Flow<Set<String>> = flowOf(emptySet()),
         var fetch: suspend () -> String?,
-    ) : LiveDetailViewModel<String>(dispatcher) {
+    ) : LiveDetailViewModel<String>(disliked, dispatcher) {
         override val notFound = "Not here"
         override suspend fun fetch(): String? = fetch.invoke()
+        override fun String.withoutSongs(disliked: Set<String>) =
+            split(",").filterNot { it in disliked }.joinToString(",")
     }
 
     @Before
@@ -114,6 +121,20 @@ class LiveDetailViewModelTest {
         detail.load()
 
         assertEquals(LiveState.Ready("Album"), detail.state.value)
+    }
+
+    @Test
+    fun songsDislikedWhileItShowsLeaveIt() {
+        val disliked = MutableStateFlow(setOf("a"))
+        val detail = Detail(disliked) { "a,b,c" }.apply { load() }
+        assertEquals(LiveState.Ready("b,c"), detail.state.value)
+
+        disliked.value = setOf("a", "c")
+        assertEquals(LiveState.Ready("b"), detail.state.value)
+
+        // Taken back, it shows again
+        disliked.value = emptySet()
+        assertEquals(LiveState.Ready("a,b,c"), detail.state.value)
     }
 
     @Test

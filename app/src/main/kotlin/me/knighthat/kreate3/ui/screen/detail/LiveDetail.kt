@@ -43,15 +43,20 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
 import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
 import me.knighthat.kreate3.provider.youtube.YouTubeException
+import me.knighthat.kreate3.source.withoutDislikedSongs
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.ArtistItem
 import me.knighthat.kreate3.ui.component.SectionTitle
@@ -74,22 +79,38 @@ sealed interface LiveState<out T> {
  * Fetches an item of an online catalog when its screen opens, see [LiveDetailScreen]. Subclasses
  * call [load] once from their `init`, after their own properties are set.
  *
+ * @param dislikedIds see [me.knighthat.kreate3.database.repository.UserSongRepository.dislikedIds]
  * @param background where [fetch] runs, never the main thread
  */
 abstract class LiveDetailViewModel<T : Any>(
+    dislikedIds: Flow<Set<String>>,
     private val background: CoroutineDispatcher = Dispatchers.Default,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<LiveState<T>>(LiveState.Loading)
     private var job: Job? = null
 
-    val state: StateFlow<LiveState<T>> = _state.asStateFlow()
+    /** Ids of the songs the user disliked, they're never shown. */
+    protected val disliked: StateFlow<Set<String>> =
+        dislikedIds.stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
+
+    /** What [fetch] gave, without the songs the user disliked, also the ones disliked meanwhile. */
+    val state: StateFlow<LiveState<T>> = combine(_state, disliked) { state, ids ->
+        if (state is LiveState.Ready && ids.isNotEmpty())
+            LiveState.Ready(state.value.withoutSongs(ids))
+        else state
+    }
+        .flowOn(background)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, LiveState.Loading)
 
     /** What [load] says when [fetch] finds nothing, like "YouTube doesn't have this album". */
     protected abstract val notFound: String
 
     /** @return `null` when the catalog doesn't have the item */
     protected abstract suspend fun fetch(): T?
+
+    /** The item without the songs whose id is in [disliked], the rest as it is. */
+    protected abstract fun T.withoutSongs(disliked: Set<String>): T
 
     /** Starts over, also after a failure. */
     fun load() {
@@ -194,6 +215,14 @@ data class LiveSection(
     val items: List<Pair<Tab, MediaItem>>,
     val more: YouTubeBrowse? = null,
 )
+
+/** The rows without the songs whose id is in [disliked], a row left with nothing goes too. */
+@JvmName("sectionsWithoutDislikedSongs")
+internal fun List<LiveSection>.withoutDislikedSongs(disliked: Set<String>): List<LiveSection> =
+    mapNotNull { section ->
+        section.copy(items = section.items.withoutDislikedSongs(disliked))
+            .takeIf { it.items.isNotEmpty() }
+    }
 
 /**
  * A titled row of cards scrolling sideways. Artists show round, anything else like an album. The

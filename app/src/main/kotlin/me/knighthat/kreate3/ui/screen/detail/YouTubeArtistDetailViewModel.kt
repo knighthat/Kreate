@@ -22,10 +22,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CoroutineScope
 import me.knighthat.kreate3.database.model.Artist
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.youtube.YouTubeLinks
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.source.DeviceReactions
+import me.knighthat.kreate3.source.withoutDisliked
 import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
 import me.knighthat.kreate3.source.youtube.SONG_ARTWORK
 import me.knighthat.kreate3.source.youtube.artwork
@@ -58,9 +60,10 @@ class YouTubeArtistDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val provider: YouTubeProvider,
     private val device: DeviceReactions,
+    library: UserSongRepository,
     scope: CoroutineScope,
     notifier: Notifier,
-) : LiveDetailViewModel<YouTubeArtistDetail>() {
+) : LiveDetailViewModel<YouTubeArtistDetail>(library.dislikedIds()) {
 
     val artistId: String = checkNotNull(savedStateHandle[LocalArtist.ID]) {
         "LocalArtist.ID is missing from the saved state"
@@ -130,6 +133,11 @@ class YouTubeArtistDetailViewModel(
             description = page.description?.trim()?.ifEmpty { null },
         )
     }
+
+    override fun YouTubeArtistDetail.withoutSongs(disliked: Set<String>) = copy(
+        topSongs = topSongs.withoutDisliked(disliked),
+        sections = sections.withoutDislikedSongs(disliked),
+    )
 
     /** The artist's public link, it needs no request. */
     fun shareLink(): Result<String> = Result.success(YouTubeLinks.artist(artistId))

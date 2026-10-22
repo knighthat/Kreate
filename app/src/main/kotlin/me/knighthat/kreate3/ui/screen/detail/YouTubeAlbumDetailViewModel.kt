@@ -22,11 +22,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CoroutineScope
 import me.knighthat.kreate3.database.model.Album
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.youtube.YouTubeLinks
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeSection
 import me.knighthat.kreate3.source.DeviceReactions
+import me.knighthat.kreate3.source.withoutDisliked
 import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
 import me.knighthat.kreate3.source.youtube.SONG_ARTWORK
 import me.knighthat.kreate3.source.youtube.artwork
@@ -71,9 +73,10 @@ class YouTubeAlbumDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val provider: YouTubeProvider,
     private val device: DeviceReactions,
+    library: UserSongRepository,
     scope: CoroutineScope,
     notifier: Notifier,
-) : LiveDetailViewModel<YouTubeAlbumDetail>() {
+) : LiveDetailViewModel<YouTubeAlbumDetail>(library.dislikedIds()) {
 
     val albumId: String = checkNotNull(savedStateHandle[LocalAlbum.ID]) {
         "LocalAlbum.ID is missing from the saved state"
@@ -141,6 +144,11 @@ class YouTubeAlbumDetailViewModel(
             isExplicit = album.isExplicit == true,
         )
     }
+
+    override fun YouTubeAlbumDetail.withoutSongs(disliked: Set<String>) = copy(
+        songs = songs.withoutDisliked(disliked),
+        sections = sections.withoutDislikedSongs(disliked),
+    )
 
     /** The album's public link, it needs no request. */
     fun shareLink(): Result<String> = Result.success(YouTubeLinks.album(albumId))

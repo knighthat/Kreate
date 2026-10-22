@@ -32,6 +32,9 @@ import me.knighthat.kreate3.model.Origin
  * The songs the active user keeps in their library, as the user sees them: the user's own
  * value when set, the shared one otherwise. Only the active user's data is touched,
  * the shared song lives in [SongRepository].
+ *
+ * Every list leaves out the songs the user disliked, [dislikedIds] are their ids. [find] still
+ * gives them, so a dislike can be taken back.
  */
 interface UserSongRepository {
 
@@ -111,6 +114,16 @@ interface UserSongRepository {
      * The origins the library has songs from. It follows changes in the database.
      */
     fun origins(): Flow<Set<Origin>>
+
+    /**
+     * Ids of the songs the user disliked, of every origin, also songs only seen live: a dislike
+     * stores the song. Lists fetched from a source leave these out. It follows changes in the
+     * database.
+     */
+    fun dislikedIds(): Flow<Set<String>>
+
+    /** [dislikedIds] right now, once a user is active. */
+    suspend fun listDislikedIds(): Set<String>
 
     /**
      * Songs of the library whose title, artists or album contain [query], a page at a time.

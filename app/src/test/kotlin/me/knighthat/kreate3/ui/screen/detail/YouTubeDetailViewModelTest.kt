@@ -27,6 +27,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -36,6 +37,7 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.source.DeviceReactions
@@ -50,6 +52,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.lang.reflect.Proxy
 import java.util.Collections
 
 /**
@@ -80,6 +83,18 @@ class YouTubeDetailViewModelTest {
     }
 
     private val device = Reactions()
+
+    /** Ids of the songs the user disliked. */
+    private val disliked = MutableStateFlow(emptySet<String>())
+
+    // The screens only ask the library which songs are disliked
+    private val library = Proxy.newProxyInstance(
+        UserSongRepository::class.java.classLoader,
+        arrayOf(UserSongRepository::class.java),
+    ) { _, method, _ ->
+        if (method.name == "dislikedIds") disliked
+        else throw UnsupportedOperationException(method.name)
+    } as UserSongRepository
 
     private fun provider(
         status: HttpStatusCode = HttpStatusCode.OK,
@@ -112,6 +127,7 @@ class YouTubeDetailViewModelTest {
             SavedStateHandle(mapOf(LocalAlbum.ID to "MPREb_1")),
             provider { ALBUM },
             device,
+            library,
             backgroundScope,
             Notifier(),
         )
@@ -128,11 +144,47 @@ class YouTubeDetailViewModelTest {
     }
 
     @Test
+    fun dislikedSongsAreLeftOutAlsoWhenDislikedWhileShown() = runTest {
+        disliked.value = setOf("v1")
+        val viewModel = YouTubeAlbumDetailViewModel(
+            SavedStateHandle(mapOf(LocalAlbum.ID to "MPREb_1")),
+            provider { ALBUM },
+            device,
+            library,
+            backgroundScope,
+            Notifier(),
+        )
+
+        val album = (viewModel.state.first { it !is LiveState.Loading } as LiveState.Ready).value
+        assertEquals(listOf("v2"), album.songs.map { it.mediaId })
+
+        disliked.value = setOf("v1", "v2")
+        viewModel.state.first { (it as LiveState.Ready).value.songs.isEmpty() }
+        // Nothing asked again
+        assertEquals(1, requests.size)
+    }
+
+    @Test
+    fun dislikedSongsOfAPlaylistAreLeftOut() = runTest {
+        disliked.value = setOf("v2")
+        val viewModel = YouTubePlaylistDetailViewModel(
+            SavedStateHandle(mapOf(YouTubePlaylist.ID to "PL1")),
+            provider { if (it.contains("\"continuation\"")) PLAYLIST_MORE else PLAYLIST },
+            library,
+        )
+
+        assertEquals(listOf("v1"), viewModel.songs.first { it.isNotEmpty() }.map { it.mediaId })
+        viewModel.loadMore()
+        assertEquals(listOf("v1", "v3"), viewModel.songs.first { it.size > 1 }.map { it.mediaId })
+    }
+
+    @Test
     fun aBookmarkWhileSignedOutStaysOnTheDevice() = runTest {
         val viewModel = YouTubeAlbumDetailViewModel(
             SavedStateHandle(mapOf(LocalAlbum.ID to "MPREb_1")),
             provider { ALBUM },
             device,
+            library,
             backgroundScope,
             Notifier(),
         )
@@ -155,6 +207,7 @@ class YouTubeDetailViewModelTest {
             SavedStateHandle(mapOf(LocalArtist.ID to "UC1")),
             provider { ARTIST },
             device,
+            library,
             backgroundScope,
             Notifier(),
         )
@@ -175,6 +228,7 @@ class YouTubeDetailViewModelTest {
             SavedStateHandle(mapOf(LocalAlbum.ID to "MPREb_x")),
             provider { "{}" },
             device,
+            library,
             backgroundScope,
             Notifier(),
         )
@@ -190,6 +244,7 @@ class YouTubeDetailViewModelTest {
             SavedStateHandle(mapOf(LocalAlbum.ID to "MPREb_1")),
             provider(HttpStatusCode.TooManyRequests) { "{}" },
             device,
+            library,
             backgroundScope,
             Notifier(),
         )
@@ -206,11 +261,14 @@ class YouTubeDetailViewModelTest {
         val viewModel = YouTubePlaylistDetailViewModel(
             SavedStateHandle(mapOf(YouTubePlaylist.ID to "PL1")),
             provider { if (it.contains("\"continuation\"")) PLAYLIST_MORE else PLAYLIST },
+            library,
         )
 
         val playlist = (viewModel.state.first { it !is LiveState.Loading } as LiveState.Ready).value
         assertEquals("Playlist", playlist.name)
-        assertEquals(listOf("v1", "v2"), viewModel.songs.value.map { it.mediaId })
+        assertEquals(
+            listOf("v1", "v2"),
+            viewModel.songs.first { it.isNotEmpty() }.map { it.mediaId })
         assertTrue(viewModel.hasMore.value)
         assertTrue(requests.single().contains("\"browseId\":\"VLPL1\""))
 
@@ -218,7 +276,9 @@ class YouTubeDetailViewModelTest {
         viewModel.hasMore.first { !it }
 
         // v2 came twice, it shows once
-        assertEquals(listOf("v1", "v2", "v3"), viewModel.songs.value.map { it.mediaId })
+        assertEquals(
+            listOf("v1", "v2", "v3"),
+            viewModel.songs.first { it.size > 2 }.map { it.mediaId })
         assertFalse(viewModel.hasMore.value)
         viewModel.loadMore()
         assertEquals(2, requests.size)

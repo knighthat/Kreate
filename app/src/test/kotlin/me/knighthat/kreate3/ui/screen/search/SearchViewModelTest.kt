@@ -92,7 +92,10 @@ class SearchViewModelTest {
     /** Searches asked of the catalog, as `<repository> <query>`. */
     private val searched: MutableList<String> = Collections.synchronizedList(mutableListOf())
 
-    /** A repository whose lists are all empty, it only remembers what was searched. */
+    /**
+     * A repository whose lists are all empty, it only remembers what was searched. No song is
+     * disliked.
+     */
     private inline fun <reified T> catalog(): T =
         Proxy.newProxyInstance(
             T::class.java.classLoader,
@@ -104,6 +107,7 @@ class SearchViewModelTest {
                     flowOf(PagingData.empty<Any>())
                 }
 
+                "dislikedIds" -> flowOf(emptySet<String>())
                 "toString" -> T::class.simpleName
                 "hashCode" -> System.identityHashCode(proxy)
                 "equals" -> proxy === args[0]

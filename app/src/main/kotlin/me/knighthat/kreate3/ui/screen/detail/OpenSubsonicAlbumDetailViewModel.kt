@@ -24,11 +24,13 @@ import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
 import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.opensubsonic.Shareable
+import me.knighthat.kreate3.source.withoutDisliked
 import me.knighthat.kreate3.ui.component.toLiveMediaItem
 import me.knighthat.kreate3.ui.navigation.LocalAlbum
 
@@ -57,9 +59,10 @@ data class OpenSubsonicAlbumDetail(
 class OpenSubsonicAlbumDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val provider: OpenSubsonicProvider,
+    library: UserSongRepository,
     scope: CoroutineScope,
     notifier: Notifier,
-) : LiveDetailViewModel<OpenSubsonicAlbumDetail>() {
+) : LiveDetailViewModel<OpenSubsonicAlbumDetail>(library.dislikedIds()) {
 
     val albumId: String = checkNotNull(savedStateHandle[LocalAlbum.ID]) {
         "LocalAlbum.ID is missing from the saved state"
@@ -100,6 +103,9 @@ class OpenSubsonicAlbumDetailViewModel(
             isExplicit = album.isExplicit == true,
         )
     }
+
+    override fun OpenSubsonicAlbumDetail.withoutSongs(disliked: Set<String>) =
+        copy(songs = songs.withoutDisliked(disliked))
 
     /**
      * A link to the album that anyone can open, asked of the server at every tap. It gives a

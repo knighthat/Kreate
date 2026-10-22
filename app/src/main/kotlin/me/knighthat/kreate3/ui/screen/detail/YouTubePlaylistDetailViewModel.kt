@@ -21,16 +21,23 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.repository.RemoteSong
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeLinks
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.withoutDisliked
 import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
 import me.knighthat.kreate3.source.youtube.SONG_ARTWORK
 import me.knighthat.kreate3.source.youtube.artwork
@@ -53,7 +60,8 @@ data class YouTubePlaylistDetail(
 class YouTubePlaylistDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val provider: YouTubeProvider,
-) : LiveDetailViewModel<YouTubePlaylistDetail>() {
+    library: UserSongRepository,
+) : LiveDetailViewModel<YouTubePlaylistDetail>(library.dislikedIds()) {
 
     val playlistId: String = checkNotNull(savedStateHandle[YouTubePlaylist.ID]) {
         "YouTubePlaylist.ID is missing from the saved state"
@@ -66,8 +74,14 @@ class YouTubePlaylistDetailViewModel(
     private var continuation: String? = null
     private var more: Job? = null
 
-    /** The songs fetched so far, in the playlist's order, each once. */
-    val songs: StateFlow<List<MediaItem>> = _songs.asStateFlow()
+    /**
+     * The songs fetched so far, in the playlist's order, each once. The ones the user disliked
+     * are left out.
+     */
+    val songs: StateFlow<List<MediaItem>> =
+        combine(_songs, disliked, List<MediaItem>::withoutDisliked)
+            .flowOn(Dispatchers.Default)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     /** Whether YouTube has songs after [songs], see [loadMore]. */
     val hasMore: StateFlow<Boolean> = _hasMore.asStateFlow()
@@ -87,6 +101,9 @@ class YouTubePlaylistDetailViewModel(
             subtitle = page.author,
         )
     }
+
+    // The songs are kept apart, in songs
+    override fun YouTubePlaylistDetail.withoutSongs(disliked: Set<String>) = this
 
     /**
      * Fetches the next songs unless they are on their way or there are none. A failure leaves

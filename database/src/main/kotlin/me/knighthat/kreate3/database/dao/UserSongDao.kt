@@ -56,6 +56,14 @@ internal interface UserSongDao {
     @Query("SELECT * FROM user_song WHERE user_id = :userId AND song_id = :songId")
     suspend fun get(userId: String, songId: String): UserSongEntity?
 
+    /** Ids of the songs the user disliked, a `liked_at` of -1. */
+    @Query("SELECT song_id FROM user_song WHERE user_id = :userId AND liked_at = -1")
+    fun dislikedIds(userId: String): Flow<List<String>>
+
+    /** [dislikedIds] right now. */
+    @Query("SELECT song_id FROM user_song WHERE user_id = :userId AND liked_at = -1")
+    suspend fun listDislikedIds(userId: String): List<String>
+
     @Upsert
     suspend fun upsert(song: UserSongEntity)
 

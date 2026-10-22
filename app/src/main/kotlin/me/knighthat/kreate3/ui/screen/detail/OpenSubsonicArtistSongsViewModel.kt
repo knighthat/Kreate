@@ -19,7 +19,9 @@ package me.knighthat.kreate3.ui.screen.detail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.media3.common.MediaItem
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate3.source.withoutDisliked
 import me.knighthat.kreate3.ui.component.toLiveMediaItem
 import me.knighthat.kreate3.ui.navigation.LocalArtist
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicArtistSongs
@@ -31,7 +33,8 @@ import me.knighthat.kreate3.ui.navigation.OpenSubsonicArtistSongs
 class OpenSubsonicArtistSongsViewModel(
     savedStateHandle: SavedStateHandle,
     private val provider: OpenSubsonicProvider,
-) : LiveDetailViewModel<List<MediaItem>>() {
+    library: UserSongRepository,
+) : LiveDetailViewModel<List<MediaItem>>(library.dislikedIds()) {
 
     private val artistId: String = checkNotNull(savedStateHandle[LocalArtist.ID]) {
         "LocalArtist.ID is missing from the saved state"
@@ -51,4 +54,6 @@ class OpenSubsonicArtistSongsViewModel(
             ?.songs
             ?.map { it.toLiveMediaItem() }
             ?.distinctBy { it.mediaId }
+
+    override fun List<MediaItem>.withoutSongs(disliked: Set<String>) = withoutDisliked(disliked)
 }

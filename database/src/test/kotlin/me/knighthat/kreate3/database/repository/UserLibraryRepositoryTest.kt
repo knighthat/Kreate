@@ -73,7 +73,47 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
         librarySong("neutral")
 
         assertEquals(listOf("liked"), songs.liked().asList().map { it.songId })
-        assertEquals(3, songs.all().asList().size)
+        assertEquals(listOf("liked", "neutral"), songs.all().asList().map { it.songId })
+    }
+
+    @Test
+    fun dislikedSongsAreLeftOutOfEveryListButStillFound() = runBlocking {
+        addAlbum("a1")
+        addArtist("r1")
+        addSong("kept", albumId = "a1", artists = listOf("r1"))
+        addSong("disliked", albumId = "a1", artists = listOf("r1"))
+        librarySong("kept")
+        librarySong("disliked", DISLIKED)
+        val playlistId = database.userPlaylistDao().upsert(
+            UserPlaylistEntity(
+                userId = USER,
+                origin = Origin.LOCAL,
+                name = "Mix",
+                createdAt = EPOCH,
+                updatedAt = EPOCH
+            )
+        )
+        listOf("kept", "disliked").forEachIndexed { position, id ->
+            database.userPlaylistDao().addSong(SongPlaylistMapEntity(id, playlistId, position))
+        }
+
+        val kept = listOf("kept")
+        assertEquals(kept, songs.all().asList().map { it.songId })
+        assertEquals(kept, songs.list().map { it.songId })
+        assertEquals(kept, songs.search("e").asList().map { it.songId })
+        assertEquals(kept, songs.ofAlbum("a1").asList().map { it.songId })
+        assertEquals(kept, songs.ofArtist("r1").asList().map { it.songId })
+        assertEquals(kept, songs.ofPlaylist(playlistId).asList().map { it.songId })
+        assertEquals(kept, songs.listOfAlbum("a1").map { it.songId })
+        assertEquals(kept, songs.listOfArtist("r1").map { it.songId })
+        assertEquals(kept, songs.listOfPlaylist(playlistId).map { it.songId })
+        // Found to take the dislike back
+        assertEquals(DISLIKED, songs.find("disliked").first()?.likedAt)
+        assertEquals(setOf("disliked"), songs.dislikedIds().first())
+
+        songs.update("kept") { it.copy(likedAt = DISLIKED) }
+        assertEquals(setOf("kept", "disliked"), songs.listDislikedIds())
+        assertTrue(songs.all().asList().isEmpty())
     }
 
     @Test
@@ -216,6 +256,24 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
         assertNull(database.userSongDao().get(USER, "a")?.albumPosition)
         assertEquals(listOf("c", "b", "d", "a"), songs.listOfAlbum("a1").map { it.songId })
         Unit
+    }
+
+    @Test
+    fun aDislikedSongKeepsItsPlaceWhenTheAlbumIsReordered() = runBlocking {
+        addAlbum("a1")
+        listOf("a", "b", "c").forEachIndexed { position, id ->
+            addSong(id, albumId = "a1", albumPosition = position)
+        }
+        librarySong("a")
+        librarySong("b", DISLIKED)
+        librarySong("c")
+
+        songs.moveInAlbum("a1", "a", after = "c")
+        assertEquals(listOf("c", "a"), songs.listOfAlbum("a1").map { it.songId })
+
+        // Taken back, it is where it was among the others
+        songs.update("b") { it.copy(likedAt = null) }
+        assertEquals(listOf("b", "c", "a"), songs.listOfAlbum("a1").map { it.songId })
     }
 
     private suspend fun play(songId: String, at: Long) = database.playbackHistoryDao().insert(

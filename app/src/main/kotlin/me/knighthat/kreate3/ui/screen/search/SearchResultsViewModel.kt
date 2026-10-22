@@ -34,6 +34,7 @@ import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.hidingDisliked
 import me.knighthat.kreate3.source.opensubsonic.searchOpenSubsonic
 import me.knighthat.kreate3.source.youtube.searchYouTube
 import me.knighthat.kreate3.ui.component.toMediaItem
@@ -65,7 +66,9 @@ class SearchResultsViewModel(
         }
     )
 
+    // The library leaves disliked songs out already, the sources don't
     val songs = results(Tab.SONGS) { songRepository.search(query).toMediaItems() }
+        .hidingDisliked(songRepository.dislikedIds()) { it.mediaId }
 
     val albums = results(Tab.ALBUMS) {
         albumRepository.search(query).map { page -> page.map { it.toMediaItem() } }

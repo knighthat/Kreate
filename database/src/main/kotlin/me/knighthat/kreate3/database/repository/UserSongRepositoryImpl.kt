@@ -22,6 +22,7 @@ import androidx.paging.PagingData
 import androidx.room.RoomRawQuery
 import androidx.sqlite.SQLiteStatement
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.AppDatabase
@@ -96,7 +97,17 @@ internal class UserSongRepositoryImpl(
     override fun origins(): Flow<Set<Origin>> =
         scope.observe(emptySet()) { userId -> userSongDao.origins(userId).map { it.toSet() } }
 
+    override fun dislikedIds(): Flow<Set<String>> =
+        scope.observe(emptySet()) { userId ->
+            userSongDao.dislikedIds(userId).map { it.toSet() }
+        }.distinctUntilChanged()
+
+    override suspend fun listDislikedIds(): Set<String> =
+        userSongDao.listDislikedIds(scope.awaitId()).toSet()
+
     /**
+     * The user's songs that [filter] keeps, disliked ones are always left out.
+     *
      * @param orderBy the `ORDER BY` clause with a unique column last, it can use the values of
      * [filter]
      * @param filter extra conditions after the user's, its `?` start at position 2
@@ -124,13 +135,16 @@ internal class UserSongRepositoryImpl(
         userSongDao.list(query(scope.awaitId(), orderBy, filter, bind))
             .map(UserSongViewEntity::toModel)
 
+    /** @param includeDisliked keeps the disliked songs, which no list shows */
     private fun query(
         userId: String,
         orderBy: String,
         filter: String,
         bind: (SQLiteStatement) -> Unit,
+        includeDisliked: Boolean = false,
     ) = RoomRawQuery(
-        sql = "SELECT * FROM user_song_view WHERE user_id = ? $filter $orderBy",
+        sql = "SELECT * FROM user_song_view WHERE user_id = ? " +
+                "${if (includeDisliked) "" else NOT_DISLIKED} $filter $orderBy",
         onBindStatement = {
             it.bindText(1, userId)
             bind(it)
@@ -181,11 +195,16 @@ internal class UserSongRepositoryImpl(
     override suspend fun moveInAlbum(albumId: String, songId: String, after: String?) {
         val userId = scope.requireId()
         database.inTransaction {
-            // Ids, not indices: the view leaves out songs that aren't in the library
+            // Ids, not indices: the view leaves out songs that aren't in the library. Hidden
+            // disliked songs are numbered too, they keep their place for when they come back
             val order = userSongDao.list(
-                query(userId, SortOrder(UserSongSort.ALBUM_POSITION).toOrderBy(), OF_ALBUM) {
-                    it.bindText(2, albumId)
-                }
+                query(
+                    userId,
+                    SortOrder(UserSongSort.ALBUM_POSITION).toOrderBy(),
+                    OF_ALBUM,
+                    bind = { it.bindText(2, albumId) },
+                    includeDisliked = true,
+                )
             ).map { it.songId }.toMutableList()
             val from = order.indexOf(songId)
             require(from >= 0) { "Song $songId isn't on album $albumId" }
@@ -241,6 +260,9 @@ internal class UserSongRepositoryImpl(
             ) DESC, RANDOM()
             LIMIT ?3
         """
+
+        // A like is a time, -1 is a dislike
+        const val NOT_DISLIKED = "AND (liked_at IS NULL OR liked_at >= 0)"
 
         const val OF_ALBUM = "AND album_id = ?"
         const val OF_ARTIST =

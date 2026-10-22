@@ -21,8 +21,10 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.opensubsonic.Shareable
+import me.knighthat.kreate3.source.withoutDisliked
 import me.knighthat.kreate3.ui.component.toLiveMediaItem
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicPlaylist
 
@@ -42,7 +44,8 @@ data class OpenSubsonicPlaylistDetail(
 class OpenSubsonicPlaylistDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val provider: OpenSubsonicProvider,
-) : LiveDetailViewModel<OpenSubsonicPlaylistDetail>() {
+    library: UserSongRepository,
+) : LiveDetailViewModel<OpenSubsonicPlaylistDetail>(library.dislikedIds()) {
 
     val playlistId: String = checkNotNull(savedStateHandle[OpenSubsonicPlaylist.ID]) {
         "OpenSubsonicPlaylist.ID is missing from the saved state"
@@ -65,6 +68,9 @@ class OpenSubsonicPlaylistDetailViewModel(
             songs = songs.map { it.toLiveMediaItem() }.distinctBy { it.mediaId },
         )
     }
+
+    override fun OpenSubsonicPlaylistDetail.withoutSongs(disliked: Set<String>) =
+        copy(songs = songs.withoutDisliked(disliked))
 
     /**
      * A link to the playlist that anyone can open. See

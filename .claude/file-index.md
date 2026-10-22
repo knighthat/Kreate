@@ -181,6 +181,8 @@ source/ (app-side glue for sources)
 - `DeviceReactions.kt` — `DeviceReactions`/`DeviceReactionsImpl` (Koin single): album bookmarks
   and artist follows kept on the device for live items, storing the album/artist first when it
   isn't; YouTube detail screens use it while signed out.
+- `DislikedSongs.kt` — `withoutDisliked`/`withoutDislikedSongs` (lists) and `hidingDisliked`
+  (paged, after `cachedIn`): leave out songs whose id is in `UserSongRepository.dislikedIds`.
 - local/`MediaStoreScanner.kt` — reads device music from MediaStore → `LocalSong`.
 - local/`LocalMusicWorker.kt` + `LocalMusicScheduler.kt` — WorkManager scan of device music, then
   loudness.
@@ -295,8 +297,9 @@ ui/screen/
   `LiveItems.kt` (live items appended after DB items).
 - detail/ — `DetailScaffold.kt` (`contentPadding` added to the bar's; lists take its padding as
   content padding), `DetailHeader.kt` (origin/explicit badges above the cover), `LiveDetail.kt` (
-  `LiveDetailViewModel`, `LiveState`,
-  `LiveSectionRow`, `LiveDetailScreen`), `ShareAction.kt` (OpenSubsonic share link on demand),
+  `LiveDetailViewModel` (state re-filtered by `dislikedIds` through each subclass's
+  `withoutSongs`), `LiveState`, `LiveSectionRow`, `LiveDetailScreen`), `ShareAction.kt` (
+  OpenSubsonic share link on demand),
   `SourceToggle.kt` (bookmark/follow kept by a source: flips at once, sent in tap order on the app
   scope, flipped back with a message on failure; `serverFailure`/`youTubeFailure` texts);
   `{Local,OpenSubsonic,YouTube}{Album,Artist,Playlist}DetailScreen/ViewModel.kt` (album screens

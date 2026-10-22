@@ -55,6 +55,7 @@ import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.youtube.YouTubeException
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.source.opensubsonic.suggestions
+import me.knighthat.kreate3.source.withoutDislikedSongs
 import me.knighthat.kreate3.source.youtube.tab
 import me.knighthat.kreate3.source.youtube.toMediaItem
 import me.knighthat.kreate3.ui.component.toMediaItem
@@ -124,7 +125,8 @@ class SearchViewModel(
 
     /**
      * What YouTube or the server suggests for the [query] while [origin] is one of them, asked
-     * live and never stored. The server suggests items only. A failed request suggests nothing.
+     * live and never stored. The server suggests items only, songs the user disliked aren't
+     * among them. A failed request suggests nothing.
      */
     val liveSuggestions: StateFlow<LiveSuggestions> = combine(query, _origin, ::Pair)
         .mapLatest { (query, origin) ->
@@ -134,6 +136,9 @@ class SearchViewModel(
                 Origin.YOUTUBE -> youTubeSuggestions(query)
                 Origin.OPEN_SUBSONIC -> serverSuggestions(query)
             }
+        }
+        .combine(songRepository.dislikedIds()) { suggestions, disliked ->
+            suggestions.copy(items = suggestions.items.withoutDislikedSongs(disliked))
         }
         // Turned into items off the main thread, while the user types
         .flowOn(Dispatchers.Default)

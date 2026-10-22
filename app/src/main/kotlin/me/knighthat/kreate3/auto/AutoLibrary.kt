@@ -51,6 +51,7 @@ import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.source.liveAlbums
 import me.knighthat.kreate3.source.liveArtists
 import me.knighthat.kreate3.source.livePlaylists
+import me.knighthat.kreate3.source.withoutDisliked
 import me.knighthat.kreate3.source.youtube.SONG_ARTWORK
 import me.knighthat.kreate3.source.youtube.artwork
 import me.knighthat.kreate3.ui.component.origin
@@ -186,7 +187,7 @@ internal class AutoLibrary(
         songs.list(origins = Preferences.HOME_SONGS_ORIGINS.origins())
             .mapNotNull { it.toMediaItem() }
 
-    /** The songs of [collection], as its screen in the app shows them. */
+    /** The songs of [collection], as its screen in the app shows them: without disliked ones. */
     private suspend fun songsOf(collection: AutoNode.Collection): List<MediaItem> {
         val key = collection.key
         val found = when (collection.tab) {
@@ -223,7 +224,7 @@ internal class AutoLibrary(
 
             Tab.SONGS -> emptyList()
         }
-        return found.distinctBy { it.mediaId }
+        return found.distinctBy { it.mediaId }.withoutDisliked(songs.listDislikedIds())
     }
 
     /**

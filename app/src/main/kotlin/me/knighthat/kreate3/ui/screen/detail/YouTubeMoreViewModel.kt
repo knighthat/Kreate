@@ -21,17 +21,22 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.hidingDisliked
 import me.knighthat.kreate3.source.youtube.browseYouTube
+import me.knighthat.kreate3.ui.navigation.Tab
 import me.knighthat.kreate3.ui.navigation.YouTubeMore
 
 /**
- * Every item of the YouTube page in the saved state, fetched live and never stored.
+ * Every item of the YouTube page in the saved state, fetched live and never stored. Songs the
+ * user disliked are left out.
  */
 class YouTubeMoreViewModel(
     savedStateHandle: SavedStateHandle,
     provider: YouTubeProvider,
+    library: UserSongRepository,
 ) : ViewModel() {
 
     val title: String = savedStateHandle[YouTubeMore.TITLE] ?: ""
@@ -44,4 +49,7 @@ class YouTubeMoreViewModel(
     )
 
     val items = browseYouTube(provider, endpoint).cachedIn(viewModelScope)
+        .hidingDisliked(library.dislikedIds()) { (tab, item) ->
+            item.mediaId.takeIf { tab == Tab.SONGS }
+        }
 }

@@ -16,6 +16,13 @@ value being when it happened. Never treat `!= null` as "liked"; check `-1` first
 them to a rating or UI state needs three states (`MediaItemDsl.kt` maps to `ThumbRating`, not
 `HeartRating`).
 
+Disliked songs are hidden everywhere, always (no setting; the maintainer plans a screen of hidden
+songs to take dislikes back). `UserSongRepositoryImpl.query` leaves them out of every library list,
+`find` still gives them. Lists fetched live drop the ids of `UserSongRepository.dislikedIds` where
+they're built (`source/DislikedSongs.kt` helpers; `LiveDetailViewModel` re-filters its state, so a
+song disliked while shown goes at once; paged lists combine after `cachedIn`). Radio and Android
+Auto use `listDislikedIds`. A new list of songs, local or live, must do the same.
+
 ## What gets stored
 
 - Store a provider's own ids and real URLs as-is. No namespaced ids (`opensubsonic:<host>:<id>`)
