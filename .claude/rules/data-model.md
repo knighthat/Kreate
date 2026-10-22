@@ -87,3 +87,10 @@ them to a rating or UI state needs three states (`MediaItemDsl.kt` maps to `Thum
   `FILTER (WHERE …)` and `json_group_array`, which the framework SQLite only has from API 31
   (minSdk is 24). Unit tests run `AndroidSQLiteDriver` on the host's newer SQLite, so they won't
   catch a query that breaks on old devices. Shrink the native library through packaging instead.
+
+## Paging
+
+- `pagedFlow(…, tables)` (and `UserSongRepositoryImpl.paged(tables = …)`) must name every table the
+  query reads, including tables used only in a filter or `ORDER BY` subquery. A view covers only
+  its own tables: `user_song_view` doesn't read `song_playlist_map`, so a playlist's song list
+  watching the view alone missed songs added, moved or removed.
