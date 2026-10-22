@@ -73,7 +73,9 @@ playback/
   `RESUME_FOREGROUND_ID` 5000 (`AppChannel.RESUME`); for System UI's card after a reboot only the
   playing song, cover as `artworkData`.
 - `PlaybackController.kt` / `PlaybackControllerImpl.kt` — `PlaybackState` (incl.
-  `repeatMode: RepeatMode` OFF/ONE/ALL, `isShuffled`) + interface screens use (`toggleShuffle`,
+  `repeatMode: RepeatMode` OFF/ONE/ALL, `isShuffled`) + interface screens use (`queue` in its own
+  order, `shuffledOrder` = queue positions in play order while shuffled else `null`, walked from
+  the controller's timeline by `Timeline.shuffledOrder()`; `toggleShuffle`,
   `cycleRepeat`, `sleepTimer` (read from session extras), `startSleepTimer`/`changeSleepTimer` (
   custom session commands), `audioSessionId()` from session extras); impl wraps a `MediaController`
   on the main thread.
@@ -300,16 +302,22 @@ ui/screen/
   `YouTubeMoreScreen/ViewModel.kt` (grid behind "See more").
 - player/ — `PlayerSheet.kt` (full player sheet: anchoredDraggable over the window, nested scroll
   lets lists drag it down; pager of Player/Lyrics/Queue tabs at the bottom over the blurred cover,
-  indicator on top with a full-width track; no collapse button), `LyricsPage.kt` (`loadLyrics`,
+  indicator on top with a full-width track; no collapse button; its own `MessageHost` above the
+  tabs, the app's is under the sheet), `LyricsPage.kt` (`loadLyrics`,
   rules in `.claude/rules/lyrics.md`; `LyricsRequest`/`loadRequested` for bar picks,
   `LyricsControls` hoisted per song in `FullPlayer`, text scaled via `LocalDensity.fontScale` ×
   `LYRICS_TEXT_SIZE`), `LyricsButtons.kt` (lyrics bar: source menu, search dialog, timing menu, text
   size stepper, copy), `PlayerButtons.kt` (Player page bar: EQ = system effect panel via
   StartActivityForResult, sleep timer menu with countdown, share: YouTube link / OpenSubsonic
   `Shareable.Song` share / local file via EXTRA_STREAM), `QueuePage.kt` (`PlaybackController.queue`,
-  tap → `skipTo`; entries keyed `mediaId#n`, `CoverEditMode` (`CoverEdit.kt`) turns covers into
+  rows in `shuffledOrder` while shuffled (queue order while its size lags), tap → `skipTo` and
+  remove at `positionOf` (row in queue order, queue index less pending removals when shuffled),
+  `FullPlayer` scrolls the list to the playing song's row when the order switches; entries keyed
+  `mediaId#n`, `CoverEditMode` (`CoverEdit.kt`) turns covers into
   drag handles (sh.calvin.reorderable, local order, `move` on drop) or X buttons (`remove`);
-  `QueueButtons` locate/lock/trash). The bar under the tabs (`PageButtons` in PlayerSheet.kt,
+  `QueueButtons` locate/lock/trash; while shuffled the lock is `ModeButton(dimmed = true)` and a
+  tap posts "Turn shuffle off to move songs", `FullPlayer` leaves REORDER when shuffle turns on).
+  The bar under the tabs (`PageButtons` in PlayerSheet.kt,
   `BUTTON_BAR_HEIGHT`) shows each page's buttons, fading with the pager; queue list state and mode
   are hoisted into `FullPlayer`; the mode resets to NONE whenever the pager's current page leaves
   the queue (`.claude/rules/ui.md`: leaving a page resets its buttons).
@@ -468,7 +476,8 @@ Depends only on `:model` (api) plus Ktor/serialization/Koin.
 - app: `ProfileUserSyncTest`, auto/`AutoNodeTest`, `SongSubtitleTest`, `ServedArtworkTest`, backup/
   `BackupTest`, playback/`DataSourceResolverTest`,
   `CacheCopiesTest` (Robolectric), `SongDataSourceTest`, `LoudnessNormalizerTest`,
-  `PlaybackErrorsTest`, source/`CoverCacheTest`, `LoudnessMeterTest`, `MediaStoreScannerTest`,
+  `PlaybackErrorsTest`, `ShuffledOrderTest`, source/`CoverCacheTest`, `LoudnessMeterTest`,
+  `MediaStoreScannerTest`,
   ui/navigation/`TopLevelBackStackTest`, ui/screen/detail/`LiveDetailViewModelTest`,
   `YouTubeDetailViewModelTest`, `SourceToggleTest`, ui/screen/search/`SearchViewModelTest`.
 - database: `DatabaseTest`, `DatabaseBackupTest`, `ConvertersTest`, paging/`SortingTest`,

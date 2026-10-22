@@ -27,6 +27,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
@@ -63,6 +64,9 @@ class PlaybackControllerImpl(
 
     private val _queue = MutableStateFlow<List<MediaItem>>(emptyList())
     override val queue: StateFlow<List<MediaItem>> = _queue.asStateFlow()
+
+    private val _shuffledOrder = MutableStateFlow<List<Int>?>(null)
+    override val shuffledOrder: StateFlow<List<Int>?> = _shuffledOrder.asStateFlow()
 
     private val _sleepTimer = MutableStateFlow<SleepTimer?>(null)
     override val sleepTimer: StateFlow<SleepTimer?> = _sleepTimer.asStateFlow()
@@ -256,6 +260,7 @@ class PlaybackControllerImpl(
         controller = null
         _state.value = PlaybackState()
         _queue.value = emptyList()
+        _shuffledOrder.value = null
         _sleepTimer.value = null
     }
 
@@ -274,6 +279,7 @@ class PlaybackControllerImpl(
                     controller = null
                     _state.value = PlaybackState()
                     _queue.value = emptyList()
+                    _shuffledOrder.value = null
                     _sleepTimer.value = null
                 }
 
@@ -295,6 +301,8 @@ class PlaybackControllerImpl(
                 connected.addListener(object : Player.Listener {
                     override fun onEvents(player: Player, events: Player.Events) {
                         if (events.contains(Player.EVENT_TIMELINE_CHANGED)) publishQueue(connected)
+                        else if (events.contains(Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED))
+                            publishShuffledOrder(connected)
                         publish(connected)
                     }
 
@@ -335,6 +343,12 @@ class PlaybackControllerImpl(
 
     private fun publishQueue(controller: MediaController) {
         _queue.value = List(controller.mediaItemCount, controller::getMediaItemAt)
+        publishShuffledOrder(controller)
+    }
+
+    private fun publishShuffledOrder(controller: MediaController) {
+        _shuffledOrder.value =
+            if (controller.shuffleModeEnabled) controller.currentTimeline.shuffledOrder() else null
     }
 
     /** Takes the item at [index] out of the queue, moving on first when it is the current one. */
@@ -370,4 +384,20 @@ private fun RepeatMode.toPlayerMode(): @Player.RepeatMode Int = when (this) {
     RepeatMode.OFF -> Player.REPEAT_MODE_OFF
     RepeatMode.ONE -> Player.REPEAT_MODE_ONE
     RepeatMode.ALL -> Player.REPEAT_MODE_ALL
+}
+
+/**
+ * Positions of the timeline's items in the order they play while shuffled, from the first. A
+ * controller's timeline carries the player's shuffled order.
+ */
+internal fun Timeline.shuffledOrder(): List<Int> {
+    if (isEmpty) return emptyList()
+    val order = ArrayList<Int>(windowCount)
+    var index = getFirstWindowIndex(true)
+    while (index != C.INDEX_UNSET) {
+        order += index
+        // Without repeating, or the walk would go around for ever
+        index = getNextWindowIndex(index, Player.REPEAT_MODE_OFF, true)
+    }
+    return order
 }

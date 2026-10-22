@@ -46,7 +46,7 @@ enum class RepeatMode {
  * @param isEnded whether the queue played to its end. A queue that is only loaded, like after
  * the app starts, or stopped by a failure, isn't ended.
  * @param isShuffled whether the queue plays in a random order. [PlaybackController.queue] keeps
- * its own order.
+ * its own order, [PlaybackController.shuffledOrder] is the one it plays in.
  */
 data class PlaybackState(
     val current: MediaItem? = null,
@@ -65,8 +65,15 @@ interface PlaybackController {
 
     val state: StateFlow<PlaybackState>
 
-    /** Every item of the queue, in the order they play. */
+    /** Every item of the queue, in its own order, see [shuffledOrder] for the one they play in. */
     val queue: StateFlow<List<MediaItem>>
+
+    /**
+     * Positions of [queue]'s items in the order they play while shuffled, `null` while they
+     * play in the queue's own order. For a moment after the queue changes, it may still be the
+     * order of the queue before.
+     */
+    val shuffledOrder: StateFlow<List<Int>?>
 
     /** When playback pauses by itself, `null` while the sleep timer is off. */
     val sleepTimer: StateFlow<SleepTimer?>

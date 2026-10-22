@@ -119,6 +119,7 @@ import me.knighthat.kreate3.playback.RepeatMode
 import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
 import me.knighthat.kreate3.ui.component.CoverEditMode
 import me.knighthat.kreate3.ui.component.ItemBadges
+import me.knighthat.kreate3.ui.component.MessageHost
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
 import me.knighthat.kreate3.ui.component.memoryCacheKey
@@ -415,9 +416,17 @@ private fun FullPlayer(
         PlayerTab.entries.size
     }
     val scope = rememberCoroutineScope()
+    val shuffledOrder by controller.shuffledOrder.collectAsStateWithLifecycle()
+    // Where the song playing shows in the queue's list, which follows the shuffled order
+    val currentRow = shuffledOrder?.indexOf(index)?.takeIf { it >= 0 } ?: index
+    val latestCurrentRow by rememberUpdatedState(currentRow)
     // Out here for the buttons under the tabs, the page itself goes when swiped away
     val queueList =
-        rememberLazyListState(initialFirstVisibleItemIndex = (index - 1).coerceAtLeast(0))
+        rememberLazyListState(initialFirstVisibleItemIndex = (currentRow - 1).coerceAtLeast(0))
+    // Another order puts the song playing elsewhere in the list, it goes back to it
+    LaunchedEffect(shuffledOrder != null) {
+        queueList.requestScrollToItem((latestCurrentRow - 1).coerceAtLeast(0))
+    }
     var queueMode by remember { mutableStateOf(CoverEditMode.NONE) }
     val lyricsControls = remember(item.mediaId) { LyricsControls() }
     val latestLyricsControls by rememberUpdatedState(lyricsControls)
@@ -427,6 +436,10 @@ private fun FullPlayer(
             if (page != PlayerTab.QUEUE.ordinal) queueMode = CoverEditMode.NONE
             if (page != PlayerTab.LYRICS.ordinal) latestLyricsControls.reset()
         }
+    }
+    // Songs can't be moved while shuffled, like when shuffle is turned on from the notification
+    LaunchedEffect(isShuffled) {
+        if (isShuffled && queueMode == CoverEditMode.REORDER) queueMode = CoverEditMode.NONE
     }
     val navigationBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     // Under the status bar and above the tabs, the lists scroll behind both
@@ -572,15 +585,25 @@ private fun FullPlayer(
                 controller = controller,
                 lyricsControls = lyricsControls,
                 queueMode = queueMode,
+                isShuffled = isShuffled,
                 onQueueModeChange = { queueMode = it },
                 onLocate = {
-                    scope.launch { queueList.animateScrollToItem((index - 1).coerceAtLeast(0)) }
+                    scope.launch {
+                        queueList.animateScrollToItem((currentRow - 1).coerceAtLeast(0))
+                    }
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .windowInsetsPadding(WindowInsets.navigationBars)
                     .height(BUTTON_BAR_HEIGHT),
+            )
+            // The app's messages show under the sheet, these show over the player, above the tabs
+            MessageHost(
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .windowInsetsPadding(WindowInsets.navigationBars)
+                    .padding(bottom = BUTTON_BAR_HEIGHT + TAB_BAR_HEIGHT)
             )
         }
     }
@@ -597,6 +620,7 @@ private fun PageButtons(
     controller: PlaybackController,
     lyricsControls: LyricsControls,
     queueMode: CoverEditMode,
+    isShuffled: Boolean,
     onQueueModeChange: (CoverEditMode) -> Unit,
     onLocate: () -> Unit,
     modifier: Modifier = Modifier,
@@ -630,6 +654,7 @@ private fun PageButtons(
     if (queueShown)
         QueueButtons(
             mode = queueMode,
+            isShuffled = isShuffled,
             onModeChange = onQueueModeChange,
             onLocate = onLocate,
             modifier = Modifier.graphicsLayer {
@@ -877,6 +902,8 @@ private fun ReactionButton(
 /**
  * A small button of the player for a mode, like shuffle or repeat: in the primary color while
  * [isOn], dimmed otherwise, so play stays the main button.
+ *
+ * @param dimmed whether it looks disabled while it still takes taps, to say why it can't be used
  */
 @Composable
 internal fun ModeButton(
@@ -885,6 +912,7 @@ internal fun ModeButton(
     isOn: Boolean,
     onClick: () -> Unit,
     enabled: Boolean = true,
+    dimmed: Boolean = false,
 ) = IconButton(onClick = onClick, enabled = enabled) {
     val tint = if (isOn) MaterialTheme.colorScheme.primary
     else MaterialTheme.colorScheme.onSurfaceVariant
@@ -892,7 +920,7 @@ internal fun ModeButton(
         painter = painterResource(icon),
         contentDescription = description,
         // A tint of its own, the button can't dim it while it is off
-        tint = if (enabled) tint else tint.copy(alpha = DISABLED_ALPHA),
+        tint = if (enabled && !dimmed) tint else tint.copy(alpha = DISABLED_ALPHA),
     )
 }
 

@@ -156,6 +156,7 @@ private class PreviewController(
 
     override val state: StateFlow<PlaybackState> = MutableStateFlow(PlaybackState())
     override val queue: StateFlow<List<MediaItem>> = MutableStateFlow(emptyList())
+    override val shuffledOrder: StateFlow<List<Int>?> = MutableStateFlow(null)
     override val sleepTimer: StateFlow<SleepTimer?> = MutableStateFlow(null)
 
     override fun play(item: MediaItem) = Unit
