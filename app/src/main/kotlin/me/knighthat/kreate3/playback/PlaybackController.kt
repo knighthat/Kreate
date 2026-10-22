@@ -150,6 +150,12 @@ interface PlaybackController {
      */
     fun remove(index: Int)
 
+    /**
+     * Takes every item but the current one out of the queue, it keeps playing alone. Songs a
+     * radio is still looking for aren't added anymore. To empty the queue too, see [stop].
+     */
+    fun clear()
+
     /** Moves the item at [from] of [queue] to [to], the items between shift over by one. */
     fun move(from: Int, to: Int)
 

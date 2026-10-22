@@ -20,13 +20,23 @@ package me.knighthat.kreate3.ui.screen.player
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -38,6 +48,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
@@ -174,8 +186,9 @@ internal fun QueuePage(
 }
 
 /**
- * The buttons of [QueuePage]: back to the song playing, and the switches of [mode], to move
- * songs and to remove them. At most one mode is on, turning one on turns the other off.
+ * The buttons of [QueuePage]: back to the song playing, the switches of [mode], to move songs
+ * and to remove them, and one to clear the queue once confirmed. At most one mode is on, turning
+ * one on turns the other off.
  *
  * While [isShuffled], songs can't be moved: the page shows the shuffled order they play in,
  * moving would change the queue's own. The button looks off and tapping it says to turn shuffle
@@ -183,6 +196,7 @@ internal fun QueuePage(
  */
 @Composable
 internal fun QueueButtons(
+    controller: PlaybackController,
     mode: CoverEditMode,
     isShuffled: Boolean,
     onModeChange: (CoverEditMode) -> Unit,
@@ -196,6 +210,7 @@ internal fun QueueButtons(
     val notifier = LocalNotifier.current
     val reordering = mode == CoverEditMode.REORDER
     val removing = mode == CoverEditMode.REMOVE
+    var confirmClear by remember { mutableStateOf(false) }
 
     ModeButton(R.drawable.my_location, "Go to the song playing", isOn = false, onClick = onLocate)
     ModeButton(
@@ -217,5 +232,79 @@ internal fun QueueButtons(
         description = if (removing) "Stop removing songs" else "Remove songs",
         isOn = removing,
         onClick = { onModeChange(if (removing) CoverEditMode.NONE else CoverEditMode.REMOVE) },
+    )
+    ModeButton(
+        icon = R.drawable.clear_all,
+        description = "Clear the queue",
+        isOn = false,
+        onClick = { confirmClear = true },
+    )
+
+    if (confirmClear)
+        ClearQueueDialog(
+            onDismiss = { confirmClear = false },
+            onConfirm = { removeCurrent ->
+                confirmClear = false
+                onModeChange(CoverEditMode.NONE)
+                // Nothing is left to play then, the player closes by itself
+                if (removeCurrent) controller.stop() else controller.clear()
+            },
+        )
+}
+
+/**
+ * Asks before the queue is cleared. The song playing stays unless the box to remove it too is
+ * checked, which says the player stops and closes then.
+ *
+ * @param onConfirm told whether the song playing goes too
+ */
+@Composable
+private fun ClearQueueDialog(onDismiss: () -> Unit, onConfirm: (removeCurrent: Boolean) -> Unit) {
+    var removeCurrent by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Clear the queue?") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Every song but the one playing is removed from the queue.")
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .toggleable(
+                            value = removeCurrent,
+                            role = Role.Checkbox,
+                            onValueChange = { removeCurrent = it },
+                        ),
+                ) {
+                    // The row takes the tap, the box only shows it
+                    Checkbox(checked = removeCurrent, onCheckedChange = null)
+                    Text(
+                        text = "Remove currently playing song",
+                        modifier = Modifier.padding(start = 12.dp),
+                    )
+                }
+                if (removeCurrent)
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.warning),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(20.dp),
+                        )
+                        Text(
+                            text = "This will stop the player and close the fullscreen player",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+            }
+        },
+        confirmButton = { TextButton(onClick = { onConfirm(removeCurrent) }) { Text("Clear") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )
 }

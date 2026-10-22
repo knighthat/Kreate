@@ -172,6 +172,7 @@ private class PreviewController(
     override fun next() = Unit
     override fun drop(mediaId: String) = Unit
     override fun remove(index: Int) = Unit
+    override fun clear() = Unit
     override fun move(from: Int, to: Int) = Unit
     override fun skipTo(index: Int) = Unit
     override fun previous() = Unit

@@ -321,7 +321,9 @@ ui/screen/
   `FullPlayer` scrolls the list to the playing song's row when the order switches; entries keyed
   `mediaId#n`, `CoverEditMode` (`CoverEdit.kt`) turns covers into
   drag handles (sh.calvin.reorderable, local order, `move` on drop) or X buttons (`remove`);
-  `QueueButtons` locate/lock/trash; while shuffled the lock is `ModeButton(dimmed = true)` and a
+  `QueueButtons` locate/lock/trash/clear (clear asks first: `PlaybackController.clear` keeps the
+  song playing, or with "Remove currently playing song" checked `stop`, which closes the player);
+  while shuffled the lock is `ModeButton(dimmed = true)` and a
   tap posts "Turn shuffle off to move songs", `FullPlayer` leaves REORDER when shuffle turns on).
   The bar under the tabs (`PageButtons` in PlayerSheet.kt,
   `BUTTON_BAR_HEIGHT`) shows each page's buttons, fading with the pager; queue list state and mode

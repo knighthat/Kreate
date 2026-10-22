@@ -656,6 +656,7 @@ private fun PageButtons(
         )
     if (queueShown)
         QueueButtons(
+            controller = controller,
             mode = queueMode,
             isShuffled = isShuffled,
             onModeChange = onQueueModeChange,

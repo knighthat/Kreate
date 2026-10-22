@@ -121,6 +121,19 @@ class PlaybackControllerImpl(
 
     override fun remove(index: Int) = run("remove item $index") { it.removeAt(index) }
 
+    override fun clear() {
+        // A radio still looking would queue its songs again
+        radioSearch?.cancel()
+        run("clear the queue") { controller ->
+            val index = controller.currentMediaItemIndex
+            val count = controller.mediaItemCount
+            if (index !in 0 until count) return@run
+            // The ones after it first, the current one keeps its index for the rest
+            controller.removeMediaItems(index + 1, count)
+            controller.removeMediaItems(0, index)
+        }
+    }
+
     override fun move(from: Int, to: Int) = run("move item $from to $to") { controller ->
         val count = controller.mediaItemCount
         if (from !in 0 until count || to !in 0 until count || from == to) return@run
