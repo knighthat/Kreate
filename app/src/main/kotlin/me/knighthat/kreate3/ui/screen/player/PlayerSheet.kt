@@ -175,8 +175,11 @@ private val TAB_BAR_HEIGHT = 56.dp
 /** The bar under the tabs with the buttons of the page shown, above the navigation bar. */
 private val BUTTON_BAR_HEIGHT = 48.dp
 
-/** Everything below the pages, above the navigation bar: the tabs and the buttons under them. */
-private val BOTTOM_BAR_HEIGHT = TAB_BAR_HEIGHT + BUTTON_BAR_HEIGHT
+/**
+ * Everything below the pages, above the navigation bar: the tabs and the buttons under them.
+ * Additional 24.dp is added to increase visibility of the last item
+ */
+private val BOTTOM_BAR_HEIGHT = TAB_BAR_HEIGHT + BUTTON_BAR_HEIGHT + 24.dp
 
 /**
  * How far the slider of the seek bar reaches up under the badges: most of the empty top of its
