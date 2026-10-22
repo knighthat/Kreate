@@ -117,6 +117,7 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.playback.RepeatMode
 import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
+import me.knighthat.kreate3.ui.component.CoverEditMode
 import me.knighthat.kreate3.ui.component.ItemBadges
 import me.knighthat.kreate3.ui.component.Thumbnail
 import me.knighthat.kreate3.ui.component.hasMiniPlayer
@@ -417,13 +418,13 @@ private fun FullPlayer(
     // Out here for the buttons under the tabs, the page itself goes when swiped away
     val queueList =
         rememberLazyListState(initialFirstVisibleItemIndex = (index - 1).coerceAtLeast(0))
-    var queueMode by remember { mutableStateOf(QueueEditMode.NONE) }
+    var queueMode by remember { mutableStateOf(CoverEditMode.NONE) }
     val lyricsControls = remember(item.mediaId) { LyricsControls() }
     val latestLyricsControls by rememberUpdatedState(lyricsControls)
     // The buttons of a page turn back off once another page is shown
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
-            if (page != PlayerTab.QUEUE.ordinal) queueMode = QueueEditMode.NONE
+            if (page != PlayerTab.QUEUE.ordinal) queueMode = CoverEditMode.NONE
             if (page != PlayerTab.LYRICS.ordinal) latestLyricsControls.reset()
         }
     }
@@ -595,8 +596,8 @@ private fun PageButtons(
     item: MediaItem,
     controller: PlaybackController,
     lyricsControls: LyricsControls,
-    queueMode: QueueEditMode,
-    onQueueModeChange: (QueueEditMode) -> Unit,
+    queueMode: CoverEditMode,
+    onQueueModeChange: (CoverEditMode) -> Unit,
     onLocate: () -> Unit,
     modifier: Modifier = Modifier,
 ) = Box(contentAlignment = Alignment.Center, modifier = modifier) {

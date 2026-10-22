@@ -147,7 +147,7 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
                 updatedAt = EPOCH
             )
         )
-        database.userPlaylistDao().addSong(SongPlaylistMapEntity("inPlaylist", playlistId))
+        database.userPlaylistDao().addSong(SongPlaylistMapEntity("inPlaylist", playlistId, 0))
 
         assertEquals(listOf("onAlbum"), songs.ofAlbum("a1").asList().map { it.songId })
         assertEquals(listOf("byArtist"), songs.ofArtist("r1").asList().map { it.songId })
@@ -155,6 +155,33 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
         assertEquals(listOf("onAlbum"), songs.listOfAlbum("a1").map { it.songId })
         assertEquals(listOf("byArtist"), songs.listOfArtist("r1").map { it.songId })
         assertEquals(listOf("inPlaylist"), songs.listOfPlaylist(playlistId).map { it.songId })
+    }
+
+    @Test
+    fun songsOfAPlaylistComeInItsOrder() = runBlocking {
+        listOf("a", "b", "c").forEach {
+            addSong(it)
+            librarySong(it)
+        }
+        val playlistId = database.userPlaylistDao().upsert(
+            UserPlaylistEntity(
+                userId = USER,
+                origin = Origin.LOCAL,
+                name = "Mix",
+                createdAt = EPOCH,
+                updatedAt = EPOCH
+            )
+        )
+        database.userPlaylistDao().addSong(SongPlaylistMapEntity("b", playlistId, 7))
+        database.userPlaylistDao().addSong(SongPlaylistMapEntity("c", playlistId, 2))
+        database.userPlaylistDao().addSong(SongPlaylistMapEntity("a", playlistId, 9))
+
+        assertEquals(listOf("c", "b", "a"), songs.ofPlaylist(playlistId).asList().map { it.songId })
+        assertEquals(listOf("c", "b", "a"), songs.listOfPlaylist(playlistId).map { it.songId })
+        assertEquals(
+            listOf("a", "b", "c"),
+            songs.listOfPlaylist(playlistId, SortOrder(UserSongSort.NAME)).map { it.songId },
+        )
     }
 
     private suspend fun play(songId: String, at: Long) = database.playbackHistoryDao().insert(
@@ -200,8 +227,8 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
                 updatedAt = EPOCH
             )
         )
-        database.userPlaylistDao().addSong(SongPlaylistMapEntity("seed", playlistId))
-        database.userPlaylistDao().addSong(SongPlaylistMapEntity("inPlaylist", playlistId))
+        database.userPlaylistDao().addSong(SongPlaylistMapEntity("seed", playlistId, 0))
+        database.userPlaylistDao().addSong(SongPlaylistMapEntity("inPlaylist", playlistId, 1))
 
         // Artist 3, then the play and the playlist 2 each, album and like 1 each, nothing last
         val found = songs.similar("seed", 10).map { it.songId }

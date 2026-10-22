@@ -19,15 +19,35 @@
 package me.knighthat.kreate3.ui.screen.detail
 
 import android.net.Uri
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -36,20 +56,29 @@ import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.ui.component.AddToQueueButton
+import me.knighthat.kreate3.ui.component.CoverEditMode
+import me.knighthat.kreate3.ui.component.CoverEditOverlay
 import me.knighthat.kreate3.ui.component.LocalNotifier
+import me.knighthat.kreate3.ui.component.MoreButton
+import me.knighthat.kreate3.ui.component.PlayNextButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
-import me.knighthat.kreate3.ui.component.QueueActionRow
+import me.knighthat.kreate3.ui.component.QueuePlayButton
 import me.knighthat.kreate3.ui.component.ScreenPreviews
+import me.knighthat.kreate3.ui.component.ShuffleButton
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.SongMenuAction
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
 import org.koin.androidx.compose.koinViewModel
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 /**
- * A playlist of this device's library.
+ * A playlist of this device's library. Its more menu turns the covers into handles to move its
+ * songs, or into buttons to take them out.
  */
 @Composable
 fun LocalPlaylistDetailScreen(
@@ -59,6 +88,8 @@ fun LocalPlaylistDetailScreen(
     viewModel: LocalPlaylistDetailViewModel = koinViewModel(),
 ) {
     val playlist by viewModel.playlist.collectAsState()
+    val mode by viewModel.editMode.collectAsState()
+    val arranged by viewModel.arranged.collectAsState()
     val notifier = LocalNotifier.current
 
     LocalPlaylistDetailContent(
@@ -66,12 +97,21 @@ fun LocalPlaylistDetailScreen(
         thumbnail = playlist?.thumbnail,
         subtitle = playlist?.let { if (it.origin == Origin.LOCAL) "On this device" else it.origin.name },
         songs = viewModel.songs.collectAsLazyPagingItems(),
+        mode = mode,
+        arranged = arranged,
         onBack = onBack,
         onAction = rememberQueueActions(viewModel::allSongs),
         onSongClick = rememberSongTap(null, viewModel::allSongs),
-        onRemoveSong = { song ->
+        onModeChange = viewModel::edit,
+        onMoveSong = { song, after ->
+            viewModel.moveSong(song.mediaId, after?.mediaId) { moved ->
+                if (!moved) notifier.post("Couldn't move it in the playlist")
+            }
+        },
+        onRemoveSong = { song, fromMenu ->
             viewModel.removeSong(song.mediaId) { removed ->
-                notifier.post(
+                // A cover tapped in a row of covers to remove says nothing unless it failed
+                if (fromMenu || !removed) notifier.post(
                     if (removed) "Removed from ${playlist?.name ?: "the playlist"}"
                     else "Couldn't remove it from the playlist"
                 )
@@ -82,16 +122,26 @@ fun LocalPlaylistDetailScreen(
     )
 }
 
+/**
+ * @param arranged every song in the playlist's order while they are moved, see
+ * [LocalPlaylistDetailViewModel.arranged]
+ * @param onMoveSong moves a song to right after another one, to the start after `null`
+ * @param onRemoveSong takes a song out, `true` when it was picked in its menu
+ */
 @Composable
 private fun LocalPlaylistDetailContent(
     name: String?,
     thumbnail: Uri?,
     subtitle: String?,
     songs: LazyPagingItems<MediaItem>,
+    mode: CoverEditMode,
+    arranged: List<MediaItem>?,
     onBack: () -> Unit,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
-    onRemoveSong: (MediaItem) -> Unit,
+    onModeChange: (CoverEditMode) -> Unit,
+    onMoveSong: (song: MediaItem, after: MediaItem?) -> Unit,
+    onRemoveSong: (song: MediaItem, fromMenu: Boolean) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -101,7 +151,27 @@ private fun LocalPlaylistDetailContent(
         modifier = modifier,
         contentPadding = contentPadding,
     ) { innerPadding ->
+        val listState = rememberLazyListState()
+        // Changed at once by the finger, the playlist follows on the drop
+        var entries by remember(arranged) { mutableStateOf(arranged) }
+        // A drag handle keeps the callbacks it was first composed with, they find the song by
+        // key in this instead of trusting the list they caught then
+        val latestEntries by rememberUpdatedState(entries)
+        var dragFrom by remember { mutableIntStateOf(-1) }
+        val haptics = LocalHapticFeedback.current
+        val reorder = rememberReorderableLazyListState(listState, innerPadding) { from, to ->
+            // Their indices count the header's items too, the songs are found by key
+            entries = entries?.toMutableList()?.apply {
+                val fromIndex = indexOfFirst { it.mediaId == from.key }
+                val toIndex = indexOfFirst { it.mediaId == to.key }
+                if (fromIndex >= 0 && toIndex >= 0) add(toIndex, removeAt(fromIndex))
+            }
+            haptics.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
+        }
+        val lifted = MaterialTheme.colorScheme.surfaceContainerHighest
+
         LazyColumn(
+            state = listState,
             contentPadding = innerPadding,
             modifier = Modifier.fillMaxSize(),
         ) {
@@ -112,20 +182,157 @@ private fun LocalPlaylistDetailContent(
                     shape = MaterialTheme.shapes.medium,
                 )
             }
-            item(key = "queue-actions") { QueueActionRow(onAction) }
-            items(count = songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
-                songs[index]?.let {
-                    val remove = remember(it, onRemoveSong) {
-                        SongMenuAction("Remove from playlist", R.drawable.playlist_remove) {
-                            onRemoveSong(it)
-                        }
+            item(key = "queue-actions") {
+                PlaylistActionRow(
+                    onAction = onAction,
+                    mode = mode,
+                    onModeChange = onModeChange,
+                    // Stays on while the last song is taken out, so it can be turned off
+                    canEdit = mode != CoverEditMode.NONE || songs.itemCount > 0,
+                )
+            }
+
+            val moving = entries
+            if (moving != null) {
+                items(moving, key = { it.mediaId }) { song ->
+                    ReorderableItem(reorder, key = song.mediaId) { isDragging ->
+                        PlaylistSong(
+                            item = song,
+                            mode = mode,
+                            handle = Modifier.draggableHandle(
+                                onDragStarted = {
+                                    dragFrom = latestEntries.orEmpty()
+                                        .indexOfFirst { it.mediaId == song.mediaId }
+                                    haptics.performHapticFeedback(
+                                        HapticFeedbackType.GestureThresholdActivate
+                                    )
+                                },
+                                onDragStopped = {
+                                    val now = latestEntries.orEmpty()
+                                    val to = now.indexOfFirst { it.mediaId == song.mediaId }
+                                    if (dragFrom >= 0 && to >= 0 && to != dragFrom)
+                                        onMoveSong(song, now.getOrNull(to - 1))
+                                    dragFrom = -1
+                                },
+                            ),
+                            onClick = { onSongClick(song) },
+                            onRemove = { onRemoveSong(song, it) },
+                            // Opaque, the songs it passes over don't show through it
+                            modifier = if (isDragging) Modifier.background(lifted) else Modifier,
+                        )
                     }
-                    SongItem(it, onClick = { onSongClick(it) }, menuActions = listOf(remove))
+                }
+            } else {
+                items(count = songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
+                    songs[index]?.let { song ->
+                        PlaylistSong(
+                            item = song,
+                            // Handles come with the whole playlist, a page can't be reordered
+                            mode = if (mode == CoverEditMode.REORDER) CoverEditMode.NONE else mode,
+                            handle = Modifier,
+                            onClick = { onSongClick(song) },
+                            onRemove = { onRemoveSong(song, it) },
+                        )
+                    }
                 }
             }
         }
     }
 }
+
+/**
+ * A song of the playlist, its cover as [mode] says, see [CoverEditOverlay].
+ *
+ * @param onRemove takes it out, `true` when picked in its menu
+ */
+@Composable
+private fun PlaylistSong(
+    item: MediaItem,
+    mode: CoverEditMode,
+    handle: Modifier,
+    onClick: () -> Unit,
+    onRemove: (fromMenu: Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val remove = remember(item, onRemove) {
+        SongMenuAction("Remove from playlist", R.drawable.playlist_remove) { onRemove(true) }
+    }
+    SongItem(
+        item = item,
+        onClick = onClick,
+        modifier = modifier,
+        thumbnailOverlay = {
+            CoverEditOverlay(
+                mode = mode,
+                handle = handle,
+                removeDescription = "Remove from the playlist",
+                onRemove = { onRemove(false) },
+            )
+        },
+        menuActions = listOf(remove),
+    )
+}
+
+/**
+ * Play, then shuffle, play next and add to queue as icons, centered in a row under the header.
+ * Its more menu switches [mode], to move songs and to take them out, like the queue's buttons: at
+ * most one is on, turning one on turns the other off.
+ *
+ * @param canEdit whether the switches can be used
+ */
+@Composable
+private fun PlaylistActionRow(
+    onAction: (QueueAction) -> Unit,
+    mode: CoverEditMode,
+    onModeChange: (CoverEditMode) -> Unit,
+    canEdit: Boolean,
+    modifier: Modifier = Modifier,
+) = Row(
+    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+) {
+    val reordering = mode == CoverEditMode.REORDER
+    val removing = mode == CoverEditMode.REMOVE
+
+    QueuePlayButton({ onAction(QueueAction.PLAY) })
+    ShuffleButton({ onAction(QueueAction.SHUFFLE) })
+    PlayNextButton({ onAction(QueueAction.PLAY_NEXT) })
+    AddToQueueButton({ onAction(QueueAction.ENQUEUE) })
+    MoreButton { close ->
+        EditMenuItem(
+            label = if (reordering) "Lock the order" else "Unlock to move songs",
+            icon = if (reordering) R.drawable.lock_open else R.drawable.lock,
+            enabled = canEdit,
+        ) {
+            close()
+            onModeChange(if (reordering) CoverEditMode.NONE else CoverEditMode.REORDER)
+        }
+        EditMenuItem(
+            label = if (removing) "Stop removing songs" else "Remove songs",
+            icon = R.drawable.delete,
+            enabled = canEdit,
+        ) {
+            close()
+            onModeChange(if (removing) CoverEditMode.NONE else CoverEditMode.REMOVE)
+        }
+    }
+}
+
+@Composable
+private fun EditMenuItem(
+    label: String,
+    @DrawableRes icon: Int,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) = DropdownMenuItem(
+    text = { Text(label) },
+    leadingIcon = { Icon(painterResource(icon), contentDescription = null) },
+    enabled = enabled,
+    onClick = onClick,
+)
 
 @ScreenPreviews
 @Composable
@@ -135,9 +342,13 @@ private fun LocalPlaylistDetailPreview() = PreviewTheme {
         thumbnail = null,
         subtitle = "On this device",
         songs = flowOf(PagingData.from(previewSongs())).collectAsLazyPagingItems(),
+        mode = CoverEditMode.NONE,
+        arranged = null,
         onBack = {},
         onAction = {},
         onSongClick = {},
-        onRemoveSong = {},
+        onModeChange = {},
+        onMoveSong = { _, _ -> },
+        onRemoveSong = { _, _ -> },
     )
 }

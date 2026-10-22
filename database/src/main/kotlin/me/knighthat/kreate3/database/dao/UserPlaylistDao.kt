@@ -20,12 +20,12 @@ package me.knighthat.kreate3.database.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.room.RoomRawQuery
+import androidx.room.Update
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.knighthat.kreate3.database.entity.SongEntity
@@ -94,6 +94,17 @@ internal interface UserPlaylistDao {
     @Query("DELETE FROM song_playlist_map WHERE playlist_id = :playlistId")
     suspend fun clearSongs(playlistId: Long)
 
-    @Delete
-    suspend fun removeSong(map: SongPlaylistMapEntity)
+    @Query("DELETE FROM song_playlist_map WHERE playlist_id = :playlistId AND song_id = :songId")
+    suspend fun removeSong(playlistId: Long, songId: String)
+
+    /** The songs of the playlist in its order. */
+    @Query("SELECT * FROM song_playlist_map WHERE playlist_id = :playlistId ORDER BY position, song_id")
+    suspend fun songLinks(playlistId: Long): List<SongPlaylistMapEntity>
+
+    /** The position after the last song of the playlist, `0` when it has none. */
+    @Query("SELECT COALESCE(MAX(position) + 1, 0) FROM song_playlist_map WHERE playlist_id = :playlistId")
+    suspend fun nextPosition(playlistId: Long): Int
+
+    @Update
+    suspend fun updateSongs(maps: List<SongPlaylistMapEntity>)
 }

@@ -18,19 +18,14 @@
 
 package me.knighthat.kreate3.ui.screen.player
 
-import androidx.annotation.DrawableRes
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,37 +36,21 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.playback.PlaybackController
+import me.knighthat.kreate3.ui.component.CoverEditMode
+import me.knighthat.kreate3.ui.component.CoverEditOverlay
 import me.knighthat.kreate3.ui.component.SongItem
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
 /** How strongly the song playing stands out from the rest of the queue. */
 private const val CURRENT_HIGHLIGHT_ALPHA = 0.16f
-
-/** How much a cover darkens under the handle or the remove button over it. */
-private const val COVER_SCRIM_ALPHA = 0.55f
-
-/** What the covers of the queue do, picked with [QueueButtons]. */
-internal enum class QueueEditMode {
-    /** Nothing, they are only covers. */
-    NONE,
-
-    /** Each one is a handle to drag its song to another place in the queue. */
-    REORDER,
-
-    /** Each one is a button that takes its song out of the queue. */
-    REMOVE,
-}
 
 /** A song of the queue, [key] tells apart the same song queued more than once. */
 private data class QueueEntry(val key: String, val item: MediaItem)
@@ -97,7 +76,7 @@ private fun List<MediaItem>.toEntries(): List<QueueEntry> {
 internal fun QueuePage(
     controller: PlaybackController,
     currentIndex: Int,
-    mode: QueueEditMode,
+    mode: CoverEditMode,
     listState: LazyListState,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
@@ -138,66 +117,35 @@ internal fun QueuePage(
                     modifier = background,
                     hasMenu = false,
                     thumbnailOverlay = {
-                        Crossfade(mode, Modifier.matchParentSize(), label = "cover") { shown ->
-                            when (shown) {
-                                QueueEditMode.NONE -> {}
-                                QueueEditMode.REORDER -> CoverIcon(
-                                    icon = R.drawable.drag_handle,
-                                    description = "Drag to move",
-                                    modifier = Modifier.draggableHandle(
-                                        onDragStarted = {
-                                            dragFrom = latestEntries.indexOfFirst {
-                                                it.key == entry.key
-                                            }
-                                            haptics.performHapticFeedback(
-                                                HapticFeedbackType.GestureThresholdActivate
-                                            )
-                                        },
-                                        onDragStopped = {
-                                            val to = latestEntries.indexOfFirst {
-                                                it.key == entry.key
-                                            }
-                                            if (dragFrom >= 0 && to >= 0 && to != dragFrom)
-                                                controller.move(dragFrom, to)
-                                            dragFrom = -1
-                                        },
-                                    ),
-                                )
-
-                                QueueEditMode.REMOVE -> CoverIcon(
-                                    icon = R.drawable.close,
-                                    description = "Remove from the queue",
-                                    modifier = Modifier.clickable {
-                                        // The controller's calls run in order, the next tap's
-                                        // index already counts this one out
-                                        entries = entries.filterNot { it.key == entry.key }
-                                        controller.remove(index)
-                                    },
-                                )
-                            }
-                        }
+                        CoverEditOverlay(
+                            mode = mode,
+                            handle = Modifier.draggableHandle(
+                                onDragStarted = {
+                                    dragFrom = latestEntries.indexOfFirst { it.key == entry.key }
+                                    haptics.performHapticFeedback(
+                                        HapticFeedbackType.GestureThresholdActivate
+                                    )
+                                },
+                                onDragStopped = {
+                                    val to = latestEntries.indexOfFirst { it.key == entry.key }
+                                    if (dragFrom >= 0 && to >= 0 && to != dragFrom)
+                                        controller.move(dragFrom, to)
+                                    dragFrom = -1
+                                },
+                            ),
+                            removeDescription = "Remove from the queue",
+                            onRemove = {
+                                // The controller's calls run in order, the next tap's index
+                                // already counts this one out
+                                entries = entries.filterNot { it.key == entry.key }
+                                controller.remove(index)
+                            },
+                        )
                     },
                 )
             }
         }
     }
-}
-
-/** [icon] in white over the cover darkened, in the cover's shape. */
-@Composable
-private fun CoverIcon(
-    @DrawableRes icon: Int,
-    description: String,
-    modifier: Modifier = Modifier,
-) = Box(
-    contentAlignment = Alignment.Center,
-    modifier = Modifier
-        .fillMaxSize()
-        .clip(MaterialTheme.shapes.small)
-        .background(Color.Black.copy(alpha = COVER_SCRIM_ALPHA))
-        .then(modifier),
-) {
-    Icon(painterResource(icon), contentDescription = description, tint = Color.White)
 }
 
 /**
@@ -206,8 +154,8 @@ private fun CoverIcon(
  */
 @Composable
 internal fun QueueButtons(
-    mode: QueueEditMode,
-    onModeChange: (QueueEditMode) -> Unit,
+    mode: CoverEditMode,
+    onModeChange: (CoverEditMode) -> Unit,
     onLocate: () -> Unit,
     modifier: Modifier = Modifier,
 ) = Row(
@@ -215,20 +163,20 @@ internal fun QueueButtons(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier,
 ) {
-    val reordering = mode == QueueEditMode.REORDER
-    val removing = mode == QueueEditMode.REMOVE
+    val reordering = mode == CoverEditMode.REORDER
+    val removing = mode == CoverEditMode.REMOVE
 
     ModeButton(R.drawable.my_location, "Go to the song playing", isOn = false, onClick = onLocate)
     ModeButton(
         icon = if (reordering) R.drawable.lock_open else R.drawable.lock,
         description = if (reordering) "Lock the order" else "Unlock to move songs",
         isOn = reordering,
-        onClick = { onModeChange(if (reordering) QueueEditMode.NONE else QueueEditMode.REORDER) },
+        onClick = { onModeChange(if (reordering) CoverEditMode.NONE else CoverEditMode.REORDER) },
     )
     ModeButton(
         icon = R.drawable.delete,
         description = if (removing) "Stop removing songs" else "Remove songs",
         isOn = removing,
-        onClick = { onModeChange(if (removing) QueueEditMode.NONE else QueueEditMode.REMOVE) },
+        onClick = { onModeChange(if (removing) CoverEditMode.NONE else CoverEditMode.REMOVE) },
     )
 }

@@ -246,6 +246,16 @@ fun PlayAllButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
 fun ShuffleButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
     IconAction(R.drawable.shuffle, "Shuffle", onClick, modifier)
 
+/** Plays every song of a list after the song playing, see [QueueAction.PLAY_NEXT]. */
+@Composable
+fun PlayNextButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
+    IconAction(R.drawable.queue_play_next, "Play next", onClick, modifier)
+
+/** Adds every song of a list to the end of the queue, see [QueueAction.ENQUEUE]. */
+@Composable
+fun AddToQueueButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
+    IconAction(R.drawable.playlist_add, "Add to queue", onClick, modifier)
+
 /** Makes a new playlist. */
 @Composable
 fun CreatePlaylistButton(onClick: () -> Unit, modifier: Modifier = Modifier) =

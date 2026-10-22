@@ -103,7 +103,9 @@ interface PlaylistRepository {
     suspend fun delete(playlistId: Long)
 
     /**
-     * @return `false` when the song was in the playlist already
+     * Adds the song at the end of the playlist.
+     *
+     * @return `false` when the song was in the playlist already, it keeps its place
      * @throws IllegalArgumentException when the playlist doesn't exist or belongs to another user
      */
     suspend fun addSong(playlistId: Long, songId: String): Boolean
@@ -112,4 +114,13 @@ interface PlaylistRepository {
      * @throws IllegalArgumentException when the playlist doesn't exist or belongs to another user
      */
     suspend fun removeSong(playlistId: Long, songId: String)
+
+    /**
+     * Moves the song to right after [after] in the playlist's order, to the start when [after]
+     * is `null`.
+     *
+     * @throws IllegalArgumentException when the playlist doesn't exist or belongs to another user,
+     * or one of the songs isn't in it
+     */
+    suspend fun moveSong(playlistId: Long, songId: String, after: String?)
 }

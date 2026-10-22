@@ -28,6 +28,7 @@ import me.knighthat.kreate3.database.dao.UserPlaylistDao
 import me.knighthat.kreate3.database.entity.SongEntity
 import me.knighthat.kreate3.database.entity.SongPlaylistMapEntity
 import me.knighthat.kreate3.database.entity.UserPlaylistEntity
+import me.knighthat.kreate3.database.inTransaction
 import me.knighthat.kreate3.database.model.Song
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.paging.PlaylistSort
@@ -155,12 +156,34 @@ internal class PlaylistRepositoryImpl(
 
     override suspend fun addSong(playlistId: Long, songId: String): Boolean {
         ownedBy(scope.requireId(), playlistId)
-        return playlistDao.addSong(SongPlaylistMapEntity(songId, playlistId)) != -1L
+        return database.inTransaction {
+            val position = playlistDao.nextPosition(playlistId)
+            playlistDao.addSong(SongPlaylistMapEntity(songId, playlistId, position)) != -1L
+        }
     }
 
     override suspend fun removeSong(playlistId: Long, songId: String) {
         ownedBy(scope.requireId(), playlistId)
-        playlistDao.removeSong(SongPlaylistMapEntity(songId, playlistId))
+        playlistDao.removeSong(playlistId, songId)
+    }
+
+    override suspend fun moveSong(playlistId: Long, songId: String, after: String?) {
+        ownedBy(scope.requireId(), playlistId)
+        database.inTransaction {
+            val links = playlistDao.songLinks(playlistId).toMutableList()
+            val from = links.indexOfFirst { it.songId == songId }
+            require(from >= 0) { "Song $songId isn't in playlist $playlistId" }
+            val moved = links.removeAt(from)
+            val to = if (after == null) 0 else links.indexOfFirst { it.songId == after } + 1
+            require(to > 0 || after == null) { "Song $after isn't in playlist $playlistId" }
+            links.add(to, moved)
+
+            // Numbered again from 0, the numbers skipped by removed songs go away with it
+            val changed = links.mapIndexedNotNull { index, link ->
+                link.takeIf { it.position != index }?.copy(position = index)
+            }
+            playlistDao.updateSongs(changed)
+        }
     }
 
     private suspend fun ownedBy(userId: String, playlistId: Long): UserPlaylistEntity {

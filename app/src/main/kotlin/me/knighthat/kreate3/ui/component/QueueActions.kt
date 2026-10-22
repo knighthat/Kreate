@@ -63,6 +63,9 @@ enum class QueueAction {
 
     /** Adds the songs to the end of the queue. */
     ENQUEUE,
+
+    /** Adds the songs right after the song playing, in the list's order. */
+    PLAY_NEXT,
 }
 
 /**
@@ -79,11 +82,16 @@ fun PlaybackController.queue(action: QueueAction, songs: List<MediaItem>): Strin
         QueueAction.PLAY -> playAll(playable)
         QueueAction.SHUFFLE -> playAll(playable.shuffled())
         QueueAction.ENQUEUE -> enqueue(playable)
+        QueueAction.PLAY_NEXT -> playNext(playable)
     }
     return when (action) {
         QueueAction.ENQUEUE ->
             if (playable.size == 1) "Added 1 song to the queue"
             else "Added ${playable.size} songs to the queue"
+
+        QueueAction.PLAY_NEXT ->
+            if (playable.size == 1) "Will play next"
+            else "Will play ${playable.size} songs next"
 
         else -> null
     }
@@ -181,22 +189,35 @@ fun QueueActionRow(onAction: (QueueAction) -> Unit, modifier: Modifier = Modifie
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
     ) {
-        if (LocalIconOnly.current) {
-            // Play stays the main action, filled like its labeled button
-            FilledIconButton(onClick = { onAction(QueueAction.PLAY) }) {
-                Icon(painterResource(R.drawable.play_arrow), contentDescription = "Play")
-            }
+        QueuePlayButton({ onAction(QueueAction.PLAY) })
+        if (LocalIconOnly.current)
             ShuffleButton({ onAction(QueueAction.SHUFFLE) })
-        } else {
-            LabeledButton("Play", R.drawable.play_arrow) { onAction(QueueAction.PLAY) }
-            LabeledButton("Shuffle", R.drawable.shuffle) { onAction(QueueAction.SHUFFLE) }
-        }
+        else
+            LabeledButton(
+                "Shuffle",
+                R.drawable.shuffle,
+                onClick = { onAction(QueueAction.SHUFFLE) })
         QueueMoreButton(onAction)
     }
 }
 
 /**
- * A [MoreButton] with the [QueueAction]s that have no button of their own.
+ * The main button of a row of [QueueAction]s, see [QueueAction.PLAY]: labeled, or a filled icon
+ * while [LocalIconOnly].
+ */
+@Composable
+fun QueuePlayButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    if (LocalIconOnly.current)
+    // Play stays the main action, filled like its labeled button
+        FilledIconButton(onClick = onClick, modifier = modifier) {
+            Icon(painterResource(R.drawable.play_arrow), contentDescription = "Play")
+        }
+    else
+        LabeledButton("Play", R.drawable.play_arrow, onClick, modifier)
+}
+
+/**
+ * A [MoreButton] with [QueueAction.ENQUEUE], for rows without a button for it.
  */
 @Composable
 fun QueueMoreButton(onAction: (QueueAction) -> Unit, modifier: Modifier = Modifier) =
@@ -212,9 +233,15 @@ fun QueueMoreButton(onAction: (QueueAction) -> Unit, modifier: Modifier = Modifi
     }
 
 @Composable
-private fun LabeledButton(label: String, @DrawableRes icon: Int, onClick: () -> Unit) =
+private fun LabeledButton(
+    label: String,
+    @DrawableRes icon: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) =
     FilledTonalButton(
         onClick = onClick,
+        modifier = modifier,
         contentPadding = ButtonDefaults.ButtonWithIconContentPadding
     ) {
         Icon(

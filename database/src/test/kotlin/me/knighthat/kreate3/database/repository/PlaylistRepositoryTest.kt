@@ -120,6 +120,68 @@ internal class PlaylistRepositoryTest : DatabaseTest() {
         assertThrows(IllegalArgumentException::class.java) {
             runBlocking { repository.removeSong(theirs, "s1") }
         }
+        assertThrows(IllegalArgumentException::class.java) {
+            runBlocking { repository.moveSong(theirs, "s1", null) }
+        }
+    }
+
+    private suspend fun orderOf(playlistId: Long) =
+        database.userPlaylistDao().songLinks(playlistId).map { it.songId }
+
+    @Test
+    fun songsAreAddedAtTheEnd() = runBlocking {
+        listOf("b", "c", "a").forEach { addSong(it) }
+        val id = repository.save(playlist("Mix"))
+
+        listOf("b", "c", "a").forEach { repository.addSong(id, it) }
+        repository.addSong(id, "b")
+
+        assertEquals(listOf("b", "c", "a"), orderOf(id))
+    }
+
+    @Test
+    fun aSongIsMovedAfterAnotherOrToTheStart() = runBlocking {
+        listOf("s1", "s2", "s3", "s4").forEach { addSong(it) }
+        val id = repository.save(playlist("Mix"))
+        listOf("s1", "s2", "s3", "s4").forEach { repository.addSong(id, it) }
+
+        repository.moveSong(id, "s1", after = "s3")
+        assertEquals(listOf("s2", "s3", "s1", "s4"), orderOf(id))
+
+        repository.moveSong(id, "s4", after = null)
+        assertEquals(listOf("s4", "s2", "s3", "s1"), orderOf(id))
+
+        repository.moveSong(id, "s2", after = "s1")
+        assertEquals(listOf("s4", "s3", "s1", "s2"), orderOf(id))
+    }
+
+    @Test
+    fun movingAfterARemovalKeepsTheOrder() = runBlocking {
+        listOf("s1", "s2", "s3", "s4", "s5").forEach { addSong(it) }
+        val id = repository.save(playlist("Mix"))
+        listOf("s1", "s2", "s3", "s4", "s5").forEach { repository.addSong(id, it) }
+        repository.removeSong(id, "s2")
+        repository.removeSong(id, "s3")
+
+        repository.moveSong(id, "s5", after = "s1")
+        repository.addSong(id, "s2")
+
+        assertEquals(listOf("s1", "s5", "s4", "s2"), orderOf(id))
+    }
+
+    @Test
+    fun aSongOutsideThePlaylistIsNotMoved() {
+        val id = runBlocking {
+            listOf("s1", "s2").forEach { addSong(it) }
+            repository.save(playlist("Mix")).also { repository.addSong(it, "s1") }
+        }
+
+        assertThrows(IllegalArgumentException::class.java) {
+            runBlocking { repository.moveSong(id, "s2", after = null) }
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            runBlocking { repository.moveSong(id, "s1", after = "s2") }
+        }
     }
 
     @Test

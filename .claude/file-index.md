@@ -201,7 +201,8 @@ source/ (app-side glue for sources)
 ui/component/ (shared composables)
 
 - `Buttons.kt` —
-  Back/Search/Profile/Settings/More/Share/PlayAll/Shuffle/Random/CreatePlaylist/PlayPause/SeeMore/Config
+  Back/Search/Profile/Settings/More/Share/PlayAll/Shuffle/PlayNext/AddToQueue/Random/CreatePlaylist/
+  PlayPause/SeeMore/Config
   buttons, `BookmarkButton`/`FollowButton` (filled in the primary color while set), `TileButton` (
   big icon+title+subtitle tile with busy spinner; wizard restore, Backup
   settings) (`.claude/rules/ui.md`).
@@ -223,8 +224,14 @@ ui/component/ (shared composables)
   `MediaItem.localSongId`.
 - `MediaItemDsl.kt` — model → `MediaItem` conversions (`toMediaItem`, `toLiveMediaItem`), `EXTRA_*`
   keys, `isExplicit`/`isBookmarked`/`hasBadges`.
-- `QueueActions.kt` — `QueueAction` enum, `QueueActionRow`, `QueueMoreButton`,
-  `PlaybackController.queue` (quick actions).
+- `QueueActions.kt` — `QueueAction` enum (PLAY/SHUFFLE/ENQUEUE/PLAY_NEXT), `QueueActionRow`,
+  `QueuePlayButton` (labeled, filled icon when icon-only), `QueueMoreButton`,
+  `PlaybackController.queue` (quick actions). The app's playlists have their own row
+  (`PlaylistActionRow` in `LocalPlaylistDetailScreen.kt`: play, shuffle, play next, add to queue,
+  more menu with the move/remove switches).
+- `CoverEdit.kt` — `CoverEditMode` NONE/REORDER/REMOVE and `CoverEditOverlay` (drag handle or X
+  button over a `SongItem` cover, the handle being the caller's reorderable `draggableHandle`), for
+  the queue and the app's playlists.
 - `CenteredPicker` (now in `ui/screen/search/SearchScreen.kt`) — generic LazyRow picker, each value
   once (no looping — the maintainer rejected a pseudo-infinite list): selected item centered (snap),
   neighbours scaled 0.75 / faded, ends have one side empty, tap slides an item to the middle; used
@@ -300,7 +307,7 @@ ui/screen/
   size stepper, copy), `PlayerButtons.kt` (Player page bar: EQ = system effect panel via
   StartActivityForResult, sleep timer menu with countdown, share: YouTube link / OpenSubsonic
   `Shareable.Song` share / local file via EXTRA_STREAM), `QueuePage.kt` (`PlaybackController.queue`,
-  tap → `skipTo`; entries keyed `mediaId#n`, `QueueEditMode` NONE/REORDER/REMOVE turns covers into
+  tap → `skipTo`; entries keyed `mediaId#n`, `CoverEditMode` (`CoverEdit.kt`) turns covers into
   drag handles (sh.calvin.reorderable, local order, `move` on drop) or X buttons (`remove`);
   `QueueButtons` locate/lock/trash). The bar under the tabs (`PageButtons` in PlayerSheet.kt,
   `BUTTON_BAR_HEIGHT`) shows each page's buttons, fading with the pager; queue list state and mode
@@ -354,7 +361,7 @@ Pure Kotlin/JVM (`kotlin("jvm")`), package `me.knighthat.kreate3.model`, rules i
 - `Transaction.kt` — write-transaction helper (no `withTransaction` with SQLite driver).
   `Converters.kt` — Instant/Duration/list/Uri.
 - entity/ — shared tables `Song`, `Album`, `Artist`, `SongFormat` (gain), `Lyrics`, `SongArtistMap`,
-  `SongPlaylistMap`; per-user `User`,
+  `SongPlaylistMap` (`position` = playlist order, gaps left by removals); per-user `User`,
   `UserSong`, `UserAlbum`, `UserArtist`, `UserPlaylist`,
   `PlaybackHistory`, `SearchHistory`, `PersistentQueue`.
 - view/ — `UserSongViewEntity`, `UserAlbumViewEntity`, `UserArtistViewEntity` (user override ?:

@@ -28,6 +28,8 @@ import androidx.room.Index
  *
  * @property songId the [SongEntity]
  * @property playlistId the [UserPlaylistEntity] that holds [songId]
+ * @property position where [songId] is in the playlist's order, lowest first; numbers can be
+ * skipped, by songs taken out
  */
 @Entity(
     tableName = "song_playlist_map",
@@ -46,11 +48,12 @@ import androidx.room.Index
             onDelete = ForeignKey.CASCADE,
         ),
     ],
-    indices = [Index("playlist_id")],
+    indices = [Index("playlist_id", "position")],
 )
 internal data class SongPlaylistMapEntity(
     @ColumnInfo(name = "song_id")
     val songId: String,
     @ColumnInfo(name = "playlist_id")
     val playlistId: Long,
+    val position: Int,
 )
