@@ -95,6 +95,7 @@ fun LocalPlaylistDetailScreen(
     LocalPlaylistDetailContent(
         name = playlist?.name,
         thumbnail = playlist?.thumbnail,
+        origin = playlist?.origin,
         subtitle = playlist?.let { if (it.origin == Origin.LOCAL) "On this device" else it.origin.name },
         songs = viewModel.songs.collectAsLazyPagingItems(),
         mode = mode,
@@ -132,6 +133,7 @@ fun LocalPlaylistDetailScreen(
 private fun LocalPlaylistDetailContent(
     name: String?,
     thumbnail: Uri?,
+    origin: Origin?,
     subtitle: String?,
     songs: LazyPagingItems<MediaItem>,
     mode: CoverEditMode,
@@ -180,6 +182,7 @@ private fun LocalPlaylistDetailContent(
                     uri = thumbnail,
                     subtitle = subtitle,
                     shape = MaterialTheme.shapes.medium,
+                    origin = origin,
                 )
             }
             item(key = "queue-actions") {
@@ -340,6 +343,7 @@ private fun LocalPlaylistDetailPreview() = PreviewTheme {
     LocalPlaylistDetailContent(
         name = "Road trip",
         thumbnail = null,
+        origin = Origin.LOCAL,
         subtitle = "On this device",
         songs = flowOf(PagingData.from(previewSongs())).collectAsLazyPagingItems(),
         mode = CoverEditMode.NONE,

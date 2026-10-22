@@ -72,6 +72,8 @@ fun LocalAlbumDetailScreen(
                 it.year?.toString()
             ).takeIf { p -> p.isNotEmpty() }?.joinToString(" · ")
         },
+        origin = album?.origin,
+        isExplicit = album?.isExplicit == true,
         songs = viewModel.songs.collectAsLazyPagingItems(),
         onBack = onBack,
         onAction = rememberQueueActions(viewModel::allSongs),
@@ -93,6 +95,8 @@ private fun LocalAlbumDetailContent(
     name: String?,
     cover: Uri?,
     subtitle: String?,
+    origin: Origin?,
+    isExplicit: Boolean,
     songs: LazyPagingItems<MediaItem>,
     onBack: () -> Unit,
     onAction: (QueueAction) -> Unit,
@@ -122,6 +126,8 @@ private fun LocalAlbumDetailContent(
                     uri = cover,
                     subtitle = subtitle,
                     shape = MaterialTheme.shapes.medium,
+                    origin = origin,
+                    isExplicit = isExplicit,
                 )
             }
             item(key = "queue-actions") { QueueActionRow(onAction) }
@@ -146,6 +152,8 @@ private fun LocalAlbumDetailPreview() = PreviewTheme {
         name = "Afterglow",
         cover = null,
         subtitle = "Neon Coast · 2021",
+        origin = Origin.LOCAL,
+        isExplicit = true,
         songs = flowOf(PagingData.from(previewSongs())).collectAsLazyPagingItems(),
         onBack = {},
         onAction = {},

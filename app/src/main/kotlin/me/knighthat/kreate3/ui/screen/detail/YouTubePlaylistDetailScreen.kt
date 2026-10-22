@@ -119,6 +119,7 @@ private fun YouTubePlaylistDetailContent(
                     uri = detail.thumbnail,
                     subtitle = detail.subtitle,
                     shape = MaterialTheme.shapes.medium,
+                    origin = Origin.YOUTUBE,
                 )
             }
             item(key = "queue-actions") { QueueActionRow(onAction) }

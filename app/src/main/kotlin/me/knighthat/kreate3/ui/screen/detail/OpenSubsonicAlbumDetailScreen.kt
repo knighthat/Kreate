@@ -113,6 +113,8 @@ private fun OpenSubsonicAlbumDetailContent(
                     uri = detail.thumbnail,
                     subtitle = detail.subtitle,
                     shape = MaterialTheme.shapes.medium,
+                    origin = Origin.OPEN_SUBSONIC,
+                    isExplicit = detail.isExplicit,
                 )
             }
             item(key = "queue-actions") { QueueActionRow(onAction) }

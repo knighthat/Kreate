@@ -38,6 +38,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.FollowButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
@@ -70,6 +71,7 @@ fun LocalArtistDetailScreen(
     LocalArtistDetailContent(
         name = artist?.name,
         thumbnail = artist?.thumbnail,
+        origin = artist?.origin,
         albums = albums,
         songs = viewModel.songs.collectAsLazyPagingItems(),
         onBack = onBack,
@@ -90,6 +92,7 @@ fun LocalArtistDetailScreen(
 private fun LocalArtistDetailContent(
     name: String?,
     thumbnail: Uri?,
+    origin: Origin?,
     albums: List<MediaItem>,
     songs: LazyPagingItems<MediaItem>,
     onBack: () -> Unit,
@@ -119,6 +122,7 @@ private fun LocalArtistDetailContent(
                     uri = thumbnail,
                     subtitle = null,
                     shape = CircleShape,
+                    origin = origin,
                 )
             }
             item(key = "queue-actions") { QueueActionRow(onAction) }
@@ -155,6 +159,7 @@ private fun LocalArtistDetailPreview() = PreviewTheme {
     LocalArtistDetailContent(
         name = "Neon Coast",
         thumbnail = null,
+        origin = Origin.LOCAL,
         albums = previewAlbums().take(3),
         songs = flowOf(PagingData.from(previewSongs())).collectAsLazyPagingItems(),
         onBack = {},

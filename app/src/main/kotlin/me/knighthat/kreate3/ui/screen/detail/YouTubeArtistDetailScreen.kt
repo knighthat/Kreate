@@ -129,6 +129,7 @@ private fun YouTubeArtistDetailContent(
                     uri = detail.thumbnail,
                     subtitle = null,
                     shape = CircleShape,
+                    origin = Origin.YOUTUBE,
                 )
             }
             if (detail.topSongs.isNotEmpty())

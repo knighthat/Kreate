@@ -123,6 +123,7 @@ private fun OpenSubsonicArtistDetailContent(
                     uri = detail.thumbnail,
                     subtitle = null,
                     shape = CircleShape,
+                    origin = Origin.OPEN_SUBSONIC,
                 )
             }
             if (detail.songs.isNotEmpty())

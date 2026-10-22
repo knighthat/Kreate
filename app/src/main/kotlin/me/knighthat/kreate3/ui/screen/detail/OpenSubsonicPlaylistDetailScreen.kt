@@ -110,6 +110,7 @@ private fun OpenSubsonicPlaylistDetailContent(
                     uri = detail.thumbnail,
                     subtitle = null,
                     shape = MaterialTheme.shapes.medium,
+                    origin = Origin.OPEN_SUBSONIC,
                 )
             }
             item(key = "queue-actions") { QueueActionRow(onAction) }

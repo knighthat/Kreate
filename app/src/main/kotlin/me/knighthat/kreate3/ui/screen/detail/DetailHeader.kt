@@ -23,6 +23,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -40,21 +41,32 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.ui.component.ExplicitBadge
+import me.knighthat.kreate3.ui.component.OriginBadge
 import me.knighthat.kreate3.ui.component.Thumbnail
 
 /** Lines of [DetailDescription] shown until it is opened. */
 private const val COLLAPSED_LINES = 3
 
+/** Edge of each badge above the [DetailHeader]'s picture. */
+private val BADGE_SIZE = 20.dp
+
 /**
- * The top of a detail screen: a large picture and a line under it, centered. The top bar already
- * shows the name.
+ * The top of a detail screen: the item's badges, a large picture under them and a line under
+ * that, centered. The top bar already shows the name, its buttons the bookmark or follow.
+ *
+ * @param origin where the item comes from, shown as a badge, none when `null`
+ * @param isExplicit whether the explicit badge shows
  */
 @Composable
 fun DetailHeader(
     uri: Uri?,
     subtitle: String?,
     shape: Shape,
+    origin: Origin?,
     modifier: Modifier = Modifier,
+    isExplicit: Boolean = false,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -63,6 +75,13 @@ fun DetailHeader(
             .fillMaxWidth()
             .padding(16.dp),
     ) {
+        if (origin != null || isExplicit) Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            origin?.let { OriginBadge(it, BADGE_SIZE) }
+            if (isExplicit) ExplicitBadge(BADGE_SIZE)
+        }
         Thumbnail(
             uri = uri,
             shape = shape,

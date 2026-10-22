@@ -37,6 +37,7 @@ import me.knighthat.kreate3.ui.navigation.LocalAlbum
  *
  * @property songs in the album's order, each with its cover for the queue and the player
  * @property description the server's notes about the album, `null` when it has none
+ * @property isExplicit whether the server marks the album explicit
  */
 data class OpenSubsonicAlbumDetail(
     val name: String?,
@@ -44,6 +45,7 @@ data class OpenSubsonicAlbumDetail(
     val subtitle: String?,
     val songs: List<MediaItem>,
     val description: String? = null,
+    val isExplicit: Boolean = false,
 )
 
 /**
@@ -95,6 +97,7 @@ class OpenSubsonicAlbumDetailViewModel(
                 .takeIf { it.isNotEmpty() }?.joinToString(" · "),
             songs = songs.map { it.toLiveMediaItem() }.distinctBy { it.mediaId },
             description = notes.await(),
+            isExplicit = album.isExplicit == true,
         )
     }
 

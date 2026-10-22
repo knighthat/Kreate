@@ -40,6 +40,7 @@ import me.knighthat.kreate3.ui.navigation.LocalAlbum
  *
  * @property songs in the album's order, each with its cover (the album's when it has none) for the queue
  * @property description YouTube's description of the album, `null` when it has none
+ * @property isExplicit whether YouTube marks the album explicit
  */
 data class YouTubeAlbumDetail(
     val name: String?,
@@ -48,6 +49,7 @@ data class YouTubeAlbumDetail(
     val songs: List<MediaItem>,
     val sections: List<LiveSection>,
     val description: String? = null,
+    val isExplicit: Boolean = false,
 )
 
 /** The row as cards to show, each item once. */
@@ -136,6 +138,7 @@ class YouTubeAlbumDetailViewModel(
             sections = page.sections.map { it.toLiveSection(provider) }
                 .filter { it.items.isNotEmpty() },
             description = page.description?.trim()?.ifEmpty { null },
+            isExplicit = album.isExplicit == true,
         )
     }
 

@@ -123,6 +123,8 @@ private fun YouTubeAlbumDetailContent(
                     uri = detail.thumbnail,
                     subtitle = detail.subtitle,
                     shape = MaterialTheme.shapes.medium,
+                    origin = Origin.YOUTUBE,
+                    isExplicit = detail.isExplicit,
                 )
             }
             item(key = "queue-actions") { QueueActionRow(onAction) }

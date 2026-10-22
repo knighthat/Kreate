@@ -222,7 +222,8 @@ ui/component/ (shared composables)
   `song` table is stored first (`SongStore`).
   `CreatePlaylistDialog` (also used by `HomePlaylistsScreen`).
 - `ItemParts.kt` — `ItemRow`, `Thumbnail` (fallback drawable, `.claude/rules/ui.md`),
-  `thumbnailModel`, `ItemBadge(s)` (origin/explicit badges), `formatDuration`,
+  `thumbnailModel`, `ItemBadge(s)` (origin/explicit badges; `OriginBadge`, `ExplicitBadge` alone),
+  `formatDuration`,
   `MediaItem.localSongId`.
 - `MediaItemDsl.kt` — model → `MediaItem` conversions (`toMediaItem`, `toLiveMediaItem`), `EXTRA_*`
   keys, `isExplicit`/`isBookmarked`/`hasBadges`.
@@ -292,7 +293,8 @@ ui/screen/
   `Home{Songs,Albums,Artists,Playlists}Screen/ViewModel.kt`, `OriginFilter.kt` (filter chips state),
   `LiveItems.kt` (live items appended after DB items).
 - detail/ — `DetailScaffold.kt` (`contentPadding` added to the bar's; lists take its padding as
-  content padding), `DetailHeader.kt`, `LiveDetail.kt` (`LiveDetailViewModel`, `LiveState`,
+  content padding), `DetailHeader.kt` (origin/explicit badges above the cover), `LiveDetail.kt` (
+  `LiveDetailViewModel`, `LiveState`,
   `LiveSectionRow`, `LiveDetailScreen`), `ShareAction.kt` (OpenSubsonic share link on demand),
   `SourceToggle.kt` (bookmark/follow kept by a source: flips at once, sent in tap order on the app
   scope, flipped back with a message on failure; `serverFailure`/`youTubeFailure` texts);

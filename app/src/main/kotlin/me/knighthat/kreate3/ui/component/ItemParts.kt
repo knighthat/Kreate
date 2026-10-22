@@ -293,29 +293,39 @@ fun ItemBadges(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.heightIn(min = size),
     ) {
-        when (item.origin) {
-            Origin.LOCAL -> ItemBadge(Origin.LOCAL.icon, "On this device", size = size)
-            Origin.YOUTUBE -> ItemBadge(Origin.YOUTUBE.icon, "From YouTube", size = size)
-            Origin.OPEN_SUBSONIC -> ItemBadge(
-                Origin.OPEN_SUBSONIC.icon,
-                "From the OpenSubsonic server",
-                size = size,
-            )
-
-            null -> {}
-        }
-        if (item.isExplicit) ItemBadge(
-            R.drawable.explicit,
-            "Explicit",
-            tint = MaterialTheme.colorScheme.error,
-            size = size,
-        )
+        item.origin?.let { OriginBadge(it, size) }
+        if (item.isExplicit) ExplicitBadge(size)
         if (!showReactions) return@Row
         if (item.isLiked) ItemBadge(R.drawable.favorite, "Favorite", size = size)
         if (item.isBookmarked) ItemBadge(R.drawable.bookmark, "Bookmarked", size = size)
         if (item.isFollowed) ItemBadge(R.drawable.notifications, "Following", size = size)
     }
 }
+
+/**
+ * The [ItemBadge] of where an item comes from.
+ */
+@Composable
+fun OriginBadge(origin: Origin, size: Dp = BADGE_SIZE) = ItemBadge(
+    icon = origin.icon,
+    contentDescription = when (origin) {
+        Origin.LOCAL -> "On this device"
+        Origin.YOUTUBE -> "From YouTube"
+        Origin.OPEN_SUBSONIC -> "From the OpenSubsonic server"
+    },
+    size = size,
+)
+
+/**
+ * The [ItemBadge] of explicit content.
+ */
+@Composable
+fun ExplicitBadge(size: Dp = BADGE_SIZE) = ItemBadge(
+    icon = R.drawable.explicit,
+    contentDescription = "Explicit",
+    tint = MaterialTheme.colorScheme.error,
+    size = size,
+)
 
 /**
  * An item as a row: cover, then the title with its badges above and the subtitle below.
