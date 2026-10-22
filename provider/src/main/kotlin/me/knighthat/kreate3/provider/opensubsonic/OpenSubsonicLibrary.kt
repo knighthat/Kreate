@@ -23,24 +23,28 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
+import me.knighthat.kreate3.provider.ReactionSender
+import me.knighthat.kreate3.provider.isLike
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
 /**
- * Keeps the songs starred on the server liked in the active user's library. Starred songs are
- * the only part of the server's library that is stored, its albums, artists and playlists are
- * fetched each time they show. Turning the server or the syncing off only stops the syncing, the
- * likes stay as they are.
+ * Keeps the songs starred on the server liked in the active user's library, and the likes given
+ * in the app starred on the server. Starred songs are the only part of the server's library that
+ * is stored, its albums, artists and playlists are fetched each time they show. Turning the server
+ * or the syncing off only stops the syncing, the likes stay as they are.
  *
  * @param syncs whether the starred songs are synced, [Preferences.OPEN_SUBSONIC_SYNC_SONGS]
  */
 class OpenSubsonicLibrary(
     private val provider: OpenSubsonicProvider,
     private val repository: RemoteCatalogRepository,
+    private val userSongs: UserSongRepository,
     private val scope: CoroutineScope,
     private val clock: Clock = Clock.System,
     private val syncs: () -> Boolean = { Preferences.OPEN_SUBSONIC_SYNC_SONGS.value },
@@ -48,6 +52,8 @@ class OpenSubsonicLibrary(
 
     /** When the liked songs of each server address were last brought up to date, or are being now. */
     private val refreshed = ConcurrentHashMap<String, Instant>()
+
+    private val sender = ReactionSender(userSongs)
 
     /**
      * Brings the liked songs up to date unless it was done recently or their syncing is off. A
@@ -84,14 +90,36 @@ class OpenSubsonicLibrary(
     }
 
     /**
+     * Changes the user's reaction to [songId], a song of the server, to what [likedAt] makes of
+     * the one stored, see `UserSong.likedAt`. While the syncing is on, a song that becomes liked
+     * is starred on the server and one that stops being liked loses its star. The API has no
+     * dislike, so a dislike stays on the device: a starred song that gets one only loses its star.
+     *
+     * When the server can't be told, the reaction is taken back to what it was, unless another
+     * one replaced it meanwhile.
+     *
+     * @throws ServerException when the server can't be used or refuses the star, the reaction
+     * is taken back then
+     */
+    suspend fun react(songId: String, likedAt: (Instant?) -> Instant?) =
+        sender.react(songId, likedAt) { before, after ->
+            val liked = after.isLike
+            if (before.isLike != liked && syncs()) provider.setStarred(songId, liked)
+        }
+
+    /**
      * @return whether the songs were stored, `false` when the server is off, or its address
-     * changed or the syncing was turned off meanwhile
+     * changed, the syncing was turned off or a reaction was saved or sent meanwhile
      */
     private suspend fun sync(server: String): Boolean {
+        val since = sender.mark()
         val songs = provider.starredSongs() ?: return false
-        if (provider.serverUrl != server || !syncs()) return false
-        repository.syncLikedSongs(Origin.OPEN_SUBSONIC, songs)
-        return true
+
+        return sender.store(since) {
+            if (provider.serverUrl != server || !syncs()) return@store false
+            repository.syncLikedSongs(Origin.OPEN_SUBSONIC, songs)
+            true
+        }
     }
 
     private companion object {

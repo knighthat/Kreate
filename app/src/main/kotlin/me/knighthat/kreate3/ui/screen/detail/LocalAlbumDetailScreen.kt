@@ -35,6 +35,7 @@ import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.source.local.albumArtUri
+import me.knighthat.kreate3.ui.component.BookmarkButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.QueueActionRow
@@ -57,6 +58,7 @@ fun LocalAlbumDetailScreen(
 ) {
     val album by viewModel.album.collectAsState()
     val canShare by viewModel.canShare.collectAsState()
+    val isBookmarked by viewModel.isBookmarked.collectAsState()
 
     LocalAlbumDetailContent(
         name = album?.name,
@@ -75,6 +77,8 @@ fun LocalAlbumDetailScreen(
         onAction = rememberQueueActions(viewModel::allSongs),
         onSongClick = rememberSongTap(null, viewModel::allSongs),
         share = if (canShare) viewModel::shareLink else null,
+        isBookmarked = isBookmarked,
+        onToggleBookmark = viewModel::toggleBookmark,
         modifier = modifier,
         contentPadding = contentPadding,
     )
@@ -82,6 +86,7 @@ fun LocalAlbumDetailScreen(
 
 /**
  * @param share gives the album's link, `null` when it has none
+ * @param isBookmarked `null` hides the bookmark button, while it isn't known
  */
 @Composable
 private fun LocalAlbumDetailContent(
@@ -93,6 +98,8 @@ private fun LocalAlbumDetailContent(
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     share: (suspend () -> Result<String>)?,
+    isBookmarked: Boolean?,
+    onToggleBookmark: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -102,6 +109,7 @@ private fun LocalAlbumDetailContent(
         modifier = modifier,
         contentPadding = contentPadding,
         actions = {
+            isBookmarked?.let { BookmarkButton(it, onToggleBookmark) }
             if (share != null) ShareAction(name, "album", share)
         },
     ) { innerPadding ->
@@ -143,5 +151,7 @@ private fun LocalAlbumDetailPreview() = PreviewTheme {
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },
+        isBookmarked = true,
+        onToggleBookmark = {},
     )
 }

@@ -311,6 +311,38 @@ class YouTubeProvider internal constructor(
         parser.artistPage(artistId, innerTube.browse(artistId))
 
     /**
+     * Likes or dislikes the song, or takes its like or dislike away. A dislike replaces a like.
+     *
+     * @throws YouTubeException when YouTube can't be reached or refuses, with
+     * [YouTubeException.signedOut] when nobody is signed in or the session ended
+     */
+    suspend fun rate(songId: String, status: LikeStatus) {
+        innerTube.rate(songId, status)
+    }
+
+    /**
+     * Saves the album to the user's library, or takes it out.
+     *
+     * @param playlistId the album's [YouTubeAlbumPage.playlistId]
+     * @throws YouTubeException when YouTube can't be reached or refuses, with
+     * [YouTubeException.signedOut] when nobody is signed in or the session ended
+     */
+    suspend fun saveAlbum(playlistId: String, saved: Boolean) {
+        innerTube.likePlaylist(playlistId, saved)
+    }
+
+    /**
+     * Subscribes the user to an artist, or unsubscribes them.
+     *
+     * @param channelId the artist's [YouTubeArtistPage.channelId]
+     * @throws YouTubeException when YouTube can't be reached or refuses, with
+     * [YouTubeException.signedOut] when nobody is signed in or the session ended
+     */
+    suspend fun subscribe(channelId: String, subscribed: Boolean) {
+        innerTube.subscribe(channelId, subscribed, SUBSCRIBE_PARAMS)
+    }
+
+    /**
      * The playlist with its first songs, [playlistSongs] gives the next ones.
      *
      * @param playlistId id of the playlist, without `VL`
@@ -524,6 +556,12 @@ class YouTubeProvider internal constructor(
         suspend fun profilePageId(): String = Secrets.YOUTUBE_PAGE_ID.current()
 
         const val HOME = "FEmusic_home"
+
+        /**
+         * What YouTube Music's subscribe button sends, a page asked outside the session doesn't
+         * give it (taken from Metrolist).
+         */
+        const val SUBSCRIBE_PARAMS = "EgIIAhgA"
 
         /** Playlist id of the radio of a song is this followed by the song's id. */
         const val RADIO_PREFIX = "RDAMVM"

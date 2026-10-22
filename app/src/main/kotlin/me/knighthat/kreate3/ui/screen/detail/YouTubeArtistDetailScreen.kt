@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
+import me.knighthat.kreate3.ui.component.FollowButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.QueueActionRow
@@ -62,6 +63,7 @@ fun YouTubeArtistDetailScreen(
     viewModel: YouTubeArtistDetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val isFollowed by viewModel.follow.isOn.collectAsStateWithLifecycle()
 
     YouTubeArtistDetailContent(
         state = state,
@@ -77,11 +79,17 @@ fun YouTubeArtistDetailScreen(
             (viewModel.state.value as? LiveState.Ready)?.value?.topSongs.orEmpty()
         },
         share = viewModel::shareLink,
+        isFollowed = isFollowed,
+        onToggleFollow = viewModel.follow::toggle,
         modifier = modifier,
         contentPadding = contentPadding,
     )
 }
 
+/**
+ * @param isFollowed whether the user is subscribed to the artist on YouTube, or follows them on
+ * the device while signed out, `null` hides the button
+ */
 @Composable
 private fun YouTubeArtistDetailContent(
     state: LiveState<YouTubeArtistDetail>,
@@ -93,6 +101,8 @@ private fun YouTubeArtistDetailContent(
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     share: suspend () -> Result<String>,
+    isFollowed: Boolean?,
+    onToggleFollow: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -105,7 +115,10 @@ private fun YouTubeArtistDetailContent(
         onRetry = onRetry,
         modifier = modifier,
         contentPadding = contentPadding,
-        actions = { ShareAction(artist?.name, "artist", share) },
+        actions = {
+            if (artist != null) isFollowed?.let { FollowButton(it, onToggleFollow) }
+            ShareAction(artist?.name, "artist", share)
+        },
     ) { detail, innerPadding ->
         LazyColumn(
             contentPadding = innerPadding,
@@ -172,5 +185,7 @@ private fun YouTubeArtistDetailPreview() = PreviewTheme {
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },
+        isFollowed = false,
+        onToggleFollow = {},
     )
 }

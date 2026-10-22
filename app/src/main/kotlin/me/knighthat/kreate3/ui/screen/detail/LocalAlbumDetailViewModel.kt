@@ -18,30 +18,41 @@
 
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.paging.cachedIn
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.knighthat.kreate3.database.repository.AlbumRepository
+import me.knighthat.kreate3.database.repository.UserAlbumRepository
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.ui.component.toMediaItem
 import me.knighthat.kreate3.ui.component.toMediaItems
 import me.knighthat.kreate3.ui.navigation.LocalAlbum
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 /**
  * The album whose id is in the saved state, `null` while it loads or when it doesn't exist, and its songs.
+ *
+ * @param scope the app's, where a bookmark is saved
  */
 class LocalAlbumDetailViewModel(
     savedStateHandle: SavedStateHandle,
     repository: AlbumRepository,
     private val songRepository: UserSongRepository,
+    private val userAlbums: UserAlbumRepository,
+    private val scope: CoroutineScope,
 ) : ViewModel() {
 
     val albumId: String = checkNotNull(savedStateHandle[LocalAlbum.ID]) {
@@ -54,6 +65,11 @@ class LocalAlbumDetailViewModel(
     val songs = songRepository.ofAlbum(albumId)
         .toMediaItems()
         .cachedIn(viewModelScope)
+
+    /** Whether the user bookmarked the album, `null` until that is known. */
+    val isBookmarked: StateFlow<Boolean?> = userAlbums.find(albumId)
+        .map { it?.bookmarkedAt.isPositive }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     /** Every song of [songs] right now, in its order, for the quick actions. */
     suspend fun allSongs(): List<MediaItem> =
@@ -76,4 +92,28 @@ class LocalAlbumDetailViewModel(
         val album = checkNotNull(album.value) { "The album isn't loaded" }
         checkNotNull(album.url) { "This album has no link" }
     }
+
+    /** Bookmarks the album, or takes the bookmark away, nothing until [isBookmarked] is known. */
+    fun toggleBookmark() {
+        val on = !(isBookmarked.value ?: return)
+        scope.launch {
+            try {
+                userAlbums.update(albumId) {
+                    it.copy(bookmarkedAt = if (on) Clock.System.now() else null)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Couldn't save the bookmark of $albumId", e)
+            }
+        }
+    }
+
+    private companion object {
+        const val TAG = "LocalAlbumDetail"
+    }
 }
+
+/** Whether a reaction holds a positive one, not a dislike or nothing, see `UserAlbum`. */
+internal val Instant?.isPositive: Boolean
+    get() = this != null && toEpochMilliseconds() != -1L

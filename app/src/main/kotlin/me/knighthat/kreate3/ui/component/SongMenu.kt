@@ -384,7 +384,7 @@ private fun rememberSongArtists(item: MediaItem): List<SongArtist> {
 /** The reactions and Share, at the top of the sheet. */
 @Composable
 private fun SongMenuButtons(item: MediaItem, close: (then: () -> Unit) -> Unit) {
-    val reaction = rememberSongReaction(item.mediaId)
+    val reaction = rememberSongReaction(item)
     val share = rememberSongShare(item)
 
     Row(

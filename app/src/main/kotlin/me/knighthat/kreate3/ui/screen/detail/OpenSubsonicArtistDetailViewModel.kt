@@ -21,9 +21,13 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
+import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.opensubsonic.Shareable
 import me.knighthat.kreate3.ui.component.toLiveMediaItem
 import me.knighthat.kreate3.ui.navigation.LocalArtist
@@ -45,10 +49,14 @@ data class OpenSubsonicArtistDetail(
 /**
  * Fetches the artist whose id is in the saved state, their albums and the songs on them, from the
  * server. Nothing is stored.
+ *
+ * @param scope the app's, where a follow is sent
  */
 class OpenSubsonicArtistDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val provider: OpenSubsonicProvider,
+    scope: CoroutineScope,
+    notifier: Notifier,
 ) : LiveDetailViewModel<OpenSubsonicArtistDetail>() {
 
     val artistId: String = checkNotNull(savedStateHandle[LocalArtist.ID]) {
@@ -60,6 +68,20 @@ class OpenSubsonicArtistDetailViewModel(
     /** Whether the user may make shares on the server, `false` until that is known. */
     val canShare = provider.canShare(viewModelScope)
 
+    /** Whether the artist is followed, which is their star on the server. */
+    val follow = SourceToggle(
+        scope,
+        notifier,
+        send = { on ->
+            if (!provider.setArtistStarred(
+                    artistId,
+                    on
+                )
+            ) throw ServerException(ServerCheck.Disabled)
+        },
+        failure = { e, on -> e.serverFailure(if (on) "follow the artist" else "unfollow the artist") },
+    )
+
     init {
         load()
     }
@@ -69,6 +91,7 @@ class OpenSubsonicArtistDetailViewModel(
         val biography = async { askServerOrNull { provider.artistBiography(artistId) } }
         val found = provider.artistWithSongs(artistId) ?: return@coroutineScope null
         val artist = found.artist.item
+        follow.known(found.artist.starredAt != null)
         OpenSubsonicArtistDetail(
             name = artist.name,
             thumbnail = artist.thumbnail,

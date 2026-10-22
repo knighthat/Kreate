@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.model.Origin
+import me.knighthat.kreate3.ui.component.BookmarkButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.QueueActionRow
@@ -51,6 +52,7 @@ fun OpenSubsonicAlbumDetailScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val canShare by viewModel.canShare.collectAsStateWithLifecycle()
+    val isBookmarked by viewModel.bookmark.isOn.collectAsStateWithLifecycle()
 
     OpenSubsonicAlbumDetailContent(
         state = state,
@@ -63,6 +65,8 @@ fun OpenSubsonicAlbumDetailScreen(
             (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
         },
         share = if (canShare) viewModel::shareLink else null,
+        isBookmarked = isBookmarked,
+        onToggleBookmark = viewModel.bookmark::toggle,
         modifier = modifier,
         contentPadding = contentPadding,
     )
@@ -70,6 +74,7 @@ fun OpenSubsonicAlbumDetailScreen(
 
 /**
  * @param share gives a link to the album, `null` while the user may not share
+ * @param isBookmarked whether the album is starred on the server, `null` hides the button
  */
 @Composable
 private fun OpenSubsonicAlbumDetailContent(
@@ -79,6 +84,8 @@ private fun OpenSubsonicAlbumDetailContent(
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     share: (suspend (name: String?) -> Result<String>)?,
+    isBookmarked: Boolean?,
+    onToggleBookmark: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -92,6 +99,7 @@ private fun OpenSubsonicAlbumDetailContent(
         modifier = modifier,
         contentPadding = contentPadding,
         actions = {
+            if (album != null) isBookmarked?.let { BookmarkButton(it, onToggleBookmark) }
             if (share != null && album != null)
                 ShareAction(album.name, "album") { share(album.name) }
         },
@@ -143,5 +151,7 @@ private fun OpenSubsonicAlbumDetailPreview() = PreviewTheme {
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },
+        isBookmarked = false,
+        onToggleBookmark = {},
     )
 }

@@ -44,8 +44,8 @@ val providerModule = module {
     }
     single { OpenSubsonicProvider(get(), get()) }
     // The scope is the app's long lived one
-    single { OpenSubsonicLibrary(get(), get(), get()) }
-    single { YouTubeLibrary(get(), get(), get()) }
+    single { OpenSubsonicLibrary(get(), get(), get(), get()) }
+    single { YouTubeLibrary(get(), get(), get(), get()) }
     single {
         Providers(
             listOf(

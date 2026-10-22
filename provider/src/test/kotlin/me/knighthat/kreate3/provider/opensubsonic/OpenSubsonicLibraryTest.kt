@@ -21,31 +21,47 @@ package me.knighthat.kreate3.provider.opensubsonic
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.engine.mock.toByteArray
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.parseQueryString
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
+import me.knighthat.kreate3.database.model.UserSong
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
 import me.knighthat.kreate3.database.repository.RemoteSong
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.IOException
+import java.lang.reflect.Proxy
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
+
+/** A [T] that fails at every call, for the parts a test doesn't use. */
+private inline fun <reified T> unused(): T =
+    Proxy.newProxyInstance(T::class.java.classLoader, arrayOf(T::class.java)) { _, method, _ ->
+        error("${method.name} isn't used here")
+    } as T
 
 class OpenSubsonicLibraryTest {
 
@@ -77,19 +93,36 @@ class OpenSubsonicLibraryTest {
         override suspend fun savePlayedSong(song: RemoteSong) = error("Not played here")
     }
 
+    /** Keeps the reaction of each song, the rest of the library isn't used here. */
+    private class Reactions : UserSongRepository by unused() {
+        val likedAt: MutableMap<String, Instant?> = Collections.synchronizedMap(mutableMapOf())
+
+        override suspend fun update(songId: String, transform: (UserSong) -> UserSong) {
+            likedAt[songId] = transform(UserSong(songId, likedAt = likedAt[songId])).likedAt
+        }
+    }
+
     private class TestClock(var time: Instant = Instant.fromEpochMilliseconds(0)) : Clock {
         override fun now() = time
     }
 
     private val settings = Settings()
     private val repository = Recorder()
+    private val reactions = Reactions()
     private val clock = TestClock()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val requests = AtomicInteger()
 
+    /** The stars sent to the server, as the method and the song id. */
+    private val sent: MutableList<String> = Collections.synchronizedList(mutableListOf())
+
+    private val liked = Instant.parse("2024-03-04T05:06:07Z")
+    private val disliked = Instant.fromEpochMilliseconds(-1)
+
     /** What the server answers, by method. */
     private var answer: suspend (method: String) -> String = { method ->
         when (method) {
+            "star", "unstar" -> OK
             "getStarred2" -> ok(""""starred2":{"song":[{"id":"s1","starred":"2024-01-01T00:00:00Z"},{"id":"s2"}]}""")
             else -> error("Unexpected $method")
         }
@@ -99,8 +132,13 @@ class OpenSubsonicLibraryTest {
         {
             HttpClient(MockEngine { request ->
                 requests.incrementAndGet()
+                val method = request.url.encodedPath.substringAfterLast('/')
+                if (method == "star" || method == "unstar") {
+                    val form = parseQueryString(request.body.toByteArray().decodeToString())
+                    sent += "$method ${form["id"]}"
+                }
                 respond(
-                    content = answer(request.url.encodedPath.substringAfterLast('/')),
+                    content = answer(method),
                     status = HttpStatusCode.OK,
                     headers = Headers.build { append(HttpHeaders.ContentType, "application/json") },
                 )
@@ -114,7 +152,8 @@ class OpenSubsonicLibraryTest {
     @Volatile
     private var syncing = true
 
-    private val library = OpenSubsonicLibrary(provider, repository, scope, clock) { syncing }
+    private val library =
+        OpenSubsonicLibrary(provider, repository, reactions, scope, clock) { syncing }
 
     private fun ok(content: String) =
         """{"subsonic-response":{"status":"ok","version":"1.16.1",$content}}"""
@@ -247,5 +286,190 @@ class OpenSubsonicLibraryTest {
 
         library.refreshNow()
         eventually { repository.calls.size == 2 }
+    }
+
+    @Test
+    fun aLikeStarsTheSongOnTheServer() = runBlocking {
+        library.react("s9") { liked }
+
+        assertEquals(listOf("star s9"), sent)
+        assertEquals(liked, reactions.likedAt["s9"])
+    }
+
+    @Test
+    fun aLikeTakenAwayTakesTheStarAway() = runBlocking {
+        reactions.likedAt["s9"] = liked
+
+        library.react("s9") { null }
+
+        assertEquals(listOf("unstar s9"), sent)
+        assertNull(reactions.likedAt["s9"])
+    }
+
+    @Test
+    fun aDislikeStaysOnTheDevice() = runBlocking {
+        library.react("s9") { disliked }
+        assertEquals(disliked, reactions.likedAt["s9"])
+
+        library.react("s9") { null }
+
+        assertTrue(sent.isEmpty())
+    }
+
+    @Test
+    fun dislikingALikedSongTakesItsStarAway() = runBlocking {
+        reactions.likedAt["s9"] = liked
+
+        library.react("s9") { disliked }
+
+        assertEquals(listOf("unstar s9"), sent)
+        assertEquals(disliked, reactions.likedAt["s9"])
+    }
+
+    @Test
+    fun likingADislikedSongStarsIt() = runBlocking {
+        reactions.likedAt["s9"] = disliked
+
+        library.react("s9") { liked }
+
+        assertEquals(listOf("star s9"), sent)
+    }
+
+    @Test
+    fun aLikeThatStaysALikeSendsNothing() = runBlocking {
+        reactions.likedAt["s9"] = liked
+
+        library.react("s9") { Instant.fromEpochMilliseconds(5) }
+
+        assertTrue(sent.isEmpty())
+    }
+
+    @Test
+    fun nothingIsSentWhileTurnedOff() = runBlocking {
+        syncing = false
+
+        library.react("s9") { liked }
+
+        assertTrue(sent.isEmpty())
+        assertEquals(liked, reactions.likedAt["s9"])
+    }
+
+    @Test
+    fun nothingIsSentWhileTheServerIsOff() = runBlocking {
+        settings.enabled = false
+
+        library.react("s9") { liked }
+
+        assertEquals(0, requests.get())
+        assertEquals(liked, reactions.likedAt["s9"])
+    }
+
+    @Test
+    fun aLikeTheServerRefusesIsTakenBack() {
+        answer =
+            { """{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":70,"message":"Not found"}}}""" }
+
+        val error = assertThrows(ServerException::class.java) {
+            runBlocking { library.react("s9") { liked } }
+        }
+
+        assertTrue(error.check is ServerCheck.Rejected)
+        assertNull(reactions.likedAt["s9"])
+    }
+
+    @Test
+    fun aDislikeTheServerCannotBeToldOfIsTakenBack() {
+        reactions.likedAt["s9"] = liked
+        answer = { throw IOException("No route to host") }
+
+        val error = assertThrows(ServerException::class.java) {
+            runBlocking { library.react("s9") { disliked } }
+        }
+
+        assertTrue(error.check is ServerCheck.Unreachable)
+        assertEquals(liked, reactions.likedAt["s9"])
+    }
+
+    @Test
+    fun aFailureDoesNotTakeBackALaterReaction() {
+        val sending = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        val default = answer
+        answer = { method ->
+            if (method == "star") {
+                sending.complete(Unit)
+                release.await()
+                """{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":0,"message":"Busy"}}}"""
+            } else default(method)
+        }
+
+        val liking = scope.async { runCatching { library.react("s9") { liked } } }
+        runBlocking {
+            sending.await()
+            // The user dislikes the song before the server answers the like
+            library.react("s9") { disliked }
+            release.complete(Unit)
+            assertTrue(liking.await().isFailure)
+        }
+
+        assertEquals(disliked, reactions.likedAt["s9"])
+    }
+
+    @Test
+    fun starredSongsFetchedBeforeAReactionWasSentAreNotStored() {
+        val asked = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        val default = answer
+        answer = { method ->
+            if (method == "getStarred2") {
+                asked.complete(Unit)
+                release.await()
+            }
+            default(method)
+        }
+
+        library.refresh()
+        runBlocking {
+            asked.await()
+            // The server answers the refresh with what it had before the like
+            library.react("s9") { liked }
+        }
+        release.complete(Unit)
+        settle()
+        assertTrue(repository.calls.isEmpty())
+
+        // The next refresh isn't held back
+        answer = default
+        library.refresh()
+        eventually { repository.calls.size == 1 }
+    }
+
+    @Test
+    fun starredSongsFetchedWhileAReactionIsSentAreNotStored() {
+        val sending = CompletableDeferred<Unit>()
+        val release = CompletableDeferred<Unit>()
+        val default = answer
+        answer = { method ->
+            if (method == "star") {
+                sending.complete(Unit)
+                release.await()
+            }
+            default(method)
+        }
+
+        val reacting = scope.launch { library.react("s9") { liked } }
+        runBlocking { sending.await() }
+        library.refresh()
+        eventually { requests.get() == 2 }
+        settle()
+        assertTrue(repository.calls.isEmpty())
+
+        release.complete(Unit)
+        runBlocking { reacting.join() }
+        assertEquals(listOf("star s9"), sent)
+    }
+
+    private companion object {
+        const val OK = """{"subsonic-response":{"status":"ok","version":"1.16.1"}}"""
     }
 }

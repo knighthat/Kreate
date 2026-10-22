@@ -123,15 +123,16 @@ interface PlaybackController {
     fun next()
 
     /**
-     * Takes the current item out of the queue for good, like one the user disliked: the next item
-     * plays when another one comes next, the queue ends otherwise. Unlike [next], it never stays
-     * on it, nor comes back to it when the queue repeats.
+     * Takes every item of the song [mediaId] out of the queue for good, like a song the user
+     * disliked. When the current item is one of them, the next item plays first, or the player
+     * stops when none comes next. Unlike [next], it never stays on it, nor comes back to it when
+     * the queue repeats.
      */
-    fun dropCurrent()
+    fun drop(mediaId: String)
 
     /**
-     * Takes the item at [index] of [queue] out of it. Removing the current item works like
-     * [dropCurrent].
+     * Takes the item at [index] of [queue] out of it. Removing the current item moves on to the
+     * next one first, the queue ends when none comes next.
      */
     fun remove(index: Int)
 

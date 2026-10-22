@@ -28,15 +28,40 @@ them to a rating or UI state needs three states (`MediaItemDsl.kt` maps to `Thum
   create one only when none exists). Caching for the app's run is fine when being wrong is cheap.
 - Browsing is live. YouTube search/browse results and every remote album, artist and playlist are
   shown from the provider and never written. A remote song is stored when it **starts playing**
-  (`PlayedSongRecorder`: added to the library, no like), when it's added to a playlist (the same
-  store, `AddToPlaylist.kt`; the playlist link needs its `song` row) or when synced as liked. A
-  planned Import button will store a remote item only on an explicit user action.
+  (`PlayedSongRecorder`: added to the library, no like), when it's added to a playlist or gets a
+  like/dislike (the same store, `SongStore`: playlist links and reactions need its `song` row) or
+  when synced as liked. A planned Import button will store a remote item only on an explicit user
+  action.
 - Sync details beyond CLAUDE.md:
     - `liked_at`: the server's like time replaces the stored one; with none given, an already liked
       song keeps its time and a newly liked/inserted one gets now − index ms (keeps server order).
       Rows are never deleted by sync, only `liked_at` changes. Dislikes can't be listed by YouTube
       or
       Subsonic, so sync never touches them.
+  - OpenSubsonic likes go back to the server (`OpenSubsonicLibrary.react`, while its liked-songs
+    sync is on): becoming liked stars the song, stopping unstars it. The API has no dislike, so a
+    dislike stays on the device by the maintainer's choice; disliking a starred song only
+    unstars it (else the next pull turns it back into a like). Never map a dislike to a rating.
+    A pull that overlapped a reaction being saved or sent is dropped, not stored.
+  - A local → remote sync that fails takes the local state back to what it was before (unless a
+    newer reaction replaced it meanwhile) and shows an error message saying why; it is not
+    retried. Applies to every source that sends changes to its server.
+  - YouTube song reactions go both ways too (`YouTubeLibrary.react`, while signed in and its
+    liked-songs sync is on): each change sends the new state, `like/like`, `like/dislike` or
+    `like/removelike`. Signed out they stay on the device. The pull ("Liked Music") overrides
+    neutral and liked; YouTube can't list dislikes, so they stay, but a local dislike of a song
+    YouTube still lists as liked (made while signed out) becomes liked again: the sync wins, by
+    the maintainer's choice (2026-10-22). Both libraries share the
+    save → send → take back on failure and the dropped overlapping pull (`ReactionSender`).
+  - Album Bookmark and artist Follow (detail screens' top bar): device items write
+    `bookmarked_at`/`follow_since`; remote ones are never stored, the button shows and changes
+    the source's own state live (`SourceToggle`): OpenSubsonic star (`albumId`/`artistId`),
+    YouTube library save (`like/like` of the album's playlist) and subscription (the page's
+    `channelId`, not the artist id). Sent whatever the sync settings. Signed out of YouTube the
+    buttons still work, on the device only (`DeviceReactions`: the album or artist is stored
+    then, like `SongStore` does for songs); signed in, YouTube's own state shows and local ones
+    are ignored, by the maintainer's choice (2026-10-22). Server playlists get no like: neither
+    API can keep one (maintainer, 2026-10-22).
     - Each source has four per-profile settings: liked-songs sync plus show/hide of the live albums,
       artists and playlists. OpenSubsonic albums/artists are `SyncMode` (`OFF`/`LIKED`/`ALL`).
     - Rejected, don't propose again: a sync that never inserts and shows liked songs live (likes

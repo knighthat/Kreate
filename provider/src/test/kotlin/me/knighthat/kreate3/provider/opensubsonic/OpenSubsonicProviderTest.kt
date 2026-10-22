@@ -379,6 +379,49 @@ class OpenSubsonicProviderTest {
     }
 
     @Test
+    fun aStarIsSentAndTakenAwayById() = runBlocking {
+        val server = provider()
+
+        assertTrue(server.setStarred("s1", true))
+        assertTrue(server.setStarred("s1", false))
+
+        assertEquals(
+            listOf("star s1", "unstar s1"),
+            requests.map { "${it.url.encodedPath.substringAfterLast('/')} ${it.form()["id"]}" },
+        )
+    }
+
+    @Test
+    fun albumsAndArtistsAreStarredByTheirOwnParameter() = runBlocking {
+        val server = provider()
+
+        assertTrue(server.setAlbumStarred("al1", true))
+        assertTrue(server.setArtistStarred("ar1", false))
+
+        assertEquals(
+            listOf("star albumId=al1", "unstar artistId=ar1"),
+            requests.map { request ->
+                val form = request.form()
+                val (name, id) = listOf("albumId", "artistId").firstNotNullOf { name ->
+                    form[name]?.let { name to it }
+                }
+                "${request.url.encodedPath.substringAfterLast('/')} $name=$id"
+            },
+        )
+        // Not as a song, the id alone would name a folder
+        assertTrue(requests.none { it.form()["id"] != null })
+    }
+
+    @Test
+    fun aStarTheServerRefusesFails() {
+        val server = provider {
+            """{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":70,"message":"Not found"}}}"""
+        }
+
+        assertThrows(ServerException::class.java) { runBlocking { server.setStarred("s1", true) } }
+    }
+
+    @Test
     fun aSongComesWithItsAlbumAndArtists() = runBlocking {
         val song = provider {
             """{"subsonic-response":{"status":"ok","version":"1.16.1","song":{
@@ -447,6 +490,9 @@ class OpenSubsonicProviderTest {
         assertNull(server.artistWithSongs("ar1"))
         assertNull(server.playlistWithSongs("p1"))
         assertNull(server.starredSongs())
+        assertFalse(server.setStarred("s1", true))
+        assertFalse(server.setAlbumStarred("al1", true))
+        assertFalse(server.setArtistStarred("ar1", true))
         assertNull(server.similarSongs("s1", 20))
         assertNull(server.songDetails("s1"))
         assertNull(server.albumNotes("al1"))

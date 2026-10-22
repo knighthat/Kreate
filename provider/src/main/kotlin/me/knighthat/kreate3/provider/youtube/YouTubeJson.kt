@@ -199,6 +199,12 @@ internal const val DISCOGRAPHY_PREFIX = "MPAD"
 /** Browse id of the lyrics of a song. */
 internal const val LYRICS_PREFIX = "MPLYt"
 
+/**
+ * Icons of the button that saves an item to the library while it isn't saved, the old one and the
+ * one of 2026.
+ */
+internal val LIBRARY_ADD_ICONS = setOf("LIBRARY_ADD", "BOOKMARK_BORDER")
+
 /** Browse id of the songs, albums and artists related to a song. */
 internal const val RELATED_PREFIX = "MPTRt"
 

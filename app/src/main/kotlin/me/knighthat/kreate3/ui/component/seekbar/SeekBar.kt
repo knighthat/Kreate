@@ -168,7 +168,7 @@ private class PreviewController(
     override fun position(): Long = positionMs
     override fun duration(): Long? = durationMs
     override fun next() = Unit
-    override fun dropCurrent() = Unit
+    override fun drop(mediaId: String) = Unit
     override fun remove(index: Int) = Unit
     override fun move(from: Int, to: Int) = Unit
     override fun skipTo(index: Int) = Unit

@@ -20,8 +20,12 @@ package me.knighthat.kreate3.ui.screen.detail
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.media3.common.MediaItem
+import kotlinx.coroutines.CoroutineScope
+import me.knighthat.kreate3.database.model.Artist
+import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.youtube.YouTubeLinks
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.DeviceReactions
 import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
 import me.knighthat.kreate3.source.youtube.SONG_ARTWORK
 import me.knighthat.kreate3.source.youtube.artwork
@@ -45,11 +49,17 @@ data class YouTubeArtistDetail(
 )
 
 /**
- * Fetches the artist whose id is in the saved state from YouTube. Nothing is stored.
+ * Fetches the artist whose id is in the saved state from YouTube. Nothing is stored, unless they
+ * are followed while nobody is signed in.
+ *
+ * @param scope the app's, where a follow is sent
  */
 class YouTubeArtistDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val provider: YouTubeProvider,
+    private val device: DeviceReactions,
+    scope: CoroutineScope,
+    notifier: Notifier,
 ) : LiveDetailViewModel<YouTubeArtistDetail>() {
 
     val artistId: String = checkNotNull(savedStateHandle[LocalArtist.ID]) {
@@ -58,12 +68,49 @@ class YouTubeArtistDetailViewModel(
 
     override val notFound = "YouTube doesn't have this artist"
 
+    /** The channel subscribed to, which may not be the artist's id. */
+    @Volatile
+    private var channelId: String? = null
+
+    /** The artist to keep the follow of on the device, `null` while it goes to YouTube. */
+    @Volatile
+    private var onDevice: Artist? = null
+
+    /**
+     * Whether the artist is followed: subscribed to on YouTube while signed in, kept on the device
+     * otherwise.
+     */
+    val follow = SourceToggle(
+        scope,
+        notifier,
+        send = { on ->
+            val artist = onDevice
+            if (artist != null) device.setFollowed(artist, on)
+            else provider.subscribe(checkNotNull(channelId), on)
+        },
+        failure = { e, on ->
+            if (onDevice != null) if (on) "Couldn't follow the artist" else "Couldn't unfollow the artist"
+            else e.youTubeFailure(if (on) "follow the artist" else "unfollow the artist")
+        },
+    )
+
     init {
         load()
     }
 
     override suspend fun fetch(): YouTubeArtistDetail? {
         val page = provider.artistPage(artistId) ?: return null
+        val signedIn = provider.isSignedIn()
+        channelId = page.channelId
+        onDevice = page.artist.takeUnless { signedIn }
+        follow.known(
+            when {
+                !signedIn -> device.isFollowed(artistId)
+                // Asked in the session, the page tells whether the user is subscribed
+                page.channelId != null -> page.subscribed
+                else -> null
+            }
+        )
         return YouTubeArtistDetail(
             name = page.artist.name,
             thumbnail = provider.artwork(page.artist.thumbnail, HEADER_ARTWORK),

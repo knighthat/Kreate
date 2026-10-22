@@ -46,6 +46,9 @@ import me.knighthat.kreate3.preferences.preferencesModule
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
 import me.knighthat.kreate3.provider.providerModule
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.DeviceReactions
+import me.knighthat.kreate3.source.DeviceReactionsImpl
+import me.knighthat.kreate3.source.SongStore
 import me.knighthat.kreate3.source.SourceNetworkClient
 import me.knighthat.kreate3.source.local.LocalCoverFetcher
 import me.knighthat.kreate3.source.local.LocalCoverKeyer
@@ -147,6 +150,10 @@ class KreateApplication : Application(), SingletonImageLoader.Factory {
                     single { YouTubeLyricsSource(get()) } bind LyricsSource::class
 
                     single { Backup(get(), get(), get()) }
+
+                    // Stores songs fetched live once the user keeps something about them
+                    single { SongStore(get(), get(), get(), get()) }
+                    single<DeviceReactions> { DeviceReactionsImpl(get(), get(), get(), get()) }
                     single { ProfileSwitcher(androidContext(), get(), get(), get(), get(), get()) }
                 },
                 databaseModule,

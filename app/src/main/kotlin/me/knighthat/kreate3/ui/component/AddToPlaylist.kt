@@ -42,19 +42,14 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.paging.PlaylistSort
 import me.knighthat.kreate3.database.paging.SortDirection
 import me.knighthat.kreate3.database.paging.SortOrder
 import me.knighthat.kreate3.database.repository.PlaylistRepository
-import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
-import me.knighthat.kreate3.database.repository.SongRepository
 import me.knighthat.kreate3.model.Origin
-import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
-import me.knighthat.kreate3.provider.youtube.YouTubeProvider
-import me.knighthat.kreate3.source.songDetails
+import me.knighthat.kreate3.source.SongStore
 import org.koin.compose.koinInject
 
 private const val TAG = "AddToPlaylist"
@@ -76,17 +71,13 @@ internal class AddToPlaylist(
 )
 
 /**
- * Puts the song of [item] in a playlist made in the app. A song fetched live is stored first, like
- * when it starts playing (`PlayedSongRecorder`): asked to its source again, then added to the
- * library.
+ * Puts the song of [item] in a playlist made in the app. A song fetched live is stored first, see
+ * [SongStore].
  */
 @Composable
 internal fun rememberAddToPlaylist(item: MediaItem): AddToPlaylist {
     val repository = koinInject<PlaylistRepository>()
-    val songs = koinInject<SongRepository>()
-    val catalog = koinInject<RemoteCatalogRepository>()
-    val youTube = koinInject<YouTubeProvider>()
-    val openSubsonic = koinInject<OpenSubsonicProvider>()
+    val songs = koinInject<SongStore>()
     val scope = koinInject<CoroutineScope>()
     val notifier = LocalNotifier.current
 
@@ -94,21 +85,10 @@ internal fun rememberAddToPlaylist(item: MediaItem): AddToPlaylist {
         value = repository.list(NEWEST_FIRST, setOf(Origin.LOCAL))
     }
 
-    // The song has to be in the database before a playlist can have it
-    suspend fun store() {
-        val songId = item.mediaId
-        if (songs.find(songId).first() != null) return
-
-        val origin = item.origin?.takeIf { it != Origin.LOCAL }
-            ?: error("$songId isn't in the database")
-        val song = songDetails(origin, songId, youTube, openSubsonic)
-            ?: error("$origin doesn't know $songId")
-        catalog.savePlayedSong(song)
-    }
-
     fun write(playlist: String, add: suspend () -> Boolean) = scope.launch {
         val message = try {
-            store()
+            // The song has to be in the database before a playlist can have it
+            songs.store(item.mediaId, item.origin)
             if (add()) "Added to $playlist" else "Already in $playlist"
         } catch (e: CancellationException) {
             throw e

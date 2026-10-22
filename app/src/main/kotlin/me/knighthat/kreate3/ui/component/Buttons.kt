@@ -38,6 +38,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -159,6 +160,55 @@ fun ShareButton(onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boo
     IconButton(onClick = onClick, modifier = modifier, enabled = enabled) {
         Icon(painterResource(R.drawable.share), contentDescription = "Share")
     }
+
+/**
+ * Bookmarks an album, or takes the bookmark away while [isBookmarked]. The icon shows whether it
+ * is bookmarked.
+ */
+@Composable
+fun BookmarkButton(isBookmarked: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) =
+    ToggleAction(
+        isSet = isBookmarked,
+        setIcon = R.drawable.bookmark_filled,
+        unsetIcon = R.drawable.bookmark_outline,
+        description = if (isBookmarked) "Remove bookmark" else "Bookmark",
+        onClick = onClick,
+        modifier = modifier,
+    )
+
+/**
+ * Follows an artist, or unfollows them while [isFollowed]. The icon shows whether they are
+ * followed.
+ */
+@Composable
+fun FollowButton(isFollowed: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) =
+    ToggleAction(
+        isSet = isFollowed,
+        setIcon = R.drawable.how_to_reg,
+        unsetIcon = R.drawable.person_add,
+        description = if (isFollowed) "Unfollow" else "Follow",
+        onClick = onClick,
+        modifier = modifier,
+    )
+
+/** An icon button that is [setIcon] in the primary color while [isSet], [unsetIcon] otherwise. */
+@Composable
+private fun ToggleAction(
+    isSet: Boolean,
+    @DrawableRes setIcon: Int,
+    @DrawableRes unsetIcon: Int,
+    description: String,
+    onClick: () -> Unit,
+    modifier: Modifier,
+) {
+    IconButton(onClick = onClick, modifier = modifier) {
+        Icon(
+            painterResource(if (isSet) setIcon else unsetIcon),
+            contentDescription = description,
+            tint = if (isSet) MaterialTheme.colorScheme.primary else LocalContentColor.current,
+        )
+    }
+}
 
 @Composable
 fun SettingsButton(onClick: () -> Unit, modifier: Modifier = Modifier) =

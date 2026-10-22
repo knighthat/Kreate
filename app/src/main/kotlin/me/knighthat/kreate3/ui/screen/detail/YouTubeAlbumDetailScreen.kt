@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
+import me.knighthat.kreate3.ui.component.BookmarkButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.QueueActionRow
@@ -58,6 +59,7 @@ fun YouTubeAlbumDetailScreen(
     viewModel: YouTubeAlbumDetailViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val isBookmarked by viewModel.bookmark.isOn.collectAsStateWithLifecycle()
 
     YouTubeAlbumDetailContent(
         state = state,
@@ -72,11 +74,17 @@ fun YouTubeAlbumDetailScreen(
             (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
         },
         share = viewModel::shareLink,
+        isBookmarked = isBookmarked,
+        onToggleBookmark = viewModel.bookmark::toggle,
         modifier = modifier,
         contentPadding = contentPadding,
     )
 }
 
+/**
+ * @param isBookmarked whether the album is saved to the library on YouTube, or bookmarked on the
+ * device while signed out, `null` hides the button
+ */
 @Composable
 private fun YouTubeAlbumDetailContent(
     state: LiveState<YouTubeAlbumDetail>,
@@ -87,6 +95,8 @@ private fun YouTubeAlbumDetailContent(
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     share: suspend () -> Result<String>,
+    isBookmarked: Boolean?,
+    onToggleBookmark: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -99,7 +109,10 @@ private fun YouTubeAlbumDetailContent(
         onRetry = onRetry,
         modifier = modifier,
         contentPadding = contentPadding,
-        actions = { ShareAction(album?.name, "album", share) },
+        actions = {
+            if (album != null) isBookmarked?.let { BookmarkButton(it, onToggleBookmark) }
+            ShareAction(album?.name, "album", share)
+        },
     ) { detail, innerPadding ->
         LazyColumn(
             contentPadding = innerPadding,
@@ -159,5 +172,7 @@ private fun YouTubeAlbumDetailPreview() = PreviewTheme {
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },
+        isBookmarked = true,
+        onToggleBookmark = {},
     )
 }

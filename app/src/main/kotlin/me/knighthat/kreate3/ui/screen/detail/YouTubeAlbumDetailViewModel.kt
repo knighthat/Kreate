@@ -20,9 +20,13 @@ package me.knighthat.kreate3.ui.screen.detail
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.media3.common.MediaItem
+import kotlinx.coroutines.CoroutineScope
+import me.knighthat.kreate3.database.model.Album
+import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.youtube.YouTubeLinks
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 import me.knighthat.kreate3.provider.youtube.YouTubeSection
+import me.knighthat.kreate3.source.DeviceReactions
 import me.knighthat.kreate3.source.youtube.HEADER_ARTWORK
 import me.knighthat.kreate3.source.youtube.SONG_ARTWORK
 import me.knighthat.kreate3.source.youtube.artwork
@@ -56,11 +60,17 @@ internal fun YouTubeSection.toLiveSection(provider: YouTubeProvider): LiveSectio
     )
 
 /**
- * Fetches the album whose id is in the saved state from YouTube. Nothing is stored.
+ * Fetches the album whose id is in the saved state from YouTube. Nothing is stored, unless it is
+ * bookmarked while nobody is signed in.
+ *
+ * @param scope the app's, where a bookmark is sent
  */
 class YouTubeAlbumDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val provider: YouTubeProvider,
+    private val device: DeviceReactions,
+    scope: CoroutineScope,
+    notifier: Notifier,
 ) : LiveDetailViewModel<YouTubeAlbumDetail>() {
 
     val albumId: String = checkNotNull(savedStateHandle[LocalAlbum.ID]) {
@@ -69,6 +79,32 @@ class YouTubeAlbumDetailViewModel(
 
     override val notFound = "YouTube doesn't have this album"
 
+    /** The playlist of the album's songs, which is what YouTube saves to the library. */
+    @Volatile
+    private var playlistId: String? = null
+
+    /** The album to keep the bookmark of on the device, `null` while it goes to YouTube. */
+    @Volatile
+    private var onDevice: Album? = null
+
+    /**
+     * Whether the album is bookmarked: saved to the library on YouTube while signed in, kept on
+     * the device otherwise.
+     */
+    val bookmark = SourceToggle(
+        scope,
+        notifier,
+        send = { on ->
+            val album = onDevice
+            if (album != null) device.setBookmarked(album, on)
+            else provider.saveAlbum(checkNotNull(playlistId), on)
+        },
+        failure = { e, on ->
+            if (onDevice != null) if (on) "Couldn't bookmark the album" else "Couldn't remove the bookmark"
+            else e.youTubeFailure(if (on) "save the album" else "remove the album")
+        },
+    )
+
     init {
         load()
     }
@@ -76,6 +112,17 @@ class YouTubeAlbumDetailViewModel(
     override suspend fun fetch(): YouTubeAlbumDetail? {
         val page = provider.albumPage(albumId) ?: return null
         val album = page.album
+        val signedIn = provider.isSignedIn()
+        playlistId = page.playlistId
+        onDevice = album.takeUnless { signedIn }
+        bookmark.known(
+            when {
+                !signedIn -> device.isBookmarked(albumId)
+                // Asked in the session, the page tells whether the album is saved
+                page.playlistId != null -> page.saved
+                else -> null
+            }
+        )
         return YouTubeAlbumDetail(
             name = album.name,
             thumbnail = provider.artwork(album.thumbnail, HEADER_ARTWORK),

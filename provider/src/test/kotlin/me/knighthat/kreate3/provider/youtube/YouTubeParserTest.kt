@@ -150,6 +150,44 @@ class YouTubeParserTest {
     }
 
     @Test
+    fun aSavedAlbumIsToldByItsLibraryButton() {
+        fun album(vararg buttons: String) = Json.parseToJsonElement(
+            """{"contents":{"twoColumnBrowseResultsRenderer":{"tabs":[{"tabRenderer":{"content":{
+            "sectionListRenderer":{"contents":[{"musicResponsiveHeaderRenderer":{
+            "title":{"runs":[{"text":"Album"}]},"buttons":[${buttons.joinToString(",")}]}}]}}}}]}}}"""
+        )
+
+        fun toggle(icon: String, toggled: Boolean) =
+            """{"toggleButtonRenderer":{"isToggled":$toggled,"defaultIcon":{"iconType":"$icon"}}}"""
+
+        // Only the library button counts, not "More" of the description
+        assertTrue(parser.albumPage("MPREb_1", album(toggle("BOOKMARK_BORDER", true)))!!.saved)
+        assertTrue(parser.albumPage("MPREb_1", album(toggle("LIBRARY_ADD", true)))!!.saved)
+        assertFalse(
+            parser.albumPage(
+                "MPREb_1",
+                album(toggle("EXPAND", true), toggle("BOOKMARK_BORDER", false)),
+            )!!.saved
+        )
+        // Outside the session the page has no such button
+        assertFalse(parser.albumPage("MPREb_BQHrCwSBM37", fixture("album"))!!.saved)
+    }
+
+    @Test
+    fun anArtistIsSubscribedToByAChannelOfTheirOwn() {
+        val page = parser.artistPage(
+            daftPunk.id,
+            Json.parseToJsonElement(
+                """{"header":{"musicImmersiveHeaderRenderer":{"title":{"runs":[{"text":"Daft Punk"}]},
+                "subscriptionButton":{"subscribeButtonRenderer":{"subscribed":true,"channelId":"UC_channel"}}}}}"""
+            ),
+        )!!
+
+        assertEquals("UC_channel", page.channelId)
+        assertTrue(page.subscribed)
+    }
+
+    @Test
     fun artistPageGivesTopSongsAndRows() {
         val page = parser.artistPage(daftPunk.id, fixture("artist"))!!
 

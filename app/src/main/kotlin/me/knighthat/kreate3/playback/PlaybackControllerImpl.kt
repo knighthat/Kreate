@@ -97,8 +97,22 @@ class PlaybackControllerImpl(
 
     override fun next() = run("skip to next") { it.seekToNext() }
 
-    override fun dropCurrent() = run("drop the current item") { controller ->
-        controller.removeAt(controller.currentMediaItemIndex)
+    override fun drop(mediaId: String) = run("drop $mediaId") { controller ->
+        // Its other items first, so moving on never lands on one of them
+        for (index in controller.mediaItemCount - 1 downTo 0) {
+            if (index == controller.currentMediaItemIndex) continue
+            if (controller.getMediaItemAt(index).mediaId == mediaId) controller.removeMediaItem(
+                index
+            )
+        }
+        if (controller.currentMediaItem?.mediaId != mediaId) return@run
+
+        val index = controller.currentMediaItemIndex
+        // With nothing after it, the player stops first: removing it would end the queue on the
+        // item before it
+        val next = controller.nextMediaItemIndex
+        if (next == C.INDEX_UNSET || next == index) controller.stop()
+        controller.removeAt(index)
     }
 
     override fun remove(index: Int) = run("remove item $index") { it.removeAt(index) }

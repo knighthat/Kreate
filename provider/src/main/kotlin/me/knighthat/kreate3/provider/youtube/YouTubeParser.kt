@@ -473,6 +473,11 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
                 ?: header.path("description").text(),
             sections = shelves.filter { it.path("musicShelfRenderer") == null }
                 .mapNotNull(::section),
+            // The library button is a toggle, its other toggles are like "More" of the description
+            saved = header.path("buttons").asArray.orEmpty()
+                .mapNotNull { it.path("toggleButtonRenderer") }
+                .firstOrNull { it.path("defaultIcon", "iconType").asString in LIBRARY_ADD_ICONS }
+                ?.path("isToggled")?.asString == "true",
         )
     }
 
@@ -494,6 +499,7 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
         val top = shelves.firstNotNullOfOrNull { it.path("musicShelfRenderer") }
         val songsBrowse = top.path("bottomEndpoint").browse()
             ?: top.path("title").runs().firstNotNullOfOrNull { it.browse }
+        val subscription = header.path("subscriptionButton", "subscribeButtonRenderer")
 
         return YouTubeArtistPage(
             artist = artist,
@@ -508,6 +514,8 @@ internal class YouTubeParser(private val uri: (String) -> Uri?) {
             sections = shelves.filter { it.path("musicCarouselShelfRenderer") != null }
                 .mapNotNull(::section)
                 .map { it.copy(items = it.items.map { item -> item.creditedTo(name) }) },
+            channelId = subscription.path("channelId").asString,
+            subscribed = subscription.path("subscribed").asString == "true",
         )
     }
 

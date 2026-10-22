@@ -39,6 +39,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
 import me.knighthat.kreate3.ui.component.AlbumItem
+import me.knighthat.kreate3.ui.component.FollowButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.QueueActionRow
@@ -64,6 +65,7 @@ fun LocalArtistDetailScreen(
 ) {
     val artist by viewModel.artist.collectAsState()
     val albums by viewModel.albums.collectAsState()
+    val isFollowed by viewModel.isFollowed.collectAsState()
 
     LocalArtistDetailContent(
         name = artist?.name,
@@ -74,11 +76,16 @@ fun LocalArtistDetailScreen(
         onOpenAlbum = onOpenAlbum,
         onAction = rememberQueueActions(viewModel::allSongs),
         onSongClick = rememberSongTap(null, viewModel::allSongs),
+        isFollowed = isFollowed,
+        onToggleFollow = viewModel::toggleFollow,
         modifier = modifier,
         contentPadding = contentPadding,
     )
 }
 
+/**
+ * @param isFollowed `null` hides the follow button, while it isn't known
+ */
 @Composable
 private fun LocalArtistDetailContent(
     name: String?,
@@ -89,6 +96,8 @@ private fun LocalArtistDetailContent(
     onOpenAlbum: (MediaItem) -> Unit,
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
+    isFollowed: Boolean?,
+    onToggleFollow: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -97,6 +106,9 @@ private fun LocalArtistDetailContent(
         onBack = onBack,
         modifier = modifier,
         contentPadding = contentPadding,
+        actions = {
+            isFollowed?.let { FollowButton(it, onToggleFollow) }
+        },
     ) { innerPadding ->
         LazyColumn(
             contentPadding = innerPadding,
@@ -149,5 +161,7 @@ private fun LocalArtistDetailPreview() = PreviewTheme {
         onOpenAlbum = {},
         onAction = {},
         onSongClick = {},
+        isFollowed = false,
+        onToggleFollow = {},
     )
 }

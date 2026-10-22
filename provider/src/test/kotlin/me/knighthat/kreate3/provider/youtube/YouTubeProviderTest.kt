@@ -47,9 +47,13 @@ class YouTubeProviderTest {
     private fun fixture(name: String): String =
         javaClass.getResource("/youtube/$name.json")!!.readText()
 
+    /**
+     * @param cookies of the session, none for nobody signed in
+     */
     private fun provider(
         locale: Locale = Locale.US,
         status: HttpStatusCode = HttpStatusCode.OK,
+        cookies: String = "",
         respond: (endpoint: String, body: JsonObject) -> String = { _, _ -> fixture("empty") },
     ): YouTubeProvider {
         val engine = MockEngine { request ->
@@ -65,7 +69,12 @@ class YouTubeProviderTest {
         }
         val client = HttpClient(engine)
         return YouTubeProvider(
-            InnerTube({ client }, Json { ignoreUnknownKeys = true }, locale = { locale }),
+            InnerTube(
+                { client },
+                Json { ignoreUnknownKeys = true },
+                locale = { locale },
+                cookies = { cookies },
+            ),
             YouTubeParser { null },
         )
     }
@@ -75,6 +84,55 @@ class YouTubeProviderTest {
     }
 
     private fun JsonObject.string(vararg keys: Any): String? = path(*keys).asString
+
+    private val HttpRequestData.endpoint: String
+        get() = url.encodedPath.substringAfter("/youtubei/v1/")
+
+    @Test
+    fun anAlbumIsSavedAsThePlaylistOfItsSongs() = runBlocking {
+        val youTube = provider(cookies = "SAPISID=sap")
+
+        youTube.saveAlbum("OLAK5uy_1", true)
+        youTube.saveAlbum("OLAK5uy_1", false)
+
+        assertEquals(listOf("like/like", "like/removelike"), requests.map { it.endpoint })
+        assertEquals(
+            listOf("OLAK5uy_1", "OLAK5uy_1"),
+            requests.map { it.json().string("target", "playlistId") },
+        )
+    }
+
+    @Test
+    fun anArtistIsSubscribedToByTheirChannel() = runBlocking {
+        val youTube = provider(cookies = "SAPISID=sap")
+
+        youTube.subscribe("UC_channel", true)
+        youTube.subscribe("UC_channel", false)
+
+        assertEquals(
+            listOf("subscription/subscribe", "subscription/unsubscribe"),
+            requests.map { it.endpoint },
+        )
+        val body = requests.first().json()
+        assertEquals("UC_channel", body.string("channelIds", 0))
+        assertEquals("EgIIAhgA", body.string("params"))
+    }
+
+    @Test
+    fun savingNeedsSomeoneSignedIn() {
+        val youTube = provider()
+
+        val saving = assertThrows(YouTubeException::class.java) {
+            runBlocking { youTube.saveAlbum("OLAK5uy_1", true) }
+        }
+        val subscribing = assertThrows(YouTubeException::class.java) {
+            runBlocking { youTube.subscribe("UC_channel", true) }
+        }
+
+        assertTrue(saving.signedOut)
+        assertTrue(subscribing.signedOut)
+        assertTrue(requests.isEmpty())
+    }
 
     @Test
     fun requestsAreSentAsTheWebsiteInTheLanguageOfTheDevice() = runBlocking {

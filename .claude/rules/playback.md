@@ -16,9 +16,10 @@ paths:
   `play()`. Details: `.claude/docs/android-gotchas.md`.
 - `LoudnessNormalizer` cuts via `player.volume` and boosts via `LoudnessEnhancer`
   (`MAX_BOOST_DB = 6`). Don't change it unasked.
-- `dropCurrent` (dislike in the player) moves to the next song before removing the current one:
-  removing the current item while repeat-one is on makes ExoPlayer end the queue even with items
-  after it.
+- A dislike, wherever it's made (player, song menu), takes every copy of the song out of the
+  queue (`PlaybackController.drop`, the maintainer's default). The current one moves to the next
+  song before it's removed: removing the current item while repeat-one is on makes ExoPlayer end
+  the queue even with items after it. With no next song the player stops first.
 
 ## Sleep timer
 

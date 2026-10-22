@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
+import me.knighthat.kreate3.ui.component.FollowButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
 import me.knighthat.kreate3.ui.component.QueueActionRow
@@ -59,6 +60,7 @@ fun OpenSubsonicArtistDetailScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val canShare by viewModel.canShare.collectAsStateWithLifecycle()
+    val isFollowed by viewModel.follow.isOn.collectAsStateWithLifecycle()
 
     OpenSubsonicArtistDetailContent(
         state = state,
@@ -72,6 +74,8 @@ fun OpenSubsonicArtistDetailScreen(
             (viewModel.state.value as? LiveState.Ready)?.value?.songs.orEmpty()
         },
         share = if (canShare) viewModel::shareLink else null,
+        isFollowed = isFollowed,
+        onToggleFollow = viewModel.follow::toggle,
         modifier = modifier,
         contentPadding = contentPadding,
     )
@@ -79,6 +83,7 @@ fun OpenSubsonicArtistDetailScreen(
 
 /**
  * @param share gives a link to the artist, `null` while the user may not share
+ * @param isFollowed whether the artist is starred on the server, `null` hides the button
  */
 @Composable
 private fun OpenSubsonicArtistDetailContent(
@@ -89,6 +94,8 @@ private fun OpenSubsonicArtistDetailContent(
     onAction: (QueueAction) -> Unit,
     onSongClick: (MediaItem) -> Unit,
     share: (suspend (name: String?) -> Result<String>)?,
+    isFollowed: Boolean?,
+    onToggleFollow: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -102,6 +109,7 @@ private fun OpenSubsonicArtistDetailContent(
         modifier = modifier,
         contentPadding = contentPadding,
         actions = {
+            if (artist != null) isFollowed?.let { FollowButton(it, onToggleFollow) }
             if (share != null && artist != null)
                 ShareAction(artist.name, "artist") { share(artist.name) }
         },
@@ -166,5 +174,7 @@ private fun OpenSubsonicArtistDetailPreview() = PreviewTheme {
         onAction = {},
         onSongClick = {},
         share = { Result.success("") },
+        isFollowed = true,
+        onToggleFollow = {},
     )
 }

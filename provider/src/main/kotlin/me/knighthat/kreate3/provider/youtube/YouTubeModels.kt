@@ -88,6 +88,9 @@ enum class YouTubeSearchFilter(internal val params: String) {
     COMMUNITY_PLAYLISTS("EgeKAQQoAEABagwQDhAKEAMQBRAJEAQ%3D"),
 }
 
+/** What the user thinks of a song on YouTube, see [YouTubeProvider.rate]. */
+enum class LikeStatus { LIKE, DISLIKE, INDIFFERENT }
+
 /**
  * What YouTube Music suggests for a search being typed.
  *
@@ -101,6 +104,8 @@ data class YouTubeSuggestions(val queries: List<String>, val items: List<YouTube
  * @property playlistId id of the playlist that holds the album's songs, its radio is
  * [YouTubeProvider.upNext] of it
  * @property sections rows shown below the songs, like "Other versions"
+ * @property saved whether the album is in the user's library, only meaningful for a page asked
+ * in the session. [YouTubeProvider.saveAlbum] saves it by [playlistId].
  */
 data class YouTubeAlbumPage(
     val album: Album,
@@ -109,6 +114,7 @@ data class YouTubeAlbumPage(
     val playlistId: String?,
     val description: String?,
     val sections: List<YouTubeSection>,
+    val saved: Boolean = false,
 )
 
 /**
@@ -117,6 +123,10 @@ data class YouTubeAlbumPage(
  * [YouTubeProvider.playlistPage]
  * @property sections rows of the page, like "Albums", "Singles & EPs" and "Fans might also like".
  * Albums with no artist named on them are given the artist.
+ * @property channelId the channel subscribed to with [YouTubeProvider.subscribe], which may not be
+ * the artist's id, `null` when the page has no subscribe button
+ * @property subscribed whether the user is subscribed to [channelId], only meaningful for a page
+ * asked in the session
  */
 data class YouTubeArtistPage(
     val artist: Artist,
@@ -124,6 +134,8 @@ data class YouTubeArtistPage(
     val topSongs: List<RemoteSong>,
     val songsPlaylistId: String?,
     val sections: List<YouTubeSection>,
+    val channelId: String? = null,
+    val subscribed: Boolean = false,
 )
 
 /**

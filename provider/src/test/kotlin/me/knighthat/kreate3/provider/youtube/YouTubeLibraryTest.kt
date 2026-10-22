@@ -23,6 +23,7 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.mock.toByteArray
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -31,13 +32,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
+import me.knighthat.kreate3.database.model.UserSong
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
 import me.knighthat.kreate3.database.repository.RemoteSong
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.lang.reflect.Proxy
 import java.util.Collections
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
@@ -94,13 +99,27 @@ class YouTubeLibraryTest {
     @Volatile
     private var onRequest: () -> Unit = {}
 
+    /** The likes and dislikes sent to YouTube, as the endpoint and the song id. */
+    private val rated: MutableList<String> = Collections.synchronizedList(mutableListOf())
+
+    /** What YouTube answers to a like or dislike. */
+    @Volatile
+    private var rateStatus = HttpStatusCode.OK
+
     private val client = HttpClient(MockEngine { request ->
                 requests.incrementAndGet()
                 onRequest()
                 val body = Json.parseToJsonElement(request.body.toByteArray().decodeToString())
+        val endpoint = request.url.encodedPath.substringAfter("/youtubei/v1/")
+        val rating = endpoint.startsWith("like/")
+        if (rating) rated += "$endpoint ${body.path("target", "videoId").asString}"
                 respond(
-                    content = if (body.path("continuation") != null) moreLikes()
-                    else answer(body.path("browseId").asString),
+                    content = when {
+                        rating -> """{"responseContext":$signedIn}"""
+                        body.path("continuation") != null -> moreLikes()
+                        else -> answer(body.path("browseId").asString)
+                    },
+                    status = if (rating) rateStatus else HttpStatusCode.OK,
                     headers = Headers.build { append(HttpHeaders.ContentType, "application/json") },
                 )
     })
@@ -117,7 +136,21 @@ class YouTubeLibraryTest {
         YouTubeParser { null },
     )
 
-    private val library = YouTubeLibrary(provider, repository, scope, clock) { syncing }
+    /** Keeps the reaction of each song, the rest of the library isn't used here. */
+    private class Reactions : UserSongRepository by unused() {
+        val likedAt: MutableMap<String, Instant?> = Collections.synchronizedMap(mutableMapOf())
+
+        override suspend fun update(songId: String, transform: (UserSong) -> UserSong) {
+            likedAt[songId] = transform(UserSong(songId, likedAt = likedAt[songId])).likedAt
+        }
+    }
+
+    private val reactions = Reactions()
+
+    private val library = YouTubeLibrary(provider, repository, reactions, scope, clock) { syncing }
+
+    private val liked = Instant.parse("2024-03-04T05:06:07Z")
+    private val disliked = Instant.fromEpochMilliseconds(-1)
 
     private fun answer(browseId: String?): String {
         check(browseId == "VLLM") { "Unexpected $browseId" }
@@ -306,4 +339,73 @@ class YouTubeLibraryTest {
 
         assertTrue(repository.calls.isEmpty())
     }
+
+    @Test
+    fun likesAndDislikesAreSentAsTheyNowAre() = runBlocking {
+        library.react("s9") { liked }
+        // A dislike replaces the like on YouTube
+        library.react("s9") { disliked }
+        library.react("s9") { null }
+        library.react("s9") { disliked }
+        library.react("s9") { liked }
+
+        assertEquals(
+            listOf(
+                "like/like s9",
+                "like/dislike s9",
+                "like/removelike s9",
+                "like/dislike s9",
+                "like/like s9",
+            ),
+            rated.toList(),
+        )
+        assertEquals(liked, reactions.likedAt["s9"])
+    }
+
+    @Test
+    fun aReactionThatDoesNotChangeSendsNothing() = runBlocking {
+        reactions.likedAt["s9"] = liked
+
+        library.react("s9") { Instant.fromEpochMilliseconds(5) }
+
+        assertTrue(rated.isEmpty())
+    }
+
+    @Test
+    fun aReactionWhileSignedOutStaysOnTheDevice() = runBlocking {
+        cookies = ""
+
+        library.react("s9") { disliked }
+
+        assertEquals(0, requests.get())
+        assertEquals(disliked, reactions.likedAt["s9"])
+    }
+
+    @Test
+    fun aReactionIsNotSentWhileTheSyncingIsOff() = runBlocking {
+        syncing = false
+
+        library.react("s9") { liked }
+
+        assertEquals(0, requests.get())
+        assertEquals(liked, reactions.likedAt["s9"])
+    }
+
+    @Test
+    fun aDislikeYouTubeRefusesIsTakenBack() {
+        reactions.likedAt["s9"] = liked
+        rateStatus = HttpStatusCode.InternalServerError
+
+        assertThrows(YouTubeException::class.java) {
+            runBlocking { library.react("s9") { disliked } }
+        }
+
+        assertEquals(liked, reactions.likedAt["s9"])
+    }
 }
+
+/** A [T] that fails at every call, for the parts a test doesn't use. */
+private inline fun <reified T> unused(): T =
+    Proxy.newProxyInstance(T::class.java.classLoader, arrayOf(T::class.java)) { _, method, _ ->
+        error("${method.name} isn't used here")
+    } as T

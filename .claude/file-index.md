@@ -172,7 +172,13 @@ source/ (app-side glue for sources)
 - `LiveLibrary.kt` — `liveAlbums`/`liveArtists`/`livePlaylists`: fetch every external source live,
   merged in order, de-duplicated.
 - `SongDetails.kt` — `songDetails(origin, songId, youTube, openSubsonic)`: a remote song as its
-  source has it now, to store it (`PlayedSongRecorder`, `AddToPlaylist`).
+  source has it now, to store it (`PlayedSongRecorder`, `SongStore`).
+- `SongStore.kt` — `SongStore.store(songId, origin)` (Koin single): makes sure a song is in the
+  `song` table before the user keeps something about it (playlist, reaction); one fetched live is
+  fetched with `songDetails` and stored with `savePlayedSong` (added to the library).
+- `DeviceReactions.kt` — `DeviceReactions`/`DeviceReactionsImpl` (Koin single): album bookmarks
+  and artist follows kept on the device for live items, storing the album/artist first when it
+  isn't; YouTube detail screens use it while signed out.
 - local/`MediaStoreScanner.kt` — reads device music from MediaStore → `LocalSong`.
 - local/`LocalMusicWorker.kt` + `LocalMusicScheduler.kt` — WorkManager scan of device music, then
   loudness.
@@ -196,7 +202,8 @@ ui/component/ (shared composables)
 
 - `Buttons.kt` —
   Back/Search/Profile/Settings/More/Share/PlayAll/Shuffle/Random/CreatePlaylist/PlayPause/SeeMore/Config
-  buttons, `TileButton` (big icon+title+subtitle tile with busy spinner; wizard restore, Backup
+  buttons, `BookmarkButton`/`FollowButton` (filled in the primary color while set), `TileButton` (
+  big icon+title+subtitle tile with busy spinner; wizard restore, Backup
   settings) (`.claude/rules/ui.md`).
 - `SongItem.kt`, `AlbumItem.kt`, `ArtistItem.kt`, `PlaylistItem.kt` — list/grid items. `SongItem`
   long-press opens the song menu (`hasMenu = false` in QueuePage, `menuActions` for list-specific
@@ -209,7 +216,7 @@ ui/component/ (shared composables)
   playlist", Details = "In construction"). `SongMenuAction` for list-specific actions.
 - `AddToPlaylist.kt` — `rememberAddToPlaylist(item)`: the app's (`LOCAL`) playlists newest first,
   `add`/`create` on the global scope with an Added/Already in/Couldn't message; a song not in the
-  `song` table is fetched (`songDetails`) and stored with `savePlayedSong` first.
+  `song` table is stored first (`SongStore`).
   `CreatePlaylistDialog` (also used by `HomePlaylistsScreen`).
 - `ItemParts.kt` — `ItemRow`, `Thumbnail` (fallback drawable, `.claude/rules/ui.md`),
   `thumbnailModel`, `ItemBadge(s)` (origin/explicit badges), `formatDuration`,
@@ -264,9 +271,12 @@ ui/screen/
   MiniPlayer. `Route.hasMiniPlayer` puts the mini player at the window bottom; a screen with its own
   bottom bar (Search, SearchResults) must opt out there and draw `PlaybackMiniPlayer` above its bar
   itself, or the mini player lands under that bar.
-- player/`SongReaction.kt` — `rememberSongReaction(songId)`: like/dislike state of the playing song
-  from `UserSongRepository.find`, toggles write `liked_at` on the global scope; `null` reaction (
-  buttons off) while the song isn't in the library.
+- player/`SongReaction.kt` — `rememberSongReaction(item)`: like/dislike state of a song (player,
+  song menu) from `UserSongRepository.find`, toggles write `liked_at` on the global scope
+  (OpenSubsonic songs through `OpenSubsonicLibrary.react`, which stars them; a failed star is taken
+  back and posted to `LocalNotifier`). A song not in the library shows neutral and is added on its
+  first reaction (`SongStore` first); `null` (buttons off) only while the lookup loads or the item
+  has no origin. A dislike also calls `PlaybackController.drop`.
 - `SetupWizardScreen.kt` — first-run wizard (ToS, profile name, theme, permissions);
   `setupCompletedFile`.
 - home/ — `HomeScaffold.kt` (collapsing title/toolbar, `contentPadding` added to its bars'),
@@ -274,8 +284,12 @@ ui/screen/
   `LiveItems.kt` (live items appended after DB items).
 - detail/ — `DetailScaffold.kt` (`contentPadding` added to the bar's; lists take its padding as
   content padding), `DetailHeader.kt`, `LiveDetail.kt` (`LiveDetailViewModel`, `LiveState`,
-  `LiveSectionRow`, `LiveDetailScreen`), `ShareAction.kt` (OpenSubsonic share link on demand);
-  `{Local,OpenSubsonic,YouTube}{Album,Artist,Playlist}DetailScreen/ViewModel.kt`;
+  `LiveSectionRow`, `LiveDetailScreen`), `ShareAction.kt` (OpenSubsonic share link on demand),
+  `SourceToggle.kt` (bookmark/follow kept by a source: flips at once, sent in tap order on the app
+  scope, flipped back with a message on failure; `serverFailure`/`youTubeFailure` texts);
+  `{Local,OpenSubsonic,YouTube}{Album,Artist,Playlist}DetailScreen/ViewModel.kt` (album screens
+  have Bookmark, artist screens Follow: local columns, the server's star, YouTube's library save /
+  subscription, or local columns while signed out of YouTube);
   `YouTubeMoreScreen/ViewModel.kt` (grid behind "See more").
 - player/ — `PlayerSheet.kt` (full player sheet: anchoredDraggable over the window, nested scroll
   lets lists drag it down; pager of Player/Lyrics/Queue tabs at the bottom over the blurred cover,
@@ -340,7 +354,8 @@ Pure Kotlin/JVM (`kotlin("jvm")`), package `me.knighthat.kreate3.model`, rules i
 - `Transaction.kt` — write-transaction helper (no `withTransaction` with SQLite driver).
   `Converters.kt` — Instant/Duration/list/Uri.
 - entity/ — shared tables `Song`, `Album`, `Artist`, `SongFormat` (gain), `Lyrics`, `SongArtistMap`,
-  `SongPlaylistMap`; per-user `User`, `UserSong`, `UserAlbum`, `UserArtist`, `UserPlaylist`,
+  `SongPlaylistMap`; per-user `User`,
+  `UserSong`, `UserAlbum`, `UserArtist`, `UserPlaylist`,
   `PlaybackHistory`, `SearchHistory`, `PersistentQueue`.
 - view/ — `UserSongViewEntity`, `UserAlbumViewEntity`, `UserArtistViewEntity` (user override ?:
   shared value; songs with `unavailable_since` hidden).
@@ -383,12 +398,15 @@ Pure Kotlin/JVM (`kotlin("jvm")`), package `me.knighthat.kreate3.model`, rules i
 - `Provider.kt` — interface every source implements (search, details, library sections); answers
   with DB models, never writes. `Providers.kt` — Origin → Provider lookup. `ProviderModule.kt` —
   Koin (register new providers here and in `Origin`). `SearchResults.kt`, `LibrarySection.kt` (
-  synced library parts).
+  synced library parts). `ReactionSender.kt` (shared by the OpenSubsonic and YouTube libraries:
+  saves a song reaction, sends it, takes it back on failure; keeps a liked-songs pull that
+  overlapped one from being stored; `isLike`/`isDislike`).
 - local/`LocalProvider.kt` — reads device songs back from DB.
 - opensubsonic/ — `OpenSubsonicProvider.kt` (API client: ping, auth check, library, details, shares,
   cover URLs, `stream(id, quality)` via transcode decision or maxBitRate, `extensions()`; gated by
   `OPEN_SUBSONIC_ENABLED` — `.claude/rules/sources.md`), `OpenSubsonicLibrary.kt` (starred-song
-  sync, `openSubsonicSyncSetting`), `OpenSubsonicSettings.kt`, `OpenSubsonicClients.kt` (dedicated
+  sync both ways: pulls stars, `react` stars/unstars a song liked/unliked in the app,
+  `openSubsonicSyncSetting`), `OpenSubsonicSettings.kt`, `OpenSubsonicClients.kt` (dedicated
   OkHttp client), `OpenSubsonicMappers.kt` (JSON → models, `toSongFormat` = `raw`,
   `toTranscodedFormat`), `ServerStream.kt` (`ServerStream`, `RAW_FORMAT`, Content-Type → format
   tag), `SelfSignedTrustManager.kt` (cert pinning, `CertificatePin`), `ServerCheck.kt`,
@@ -402,7 +420,8 @@ Pure Kotlin/JVM (`kotlin("jvm")`), package `me.knighthat.kreate3.model`, rules i
   hidden WebView, page in `provider/src/main/assets/po_token.html`), `YouTubeParser.kt` (InnerTube
   JSON → models), `YouTubeJson.kt` (JSON path helpers), `YouTubeModels.kt` (`YouTubeItem`,
   page/section/account/channel models, `YouTubeSearchFilter`, `YouTubeStream`),
-  `YouTubeLibrary.kt` (liked-song sync, `youTubeSyncSetting`), `YouTubeLinks.kt` (share links,
+  `YouTubeLibrary.kt` (liked-song sync both ways: pulls "Liked Music", `react` sends like,
+  dislike or neither while signed in; `youTubeSyncSetting`), `YouTubeLinks.kt` (share links,
   `resizeArtwork`).
 - test resources: `provider/src/test/resources/youtube/*.json` (captured InnerTube responses),
   `certs/*.pem`.
@@ -444,7 +463,7 @@ Depends only on `:model` (api) plus Ktor/serialization/Koin.
   `CacheCopiesTest` (Robolectric), `SongDataSourceTest`, `LoudnessNormalizerTest`,
   `PlaybackErrorsTest`, source/`CoverCacheTest`, `LoudnessMeterTest`, `MediaStoreScannerTest`,
   ui/navigation/`TopLevelBackStackTest`, ui/screen/detail/`LiveDetailViewModelTest`,
-  `YouTubeDetailViewModelTest`, ui/screen/search/`SearchViewModelTest`.
+  `YouTubeDetailViewModelTest`, `SourceToggleTest`, ui/screen/search/`SearchViewModelTest`.
 - database: `DatabaseTest`, `DatabaseBackupTest`, `ConvertersTest`, paging/`SortingTest`,
   repository/ `HistoryRepositoryTest`, `LocalCatalogRepositoryTest`, `MappersTest`,
   `PlaylistRepositoryTest`, `RemoteCatalogRepositoryTest`, `SearchPatternTest`,

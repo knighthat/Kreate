@@ -658,7 +658,7 @@ private fun NowPlayingPage(
     coverHeight: Dp,
 ) {
     val metadata = item.mediaMetadata
-    val reaction = rememberSongReaction(item.mediaId)
+    val reaction = rememberSongReaction(item)
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -703,12 +703,8 @@ private fun NowPlayingPage(
                     unsetIcon = R.drawable.thumb_down_outline,
                     description = "Dislike",
                     setDescription = "Remove dislike",
-                    onClick = {
-                        val disliking = reaction.reaction != Reaction.DISLIKED
-                        reaction.toggleDislike()
-                        // A song the user dislikes isn't worth finishing, nor hearing again
-                        if (disliking) controller.dropCurrent()
-                    },
+                    // Also takes it out of the queue
+                    onClick = reaction.toggleDislike,
                 )
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,

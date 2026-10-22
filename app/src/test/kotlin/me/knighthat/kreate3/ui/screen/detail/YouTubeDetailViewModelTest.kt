@@ -30,11 +30,17 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.serialization.json.Json
+import me.knighthat.kreate3.database.model.Album
+import me.knighthat.kreate3.database.model.Artist
+import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import me.knighthat.kreate3.source.DeviceReactions
 import me.knighthat.kreate3.ui.navigation.LocalAlbum
+import me.knighthat.kreate3.ui.navigation.LocalArtist
 import me.knighthat.kreate3.ui.navigation.YouTubePlaylist
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -54,6 +60,26 @@ import java.util.Collections
 class YouTubeDetailViewModelTest {
 
     private val requests: MutableList<String> = Collections.synchronizedList(mutableListOf())
+
+    /** Bookmarks and follows kept on the device, by id. */
+    private class Reactions : DeviceReactions {
+        val bookmarked = Collections.synchronizedMap(mutableMapOf<String, Boolean>())
+        val followed = Collections.synchronizedMap(mutableMapOf<String, Boolean>())
+
+        override suspend fun isBookmarked(albumId: String) = bookmarked[albumId] == true
+
+        override suspend fun setBookmarked(album: Album, on: Boolean) {
+            bookmarked[album.id] = on
+        }
+
+        override suspend fun isFollowed(artistId: String) = followed[artistId] == true
+
+        override suspend fun setFollowed(artist: Artist, on: Boolean) {
+            followed[artist.id] = on
+        }
+    }
+
+    private val device = Reactions()
 
     private fun provider(
         status: HttpStatusCode = HttpStatusCode.OK,
@@ -85,6 +111,9 @@ class YouTubeDetailViewModelTest {
         val viewModel = YouTubeAlbumDetailViewModel(
             SavedStateHandle(mapOf(LocalAlbum.ID to "MPREb_1")),
             provider { ALBUM },
+            device,
+            backgroundScope,
+            Notifier(),
         )
 
         // The answer comes on the client's own thread
@@ -99,10 +128,55 @@ class YouTubeDetailViewModelTest {
     }
 
     @Test
+    fun aBookmarkWhileSignedOutStaysOnTheDevice() = runTest {
+        val viewModel = YouTubeAlbumDetailViewModel(
+            SavedStateHandle(mapOf(LocalAlbum.ID to "MPREb_1")),
+            provider { ALBUM },
+            device,
+            backgroundScope,
+            Notifier(),
+        )
+        viewModel.state.first { it !is LiveState.Loading }
+        assertEquals(false, viewModel.bookmark.isOn.value)
+
+        viewModel.bookmark.toggle()
+        runCurrent()
+
+        assertEquals(true, viewModel.bookmark.isOn.value)
+        assertEquals(mapOf("MPREb_1" to true), device.bookmarked)
+        // Only the page was asked, nothing went to YouTube
+        assertEquals(1, requests.size)
+    }
+
+    @Test
+    fun aFollowWhileSignedOutStaysOnTheDevice() = runTest {
+        device.followed["UC1"] = true
+        val viewModel = YouTubeArtistDetailViewModel(
+            SavedStateHandle(mapOf(LocalArtist.ID to "UC1")),
+            provider { ARTIST },
+            device,
+            backgroundScope,
+            Notifier(),
+        )
+        viewModel.state.first { it !is LiveState.Loading }
+        assertEquals(true, viewModel.follow.isOn.value)
+
+        viewModel.follow.toggle()
+        runCurrent()
+
+        assertEquals(false, viewModel.follow.isOn.value)
+        assertEquals(mapOf("UC1" to false), device.followed)
+        assertEquals(1, requests.size)
+    }
+
+    @Test
     fun unknownAlbumSaysSo() = runTest {
         val viewModel = YouTubeAlbumDetailViewModel(
             SavedStateHandle(mapOf(LocalAlbum.ID to "MPREb_x")),
             provider { "{}" },
+            device,
+            backgroundScope,
+            Notifier(),
         )
 
         val state = viewModel.state.first { it !is LiveState.Loading }
@@ -115,6 +189,9 @@ class YouTubeDetailViewModelTest {
         val viewModel = YouTubeAlbumDetailViewModel(
             SavedStateHandle(mapOf(LocalAlbum.ID to "MPREb_1")),
             provider(HttpStatusCode.TooManyRequests) { "{}" },
+            device,
+            backgroundScope,
+            Notifier(),
         )
 
         assertTrue(viewModel.state.first { it !is LiveState.Loading } is LiveState.Failed)
@@ -164,6 +241,9 @@ class YouTubeDetailViewModelTest {
 
         val ALBUM =
             page("Album", """{"musicShelfRenderer":{"contents":[${song("v1")},${song("v2")}]}}""")
+
+        const val ARTIST =
+            """{"header":{"musicImmersiveHeaderRenderer":{"title":{"runs":[{"text":"Artist"}]}}}}"""
 
         val PLAYLIST = page(
             "Playlist",

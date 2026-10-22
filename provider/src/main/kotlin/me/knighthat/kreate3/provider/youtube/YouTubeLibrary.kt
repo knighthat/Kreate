@@ -22,25 +22,30 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.repository.RemoteCatalogRepository
+import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.provider.LibrarySection
+import me.knighthat.kreate3.provider.ReactionSender
+import me.knighthat.kreate3.provider.isDislike
+import me.knighthat.kreate3.provider.isLike
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
 /**
- * Keeps the songs the signed in user liked on YouTube liked in their library. Liked songs are the
- * only part of the YouTube library that is stored, its albums, artists and playlists are fetched
- * each time they show. Signing out, or turning the account or the syncing off, only stops the
- * syncing, the likes stay as they are.
+ * Keeps the songs the signed in user liked on YouTube liked in their library, and the likes and
+ * dislikes given in the app on YouTube. Liked songs are the only part of the YouTube library that
+ * is stored, its albums, artists and playlists are fetched each time they show. Signing out, or
+ * turning the account or the syncing off, only stops the syncing, the likes stay as they are.
  *
  * @param syncs whether the liked songs are synced, [Preferences.YOUTUBE_SYNC_SONGS]
  */
 class YouTubeLibrary(
     private val provider: YouTubeProvider,
     private val repository: RemoteCatalogRepository,
+    userSongs: UserSongRepository,
     private val scope: CoroutineScope,
     private val clock: Clock = Clock.System,
     private val syncs: () -> Boolean = { LibrarySection.SONGS.youTubeSyncSetting.value },
@@ -48,6 +53,8 @@ class YouTubeLibrary(
 
     /** When the liked songs of each session were last brought up to date, or are being now. */
     private val refreshed = ConcurrentHashMap<String, Instant>()
+
+    private val sender = ReactionSender(userSongs)
 
     /**
      * Brings the liked songs up to date unless it was done recently or their syncing is off. A
@@ -85,20 +92,51 @@ class YouTubeLibrary(
     }
 
     /**
+     * Changes the user's reaction to [songId], a song of YouTube, to what [likedAt] makes of the
+     * one stored, see `UserSong.likedAt`. While signed in and the syncing is on, YouTube gets the
+     * song liked, disliked or neither, as it now is. Signed out it stays on the device, and the next
+     * sync after signing in puts YouTube's likes back; dislikes aren't listed by YouTube, they stay.
+     *
+     * When YouTube can't be told, the reaction is taken back to what it was, unless another one
+     * replaced it meanwhile.
+     *
+     * @throws YouTubeException when YouTube can't be reached or refuses, the reaction is taken
+     * back then
+     */
+    suspend fun react(songId: String, likedAt: (Instant?) -> Instant?) =
+        sender.react(songId, likedAt) { before, after ->
+            val status = after.likeStatus
+            if (before.likeStatus != status && syncs() && provider.isSignedIn())
+                provider.rate(songId, status)
+        }
+
+    /**
      * @return whether the songs were stored, `false` when nobody is signed in, or the session
-     * changed or the syncing was turned off meanwhile
+     * changed, the syncing was turned off or a reaction was saved or sent meanwhile
      */
     private suspend fun sync(session: String): Boolean {
+        val since = sender.mark()
         val liked = provider.likedSongs() ?: return false
-        if (provider.sessionId() != session || !syncs()) return false
-        // More are liked than were fetched, the likes not fetched are left as they are then
-        repository.syncLikedSongs(
-            Origin.YOUTUBE,
-            liked.items,
-            complete = liked.continuation == null,
-        )
-        return true
+
+        return sender.store(since) {
+            if (provider.sessionId() != session || !syncs()) return@store false
+            // More are liked than were fetched, the likes not fetched are left as they are then
+            repository.syncLikedSongs(
+                Origin.YOUTUBE,
+                liked.items,
+                complete = liked.continuation == null,
+            )
+            true
+        }
     }
+
+    /** What YouTube is told of a reaction, see `UserSong.likedAt`. */
+    private val Instant?.likeStatus: LikeStatus
+        get() = when {
+            isDislike -> LikeStatus.DISLIKE
+            isLike -> LikeStatus.LIKE
+            else -> LikeStatus.INDIFFERENT
+        }
 
     private companion object {
 

@@ -34,9 +34,11 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectBuilder
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import me.knighthat.kreate3.constant.StreamQuality
 import java.security.MessageDigest
@@ -208,6 +210,42 @@ internal class InnerTube(
 
     /** The signed in user's name and picture. */
     suspend fun accountMenu(): JsonObject = post("account/account_menu", signedIn = true) {}
+
+    /** Likes or dislikes the video [videoId], a song too, or takes its like or dislike away. */
+    suspend fun rate(videoId: String, status: LikeStatus): JsonObject =
+        post(
+            when (status) {
+                LikeStatus.LIKE -> "like/like"
+                LikeStatus.DISLIKE -> "like/dislike"
+                LikeStatus.INDIFFERENT -> "like/removelike"
+            },
+            signedIn = true,
+        ) {
+            putJsonObject("target") { put("videoId", videoId) }
+        }
+
+    /**
+     * Saves the playlist [playlistId] to the user's library, or takes it out. An album is saved
+     * as the playlist of its songs.
+     */
+    suspend fun likePlaylist(playlistId: String, like: Boolean): JsonObject =
+        post(if (like) "like/like" else "like/removelike", signedIn = true) {
+            putJsonObject("target") { put("playlistId", playlistId) }
+        }
+
+    /**
+     * Subscribes the user to the channel [channelId], or unsubscribes them.
+     *
+     * @param params what the page's button sends with it, `null` for none
+     */
+    suspend fun subscribe(channelId: String, subscribe: Boolean, params: String?): JsonObject =
+        post(
+            if (subscribe) "subscription/subscribe" else "subscription/unsubscribe",
+            signedIn = true,
+        ) {
+            putJsonArray("channelIds") { add(channelId) }
+            params?.let { put("params", it) }
+        }
 
     suspend fun search(query: String, params: String?): JsonObject =
         post("search") {

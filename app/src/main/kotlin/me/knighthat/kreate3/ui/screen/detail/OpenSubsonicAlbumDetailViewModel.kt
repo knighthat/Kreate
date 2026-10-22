@@ -21,9 +21,13 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
+import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
+import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.opensubsonic.Shareable
 import me.knighthat.kreate3.ui.component.toLiveMediaItem
 import me.knighthat.kreate3.ui.navigation.LocalAlbum
@@ -45,10 +49,14 @@ data class OpenSubsonicAlbumDetail(
 /**
  * Fetches the album whose id is in the saved state, and its songs, from the server. Nothing is
  * stored.
+ *
+ * @param scope the app's, where a bookmark is sent
  */
 class OpenSubsonicAlbumDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val provider: OpenSubsonicProvider,
+    scope: CoroutineScope,
+    notifier: Notifier,
 ) : LiveDetailViewModel<OpenSubsonicAlbumDetail>() {
 
     val albumId: String = checkNotNull(savedStateHandle[LocalAlbum.ID]) {
@@ -60,6 +68,16 @@ class OpenSubsonicAlbumDetailViewModel(
     /** Whether the user may make shares on the server, `false` until that is known. */
     val canShare = provider.canShare(viewModelScope)
 
+    /** Whether the album is bookmarked, which is its star on the server. */
+    val bookmark = SourceToggle(
+        scope,
+        notifier,
+        send = { on ->
+            if (!provider.setAlbumStarred(albumId, on)) throw ServerException(ServerCheck.Disabled)
+        },
+        failure = { e, on -> e.serverFailure(if (on) "bookmark the album" else "remove the bookmark") },
+    )
+
     init {
         load()
     }
@@ -69,6 +87,7 @@ class OpenSubsonicAlbumDetailViewModel(
         val notes = async { askServerOrNull { provider.albumNotes(albumId) } }
         val (remote, songs) = provider.albumWithSongs(albumId) ?: return@coroutineScope null
         val album = remote.item
+        bookmark.known(remote.starredAt != null)
         OpenSubsonicAlbumDetail(
             name = album.name,
             thumbnail = album.thumbnail,

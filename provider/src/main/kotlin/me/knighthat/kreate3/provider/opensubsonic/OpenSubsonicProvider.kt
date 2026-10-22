@@ -388,6 +388,42 @@ class OpenSubsonicProvider internal constructor(
     }
 
     /**
+     * Stars [songId] on the server, or takes its star away. The API has no dislike, a star is all
+     * the server keeps of what the user thinks of a song.
+     *
+     * @return `false` while the server is off or not set up, nothing is sent then
+     * @throws ServerException when the server can't be used or refuses, like for an id it doesn't have
+     */
+    suspend fun setStarred(songId: String, starred: Boolean): Boolean =
+        star("id" to songId, starred)
+
+    /**
+     * Stars the album [albumId] on the server, or takes its star away, see [setStarred].
+     *
+     * @return `false` while the server is off or not set up, nothing is sent then
+     * @throws ServerException when the server can't be used or refuses, like for an id it doesn't have
+     */
+    suspend fun setAlbumStarred(albumId: String, starred: Boolean): Boolean =
+        star("albumId" to albumId, starred)
+
+    /**
+     * Stars the artist [artistId] on the server, or takes their star away, see [setStarred].
+     *
+     * @return `false` while the server is off or not set up, nothing is sent then
+     * @throws ServerException when the server can't be used or refuses, like for an id it doesn't have
+     */
+    suspend fun setArtistStarred(artistId: String, starred: Boolean): Boolean =
+        star("artistId" to artistId, starred)
+
+    /** Sends `star` or `unstar` for [item], the parameter naming what it is with its id. */
+    private suspend fun star(item: Pair<String, String>, starred: Boolean): Boolean {
+        serverUrl ?: return false
+
+        call(if (starred) "star" else "unstar", item)
+        return true
+    }
+
+    /**
      * Songs the server finds similar to [songId], most similar first. Servers build this from
      * outside metadata, like Last.fm for Navidrome, so it may be empty.
      *
