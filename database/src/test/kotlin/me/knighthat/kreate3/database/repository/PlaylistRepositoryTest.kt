@@ -28,9 +28,11 @@ import me.knighthat.kreate3.database.paging.SongSort
 import me.knighthat.kreate3.database.paging.SortOrder
 import me.knighthat.kreate3.model.Origin
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -97,9 +99,9 @@ internal class PlaylistRepositoryTest : DatabaseTest() {
         addSong("s2")
         val id = repository.save(playlist("Mix"))
 
-        repository.addSong(id, "s1")
-        repository.addSong(id, "s1")
-        repository.addSong(id, "s2")
+        assertTrue(repository.addSong(id, "s1"))
+        assertFalse(repository.addSong(id, "s1"))
+        assertTrue(repository.addSong(id, "s2"))
         repository.removeSong(id, "s1")
 
         assertEquals(listOf("s2"), repository.songsOf(id).asList().map { it.id })

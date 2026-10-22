@@ -28,8 +28,9 @@ them to a rating or UI state needs three states (`MediaItemDsl.kt` maps to `Thum
   create one only when none exists). Caching for the app's run is fine when being wrong is cheap.
 - Browsing is live. YouTube search/browse results and every remote album, artist and playlist are
   shown from the provider and never written. A remote song is stored when it **starts playing**
-  (`PlayedSongRecorder`: added to the library, no like) or when synced as liked. A planned Import
-  button will store a remote item only on an explicit user action.
+  (`PlayedSongRecorder`: added to the library, no like), when it's added to a playlist (the same
+  store, `AddToPlaylist.kt`; the playlist link needs its `song` row) or when synced as liked. A
+  planned Import button will store a remote item only on an explicit user action.
 - Sync details beyond CLAUDE.md:
     - `liked_at`: the server's like time replaces the stored one; with none given, an already liked
       song keeps its time and a newly liked/inserted one gets now − index ms (keeps server order).

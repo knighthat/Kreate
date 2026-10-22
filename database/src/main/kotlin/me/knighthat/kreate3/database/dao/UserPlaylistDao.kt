@@ -84,8 +84,9 @@ internal interface UserPlaylistDao {
     @Query("DELETE FROM user_playlist WHERE playlist_id = :playlistId AND user_id = :userId")
     suspend fun delete(playlistId: Long, userId: String)
 
+    /** @return the row id when the song was added, `-1` when it was in the playlist already */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addSong(map: SongPlaylistMapEntity)
+    suspend fun addSong(map: SongPlaylistMapEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addSongs(maps: List<SongPlaylistMapEntity>)

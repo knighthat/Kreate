@@ -146,7 +146,7 @@ val LocalSongMenuHost = staticCompositionLocalOf<SongMenuHost?> { null }
 @Immutable
 private class SongArtist(val id: String, val name: String?, val route: Route)
 
-private enum class SongMenuPage { ACTIONS, ARTISTS }
+private enum class SongMenuPage { ACTIONS, ARTISTS, PLAYLISTS }
 
 /**
  * Where the sheet of [sheetState] is on the screen, followed by the lifted row. The sheet moves
@@ -265,10 +265,17 @@ private fun SongMenu(request: SongMenuRequest, onClosed: () -> Unit) {
                     actions = request.actions,
                     close = ::close,
                     onPickArtist = { page = SongMenuPage.ARTISTS },
+                    onPickPlaylist = { page = SongMenuPage.PLAYLISTS },
                 )
 
                 SongMenuPage.ARTISTS -> ArtistPicker(
                     artists = artists,
+                    onBack = { page = SongMenuPage.ACTIONS },
+                    close = ::close,
+                )
+
+                SongMenuPage.PLAYLISTS -> PlaylistPicker(
+                    item = request.item,
                     onBack = { page = SongMenuPage.ACTIONS },
                     close = ::close,
                 )
@@ -417,6 +424,7 @@ private fun SongMenuActions(
     actions: List<SongMenuAction>,
     close: (then: () -> Unit) -> Unit,
     onPickArtist: () -> Unit,
+    onPickPlaylist: () -> Unit,
 ) {
     val playback = koinInject<PlaybackController>()
     val notifier = LocalNotifier.current
@@ -437,6 +445,12 @@ private fun SongMenuActions(
     MenuRow(R.drawable.playlist_add, "Add to queue", enabled = playable) {
         close { playback.queue(QueueAction.ENQUEUE, listOf(item))?.let(notifier::post) }
     }
+    MenuRow(
+        icon = R.drawable.library_add,
+        label = "Add to playlist",
+        trailing = R.drawable.chevron_right,
+        onClick = onPickPlaylist,
+    )
     MenuRow(R.drawable.radio, "Start radio", enabled = playable) {
         close { playback.radio(item) }
     }
@@ -476,6 +490,52 @@ private fun ArtistPicker(
             close { navigator.open(artist.route) }
         }
     }
+}
+
+/**
+ * The playlists made in the app, the newest first, to put the song of [item] in. A new one can be
+ * made on the spot, the song goes in it.
+ */
+@Composable
+private fun PlaylistPicker(
+    item: MediaItem,
+    onBack: () -> Unit,
+    close: (then: () -> Unit) -> Unit,
+) {
+    val picker = rememberAddToPlaylist(item)
+    var creating by remember { mutableStateOf(false) }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(horizontal = 4.dp),
+    ) {
+        BackButton(onBack)
+        Text(
+            text = "Add to playlist",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.weight(1f),
+        )
+        CreatePlaylistButton({ creating = true })
+    }
+    if (picker.playlists?.isEmpty() == true)
+        Text(
+            text = "No playlists yet",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+        )
+    picker.playlists?.forEach { playlist ->
+        MenuRow(R.drawable.queue_music, playlist.name) { close { picker.add(playlist) } }
+    }
+
+    if (creating)
+        CreatePlaylistDialog(
+            onCreate = { name ->
+                creating = false
+                close { picker.create(name) }
+            },
+            onDismiss = { creating = false },
+        )
 }
 
 @Composable

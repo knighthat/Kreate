@@ -103,9 +103,10 @@ interface PlaylistRepository {
     suspend fun delete(playlistId: Long)
 
     /**
+     * @return `false` when the song was in the playlist already
      * @throws IllegalArgumentException when the playlist doesn't exist or belongs to another user
      */
-    suspend fun addSong(playlistId: Long, songId: String)
+    suspend fun addSong(playlistId: Long, songId: String): Boolean
 
     /**
      * @throws IllegalArgumentException when the playlist doesn't exist or belongs to another user

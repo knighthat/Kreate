@@ -153,9 +153,9 @@ internal class PlaylistRepositoryImpl(
     override suspend fun delete(playlistId: Long) =
         playlistDao.delete(playlistId, scope.requireId())
 
-    override suspend fun addSong(playlistId: Long, songId: String) {
+    override suspend fun addSong(playlistId: Long, songId: String): Boolean {
         ownedBy(scope.requireId(), playlistId)
-        playlistDao.addSong(SongPlaylistMapEntity(songId, playlistId))
+        return playlistDao.addSong(SongPlaylistMapEntity(songId, playlistId)) != -1L
     }
 
     override suspend fun removeSong(playlistId: Long, songId: String) {

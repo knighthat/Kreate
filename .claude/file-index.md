@@ -171,6 +171,8 @@ source/ (app-side glue for sources)
 
 - `LiveLibrary.kt` — `liveAlbums`/`liveArtists`/`livePlaylists`: fetch every external source live,
   merged in order, de-duplicated.
+- `SongDetails.kt` — `songDetails(origin, songId, youTube, openSubsonic)`: a remote song as its
+  source has it now, to store it (`PlayedSongRecorder`, `AddToPlaylist`).
 - local/`MediaStoreScanner.kt` — reads device music from MediaStore → `LocalSong`.
 - local/`LocalMusicWorker.kt` + `LocalMusicScheduler.kt` — WorkManager scan of device music, then
   loudness.
@@ -202,8 +204,13 @@ ui/component/ (shared composables)
 - `SongMenu.kt` (2026-10-20) — `SongMenuHost`/`LocalSongMenuHost`/`SongMenuOverlay` (one menu for
   the app, placed last in KreateApp's root Box), the lifted row (`LiftedRow`, `SheetPlacement`
   progress from `sheetState.requireOffset()`), the ModalBottomSheet (Dislike/Like/Share header, play
-  next, add to queue, radio, go to album/artist(s) + picker, list actions like "Remove from
+  next, add to queue, add to playlist + picker of the app's playlists (newest first, create button
+  in its header), radio, go to album/artist(s) + picker, list actions like "Remove from
   playlist", Details = "In construction"). `SongMenuAction` for list-specific actions.
+- `AddToPlaylist.kt` — `rememberAddToPlaylist(item)`: the app's (`LOCAL`) playlists newest first,
+  `add`/`create` on the global scope with an Added/Already in/Couldn't message; a song not in the
+  `song` table is fetched (`songDetails`) and stored with `savePlayedSong` first.
+  `CreatePlaylistDialog` (also used by `HomePlaylistsScreen`).
 - `ItemParts.kt` — `ItemRow`, `Thumbnail` (fallback drawable, `.claude/rules/ui.md`),
   `thumbnailModel`, `ItemBadge(s)` (origin/explicit badges), `formatDuration`,
   `MediaItem.localSongId`.
