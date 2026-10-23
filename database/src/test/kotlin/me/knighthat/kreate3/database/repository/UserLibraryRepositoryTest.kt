@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.database.repository
 
+import android.net.Uri
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.database.DatabaseTest
@@ -33,6 +34,7 @@ import me.knighthat.kreate3.database.paging.SortOrder
 import me.knighthat.kreate3.database.paging.UserSongSort
 import me.knighthat.kreate3.model.Origin
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
@@ -536,6 +538,84 @@ internal class UserLibraryRepositoryTest : DatabaseTest() {
         assertEquals(0, artists.count(setOf(Origin.OPEN_SUBSONIC)))
         assertEquals(setOf(Origin.LOCAL, Origin.YOUTUBE), albums.origins().first())
         assertEquals(setOf(Origin.LOCAL, Origin.YOUTUBE), artists.origins().first())
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Albums and artists kept for nothing">
+    private val remote = Origin.YOUTUBE
+
+    @Test
+    fun anAlbumOrArtistKeptForNothingLeavesTheLibrary() = runBlocking {
+        addAlbum("a1", origin = remote)
+        addArtist("r1", origin = remote)
+        albums.save(UserAlbum("a1"))
+        artists.save(UserArtist("r1"))
+
+        assertTrue(albums.removeIfEmpty("a1"))
+        assertTrue(artists.removeIfEmpty("r1"))
+        assertNull(database.userAlbumDao().get(USER, "a1"))
+        assertNull(database.userArtistDao().get(USER, "r1"))
+        // Only the library entry goes
+        assertNotNull(database.albumDao().get("a1"))
+        assertNotNull(database.artistDao().get("r1"))
+    }
+
+    @Test
+    fun aReactionKeepsTheEntry() = runBlocking {
+        listOf("a1", "a2").forEach { addAlbum(it, origin = remote) }
+        listOf("r1", "r2").forEach { addArtist(it, origin = remote) }
+        albums.save(UserAlbum("a1", bookmarkedAt = liked))
+        albums.save(UserAlbum("a2", bookmarkedAt = DISLIKED))
+        artists.save(UserArtist("r1", followSince = liked))
+        artists.save(UserArtist("r2", followSince = DISLIKED))
+
+        listOf("a1", "a2").forEach { assertFalse(albums.removeIfEmpty(it)) }
+        listOf("r1", "r2").forEach { assertFalse(artists.removeIfEmpty(it)) }
+        assertEquals(2, albums.count())
+        assertEquals(2, artists.count())
+    }
+
+    @Test
+    fun theUsersOwnValuesKeepTheEntry() = runBlocking {
+        listOf("a1", "a2", "a3").forEach { addAlbum(it, origin = remote) }
+        listOf("r1", "r2").forEach { addArtist(it, origin = remote) }
+        val cover = Uri.parse("https://example.com/cover.jpg")
+        albums.save(UserAlbum("a1", name = "Mine"))
+        albums.save(UserAlbum("a2", thumbnail = cover))
+        albums.save(UserAlbum("a3", artists = listOf("Someone")))
+        artists.save(UserArtist("r1", name = "Mine"))
+        artists.save(UserArtist("r2", thumbnail = cover))
+
+        listOf("a1", "a2", "a3").forEach { assertFalse(albums.removeIfEmpty(it)) }
+        listOf("r1", "r2").forEach { assertFalse(artists.removeIfEmpty(it)) }
+        assertEquals(3, albums.count())
+        assertEquals(2, artists.count())
+    }
+
+    @Test
+    fun theDevicesAlbumsAndArtistsStayInTheLibrary() = runBlocking {
+        addAlbum("a1", origin = Origin.LOCAL)
+        addArtist("r1", origin = Origin.LOCAL)
+        albums.save(UserAlbum("a1"))
+        artists.save(UserArtist("r1"))
+
+        assertFalse(albums.removeIfEmpty("a1"))
+        assertFalse(artists.removeIfEmpty("r1"))
+        assertEquals(1, albums.count())
+        assertEquals(1, artists.count())
+    }
+
+    @Test
+    fun anotherUsersEntryStays() = runBlocking {
+        addUser("other")
+        addAlbum("a1", origin = remote)
+        albums.save(UserAlbum("a1"))
+        activeUser.id.value = "other"
+        albums.save(UserAlbum("a1"))
+        activeUser.id.value = USER
+
+        assertTrue(albums.removeIfEmpty("a1"))
+        assertNotNull(database.userAlbumDao().get("other", "a1"))
     }
     //</editor-fold>
 }

@@ -161,4 +161,7 @@ internal class UserAlbumRepositoryImpl(
 
     override suspend fun remove(albumId: String) =
         userAlbumDao.delete(scope.requireId(), albumId)
+
+    override suspend fun removeIfEmpty(albumId: String): Boolean =
+        userAlbumDao.deleteIfEmpty(scope.requireId(), albumId, Origin.LOCAL) > 0
 }

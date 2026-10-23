@@ -89,4 +89,17 @@ internal interface UserAlbumDao {
 
     @Query("DELETE FROM user_album WHERE user_id = :userId AND album_id = :albumId")
     suspend fun delete(userId: String, albumId: String)
+
+    /**
+     * Deletes the user's row of an album not of [device] when it holds nothing: no bookmark or
+     * dislike and none of the user's own values.
+     *
+     * @return the number of rows deleted
+     */
+    @Query(
+        "DELETE FROM user_album WHERE user_id = :userId AND album_id = :albumId " +
+                "AND bookmarked_at IS NULL AND name IS NULL AND thumbnail IS NULL " +
+                "AND artists IS NULL AND album_id IN (SELECT id FROM album WHERE origin != :device)"
+    )
+    suspend fun deleteIfEmpty(userId: String, albumId: String, device: Origin): Int
 }

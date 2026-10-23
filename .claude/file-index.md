@@ -180,7 +180,8 @@ source/ (app-side glue for sources)
   fetched with `songDetails` and stored with `savePlayedSong` (added to the library).
 - `DeviceReactions.kt` — `DeviceReactions`/`DeviceReactionsImpl` (Koin single): album bookmarks
   and artist follows kept on the device for live items, storing the album/artist first when it
-  isn't; YouTube detail screens use it while signed out.
+  isn't and removing the library entry again when taken back with nothing else kept
+  (`removeIfEmpty`); YouTube detail screens use it while signed out.
 - `DislikedSongs.kt` — `withoutDisliked`/`withoutDislikedSongs` (lists) and `hidingDisliked`
   (paged, after `cachedIn`): leave out songs whose id is in `UserSongRepository.dislikedIds`.
 - local/`MediaStoreScanner.kt` — reads device music from MediaStore → `LocalSong`.

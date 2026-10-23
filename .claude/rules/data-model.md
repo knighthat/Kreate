@@ -66,9 +66,12 @@ Auto use `listDislikedIds`. A new list of songs, local or live, must do the same
     YouTube library save (`like/like` of the album's playlist) and subscription (the page's
     `channelId`, not the artist id). Sent whatever the sync settings. Signed out of YouTube the
     buttons still work, on the device only (`DeviceReactions`: the album or artist is stored
-    then, like `SongStore` does for songs); signed in, YouTube's own state shows and local ones
-    are ignored, by the maintainer's choice (2026-10-22). Server playlists get no like: neither
-    API can keep one (maintainer, 2026-10-22).
+    then, like `SongStore` does for songs; taking the bookmark/follow back deletes the
+    `user_album`/`user_artist` row unless it holds a name, cover or artists of the user's own,
+    the `album`/`artist` row stays, by the maintainer's choice (2026-10-22); device albums
+    and artists keep their rows, the scan put them in the library); signed in, YouTube's own
+    state shows and local ones are ignored, by the maintainer's choice (2026-10-22). Server
+    playlists get no like: neither API can keep one (maintainer, 2026-10-22).
     - Each source has four per-profile settings: liked-songs sync plus show/hide of the live albums,
       artists and playlists. OpenSubsonic albums/artists are `SyncMode` (`OFF`/`LIKED`/`ALL`).
     - Rejected, don't propose again: a sync that never inserts and shows liked songs live (likes

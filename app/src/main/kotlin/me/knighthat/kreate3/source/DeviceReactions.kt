@@ -31,20 +31,22 @@ import kotlin.time.Instant
 /**
  * Bookmarks of albums and follows of artists kept in the active user's library on the device,
  * for items fetched live too, like a YouTube album while nobody is signed in. Such an item is
- * stored with the first one, the library entry needs it in the database.
+ * stored with the first one, the library entry needs it in the database. Taking it back removes
+ * the entry again when the user keeps nothing else about the item (a name or cover of their
+ * own); the stored item stays.
  */
 interface DeviceReactions {
 
     /** Whether the user bookmarked the album, `false` for one that isn't stored. */
     suspend fun isBookmarked(albumId: String): Boolean
 
-    /** Bookmarks [album], or takes the bookmark away, storing it first when it isn't. */
+    /** Bookmarks [album], storing it first when it isn't, or takes the bookmark away. */
     suspend fun setBookmarked(album: Album, on: Boolean)
 
     /** Whether the user follows the artist, `false` for one that isn't stored. */
     suspend fun isFollowed(artistId: String): Boolean
 
-    /** Follows [artist], or unfollows them, storing them first when they aren't. */
+    /** Follows [artist], storing them first when they aren't, or unfollows them. */
     suspend fun setFollowed(artist: Artist, on: Boolean)
 }
 
@@ -60,17 +62,29 @@ class DeviceReactionsImpl(
         userAlbums.find(albumId).first()?.bookmarkedAt.isPositive
 
     override suspend fun setBookmarked(album: Album, on: Boolean) {
-        // A stored album keeps its own values
-        if (albums.find(album.id).first() == null) albums.save(album)
-        userAlbums.update(album.id) { it.copy(bookmarkedAt = if (on) clock.now() else null) }
+        if (on) {
+            // A stored album keeps its own values
+            if (albums.find(album.id).first() == null) albums.save(album)
+            userAlbums.update(album.id) { it.copy(bookmarkedAt = clock.now()) }
+        } else if (userAlbums.find(album.id).first() != null) {
+            userAlbums.update(album.id) { it.copy(bookmarkedAt = null) }
+            // Kept for the bookmark alone, the entry leaves the library with it
+            userAlbums.removeIfEmpty(album.id)
+        }
     }
 
     override suspend fun isFollowed(artistId: String): Boolean =
         userArtists.find(artistId).first()?.followSince.isPositive
 
     override suspend fun setFollowed(artist: Artist, on: Boolean) {
-        if (artists.find(artist.id).first() == null) artists.save(artist)
-        userArtists.update(artist.id) { it.copy(followSince = if (on) clock.now() else null) }
+        if (on) {
+            if (artists.find(artist.id).first() == null) artists.save(artist)
+            userArtists.update(artist.id) { it.copy(followSince = clock.now()) }
+        } else if (userArtists.find(artist.id).first() != null) {
+            userArtists.update(artist.id) { it.copy(followSince = null) }
+            // Kept for the follow alone, the entry leaves the library with it
+            userArtists.removeIfEmpty(artist.id)
+        }
     }
 
     /** Whether a reaction holds a positive one, not a dislike or nothing. */

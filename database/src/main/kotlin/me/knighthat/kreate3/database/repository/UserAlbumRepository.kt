@@ -120,4 +120,13 @@ interface UserAlbumRepository {
      * Removes the album from the library. The shared album stays.
      */
     suspend fun remove(albumId: String)
+
+    /**
+     * Removes the album from the library when the user keeps nothing about it: no bookmark or
+     * dislike and none of their own values. An album of the device stays, it is in the library
+     * for its songs. The shared album stays.
+     *
+     * @return whether it was removed
+     */
+    suspend fun removeIfEmpty(albumId: String): Boolean
 }

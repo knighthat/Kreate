@@ -158,4 +158,7 @@ internal class UserArtistRepositoryImpl(
 
     override suspend fun remove(artistId: String) =
         userArtistDao.delete(scope.requireId(), artistId)
+
+    override suspend fun removeIfEmpty(artistId: String): Boolean =
+        userArtistDao.deleteIfEmpty(scope.requireId(), artistId, Origin.LOCAL) > 0
 }

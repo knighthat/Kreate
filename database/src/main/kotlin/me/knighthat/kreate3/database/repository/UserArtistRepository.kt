@@ -114,4 +114,13 @@ interface UserArtistRepository {
      * Removes the artist from the library. The shared artist stays.
      */
     suspend fun remove(artistId: String)
+
+    /**
+     * Removes the artist from the library when the user keeps nothing about them: no follow or
+     * dislike and none of their own values. An artist of the device stays, they are in the
+     * library for their songs. The shared artist stays.
+     *
+     * @return whether they were removed
+     */
+    suspend fun removeIfEmpty(artistId: String): Boolean
 }
