@@ -83,6 +83,13 @@ object Preferences : KoinComponent {
     val ICON_ONLY by lazy { boolean("icon_only", false) }
 
     /**
+     * A playlist with no picture and no song covers to show shows the first letter of its name,
+     * on a color picked from the name, instead of a playlist icon. Read by `PlaylistItem` through
+     * `LocalPlaylistInitial`.
+     */
+    val PLAYLIST_INITIAL by lazy { boolean("playlist_initial", false) }
+
+    /**
      * Going back from the first screen asks to go back again before the app closes, see
      * [EXIT_CONFIRMATION_TIMEOUT]. [BACK_EXIT_DISABLED] wins over it.
      */

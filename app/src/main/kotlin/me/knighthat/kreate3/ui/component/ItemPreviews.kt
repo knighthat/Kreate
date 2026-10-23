@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,6 +54,9 @@ private fun Items() {
         ) {
             SongItem(song, onClick = {})
             PlaylistItem(playlist, onClick = {})
+            CompositionLocalProvider(LocalPlaylistInitial provides true) {
+                PlaylistItem(playlist, onClick = {})
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 AlbumItem(album, onClick = {}, modifier = Modifier.weight(1f))
                 ArtistItem(artist, onClick = {}, modifier = Modifier.weight(1f))

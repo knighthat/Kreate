@@ -213,7 +213,11 @@ ui/component/ (shared composables)
   settings) (`.claude/rules/ui.md`).
 - `SongItem.kt`, `AlbumItem.kt`, `ArtistItem.kt`, `PlaylistItem.kt` — list/grid items. `SongItem`
   long-press opens the song menu (`hasMenu = false` in QueuePage, `menuActions` for list-specific
-  rows); `SongRow` draws both the row and its lifted copy.
+  rows); `SongRow` draws both the row and its lifted copy. `PlaylistItem` without a picture of its
+  own shows its covers (`EXTRA_COVERS`): 4 → 2 × 2 grid, 1–3 → the most played alone, none →
+  `queue_music` icon, or the name's first letter on a hue from the name (HCT) while
+  `LocalPlaylistInitial` (`Preferences.PLAYLIST_INITIAL`, provided in `KreateApp`) is on; drawn
+  through `Thumbnail`'s `placeholder` slot.
 - `SongMenu.kt` (2026-10-20) — `SongMenuHost`/`LocalSongMenuHost`/`SongMenuOverlay` (one menu for
   the app, placed last in KreateApp's root Box), the lifted row (`LiftedRow`, `SheetPlacement`
   progress from `sheetState.requireOffset()`), the ModalBottomSheet (Dislike/Like/Share header, play
@@ -393,10 +397,13 @@ Pure Kotlin/JVM (`kotlin("jvm")`), package `me.knighthat.kreate3.model`, rules i
   `PlaybackHistory`, `SearchHistory`, `PersistentQueue`.
 - view/ — `UserSongViewEntity`, `UserAlbumViewEntity`, `UserArtistViewEntity` (user override ?:
   shared value; songs with `unavailable_since` hidden).
-- dao/ — one DAO per table (internal).
+- dao/ — one DAO per table (internal). `UserPlaylistDao.kt` also has `UserPlaylistRow` (a
+  playlist + its `covers` JSON, for `PlaylistRepository.all`).
 - model/ — public models mirroring entities/views (`Origin`/`LyricsSync` now come from `:model`);
   `LocalSong.kt` (+`LocalAlbum`/`LocalArtist` scan results), `QueuedSong.kt` (a saved-queue row; not
-  the playback `QueuedSong` in `DataSourceResolver.kt`).
+  the playback `QueuedSong` in `DataSourceResolver.kt`), `PlaylistCover.kt` (cover of one of a
+  playlist's songs; `UserPlaylist.covers` = up to 4 different covers of its most played songs,
+  filled by `PlaylistRepository.all` only).
 - paging/ — `Paging.kt` (`RoomDatabase.pagedFlow(transform, tables…)`: also invalidates its sources
   on every change of the tables, because Room's paging source ignores changes made while its first
   page loads — the Songs tab missed the startup scan; PagingConfig), `Sorting.kt` (`SortOrder`,

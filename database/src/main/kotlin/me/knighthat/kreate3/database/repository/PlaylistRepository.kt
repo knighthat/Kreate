@@ -33,7 +33,8 @@ import me.knighthat.kreate3.model.Origin
 interface PlaylistRepository {
 
     /**
-     * The playlists of the active user, a page at a time.
+     * The playlists of the active user, a page at a time, with their [UserPlaylist.covers]. The
+     * list follows plays and changes to the playlists' songs too.
      *
      * @param origins only the playlists from these, every playlist when empty
      */

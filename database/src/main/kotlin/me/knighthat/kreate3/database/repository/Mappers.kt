@@ -18,6 +18,11 @@
 
 package me.knighthat.kreate3.database.repository
 
+import android.net.Uri
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonPrimitive
+import me.knighthat.kreate3.database.dao.UserPlaylistRow
 import me.knighthat.kreate3.database.entity.AlbumEntity
 import me.knighthat.kreate3.database.entity.ArtistEntity
 import me.knighthat.kreate3.database.entity.LyricsEntity
@@ -35,6 +40,7 @@ import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.Lyrics
 import me.knighthat.kreate3.database.model.PlaybackHistory
+import me.knighthat.kreate3.database.model.PlaylistCover
 import me.knighthat.kreate3.database.model.QueuedSong
 import me.knighthat.kreate3.database.model.SearchHistory
 import me.knighthat.kreate3.database.model.Song
@@ -50,6 +56,7 @@ import me.knighthat.kreate3.database.model.UserSongView
 import me.knighthat.kreate3.database.view.UserAlbumViewEntity
 import me.knighthat.kreate3.database.view.UserArtistViewEntity
 import me.knighthat.kreate3.database.view.UserSongViewEntity
+import me.knighthat.kreate3.model.Origin
 import kotlin.time.Instant
 
 // Models carry no timestamps and no user id. Repositories add them when writing,
@@ -127,6 +134,21 @@ internal fun UserSong.toEntity(userId: String, createdAt: Instant, updatedAt: In
 
 internal fun UserPlaylistEntity.toModel() =
     UserPlaylist(playlistId, origin, name, thumbnail, isMonthly, remoteId)
+
+internal fun UserPlaylistRow.toModel() = playlist.toModel().copy(covers = parseCovers(covers))
+
+/** The covers of [UserPlaylistRow.covers], none when the JSON can't be read. */
+private fun parseCovers(json: String?): List<PlaylistCover> =
+    json?.let {
+        runCatching {
+            Json.parseToJsonElement(it).jsonArray.map { cover ->
+                val (songId, origin, thumbnail) = cover.jsonArray.map { value ->
+                    value.jsonPrimitive.content
+                }
+                PlaylistCover(songId, Origin.valueOf(origin), Uri.parse(thumbnail))
+            }
+        }.getOrNull()
+    }.orEmpty()
 
 internal fun UserPlaylist.toEntity(userId: String, createdAt: Instant, updatedAt: Instant) =
     UserPlaylistEntity(

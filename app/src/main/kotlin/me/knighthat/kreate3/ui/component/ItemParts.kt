@@ -177,9 +177,17 @@ fun Thumbnail(
  * Like the other [Thumbnail], with several pictures to try. One that Coil has in memory shows
  * first, wherever it is in [models], so nothing is loaded for it. The others are loaded in the
  * order of [models], the next one when one fails.
+ *
+ * @param placeholder drawn instead of the broken frame when [models] is empty; a picture that
+ * can't be loaded still shows the broken frame
  */
 @Composable
-fun Thumbnail(models: List<Any>, shape: Shape, modifier: Modifier = Modifier) {
+fun Thumbnail(
+    models: List<Any>,
+    shape: Shape,
+    modifier: Modifier = Modifier,
+    placeholder: (@Composable BoxScope.() -> Unit)? = null,
+) {
     val context = LocalContext.current
     val order = remember(models) {
         val memory = SingletonImageLoader.get(context).memoryCache
@@ -198,7 +206,9 @@ fun Thumbnail(models: List<Any>, shape: Shape, modifier: Modifier = Modifier) {
             .background(MaterialTheme.colorScheme.surfaceContainerHighest),
         contentAlignment = Alignment.Center,
     ) {
-        if (model == null)
+        if (model == null && placeholder != null && order.isEmpty())
+            placeholder()
+        else if (model == null)
             Image(
                 painter = painterResource(R.drawable.image_not_available),
                 contentDescription = null,

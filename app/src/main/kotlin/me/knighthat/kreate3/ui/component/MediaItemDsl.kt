@@ -63,6 +63,15 @@ const val EXTRA_IS_MONTHLY = "is_monthly"
 /** Id of a playlist at its origin, see [UserPlaylist.remoteId]. */
 const val EXTRA_REMOTE_ID = "remote_id"
 
+/** The [UserPlaylist.covers] of a playlist as a `StringArray` of their pictures. */
+const val EXTRA_COVERS = "covers"
+
+/**
+ * For each of [EXTRA_COVERS], as a `StringArray` in the same order, the id of its song when the
+ * song is on this device, empty otherwise.
+ */
+const val EXTRA_COVER_LOCAL_IDS = "cover_local_ids"
+
 /**
  * Builds a [MediaItem] whose metadata is described by [block].
  */
@@ -248,6 +257,11 @@ fun UserPlaylist.toMediaItem(): MediaItem =
             putString(EXTRA_ORIGIN, origin.name)
             putBoolean(EXTRA_IS_MONTHLY, isMonthly)
             putString(EXTRA_REMOTE_ID, remoteId)
+            putStringArray(EXTRA_COVERS, covers.map { it.thumbnail.toString() }.toTypedArray())
+            putStringArray(
+                EXTRA_COVER_LOCAL_IDS,
+                covers.map { if (it.origin == Origin.LOCAL) it.songId else "" }.toTypedArray(),
+            )
         })
         setIsBrowsable(true)
         setIsPlayable(false)

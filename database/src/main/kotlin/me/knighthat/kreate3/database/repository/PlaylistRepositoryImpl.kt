@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.map
 import me.knighthat.kreate3.database.ActiveUser
 import me.knighthat.kreate3.database.AppDatabase
 import me.knighthat.kreate3.database.dao.UserPlaylistDao
+import me.knighthat.kreate3.database.dao.UserPlaylistRow
 import me.knighthat.kreate3.database.entity.SongEntity
 import me.knighthat.kreate3.database.entity.SongPlaylistMapEntity
 import me.knighthat.kreate3.database.entity.UserPlaylistEntity
@@ -56,10 +57,17 @@ internal class PlaylistRepositoryImpl(
         origins: Set<Origin>,
     ): Flow<PagingData<UserPlaylist>> =
         scope.observe(PagingData.empty()) { userId ->
-            database.pagedFlow(UserPlaylistEntity::toModel, "user_playlist") {
-                playlistDao.paged(
+            database.pagedFlow(
+                UserPlaylistRow::toModel,
+                "user_playlist",
+                "song_playlist_map",
+                "playback_history",
+                "user_song_view",
+            ) {
+                playlistDao.pagedWithCovers(
                     RoomRawQuery(
-                        sql = "SELECT * FROM user_playlist WHERE user_id = ? ${originFilter(origins)} " +
+                        sql = "SELECT *, $COVERS FROM user_playlist " +
+                                "WHERE user_id = ? ${originFilter(origins)} " +
                                 order.toOrderBy("playlist_id"),
                         onBindStatement = { it.bindText(1, userId) },
                     )
@@ -192,5 +200,37 @@ internal class PlaylistRepositoryImpl(
             "Playlist $playlistId doesn't exist or belongs to another user"
         }
         return playlist
+    }
+
+    private companion object {
+
+        /**
+         * The `covers` column of [UserPlaylistRow] for each row of `user_playlist`: the songs the
+         * playlist shows (in the library, not disliked) that have a cover, the most played first
+         * (then in the playlist's order), the first song of each cover only, at most four.
+         * Plays are the user's entries in `playback_history`.
+         */
+        const val COVERS = """
+            (SELECT json_group_array(json_array(song_id, origin, thumbnail)) FROM (
+                SELECT song_id, origin, thumbnail FROM (
+                    SELECT *, ROW_NUMBER() OVER (
+                        PARTITION BY thumbnail ORDER BY plays DESC, position, song_id
+                    ) AS nth FROM (
+                        SELECT v.song_id, v.origin, v.thumbnail, m.position,
+                            (SELECT COUNT(*) FROM playback_history h
+                             WHERE h.user_id = v.user_id AND h.song_id = v.song_id) AS plays
+                        FROM song_playlist_map m
+                        JOIN user_song_view v ON v.song_id = m.song_id
+                            AND v.user_id = user_playlist.user_id
+                        WHERE m.playlist_id = user_playlist.playlist_id
+                          AND v.thumbnail IS NOT NULL
+                          AND (v.liked_at IS NULL OR v.liked_at >= 0)
+                    )
+                )
+                WHERE nth = 1
+                ORDER BY plays DESC, position, song_id
+                LIMIT 4
+            )) AS covers
+        """
     }
 }

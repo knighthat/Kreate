@@ -20,6 +20,7 @@ package me.knighthat.kreate3.database.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
+import androidx.room.Embedded
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -28,10 +29,22 @@ import androidx.room.RoomRawQuery
 import androidx.room.Update
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
+import me.knighthat.kreate3.database.entity.PlaybackHistoryEntity
 import me.knighthat.kreate3.database.entity.SongEntity
 import me.knighthat.kreate3.database.entity.SongPlaylistMapEntity
 import me.knighthat.kreate3.database.entity.UserPlaylistEntity
+import me.knighthat.kreate3.database.view.UserSongViewEntity
 import me.knighthat.kreate3.model.Origin
+
+/**
+ * A playlist with the covers of its songs, see [UserPlaylistDao.pagedWithCovers].
+ *
+ * @property covers `[[song_id, origin, thumbnail], …]` as JSON, `null` when it has none
+ */
+internal data class UserPlaylistRow(
+    @Embedded val playlist: UserPlaylistEntity,
+    val covers: String?,
+)
 
 @Dao
 internal interface UserPlaylistDao {
@@ -41,6 +54,20 @@ internal interface UserPlaylistDao {
      */
     @RawQuery(observedEntities = [UserPlaylistEntity::class])
     fun paged(query: RoomRawQuery): PagingSource<Int, UserPlaylistEntity>
+
+    /**
+     * Like [paged], each playlist with the covers of its songs. [query] must select from
+     * `user_playlist` and add a `covers` column.
+     */
+    @RawQuery(
+        observedEntities = [
+            UserPlaylistEntity::class,
+            SongPlaylistMapEntity::class,
+            PlaybackHistoryEntity::class,
+            UserSongViewEntity::class,
+        ]
+    )
+    fun pagedWithCovers(query: RoomRawQuery): PagingSource<Int, UserPlaylistRow>
 
     @Query("SELECT DISTINCT origin FROM user_playlist WHERE user_id = :userId")
     fun origins(userId: String): Flow<List<Origin>>

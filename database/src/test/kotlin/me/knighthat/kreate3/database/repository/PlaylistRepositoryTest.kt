@@ -18,11 +18,14 @@
 
 package me.knighthat.kreate3.database.repository
 
+import android.net.Uri
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.database.DatabaseTest
 import me.knighthat.kreate3.database.asList
+import me.knighthat.kreate3.database.entity.PlaybackHistoryEntity
 import me.knighthat.kreate3.database.entity.UserPlaylistEntity
+import me.knighthat.kreate3.database.entity.UserSongEntity
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.paging.SongSort
 import me.knighthat.kreate3.database.paging.SortOrder
@@ -35,6 +38,8 @@ import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 internal class PlaylistRepositoryTest : DatabaseTest() {
 
@@ -234,5 +239,94 @@ internal class PlaylistRepositoryTest : DatabaseTest() {
             listOf("first", "third", "unknown"),
             repository.songsOf(id, SortOrder(SongSort.ALBUM_POSITION)).asList().map { it.id }
         )
+    }
+
+    /** A song in the user's library whose cover is [cover]. */
+    private suspend fun librarySong(id: String, cover: String?, likedAt: Instant? = null) {
+        addSong(id)
+        database.userSongDao().upsert(
+            UserSongEntity(
+                userId = USER,
+                songId = id,
+                thumbnail = cover?.let(Uri::parse),
+                likedAt = likedAt,
+                createdAt = EPOCH,
+                updatedAt = EPOCH,
+            )
+        )
+    }
+
+    private suspend fun play(songId: String, times: Int, userId: String = USER) = repeat(times) {
+        database.playbackHistoryDao().insert(
+            PlaybackHistoryEntity(
+                songId = songId,
+                userId = userId,
+                timeSpent = 10.seconds,
+                createdAt = EPOCH,
+            )
+        )
+    }
+
+    private suspend fun coversOf(name: String): List<Pair<String, String>> =
+        repository.all().asList().single { it.name == name }.covers
+            .map { it.songId to it.thumbnail.toString() }
+
+    @Test
+    fun coversAreOfTheMostPlayedSongsOneSongPerCover() = runBlocking {
+        librarySong("a", "x")
+        librarySong("b", "y")
+        librarySong("c", "x")
+        librarySong("d", "z")
+        librarySong("e", "w")
+        librarySong("f", null)
+        librarySong("g", "v")
+        val id = repository.save(playlist("Mix"))
+        listOf("a", "b", "c", "d", "e", "f", "g").forEach { repository.addSong(id, it) }
+        play("a", 1)
+        play("b", 3)
+        play("c", 5)
+        play("e", 2)
+        play("f", 9)
+
+        // c wins x over a, f has no cover, d comes before g in the playlist
+        assertEquals(
+            listOf("c" to "x", "b" to "y", "e" to "w", "d" to "z"),
+            coversOf("Mix"),
+        )
+    }
+
+    @Test
+    fun coversLeaveOutHiddenSongsAndThePlaysOfOthers() = runBlocking {
+        librarySong("kept", "x")
+        librarySong("disliked", "y", likedAt = DISLIKED)
+        librarySong("liked", "z", likedAt = EPOCH)
+        addSong("notInLibrary")
+        val id = repository.save(playlist("Mix"))
+        listOf("kept", "disliked", "liked", "notInLibrary").forEach { repository.addSong(id, it) }
+        play("disliked", 9)
+        play("liked", 5, userId = "other")
+        play("kept", 1)
+
+        assertEquals(listOf("kept" to "x", "liked" to "z"), coversOf("Mix"))
+    }
+
+    @Test
+    fun anEmptyPlaylistHasNoCovers() = runBlocking {
+        repository.save(playlist("Empty"))
+
+        assertEquals(emptyList<Pair<String, String>>(), coversOf("Empty"))
+    }
+
+    @Test
+    fun songsPlayedAsOftenKeepThePlaylistOrder() = runBlocking {
+        librarySong("a", "x")
+        librarySong("b", "y")
+        val id = repository.save(playlist("Mix"))
+        listOf("b", "a").forEach { repository.addSong(id, it) }
+        assertEquals(listOf("b" to "y", "a" to "x"), coversOf("Mix"))
+
+        play("a", 1)
+
+        assertEquals(listOf("a" to "x", "b" to "y"), coversOf("Mix"))
     }
 }

@@ -44,6 +44,7 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
     val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
     val iconOnly by Preferences.ICON_ONLY.collectAsStateWithLifecycle()
+    val playlistInitial by Preferences.PLAYLIST_INITIAL.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var appIcon by remember { mutableStateOf(AppIcon.current(context)) }
 
@@ -70,6 +71,12 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             checked = iconOnly,
             onCheckedChange = Preferences.ICON_ONLY::update,
             summary = "Hide the text of the bottom bar, origin chips and quick actions",
+        )
+        SwitchSetting(
+            title = "Playlist initial",
+            checked = playlistInitial,
+            onCheckedChange = Preferences.PLAYLIST_INITIAL::update,
+            summary = "Playlists without covers show the first letter of their name instead of an icon",
         )
 
         SettingsSection("Launcher")

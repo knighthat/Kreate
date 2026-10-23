@@ -48,6 +48,7 @@ import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.LocalIconOnly
 import me.knighthat.kreate3.ui.component.LocalMessageHost
 import me.knighthat.kreate3.ui.component.LocalNotifier
+import me.knighthat.kreate3.ui.component.LocalPlaylistInitial
 import me.knighthat.kreate3.ui.component.LocalSongMenuHost
 import me.knighthat.kreate3.ui.component.MessageHost
 import me.knighthat.kreate3.ui.component.MiniPlayer
@@ -156,6 +157,7 @@ fun KreateApp() {
     val themeMode by Preferences.THEME_MODE.collectAsStateWithLifecycle()
     val contrastLevel by Preferences.CONTRAST_LEVEL.collectAsStateWithLifecycle()
     val iconOnly by Preferences.ICON_ONLY.collectAsStateWithLifecycle()
+    val playlistInitial by Preferences.PLAYLIST_INITIAL.collectAsStateWithLifecycle()
 
     val topLevel = rememberTopLevelBackStack()
     val playback = koinInject<PlaybackController>()
@@ -180,6 +182,7 @@ fun KreateApp() {
         CompositionLocalProvider(
             LocalPlayerSheet provides playerSheet,
             LocalIconOnly provides iconOnly,
+            LocalPlaylistInitial provides playlistInitial,
             LocalNotifier provides notifier,
             LocalMessageHost provides messages,
             LocalNavigator provides navigator,

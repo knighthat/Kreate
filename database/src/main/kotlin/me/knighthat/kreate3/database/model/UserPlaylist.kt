@@ -30,6 +30,8 @@ import me.knighthat.kreate3.model.Origin
  * @property thumbnail image of the playlist, `null` for none
  * @property isMonthly whether this is a monthly playlist
  * @property remoteId id of the playlist at its [origin], `null` for one made in the app
+ * @property covers the different covers of its most played songs, most played first, at most
+ * four; read only, saving ignores it, and only the lists that say so fill it
  */
 data class UserPlaylist(
     val id: Long = 0,
@@ -38,4 +40,5 @@ data class UserPlaylist(
     val thumbnail: Uri? = null,
     val isMonthly: Boolean = false,
     val remoteId: String? = null,
+    val covers: List<PlaylistCover> = emptyList(),
 )
