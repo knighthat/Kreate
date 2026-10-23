@@ -28,12 +28,14 @@ import me.knighthat.kreate3.database.dao.PlaybackHistoryDao
 import me.knighthat.kreate3.database.dao.SearchHistoryDao
 import me.knighthat.kreate3.database.entity.PlaybackHistoryEntity
 import me.knighthat.kreate3.database.entity.SearchHistoryEntity
+import me.knighthat.kreate3.database.inTransaction
 import me.knighthat.kreate3.database.model.PlaybackHistory
 import me.knighthat.kreate3.database.model.SearchHistory
 import me.knighthat.kreate3.database.paging.SearchSort
 import me.knighthat.kreate3.database.paging.SortOrder
 import me.knighthat.kreate3.database.paging.pagedFlow
 import me.knighthat.kreate3.database.paging.toOrderBy
+import java.text.Normalizer
 import kotlin.time.Clock
 import kotlin.time.Duration
 
@@ -68,8 +70,17 @@ internal class HistoryRepositoryImpl(
                 .map { it.map(SearchHistoryEntity::toModel) }
         }
 
-    override suspend fun recordSearch(query: String) =
-        searchHistoryDao.upsert(SearchHistoryEntity(query, scope.requireId(), clock.now()))
+    override suspend fun recordSearch(query: String) {
+        val search = query.normalized()
+        val userId = scope.requireId()
+        database.inTransaction {
+            // The same search saved before searches were normalized
+            searchHistoryDao.queries(userId)
+                .filter { it != search && it.normalized() == search }
+                .forEach { searchHistoryDao.delete(userId, it) }
+            searchHistoryDao.upsert(SearchHistoryEntity(search, userId, clock.now()))
+        }
+    }
 
     override suspend fun deleteSearch(query: String) =
         searchHistoryDao.delete(scope.requireId(), query)
@@ -96,4 +107,7 @@ internal class HistoryRepositoryImpl(
         playbackHistoryDao.updateTimeSpent(id, timeSpent)
 
     override suspend fun clearPlays() = playbackHistoryDao.clear(scope.requireId())
+
+    /** Trimmed, with accents composed the same whatever the keyboard. */
+    private fun String.normalized(): String = Normalizer.normalize(trim(), Normalizer.Form.NFC)
 }

@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import me.knighthat.kreate3.database.DatabaseTest
 import me.knighthat.kreate3.database.asList
+import me.knighthat.kreate3.database.entity.SearchHistoryEntity
 import me.knighthat.kreate3.database.paging.SearchSort
 import me.knighthat.kreate3.database.paging.SortOrder
 import org.junit.Assert.assertEquals
@@ -65,6 +66,44 @@ internal class HistoryRepositoryTest : DatabaseTest() {
         assertEquals(listOf("abba", "queen"), searches.map { it.query })
         assertEquals(again, searches.last().lastUsed)
         assertEquals(listOf("queen", "abba"), suggestions(""))
+    }
+
+    @Test
+    fun searchingWithSpacesAroundKeepsOneSearch() = runBlocking {
+        search("queen")
+        search("abba")
+        search("  queen ")
+        search("\tqueen\n")
+        // "Sơn" with a combining horn, then precomposed
+        search("Sơn Tùng")
+        search("Sơn Tùng")
+
+        assertEquals(listOf("Sơn Tùng", "queen", "abba"), suggestions(""))
+    }
+
+    @Test
+    fun searchesInAnotherCaseOrInnerSpacingAreKeptApart() = runBlocking {
+        search("queen")
+        search("Queen")
+        search("QUEEN ")
+        search("the queen")
+        search("the  queen")
+
+        assertEquals(
+            listOf("the  queen", "the queen", "QUEEN", "Queen", "queen"),
+            suggestions(""),
+        )
+    }
+
+    @Test
+    fun searchingReplacesASearchSavedUntrimmed() = runBlocking {
+        database.searchHistoryDao().upsert(SearchHistoryEntity(" the queen ", USER, clock.now()))
+        database.searchHistoryDao().upsert(SearchHistoryEntity(" The Queen", USER, clock.now()))
+        database.searchHistoryDao().upsert(SearchHistoryEntity("the  queen ", USER, clock.now()))
+        clock.advance()
+        search("the queen")
+
+        assertEquals(listOf("the queen", " The Queen", "the  queen "), suggestions(""))
     }
 
     @Test

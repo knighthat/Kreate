@@ -46,7 +46,8 @@ interface HistoryRepository {
     fun searchesStartingWith(prefix: String, limit: Int): Flow<List<SearchHistory>>
 
     /**
-     * Remembers [query], searching for it again only refreshes the time.
+     * Remembers [query] trimmed, as typed otherwise: `Queen` and `queen` are two searches, so are
+     * `the  queen` and `the queen`. Searching for it again only refreshes the time.
      */
     suspend fun recordSearch(query: String)
 

@@ -42,6 +42,9 @@ internal interface SearchHistoryDao {
     )
     fun startingWith(userId: String, pattern: String, limit: Int): Flow<List<SearchHistoryEntity>>
 
+    @Query("SELECT query FROM search_history WHERE user_id = :userId")
+    suspend fun queries(userId: String): List<String>
+
     @Upsert
     suspend fun upsert(history: SearchHistoryEntity)
 
