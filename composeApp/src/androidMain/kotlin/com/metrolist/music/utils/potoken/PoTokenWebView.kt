@@ -9,7 +9,6 @@ import androidx.annotation.MainThread
 import androidx.collection.ArrayMap
 import app.kreate.android.BuildConfig
 import co.touchlab.kermit.Logger
-import com.metrolist.innertube.YouTube
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -20,6 +19,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.Headers.Companion.toHeaders
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.koin.java.KoinJavaComponent
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.Collections
@@ -329,9 +329,9 @@ class PoTokenWebView private constructor(
                 "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.3"
         private const val JS_INTERFACE = "PoTokenWebView"
 
-        private val httpClient = OkHttpClient.Builder()
-            .proxy(YouTube.proxy)
-            .build()
+        private val httpClient: OkHttpClient by lazy {
+            KoinJavaComponent.get( OkHttpClient::class.java )
+        }
 
         suspend fun getNewPoTokenGenerator(context: Context): PoTokenWebView {
             return withContext(Dispatchers.Main) {

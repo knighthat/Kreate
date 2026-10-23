@@ -6,13 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.innertube.InnerTubeX
 import app.kreate.android.utils.innertube.InnertubeUtils
 import app.kreate.database.models.Playlist
 import app.kreate.database.models.PlaylistPreview
 import co.touchlab.kermit.Logger
-import com.metrolist.innertube.YouTube
-import com.metrolist.innertube.models.PlaylistItem
-import com.metrolist.innertube.pages.BrowseResult
 import it.fast4x.rimusic.Database
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -71,7 +69,7 @@ class HomeLibraryViewModel : ViewModel(), KoinComponent {
         }
         if( !isEnabled ) return
 
-        YouTube.browse( "FEmusic_library_landing", null )
+        InnerTubeX.libraryItems()
                .onFailure { err ->
                    Logger.e( "", err, "HomePlaylist" )
                    Toaster.e(
@@ -80,9 +78,7 @@ class HomeLibraryViewModel : ViewModel(), KoinComponent {
                    )
                }
                .onSuccess { result ->
-                   result.items
-                         .flatMap( BrowseResult.Item::items )
-                         .mapNotNull { it as? PlaylistItem }
+                   result.filterIsInstance<InnerTubeX.LibraryItem.Playlist>()
                          .map { item ->
                              PlaylistPreview(
                                  playlist = Playlist(

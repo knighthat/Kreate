@@ -4,23 +4,20 @@
 package app.kreate.di
 
 import android.content.Context
-import android.net.ConnectivityManager
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.util.fastFilter
-import androidx.core.content.getSystemService
 import androidx.media3.common.C
 import androidx.media3.datasource.DataSpec
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.innertube.InnerTubeX
 import app.kreate.android.utils.CharUtils
 import app.kreate.android.utils.ConnectivityUtils
 import app.kreate.android.utils.innertube.CURRENT_LOCALE
 import app.kreate.database.models.Format
 import co.touchlab.kermit.Logger
 import com.grack.nanojson.JsonWriter
-import com.metrolist.innertube.YouTube
-import com.metrolist.music.utils.YTPlayerUtils
-import com.metrolist.music.utils.cipher.CipherDeobfuscator
+import com.metrolist.innertubex.extraction.ExtractedStream
 import io.ktor.client.HttpClient
 import io.ktor.client.request.head
 import io.ktor.http.URLBuilder
@@ -53,6 +50,7 @@ import org.koin.java.KoinJavaComponent.get
 import java.net.UnknownHostException
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.atomics.AtomicReference
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 
@@ -65,7 +63,7 @@ private const val METHOD_IOS = 2
  * This is created to reduce load to Room
  */
 private val justInserted = AtomicReference("")
-private val cachedStreamUrl = ConcurrentHashMap<String, YTPlayerUtils.PlaybackData>()
+private val cachedStreamUrl = ConcurrentHashMap<String, ExtractedStream>()
 private val logger = Logger.withTag("dataspec")
 private val jsonParser =
     Json {
@@ -295,48 +293,24 @@ private suspend fun makeStreamCache(
     }
 }
 
-private fun getPlayableUrl( songId: String ): YTPlayerUtils.PlaybackData = runBlocking( Dispatchers.IO ) {
+private fun getPlayableUrl( songId: String ): ExtractedStream = runBlocking( Dispatchers.IO ) {
     logger.v { "Processing $songId" }
 
-    if( !CipherDeobfuscator.isInitialized() )
-        CipherDeobfuscator.initialize( get(Context::class.java) )
-
-    val cache: YTPlayerUtils.PlaybackData
-    if( cachedStreamUrl.contains(songId) ) {
-        cache = cachedStreamUrl[songId]!!
+    cachedStreamUrl[songId]?.let { cache ->
         // Handle expired url with 30secs offset
-        val remainingSeconds = cache.streamExpiresInSeconds.seconds - 30.seconds
-        if( remainingSeconds.inWholeMilliseconds <= System.currentTimeMillis() ) {
-            logger.d { "Cached stream url of $songId expired" }
-
-            cachedStreamUrl.remove( songId )
-            return@runBlocking getPlayableUrl( songId )
-        } else
+        val expiresAt = cache.expiresAt
+        if( expiresAt == null || expiresAt - 30.seconds > Clock.System.now() ) {
             logger.d { "Stream url of $songId is cached" }
-    } else {
-        if( YouTube.visitorData == null )
-            YouTube.visitorData()
-                   .onFailure { err ->
-                       logger.e( "", err )
-                   }
-                   .onSuccess {
-                       YouTube.visitorData = it
-                       logger.d { "Fetched visitorData: $it" }
-                   }
+            return@runBlocking cache
+        }
 
-        val connManager = get<Context>(Context::class.java).getSystemService<ConnectivityManager>()!!
-        val audioQuality by Preferences.AUDIO_QUALITY
-
-        cache = YTPlayerUtils.playerResponseForPlayback(
-            videoId = songId,
-            playlistId = null,
-            audioQuality = audioQuality,
-            connectivityManager = connManager
-        ).getOrThrow()
-        cachedStreamUrl[songId] = cache
+        logger.d { "Cached stream url of $songId expired" }
+        cachedStreamUrl.remove( songId )
     }
 
-    cache
+    val audioQuality by Preferences.AUDIO_QUALITY
+    InnerTubeX.extractStream( songId, audioQuality )
+              .also { cachedStreamUrl[songId] = it }
 }
 //</editor-fold>
 
@@ -348,10 +322,11 @@ fun Scope.resolveInnertubeMedia( dataSpec: DataSpec ): DataSpec {
     }
     upsertSongInfo( get(), songId )
 
-    val cache = getPlayableUrl( songId )
-    val length = cache.format.contentLength ?: C.LENGTH_UNSET.toLong()
+    val stream = getPlayableUrl( songId )
+    val length = stream.contentLengthBytes ?: C.LENGTH_UNSET.toLong()
     return dataSpec.buildUpon()
-                   .setUri(cache.streamUrl)
+                   .setUri( stream.audioUrl )
+                   .setHttpRequestHeaders( stream.headers )
                    .setLength( length )
                    .build()
 }

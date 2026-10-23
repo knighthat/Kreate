@@ -6,12 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.innertube.InnerTubeX
 import app.kreate.android.utils.innertube.InnertubeUtils
 import app.kreate.database.models.Album
 import co.touchlab.kermit.Logger
-import com.metrolist.innertube.YouTube
-import com.metrolist.innertube.models.AlbumItem
-import com.metrolist.innertube.pages.BrowseResult
 import it.fast4x.rimusic.Database
 import it.fast4x.rimusic.enums.AlbumsType
 import it.fast4x.rimusic.enums.FilterBy
@@ -84,7 +82,7 @@ class HomeAlbumsViewModel : ViewModel(), KoinComponent {
         }
         if( !isEnabled ) return
 
-        YouTube.browse( "FEmusic_library_landing", null )
+        InnerTubeX.libraryItems()
                .onFailure { err ->
                    Logger.e( "", err, "HomeAlbum" )
                    Toaster.e(
@@ -93,16 +91,14 @@ class HomeAlbumsViewModel : ViewModel(), KoinComponent {
                    )
                }
                .onSuccess { result ->
-                   result.items
-                         .flatMap( BrowseResult.Item::items )
-                         .mapNotNull { it as? AlbumItem }
+                   result.filterIsInstance<InnerTubeX.LibraryItem.Album>()
                          .map { item ->
                              Album(
                                  id = item.id,
                                  title = item.title,
                                  thumbnailUrl = item.thumbnail,
-                                 year = item.year?.toString(),
-                                 authorsText = item.artists?.joinToString { it.name },
+                                 year = item.year,
+                                 authorsText = item.artists.joinToString().takeIf( String::isNotBlank ),
                                  shareUrl = item.shareLink,
                                  isYoutubeAlbum = true
                              )

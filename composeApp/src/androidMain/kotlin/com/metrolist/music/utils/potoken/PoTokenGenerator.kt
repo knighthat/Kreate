@@ -1,8 +1,8 @@
 package com.metrolist.music.utils.potoken
 
+import android.content.Context
 import android.webkit.CookieManager
 import co.touchlab.kermit.Logger
-import com.metrolist.music.utils.cipher.CipherDeobfuscator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.runBlocking
@@ -11,7 +11,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 
-class PoTokenGenerator {
+class PoTokenGenerator( private val context: Context ) {
     private val TAG = "PoTokenGenerator"
 
     private val logger = Logger.withTag(TAG)
@@ -41,7 +41,7 @@ class PoTokenGenerator {
         } catch (e: TimeoutCancellationException) {
             // The WebView's sandboxed process can be culled by the OS (storage pressure, low
             // memory, etc.) which leaves the PoToken WebView call hung indefinitely. Cap it so
-            // playerResponseForPlayback can fall through to non-PoToken fallback clients (e.g.
+            // stream extraction can fall through to non-PoToken fallback clients (e.g.
             // ANDROID_VR) instead of blocking the entire playback path.
             logger.w("poToken generation timed out after ${POTOKEN_TIMEOUT_MS}ms; proceeding without PoToken")
             runBlocking {
@@ -101,7 +101,7 @@ class PoTokenGenerator {
                     }
 
                     // create a new webPoTokenGenerator
-                    webPoTokenGenerator = PoTokenWebView.getNewPoTokenGenerator(CipherDeobfuscator.appContext)
+                    webPoTokenGenerator = PoTokenWebView.getNewPoTokenGenerator(context)
 
                     // The streaming poToken needs to be generated exactly once before generating
                     // any other (player) tokens.

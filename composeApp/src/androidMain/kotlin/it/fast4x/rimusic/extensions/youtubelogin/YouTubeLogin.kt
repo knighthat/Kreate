@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import app.kreate.android.Preferences
 import app.kreate.android.R
+import app.kreate.android.service.innertube.InnerTubeX
 import co.touchlab.kermit.Logger
-import com.metrolist.innertube.YouTube
 import it.fast4x.rimusic.LocalPlayerAwareWindowInsets
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -51,17 +51,17 @@ fun YouTubeLogin( onDone: () -> Unit ) {
                             return
 
                         Preferences.YOUTUBE_COOKIES.value = CookieManager.getInstance().getCookie( url )
-                        YouTube.cookie = Preferences.YOUTUBE_COOKIES.value
+                        InnerTubeX.innerTube.cookie = Preferences.YOUTUBE_COOKIES.value.takeIf( String::isNotBlank )
                         evaluateJavascript( "window.yt.config_.VISITOR_DATA" ) { result ->
                             Preferences.YOUTUBE_VISITOR_DATA.value = if( result != "null" ) result.removeSurrounding("\"") else ""
-                            YouTube.visitorData = Preferences.YOUTUBE_VISITOR_DATA.value
+                            InnerTubeX.innerTube.visitorData = Preferences.YOUTUBE_VISITOR_DATA.value.takeIf( String::isNotBlank )
                         }
                         evaluateJavascript( "window.yt.config_.DATASYNC_ID" ) { result ->
                             Preferences.YOUTUBE_SYNC_ID.value = if( result != "null" ) result.removeSurrounding("\"").substringBefore("||") else ""
-                            YouTube.dataSyncId = Preferences.YOUTUBE_SYNC_ID.value
+                            InnerTubeX.innerTube.dataSyncId = Preferences.YOUTUBE_SYNC_ID.value.takeIf( String::isNotBlank )
                         }
                         CoroutineScope(Dispatchers.IO).launch {
-                            YouTube.accountInfo()
+                            InnerTubeX.accountInfo()
                                    .onFailure { err ->
                                        Logger.e( "", err, "YouTubeLogin" )
                                        Toaster.e( R.string.error_failed_to_acquire_account_info )
