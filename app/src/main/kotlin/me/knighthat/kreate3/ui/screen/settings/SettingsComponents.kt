@@ -230,7 +230,11 @@ fun <T> ChoiceSetting(
                     }
                 }
             },
-            confirmButton = { TextButton(onClick = { open = false }) { Text("Close") } },
+            confirmButton = {
+                TextButton(onClick = {
+                    open = false
+                }) { Text(stringResource(R.string.action_close)) }
+            },
         )
 }
 
@@ -298,7 +302,7 @@ fun TextSetting(
     SettingsItem(
         title = title,
         modifier = modifier,
-        summary = summary.ifEmpty { "Not set" },
+        summary = summary.ifEmpty { stringResource(R.string.status_not_set) },
         onClick = { open = true },
     )
 
@@ -329,9 +333,13 @@ fun TextSetting(
                         onSave(text)
                         open = false
                     },
-                ) { Text("Save") }
+                ) { Text(stringResource(R.string.action_save)) }
             },
-            dismissButton = { TextButton(onClick = { open = false }) { Text("Cancel") } },
+            dismissButton = {
+                TextButton(onClick = {
+                    open = false
+                }) { Text(stringResource(R.string.action_cancel)) }
+            },
         )
     }
 }

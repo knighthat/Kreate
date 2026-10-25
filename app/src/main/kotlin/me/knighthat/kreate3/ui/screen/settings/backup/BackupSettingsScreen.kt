@@ -62,7 +62,7 @@ fun BackupSettingsScreen(
         uri?.let(viewModel::restore)
     }
 
-    SettingsPage("Backup", onBack, modifier) {
+    SettingsPage(stringResource(R.string.screen_title_backup), onBack, modifier) {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
@@ -114,8 +114,12 @@ fun BackupSettingsScreen(
                         confirmRestore = false
                         restoreFrom.launch(arrayOf("application/zip", "application/octet-stream"))
                     },
-                ) { Text("Pick backup") }
+                ) { Text(stringResource(R.string.action_pick_backup)) }
             },
-            dismissButton = { TextButton(onClick = { confirmRestore = false }) { Text("Cancel") } },
+            dismissButton = {
+                TextButton(onClick = {
+                    confirmRestore = false
+                }) { Text(stringResource(R.string.action_cancel)) }
+            },
         )
 }

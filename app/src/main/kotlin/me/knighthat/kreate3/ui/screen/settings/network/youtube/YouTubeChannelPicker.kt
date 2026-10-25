@@ -54,7 +54,7 @@ fun YouTubeChannelPicker(
     pageId: String,
     onPick: (YouTubeChannel) -> Unit,
     onDismiss: () -> Unit,
-    dismissLabel: String = "Cancel",
+    dismissLabel: String = stringResource(R.string.action_cancel),
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,

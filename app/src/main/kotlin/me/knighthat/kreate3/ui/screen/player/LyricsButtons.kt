@@ -53,6 +53,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
@@ -95,7 +96,7 @@ internal fun LyricsButtons(
     Box {
         ModeButton(
             icon = R.drawable.swap_horiz,
-            description = "Change source",
+            description = stringResource(R.string.semantic_change_source),
             isOn = request?.provider != null,
             enabled = searchable,
             onClick = { menu = LyricsMenu.SOURCE },
@@ -107,7 +108,10 @@ internal fun LyricsButtons(
                     // Room for the check on every row, the names line up
                     leadingIcon = {
                         if (shown?.source == source.name)
-                            Icon(painterResource(R.drawable.check), contentDescription = "Shown")
+                            Icon(
+                                painterResource(R.drawable.check),
+                                contentDescription = stringResource(R.string.semantic_shown)
+                            )
                         else
                             Spacer(Modifier.size(24.dp))
                     },
@@ -122,7 +126,7 @@ internal fun LyricsButtons(
     }
     ModeButton(
         icon = R.drawable.manage_search,
-        description = "Search the lyrics with other words",
+        description = stringResource(R.string.semantic_search_the_lyrics_with_other_words),
         isOn = request?.isSearch == true,
         enabled = searchable,
         onClick = { searching = true },
@@ -134,7 +138,7 @@ internal fun LyricsButtons(
     Box {
         ModeButton(
             icon = R.drawable.av_timer,
-            description = "Timing of the lyrics",
+            description = stringResource(R.string.semantic_timing_of_the_lyrics),
             isOn = controls.sync != null,
             enabled = timings.size > 1,
             onClick = { menu = LyricsMenu.TIMING },
@@ -146,7 +150,10 @@ internal fun LyricsButtons(
                     // Room for the check on every row, the labels line up
                     leadingIcon = {
                         if ((controls.sync ?: loaded) == timing)
-                            Icon(painterResource(R.drawable.check), contentDescription = "Shown")
+                            Icon(
+                                painterResource(R.drawable.check),
+                                contentDescription = stringResource(R.string.semantic_shown)
+                            )
                         else
                             Spacer(Modifier.size(24.dp))
                     },
@@ -162,7 +169,7 @@ internal fun LyricsButtons(
     Box {
         ModeButton(
             icon = R.drawable.format_size,
-            description = "Text size",
+            description = stringResource(R.string.semantic_text_size),
             isOn = textSize != Preferences.LYRICS_TEXT_SIZE.default,
             // Nothing to see the size on while there are no lyrics
             enabled = shown != null,
@@ -175,7 +182,7 @@ internal fun LyricsButtons(
 
     ModeButton(
         icon = R.drawable.content_copy,
-        description = "Copy the lyrics",
+        description = stringResource(R.string.semantic_copy_the_lyrics),
         isOn = false,
         enabled = shown != null,
         onClick = {
@@ -214,7 +221,10 @@ private fun TextSizeStepper(size: Int) = Row(
         onClick = { Preferences.LYRICS_TEXT_SIZE.update { (it - sizes.step).coerceAtLeast(sizes.first) } },
         enabled = size > sizes.first,
     ) {
-        Icon(painterResource(R.drawable.remove), contentDescription = "Smaller")
+        Icon(
+            painterResource(R.drawable.remove),
+            contentDescription = stringResource(R.string.semantic_smaller)
+        )
     }
     TextButton(
         onClick = { Preferences.LYRICS_TEXT_SIZE.reset() },
@@ -226,7 +236,10 @@ private fun TextSizeStepper(size: Int) = Row(
         onClick = { Preferences.LYRICS_TEXT_SIZE.update { (it + sizes.step).coerceAtMost(sizes.last) } },
         enabled = size < sizes.last,
     ) {
-        Icon(painterResource(R.drawable.add), contentDescription = "Larger")
+        Icon(
+            painterResource(R.drawable.add),
+            contentDescription = stringResource(R.string.semantic_larger)
+        )
     }
 }
 
@@ -271,7 +284,10 @@ private fun LyricsSearchDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = search, enabled = typedTitle.isNotBlank()) { Text("Search") }
+            TextButton(
+                onClick = search,
+                enabled = typedTitle.isNotBlank()
+            ) { Text(stringResource(R.string.action_search)) }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )

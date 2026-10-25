@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -319,9 +320,15 @@ fun ItemBadges(
 fun OriginBadge(origin: Origin, size: Dp = BADGE_SIZE) = ItemBadge(
     icon = origin.icon,
     contentDescription = when (origin) {
-        Origin.LOCAL -> "On this device"
-        Origin.YOUTUBE -> "From YouTube"
-        Origin.OPEN_SUBSONIC -> "From the OpenSubsonic server"
+        Origin.LOCAL -> stringResource(R.string.semantic_on_this_device)
+        Origin.YOUTUBE ->
+            stringResource(R.string.semantic_from_youtube, stringResource(R.string.source_ytm))
+
+        Origin.OPEN_SUBSONIC ->
+            stringResource(
+                R.string.semantic_from_opensubsonic,
+                stringResource(R.string.source_opensubsonicapi),
+            )
     },
     size = size,
 )
@@ -332,7 +339,7 @@ fun OriginBadge(origin: Origin, size: Dp = BADGE_SIZE) = ItemBadge(
 @Composable
 fun ExplicitBadge(size: Dp = BADGE_SIZE) = ItemBadge(
     icon = R.drawable.explicit,
-    contentDescription = "Explicit",
+    contentDescription = stringResource(R.string.semantic_explicit),
     tint = MaterialTheme.colorScheme.error,
     size = size,
 )

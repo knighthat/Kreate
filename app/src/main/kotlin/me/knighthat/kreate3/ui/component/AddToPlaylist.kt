@@ -37,12 +37,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.UserPlaylist
 import me.knighthat.kreate3.database.paging.PlaylistSort
 import me.knighthat.kreate3.database.paging.SortDirection
@@ -147,7 +149,11 @@ fun CreatePlaylistDialog(onCreate: (String) -> Unit, onDismiss: () -> Unit) {
             )
         },
         confirmButton = {
-            TextButton(onClick = { onCreate(name) }, enabled = name.isNotBlank()) { Text("Create") }
+            TextButton(onClick = { onCreate(name) }, enabled = name.isNotBlank()) {
+                Text(
+                    stringResource(R.string.action_create)
+                )
+            }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )

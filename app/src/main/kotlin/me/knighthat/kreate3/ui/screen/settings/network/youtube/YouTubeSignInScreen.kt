@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.provider.youtube.YouTubeChannel
 import me.knighthat.kreate3.provider.youtube.youTubeProxy
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
@@ -119,11 +120,16 @@ fun YouTubeSignInScreen(
             onPick = { finish(it) },
             // Without a choice the account's own channel is used
             onDismiss = { finish(null) },
-            dismissLabel = "Skip",
+            dismissLabel = stringResource(R.string.action_skip),
         )
     }
 
-    DetailScaffold("Sign in to YouTube", onBack, modifier) { innerPadding ->
+    DetailScaffold(
+        stringResource(
+            R.string.screen_title_sign_in_to_youtube,
+            stringResource(R.string.source_ytm)
+        ), onBack, modifier
+    ) { innerPadding ->
         val current = proxy
         if (signedIn || current == null || current is SignInProxy.Unavailable) {
             Box(

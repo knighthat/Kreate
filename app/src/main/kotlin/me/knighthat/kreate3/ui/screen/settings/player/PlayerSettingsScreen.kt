@@ -67,7 +67,7 @@ fun PlayerSettingsScreen(
     val autoArtistTap by Preferences.AUTO_ARTIST_TAP.collectAsStateWithLifecycle()
     val autoPlaylistTap by Preferences.AUTO_PLAYLIST_TAP.collectAsStateWithLifecycle()
 
-    SettingsPage("Player", onBack, modifier) {
+    SettingsPage(stringResource(R.string.screen_title_player), onBack, modifier) {
         SettingsSection(stringResource(R.string.setting_header_queue))
         SwitchSetting(
             title = stringResource(R.string.setting_title_radio_from_songs),
@@ -103,27 +103,35 @@ fun PlayerSettingsScreen(
                 onSave = { Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL.update(it.toInt()) },
                 note = stringResource(R.string.setting_description_save_interval),
             )
+        val off = stringResource(R.string.status_off)
+        val preloadLabels = PRELOAD_SECONDS.associateWith {
+            if (it == 0) off else pluralStringResource(R.plurals.second, it, it)
+        }
         SliderSetting(
             title = stringResource(R.string.setting_title_load_next_song_ahead),
             value = preloadSeconds,
             options = PRELOAD_SECONDS,
-            label = { if (it == 0) "Off" else "$it seconds" },
+            label = { preloadLabels.getValue(it) },
             onSelect = { Preferences.PLAYBACK_PRELOAD_SECONDS.update(it) },
         )
 
         SettingsSection(stringResource(R.string.setting_header_sleep_timer))
+        val sleepTimerLabels = SleepTimerStep.entries.associateWith { step ->
+            step.minutes?.let { pluralStringResource(R.plurals.minute, it, it) }
+                ?: "Until the song ends"
+        }
         ChoiceSetting(
             title = stringResource(R.string.setting_title_remove_button),
             value = sleepTimerRemove,
             options = SleepTimerStep.entries,
-            label = { it.label },
+            label = { sleepTimerLabels.getValue(it) },
             onSelect = { Preferences.SLEEP_TIMER_REMOVE_STEP.update(it) },
         )
         ChoiceSetting(
             title = stringResource(R.string.setting_title_add_button),
             value = sleepTimerAdd,
             options = SleepTimerStep.entries,
-            label = { it.label },
+            label = { sleepTimerLabels.getValue(it) },
             onSelect = { Preferences.SLEEP_TIMER_ADD_STEP.update(it) },
         )
 
@@ -168,11 +176,13 @@ fun PlayerSettingsScreen(
             else
                 stringResource(R.string.setting_description_always_fetch_lyrics_off),
         )
+        val textSizes = LYRICS_TEXT_SIZES.toList()
+        val percents = textSizes.associateWith { stringResource(R.string.percent, it) }
         SliderSetting(
             title = stringResource(R.string.setting_title_text_size),
             value = lyricsTextSize,
-            options = LYRICS_TEXT_SIZES.toList(),
-            label = { "$it%" },
+            options = textSizes,
+            label = { percents.getValue(it) },
             onSelect = { Preferences.LYRICS_TEXT_SIZE.update(it) },
         )
 
@@ -210,12 +220,4 @@ private val AutoTapAction.label: String
         AutoTapAction.OPEN -> "Show its songs"
         AutoTapAction.PLAY_FROM_START -> "Play from the start"
         AutoTapAction.PLAY_RANDOMLY -> "Play in random order"
-    }
-
-/** How a [SleepTimerStep] reads in the settings. */
-private val SleepTimerStep.label: String
-    get() = when (val minutes = minutes) {
-        null -> "Until the song ends"
-        1 -> "1 minute"
-        else -> "$minutes minutes"
     }

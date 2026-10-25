@@ -41,6 +41,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.Dispatchers
@@ -262,7 +263,10 @@ fun QueuePlayButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     if (LocalIconOnly.current)
     // Play stays the main action, filled like its labeled button
         FilledIconButton(onClick = onClick, modifier = modifier) {
-            Icon(painterResource(R.drawable.play_arrow), contentDescription = "Play")
+            Icon(
+                painterResource(R.drawable.play_arrow),
+                contentDescription = stringResource(R.string.semantic_play)
+            )
         }
     else
         LabeledButton("Play", R.drawable.play_arrow, onClick, modifier)

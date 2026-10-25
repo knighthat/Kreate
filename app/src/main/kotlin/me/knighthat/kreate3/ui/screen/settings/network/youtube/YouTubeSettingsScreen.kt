@@ -67,7 +67,7 @@ fun YouTubeSettingsScreen(
     // A choice only when the account has several channels
     val canSwitch = channels.size > 1
 
-    SettingsPage("YouTube", onBack, modifier) {
+    SettingsPage(stringResource(R.string.source_ytm), onBack, modifier) {
         MainSwitch(
             title = stringResource(
                 R.string.setting_title_use_youtube_account,
@@ -106,13 +106,16 @@ fun YouTubeSettingsScreen(
                     trailing = if (canSwitch) ({
                         Icon(
                             painterResource(R.drawable.chevron_right),
-                            contentDescription = stringResource(R.string.setting_title_switch_channel)
+                            contentDescription = stringResource(R.string.semantic_switch_channel)
                         )
                     }) else null,
                 )
 
                 YouTubeAccountState.Ended -> SettingsItem(
-                    title = "Signed out by YouTube",
+                    title = stringResource(
+                        R.string.setting_title_account_status_signed_out,
+                        stringResource(R.string.source_ytm)
+                    ),
                     summary = stringResource(R.string.setting_description_account_status_session_ended),
                     onClick = onSignIn,
                 )
@@ -169,10 +172,12 @@ fun YouTubeSettingsScreen(
                         TextButton(onClick = {
                             askSignOut = false
                             viewModel.signOut()
-                        }) { Text("Sign out") }
+                        }) { Text(stringResource(R.string.action_sign_out)) }
                     },
                     dismissButton = {
-                        TextButton(onClick = { askSignOut = false }) { Text("Cancel") }
+                        TextButton(onClick = {
+                            askSignOut = false
+                        }) { Text(stringResource(R.string.action_cancel)) }
                     },
                 )
         }

@@ -82,6 +82,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
@@ -96,6 +97,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
@@ -316,7 +318,7 @@ private fun ConfigSheet(
                     FilterChip(
                         selected = it in categories,
                         onClick = { onCategoryChange(it, it !in categories) },
-                        label = { Text(it.label) },
+                        label = { Text(stringResource(it.title)) },
                     )
                 }
             }
@@ -341,7 +343,7 @@ private fun KindBadge(kind: Tab) {
             modifier = Modifier.size(14.dp),
         )
         Text(
-            text = kind.label.removeSuffix("s"),
+            text = stringResource(kind.title).removeSuffix("s"),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -432,7 +434,7 @@ fun SearchScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Search") },
+                title = { Text(stringResource(R.string.screen_title_search)) },
                 navigationIcon = { BackButton(onBack) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surfaceDim,

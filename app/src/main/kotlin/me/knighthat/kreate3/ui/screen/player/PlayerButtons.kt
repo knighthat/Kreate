@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
@@ -101,7 +102,7 @@ private fun EqualizerButton(controller: PlaybackController) {
 
     ModeButton(
         icon = R.drawable.equalizer,
-        description = "Equalizer",
+        description = stringResource(R.string.semantic_equalizer),
         isOn = false,
         onClick = {
             val audioSession = controller.audioSessionId()
@@ -134,7 +135,7 @@ private fun SleepTimerButton(controller: PlaybackController) = Box {
 
     ModeButton(
         icon = R.drawable.bedtime,
-        description = "Sleep timer",
+        description = stringResource(R.string.semantic_sleep_timer),
         isOn = timer != null,
         onClick = { open = true },
     )
@@ -210,8 +211,8 @@ private fun SleepTimerControls(timer: SleepTimer, controller: PlaybackController
                 painter = painterResource(
                     if (timer.isPaused) R.drawable.play_arrow else R.drawable.pause
                 ),
-                contentDescription = if (timer.isPaused) "Resume the sleep timer"
-                else "Pause the sleep timer",
+                contentDescription = if (timer.isPaused) stringResource(R.string.semantic_resume_the_sleep_timer)
+                else stringResource(R.string.semantic_pause_the_sleep_timer),
             )
         }
         TextButton(
@@ -231,7 +232,10 @@ private fun SleepTimerItem(label: String, isChecked: Boolean, onClick: () -> Uni
         // Room for the check on every row, the labels line up
         leadingIcon = {
             if (isChecked)
-                Icon(painterResource(R.drawable.check), contentDescription = "Set")
+                Icon(
+                    painterResource(R.drawable.check),
+                    contentDescription = stringResource(R.string.semantic_set)
+                )
             else
                 Spacer(Modifier.size(24.dp))
         },
@@ -245,7 +249,7 @@ private fun SongShareButton(item: MediaItem) {
 
     ModeButton(
         icon = R.drawable.share,
-        description = "Share",
+        description = stringResource(R.string.semantic_share),
         isOn = false,
         enabled = share.enabled,
         onClick = { share.share() },

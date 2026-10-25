@@ -17,6 +17,7 @@
  */
 package me.knighthat.kreate3.ui.screen.settings.network.youtube
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.provider.LibrarySection
@@ -64,6 +66,7 @@ sealed interface YouTubeAccountState {
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class YouTubeAccountViewModel(
+    private val context: Context,
     private val provider: YouTubeProvider,
     private val library: YouTubeLibrary,
 ) : ViewModel() {
@@ -96,7 +99,12 @@ class YouTubeAccountViewModel(
                             ?: YouTubeAccountState.SignedOut
                     } catch (e: YouTubeException) {
                         if (e.signedOut) YouTubeAccountState.Ended
-                        else YouTubeAccountState.Failed(e.message ?: "Can't reach YouTube")
+                        else YouTubeAccountState.Failed(
+                            e.message ?: context.getString(
+                                R.string.setting_description_account_status_unreachable,
+                                context.getString(R.string.source_ytm),
+                            )
+                        )
                     }
                 )
             }

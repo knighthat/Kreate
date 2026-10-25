@@ -104,7 +104,7 @@ class BackupViewModel(
     ) {
         if (_working.value != null) return
         if (profileManager.activeId.value != Profile.DEFAULT_ID) {
-            notifier.post("Only the default profile can back up or restore")
+            notifier.post(context.getString(R.string.setting_description_backup_status_default_profile_only))
             return
         }
         _working.value = task

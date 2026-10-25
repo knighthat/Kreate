@@ -33,6 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
@@ -129,7 +130,7 @@ private fun HomePlaylistsContent(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     HomeScaffold(
-        title = Tab.PLAYLISTS.label,
+        title = stringResource(Tab.PLAYLISTS.title),
         choices = choices,
         selected = selected,
         onToggleOrigin = onToggleOrigin,

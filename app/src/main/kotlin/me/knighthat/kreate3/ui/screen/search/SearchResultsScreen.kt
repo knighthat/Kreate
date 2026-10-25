@@ -40,6 +40,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
@@ -169,7 +170,7 @@ fun SearchResultsScreen(
                         Button(onClick = current::retry) { Text("Try again") }
                     }
 
-                    else -> Notice("No ${selected.label.lowercase()} found for \"${viewModel.query}\"")
+                    else -> Notice("No ${stringResource(selected.title).lowercase()} found for \"${viewModel.query}\"")
                 }
             }
             return@Scaffold

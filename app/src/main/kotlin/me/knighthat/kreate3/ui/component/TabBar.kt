@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.ui.navigation.Tab
 
 /**
@@ -47,10 +48,10 @@ fun TabBar(
                     // Without the text, the icon has to name the tab
                     Icon(
                         painterResource(it.icon),
-                        contentDescription = if (iconOnly) it.label else null,
+                        contentDescription = if (iconOnly) stringResource(it.title) else null,
                     )
                 },
-                label = if (iconOnly) null else ({ Text(it.label) }),
+                label = if (iconOnly) null else ({ Text(stringResource(it.title)) }),
             )
         }
     }

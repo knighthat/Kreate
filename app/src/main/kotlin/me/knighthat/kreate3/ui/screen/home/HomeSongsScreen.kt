@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
@@ -95,7 +96,7 @@ private fun HomeSongsContent(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     HomeScaffold(
-        title = Tab.SONGS.label,
+        title = stringResource(Tab.SONGS.title),
         choices = choices,
         selected = selected,
         onToggleOrigin = onToggleOrigin,

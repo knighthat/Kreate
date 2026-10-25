@@ -49,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -170,7 +171,7 @@ internal fun QueuePage(
                                     dragFrom = -1
                                 },
                             ),
-                            removeDescription = "Remove from the queue",
+                            removeDescription = stringResource(R.string.semantic_remove_from_the_queue),
                             onRemove = {
                                 // Before it leaves the list, which the next tap counts it out of
                                 val position = positionOf(entry)
@@ -212,7 +213,12 @@ internal fun QueueButtons(
     val removing = mode == CoverEditMode.REMOVE
     var confirmClear by remember { mutableStateOf(false) }
 
-    ModeButton(R.drawable.my_location, "Go to the song playing", isOn = false, onClick = onLocate)
+    ModeButton(
+        R.drawable.my_location,
+        stringResource(R.string.semantic_go_to_the_song_playing),
+        isOn = false,
+        onClick = onLocate
+    )
     ModeButton(
         icon = if (reordering) R.drawable.lock_open else R.drawable.lock,
         description = when {
@@ -229,13 +235,15 @@ internal fun QueueButtons(
     )
     ModeButton(
         icon = R.drawable.delete,
-        description = if (removing) "Stop removing songs" else "Remove songs",
+        description = if (removing) stringResource(R.string.semantic_stop_removing_songs) else stringResource(
+            R.string.semantic_remove_songs
+        ),
         isOn = removing,
         onClick = { onModeChange(if (removing) CoverEditMode.NONE else CoverEditMode.REMOVE) },
     )
     ModeButton(
         icon = R.drawable.clear_all,
-        description = "Clear the queue",
+        description = stringResource(R.string.semantic_clear_the_queue),
         isOn = false,
         onClick = { confirmClear = true },
     )

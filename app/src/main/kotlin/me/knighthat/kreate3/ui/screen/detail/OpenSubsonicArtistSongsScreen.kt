@@ -24,8 +24,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
@@ -76,7 +78,8 @@ private fun OpenSubsonicArtistSongsContent(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     LiveDetailScreen(
-        title = name?.let { "Songs by $it" } ?: "Songs",
+        title = name?.let { stringResource(R.string.screen_title_songs_by, it) }
+            ?: stringResource(R.string.screen_title_songs),
         onBack = onBack,
         state = state,
         onRetry = onRetry,

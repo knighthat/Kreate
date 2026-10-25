@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -258,7 +259,7 @@ private fun PlaylistSong(
             CoverEditOverlay(
                 mode = mode,
                 handle = handle,
-                removeDescription = "Remove from the playlist",
+                removeDescription = stringResource(R.string.semantic_remove_from_the_playlist),
                 onRemove = { onRemove(false) },
             )
         },

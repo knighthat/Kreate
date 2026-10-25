@@ -49,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.ProfilesActivity
@@ -124,22 +125,27 @@ fun TileButton(
 
 @Composable
 fun BackButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconAction(R.drawable.arrow_back, "Back", onClick, modifier)
+    IconAction(R.drawable.arrow_back, stringResource(R.string.semantic_back), onClick, modifier)
 
 /** Opens every item of a row that shows only some, see [SectionTitle]. */
 @Composable
 fun SeeMoreButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconAction(R.drawable.arrow_forward, "See more", onClick, modifier)
+    IconAction(
+        R.drawable.arrow_forward,
+        stringResource(R.string.semantic_see_more),
+        onClick,
+        modifier
+    )
 
 @Composable
 fun SearchButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconAction(R.drawable.search, "Search", onClick, modifier)
+    IconAction(R.drawable.search, stringResource(R.string.semantic_search), onClick, modifier)
 
 @Composable
 fun ProfileButton(modifier: Modifier = Modifier) =
     IconAction(
         icon = R.drawable.person,
-        description = "Profile",
+        description = stringResource(R.string.semantic_profile),
         onClick = {
             val context = GlobalContext.get().get<Context>()
 
@@ -158,7 +164,10 @@ fun ProfileButton(modifier: Modifier = Modifier) =
 @Composable
 fun ShareButton(onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) =
     IconButton(onClick = onClick, modifier = modifier, enabled = enabled) {
-        Icon(painterResource(R.drawable.share), contentDescription = "Share")
+        Icon(
+            painterResource(R.drawable.share),
+            contentDescription = stringResource(R.string.semantic_share)
+        )
     }
 
 /**
@@ -171,7 +180,9 @@ fun BookmarkButton(isBookmarked: Boolean, onClick: () -> Unit, modifier: Modifie
         isSet = isBookmarked,
         setIcon = R.drawable.bookmark_filled,
         unsetIcon = R.drawable.bookmark_outline,
-        description = if (isBookmarked) "Remove bookmark" else "Bookmark",
+        description = if (isBookmarked) stringResource(R.string.semantic_remove_bookmark) else stringResource(
+            R.string.semantic_bookmark
+        ),
         onClick = onClick,
         modifier = modifier,
     )
@@ -186,7 +197,9 @@ fun FollowButton(isFollowed: Boolean, onClick: () -> Unit, modifier: Modifier = 
         isSet = isFollowed,
         setIcon = R.drawable.how_to_reg,
         unsetIcon = R.drawable.person_add,
-        description = if (isFollowed) "Unfollow" else "Follow",
+        description = if (isFollowed) stringResource(R.string.semantic_unfollow) else stringResource(
+            R.string.semantic_follow
+        ),
         onClick = onClick,
         modifier = modifier,
     )
@@ -212,7 +225,7 @@ private fun ToggleAction(
 
 @Composable
 fun SettingsButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconAction(R.drawable.settings, "Settings", onClick, modifier)
+    IconAction(R.drawable.settings, stringResource(R.string.semantic_settings), onClick, modifier)
 
 /**
  * Pauses while [isPlaying], plays otherwise. The icon shows what a tap does.
@@ -222,49 +235,70 @@ fun PlayPauseButton(isPlaying: Boolean, onClick: () -> Unit, modifier: Modifier 
     IconButton(onClick = onClick, modifier = modifier) {
         Crossfade(targetState = isPlaying, label = "PlayPauseIcon") { playing ->
             if (playing)
-                Icon(painterResource(R.drawable.pause), contentDescription = "Pause")
+                Icon(
+                    painterResource(R.drawable.pause),
+                    contentDescription = stringResource(R.string.semantic_pause)
+                )
             else
-                Icon(painterResource(R.drawable.play_arrow), contentDescription = "Play")
+                Icon(
+                    painterResource(R.drawable.play_arrow),
+                    contentDescription = stringResource(R.string.semantic_play)
+                )
         }
     }
 
 @Composable
 fun SkipNextButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconAction(R.drawable.skip_next, "Next", onClick, modifier)
+    IconAction(R.drawable.skip_next, stringResource(R.string.semantic_next), onClick, modifier)
 
 @Composable
 fun ConfigButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconAction(R.drawable.tune, "Config", onClick, modifier)
+    IconAction(R.drawable.tune, stringResource(R.string.semantic_config), onClick, modifier)
 
 /** Plays every song of a list, see [QueueAction.PLAY]. */
 @Composable
 fun PlayAllButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconAction(R.drawable.play_arrow, "Play all", onClick, modifier)
+    IconAction(R.drawable.play_arrow, stringResource(R.string.semantic_play_all), onClick, modifier)
 
 /** Plays every song of a list in a random order, see [QueueAction.SHUFFLE]. */
 @Composable
 fun ShuffleButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconAction(R.drawable.shuffle, "Shuffle", onClick, modifier)
+    IconAction(R.drawable.shuffle, stringResource(R.string.semantic_shuffle), onClick, modifier)
 
 /** Plays every song of a list after the song playing, see [QueueAction.PLAY_NEXT]. */
 @Composable
 fun PlayNextButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconAction(R.drawable.queue_play_next, "Play next", onClick, modifier)
+    IconAction(
+        R.drawable.queue_play_next,
+        stringResource(R.string.semantic_play_next),
+        onClick,
+        modifier
+    )
 
 /** Adds every song of a list to the end of the queue, see [QueueAction.ENQUEUE]. */
 @Composable
 fun AddToQueueButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconAction(R.drawable.playlist_add, "Add to queue", onClick, modifier)
+    IconAction(
+        R.drawable.playlist_add,
+        stringResource(R.string.semantic_add_to_queue),
+        onClick,
+        modifier
+    )
 
 /** Makes a new playlist. */
 @Composable
 fun CreatePlaylistButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconAction(R.drawable.add, "Create playlist", onClick, modifier)
+    IconAction(R.drawable.add, stringResource(R.string.semantic_create_playlist), onClick, modifier)
 
 /** Opens one item of a list picked at random. */
 @Composable
 fun RandomButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
-    IconAction(R.drawable.casino, "Open one at random", onClick, modifier)
+    IconAction(
+        R.drawable.casino,
+        stringResource(R.string.semantic_open_one_at_random),
+        onClick,
+        modifier
+    )
 
 /**
  * Opens a menu of the actions used less often. Each item of [items] should call `close` once
@@ -278,7 +312,12 @@ fun MoreButton(
     var expanded by remember { mutableStateOf(false) }
 
     Box(modifier) {
-        IconAction(R.drawable.more_vert, "More", { expanded = true }, Modifier)
+        IconAction(
+            R.drawable.more_vert,
+            stringResource(R.string.semantic_more),
+            { expanded = true },
+            Modifier
+        )
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             items { expanded = false }
         }

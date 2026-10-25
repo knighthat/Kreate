@@ -47,7 +47,7 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val exitConfirmation by Preferences.EXIT_CONFIRMATION.collectAsStateWithLifecycle()
     val exitTimeout by Preferences.EXIT_CONFIRMATION_TIMEOUT.collectAsStateWithLifecycle()
 
-    SettingsPage("General", onBack, modifier) {
+    SettingsPage(stringResource(R.string.screen_title_general), onBack, modifier) {
         SettingsSection(stringResource(R.string.setting_header_library))
         NumberSetting(
             title = stringResource(R.string.setting_title_scan_interval),
@@ -63,7 +63,7 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         NumberSetting(
             title = stringResource(R.string.setting_title_cache),
             value = songCache / MIB,
-            unit = "MiB",
+            unit = stringResource(R.string.mib),
             min = 128,
             max = 32 * 1024,
             onSave = { Preferences.MEDIA3_CACHE_SIZE.update(it * MIB) },
@@ -75,7 +75,7 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         NumberSetting(
             title = stringResource(R.string.setting_title_downloads),
             value = songDownloads / MIB,
-            unit = "MiB",
+            unit = stringResource(R.string.mib),
             min = 128,
             max = 256 * 1024,
             onSave = { Preferences.MEDIA3_DOWNLOAD_SIZE.update(it * MIB) },
@@ -86,7 +86,7 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         NumberSetting(
             title = stringResource(R.string.setting_title_disk_cache),
             value = diskCache / MIB,
-            unit = "MiB",
+            unit = stringResource(R.string.mib),
             min = 16,
             max = 4096,
             onSave = { Preferences.IMAGE_DISK_CACHE.update(it * MIB) },

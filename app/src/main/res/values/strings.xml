@@ -20,6 +20,9 @@
     <string name="app_name">Kreate</string>
     <string name="source_ytm">YouTube Music</string>
     <string name="source_opensubsonicapi">OpenSubsonic API</string>
+    <string name="all">All</string>
+    <string name="mib">MiB</string>
+    <string name="percent">%1$d%%</string>
 
     <!-- Settings: pages and sections -->
     <string name="setting_header_library">Library</string>
@@ -161,7 +164,6 @@
     <string name="setting_description_use_youtube_account">%1$s is used signed out while this is off</string>
     <string name="setting_title_sign_in">Sign in</string>
     <string name="setting_description_sign_in_youtube">Brings your albums, artists and playlists, and makes suggestions yours</string>
-    <string name="setting_title_switch_channel">Switch channel</string>
     <string name="setting_title_sign_out">Sign out</string>
     <string name="setting_description_sign_out">Your liked songs stay in this profile</string>
     <string name="setting_title_sign_out_of_youtube">Sign out of %1$s?</string>
@@ -189,6 +191,8 @@
     <string name="setting_title_api_key">API key</string>
     <string name="setting_title_direct_play">Direct play</string>
     <string name="setting_description_direct_play">Streams songs from the server without keeping them in the song cache</string>
+    <string name="setting_title_account_status_signed_out">Signed out by %1$s</string>
+    <string name="setting_description_backup_status_default_profile_only">Only the default profile can back up or restore</string>
 
     <!-- Settings: statuses of one setting -->
     <string name="setting_description_configure_youtube_status_not_signed_in">Not signed in</string>
@@ -206,6 +210,7 @@
     <string name="setting_description_account_status_signed_in">Signed in</string>
     <string name="setting_description_account_status_session_ended">The session ended, tap to sign in again</string>
     <string name="setting_description_account_status_failed">%1$s, tap to try again</string>
+    <string name="setting_description_account_status_unreachable">Can\'t reach %1$s</string>
     <string name="setting_description_server_status_checking">Checking the server…</string>
     <string name="setting_description_server_status_online">Online</string>
     <string name="setting_description_server_status_unreachable">Can\'t reach the server: %1$s</string>
@@ -227,4 +232,96 @@
     <string name="setting_description_back_up_status_saved">Backup saved</string>
     <string name="setting_description_back_up_status_failed">Couldn\'t save the backup</string>
     <string name="setting_description_username_status_none">None, the proxy needs no sign in</string>
+
+    <!-- Actions, shared by every screen -->
+    <string name="action_close">Close</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_skip">Skip</string>
+    <string name="action_forget">Forget</string>
+    <string name="action_sign_out">Sign out</string>
+    <string name="action_pick_backup">Pick backup</string>
+    <string name="action_trust_new_certificate">Trust new certificate</string>
+    <string name="action_not_now">Not now</string>
+    <string name="action_search">Search</string>
+    <string name="action_create">Create</string>
+
+    <!-- Statuses, shared by every screen -->
+    <string name="status_off">Off</string>
+    <string name="status_not_set">Not set</string>
+
+    <!-- Settings: screens and statuses -->
+    <string name="screen_title_songs">Songs</string>
+    <string name="screen_title_albums">Albums</string>
+    <string name="screen_title_artists">Artists</string>
+    <string name="screen_title_playlists">Playlists</string>
+    <string name="screen_title_search">Search</string>
+    <string name="screen_title_songs_by">Songs by %1$s</string>
+    <string name="screen_title_welcome">Welcome</string>
+    <string name="screen_title_permissions">Permissions</string>
+    <string name="screen_title_import">Import</string>
+    <string name="screen_title_basic_settings">Basic settings</string>
+    <string name="screen_title_terms_of_service">Terms of service</string>
+    <string name="screen_title_settings">Settings</string>
+    <string name="screen_title_general">General</string>
+    <string name="screen_title_player">Player</string>
+    <string name="screen_title_ui">UI</string>
+    <string name="screen_title_network">Network</string>
+    <string name="screen_title_backup">Backup</string>
+    <string name="screen_title_sign_in_to_youtube">Sign in to %1$s</string>
+
+    <!-- Descriptions of icons for screen readers -->
+    <string name="semantic_add_to_queue">Add to queue</string>
+    <string name="semantic_back">Back</string>
+    <string name="semantic_bookmark">Bookmark</string>
+    <string name="semantic_change_source">Change source</string>
+    <string name="semantic_clear_the_queue">Clear the queue</string>
+    <string name="semantic_config">Config</string>
+    <string name="semantic_copy_the_lyrics">Copy the lyrics</string>
+    <string name="semantic_create_playlist">Create playlist</string>
+    <string name="semantic_dislike">Dislike</string>
+    <string name="semantic_drag_to_move">Drag to move</string>
+    <string name="semantic_equalizer">Equalizer</string>
+    <string name="semantic_explicit">Explicit</string>
+    <string name="semantic_follow">Follow</string>
+    <string name="semantic_from_opensubsonic">From the %1$s server</string>
+    <string name="semantic_from_youtube">From %1$s</string>
+    <string name="semantic_go_to_the_song_playing">Go to the song playing</string>
+    <string name="semantic_larger">Larger</string>
+    <string name="semantic_like">Like</string>
+    <string name="semantic_more">More</string>
+    <string name="semantic_next">Next</string>
+    <string name="semantic_on_this_device">On this device</string>
+    <string name="semantic_open_one_at_random">Open one at random</string>
+    <string name="semantic_pause">Pause</string>
+    <string name="semantic_pause_the_sleep_timer">Pause the sleep timer</string>
+    <string name="semantic_play">Play</string>
+    <string name="semantic_play_all">Play all</string>
+    <string name="semantic_play_next">Play next</string>
+    <string name="semantic_previous">Previous</string>
+    <string name="semantic_profile">Profile</string>
+    <string name="semantic_remove_bookmark">Remove bookmark</string>
+    <string name="semantic_remove_dislike">Remove dislike</string>
+    <string name="semantic_remove_from_the_playlist">Remove from the playlist</string>
+    <string name="semantic_remove_from_the_queue">Remove from the queue</string>
+    <string name="semantic_remove_like">Remove like</string>
+    <string name="semantic_remove_songs">Remove songs</string>
+    <string name="semantic_resume_the_sleep_timer">Resume the sleep timer</string>
+    <string name="semantic_search">Search</string>
+    <string name="semantic_search_the_lyrics_with_other_words">Search the lyrics with other words</string>
+    <string name="semantic_see_more">See more</string>
+    <string name="semantic_set">Set</string>
+    <string name="semantic_settings">Settings</string>
+    <string name="semantic_share">Share</string>
+    <string name="semantic_shown">Shown</string>
+    <string name="semantic_shuffle">Shuffle</string>
+    <string name="semantic_shuffle_off">Shuffle off</string>
+    <string name="semantic_shuffle_on">Shuffle on</string>
+    <string name="semantic_sleep_timer">Sleep timer</string>
+    <string name="semantic_smaller">Smaller</string>
+    <string name="semantic_stop_removing_songs">Stop removing songs</string>
+    <string name="semantic_switch_channel">Switch channel</string>
+    <string name="semantic_text_size">Text size</string>
+    <string name="semantic_timing_of_the_lyrics">Timing of the lyrics</string>
+    <string name="semantic_unfollow">Unfollow</string>
 </resources>

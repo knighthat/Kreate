@@ -273,7 +273,7 @@ internal class AutoLibrary(
     @OptIn(UnstableApi::class)
     private fun sectionItem(tab: Tab): MediaItem = folder(
         id = AutoNode.Section(tab).id,
-        title = tab.label,
+        title = context.getString(tab.title),
         type = when (tab) {
             Tab.SONGS -> MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
             Tab.ALBUMS -> MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS

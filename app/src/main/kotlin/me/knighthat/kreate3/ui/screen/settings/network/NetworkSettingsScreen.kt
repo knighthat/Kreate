@@ -107,7 +107,7 @@ fun NetworkSettingsScreen(
     val readTimeout by Preferences.NETWORK_READ_TIMEOUT.collectAsStateWithLifecycle()
     val maxRetries by Preferences.NETWORK_MAX_RETRIES.collectAsStateWithLifecycle()
 
-    SettingsPage("Network", onBack, modifier) {
+    SettingsPage(stringResource(R.string.screen_title_network), onBack, modifier) {
         SettingsSection(stringResource(R.string.setting_header_requests))
         NumberSetting(
             title = stringResource(R.string.setting_title_connect_timeout),
@@ -154,7 +154,7 @@ fun NetworkSettingsScreen(
                 R.string.setting_title_configure_youtube,
                 stringResource(R.string.source_ytm)
             ),
-            summary = if (youtubeEnabled) youtubeAccount.summary() else "Off",
+            summary = if (youtubeEnabled) youtubeAccount.summary() else stringResource(R.string.status_off),
             onClick = { onOpen(YouTubeSettings) },
         )
         SettingsItem(
@@ -163,7 +163,7 @@ fun NetworkSettingsScreen(
                 stringResource(R.string.source_opensubsonicapi)
             ),
             summary = when {
-                !openSubsonicEnabled -> "Off"
+                !openSubsonicEnabled -> stringResource(R.string.status_off)
                 url.isEmpty() -> stringResource(R.string.setting_description_configure_opensubsonic_status_no_server)
                 else -> server.serverName()
             },

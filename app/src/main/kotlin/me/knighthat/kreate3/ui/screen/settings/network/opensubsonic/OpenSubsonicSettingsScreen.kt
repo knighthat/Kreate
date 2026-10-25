@@ -123,10 +123,17 @@ private fun StreamQuality.openSubsonicLabel(): String = when (this) {
 
 private fun String.shortFingerprint(): String = split(':').take(8).joinToString(":") + "…"
 
-private fun SyncMode.label(): String = when (this) {
-    SyncMode.OFF -> "Off"
-    SyncMode.LIKED -> "Liked only"
-    SyncMode.ALL -> "All"
+@Composable
+private fun syncModeLabel(): (SyncMode) -> String {
+    val off = stringResource(R.string.status_off)
+    val all = stringResource(R.string.all)
+    return { mode ->
+        when (mode) {
+            SyncMode.OFF -> off
+            SyncMode.LIKED -> "Liked only"
+            SyncMode.ALL -> all
+        }
+    }
 }
 
 /**
@@ -159,8 +166,8 @@ private fun CertificateChangedDialog(
                 )
             }
         },
-        confirmButton = { TextButton(onClick = onTrust) { Text("Trust new certificate") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Not now") } },
+        confirmButton = { TextButton(onClick = onTrust) { Text(stringResource(R.string.action_trust_new_certificate)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_not_now)) } },
     )
 }
 
@@ -185,8 +192,8 @@ private fun ForgetCertificateDialog(onForget: () -> Unit, onDismiss: () -> Unit)
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.setting_title_forget_certificate)) },
         text = { Text(stringResource(R.string.setting_description_forget_certificate)) },
-        confirmButton = { TextButton(onClick = onForget) { Text("Forget") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+        confirmButton = { TextButton(onClick = onForget) { Text(stringResource(R.string.action_forget)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
 
 /**
@@ -256,7 +263,7 @@ fun OpenSubsonicSettingsScreen(
     val password by Secrets.OPEN_SUBSONIC_PASSWORD.collectAsStateWithLifecycle()
     val apiKey by Secrets.OPEN_SUBSONIC_API_KEY.collectAsStateWithLifecycle()
 
-    SettingsPage("OpenSubsonic", onBack, modifier) {
+    SettingsPage(stringResource(R.string.source_opensubsonicapi), onBack, modifier) {
         MainSwitch(
             title = stringResource(
                 R.string.setting_title_use_opensubsonic,
@@ -383,14 +390,14 @@ fun OpenSubsonicSettingsScreen(
             title = stringResource(R.string.setting_title_show_albums),
             value = syncAlbums,
             options = SyncMode.entries,
-            label = SyncMode::label,
+            label = syncModeLabel(),
             onSelect = Preferences.OPEN_SUBSONIC_SYNC_ALBUMS::update,
         )
         ChoiceSetting(
             title = stringResource(R.string.setting_title_show_artists),
             value = syncArtists,
             options = SyncMode.entries,
-            label = SyncMode::label,
+            label = syncModeLabel(),
             onSelect = Preferences.OPEN_SUBSONIC_SYNC_ARTISTS::update,
         )
 

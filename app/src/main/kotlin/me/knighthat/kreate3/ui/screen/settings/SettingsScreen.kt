@@ -48,24 +48,24 @@ fun SettingsScreen(
 ) {
     val activeId by profileManager.activeId.collectAsStateWithLifecycle()
 
-    SettingsPage("Settings", onBack, modifier) {
+    SettingsPage(stringResource(R.string.screen_title_settings), onBack, modifier) {
         SettingsItem(
-            title = "General",
+            title = stringResource(R.string.screen_title_general),
             summary = stringResource(R.string.setting_description_general),
             onClick = { onOpen(GeneralSettings) },
         )
         SettingsItem(
-            title = "Player",
+            title = stringResource(R.string.screen_title_player),
             summary = stringResource(R.string.setting_description_player),
             onClick = { onOpen(PlayerSettings) },
         )
         SettingsItem(
-            title = "UI",
+            title = stringResource(R.string.screen_title_ui),
             summary = stringResource(R.string.setting_description_ui),
             onClick = { onOpen(UiSettings) },
         )
         SettingsItem(
-            title = "Network",
+            title = stringResource(R.string.screen_title_network),
             summary = stringResource(
                 R.string.setting_description_network,
                 stringResource(R.string.source_ytm)
@@ -75,7 +75,7 @@ fun SettingsScreen(
         // A backup holds every profile, so only the default one may save or replace them
         if (activeId == Profile.DEFAULT_ID)
             SettingsItem(
-                title = "Backup",
+                title = stringResource(R.string.screen_title_backup),
                 summary = stringResource(R.string.setting_description_backup),
                 onClick = { onOpen(BackupSettings) },
             )

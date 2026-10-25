@@ -87,6 +87,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -135,8 +136,13 @@ private const val PAGE_IMPORT = 2
 private const val PAGE_PROFILE = 3
 private const val PAGE_TERMS = 4
 
-private val PAGE_TITLES =
-    listOf("Welcome", "Permissions", "Import", "Basic settings", "Terms of service")
+private val PAGE_TITLES = listOf(
+    R.string.screen_title_welcome,
+    R.string.screen_title_permissions,
+    R.string.screen_title_import,
+    R.string.screen_title_basic_settings,
+    R.string.screen_title_terms_of_service,
+)
 
 /**
  * Keeps the backup at [uri], it is restored when the app starts after setup.
@@ -219,10 +225,13 @@ private fun Welcome() {
             Text("Dear User,", style = MaterialTheme.typography.headlineMedium)
             Text("A few quick steps and you are ready to listen. Here is what comes next:")
 
-            Entry(PAGE_TITLES[1], "Control what Kreate can and cannot do or see.")
-            Entry(PAGE_TITLES[2], "Bring over existing data from another machine or backup.")
-            Entry(PAGE_TITLES[3], "Taylor the app to your taste.")
-            Entry(PAGE_TITLES[4], "")
+            Entry(stringResource(PAGE_TITLES[1]), "Control what Kreate can and cannot do or see.")
+            Entry(
+                stringResource(PAGE_TITLES[2]),
+                "Bring over existing data from another machine or backup."
+            )
+            Entry(stringResource(PAGE_TITLES[3]), "Taylor the app to your taste.")
+            Entry(stringResource(PAGE_TITLES[4]), "")
         }
     }
 }
@@ -508,7 +517,7 @@ private fun WizardTopBar(page: Int) {
                     label = "wizard title",
                 ) {
                     Text(
-                        text = PAGE_TITLES[it],
+                        text = stringResource(PAGE_TITLES[it]),
                         style = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),

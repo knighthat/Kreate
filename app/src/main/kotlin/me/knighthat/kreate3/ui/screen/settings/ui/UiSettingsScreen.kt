@@ -50,7 +50,7 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     var appIcon by remember { mutableStateOf(AppIcon.current(context)) }
 
-    SettingsPage("UI", onBack, modifier) {
+    SettingsPage(stringResource(R.string.screen_title_ui), onBack, modifier) {
         SettingsSection(stringResource(R.string.setting_title_theme))
         ChoiceSetting(
             title = stringResource(R.string.setting_title_theme),

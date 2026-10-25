@@ -30,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
@@ -112,7 +113,7 @@ private fun HomeAlbumsContent(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     HomeScaffold(
-        title = Tab.ALBUMS.label,
+        title = stringResource(Tab.ALBUMS.title),
         choices = choices,
         selected = selected,
         onToggleOrigin = onToggleOrigin,

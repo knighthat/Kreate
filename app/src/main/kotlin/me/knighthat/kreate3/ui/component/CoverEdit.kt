@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.R
 
 /** How much a cover darkens under the handle or the remove button over it. */
@@ -65,7 +66,7 @@ internal fun BoxScope.DragHandle(handle: Modifier) = Box(
 ) {
     Icon(
         painterResource(R.drawable.drag_handle),
-        contentDescription = "Drag to move",
+        contentDescription = stringResource(R.string.semantic_drag_to_move),
         tint = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
@@ -86,7 +87,11 @@ internal fun BoxScope.CoverEditOverlay(
 ) = Crossfade(mode, Modifier.matchParentSize(), label = "cover") { shown ->
     when (shown) {
         CoverEditMode.NONE -> {}
-        CoverEditMode.REORDER -> CoverIcon(R.drawable.drag_handle, "Drag to move", handle)
+        CoverEditMode.REORDER -> CoverIcon(
+            R.drawable.drag_handle,
+            stringResource(R.string.semantic_drag_to_move),
+            handle
+        )
         CoverEditMode.REMOVE -> CoverIcon(
             icon = R.drawable.close,
             description = removeDescription,

@@ -100,6 +100,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -731,8 +732,8 @@ private fun NowPlayingPage(
                     enabled = reaction.reaction != null,
                     setIcon = R.drawable.thumb_down,
                     unsetIcon = R.drawable.thumb_down_outline,
-                    description = "Dislike",
-                    setDescription = "Remove dislike",
+                    description = stringResource(R.string.semantic_dislike),
+                    setDescription = stringResource(R.string.semantic_remove_dislike),
                     // Also takes it out of the queue
                     onClick = reaction.toggleDislike,
                 )
@@ -762,8 +763,8 @@ private fun NowPlayingPage(
                     enabled = reaction.reaction != null,
                     setIcon = R.drawable.thumb_up,
                     unsetIcon = R.drawable.thumb_up_outline,
-                    description = "Like",
-                    setDescription = "Remove like",
+                    description = stringResource(R.string.semantic_like),
+                    setDescription = stringResource(R.string.semantic_remove_like),
                     onClick = reaction.toggleLike,
                 )
             }
@@ -785,18 +786,30 @@ private fun NowPlayingPage(
             ) {
                 ModeButton(
                     icon = R.drawable.shuffle,
-                    description = if (isShuffled) "Shuffle on" else "Shuffle off",
+                    description = if (isShuffled) stringResource(R.string.semantic_shuffle_on) else stringResource(
+                        R.string.semantic_shuffle_off
+                    ),
                     isOn = isShuffled,
                     onClick = controller::toggleShuffle,
                 )
-                ControlButton(R.drawable.skip_previous, "Previous", controller::previous)
+                ControlButton(
+                    R.drawable.skip_previous,
+                    stringResource(R.string.semantic_previous),
+                    controller::previous
+                )
                 ControlButton(
                     icon = if (isPlaying) R.drawable.pause else R.drawable.play_arrow,
-                    description = if (isPlaying) "Pause" else "Play",
+                    description = if (isPlaying) stringResource(R.string.semantic_pause) else stringResource(
+                        R.string.semantic_play
+                    ),
                     onClick = controller::togglePlay,
                     iconSize = 56.dp,
                 )
-                ControlButton(R.drawable.skip_next, "Next", controller::next)
+                ControlButton(
+                    R.drawable.skip_next,
+                    stringResource(R.string.semantic_next),
+                    controller::next
+                )
                 ModeButton(
                     icon = if (repeatMode == RepeatMode.ONE) R.drawable.repeat_one else R.drawable.repeat,
                     description = when (repeatMode) {

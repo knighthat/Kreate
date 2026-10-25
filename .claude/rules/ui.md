@@ -34,9 +34,25 @@ paths:
   `unit_second` for `second` / `seconds`.
 - A status that belongs to one setting is `setting_description_{setting name}_status_*`, with the
   setting's name from its `setting_title_*` key (`setting_description_server_status_online`).
-- Not extracted yet, they stay literals: the title of a screen (the page that opens, in its top bar
-  and in the row that opens it), actions (the text of buttons: Save, Cancel, Sign out, …), statuses
-  (the general ones: Off, Not set, …) and the labels of a setting's values.
+- A single word that isn't tied to one setting is a string named after the word, with `action_` for
+  the text of a button and `status_` for a status: `action_save`, `status_off`. A unit symbol is one
+  too
+  (`mib`). `quoted` is `\"%1$s\"` and `percent` is `%1$d%%`.
+- An action and a title are separate strings, even when the English is the same: the `Search` button
+  is `action_search`, the title `Search` of a screen is its own key, never `action_search`.
+- The description of an icon for screen readers (`contentDescription`, the `description` of an icon
+  button) is `semantic_*`, separate from the action and the title of the same words:
+  `semantic_search`.
+- Strings only a preview shows (`KreateThemePreview.kt`) are not extracted.
+- An action can be several words (`action_sign_out`). The Context a view model needs for its strings
+  is injected (`private val context: Context`, Koin provides it), never read from a global.
+- The title of a screen (its top bar, the label of its tab, the row that opens it, a page of the
+  setup
+  wizard) is `screen_title_*`, so the titles
+  of every screen group together: `screen_title_network`. The `YouTube` and `OpenSubsonic` screens
+  use `source_ytm` and `source_opensubsonicapi`.
+- Not extracted yet, they stay literals: the labels of a setting's values. Protocol names (`HTTP`,
+  `SOCKS5`) and examples are never translated and stay literals for good.
 
 ## Covers
 
