@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.KreateApplication
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.backup.BackupException
 import me.knighthat.kreate3.notification.AppChannel
@@ -71,13 +72,20 @@ class BackupViewModel(
         return "kreate_backup_${version}_$time.zip"
     }
 
-    fun export(uri: Uri) = run(BackupTask.EXPORT, "Couldn't save the backup") {
+    fun export(uri: Uri) = run(
+        BackupTask.EXPORT,
+        context.getString(R.string.setting_description_back_up_status_failed)
+    ) {
         backup.export(openStream { context.contentResolver.openOutputStream(uri, "wt") })
-        notifier.post("Backup saved")
+        notifier.post(context.getString(R.string.setting_description_back_up_status_saved))
     }
 
     /** Restores the backup at [uri], the app restarts when it can be restored. */
-    fun restore(uri: Uri) = run(BackupTask.RESTORE, "Couldn't read the backup", AppChannel.OTHER) {
+    fun restore(uri: Uri) = run(
+        BackupTask.RESTORE,
+        context.getString(R.string.setting_description_restore_status_failed),
+        AppChannel.OTHER,
+    ) {
         backup.stage(openStream { context.contentResolver.openInputStream(uri) })
         (context.applicationContext as KreateApplication).restart()
     }

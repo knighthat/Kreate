@@ -18,10 +18,12 @@
 
 package me.knighthat.kreate3.ui.screen.settings.network.youtube
 
+import androidx.annotation.StringRes
 import androidx.webkit.ProxyConfig
 import androidx.webkit.ProxyController
 import androidx.webkit.WebViewFeature
 import kotlinx.coroutines.suspendCancellableCoroutine
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.ProxyType
 import me.knighthat.kreate3.provider.SourceProxy
 import kotlin.coroutines.resume
@@ -38,7 +40,7 @@ internal sealed interface SignInProxy {
     data class Applied(val proxy: SourceProxy.Ready) : SignInProxy
 
     /** Not at all: the page would skip YouTube's proxy, [reason] tells the user why. */
-    data class Unavailable(val reason: String) : SignInProxy
+    data class Unavailable(@StringRes val reason: Int) : SignInProxy
 }
 
 /**
@@ -50,15 +52,15 @@ internal suspend fun useInWebViews(proxy: SourceProxy): SignInProxy = when (prox
     SourceProxy.Off -> SignInProxy.Direct
 
     SourceProxy.Incomplete ->
-        SignInProxy.Unavailable("Set the host and port of the proxy first")
+        SignInProxy.Unavailable(R.string.setting_description_sign_in_proxy_incomplete)
 
     is SourceProxy.Ready -> when {
         !WebViewFeature.isFeatureSupported(WebViewFeature.PROXY_OVERRIDE) ->
-            SignInProxy.Unavailable("This device's WebView can't use a proxy, the sign in page would skip it")
+            SignInProxy.Unavailable(R.string.setting_description_sign_in_proxy_unsupported)
 
         // Chromium has no sign in for SOCKS proxies
         proxy.type == ProxyType.SOCKS && proxy.username.isNotEmpty() ->
-            SignInProxy.Unavailable("The sign in page can't sign in to a SOCKS5 proxy. Sign in through an HTTP proxy, or a SOCKS5 one without a username")
+            SignInProxy.Unavailable(R.string.setting_description_sign_in_proxy_socks_username)
 
         else -> {
             val scheme = if (proxy.type == ProxyType.SOCKS) "socks5" else "http"

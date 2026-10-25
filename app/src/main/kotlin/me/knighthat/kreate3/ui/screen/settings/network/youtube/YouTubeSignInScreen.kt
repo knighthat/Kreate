@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -133,7 +134,7 @@ fun YouTubeSignInScreen(
                     .padding(24.dp),
             ) {
                 if (current is SignInProxy.Unavailable)
-                    Text(current.reason, textAlign = TextAlign.Center)
+                    Text(stringResource(current.reason), textAlign = TextAlign.Center)
                 else CircularProgressIndicator()
             }
             return@DetailScaffold

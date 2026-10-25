@@ -19,6 +19,8 @@ package me.knighthat.kreate3.ui.screen.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
@@ -38,14 +40,14 @@ fun StreamQualitySettings(
     val onMobile by mobile.collectAsStateWithLifecycle()
 
     SliderSetting(
-        title = "On Wi-Fi",
+        title = stringResource(R.string.setting_title_on_wifi),
         value = onWifi.offeredIn(options),
         options = options,
         label = label,
         onSelect = wifi::update,
     )
     SliderSetting(
-        title = "On mobile data",
+        title = stringResource(R.string.setting_title_on_mobile_data),
         value = onMobile.offeredIn(options),
         options = options,
         label = label,

@@ -21,6 +21,9 @@ package me.knighthat.kreate3.ui.screen.settings.general
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
@@ -29,8 +32,6 @@ import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
 
 private const val MIB = 1024L * 1024
-
-private const val NEXT_LAUNCH = "Applies from the next launch"
 
 /**
  * How the app behaves: scanning the device, keeping songs and images, and leaving the app.
@@ -47,80 +48,83 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val exitTimeout by Preferences.EXIT_CONFIRMATION_TIMEOUT.collectAsStateWithLifecycle()
 
     SettingsPage("General", onBack, modifier) {
-        SettingsSection("Library")
+        SettingsSection(stringResource(R.string.setting_header_library))
         NumberSetting(
-            title = "Scan interval",
+            title = stringResource(R.string.setting_title_scan_interval),
             value = scanInterval.toLong(),
-            unit = "minutes",
+            unit = pluralStringResource(R.plurals.unit_minute, scanInterval),
             min = 15,
             max = 24 * 60,
             onSave = { Preferences.LOCAL_SCAN_INTERVAL.update(it.toInt()) },
-            note = "How often the device is searched for new music",
+            note = stringResource(R.string.setting_description_scan_interval),
         )
 
-        SettingsSection("Songs")
+        SettingsSection(stringResource(R.string.setting_header_songs))
         NumberSetting(
-            title = "Cache",
+            title = stringResource(R.string.setting_title_cache),
             value = songCache / MIB,
             unit = "MiB",
             min = 128,
             max = 32 * 1024,
             onSave = { Preferences.MEDIA3_CACHE_SIZE.update(it * MIB) },
-            note = "Songs streamed from a server or YouTube. $NEXT_LAUNCH",
+            note = stringResource(
+                R.string.setting_description_cache,
+                stringResource(R.string.source_ytm)
+            ),
         )
         NumberSetting(
-            title = "Downloads",
+            title = stringResource(R.string.setting_title_downloads),
             value = songDownloads / MIB,
             unit = "MiB",
             min = 128,
             max = 256 * 1024,
             onSave = { Preferences.MEDIA3_DOWNLOAD_SIZE.update(it * MIB) },
-            note = "Songs kept to play offline, separate from the cache",
+            note = stringResource(R.string.setting_description_downloads),
         )
 
-        SettingsSection("Images")
+        SettingsSection(stringResource(R.string.setting_header_images))
         NumberSetting(
-            title = "Disk cache",
+            title = stringResource(R.string.setting_title_disk_cache),
             value = diskCache / MIB,
             unit = "MiB",
             min = 16,
             max = 4096,
             onSave = { Preferences.IMAGE_DISK_CACHE.update(it * MIB) },
-            note = NEXT_LAUNCH,
+            note = stringResource(R.string.setting_description_next_launch),
         )
         NumberSetting(
-            title = "Memory cache",
+            title = stringResource(R.string.setting_title_memory_cache),
             value = Math.round(memoryCache * 100),
-            unit = "% of app memory",
+            unit = stringResource(R.string.setting_description_percent_of_app_memory),
             min = 5,
             max = 50,
             onSave = { Preferences.IMAGE_MEMORY_CACHE_PERCENT.update(it / 100.0) },
-            note = NEXT_LAUNCH,
+            note = stringResource(R.string.setting_description_next_launch),
         )
 
-        SettingsSection("Navigation")
+        SettingsSection(stringResource(R.string.setting_header_navigation))
         SwitchSetting(
-            title = "Don't exit with back",
+            title = stringResource(R.string.setting_title_dont_exit_with_back),
             checked = exitDisabled,
             onCheckedChange = { Preferences.BACK_EXIT_DISABLED.update(it) },
-            summary = "Going back from the first screen does nothing",
+            summary = stringResource(R.string.setting_description_dont_exit_with_back),
         )
         if (!exitDisabled) {
             SwitchSetting(
-                title = "Confirm exit",
+                title = stringResource(R.string.setting_title_confirm_exit),
                 checked = exitConfirmation,
                 onCheckedChange = { Preferences.EXIT_CONFIRMATION.update(it) },
-                summary = "Go back twice from the first screen to exit",
+                summary = stringResource(R.string.setting_description_confirm_exit),
             )
             if (exitConfirmation)
                 NumberSetting(
-                    title = "Confirmation time",
+                    title = stringResource(R.string.setting_title_confirmation_time),
                     value = exitTimeout.toLong(),
-                    unit = "seconds",
+                    unit = pluralStringResource(R.plurals.unit_second, exitTimeout),
                     min = 1,
                     max = 10,
                     onSave = { Preferences.EXIT_CONFIRMATION_TIMEOUT.update(it.toInt()) },
-                    note = "How long the second time is waited for",
+                    note = stringResource(R.string.setting_description_confirmation_time),
                 )
         }
     }

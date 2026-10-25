@@ -48,11 +48,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
 import kotlin.math.roundToInt
 
@@ -351,6 +353,8 @@ fun NumberSetting(
     modifier: Modifier = Modifier,
     note: String? = null,
 ) {
+    val outOfRange = stringResource(R.string.setting_description_between, min, max)
+
     TextSetting(
         title = title,
         value = value.toString(),
@@ -360,7 +364,7 @@ fun NumberSetting(
         keyboardType = KeyboardType.Number,
         validate = {
             val number = it.toLongOrNull()
-            if (number == null || number !in min..max) "Between $min and $max" else null
+            if (number == null || number !in min..max) outOfRange else null
         },
     )
 }

@@ -21,7 +21,9 @@ package me.knighthat.kreate3.ui.screen.settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.preferences.Profile
 import me.knighthat.kreate3.preferences.ProfileManager
 import me.knighthat.kreate3.ui.navigation.BackupSettings
@@ -49,29 +51,32 @@ fun SettingsScreen(
     SettingsPage("Settings", onBack, modifier) {
         SettingsItem(
             title = "General",
-            summary = "How the app behaves",
+            summary = stringResource(R.string.setting_description_general),
             onClick = { onOpen(GeneralSettings) },
         )
         SettingsItem(
             title = "Player",
-            summary = "How songs play and what is kept of them",
+            summary = stringResource(R.string.setting_description_player),
             onClick = { onOpen(PlayerSettings) },
         )
         SettingsItem(
             title = "UI",
-            summary = "Theme and what you interact with",
+            summary = stringResource(R.string.setting_description_ui),
             onClick = { onOpen(UiSettings) },
         )
         SettingsItem(
             title = "Network",
-            summary = "Connections, your music server and YouTube account",
+            summary = stringResource(
+                R.string.setting_description_network,
+                stringResource(R.string.source_ytm)
+            ),
             onClick = { onOpen(NetworkSettings) },
         )
         // A backup holds every profile, so only the default one may save or replace them
         if (activeId == Profile.DEFAULT_ID)
             SettingsItem(
                 title = "Backup",
-                summary = "Save or restore your profiles, settings and library",
+                summary = stringResource(R.string.setting_description_backup),
                 onClick = { onOpen(BackupSettings) },
             )
     }

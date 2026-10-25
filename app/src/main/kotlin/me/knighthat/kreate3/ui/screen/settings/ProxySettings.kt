@@ -20,7 +20,9 @@ package me.knighthat.kreate3.ui.screen.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.ProxyType
 import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.preferences.Preferences
@@ -36,16 +38,26 @@ private fun ProxyType.label(): String = when (this) {
  * A host name or an IP address, without a scheme, a port or a path. An empty one is accepted,
  * it clears the host.
  *
- * @return the reason the host is not acceptable, `null` when it is
+ * @return a check that gives the reason the host is not acceptable, `null` when it is
  */
-private fun validateHost(host: String): String? = when {
-    "://" in host -> "Leave out the scheme, like http://"
-    host.any { it.isWhitespace() || it == '/' } -> "Only the host name or IP address"
-    else -> null
+@Composable
+private fun hostValidator(): (String) -> String? {
+    val scheme = stringResource(R.string.setting_description_host_scheme)
+    val hostOnly = stringResource(R.string.setting_description_host_only)
+    return { host ->
+        when {
+            "://" in host -> scheme
+            host.any { it.isWhitespace() || it == '/' } -> hostOnly
+            else -> null
+        }
+    }
 }
 
-private fun validatePort(port: String): String? =
-    if (port.isEmpty() || port.toIntOrNull() in 1..65535) null else "A port from 1 to 65535"
+@Composable
+private fun portValidator(): (String) -> String? {
+    val range = stringResource(R.string.setting_description_port_range)
+    return { port -> if (port.isEmpty() || port.toIntOrNull() in 1..65535) null else range }
+}
 
 /**
  * The proxy every request of a source, or of the whole app, goes through: whether it is used,
@@ -72,18 +84,24 @@ fun ProxySettings(
     val secret by password.collectAsStateWithLifecycle()
     val appProxy by Preferences.NETWORK_PROXY_ENABLED.collectAsStateWithLifecycle()
 
-    val incomplete = on && (address.isBlank() || number == 0)
-    SettingsSection("Proxy")
-    SwitchSetting(
-        title = "Use a proxy",
-        summary = when {
-            source == null && incomplete ->
-                "Nothing is sent until the host and port are set, except to sources with a proxy of their own"
+    val validateHost = hostValidator()
+    val validatePort = portValidator()
 
-            source == null -> "Every request goes through it, except to sources with a proxy of their own"
-            incomplete -> "Nothing is sent to $source until the host and port are set"
-            !on && appProxy -> "Off, requests to $source go through the proxy on the Network page"
-            else -> "Every request to $source goes through it"
+    val incomplete = on && (address.isBlank() || number == 0)
+    SettingsSection(stringResource(R.string.setting_header_proxy))
+    SwitchSetting(
+        title = stringResource(R.string.setting_title_use_a_proxy),
+        summary = when {
+            source == null && incomplete -> stringResource(R.string.setting_description_proxy_app_incomplete)
+
+            source == null -> stringResource(R.string.setting_description_proxy_app)
+            incomplete -> stringResource(
+                R.string.setting_description_proxy_source_incomplete,
+                source
+            )
+
+            !on && appProxy -> stringResource(R.string.setting_description_proxy_source_off, source)
+            else -> stringResource(R.string.setting_description_proxy_source, source)
         },
         checked = on,
         onCheckedChange = enabled::update,
@@ -92,36 +110,36 @@ fun ProxySettings(
     if (!on) return
 
     ChoiceSetting(
-        title = "Type",
+        title = stringResource(R.string.setting_title_type),
         value = kind,
         options = ProxyType.entries,
         label = ProxyType::label,
         onSelect = type::update,
     )
     TextSetting(
-        title = "Host",
+        title = stringResource(R.string.setting_title_host),
         value = address,
         placeholder = "proxy.example.com",
         keyboardType = KeyboardType.Uri,
-        validate = ::validateHost,
+        validate = validateHost,
         onSave = { host.update(it.trim()) },
     )
     TextSetting(
-        title = "Port",
+        title = stringResource(R.string.setting_title_port),
         value = if (number == 0) "" else number.toString(),
         keyboardType = KeyboardType.Number,
         validate = { validatePort(it.trim()) },
         onSave = { port.update(it.trim().toIntOrNull() ?: 0) },
     )
     TextSetting(
-        title = "Username",
+        title = stringResource(R.string.setting_title_username),
         value = user,
-        summary = user.ifEmpty { "None, the proxy needs no sign in" },
+        summary = user.ifEmpty { stringResource(R.string.setting_description_username_status_none) },
         onSave = { username.update(it.trim()) },
     )
     if (user.isNotEmpty())
         TextSetting(
-            title = "Password",
+            title = stringResource(R.string.setting_title_password),
             value = secret,
             summary = if (secret.isEmpty()) "" else "•".repeat(8),
             hidden = true,

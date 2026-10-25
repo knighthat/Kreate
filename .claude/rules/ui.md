@@ -21,6 +21,23 @@ paths:
   Music and OpenSubsonic logos are the maintainer's choice and the trademark risk was discussed:
   don't raise it again or swap in a generic icon unless asked.
 
+## Strings
+
+- Every placeholder in `strings.xml` and `plurals.xml` is positional, even when there is only one:
+  `%1$s`, `%1$d`, never `%s` or `%d`. Translations reorder them.
+- Never write a source's name inside another string: `source_ytm` and `source_opensubsonicapi`
+  carry them, pass those as the arguments (
+  `stringResource(R.string.x, stringResource(R.string.source_ytm))`).
+- Settings texts are `setting_title_*`, `setting_description_*` and, for the header that names a
+  group of rows (`SettingsSection`), `setting_header_*`. A header and a row with the same text share
+  one key, whichever prefix it has. A plural is `second` for `%1$d second` / `%1$d seconds`, or
+  `unit_second` for `second` / `seconds`.
+- A status that belongs to one setting is `setting_description_{setting name}_status_*`, with the
+  setting's name from its `setting_title_*` key (`setting_description_server_status_online`).
+- Not extracted yet, they stay literals: the title of a screen (the page that opens, in its top bar
+  and in the row that opens it), actions (the text of buttons: Save, Cancel, Sign out, …), statuses
+  (the general ones: Off, Not set, …) and the labels of a setting's values.
+
 ## Covers
 
 - Cover fallback lives only in `Thumbnail` (`ItemParts.kt`: `image_not_available` while there's no

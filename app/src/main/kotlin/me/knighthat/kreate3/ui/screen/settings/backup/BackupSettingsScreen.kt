@@ -35,6 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.R
@@ -73,8 +74,10 @@ fun BackupSettingsScreen(
 
             TileButton(
                 icon = R.drawable.upload,
-                title = if (working == BackupTask.RESTORE) "Reading…" else "Restore",
-                subtitle = "Replace everything with a backup. The app restarts after a restore.",
+                title = if (working == BackupTask.RESTORE) stringResource(R.string.setting_description_restore_status_reading) else stringResource(
+                    R.string.setting_title_restore
+                ),
+                subtitle = stringResource(R.string.setting_description_restore),
                 onClick = {
                     if (working == null) confirmRestore = true
                 },
@@ -84,8 +87,10 @@ fun BackupSettingsScreen(
             )
             TileButton(
                 icon = R.drawable.download,
-                title = if (working == BackupTask.EXPORT) "Saving…" else "Back up",
-                subtitle = "Save your profiles, settings and library to a file. Passwords and sign ins stay on this device, they are never in a backup.",
+                title = if (working == BackupTask.EXPORT) stringResource(R.string.setting_description_back_up_status_saving) else stringResource(
+                    R.string.setting_title_back_up
+                ),
+                subtitle = stringResource(R.string.setting_description_back_up),
                 onClick = {
                     if (working == null) exportTo.launch(viewModel.fileName())
                 },
@@ -99,13 +104,9 @@ fun BackupSettingsScreen(
     if (confirmRestore)
         AlertDialog(
             onDismissRequest = { confirmRestore = false },
-            title = { Text("Restore a backup?") },
+            title = { Text(stringResource(R.string.setting_title_restore_a_backup)) },
             text = {
-                Text(
-                    "Every profile, setting and the library are replaced with the backup's, then " +
-                            "the app restarts. Passwords and sign ins of profiles in the backup " +
-                            "that are on this device are kept."
-                )
+                Text(stringResource(R.string.setting_description_restore_a_backup))
             },
             confirmButton = {
                 TextButton(

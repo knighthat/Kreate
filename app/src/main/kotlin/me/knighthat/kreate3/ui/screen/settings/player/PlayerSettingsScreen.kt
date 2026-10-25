@@ -21,6 +21,9 @@ package me.knighthat.kreate3.ui.screen.settings.player
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.AutoTapAction
 import me.knighthat.kreate3.constant.SleepTimerStep
 import me.knighthat.kreate3.lyrics.LyricsFinder
@@ -65,131 +68,131 @@ fun PlayerSettingsScreen(
     val autoPlaylistTap by Preferences.AUTO_PLAYLIST_TAP.collectAsStateWithLifecycle()
 
     SettingsPage("Player", onBack, modifier) {
-        SettingsSection("Queue")
+        SettingsSection(stringResource(R.string.setting_header_queue))
         SwitchSetting(
-            title = "Radio from Songs",
+            title = stringResource(R.string.setting_title_radio_from_songs),
             checked = homeTapRadio,
             onCheckedChange = { Preferences.HOME_SONGS_TAP_RADIO.update(it) },
             summary = if (homeTapRadio)
-                "A song tapped in Songs plays with songs like it"
+                stringResource(R.string.setting_description_radio_from_songs_on)
             else
-                "A song tapped in Songs plays with the songs below it",
+                stringResource(R.string.setting_description_radio_from_songs_off),
         )
         SwitchSetting(
-            title = "Radio from search",
+            title = stringResource(R.string.setting_title_radio_from_search),
             checked = searchTapRadio,
             onCheckedChange = { Preferences.SEARCH_SONGS_TAP_RADIO.update(it) },
             summary = if (searchTapRadio)
-                "A song tapped in search results plays with songs like it"
+                stringResource(R.string.setting_description_radio_from_search_on)
             else
-                "A song tapped in search results plays with the results below it",
+                stringResource(R.string.setting_description_radio_from_search_off),
         )
         SwitchSetting(
-            title = "Keep the queue",
+            title = stringResource(R.string.setting_title_keep_the_queue),
             checked = queuePersisted,
             onCheckedChange = { Preferences.PERSISTENT_QUEUE_ENABLED.update(it) },
-            summary = "Pick up where you left off after the app closes",
+            summary = stringResource(R.string.setting_description_keep_the_queue),
         )
         if (queuePersisted)
             NumberSetting(
-                title = "Save interval",
+                title = stringResource(R.string.setting_title_save_interval),
                 value = queueSaveInterval.toLong(),
-                unit = "seconds",
+                unit = pluralStringResource(R.plurals.unit_second, queueSaveInterval),
                 min = 1,
                 max = 5 * 60,
                 onSave = { Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL.update(it.toInt()) },
-                note = "How often the place in the song is saved while it plays",
+                note = stringResource(R.string.setting_description_save_interval),
             )
         SliderSetting(
-            title = "Load the next song ahead",
+            title = stringResource(R.string.setting_title_load_next_song_ahead),
             value = preloadSeconds,
             options = PRELOAD_SECONDS,
             label = { if (it == 0) "Off" else "$it seconds" },
             onSelect = { Preferences.PLAYBACK_PRELOAD_SECONDS.update(it) },
         )
 
-        SettingsSection("Sleep timer")
+        SettingsSection(stringResource(R.string.setting_header_sleep_timer))
         ChoiceSetting(
-            title = "Remove button",
+            title = stringResource(R.string.setting_title_remove_button),
             value = sleepTimerRemove,
             options = SleepTimerStep.entries,
             label = { it.label },
             onSelect = { Preferences.SLEEP_TIMER_REMOVE_STEP.update(it) },
         )
         ChoiceSetting(
-            title = "Add button",
+            title = stringResource(R.string.setting_title_add_button),
             value = sleepTimerAdd,
             options = SleepTimerStep.entries,
             label = { it.label },
             onSelect = { Preferences.SLEEP_TIMER_ADD_STEP.update(it) },
         )
 
-        SettingsSection("History")
+        SettingsSection(stringResource(R.string.setting_header_history))
         SwitchSetting(
-            title = "Pause history",
+            title = stringResource(R.string.setting_title_pause_history),
             checked = historyPaused,
             onCheckedChange = { Preferences.PLAYBACK_HISTORY_PAUSED.update(it) },
-            summary = "Songs played meanwhile aren't added to the history",
+            summary = stringResource(R.string.setting_description_pause_history),
         )
         NumberSetting(
-            title = "Minimum play time",
+            title = stringResource(R.string.setting_title_minimum_play_time),
             value = historyMinSeconds.toLong(),
-            unit = "seconds",
+            unit = pluralStringResource(R.plurals.unit_second, historyMinSeconds),
             min = 1,
             max = 10 * 60,
             onSave = { Preferences.PLAYBACK_HISTORY_MIN_SECONDS.update(it.toInt()) },
-            note = "Songs played for less aren't added to the history. Pauses and loading don't count",
+            note = stringResource(R.string.setting_description_minimum_play_time),
         )
 
-        SettingsSection("Lyrics")
+        SettingsSection(stringResource(R.string.setting_header_lyrics))
         ChoiceSetting(
-            title = "Lyrics source",
+            title = stringResource(R.string.setting_title_lyrics_source),
             value = lyrics.source(lyricsSource) ?: lyrics.sources.first(),
             options = lyrics.sources,
             label = { it.name },
             onSelect = { Preferences.LYRICS_SOURCE.update(it.provider) },
         )
         ChoiceSetting(
-            title = "Preferred timing",
+            title = stringResource(R.string.setting_title_preferred_timing),
             value = lyricsSync,
             options = LyricsSync.entries.reversed(),
             label = { it.label },
             onSelect = { Preferences.LYRICS_SYNC.update(it) },
         )
         SwitchSetting(
-            title = "Always fetch lyrics",
+            title = stringResource(R.string.setting_title_always_fetch_lyrics),
             checked = lyricsAlwaysLive,
             onCheckedChange = { Preferences.LYRICS_ALWAYS_LIVE.update(it) },
             summary = if (lyricsAlwaysLive)
-                "Lyrics are fetched each time they show, and not saved"
+                stringResource(R.string.setting_description_always_fetch_lyrics_on)
             else
-                "Saved lyrics of the source show without fetching",
+                stringResource(R.string.setting_description_always_fetch_lyrics_off),
         )
         SliderSetting(
-            title = "Text size",
+            title = stringResource(R.string.setting_title_text_size),
             value = lyricsTextSize,
             options = LYRICS_TEXT_SIZES.toList(),
             label = { "$it%" },
             onSelect = { Preferences.LYRICS_TEXT_SIZE.update(it) },
         )
 
-        SettingsSection("Android Auto")
+        SettingsSection(stringResource(R.string.setting_header_android_auto))
         ChoiceSetting(
-            title = "Tapping an album",
+            title = stringResource(R.string.setting_title_tapping_an_album),
             value = autoAlbumTap,
             options = AutoTapAction.entries,
             label = { it.label },
             onSelect = { Preferences.AUTO_ALBUM_TAP.update(it) },
         )
         ChoiceSetting(
-            title = "Tapping an artist",
+            title = stringResource(R.string.setting_title_tapping_an_artist),
             value = autoArtistTap,
             options = AutoTapAction.entries,
             label = { it.label },
             onSelect = { Preferences.AUTO_ARTIST_TAP.update(it) },
         )
         ChoiceSetting(
-            title = "Tapping a playlist",
+            title = stringResource(R.string.setting_title_tapping_a_playlist),
             value = autoPlaylistTap,
             options = AutoTapAction.entries,
             label = { it.label },

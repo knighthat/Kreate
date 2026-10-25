@@ -25,7 +25,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.AppIcon
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.preferences.Preferences
@@ -49,39 +51,39 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     var appIcon by remember { mutableStateOf(AppIcon.current(context)) }
 
     SettingsPage("UI", onBack, modifier) {
-        SettingsSection("Theme")
+        SettingsSection(stringResource(R.string.setting_title_theme))
         ChoiceSetting(
-            title = "Theme",
+            title = stringResource(R.string.setting_title_theme),
             value = themeMode,
             options = ThemeMode.entries,
             label = ThemeMode::prettyName,
             onSelect = Preferences.THEME_MODE::update,
         )
         ChoiceSetting(
-            title = "Contrast",
+            title = stringResource(R.string.setting_title_contrast),
             value = contrastLevel,
             options = ContrastLevel.entries,
             label = ContrastLevel::prettyName,
             onSelect = Preferences.CONTRAST_LEVEL::update,
         )
 
-        SettingsSection("Layout")
+        SettingsSection(stringResource(R.string.setting_header_layout))
         SwitchSetting(
-            title = "Icon only",
+            title = stringResource(R.string.setting_title_icon_only),
             checked = iconOnly,
             onCheckedChange = Preferences.ICON_ONLY::update,
-            summary = "Hide the text of the bottom bar, origin chips and quick actions",
+            summary = stringResource(R.string.setting_description_icon_only),
         )
         SwitchSetting(
-            title = "Playlist initial",
+            title = stringResource(R.string.setting_title_playlist_initial),
             checked = playlistInitial,
             onCheckedChange = Preferences.PLAYLIST_INITIAL::update,
-            summary = "Playlists without covers show the first letter of their name instead of an icon",
+            summary = stringResource(R.string.setting_description_playlist_initial),
         )
 
-        SettingsSection("Launcher")
+        SettingsSection(stringResource(R.string.setting_header_launcher))
         ChoiceSetting(
-            title = "App icon",
+            title = stringResource(R.string.setting_title_app_icon),
             value = appIcon,
             options = AppIcon.entries,
             label = AppIcon::prettyName,

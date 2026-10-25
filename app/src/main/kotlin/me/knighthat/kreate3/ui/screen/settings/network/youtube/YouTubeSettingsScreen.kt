@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.preferences.Preferences
@@ -68,8 +69,14 @@ fun YouTubeSettingsScreen(
 
     SettingsPage("YouTube", onBack, modifier) {
         MainSwitch(
-            title = "Use YouTube account",
-            summary = "YouTube is used signed out while this is off",
+            title = stringResource(
+                R.string.setting_title_use_youtube_account,
+                stringResource(R.string.source_ytm)
+            ),
+            summary = stringResource(
+                R.string.setting_description_use_youtube_account,
+                stringResource(R.string.source_ytm)
+            ),
             checked = enabled,
             onCheckedChange = viewModel::setEnabled,
         )
@@ -77,51 +84,57 @@ fun YouTubeSettingsScreen(
         // The session stays when hidden, it is used again once the setting is back on
         if (enabled) {
 
-            SettingsSection("Account")
+            SettingsSection(stringResource(R.string.setting_title_account))
             when (val state = account) {
                 YouTubeAccountState.SignedOut -> SettingsItem(
-                    title = "Sign in",
-                    summary =
-                        "Brings your albums, artists and playlists, and makes suggestions yours",
+                    title = stringResource(R.string.setting_title_sign_in),
+                    summary = stringResource(R.string.setting_description_sign_in_youtube),
                     onClick = onSignIn,
                 )
 
                 YouTubeAccountState.Checking ->
-                    SettingsItem(title = "Account", summary = "Checking…")
+                    SettingsItem(
+                        title = stringResource(R.string.setting_title_account),
+                        summary = stringResource(R.string.setting_description_account_status_checking)
+                    )
 
                 is YouTubeAccountState.SignedIn -> SettingsItem(
                     title = state.account.name,
-                    summary = state.account.handle ?: "Signed in",
+                    summary = state.account.handle
+                        ?: stringResource(R.string.setting_description_account_status_signed_in),
                     onClick = if (canSwitch) ({ pickChannel = true }) else null,
                     trailing = if (canSwitch) ({
                         Icon(
                             painterResource(R.drawable.chevron_right),
-                            contentDescription = "Switch channel"
+                            contentDescription = stringResource(R.string.setting_title_switch_channel)
                         )
                     }) else null,
                 )
 
                 YouTubeAccountState.Ended -> SettingsItem(
                     title = "Signed out by YouTube",
-                    summary = "The session ended, tap to sign in again",
+                    summary = stringResource(R.string.setting_description_account_status_session_ended),
                     onClick = onSignIn,
                 )
 
                 is YouTubeAccountState.Failed -> SettingsItem(
-                    title = "Account",
-                    summary = "${state.reason}, tap to try again",
+                    title = stringResource(R.string.setting_title_account),
+                    summary = stringResource(
+                        R.string.setting_description_account_status_failed,
+                        state.reason
+                    ),
                     onClick = viewModel::retry,
                 )
             }
             if (account != YouTubeAccountState.SignedOut) {
                 SettingsItem(
-                    title = "Sign out",
-                    summary = "Your liked songs stay in this profile",
+                    title = stringResource(R.string.setting_title_sign_out),
+                    summary = stringResource(R.string.setting_description_sign_out),
                     onClick = { askSignOut = true },
                 )
 
-                SettingsSection("Library")
-                LibrarySyncSettings({ it.youTubeSyncSetting }, "on YouTube", viewModel::setSyncing)
+                SettingsSection(stringResource(R.string.setting_header_library))
+                LibrarySyncSettings({ it.youTubeSyncSetting }, viewModel::setSyncing)
             }
             if (pickChannel && canSwitch)
                 YouTubeChannelPicker(
@@ -136,8 +149,22 @@ fun YouTubeSettingsScreen(
             if (askSignOut)
                 AlertDialog(
                     onDismissRequest = { askSignOut = false },
-                    title = { Text("Sign out of YouTube?") },
-                    text = { Text("Your YouTube library stops showing here, the songs you liked stay liked. You can sign in again any time.") },
+                    title = {
+                        Text(
+                            stringResource(
+                                R.string.setting_title_sign_out_of_youtube,
+                                stringResource(R.string.source_ytm)
+                            )
+                        )
+                    },
+                    text = {
+                        Text(
+                            stringResource(
+                                R.string.setting_description_sign_out_of_youtube,
+                                stringResource(R.string.source_ytm)
+                            )
+                        )
+                    },
                     confirmButton = {
                         TextButton(onClick = {
                             askSignOut = false
@@ -151,12 +178,12 @@ fun YouTubeSettingsScreen(
         }
 
         // YouTube plays signed out too, only Original needs the account
-        SettingsSection("Playback")
+        SettingsSection(stringResource(R.string.setting_header_playback))
         YouTubeQualitySettings(signedIn = enabled && account is YouTubeAccountState.SignedIn)
 
         // Signed out requests go through it too
         ProxySettings(
-            source = "YouTube",
+            source = stringResource(R.string.source_ytm),
             enabled = Preferences.YOUTUBE_PROXY_ENABLED,
             type = Preferences.YOUTUBE_PROXY_TYPE,
             host = Preferences.YOUTUBE_PROXY_HOST,

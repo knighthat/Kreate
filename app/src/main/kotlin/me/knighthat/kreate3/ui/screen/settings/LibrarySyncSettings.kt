@@ -20,28 +20,47 @@ package me.knighthat.kreate3.ui.screen.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.preferences.Preference
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.LibrarySection
 
 /**
- * A switch for each [LibrarySection] of a source: the liked songs are synced, the others show.
+ * A switch for each [LibrarySection] of YouTube: the liked songs are synced, the others show.
  *
  * @param setting the setting of a section, like `youTubeSyncSetting`
- * @param where what the user's library is called on the source, like "on YouTube"
  */
 @Composable
 internal fun LibrarySyncSettings(
     setting: (LibrarySection) -> Preference<Boolean>,
-    where: String,
     onSyncChange: (LibrarySection, Boolean) -> Unit,
 ) = LibrarySection.entries.forEach { section ->
     val syncs by setting(section).collectAsStateWithLifecycle()
     val (title, summary) = when (section) {
-        LibrarySection.SONGS -> "Sync liked songs" to "The songs you liked $where are liked here too"
-        LibrarySection.ALBUMS -> "Show albums" to "The albums you saved $where show in your library"
-        LibrarySection.ARTISTS -> "Show artists" to "The artists you follow $where show in your library"
-        LibrarySection.PLAYLISTS -> "Show playlists" to "Your playlists $where show in your library"
+        LibrarySection.SONGS ->
+            stringResource(R.string.setting_title_sync_liked_songs) to stringResource(
+                R.string.setting_description_sync_songs_youtube,
+                stringResource(R.string.source_ytm)
+            )
+
+        LibrarySection.ALBUMS ->
+            stringResource(R.string.setting_title_show_albums) to stringResource(
+                R.string.setting_description_show_albums_youtube,
+                stringResource(R.string.source_ytm)
+            )
+
+        LibrarySection.ARTISTS ->
+            stringResource(R.string.setting_title_show_artists) to stringResource(
+                R.string.setting_description_show_artists_youtube,
+                stringResource(R.string.source_ytm)
+            )
+
+        LibrarySection.PLAYLISTS ->
+            stringResource(R.string.setting_title_show_playlists) to stringResource(
+                R.string.setting_description_show_playlists_youtube,
+                stringResource(R.string.source_ytm)
+            )
     }
     SwitchSetting(
         title = title,
