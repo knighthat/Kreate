@@ -7,9 +7,11 @@
   entry (with a doc saying what will read it) and its settings row, then stop: don't design or ask
   about the feature behind it. When the request itself says what the setting does and the behavior
   is small (e.g. "Icon only" hiding labels), ask once whether to build that behavior too.
-- **Where things live:** `.claude/file-index.md` maps every source file to what it does; check
-  it first; grep it for a name or folder instead of reading it whole. Ask once whether to update
-  it yourself when files are added, moved or removed. `.claude/rule-index.md` does the same for
+- **Where things live:** the file index maps every source file to what it does, in parts under
+  `.claude/file-index/` (one per module, `:app` by package; `.claude/file-index.md` lists them).
+  Check it first: grep the folder for a name, or read only the part you need. Ask once whether to
+  update it yourself when files are added, moved or removed. `.claude/rule-index.md` does the same
+  for
   rules and docs: update it in the same change when a rule or doc is added, split, renamed or its
   `paths` change.
 - **Read in parts.** Grep for the symbol before opening a file; read files over ~300 lines by
@@ -36,9 +38,9 @@
 - **CLAUDE.md stays lean:** only durable, approved rules; no descriptions of what exists. Details
   go in `.claude/rules/` (by path) or `.claude/docs/`.
 - **Agent files live under `.claude/`:** rules in `rules/`, details in `docs/`, plus
-  `file-index.md`; never a top-level `docs/`, and never `.claude/agents/`, which Claude Code reads
-  as subagent definitions. What's meant to stay local goes in your memory under `~/.claude`, never
-  in git-ignored files of the repo.
+  `rule-index.md`, `file-index.md` and its parts in `file-index/`; never a top-level `docs/`, and
+  never `.claude/agents/`, which Claude Code reads as subagent definitions. What's meant to stay
+  local goes in your memory under `~/.claude`, never in git-ignored files of the repo.
 - Don't stop Gradle with broad `pkill -f` patterns (e.g. `"Gradle Test Executor"`): they match the
   agent's own shell. Use `./gradlew --stop` or kill specific PIDs from `pgrep -af`.
 - A UI stutter is traced before it's fixed (main thread Running vs runnable): see
