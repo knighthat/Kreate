@@ -38,6 +38,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -112,6 +113,8 @@ import me.knighthat.kreate3.backup.Backup
 import me.knighthat.kreate3.backup.BackupException
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.TileButton
 import me.knighthat.kreate3.ui.theme.KreateTheme
 import me.knighthat.kreate3.utils.AUDIO_PERMISSION
@@ -129,6 +132,8 @@ import java.security.MessageDigest
 private const val DEFAULT_PROFILE_NAME = "Default"
 
 private const val LICENSE_URL = "https://opensource.org/license/gpl-3.0"
+
+private const val LICENSE_NAME = "GPL 3.0 License"
 
 private const val PAGE_WELCOME = 0
 private const val PAGE_PERMISSIONS = 1
@@ -158,9 +163,9 @@ private suspend fun Context.importBackup(uri: Uri): String? =
     } catch (e: BackupException) {
         e.message
     } catch (_: IOException) {
-        "Couldn't read the backup"
+        getString(R.string.setting_description_restore_status_failed)
     } catch (_: SecurityException) {
-        "Couldn't read the backup"
+        getString(R.string.setting_description_restore_status_failed)
     }
 
 private fun String.prettify() =
@@ -222,15 +227,21 @@ private fun Welcome() {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text("Dear User,", style = MaterialTheme.typography.headlineMedium)
-            Text("A few quick steps and you are ready to listen. Here is what comes next:")
+            Text(
+                stringResource(R.string.wizard_dear_user),
+                style = MaterialTheme.typography.headlineMedium
+            )
+            Text(stringResource(R.string.wizard_intro))
 
-            Entry(stringResource(PAGE_TITLES[1]), "Control what Kreate can and cannot do or see.")
+            Entry(
+                stringResource(PAGE_TITLES[1]),
+                stringResource(R.string.wizard_permissions_entry, stringResource(R.string.app_name))
+            )
             Entry(
                 stringResource(PAGE_TITLES[2]),
-                "Bring over existing data from another machine or backup."
+                stringResource(R.string.wizard_import_entry)
             )
-            Entry(stringResource(PAGE_TITLES[3]), "Taylor the app to your taste.")
+            Entry(stringResource(PAGE_TITLES[3]), stringResource(R.string.wizard_profile_entry))
             Entry(stringResource(PAGE_TITLES[4]), "")
         }
     }
@@ -286,7 +297,7 @@ private fun PermissionItem(
                             )
                         }
                 ) {
-                    Text(if (granted) "Granted" else "Grant")
+                    Text(if (granted) stringResource(R.string.status_granted) else stringResource(R.string.action_grant))
                 }
             }
         }
@@ -305,11 +316,11 @@ private fun Permissions() {
     }
 
     StepColumn {
-        Text("Kreate needs your permission for the following. You can skip any of them and allow it later.")
+        Text(stringResource(R.string.wizard_permissions_intro, stringResource(R.string.app_name)))
 
         PermissionItem(
-            title = "Music",
-            subtitle = "Read the audio files stored on this device to build your library",
+            title = stringResource(R.string.wizard_music),
+            subtitle = stringResource(R.string.wizard_music_description),
             permission = AUDIO_PERMISSION,
             granted = audioGranted,
             onRationaleFailed = {
@@ -321,8 +332,8 @@ private fun Permissions() {
             }
         )
         PermissionItem(
-            title = "Notifications",
-            subtitle = "Allow app to inform you what is going on within the app",
+            title = stringResource(R.string.wizard_notifications),
+            subtitle = stringResource(R.string.wizard_notifications_description),
             permission = Manifest.permission.POST_NOTIFICATIONS,
             granted = notificationGranted,
             onRationaleFailed = {
@@ -366,7 +377,7 @@ private fun Import(
         }
 
     StepColumn {
-        Text("Have a backup of Kreate? Choose it to bring your profiles, settings and library along. You can skip this.")
+        Text(stringResource(R.string.wizard_import_intro, stringResource(R.string.app_name)))
 
         val ready = imported && !importing
         // The theme has no green, so it is picked by how dark the theme is
@@ -374,12 +385,16 @@ private fun Import(
         TileButton(
             icon = if (ready) R.drawable.check else R.drawable.database,
             title = when {
-                importing -> "Reading the backup…"
-                ready -> "Backup ready"
-                else -> "Restore a backup"
+                importing -> stringResource(R.string.wizard_reading_the_backup)
+                ready -> stringResource(R.string.wizard_backup_ready)
+                else -> stringResource(R.string.wizard_restore_a_backup)
             },
-            subtitle = if (ready) "It is restored once setup finishes, tap to choose another"
-            else "Choose a backup made in Settings, Backup",
+            subtitle = if (ready) stringResource(R.string.wizard_backup_ready_description)
+            else stringResource(
+                R.string.wizard_restore_a_backup_description,
+                stringResource(R.string.screen_title_settings),
+                stringResource(R.string.screen_title_backup)
+            ),
             onClick = { picker.launch(arrayOf("application/zip", "application/octet-stream")) },
             busy = importing,
             colors = if (ready)
@@ -406,18 +421,26 @@ private fun Settings(
     onContrastLevelChange: (ContrastLevel) -> Unit,
 ) {
     StepColumn {
-        Text("Leave the name empty to keep \"${DEFAULT_PROFILE_NAME}\". You can change all of this later.")
+        Text(
+            stringResource(
+                R.string.wizard_profile_intro,
+                stringResource(R.string.quoted, DEFAULT_PROFILE_NAME)
+            )
+        )
 
         OutlinedTextField(
             value = name,
             onValueChange = onNameChange,
-            label = { Text("Name") },
+            label = { Text(stringResource(R.string.name)) },
             placeholder = { Text(DEFAULT_PROFILE_NAME) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
 
-        Text("Theme", style = MaterialTheme.typography.titleMedium)
+        Text(
+            stringResource(R.string.setting_title_theme),
+            style = MaterialTheme.typography.titleMedium
+        )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             // THUMBNAIL needs a playing song, it isn't a choice to make up front
             ThemeMode.entries.filter { it != ThemeMode.THUMBNAIL }.forEach {
@@ -429,7 +452,10 @@ private fun Settings(
             }
         }
 
-        Text("Contrast", style = MaterialTheme.typography.titleMedium)
+        Text(
+            stringResource(R.string.setting_title_contrast),
+            style = MaterialTheme.typography.titleMedium
+        )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             ContrastLevel.entries.forEach {
                 FilterChip(
@@ -474,11 +500,17 @@ private fun TermOfService() {
             )
         }
 
+        val distributed = stringResource(R.string.wizard_distributed_under, LICENSE_NAME)
         Text(
             text = buildAnnotatedString {
-                append("Distributed under the ")
-                withLink(LinkAnnotation.Url(LICENSE_URL)) { append("GPL 3.0 License") }
-                append(".")
+                // The name of the license is the link, wherever the translation puts it
+                val start = distributed.indexOf(LICENSE_NAME)
+                if (start < 0) append(distributed)
+                else {
+                    append(distributed.substring(0, start))
+                    withLink(LinkAnnotation.Url(LICENSE_URL)) { append(LICENSE_NAME) }
+                    append(distributed.substring(start + LICENSE_NAME.length))
+                }
             },
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
@@ -565,7 +597,8 @@ private fun WizardBottomBar(
                 enabled = !locked,
                 modifier = Modifier.weight(1f)
             ) {
-                val text = if (canGoBack) "Go back" else "Skip"
+                val text =
+                    if (canGoBack) stringResource(R.string.action_go_back) else stringResource(R.string.action_skip)
                 Text(text)
             }
             Button(
@@ -575,9 +608,9 @@ private fun WizardBottomBar(
             ) {
                 Text(
                     when (page) {
-                        PAGE_WELCOME -> "Get started"
-                        PAGE_TERMS -> "Start listening"
-                        else -> "Next"
+                        PAGE_WELCOME -> stringResource(R.string.wizard_get_started)
+                        PAGE_TERMS -> stringResource(R.string.wizard_start_listening)
+                        else -> stringResource(R.string.action_next)
                     }
                 )
             }
@@ -707,3 +740,54 @@ fun SetupWizardScreen(modifier: Modifier = Modifier) {
 }
 
 fun Context.setupCompletedFile(): File = filesDir.resolve("setup_completed")
+
+//<editor-fold defaultstate="collapsed" desc="Previews">
+/** A page of the wizard between the bars it has on a device, [page] being its position. */
+@Composable
+private fun WizardPreview(page: Int, content: @Composable () -> Unit) = PreviewTheme {
+    Scaffold(
+        topBar = { WizardTopBar(page = page) },
+        bottomBar = {
+            WizardBottomBar(
+                page = page,
+                locked = false,
+                onBack = {},
+                onForward = {},
+                onSkip = {},
+                onDone = {},
+            )
+        },
+    ) { padding -> Box(Modifier.padding(padding)) { content() } }
+}
+
+@ScreenPreviews
+@Composable
+private fun WizardWelcomePreview() = WizardPreview(PAGE_WELCOME) { Welcome() }
+
+@ScreenPreviews
+@Composable
+private fun WizardPermissionsPreview() = WizardPreview(PAGE_PERMISSIONS) { Permissions() }
+
+@ScreenPreviews
+@Composable
+private fun WizardImportPreview() = WizardPreview(PAGE_IMPORT) {
+    Import(imported = false, importing = false, message = null, onImport = {})
+}
+
+@ScreenPreviews
+@Composable
+private fun WizardProfilePreview() = WizardPreview(PAGE_PROFILE) {
+    Settings(
+        name = "",
+        onNameChange = {},
+        themeMode = ThemeMode.AUTOMATIC_DYNAMIC,
+        onThemeModeChange = {},
+        contrastLevel = ContrastLevel.NORMAL,
+        onContrastLevelChange = {},
+    )
+}
+
+@ScreenPreviews
+@Composable
+private fun WizardTermsPreview() = WizardPreview(PAGE_TERMS) { TermOfService() }
+//</editor-fold>

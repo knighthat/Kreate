@@ -47,6 +47,8 @@ paths:
   name, so the name describes the icon. The text of any other menu item is `menu_*`, the heading of
   a page of a menu is `menu_title_*`. A plural that takes no number in its text is still a plural
   (`menu_go_to_artist`).
+- A text only the setup wizard shows is `wizard_*`. The words it shares with the rest of the app
+  (Skip, Next, Theme, Name, …) use their usual keys.
 - Strings only a preview shows (`KreateThemePreview.kt`) are not extracted.
 - An action can be several words (`action_sign_out`). The Context a view model needs for its strings
   is injected (`private val context: Context`, Koin provides it), never read from a global.

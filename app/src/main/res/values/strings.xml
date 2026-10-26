@@ -245,10 +245,16 @@
     <string name="action_not_now">Not now</string>
     <string name="action_search">Search</string>
     <string name="action_create">Create</string>
+    <string name="action_grant">Grant</string>
+    <string name="action_go_back">Go back</string>
+    <string name="action_next">Next</string>
 
     <!-- Statuses, shared by every screen -->
     <string name="status_off">Off</string>
     <string name="status_not_set">Not set</string>
+    <string name="status_granted">Granted</string>
+    <string name="name">Name</string>
+    <string name="quoted">\"%1$s\"</string>
     <string name="status_unknown_artist">Unknown artist</string>
     <string name="status_no_playlists_yet">No playlists yet</string>
 
@@ -347,4 +353,26 @@
     <string name="menu_word_by_word">Word by word</string>
     <string name="menu_line_by_line">Line by line</string>
     <string name="menu_plain_text">Plain text</string>
+
+    <!-- Setup wizard -->
+    <string name="wizard_dear_user">Dear User,</string>
+    <string name="wizard_intro">A few quick steps and you are ready to listen. Here is what comes next:</string>
+    <string name="wizard_permissions_entry">Control what %1$s can and cannot do or see.</string>
+    <string name="wizard_import_entry">Bring over existing data from another machine or backup.</string>
+    <string name="wizard_profile_entry">Taylor the app to your taste.</string>
+    <string name="wizard_permissions_intro">%1$s needs your permission for the following. You can skip any of them and allow it later.</string>
+    <string name="wizard_music">Music</string>
+    <string name="wizard_music_description">Read the audio files stored on this device to build your library</string>
+    <string name="wizard_notifications">Notifications</string>
+    <string name="wizard_notifications_description">Allow app to inform you what is going on within the app</string>
+    <string name="wizard_import_intro">Have a backup of %1$s? Choose it to bring your profiles, settings and library along. You can skip this.</string>
+    <string name="wizard_reading_the_backup">Reading the backup…</string>
+    <string name="wizard_backup_ready">Backup ready</string>
+    <string name="wizard_backup_ready_description">It is restored once setup finishes, tap to choose another</string>
+    <string name="wizard_restore_a_backup">Restore a backup</string>
+    <string name="wizard_restore_a_backup_description">Choose a backup made in %1$s, %2$s</string>
+    <string name="wizard_profile_intro">Leave the name empty to keep %1$s. You can change all of this later.</string>
+    <string name="wizard_distributed_under">Distributed under the %1$s.</string>
+    <string name="wizard_get_started">Get started</string>
+    <string name="wizard_start_listening">Start listening</string>
 </resources>
