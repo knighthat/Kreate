@@ -21,4 +21,5 @@ on
 - constant/ — `ThemeMode`, `ContrastLevel`, `OpenSubsonicAuth`, `StreamQuality` (
   LOW/MEDIUM/HIGH/ORIGINAL, order = ordinal), `SyncMode` (OFF/LIKED/ALL), `SleepTimerStep` (sleep
   timer add/remove amounts), `ProxyType` (HTTP/SOCKS), `AutoTapAction`
-  (OPEN/PLAY_FROM_START/PLAY_RANDOMLY, Android Auto) enums.
+  (OPEN/PLAY_FROM_START/PLAY_RANDOMLY, Android Auto), `PlaybackFailureAction`
+  (SKIP/RETRY_THEN_SKIP/RETRY_THEN_STOP/STOP, `retries`/`skips`) enums.

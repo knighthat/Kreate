@@ -25,7 +25,6 @@ import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
-import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
@@ -40,9 +39,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
-import me.knighthat.kreate3.notification.AppChannel
-import me.knighthat.kreate3.notification.Message
-import me.knighthat.kreate3.notification.Notifier
 import kotlin.time.Duration
 
 /**
@@ -56,7 +52,6 @@ class PlaybackControllerImpl(
     private val context: Context,
     private val scope: CoroutineScope,
     private val radio: Radio,
-    private val notifier: Notifier,
 ) : PlaybackController {
 
     private val _state = MutableStateFlow(PlaybackState())
@@ -326,18 +321,6 @@ class PlaybackControllerImpl(
                         else if (events.contains(Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED))
                             publishShuffledOrder(connected)
                         publish(connected)
-                    }
-
-                    override fun onPlayerError(error: PlaybackException) {
-                        Log.w(TAG, "Couldn't play ${connected.currentMediaItem?.mediaId}", error)
-                        // Whatever screen is open, or none, the user learns why a song stopped
-                        notifier.post(
-                            Message(
-                                error.userMessage(context, connected.currentMediaItem),
-                                dismissable = true,
-                                channel = AppChannel.PLAYBACK,
-                            )
-                        )
                     }
                 })
                 publishQueue(connected)

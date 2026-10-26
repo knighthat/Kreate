@@ -25,6 +25,7 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.AutoTapAction
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
+import me.knighthat.kreate3.constant.PlaybackFailureAction
 import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.constant.SyncMode
 import me.knighthat.kreate3.constant.ThemeMode
@@ -99,6 +100,15 @@ val AutoTapAction.labelRes: Int
         AutoTapAction.OPEN -> R.string.constant_auto_tap_action_open
         AutoTapAction.PLAY_FROM_START -> R.string.constant_auto_tap_action_play_from_start
         AutoTapAction.PLAY_RANDOMLY -> R.string.constant_auto_tap_action_play_randomly
+    }
+
+@get:StringRes
+val PlaybackFailureAction.labelRes: Int
+    get() = when (this) {
+        PlaybackFailureAction.SKIP -> R.string.constant_playback_failure_action_skip
+        PlaybackFailureAction.RETRY_THEN_SKIP -> R.string.constant_playback_failure_action_retry_then_skip
+        PlaybackFailureAction.RETRY_THEN_STOP -> R.string.constant_playback_failure_action_retry_then_stop
+        PlaybackFailureAction.STOP -> R.string.constant_playback_failure_action_stop
     }
 
 /** How good a song of YouTube is, what each quality means there. */

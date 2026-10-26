@@ -38,10 +38,14 @@ fun MediaItem?.songTitle(): String? =
  * What to tell the user when [item] failed to play with this error, like
  * `Couldn't play "Song": file doesn't exist`.
  */
-fun PlaybackException.userMessage(context: Context, item: MediaItem?): String {
+fun PlaybackException.userMessage(context: Context, item: MediaItem?): String =
+    cantPlayMessage(context, item, reasonRes())
+
+/** What to tell the user when [item] failed to play because of [reason], see [userMessage]. */
+fun cantPlayMessage(context: Context, item: MediaItem?, @StringRes reason: Int): String {
     val song = item.songTitle()?.let { context.getString(R.string.quoted, it) }
         ?: context.getString(R.string.snackbar_this_song)
-    return context.getString(R.string.snackbar_cant_play, song, context.getString(reasonRes()))
+    return context.getString(R.string.snackbar_cant_play, song, context.getString(reason))
 }
 
 /** Why a song failed to play, in words for the user. */

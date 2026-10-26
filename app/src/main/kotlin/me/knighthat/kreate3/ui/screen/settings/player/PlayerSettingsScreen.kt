@@ -25,6 +25,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.AutoTapAction
+import me.knighthat.kreate3.constant.PlaybackFailureAction
 import me.knighthat.kreate3.constant.SleepTimerStep
 import me.knighthat.kreate3.lyrics.LyricsFinder
 import me.knighthat.kreate3.model.LyricsProvider
@@ -63,6 +64,8 @@ fun PlayerSettingsScreen(
     val queuePersisted by Preferences.PERSISTENT_QUEUE_ENABLED.collectAsStateWithLifecycle()
     val queueSaveInterval by Preferences.PERSISTENT_QUEUE_SAVE_INTERVAL.collectAsStateWithLifecycle()
     val preloadSeconds by Preferences.PLAYBACK_PRELOAD_SECONDS.collectAsStateWithLifecycle()
+    val failureAction by Preferences.PLAYBACK_FAILURE_ACTION.collectAsStateWithLifecycle()
+    val stallSeconds by Preferences.PLAYBACK_STALL_SECONDS.collectAsStateWithLifecycle()
     val lyricsSource by Preferences.LYRICS_SOURCE.collectAsStateWithLifecycle()
     val lyricsSync by Preferences.LYRICS_SYNC.collectAsStateWithLifecycle()
     val lyricsAlwaysLive by Preferences.LYRICS_ALWAYS_LIVE.collectAsStateWithLifecycle()
@@ -81,6 +84,8 @@ fun PlayerSettingsScreen(
         queuePersisted = queuePersisted,
         queueSaveInterval = queueSaveInterval,
         preloadSeconds = preloadSeconds,
+        failureAction = failureAction,
+        stallSeconds = stallSeconds,
         lyricsSource = (lyrics.source(lyricsSource) ?: lyrics.sources.first()).provider,
         lyricsSources = lyrics.sources.associate { it.provider to it.name },
         lyricsSync = lyricsSync,
@@ -109,6 +114,8 @@ private fun PlayerSettingsContent(
     queuePersisted: Boolean,
     queueSaveInterval: Int,
     preloadSeconds: Int,
+    failureAction: PlaybackFailureAction,
+    stallSeconds: Int,
     lyricsSource: LyricsProvider,
     lyricsSources: Map<LyricsProvider, String>,
     lyricsSync: LyricsSync,
@@ -172,6 +179,23 @@ private fun PlayerSettingsContent(
             options = PRELOAD_SECONDS,
             label = { preloadLabels.getValue(it) },
             onSelect = { Preferences.PLAYBACK_PRELOAD_SECONDS.update(it) },
+        )
+        ChoiceSetting(
+            title = stringResource(R.string.setting_title_when_a_song_fails),
+            value = failureAction,
+            options = PlaybackFailureAction.entries,
+            label = labelsOf(PlaybackFailureAction.entries) { it.labelRes },
+            onSelect = { Preferences.PLAYBACK_FAILURE_ACTION.update(it) },
+        )
+        val stallLabels = STALL_SECONDS.associateWith {
+            if (it == 0) off else pluralStringResource(R.plurals.second, it, it)
+        }
+        SliderSetting(
+            title = stringResource(R.string.setting_title_give_up_loading_after),
+            value = stallSeconds,
+            options = STALL_SECONDS,
+            label = { stallLabels.getValue(it) },
+            onSelect = { Preferences.PLAYBACK_STALL_SECONDS.update(it) },
         )
 
         SettingsSection(stringResource(R.string.setting_header_sleep_timer))
@@ -287,6 +311,8 @@ private fun PlayerSettingsPreview() = PreviewTheme {
         queuePersisted = true,
         queueSaveInterval = 10,
         preloadSeconds = 5,
+        failureAction = PlaybackFailureAction.SKIP,
+        stallSeconds = 15,
         lyricsSource = LyricsProvider.LRCLIB,
         lyricsSources = LyricsProvider.entries.associateWith { stringResource(it.sourceRes) },
         lyricsSync = LyricsSync.WORD,
@@ -303,3 +329,6 @@ private fun PlayerSettingsPreview() = PreviewTheme {
 
 /** Seconds of the next song that can be loaded ahead, `0` for none. */
 private val PRELOAD_SECONDS = listOf(0, 5, 10, 15, 30, 60)
+
+/** Seconds a song may load while it should play before it fails, `0` to wait for the network. */
+private val STALL_SECONDS = listOf(0, 5, 10, 15, 30, 60)

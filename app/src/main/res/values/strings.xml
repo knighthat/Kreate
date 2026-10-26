@@ -144,6 +144,8 @@
     <string name="setting_title_save_interval">Save interval</string>
     <string name="setting_description_save_interval">Save queue every %1$s while the song plays</string>
     <string name="setting_title_load_next_song_ahead">Load the next song ahead</string>
+    <string name="setting_title_when_a_song_fails">When a song fails</string>
+    <string name="setting_title_give_up_loading_after">Give up loading after</string>
     <string name="setting_title_remove_button">Remove button</string>
     <string name="setting_title_add_button">Add button</string>
     <string name="setting_title_pause_history">Pause history</string>
@@ -438,6 +440,7 @@
     <string name="error_playback_decoding_failed">decoding failed</string>
     <string name="error_playback_source_off">source unavailable</string>
     <string name="error_playback_not_playable">nothing to play</string>
+    <string name="error_playback_too_slow">took too long to load</string>
     <string name="error_playback_unknown">unknown error</string>
     <string name="error_backup_not_a_backup">Not a Kreate backup</string>
     <string name="error_backup_newer_version">Backup is from a newer version, update the app</string>
@@ -591,6 +594,10 @@
     <string name="constant_auto_tap_action_open">Show its songs</string>
     <string name="constant_auto_tap_action_play_from_start">Play from the start</string>
     <string name="constant_auto_tap_action_play_randomly">Play in random order</string>
+    <string name="constant_playback_failure_action_skip">Skip to the next song</string>
+    <string name="constant_playback_failure_action_retry_then_skip">Try again, then skip</string>
+    <string name="constant_playback_failure_action_retry_then_stop">Try again, then stop</string>
+    <string name="constant_playback_failure_action_stop">Stop</string>
     <string name="constant_stream_quality_ytm_low">Low, about 48 kbps</string>
     <string name="constant_stream_quality_ytm_medium">Medium, about 128 kbps</string>
     <string name="constant_stream_quality_ytm_high">High, about 160 kbps</string>

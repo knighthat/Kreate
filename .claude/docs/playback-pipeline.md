@@ -15,6 +15,11 @@ open items are at the end.
 - OpenSubsonic streams read through `OpenSubsonicProvider.streamClient()` (trusts the pinned
   self-signed cert). A server song's address is reused for seeks for 1 h (`SERVER_ADDRESS_LIFE`).
 - Failures map to `ERROR_CODE_SOURCE_OFF` / `ERROR_CODE_NOT_PLAYABLE` (`PlaybackErrors.kt`).
+- A failed or stalled song is handled by `PlaybackRecovery` (Player settings → Queue: "When a song
+  fails", default skip; "Give up loading after", default 15 s, 0 = off). Without the stall limit a
+  slow server leaves the player buffering for minutes: OkHttp waits 15 s to connect and 30 s per
+  read, Media3 retries a progressive load 3 more times with growing delays, and resets its error
+  count whenever bytes arrive.
 - Wake mode is NETWORK.
 - Preload: `PLAYBACK_PRELOAD_SECONDS` (Player settings → Queue, 0 = off, default 5 s) →
   `ExoPlayer.PreloadConfiguration`, applied by `PlaybackService`. Media3 preloads one item, the one
@@ -83,8 +88,8 @@ gets 200 from the start (Media3 skips ahead) and the estimate was ~4 % too long 
 - OpenSubsonic songs without ReplayGain have no gain, and a row stored without gain is never
   re-asked.
 - Chunked (bounded-range) reading, if refusing `rangeSize` clients proves too strict.
-- Proposed: keep innertubex's `AGE_RESTRICTED` reason as a `YouTubeException` flag. Auto-skip after
-  a failure not decided.
+- Proposed: keep innertubex's `AGE_RESTRICTED` reason as a `YouTubeException` flag.
+- `PlaybackRecovery` not verified on a device (stall with a slow Navidrome, skip cap, retry).
 - A new copy's stream failing while online errors out instead of falling back to a lower cached
   copy (offline is decided only by Android's VALIDATED flag).
 - Not verified on a device: quality selection, cache copies, whether a cold OpenSubsonic estimate

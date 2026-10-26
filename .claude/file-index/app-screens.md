@@ -72,7 +72,8 @@ ui/screen/
   Wi-Fi + mobile quality sliders), `LibrarySyncSettings.kt` (per-section sync/show switches of a
   source); both, like `ProxySettings`, also have a stateless overload taking values that previews
   call. `general/GeneralSettingsScreen.kt`, `player/PlayerSettingsScreen.kt` (player behavior/UI
-  only: Queue incl. preload slider, History; Android Auto section with the three
+  only: Queue incl. preload slider, failure action + stall limit, History; Android Auto section with
+  the three
   `AUTO_*_TAP` choices), `ui/UiSettingsScreen.kt`,
   `network/NetworkSettingsScreen.kt` (timeouts/retries + "
   Configure YouTube/OpenSubsonic" rows), `network/youtube/` (`YouTubeSettingsScreen.kt` account

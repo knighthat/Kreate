@@ -21,6 +21,7 @@ package me.knighthat.kreate3.preferences
 import me.knighthat.kreate3.constant.AutoTapAction
 import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.OpenSubsonicAuth
+import me.knighthat.kreate3.constant.PlaybackFailureAction
 import me.knighthat.kreate3.constant.ProxyType
 import me.knighthat.kreate3.constant.SleepTimerStep
 import me.knighthat.kreate3.constant.StreamQuality
@@ -48,6 +49,7 @@ import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_PROXY_PORT
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_PROXY_TYPE
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_QUALITY_WIFI
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_SYNC_ALBUMS
+import me.knighthat.kreate3.preferences.Preferences.PLAYBACK_STALL_SECONDS
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_ACCOUNT_ENABLED
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_PROXY_ENABLED
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_PROXY_HOST
@@ -403,6 +405,21 @@ object Preferences : KoinComponent {
      * player.
      */
     val PLAYBACK_PRELOAD_SECONDS by lazy { int("playback_preload_seconds", 5) }
+
+    /**
+     * What the player does when a song fails to play, or loads longer than
+     * [PLAYBACK_STALL_SECONDS]. [PlaybackFailureAction.RETRY_THEN_SKIP] by default. `PlaybackRecovery` reads
+     * it at each failure.
+     */
+    val PLAYBACK_FAILURE_ACTION by lazy {
+        enum("playback_failure_action", PlaybackFailureAction.RETRY_THEN_SKIP)
+    }
+
+    /**
+     * Seconds a song may load while it should be playing before it counts as failed, `0` to wait
+     * as long as the network does. `PlaybackRecovery` reads it each time loading starts.
+     */
+    val PLAYBACK_STALL_SECONDS by lazy { int("playback_stall_seconds", 15) }
 
     /**
      * Keeps the queue in the database, with where the song playing was, and puts it back in the

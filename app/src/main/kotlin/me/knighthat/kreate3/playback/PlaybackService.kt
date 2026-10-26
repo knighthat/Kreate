@@ -92,6 +92,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
 
     private var mediaSession: MediaLibrarySession? = null
     private var normalizer: LoudnessNormalizer? = null
+    private var recovery: PlaybackRecovery? = null
     private var persistentQueue: PersistentQueue? = null
     private var audioEffects: AudioEffectSession? = null
     private var sleepTimer: SleepTimerRunner? = null
@@ -133,6 +134,7 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             }
         }
         normalizer = LoudnessNormalizer(player, get(), get(), scope)
+        recovery = PlaybackRecovery(player, get(), this, scope)
         PlaybackHistoryRecorder(player, get(), writeScope)
         persistentQueue = PersistentQueue(
             player = player,
@@ -203,6 +205,8 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
 
         normalizer?.release()
         normalizer = null
+        recovery?.release()
+        recovery = null
         audioEffects?.release()
         audioEffects = null
         sleepTimer?.release()

@@ -6,8 +6,14 @@ Paths are relative to `app/src/main/kotlin/me/knighthat/kreate3/`; checked again
 
 playback/
 
-- `PlaybackErrors.kt` — `PlaybackException.userMessage(item)`; `PlaybackControllerImpl` posts them
-  to `Notifier` (dismissable); `togglePlay` re-prepares after a failure.
+- `PlaybackErrors.kt` — `PlaybackException.userMessage(item)`, `cantPlayMessage(item, reason)`;
+  `PlaybackRecovery` posts them to `Notifier` (dismissable); `togglePlay` re-prepares after a
+  failure.
+- `PlaybackRecovery.kt` — service-side listener: on a player error, or loading longer than
+  `PLAYBACK_STALL_SECONDS` while playWhenReady (stall → `player.stop()`), follows
+  `PLAYBACK_FAILURE_ACTION`: retry once per song (`prepare()`, reset on transition), skip to the
+  next (at most `MAX_SKIPS_IN_A_ROW` 3 until one plays), or stay idle; posts the reason unless it
+  retries.
 - `PlaybackService.kt` — `MediaLibraryService`, owns the player + notification; `SessionCallback`
   adds `withSongUri` to queued items, answers Android Auto's browsing from `AutoLibrary`
   (`onGetLibraryRoot`/`onGetChildren`/`onSubscribe`, no recent root) and turns a tapped Auto node
