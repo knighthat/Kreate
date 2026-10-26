@@ -85,6 +85,11 @@ fun LocalPlaylistDetailScreen(
     val moveFailed = stringResource(R.string.error_move_song)
     val removeFailed = stringResource(R.string.error_playlist_remove_song)
 
+    val removedFrom = stringResource(
+        R.string.snackbar_removed_from,
+        playlist?.name ?: stringResource(R.string.snackbar_the_playlist)
+    )
+
     LocalPlaylistDetailContent(
         name = playlist?.name,
         thumbnail = playlist?.thumbnail,
@@ -106,7 +111,7 @@ fun LocalPlaylistDetailScreen(
             viewModel.removeSong(song.mediaId) { removed ->
                 // A cover tapped in a row of covers to remove says nothing unless it failed
                 if (fromMenu || !removed) notifier.post(
-                    if (removed) "Removed from ${playlist?.name ?: "the playlist"}"
+                    if (removed) removedFrom
                     else removeFailed
                 )
             }

@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.BookmarkButton
 import me.knighthat.kreate3.ui.component.PreviewTheme
@@ -101,7 +102,7 @@ private fun OpenSubsonicAlbumDetailContent(
         actions = {
             if (album != null) isBookmarked?.let { BookmarkButton(it, onToggleBookmark) }
             if (share != null && album != null)
-                ShareAction(album.name, "album") { share(album.name) }
+                ShareAction(album.name, R.plurals.unit_album) { share(album.name) }
         },
     ) { detail, innerPadding ->
         LazyColumn(

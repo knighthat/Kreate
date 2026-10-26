@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
 import me.knighthat.kreate3.ui.component.BookmarkButton
@@ -111,7 +112,7 @@ private fun YouTubeAlbumDetailContent(
         contentPadding = contentPadding,
         actions = {
             if (album != null) isBookmarked?.let { BookmarkButton(it, onToggleBookmark) }
-            ShareAction(album?.name, "album", share)
+            ShareAction(album?.name, R.plurals.unit_album, share)
         },
     ) { detail, innerPadding ->
         LazyColumn(

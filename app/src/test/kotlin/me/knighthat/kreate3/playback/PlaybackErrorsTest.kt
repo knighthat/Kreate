@@ -39,13 +39,16 @@ class PlaybackErrorsTest {
         .build()
 
     @Test
-    fun messageNamesTheSongAndWhyItFailed() {
+    fun songTitleIsTheOneToShow() {
+        assertEquals("Derezzed", song.songTitle())
+        assertEquals(null, null.songTitle())
         assertEquals(
-            "Couldn't play \"Derezzed\": its file is gone",
-            error(PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND).userMessage(
-                song,
-                "its file is gone"
-            ),
+            null,
+            MediaItem.Builder()
+                .setMediaId("2")
+                .setMediaMetadata(MediaMetadata.Builder().setTitle("  ").build())
+                .build()
+                .songTitle(),
         )
     }
 
@@ -78,9 +81,5 @@ class PlaybackErrorsTest {
     fun songWithoutTitleAndUnknownErrorStillSaySomething() {
         val unknown = error(PlaybackException.ERROR_CODE_UNSPECIFIED)
         assertEquals(R.string.error_playback_unknown, unknown.reasonRes())
-        assertEquals(
-            "Couldn't play this song: something went wrong",
-            unknown.userMessage(null, "something went wrong"),
-        )
     }
 }

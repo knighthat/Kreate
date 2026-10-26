@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
@@ -98,7 +99,7 @@ private fun OpenSubsonicPlaylistDetailContent(
         contentPadding = contentPadding,
         actions = {
             if (share != null && playlist != null)
-                ShareAction(playlist.name, "playlist") { share(playlist.name) }
+                ShareAction(playlist.name, R.plurals.unit_playlist) { share(playlist.name) }
         },
     ) { detail, innerPadding ->
         LazyColumn(

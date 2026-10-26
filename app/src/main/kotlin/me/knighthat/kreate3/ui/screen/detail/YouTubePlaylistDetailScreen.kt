@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.QueueAction
@@ -108,7 +109,7 @@ private fun YouTubePlaylistDetailContent(
         onRetry = onRetry,
         modifier = modifier,
         contentPadding = contentPadding,
-        actions = { ShareAction(playlist?.name, "playlist", share) },
+        actions = { ShareAction(playlist?.name, R.plurals.unit_playlist, share) },
     ) { detail, innerPadding ->
         LazyColumn(
             contentPadding = innerPadding,

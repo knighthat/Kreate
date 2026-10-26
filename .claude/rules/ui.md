@@ -62,6 +62,8 @@ paths:
 - An error the user sees is `error_*`. When a message is built from a text and an error (`Couldn't
   play "Song": its file is gone`), only the error is a string; the rest stays a literal for now.
   Code without a `Context` holds the error as a `@StringRes` and its caller resolves it.
+- A message shown in a snackbar is `snackbar_*`, an error in it `error_*` (see above). Code that
+  builds one without a `Context` takes it as a parameter (`PlaybackController.queue(context, …)`).
 - Strings only a preview shows (`KreateThemePreview.kt`) are not extracted.
 - An action can be several words (`action_sign_out`). The Context a view model needs for its strings
   is injected (`private val context: Context`, Koin provides it), never read from a global.

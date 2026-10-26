@@ -119,7 +119,7 @@ private fun OpenSubsonicArtistDetailContent(
         actions = {
             if (artist != null) isFollowed?.let { FollowButton(it, onToggleFollow) }
             if (share != null && artist != null)
-                ShareAction(artist.name, "artist") { share(artist.name) }
+                ShareAction(artist.name, R.plurals.unit_artist) { share(artist.name) }
         },
     ) { detail, innerPadding ->
         LazyColumn(

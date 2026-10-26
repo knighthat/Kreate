@@ -297,6 +297,7 @@
     <string name="semantic_from_youtube">From %1$s</string>
     <string name="semantic_go_to_the_song_playing">Go to the song playing</string>
     <string name="semantic_larger">Larger</string>
+    <string name="semantic_turn_shuffle_off_to_move_songs">Turn shuffle off to move songs</string>
     <string name="semantic_lock_the_order">Lock the order</string>
     <string name="semantic_unlock_to_move_songs">Unlock to move songs</string>
     <string name="semantic_reorder">Reorder</string>
@@ -419,4 +420,28 @@
     <string name="error_lyrics_load">Couldn\'t load lyrics</string>
     <string name="error_unreachable">Can\'t reach %1$s</string>
     <string name="error_loudness_failed">Loudness measurement failed</string>
+    <string name="error_nothing_to_play">Nothing to play</string>
+    <string name="error_songs_not_playable">These songs can\'t be played</string>
+    <string name="error_song_not_playable">This song can\'t be played</string>
+    <string name="error_share_unsupported">This server doesn\'t support sharing this %1$s</string>
+    <string name="error_share_unreachable">Can\'t reach the server to share</string>
+    <string name="error_cant_share">Can\'t share this %1$s</string>
+
+    <!-- Snack bar messages -->
+    <string name="snackbar_cant_play">Couldn\'t play %1$s: %2$s</string>
+    <string name="snackbar_this_song">this song</string>
+    <string name="snackbar_nothing_to_pick">No %1$s to pick from</string>
+    <string name="snackbar_album_order_reset">Back in the album\'s order</string>
+    <string name="snackbar_removed_from">Removed from %1$s</string>
+    <string name="snackbar_the_playlist">the playlist</string>
+    <string name="snackbar_added_to_queue">Added %1$s to the queue</string>
+    <string name="snackbar_will_play_next_one">Will play next</string>
+    <string name="snackbar_will_play_next_many">Will play %1$s next</string>
+    <string name="snackbar_lyrics_copied">Lyrics copied</string>
+    <string name="snackbar_turn_shuffle_off">Turn shuffle off to move songs</string>
+    <string name="snackbar_added_to">Added to %1$s</string>
+    <string name="snackbar_already_in">Already in %1$s</string>
+    <string name="snackbar_couldnt_add_to">Couldn\'t add to %1$s</string>
+    <string name="snackbar_exit_swipe">Swipe again to exit</string>
+    <string name="snackbar_exit_press">Press again to exit</string>
 </resources>

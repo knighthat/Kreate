@@ -181,6 +181,8 @@ internal fun LyricsButtons(
         }
     }
 
+    val lyricsCopied = stringResource(R.string.snackbar_lyrics_copied)
+
     ModeButton(
         icon = R.drawable.content_copy,
         description = stringResource(R.string.semantic_copy_the_lyrics),
@@ -192,7 +194,7 @@ internal fun LyricsButtons(
                 clipboard.setClipEntry(ClipData.newPlainText("Lyrics", text).toClipEntry())
             }
             // Newer versions show what was copied themselves
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) notifier.post("Lyrics copied")
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) notifier.post(lyricsCopied)
         },
     )
 

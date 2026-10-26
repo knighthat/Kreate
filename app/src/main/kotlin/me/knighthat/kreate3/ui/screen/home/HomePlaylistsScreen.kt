@@ -33,6 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -74,6 +75,10 @@ fun HomePlaylistsScreen(
     val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
     val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
     val notifier = LocalNotifier.current
+    val nothingToPick = stringResource(
+        R.string.snackbar_nothing_to_pick,
+        pluralStringResource(R.plurals.unit_playlist, 2)
+    )
     val scope = rememberCoroutineScope()
     var creating by rememberSaveable { mutableStateOf(false) }
 
@@ -91,7 +96,7 @@ fun HomePlaylistsScreen(
             scope.launch {
                 val picked = viewModel.random()
                 if (picked != null) onOpen(picked)
-                else notifier.post("No playlists to pick from")
+                else notifier.post(nothingToPick)
             }
         },
         onCreate = { creating = true },

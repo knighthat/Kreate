@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
 import me.knighthat.kreate3.ui.component.FollowButton
@@ -117,7 +118,7 @@ private fun YouTubeArtistDetailContent(
         contentPadding = contentPadding,
         actions = {
             if (artist != null) isFollowed?.let { FollowButton(it, onToggleFollow) }
-            ShareAction(artist?.name, "artist", share)
+            ShareAction(artist?.name, R.plurals.unit_artist, share)
         },
     ) { detail, innerPadding ->
         LazyColumn(

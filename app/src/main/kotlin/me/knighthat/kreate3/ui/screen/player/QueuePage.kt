@@ -209,6 +209,7 @@ internal fun QueueButtons(
     modifier = modifier,
 ) {
     val notifier = LocalNotifier.current
+    val turnShuffleOff = stringResource(R.string.snackbar_turn_shuffle_off)
     val reordering = mode == CoverEditMode.REORDER
     val removing = mode == CoverEditMode.REMOVE
     var confirmClear by remember { mutableStateOf(false) }
@@ -222,14 +223,14 @@ internal fun QueueButtons(
     ModeButton(
         icon = if (reordering) R.drawable.lock_open else R.drawable.lock,
         description = when {
-            isShuffled -> "Turn shuffle off to move songs"
-            reordering -> "Lock the order"
-            else -> "Unlock to move songs"
+            isShuffled -> stringResource(R.string.semantic_turn_shuffle_off_to_move_songs)
+            reordering -> stringResource(R.string.semantic_lock_the_order)
+            else -> stringResource(R.string.semantic_unlock_to_move_songs)
         },
         isOn = reordering,
         dimmed = isShuffled,
         onClick = {
-            if (isShuffled) notifier.post("Turn shuffle off to move songs")
+            if (isShuffled) notifier.post(turnShuffleOff)
             else onModeChange(if (reordering) CoverEditMode.NONE else CoverEditMode.REORDER)
         },
     )

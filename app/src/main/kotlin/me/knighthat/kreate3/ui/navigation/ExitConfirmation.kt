@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import kotlin.time.Duration.Companion.seconds
@@ -96,11 +97,14 @@ fun ExitConfirmation(atBottom: Boolean, snackbar: SnackbarHostState) {
             }
 
             else -> asking = scope.launch {
-                val action = if (swiped || context.usesGestureNavigation()) "Swipe" else "Press"
+                val message = context.getString(
+                    if (swiped || context.usesGestureNavigation()) R.string.snackbar_exit_swipe
+                    else R.string.snackbar_exit_press
+                )
                 snackbar.currentSnackbarData?.dismiss()
                 withTimeoutOrNull(timeout.coerceAtLeast(1).seconds) {
                     snackbar.showSnackbar(
-                        "$action again to exit",
+                        message,
                         duration = SnackbarDuration.Indefinite
                     )
                 }

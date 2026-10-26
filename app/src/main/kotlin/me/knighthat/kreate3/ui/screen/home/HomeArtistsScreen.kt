@@ -30,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -69,6 +70,10 @@ fun HomeArtistsScreen(
     val choices by viewModel.filter.choices.collectAsStateWithLifecycle()
     val selected by viewModel.filter.selected.collectAsStateWithLifecycle()
     val notifier = LocalNotifier.current
+    val nothingToPick = stringResource(
+        R.string.snackbar_nothing_to_pick,
+        pluralStringResource(R.plurals.unit_artist, 2)
+    )
     val scope = rememberCoroutineScope()
 
     // Each visit to the tab, the items of the external sources are fetched again
@@ -85,7 +90,7 @@ fun HomeArtistsScreen(
             scope.launch {
                 val picked = viewModel.random()
                 if (picked != null) onOpen(picked)
-                else notifier.post("No artists to pick from")
+                else notifier.post(nothingToPick)
             }
         },
         onSearch = onSearch,

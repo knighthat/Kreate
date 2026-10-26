@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -82,6 +83,7 @@ internal fun rememberAddToPlaylist(item: MediaItem): AddToPlaylist {
     val songs = koinInject<SongStore>()
     val scope = koinInject<CoroutineScope>()
     val notifier = LocalNotifier.current
+    val context = LocalContext.current
 
     val playlists by produceState<List<UserPlaylist>?>(null, repository) {
         value = repository.list(NEWEST_FIRST, setOf(Origin.LOCAL))
@@ -91,12 +93,15 @@ internal fun rememberAddToPlaylist(item: MediaItem): AddToPlaylist {
         val message = try {
             // The song has to be in the database before a playlist can have it
             songs.store(item.mediaId, item.origin)
-            if (add()) "Added to $playlist" else "Already in $playlist"
+            context.getString(
+                if (add()) R.string.snackbar_added_to else R.string.snackbar_already_in,
+                playlist,
+            )
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             Log.w(TAG, "Couldn't add ${item.mediaId} to $playlist", e)
-            "Couldn't add to $playlist"
+            context.getString(R.string.snackbar_couldnt_add_to, playlist)
         }
         notifier.post(message)
     }

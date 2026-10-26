@@ -23,6 +23,7 @@ import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.provider.MediaStore
+import androidx.annotation.PluralsRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -39,6 +40,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.MessageDuration
@@ -81,28 +83,30 @@ internal fun Context.shareLink(title: String?, link: String) {
     startActivity(Intent.createChooser(send, null))
 }
 
-/** What to tell the user when no link could be made for a [kind], like "album". */
-internal fun Throwable.shareFailure(kind: String): String =
-    when (val check = (this as? ServerException)?.check) {
+/** What to tell the user when no link could be made for a [kind], like the plural `album`. */
+internal fun Throwable.shareFailure(context: Context, @PluralsRes kind: Int): String {
+    val noun = context.resources.getQuantityString(kind, 1)
+    return when ((this as? ServerException)?.check) {
         // The button only shows to an account that may share, so the server doesn't share this
-        is ServerCheck.Rejected -> "This server doesn't support sharing this $kind"
+        is ServerCheck.Rejected -> context.getString(R.string.error_share_unsupported, noun)
         is ServerCheck.Unreachable,
         is ServerCheck.UntrustedCertificate,
-        is ServerCheck.CertificateChanged -> "Can't reach the server to share"
+        is ServerCheck.CertificateChanged -> context.getString(R.string.error_share_unreachable)
 
-        null -> message ?: "Can't share this $kind"
-        else -> "Can't share this $kind"
+        null -> message ?: context.getString(R.string.error_cant_share, noun)
+        else -> context.getString(R.string.error_cant_share, noun)
     }
+}
 
 /**
  * The share button of a detail screen's top bar. A tap gets the link from [link], which may ask
  * the server, then opens the share sheet titled [title]. It is off while the link is on its way,
  * and a failure is posted to [LocalNotifier].
  *
- * @param kind what is shared, like "album", for the failure message
+ * @param kind what is shared, like the plural `album`, for the failure message
  */
 @Composable
-fun ShareAction(title: String?, kind: String, link: suspend () -> Result<String>) {
+fun ShareAction(title: String?, @PluralsRes kind: Int, link: suspend () -> Result<String>) {
     val context = LocalContext.current
     val notifier = LocalNotifier.current
     val scope = rememberCoroutineScope()
@@ -116,7 +120,7 @@ fun ShareAction(title: String?, kind: String, link: suspend () -> Result<String>
                 link()
                     .onSuccess { context.shareLink(title, it) }
                     .onFailure {
-                        notifier.post(Message(it.shareFailure(kind), MessageDuration.LONG))
+                        notifier.post(Message(it.shareFailure(context, kind), MessageDuration.LONG))
                     }
                 sharing = false
             }
@@ -178,7 +182,12 @@ fun rememberSongShare(
                     openSubsonic.shareLinkOf(Shareable.Song(item.mediaId), title)
                         .onSuccess { context.shareLink(title, it) }
                         .onFailure {
-                            notifier.post(Message(it.shareFailure("song"), MessageDuration.LONG))
+                            notifier.post(
+                                Message(
+                                    it.shareFailure(context, R.plurals.unit_song),
+                                    MessageDuration.LONG
+                                )
+                            )
                         }
                     sharing = false
                     then()

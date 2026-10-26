@@ -37,6 +37,10 @@
         <item quantity="one">%1$d second</item>
         <item quantity="other">%1$d seconds</item>
     </plurals>
+    <plurals name="song">
+        <item quantity="one">%1$d song</item>
+        <item quantity="other">%1$d songs</item>
+    </plurals>
     <plurals name="hour">
         <item quantity="one">%1$d hour</item>
         <item quantity="other">%1$d hours</item>

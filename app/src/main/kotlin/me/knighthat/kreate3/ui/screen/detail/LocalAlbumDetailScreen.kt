@@ -97,6 +97,7 @@ fun LocalAlbumDetailScreen(
     val notifier = LocalNotifier.current
     val resetFailed = stringResource(R.string.error_album_reset_order)
     val moveFailed = stringResource(R.string.error_move_song)
+    val orderReset = stringResource(R.string.snackbar_album_order_reset)
 
     LocalAlbumDetailContent(
         name = album?.name,
@@ -121,7 +122,7 @@ fun LocalAlbumDetailScreen(
         onReorder = viewModel::reorder,
         onResetOrder = {
             viewModel.resetOrder { reset ->
-                notifier.post(if (reset) "Back in the album's order" else resetFailed)
+                notifier.post(if (reset) orderReset else resetFailed)
             }
         },
         onMoveSong = { song, after ->
@@ -174,7 +175,7 @@ private fun LocalAlbumDetailContent(
         contentPadding = contentPadding,
         actions = {
             isBookmarked?.let { BookmarkButton(it, onToggleBookmark) }
-            if (share != null) ShareAction(name, "album", share)
+            if (share != null) ShareAction(name, R.plurals.unit_album, share)
         },
     ) { innerPadding ->
         val listState = rememberLazyListState()
