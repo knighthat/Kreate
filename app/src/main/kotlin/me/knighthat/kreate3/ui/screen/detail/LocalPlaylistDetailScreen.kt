@@ -248,8 +248,9 @@ private fun PlaylistSong(
     onRemove: (fromMenu: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val remove = remember(item, onRemove) {
-        SongMenuAction("Remove from playlist", R.drawable.playlist_remove) { onRemove(true) }
+    val removeLabel = stringResource(R.string.menu_remove_from_playlist)
+    val remove = remember(item, onRemove, removeLabel) {
+        SongMenuAction(removeLabel, R.drawable.playlist_remove) { onRemove(true) }
     }
     SongItem(
         item = item,
@@ -286,7 +287,9 @@ private fun PlaylistActionRow(
 
     QueueActionRow(onAction, modifier) { close ->
         EditMenuItem(
-            label = if (reordering) "Lock the order" else "Unlock to move songs",
+            label = if (reordering) stringResource(R.string.semantic_lock_the_order) else stringResource(
+                R.string.semantic_unlock_to_move_songs
+            ),
             icon = if (reordering) R.drawable.lock_open else R.drawable.lock,
             enabled = canEdit,
         ) {
@@ -294,7 +297,9 @@ private fun PlaylistActionRow(
             onModeChange(if (reordering) CoverEditMode.NONE else CoverEditMode.REORDER)
         }
         EditMenuItem(
-            label = if (removing) "Stop removing songs" else "Remove songs",
+            label = if (removing) stringResource(R.string.semantic_stop_removing_songs) else stringResource(
+                R.string.semantic_remove_songs
+            ),
             icon = R.drawable.delete,
             enabled = canEdit,
         ) {

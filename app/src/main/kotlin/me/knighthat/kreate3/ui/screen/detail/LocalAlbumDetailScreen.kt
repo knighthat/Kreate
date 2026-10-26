@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
@@ -329,7 +330,7 @@ private fun ReorderMenuItem(
             tint = color,
         )
         Text(
-            if (isReordering) "Lock the order" else "Reorder",
+            if (isReordering) stringResource(R.string.semantic_lock_the_order) else stringResource(R.string.semantic_reorder),
             color = color,
             style = MaterialTheme.typography.labelLarge,
         )

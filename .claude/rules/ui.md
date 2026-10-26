@@ -43,14 +43,17 @@ paths:
 - The description of an icon for screen readers (`contentDescription`, the `description` of an icon
   button) is `semantic_*`, separate from the action and the title of the same words:
   `semantic_search`.
+- The name of an entry of a more (three dot) button is `semantic_*`: the entry is an icon with a
+  name, so the name describes the icon. The text of any other menu item is `menu_*`, the heading of
+  a page of a menu is `menu_title_*`. A plural that takes no number in its text is still a plural
+  (`menu_go_to_artist`).
 - Strings only a preview shows (`KreateThemePreview.kt`) are not extracted.
 - An action can be several words (`action_sign_out`). The Context a view model needs for its strings
   is injected (`private val context: Context`, Koin provides it), never read from a global.
 - The title of a screen (its top bar, the label of its tab, the row that opens it, a page of the
-  setup
-  wizard) is `screen_title_*`, so the titles
-  of every screen group together: `screen_title_network`. The `YouTube` and `OpenSubsonic` screens
-  use `source_ytm` and `source_opensubsonicapi`.
+  setup wizard) is `screen_title_*`, so the titles of every screen group together:
+  `screen_title_network`. The `YouTube` and `OpenSubsonic` screens use `source_ytm` and
+  `source_opensubsonicapi`.
 - Not extracted yet, they stay literals: the labels of a setting's values. Protocol names (`HTTP`,
   `SOCKS5`) and examples are never translated and stay literals for good.
 

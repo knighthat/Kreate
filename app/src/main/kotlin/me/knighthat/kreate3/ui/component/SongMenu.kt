@@ -76,6 +76,8 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionOnScreen
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
@@ -396,7 +398,7 @@ private fun SongMenuButtons(item: MediaItem, close: (then: () -> Unit) -> Unit) 
             enabled = reaction.reaction != null,
             setIcon = R.drawable.thumb_down,
             unsetIcon = R.drawable.thumb_down_outline,
-            label = "Dislike",
+            label = stringResource(R.string.menu_dislike),
             onClick = reaction.toggleDislike,
         )
         ReactionToggle(
@@ -404,12 +406,12 @@ private fun SongMenuButtons(item: MediaItem, close: (then: () -> Unit) -> Unit) 
             enabled = reaction.reaction != null,
             setIcon = R.drawable.thumb_up,
             unsetIcon = R.drawable.thumb_up_outline,
-            label = "Like",
+            label = stringResource(R.string.menu_like),
             onClick = reaction.toggleLike,
         )
         LabeledIconButton(
             icon = R.drawable.share,
-            label = "Share",
+            label = stringResource(R.string.menu_share),
             enabled = share.enabled,
             // A link of the server can take a moment, the sheet stays until it is there
             onClick = { share.share { close {} } },
@@ -436,30 +438,41 @@ private fun SongMenuActions(
             ?.takeIf { it != navigator?.current }
     }
 
-    MenuRow(R.drawable.queue_play_next, "Play next", enabled = playable) {
+    MenuRow(
+        R.drawable.queue_play_next,
+        stringResource(R.string.menu_play_next),
+        enabled = playable
+    ) {
         close {
             playback.playNext(listOf(item))
             notifier.post("Will play next")
         }
     }
-    MenuRow(R.drawable.playlist_add, "Add to queue", enabled = playable) {
+    MenuRow(
+        R.drawable.playlist_add,
+        stringResource(R.string.menu_add_to_queue),
+        enabled = playable
+    ) {
         close { playback.queue(QueueAction.ENQUEUE, listOf(item))?.let(notifier::post) }
     }
     MenuRow(
         icon = R.drawable.library_add,
-        label = "Add to playlist",
+        label = stringResource(R.string.menu_add_to_playlist),
         trailing = R.drawable.chevron_right,
         onClick = onPickPlaylist,
     )
-    MenuRow(R.drawable.radio, "Start radio", enabled = playable) {
+    MenuRow(R.drawable.radio, stringResource(R.string.menu_start_radio), enabled = playable) {
         close { playback.radio(item) }
     }
     if (navigator != null && album != null)
-        MenuRow(R.drawable.album, "Go to album") { close { navigator.open(album) } }
+        MenuRow(
+            R.drawable.album,
+            stringResource(R.string.menu_go_to_album)
+        ) { close { navigator.open(album) } }
     if (navigator != null && artists.isNotEmpty())
         MenuRow(
             icon = R.drawable.artist,
-            label = if (artists.size == 1) "Go to artist" else "Go to artists",
+            label = pluralStringResource(R.plurals.menu_go_to_artist, artists.size),
             trailing = R.drawable.chevron_right.takeIf { artists.size > 1 },
         ) {
             if (artists.size == 1) close { navigator.open(artists.single().route) }
@@ -483,10 +496,13 @@ private fun ArtistPicker(
         modifier = Modifier.padding(horizontal = 4.dp),
     ) {
         BackButton(onBack)
-        Text("Artists", style = MaterialTheme.typography.titleMedium)
+        Text(
+            stringResource(R.string.menu_title_artists),
+            style = MaterialTheme.typography.titleMedium
+        )
     }
     artists.forEach { artist ->
-        MenuRow(R.drawable.artist, artist.name ?: "Unknown artist") {
+        MenuRow(R.drawable.artist, artist.name ?: stringResource(R.string.status_unknown_artist)) {
             close { navigator.open(artist.route) }
         }
     }
@@ -511,7 +527,7 @@ private fun PlaylistPicker(
     ) {
         BackButton(onBack)
         Text(
-            text = "Add to playlist",
+            text = stringResource(R.string.menu_title_add_to_playlist),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.weight(1f),
         )
@@ -519,7 +535,7 @@ private fun PlaylistPicker(
     }
     if (picker.playlists?.isEmpty() == true)
         Text(
-            text = "No playlists yet",
+            text = stringResource(R.string.status_no_playlists_yet),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),

@@ -279,7 +279,7 @@ fun QueuePlayButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 fun QueueMoreButton(onAction: (QueueAction) -> Unit, modifier: Modifier = Modifier) =
     MoreButton(modifier) { close ->
         DropdownMenuItem(
-            text = { Text("Add to queue") },
+            text = { Text(stringResource(R.string.semantic_add_to_queue)) },
             leadingIcon = { Icon(painterResource(R.drawable.playlist_add), null) },
             onClick = {
                 close()

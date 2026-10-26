@@ -31,7 +31,7 @@ import me.knighthat.kreate3.model.LyricsSync
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.screen.player.LYRICS_TEXT_SIZES
-import me.knighthat.kreate3.ui.screen.player.label
+import me.knighthat.kreate3.ui.screen.player.labelRes
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
@@ -160,11 +160,12 @@ fun PlayerSettingsScreen(
             label = { it.name },
             onSelect = { Preferences.LYRICS_SOURCE.update(it.provider) },
         )
+        val syncLabels = LyricsSync.entries.associateWith { stringResource(it.labelRes) }
         ChoiceSetting(
             title = stringResource(R.string.setting_title_preferred_timing),
             value = lyricsSync,
             options = LyricsSync.entries.reversed(),
-            label = { it.label },
+            label = { syncLabels.getValue(it) },
             onSelect = { Preferences.LYRICS_SYNC.update(it) },
         )
         SwitchSetting(

@@ -19,6 +19,7 @@
 package me.knighthat.kreate3.ui.screen.player
 
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -198,11 +199,12 @@ internal class LyricsControls {
 internal val LYRICS_TEXT_SIZES = 80..200 step 10
 
 /** How [LyricsSync] is shown to the user. */
-internal val LyricsSync.label: String
+@get:StringRes
+internal val LyricsSync.labelRes: Int
     get() = when (this) {
-        LyricsSync.WORD -> "Word by word"
-        LyricsSync.LINE -> "Line by line"
-        LyricsSync.NONE -> "Plain text"
+        LyricsSync.WORD -> R.string.menu_word_by_word
+        LyricsSync.LINE -> R.string.menu_line_by_line
+        LyricsSync.NONE -> R.string.menu_plain_text
     }
 
 /** What lyrics sources are told about the item, `null` when it has no origin or title. */

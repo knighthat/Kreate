@@ -146,7 +146,7 @@ internal fun LyricsButtons(
         DropdownMenu(expanded = menu == LyricsMenu.TIMING, onDismissRequest = { menu = null }) {
             timings.forEach { timing ->
                 DropdownMenuItem(
-                    text = { Text(timing.label) },
+                    text = { Text(stringResource(timing.labelRes)) },
                     // Room for the check on every row, the labels line up
                     leadingIcon = {
                         if ((controls.sync ?: loaded) == timing)

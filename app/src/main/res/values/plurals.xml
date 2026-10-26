@@ -37,4 +37,12 @@
         <item quantity="one">%1$d second</item>
         <item quantity="other">%1$d seconds</item>
     </plurals>
+    <plurals name="hour">
+        <item quantity="one">%1$d hour</item>
+        <item quantity="other">%1$d hours</item>
+    </plurals>
+    <plurals name="menu_go_to_artist">
+        <item quantity="one">Go to artist</item>
+        <item quantity="other">Go to artists</item>
+    </plurals>
 </resources>

@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -144,18 +145,25 @@ private fun SleepTimerButton(controller: PlaybackController) = Box {
             SleepTimerControls(running, controller)
             HorizontalDivider()
         }
-        SleepTimerItem("Off", isChecked = timer == null) {
+        SleepTimerItem(stringResource(R.string.menu_off), isChecked = timer == null) {
             open = false
             controller.changeSleepTimer(SleepTimerAction.STOP)
         }
         SLEEP_TIMER_MINUTES.forEach { minutes ->
             // A running timer counts down, no row stays its match
-            SleepTimerItem(if (minutes == 60) "1 hour" else "$minutes minutes", isChecked = false) {
+            SleepTimerItem(
+                if (minutes == 60) pluralStringResource(R.plurals.hour, 1, 1)
+                else pluralStringResource(R.plurals.minute, minutes, minutes),
+                isChecked = false,
+            ) {
                 open = false
                 controller.startSleepTimer(minutes.minutes)
             }
         }
-        SleepTimerItem("End of song", isChecked = timer is SleepTimer.EndOfSong) {
+        SleepTimerItem(
+            stringResource(R.string.menu_end_of_song),
+            isChecked = timer is SleepTimer.EndOfSong
+        ) {
             open = false
             controller.startSleepTimer(null)
         }
