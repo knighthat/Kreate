@@ -104,9 +104,9 @@ fun BackupSettingsScreen(
     if (confirmRestore)
         AlertDialog(
             onDismissRequest = { confirmRestore = false },
-            title = { Text(stringResource(R.string.setting_title_restore_a_backup)) },
+            title = { Text(stringResource(R.string.dialog_title_restore_a_backup)) },
             text = {
-                Text(stringResource(R.string.setting_description_restore_a_backup))
+                Text(stringResource(R.string.dialog_body_restore_a_backup))
             },
             confirmButton = {
                 TextButton(

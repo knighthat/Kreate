@@ -23,6 +23,8 @@
     <string name="all">All</string>
     <string name="mib">MiB</string>
     <string name="percent">%1$d%%</string>
+    <string name="name">Name</string>
+    <string name="quoted">\"%1$s\"</string>
 
     <!-- Settings: pages and sections -->
     <string name="setting_header_library">Library</string>
@@ -156,8 +158,6 @@
     <string name="setting_description_restore">Replace everything with a backup. The app restarts after a restore.</string>
     <string name="setting_title_back_up">Back up</string>
     <string name="setting_description_back_up">Save your profiles, settings and library to a file. Passwords and sign ins stay on this device, they are never in a backup.</string>
-    <string name="setting_title_restore_a_backup">Restore a backup?</string>
-    <string name="setting_description_restore_a_backup">Every profile, setting and the library are replaced with the backup\'s, then the app restarts. Passwords and sign ins of profiles in the backup that are on this device are kept.</string>
 
     <!-- Settings: YouTube -->
     <string name="setting_title_use_youtube_account">Use %1$s account</string>
@@ -166,9 +166,6 @@
     <string name="setting_description_sign_in_youtube">Brings your albums, artists and playlists, and makes suggestions yours</string>
     <string name="setting_title_sign_out">Sign out</string>
     <string name="setting_description_sign_out">Your liked songs stay in this profile</string>
-    <string name="setting_title_sign_out_of_youtube">Sign out of %1$s?</string>
-    <string name="setting_description_sign_out_of_youtube">Your %1$s library stops showing here, the songs you liked stay liked. You can sign in again any time.</string>
-    <string name="setting_title_choose_a_channel">Choose a channel</string>
     <string name="setting_description_sign_in_proxy_incomplete">Set the host and port of the proxy first</string>
     <string name="setting_description_sign_in_proxy_unsupported">This device\'s WebView can\'t use a proxy, the sign in page would skip it</string>
     <string name="setting_description_sign_in_proxy_socks_username">The sign in page can\'t sign in to a SOCKS5 proxy. Sign in through an HTTP proxy, or a SOCKS5 one without a username</string>
@@ -177,12 +174,8 @@
     <string name="setting_title_use_opensubsonic">Use %1$s</string>
     <string name="setting_description_use_opensubsonic">The server is not contacted while this is off</string>
     <string name="setting_title_server_address">Server address</string>
-    <string name="setting_title_certificate_changed">Certificate changed</string>
-    <string name="setting_description_certificate_changed_dialog">%1$s presents a different self-signed certificate than the one you trusted. If you didn\'t replace it, someone may be pretending to be your server.</string>
     <string name="setting_title_trusted_until_now">Trusted until now</string>
     <string name="setting_title_presented_now">Presented now</string>
-    <string name="setting_title_forget_certificate">Forget certificate?</string>
-    <string name="setting_description_forget_certificate">The next certificate the server presents will be trusted without asking.</string>
     <string name="setting_description_server_url_scheme">Start with https:// or http://</string>
     <string name="setting_description_server_url_host">Add the host of the server</string>
     <string name="setting_title_allow_self_signed_certificate">Allow self-signed certificate</string>
@@ -245,6 +238,8 @@
     <string name="action_not_now">Not now</string>
     <string name="action_search">Search</string>
     <string name="action_create">Create</string>
+    <string name="action_reset">Reset</string>
+    <string name="action_clear">Clear</string>
     <string name="action_grant">Grant</string>
     <string name="action_go_back">Go back</string>
     <string name="action_next">Next</string>
@@ -253,8 +248,6 @@
     <string name="status_off">Off</string>
     <string name="status_not_set">Not set</string>
     <string name="status_granted">Granted</string>
-    <string name="name">Name</string>
-    <string name="quoted">\"%1$s\"</string>
     <string name="status_unknown_artist">Unknown artist</string>
     <string name="status_no_playlists_yet">No playlists yet</string>
 
@@ -277,6 +270,14 @@
     <string name="screen_title_network">Network</string>
     <string name="screen_title_backup">Backup</string>
     <string name="screen_title_sign_in_to_youtube">Sign in to %1$s</string>
+
+    <string name="tab_songs">Songs</string>
+    <string name="tab_albums">Albums</string>
+    <string name="tab_artists">Artists</string>
+    <string name="tab_playlists">Playlists</string>
+    <string name="tab_lyrics">Lyrics</string>
+    <string name="tab_player">Player</string>
+    <string name="tab_queue">Queue</string>
 
     <!-- Descriptions of icons for screen readers -->
     <string name="semantic_add_to_queue">Add to queue</string>
@@ -344,7 +345,7 @@
     <string name="menu_add_to_queue">Add to queue</string>
     <string name="menu_add_to_playlist">Add to playlist</string>
     <string name="menu_start_radio">Start radio</string>
-    <string name="menu_go_to_album">Go to album</string>
+    <string name="menu_go_to">Go to %1$s</string>
     <string name="menu_title_artists">Artists</string>
     <string name="menu_title_add_to_playlist">Add to playlist</string>
     <string name="menu_remove_from_playlist">Remove from playlist</string>
@@ -375,4 +376,23 @@
     <string name="wizard_distributed_under">Distributed under the %1$s.</string>
     <string name="wizard_get_started">Get started</string>
     <string name="wizard_start_listening">Start listening</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_title_certificate_changed">Certificate changed</string>
+    <string name="dialog_body_certificate_changed">%1$s presents a different self-signed certificate than the one you trusted. If you didn\'t replace it, someone may be pretending to be your server.</string>
+    <string name="dialog_title_choose_a_channel">Choose a channel</string>
+    <string name="dialog_title_clear_the_queue">Clear the queue?</string>
+    <string name="dialog_body_clear_the_queue_1">Every song but the one playing is removed from the queue.</string>
+    <string name="dialog_body_clear_the_queue_2">Remove currently playing song</string>
+    <string name="dialog_body_clear_the_queue_3">This will stop the player and close the fullscreen player</string>
+    <string name="dialog_title_forget_certificate">Forget certificate?</string>
+    <string name="dialog_body_forget_certificate">The next certificate the server presents will be trusted without asking.</string>
+    <string name="dialog_title_new_playlist">New playlist</string>
+    <string name="dialog_title_reset_the_order">Reset the order?</string>
+    <string name="dialog_body_reset_the_order">The songs go back to the album\'s own order.</string>
+    <string name="dialog_title_restore_a_backup">Restore a backup?</string>
+    <string name="dialog_body_restore_a_backup">Every profile, setting and the library are replaced with the backup\'s, then the app restarts. Passwords and sign ins of profiles in the backup that are on this device are kept.</string>
+    <string name="dialog_title_search_lyrics">Search lyrics</string>
+    <string name="dialog_title_sign_out_of_youtube">Sign out of %1$s?</string>
+    <string name="dialog_body_sign_out_of_youtube">Your %1$s library stops showing here, the songs you liked stay liked. You can sign in again any time.</string>
 </resources>

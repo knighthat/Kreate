@@ -20,6 +20,7 @@ package me.knighthat.kreate3.ui.screen.player
 
 import androidx.activity.compose.PredictiveBackHandler
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
@@ -201,10 +202,10 @@ private const val PAGE_SCRIM_ALPHA = 0.6f
 private const val DISABLED_ALPHA = 0.38f
 
 /** Pages of the full player, in the order of its tabs: the player between the other two. */
-private enum class PlayerTab(val label: String) {
-    LYRICS("Lyrics"),
-    PLAYER("Player"),
-    QUEUE("Queue"),
+private enum class PlayerTab(@param:StringRes val label: Int) {
+    LYRICS(R.string.tab_lyrics),
+    PLAYER(R.string.tab_player),
+    QUEUE(R.string.tab_queue),
 }
 
 /** Where the full player stands. */
@@ -577,7 +578,7 @@ private fun FullPlayer(
                         Tab(
                             selected = pagerState.currentPage == tab.ordinal,
                             onClick = { scope.launch { pagerState.animateScrollToPage(tab.ordinal) } },
-                            text = { Text(tab.label) },
+                            text = { Text(stringResource(tab.label)) },
                             unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }

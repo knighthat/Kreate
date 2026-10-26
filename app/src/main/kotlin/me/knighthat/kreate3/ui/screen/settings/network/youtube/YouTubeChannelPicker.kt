@@ -58,7 +58,7 @@ fun YouTubeChannelPicker(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.setting_title_choose_a_channel)) },
+        title = { Text(stringResource(R.string.dialog_title_choose_a_channel)) },
         text = {
             LazyColumn {
                 items(channels, key = { it.pageId.orEmpty() }) { channel ->

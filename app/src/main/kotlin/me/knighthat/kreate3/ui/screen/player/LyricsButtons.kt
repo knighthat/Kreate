@@ -53,6 +53,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -262,13 +263,13 @@ private fun LyricsSearchDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Search lyrics") },
+        title = { Text(stringResource(R.string.dialog_title_search_lyrics)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = typedTitle,
                     onValueChange = { typedTitle = it },
-                    label = { Text("Title") },
+                    label = { Text(stringResource(R.string.name)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     modifier = Modifier.focusRequester(focus),
@@ -276,7 +277,10 @@ private fun LyricsSearchDialog(
                 OutlinedTextField(
                     value = typedArtist,
                     onValueChange = { typedArtist = it },
-                    label = { Text("Artist") },
+                    label = {
+                        val artistName = pluralStringResource(R.plurals.artist, 1)
+                        Text(artistName.replaceFirstChar { it.uppercase() })
+                    },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = { search() }),
@@ -289,6 +293,6 @@ private fun LyricsSearchDialog(
                 enabled = typedTitle.isNotBlank()
             ) { Text(stringResource(R.string.action_search)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
 }

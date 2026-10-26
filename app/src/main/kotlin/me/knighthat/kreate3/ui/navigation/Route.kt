@@ -20,6 +20,7 @@ package me.knighthat.kreate3.ui.navigation
 
 import android.os.Bundle
 import androidx.annotation.DrawableRes
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
 import androidx.media3.common.MediaItem
@@ -292,12 +293,13 @@ fun itemRoute(tab: Tab, item: MediaItem): Route? = when (tab) {
 enum class Tab(
     val route: Route,
     @param:StringRes val title: Int,
+    @param:PluralsRes val noun: Int,
     @param:DrawableRes val icon: Int,
 ) {
-    SONGS(Songs, R.string.screen_title_songs, R.drawable.music_note),
-    ALBUMS(Albums, R.string.screen_title_albums, R.drawable.album),
-    ARTISTS(Artists, R.string.screen_title_artists, R.drawable.artist),
-    PLAYLISTS(Playlists, R.string.screen_title_playlists, R.drawable.queue_music);
+    SONGS(Songs, R.string.tab_songs, R.plurals.song, R.drawable.music_note),
+    ALBUMS(Albums, R.string.tab_albums, R.plurals.album, R.drawable.album),
+    ARTISTS(Artists, R.string.tab_artists, R.plurals.artist, R.drawable.artist),
+    PLAYLISTS(Playlists, R.string.tab_playlists, R.plurals.playlist, R.drawable.queue_music);
 
     companion object {
 

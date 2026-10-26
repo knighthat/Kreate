@@ -82,6 +82,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -318,7 +319,13 @@ private fun ConfigSheet(
                     FilterChip(
                         selected = it in categories,
                         onClick = { onCategoryChange(it, it !in categories) },
-                        label = { Text(stringResource(it.title)) },
+                        label = {
+                            Text(
+                                pluralStringResource(
+                                    it.noun,
+                                    2
+                                ).replaceFirstChar { it.uppercase() })
+                        },
                     )
                 }
             }
@@ -343,7 +350,7 @@ private fun KindBadge(kind: Tab) {
             modifier = Modifier.size(14.dp),
         )
         Text(
-            text = stringResource(kind.title).removeSuffix("s"),
+            text = pluralStringResource(kind.noun, 1).replaceFirstChar { it.uppercase() },
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

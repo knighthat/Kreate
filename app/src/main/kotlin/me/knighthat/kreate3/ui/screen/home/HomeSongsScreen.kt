@@ -33,6 +33,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.PlayAllButton
@@ -45,7 +46,6 @@ import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
-import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -96,7 +96,7 @@ private fun HomeSongsContent(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     HomeScaffold(
-        title = stringResource(Tab.SONGS.title),
+        title = stringResource(R.string.screen_title_songs),
         choices = choices,
         selected = selected,
         onToggleOrigin = onToggleOrigin,

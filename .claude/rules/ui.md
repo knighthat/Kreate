@@ -49,11 +49,21 @@ paths:
   (`menu_go_to_artist`).
 - A text only the setup wizard shows is `wizard_*`. The words it shares with the rest of the app
   (Skip, Next, Theme, Name, …) use their usual keys.
+- Prefixes never share a key, even for the same words: the label of a tab (the library's bottom
+  bar, the player) is `tab_*`, the title of the screen it opens is `screen_title_*`; the title of a
+  setting is `setting_title_*`, the title of a dialog `dialog_title_*`.
+- A noun that is shown in the singular or the plural, and is not a `tab_*` nor a `screen_title_*`,
+  is a plural with the noun as its name (`album`: album, albums), never cut from another string.
+  Texts in `plurals.xml` are lowercase, a heading or label capitalizes them in code
+  (`replaceFirstChar`). A menu entry that goes to a noun is `menu_go_to` with the plural as its
+  argument.
+- A dialog has `dialog_title_{dialog}` and `dialog_body_{dialog}`; when it has several bodies they
+  are numbered, `dialog_body_{dialog}_1`. The buttons use `action_*`.
 - Strings only a preview shows (`KreateThemePreview.kt`) are not extracted.
 - An action can be several words (`action_sign_out`). The Context a view model needs for its strings
   is injected (`private val context: Context`, Koin provides it), never read from a global.
-- The title of a screen (its top bar, the label of its tab, the row that opens it, a page of the
-  setup wizard) is `screen_title_*`, so the titles of every screen group together:
+- The title of a screen (its top bar, the row that opens it, a page of the setup wizard) is
+  `screen_title_*`, so the titles of every screen group together:
   `screen_title_network`. The `YouTube` and `OpenSubsonic` screens use `source_ytm` and
   `source_opensubsonicapi`.
 - Not extracted yet, they stay literals: the labels of a setting's values. Protocol names (`HTTP`,

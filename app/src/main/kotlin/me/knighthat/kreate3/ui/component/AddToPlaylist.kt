@@ -133,12 +133,12 @@ fun CreatePlaylistDialog(onCreate: (String) -> Unit, onDismiss: () -> Unit) {
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("New playlist") },
+        title = { Text(stringResource(R.string.dialog_title_new_playlist)) },
         text = {
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Name") },
+                label = { Text(stringResource(R.string.name)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Sentences,
@@ -155,6 +155,6 @@ fun CreatePlaylistDialog(onCreate: (String) -> Unit, onDismiss: () -> Unit) {
                 )
             }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
 }

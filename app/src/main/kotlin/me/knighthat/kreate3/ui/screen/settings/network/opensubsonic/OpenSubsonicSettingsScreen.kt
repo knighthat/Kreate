@@ -147,12 +147,12 @@ private fun CertificateChangedDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.setting_title_certificate_changed)) },
+        title = { Text(stringResource(R.string.dialog_title_certificate_changed)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
                     stringResource(
-                        R.string.setting_description_certificate_changed_dialog,
+                        R.string.dialog_body_certificate_changed,
                         change.host,
                     )
                 )
@@ -190,8 +190,8 @@ private fun Fingerprint(label: String, fingerprint: String) =
 private fun ForgetCertificateDialog(onForget: () -> Unit, onDismiss: () -> Unit) =
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.setting_title_forget_certificate)) },
-        text = { Text(stringResource(R.string.setting_description_forget_certificate)) },
+        title = { Text(stringResource(R.string.dialog_title_forget_certificate)) },
+        text = { Text(stringResource(R.string.dialog_body_forget_certificate)) },
         confirmButton = { TextButton(onClick = onForget) { Text(stringResource(R.string.action_forget)) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )

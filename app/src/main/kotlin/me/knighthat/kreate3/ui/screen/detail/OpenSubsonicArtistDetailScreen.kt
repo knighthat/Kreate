@@ -29,9 +29,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.FollowButton
@@ -139,7 +141,11 @@ private fun OpenSubsonicArtistDetailContent(
             }
             if (detail.albums.isNotEmpty())
                 item(key = "albums") {
-                    SectionTitle("Albums")
+                    SectionTitle(
+                        pluralStringResource(
+                            R.plurals.album,
+                            2
+                        ).replaceFirstChar { it.uppercase() })
                     LazyRow(
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),

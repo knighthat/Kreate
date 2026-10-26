@@ -284,18 +284,20 @@ private fun LocalAlbumDetailContent(
         if (confirmReset)
             AlertDialog(
                 onDismissRequest = { confirmReset = false },
-                title = { Text("Reset the order?") },
-                text = { Text("The songs go back to the album's own order.") },
+                title = { Text(stringResource(R.string.dialog_title_reset_the_order)) },
+                text = { Text(stringResource(R.string.dialog_body_reset_the_order)) },
                 confirmButton = {
                     TextButton(
                         onClick = {
                             confirmReset = false
                             onResetOrder()
                         },
-                    ) { Text("Reset") }
+                    ) { Text(stringResource(R.string.action_reset)) }
                 },
                 dismissButton = {
-                    TextButton(onClick = { confirmReset = false }) { Text("Cancel") }
+                    TextButton(onClick = {
+                        confirmReset = false
+                    }) { Text(stringResource(R.string.action_cancel)) }
                 },
             )
     }

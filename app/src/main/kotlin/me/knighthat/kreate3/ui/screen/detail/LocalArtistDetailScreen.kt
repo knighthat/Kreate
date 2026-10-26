@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.paging.PagingData
@@ -38,6 +39,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.FollowButton
@@ -128,7 +130,11 @@ private fun LocalArtistDetailContent(
             item(key = "queue-actions") { QueueActionRow(onAction) }
             if (albums.isNotEmpty()) {
                 item {
-                    SectionTitle("Albums")
+                    SectionTitle(
+                        pluralStringResource(
+                            R.plurals.album,
+                            2
+                        ).replaceFirstChar { it.uppercase() })
                     LazyRow(
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -143,7 +149,13 @@ private fun LocalArtistDetailContent(
                     }
                 }
             }
-            item { SectionTitle("Songs") }
+            item {
+                SectionTitle(
+                    pluralStringResource(
+                        R.plurals.song,
+                        2
+                    ).replaceFirstChar { it.uppercase() })
+            }
             items(count = songs.itemCount, key = songs.itemKey { it.mediaId }) { index ->
                 songs[index]?.let {
                     SongItem(it, onClick = { onSongClick(it) })

@@ -272,10 +272,10 @@ private fun ClearQueueDialog(onDismiss: () -> Unit, onConfirm: (removeCurrent: B
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Clear the queue?") },
+        title = { Text(stringResource(R.string.dialog_title_clear_the_queue)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Every song but the one playing is removed from the queue.")
+                Text(stringResource(R.string.dialog_body_clear_the_queue_1))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
@@ -289,7 +289,7 @@ private fun ClearQueueDialog(onDismiss: () -> Unit, onConfirm: (removeCurrent: B
                     // The row takes the tap, the box only shows it
                     Checkbox(checked = removeCurrent, onCheckedChange = null)
                     Text(
-                        text = "Remove currently playing song",
+                        text = stringResource(R.string.dialog_body_clear_the_queue_2),
                         modifier = Modifier.padding(start = 12.dp),
                     )
                 }
@@ -305,14 +305,14 @@ private fun ClearQueueDialog(onDismiss: () -> Unit, onConfirm: (removeCurrent: B
                             modifier = Modifier.size(20.dp),
                         )
                         Text(
-                            text = "This will stop the player and close the fullscreen player",
+                            text = stringResource(R.string.dialog_body_clear_the_queue_3),
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodySmall,
                         )
                     }
             }
         },
-        confirmButton = { TextButton(onClick = { onConfirm(removeCurrent) }) { Text("Clear") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+        confirmButton = { TextButton(onClick = { onConfirm(removeCurrent) }) { Text(stringResource(R.string.action_clear)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
 }

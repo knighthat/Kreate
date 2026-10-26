@@ -155,7 +155,7 @@ fun YouTubeSettingsScreen(
                     title = {
                         Text(
                             stringResource(
-                                R.string.setting_title_sign_out_of_youtube,
+                                R.string.dialog_title_sign_out_of_youtube,
                                 stringResource(R.string.source_ytm)
                             )
                         )
@@ -163,7 +163,7 @@ fun YouTubeSettingsScreen(
                     text = {
                         Text(
                             stringResource(
-                                R.string.setting_description_sign_out_of_youtube,
+                                R.string.dialog_body_sign_out_of_youtube,
                                 stringResource(R.string.source_ytm)
                             )
                         )

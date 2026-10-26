@@ -43,6 +43,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.CreatePlaylistButton
 import me.knighthat.kreate3.ui.component.CreatePlaylistDialog
@@ -52,7 +53,6 @@ import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.RandomButton
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.previewPlaylists
-import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -130,7 +130,7 @@ private fun HomePlaylistsContent(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     HomeScaffold(
-        title = stringResource(Tab.PLAYLISTS.title),
+        title = stringResource(R.string.screen_title_playlists),
         choices = choices,
         selected = selected,
         onToggleOrigin = onToggleOrigin,

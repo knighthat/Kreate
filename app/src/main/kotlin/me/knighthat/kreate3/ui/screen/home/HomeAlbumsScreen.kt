@@ -40,6 +40,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.LocalNotifier
@@ -47,7 +48,6 @@ import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.RandomButton
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.previewAlbums
-import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -113,7 +113,7 @@ private fun HomeAlbumsContent(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     HomeScaffold(
-        title = stringResource(Tab.ALBUMS.title),
+        title = stringResource(R.string.screen_title_albums),
         choices = choices,
         selected = selected,
         onToggleOrigin = onToggleOrigin,
