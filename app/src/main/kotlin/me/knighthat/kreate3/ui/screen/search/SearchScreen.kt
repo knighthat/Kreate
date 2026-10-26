@@ -93,12 +93,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.media3.common.MediaItem
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.database.model.SearchHistory
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
@@ -106,10 +109,15 @@ import me.knighthat.kreate3.ui.component.BackButton
 import me.knighthat.kreate3.ui.component.ConfigButton
 import me.knighthat.kreate3.ui.component.ItemRow
 import me.knighthat.kreate3.ui.component.MessageHost
+import me.knighthat.kreate3.ui.component.MiniPlayerSpace
 import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SearchButton
 import me.knighthat.kreate3.ui.component.SectionTitle
 import me.knighthat.kreate3.ui.component.labelsOf
+import me.knighthat.kreate3.ui.component.previewAlbums
+import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberMiniPlayerSpace
 import me.knighthat.kreate3.ui.component.sourceRes
 import me.knighthat.kreate3.ui.navigation.Tab
@@ -287,12 +295,13 @@ private fun SearchInputBar(
 }
 
 /**
- * Chooses where to search, and which kinds of items the suggestions show.
+ * Chooses where to search, one of [origins], and which kinds of items the suggestions show.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun ConfigSheet(
     origin: Origin,
+    origins: List<Origin>,
     onOriginChange: (Origin) -> Unit,
     categories: Set<Tab>,
     onCategoryChange: (Tab, Boolean) -> Unit,
@@ -300,10 +309,8 @@ private fun ConfigSheet(
 ) {
     ModalBottomSheet(onDismissRequest = onDismiss) {
         SectionTitle(stringResource(R.string.section_header_source))
-        // The server is only offered while it is in use
-        val serverEnabled by Preferences.OPEN_SUBSONIC_ENABLED.collectAsStateWithLifecycle()
         CenteredPicker(
-            items = Origin.entries.filter { it != Origin.OPEN_SUBSONIC || serverEnabled },
+            items = origins,
             selected = origin,
             onSelect = onOriginChange,
             label = labelsOf(Origin.entries) { it.sourceRes },
@@ -379,7 +386,6 @@ private fun suggestionsOf(results: Map<Tab, LazyPagingItems<MediaItem>>): List<S
  * Suggestions while the user types: library items that match the text, and below them the
  * earlier searches that start with it.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     onBack: () -> Unit,
@@ -420,6 +426,64 @@ fun SearchScreen(
         viewModel.setOrigin(origin ?: Origin.LOCAL)
     }
 
+    SearchContent(
+        text = text,
+        query = query,
+        origin = origin,
+        // The server is only offered while it is in use
+        origins = Origin.entries.filter { it != Origin.OPEN_SUBSONIC || serverEnabled },
+        categories = categories,
+        recent = recent,
+        live = live,
+        songs = songs,
+        albums = albums,
+        artists = artists,
+        playlists = playlists,
+        onTextChange = viewModel::setText,
+        onSearch = search,
+        onOriginChange = { Preferences.SEARCH_ORIGIN.update(it.name) },
+        onCategoryChange = viewModel::setCategory,
+        onOpenAlbum = onOpenAlbum,
+        onOpenArtist = onOpenArtist,
+        onOpenPlaylist = onOpenPlaylist,
+        onBack = onBack,
+        modifier = modifier,
+        miniPlayer = { PlaybackMiniPlayer(it) },
+    )
+}
+
+/**
+ * @param text what is typed, [query] is the part the suggestions are for
+ * @param origins where the user can search, [origin] is the one chosen
+ * @param songs the songs of the library that match, like [albums], [artists] and [playlists]
+ * @param onSearch records the search and opens its results
+ * @param miniPlayer the mini player above the search bar, measured into the space it is given
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchContent(
+    text: String,
+    query: String,
+    origin: Origin,
+    origins: List<Origin>,
+    categories: Set<Tab>,
+    recent: List<SearchHistory>,
+    live: LiveSuggestions,
+    songs: LazyPagingItems<MediaItem>,
+    albums: LazyPagingItems<MediaItem>,
+    artists: LazyPagingItems<MediaItem>,
+    playlists: LazyPagingItems<MediaItem>,
+    onTextChange: (String) -> Unit,
+    onSearch: (String) -> Unit,
+    onOriginChange: (Origin) -> Unit,
+    onCategoryChange: (Tab, Boolean) -> Unit,
+    onOpenAlbum: (MediaItem) -> Unit,
+    onOpenArtist: (MediaItem) -> Unit,
+    onOpenPlaylist: (MediaItem) -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    miniPlayer: @Composable (MiniPlayerSpace) -> Unit,
+) {
     var showConfig by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
@@ -438,7 +502,7 @@ fun SearchScreen(
         .filter { (kind, _) -> kind in categories }
         .map { (kind, item) -> Suggestion(kind, item) }
 
-    val miniPlayer = rememberMiniPlayerSpace()
+    val miniPlayerSpace = rememberMiniPlayerSpace()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -452,7 +516,7 @@ fun SearchScreen(
         bottomBar = {
             // The search bar stays last, next to the keyboard
             Column {
-                PlaybackMiniPlayer(miniPlayer)
+                miniPlayer(miniPlayerSpace)
                 SearchInputBar(
                     text = text,
                     placeholder = when (origin) {
@@ -464,8 +528,8 @@ fun SearchScreen(
 
                         Origin.OPEN_SUBSONIC -> stringResource(R.string.screen_search_hint_opensubsonic)
                     },
-                    onTextChange = viewModel::setText,
-                    onSearch = { search(text) },
+                    onTextChange = onTextChange,
+                    onSearch = { onSearch(text) },
                     onConfig = { showConfig = true },
                     focusRequester = focusRequester,
                 )
@@ -494,10 +558,10 @@ fun SearchScreen(
         } else
             // Clear of the search bar, but running under the mini player, see MiniPlayerSpace
             LazyColumn(
-                contentPadding = miniPlayer.inside,
+                contentPadding = miniPlayerSpace.inside,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(miniPlayer.outside(innerPadding)),
+                    .padding(miniPlayerSpace.outside(innerPadding)),
             ) {
                 items(suggestions, key = { it.kind.name + ":" + it.item.mediaId }) {
                     ItemRow(
@@ -521,8 +585,8 @@ fun SearchScreen(
                             headlineContent = { Text(suggestion) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                             modifier = Modifier.clickable {
-                                viewModel.setText(suggestion)
-                                search(suggestion)
+                                onTextChange(suggestion)
+                                onSearch(suggestion)
                             },
                         )
                     }
@@ -540,8 +604,8 @@ fun SearchScreen(
                             headlineContent = { Text(recentSearch.query) },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                             modifier = Modifier.clickable {
-                                viewModel.setText(recentSearch.query)
-                                search(recentSearch.query)
+                                onTextChange(recentSearch.query)
+                                onSearch(recentSearch.query)
                             },
                         )
                     }
@@ -552,9 +616,38 @@ fun SearchScreen(
     if (showConfig)
         ConfigSheet(
             origin = origin,
-            onOriginChange = { Preferences.SEARCH_ORIGIN.update(it.name) },
+            origins = origins,
+            onOriginChange = onOriginChange,
             categories = categories,
-            onCategoryChange = viewModel::setCategory,
+            onCategoryChange = onCategoryChange,
             onDismiss = { showConfig = false },
         )
+}
+
+@ScreenPreviews
+@Composable
+private fun SearchPreview() = PreviewTheme {
+    val none = flowOf(PagingData.empty<MediaItem>()).collectAsLazyPagingItems()
+    SearchContent(
+        text = "Neon",
+        query = "Neon",
+        origin = Origin.LOCAL,
+        origins = Origin.entries,
+        categories = Tab.entries.toSet(),
+        recent = listOf(SearchHistory("Neon Coast"), SearchHistory("Neon lights")),
+        live = LiveSuggestions(emptyList(), emptyList()),
+        songs = flowOf(PagingData.from(previewSongs().take(2))).collectAsLazyPagingItems(),
+        albums = flowOf(PagingData.from(previewAlbums().take(1))).collectAsLazyPagingItems(),
+        artists = none,
+        playlists = none,
+        onTextChange = {},
+        onSearch = {},
+        onOriginChange = {},
+        onCategoryChange = { _, _ -> },
+        onOpenAlbum = {},
+        onOpenArtist = {},
+        onOpenPlaylist = {},
+        onBack = {},
+        miniPlayer = {},
+    )
 }

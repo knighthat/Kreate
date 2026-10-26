@@ -24,7 +24,9 @@ import android.webkit.WebStorage
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
@@ -46,6 +48,8 @@ import androidx.core.net.toUri
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.provider.youtube.YouTubeChannel
 import me.knighthat.kreate3.provider.youtube.youTubeProxy
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.screen.detail.DetailScaffold
 import org.koin.androidx.compose.koinViewModel
 
@@ -65,6 +69,35 @@ private fun clearWebData() {
     }
     WebStorage.getInstance().deleteAllData()
 }
+
+@Composable
+private fun SignInScaffold(
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable (PaddingValues) -> Unit,
+) = DetailScaffold(
+    stringResource(
+        R.string.screen_title_sign_in_to_youtube,
+        stringResource(R.string.source_ytm)
+    ), onBack, modifier, content = content
+)
+
+/**
+ * What shows in place of the page: a spinner while it isn't ready, or the [reason] it can't load.
+ */
+@Composable
+private fun SignInStatus(@StringRes reason: Int?, innerPadding: PaddingValues) =
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            .padding(24.dp),
+    ) {
+        if (reason != null)
+            Text(stringResource(reason), textAlign = TextAlign.Center)
+        else CircularProgressIndicator()
+    }
 
 /**
  * Google's sign in page in a web view. The user signs in there, the app never sees the password:
@@ -124,26 +157,11 @@ fun YouTubeSignInScreen(
         )
     }
 
-    DetailScaffold(
-        stringResource(
-            R.string.screen_title_sign_in_to_youtube,
-            stringResource(R.string.source_ytm)
-        ), onBack, modifier
-    ) { innerPadding ->
+    SignInScaffold(onBack, modifier) { innerPadding ->
         val current = proxy
         if (signedIn || current == null || current is SignInProxy.Unavailable) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(24.dp),
-            ) {
-                if (current is SignInProxy.Unavailable)
-                    Text(stringResource(current.reason), textAlign = TextAlign.Center)
-                else CircularProgressIndicator()
-            }
-            return@DetailScaffold
+            SignInStatus((current as? SignInProxy.Unavailable)?.reason, innerPadding)
+            return@SignInScaffold
         }
         val proxySignIn =
             (current as? SignInProxy.Applied)?.proxy?.takeIf { it.username.isNotEmpty() }
@@ -186,5 +204,13 @@ fun YouTubeSignInScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
         )
+    }
+}
+
+@ScreenPreviews
+@Composable
+private fun YouTubeSignInPreview() = PreviewTheme {
+    SignInScaffold(onBack = {}) {
+        SignInStatus(R.string.setting_description_sign_in_proxy_incomplete, it)
     }
 }

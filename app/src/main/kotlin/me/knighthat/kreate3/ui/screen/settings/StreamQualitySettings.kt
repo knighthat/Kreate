@@ -39,19 +39,39 @@ fun StreamQualitySettings(
     val onWifi by wifi.collectAsStateWithLifecycle()
     val onMobile by mobile.collectAsStateWithLifecycle()
 
+    StreamQualitySettings(
+        wifi = onWifi,
+        mobile = onMobile,
+        label = label,
+        onWifiChange = { wifi.update(it) },
+        onMobileChange = { mobile.update(it) },
+        options = options,
+    )
+}
+
+/** [StreamQualitySettings] with the qualities given, each change goes to its callback. */
+@Composable
+fun StreamQualitySettings(
+    wifi: StreamQuality,
+    mobile: StreamQuality,
+    label: (StreamQuality) -> String,
+    onWifiChange: (StreamQuality) -> Unit,
+    onMobileChange: (StreamQuality) -> Unit,
+    options: List<StreamQuality> = StreamQuality.entries,
+) {
     SliderSetting(
         title = stringResource(R.string.setting_title_on_wifi),
-        value = onWifi.offeredIn(options),
+        value = wifi.offeredIn(options),
         options = options,
         label = label,
-        onSelect = wifi::update,
+        onSelect = onWifiChange,
     )
     SliderSetting(
         title = stringResource(R.string.setting_title_on_mobile_data),
-        value = onMobile.offeredIn(options),
+        value = mobile.offeredIn(options),
         options = options,
         label = label,
-        onSelect = mobile::update,
+        onSelect = onMobileChange,
     )
 }
 

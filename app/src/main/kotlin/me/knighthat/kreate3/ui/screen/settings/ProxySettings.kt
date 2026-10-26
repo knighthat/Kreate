@@ -84,6 +84,47 @@ fun ProxySettings(
     val secret by password.collectAsStateWithLifecycle()
     val appProxy by Preferences.NETWORK_PROXY_ENABLED.collectAsStateWithLifecycle()
 
+    ProxySettings(
+        source = source,
+        on = on,
+        kind = kind,
+        address = address,
+        number = number,
+        user = user,
+        secret = secret,
+        appProxy = appProxy,
+        onEnabledChange = { enabled.update(it) },
+        onTypeChange = { type.update(it) },
+        onHostChange = { host.update(it) },
+        onPortChange = { port.update(it) },
+        onUsernameChange = { username.update(it) },
+        onPasswordChange = { password.update(it) },
+    )
+}
+
+/**
+ * [ProxySettings] with the values given, each change goes to its callback.
+ *
+ * @param number the port, `0` while there is none
+ * @param appProxy whether the app's proxy is on, which a source's own proxy overrides
+ */
+@Composable
+fun ProxySettings(
+    source: String?,
+    on: Boolean,
+    kind: ProxyType,
+    address: String,
+    number: Int,
+    user: String,
+    secret: String,
+    appProxy: Boolean,
+    onEnabledChange: (Boolean) -> Unit,
+    onTypeChange: (ProxyType) -> Unit,
+    onHostChange: (String) -> Unit,
+    onPortChange: (Int) -> Unit,
+    onUsernameChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+) {
     val validateHost = hostValidator()
     val validatePort = portValidator()
 
@@ -104,7 +145,7 @@ fun ProxySettings(
             else -> stringResource(R.string.setting_description_proxy_source, source)
         },
         checked = on,
-        onCheckedChange = enabled::update,
+        onCheckedChange = onEnabledChange,
     )
     // Saved values stay when hidden, they are used again once the setting is back on
     if (!on) return
@@ -114,7 +155,7 @@ fun ProxySettings(
         value = kind,
         options = ProxyType.entries,
         label = ProxyType::label,
-        onSelect = type::update,
+        onSelect = onTypeChange,
     )
     TextSetting(
         title = stringResource(R.string.setting_title_host),
@@ -122,20 +163,20 @@ fun ProxySettings(
         placeholder = "proxy.example.com",
         keyboardType = KeyboardType.Uri,
         validate = validateHost,
-        onSave = { host.update(it.trim()) },
+        onSave = { onHostChange(it.trim()) },
     )
     TextSetting(
         title = stringResource(R.string.setting_title_port),
         value = if (number == 0) "" else number.toString(),
         keyboardType = KeyboardType.Number,
         validate = { validatePort(it.trim()) },
-        onSave = { port.update(it.trim().toIntOrNull() ?: 0) },
+        onSave = { onPortChange(it.trim().toIntOrNull() ?: 0) },
     )
     TextSetting(
         title = stringResource(R.string.setting_title_username),
         value = user,
         summary = user.ifEmpty { stringResource(R.string.setting_description_username_status_none) },
-        onSave = { username.update(it.trim()) },
+        onSave = { onUsernameChange(it.trim()) },
     )
     if (user.isNotEmpty())
         TextSetting(
@@ -143,6 +184,25 @@ fun ProxySettings(
             value = secret,
             summary = if (secret.isEmpty()) "" else "•".repeat(8),
             hidden = true,
-            onSave = password::update,
+            onSave = onPasswordChange,
         )
 }
+
+/** [ProxySettings] of a proxy that is off, for previews. */
+@Composable
+internal fun PreviewProxySettings(source: String?) = ProxySettings(
+    source = source,
+    on = false,
+    kind = ProxyType.HTTP,
+    address = "",
+    number = 0,
+    user = "",
+    secret = "",
+    appProxy = false,
+    onEnabledChange = {},
+    onTypeChange = {},
+    onHostChange = {},
+    onPortChange = {},
+    onUsernameChange = {},
+    onPasswordChange = {},
+)

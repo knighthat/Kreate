@@ -28,10 +28,15 @@ import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
+import me.knighthat.kreate3.provider.opensubsonic.ServerInfo
+import me.knighthat.kreate3.provider.youtube.YouTubeAccount
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.navigation.OpenSubsonicSettings
 import me.knighthat.kreate3.ui.navigation.Route
 import me.knighthat.kreate3.ui.navigation.YouTubeSettings
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
+import me.knighthat.kreate3.ui.screen.settings.PreviewProxySettings
 import me.knighthat.kreate3.ui.screen.settings.ProxySettings
 import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
@@ -107,6 +112,52 @@ fun NetworkSettingsScreen(
     val readTimeout by Preferences.NETWORK_READ_TIMEOUT.collectAsStateWithLifecycle()
     val maxRetries by Preferences.NETWORK_MAX_RETRIES.collectAsStateWithLifecycle()
 
+    NetworkSettingsContent(
+        connectTimeout = connectTimeout,
+        readTimeout = readTimeout,
+        maxRetries = maxRetries,
+        youtubeEnabled = youtubeEnabled,
+        youtubeAccount = youtubeAccount,
+        openSubsonicEnabled = openSubsonicEnabled,
+        url = url,
+        server = server,
+        onBack = onBack,
+        onOpen = onOpen,
+        modifier = modifier,
+        // A source's own proxy, on its page, overrides this one
+        proxy = {
+            ProxySettings(
+                source = null,
+                enabled = Preferences.NETWORK_PROXY_ENABLED,
+                type = Preferences.NETWORK_PROXY_TYPE,
+                host = Preferences.NETWORK_PROXY_HOST,
+                port = Preferences.NETWORK_PROXY_PORT,
+                username = Secrets.NETWORK_PROXY_USERNAME,
+                password = Secrets.NETWORK_PROXY_PASSWORD,
+            )
+        },
+    )
+}
+
+/**
+ * @param url the OpenSubsonic server's address, empty while there is none
+ * @param proxy the app's proxy, see [ProxySettings]
+ */
+@Composable
+private fun NetworkSettingsContent(
+    connectTimeout: Int,
+    readTimeout: Int,
+    maxRetries: Int,
+    youtubeEnabled: Boolean,
+    youtubeAccount: YouTubeAccountState,
+    openSubsonicEnabled: Boolean,
+    url: String,
+    server: CheckState,
+    onBack: () -> Unit,
+    onOpen: (Route) -> Unit,
+    modifier: Modifier = Modifier,
+    proxy: @Composable () -> Unit,
+) {
     SettingsPage(stringResource(R.string.screen_title_network), onBack, modifier) {
         SettingsSection(stringResource(R.string.setting_header_requests))
         NumberSetting(
@@ -149,16 +200,7 @@ fun NetworkSettingsScreen(
             },
         )
 
-        // A source's own proxy, on its page, overrides this one
-        ProxySettings(
-            source = null,
-            enabled = Preferences.NETWORK_PROXY_ENABLED,
-            type = Preferences.NETWORK_PROXY_TYPE,
-            host = Preferences.NETWORK_PROXY_HOST,
-            port = Preferences.NETWORK_PROXY_PORT,
-            username = Secrets.NETWORK_PROXY_USERNAME,
-            password = Secrets.NETWORK_PROXY_PASSWORD,
-        )
+        proxy()
 
         SettingsSection(stringResource(R.string.setting_header_sources))
         SettingsItem(
@@ -182,4 +224,30 @@ fun NetworkSettingsScreen(
             onClick = { onOpen(OpenSubsonicSettings) },
         )
     }
+}
+
+@ScreenPreviews
+@Composable
+private fun NetworkSettingsPreview() = PreviewTheme {
+    NetworkSettingsContent(
+        connectTimeout = 15,
+        readTimeout = 30,
+        maxRetries = 3,
+        youtubeEnabled = true,
+        youtubeAccount = YouTubeAccountState.SignedIn(
+            YouTubeAccount(
+                "Neon Coast",
+                "@neoncoast",
+                null
+            )
+        ),
+        openSubsonicEnabled = true,
+        url = "https://music.example.com",
+        server = CheckState.Done(
+            ServerCheck.Success(ServerInfo("1.16.1", "navidrome", "0.58.0", isOpenSubsonic = true))
+        ),
+        onBack = {},
+        onOpen = {},
+        proxy = { PreviewProxySettings(source = null) },
+    )
 }

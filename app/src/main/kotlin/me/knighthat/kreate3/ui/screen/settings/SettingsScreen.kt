@@ -26,6 +26,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.preferences.Profile
 import me.knighthat.kreate3.preferences.ProfileManager
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.navigation.BackupSettings
 import me.knighthat.kreate3.ui.navigation.GeneralSettings
 import me.knighthat.kreate3.ui.navigation.NetworkSettings
@@ -48,6 +50,22 @@ fun SettingsScreen(
 ) {
     val activeId by profileManager.activeId.collectAsStateWithLifecycle()
 
+    // A backup holds every profile, so only the default one may save or replace them
+    SettingsContent(
+        onBack = onBack,
+        onOpen = onOpen,
+        showBackup = activeId == Profile.DEFAULT_ID,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun SettingsContent(
+    onBack: () -> Unit,
+    onOpen: (Route) -> Unit,
+    showBackup: Boolean,
+    modifier: Modifier = Modifier,
+) {
     SettingsPage(stringResource(R.string.screen_title_settings), onBack, modifier) {
         SettingsItem(
             title = stringResource(R.string.screen_title_general),
@@ -72,12 +90,17 @@ fun SettingsScreen(
             ),
             onClick = { onOpen(NetworkSettings) },
         )
-        // A backup holds every profile, so only the default one may save or replace them
-        if (activeId == Profile.DEFAULT_ID)
+        if (showBackup)
             SettingsItem(
                 title = stringResource(R.string.screen_title_backup),
                 summary = stringResource(R.string.setting_description_backup),
                 onClick = { onOpen(BackupSettings) },
             )
     }
+}
+
+@ScreenPreviews
+@Composable
+private fun SettingsPreview() = PreviewTheme {
+    SettingsContent(onBack = {}, onOpen = {}, showBackup = true)
 }

@@ -351,7 +351,8 @@ ui/screen/
   list), `SettingsComponents.kt` (SettingsPage/Section, MainSwitch (page-top switch),
   Switch/Choice/Radio/Number/Text/Slider settings, `prettyName`), `StreamQualitySettings.kt` (
   Wi-Fi + mobile quality sliders), `LibrarySyncSettings.kt` (per-section sync/show switches of a
-  source). `general/GeneralSettingsScreen.kt`, `player/PlayerSettingsScreen.kt` (player behavior/UI
+  source); both, like `ProxySettings`, also have a stateless overload taking values that previews
+  call. `general/GeneralSettingsScreen.kt`, `player/PlayerSettingsScreen.kt` (player behavior/UI
   only: Queue incl. preload slider, History; Android Auto section with the three
   `AUTO_*_TAP` choices), `ui/UiSettingsScreen.kt`,
   `network/NetworkSettingsScreen.kt` (timeouts/retries + "
@@ -532,5 +533,6 @@ rebuilt per proxy with own pool; `youTubeProxy()`, `isYouTubeHost()`); `OpenSubs
 proxy too. App: `source/SourceNetworkClient.kt` (Coil routes YouTube hosts to
 `YouTubeProvider.httpClient()`), `SongDataSource` has a YouTube upstream (
 `YouTubeProvider.streamClient()`), settings `ProxySettings.kt` (section at the end of both source
-pages), `network/youtube/SignInProxy.kt` (androidx.webkit ProxyController override while the sign-in
+pages; `PreviewProxySettings` is an off proxy for previews), `network/youtube/SignInProxy.kt` (
+androidx.webkit ProxyController override while the sign-in
 screen shows; SOCKS with a username refused, Chromium can't sign in to SOCKS).

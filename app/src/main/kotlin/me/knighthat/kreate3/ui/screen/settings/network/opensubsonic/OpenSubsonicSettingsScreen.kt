@@ -45,11 +45,15 @@ import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
+import me.knighthat.kreate3.provider.opensubsonic.ServerInfo
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.labelsOf
 import me.knighthat.kreate3.ui.component.openSubsonicLabelRes
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
 import me.knighthat.kreate3.ui.screen.settings.MainSwitch
+import me.knighthat.kreate3.ui.screen.settings.PreviewProxySettings
 import me.knighthat.kreate3.ui.screen.settings.ProxySettings
 import me.knighthat.kreate3.ui.screen.settings.RadioSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsItem
@@ -234,9 +238,6 @@ fun OpenSubsonicSettingsScreen(
     val syncAlbums by Preferences.OPEN_SUBSONIC_SYNC_ALBUMS.collectAsStateWithLifecycle()
     val syncArtists by Preferences.OPEN_SUBSONIC_SYNC_ARTISTS.collectAsStateWithLifecycle()
     val syncPlaylists by Preferences.OPEN_SUBSONIC_SYNC_PLAYLISTS.collectAsStateWithLifecycle()
-    // Fingerprint of the change the user put off, it isn't asked again until they tap the row
-    var putOff by rememberSaveable { mutableStateOf<String?>(null) }
-    var askForget by remember { mutableStateOf(false) }
     val credentialsCheck by viewModel.credentials.collectFlowAsState()
     val enabled by Preferences.OPEN_SUBSONIC_ENABLED.collectAsStateWithLifecycle()
     val auth by Preferences.OPEN_SUBSONIC_AUTH.collectAsStateWithLifecycle()
@@ -244,6 +245,88 @@ fun OpenSubsonicSettingsScreen(
     val username by Secrets.OPEN_SUBSONIC_USERNAME.collectAsStateWithLifecycle()
     val password by Secrets.OPEN_SUBSONIC_PASSWORD.collectAsStateWithLifecycle()
     val apiKey by Secrets.OPEN_SUBSONIC_API_KEY.collectAsStateWithLifecycle()
+
+    OpenSubsonicSettingsContent(
+        enabled = enabled,
+        url = url,
+        serverCheck = serverCheck,
+        allowSelfSigned = allowSelfSigned,
+        certificateHost = certificateHost,
+        certificate = certificate,
+        auth = auth,
+        username = username,
+        password = password,
+        apiKey = apiKey,
+        credentialsCheck = credentialsCheck,
+        directPlay = directPlay,
+        syncSongs = syncSongs,
+        syncPlaylists = syncPlaylists,
+        syncAlbums = syncAlbums,
+        syncArtists = syncArtists,
+        onRetry = viewModel::retry,
+        onTrust = viewModel::trust,
+        onForgetCertificate = viewModel::forgetCertificate,
+        onSongSyncChange = viewModel::setSongSync,
+        onBack = onBack,
+        modifier = modifier,
+        quality = {
+            StreamQualitySettings(
+                wifi = Preferences.OPEN_SUBSONIC_QUALITY_WIFI,
+                mobile = Preferences.OPEN_SUBSONIC_QUALITY_MOBILE,
+                label = labelsOf(StreamQuality.entries) { it.openSubsonicLabelRes },
+            )
+        },
+        proxy = {
+            ProxySettings(
+                source = stringResource(R.string.setting_description_the_server),
+                enabled = Preferences.OPEN_SUBSONIC_PROXY_ENABLED,
+                type = Preferences.OPEN_SUBSONIC_PROXY_TYPE,
+                host = Preferences.OPEN_SUBSONIC_PROXY_HOST,
+                port = Preferences.OPEN_SUBSONIC_PROXY_PORT,
+                username = Secrets.OPEN_SUBSONIC_PROXY_USERNAME,
+                password = Secrets.OPEN_SUBSONIC_PROXY_PASSWORD,
+            )
+        },
+    )
+}
+
+/**
+ * @param certificate SHA-256 fingerprint of the trusted certificate, empty while there is none
+ * @param certificateHost the host [certificate] was trusted for
+ * @param onRetry runs the checks again
+ * @param quality how good the streamed songs are, see [StreamQualitySettings]
+ * @param proxy the server's proxy, see [ProxySettings]
+ */
+@Composable
+private fun OpenSubsonicSettingsContent(
+    enabled: Boolean,
+    url: String,
+    serverCheck: CheckState,
+    allowSelfSigned: Boolean,
+    certificateHost: String,
+    certificate: String,
+    auth: OpenSubsonicAuth,
+    username: String,
+    password: String,
+    apiKey: String,
+    credentialsCheck: CheckState,
+    directPlay: Boolean,
+    syncSongs: Boolean,
+    syncPlaylists: Boolean,
+    syncAlbums: SyncMode,
+    syncArtists: SyncMode,
+    onRetry: () -> Unit,
+    onTrust: (ServerCheck.CertificateChanged) -> Unit,
+    onForgetCertificate: () -> Unit,
+    onSongSyncChange: (Boolean) -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    quality: @Composable () -> Unit,
+    proxy: @Composable () -> Unit,
+) {
+    // Fingerprint of the change the user put off, it isn't asked again until they tap the row
+    var putOff by rememberSaveable { mutableStateOf<String?>(null) }
+    var askForget by remember { mutableStateOf(false) }
 
     SettingsPage(stringResource(R.string.source_opensubsonicapi), onBack, modifier) {
         MainSwitch(
@@ -253,7 +336,7 @@ fun OpenSubsonicSettingsScreen(
             ),
             summary = stringResource(R.string.setting_description_use_opensubsonic),
             checked = enabled,
-            onCheckedChange = Preferences.OPEN_SUBSONIC_ENABLED::update,
+            onCheckedChange = { Preferences.OPEN_SUBSONIC_ENABLED.update(it) },
         )
 
         // Saved values stay when hidden, they are used again once the setting is back on
@@ -274,12 +357,12 @@ fun OpenSubsonicSettingsScreen(
             serverCheck,
             serverCheck.serverSummary()
         ) {
-            if (change != null) putOff = null else viewModel.retry()
+            if (change != null) putOff = null else onRetry()
         }
         if (change != null && putOff != change.fingerprint)
             CertificateChangedDialog(
                 change = change,
-                onTrust = { viewModel.trust(change) },
+                onTrust = { onTrust(change) },
                 onDismiss = { putOff = change.fingerprint },
             )
 
@@ -287,7 +370,7 @@ fun OpenSubsonicSettingsScreen(
             title = stringResource(R.string.setting_title_allow_self_signed_certificate),
             summary = stringResource(R.string.setting_description_allow_self_signed_certificate),
             checked = allowSelfSigned,
-            onCheckedChange = Preferences.OPEN_SUBSONIC_ALLOW_SELF_SIGNED::update,
+            onCheckedChange = { Preferences.OPEN_SUBSONIC_ALLOW_SELF_SIGNED.update(it) },
         )
         if (allowSelfSigned && certificate.isNotEmpty())
             SettingsItem(
@@ -299,7 +382,7 @@ fun OpenSubsonicSettingsScreen(
             ForgetCertificateDialog(
                 onForget = {
                     askForget = false
-                    viewModel.forgetCertificate()
+                    onForgetCertificate()
                 },
                 onDismiss = { askForget = false },
             )
@@ -309,7 +392,7 @@ fun OpenSubsonicSettingsScreen(
             value = auth,
             options = OpenSubsonicAuth.entries,
             label = labelsOf(OpenSubsonicAuth.entries) { it.labelRes },
-            onSelect = Preferences.OPEN_SUBSONIC_AUTH::update,
+            onSelect = { Preferences.OPEN_SUBSONIC_AUTH.update(it) },
         )
         when (auth) {
             OpenSubsonicAuth.PASSWORD -> {
@@ -323,7 +406,7 @@ fun OpenSubsonicSettingsScreen(
                     value = password,
                     summary = if (password.isEmpty()) "" else "•".repeat(8),
                     hidden = true,
-                    onSave = Secrets.OPEN_SUBSONIC_PASSWORD::update,
+                    onSave = { Secrets.OPEN_SUBSONIC_PASSWORD.update(it) },
                 )
             }
 
@@ -332,14 +415,14 @@ fun OpenSubsonicSettingsScreen(
                 value = apiKey,
                 summary = if (apiKey.isEmpty()) "" else "•".repeat(8),
                 hidden = true,
-                onSave = Secrets.OPEN_SUBSONIC_API_KEY::update,
+                onSave = { Secrets.OPEN_SUBSONIC_API_KEY.update(it) },
             )
         }
         CheckRow(
             stringResource(R.string.setting_title_sign_in),
             credentialsCheck,
             credentialsCheck.credentialsSummary(),
-            viewModel::retry
+            onRetry
         )
 
         SettingsSection(stringResource(R.string.setting_header_playback))
@@ -347,50 +430,79 @@ fun OpenSubsonicSettingsScreen(
             title = stringResource(R.string.setting_title_direct_play),
             summary = stringResource(R.string.setting_description_direct_play),
             checked = directPlay,
-            onCheckedChange = Preferences.OPEN_SUBSONIC_DIRECT_PLAY::update,
+            onCheckedChange = { Preferences.OPEN_SUBSONIC_DIRECT_PLAY.update(it) },
         )
-        StreamQualitySettings(
-            wifi = Preferences.OPEN_SUBSONIC_QUALITY_WIFI,
-            mobile = Preferences.OPEN_SUBSONIC_QUALITY_MOBILE,
-            label = labelsOf(StreamQuality.entries) { it.openSubsonicLabelRes },
-        )
+        quality()
 
         SettingsSection(stringResource(R.string.setting_header_server_library))
         SwitchSetting(
             title = stringResource(R.string.setting_title_sync_liked_songs),
             summary = stringResource(R.string.setting_description_sync_songs_server),
             checked = syncSongs,
-            onCheckedChange = viewModel::setSongSync,
+            onCheckedChange = onSongSyncChange,
         )
         SwitchSetting(
             title = stringResource(R.string.setting_title_show_playlists),
             summary = stringResource(R.string.setting_description_show_playlists_server),
             checked = syncPlaylists,
-            onCheckedChange = Preferences.OPEN_SUBSONIC_SYNC_PLAYLISTS::update,
+            onCheckedChange = { Preferences.OPEN_SUBSONIC_SYNC_PLAYLISTS.update(it) },
         )
         ChoiceSetting(
             title = stringResource(R.string.setting_title_show_albums),
             value = syncAlbums,
             options = SyncMode.entries,
             label = labelsOf(SyncMode.entries) { it.labelRes },
-            onSelect = Preferences.OPEN_SUBSONIC_SYNC_ALBUMS::update,
+            onSelect = { Preferences.OPEN_SUBSONIC_SYNC_ALBUMS.update(it) },
         )
         ChoiceSetting(
             title = stringResource(R.string.setting_title_show_artists),
             value = syncArtists,
             options = SyncMode.entries,
             label = labelsOf(SyncMode.entries) { it.labelRes },
-            onSelect = Preferences.OPEN_SUBSONIC_SYNC_ARTISTS::update,
+            onSelect = { Preferences.OPEN_SUBSONIC_SYNC_ARTISTS.update(it) },
         )
 
-        ProxySettings(
-            source = stringResource(R.string.setting_description_the_server),
-            enabled = Preferences.OPEN_SUBSONIC_PROXY_ENABLED,
-            type = Preferences.OPEN_SUBSONIC_PROXY_TYPE,
-            host = Preferences.OPEN_SUBSONIC_PROXY_HOST,
-            port = Preferences.OPEN_SUBSONIC_PROXY_PORT,
-            username = Secrets.OPEN_SUBSONIC_PROXY_USERNAME,
-            password = Secrets.OPEN_SUBSONIC_PROXY_PASSWORD,
-        )
+        proxy()
     }
+}
+
+@ScreenPreviews
+@Composable
+private fun OpenSubsonicSettingsPreview() = PreviewTheme {
+    val online = CheckState.Done(
+        ServerCheck.Success(ServerInfo("1.16.1", "navidrome", "0.58.0", isOpenSubsonic = true))
+    )
+    OpenSubsonicSettingsContent(
+        enabled = true,
+        url = "https://music.example.com",
+        serverCheck = online,
+        allowSelfSigned = false,
+        certificateHost = "",
+        certificate = "",
+        auth = OpenSubsonicAuth.PASSWORD,
+        username = "neon",
+        password = "secret",
+        apiKey = "",
+        credentialsCheck = online,
+        directPlay = false,
+        syncSongs = true,
+        syncPlaylists = true,
+        syncAlbums = SyncMode.ALL,
+        syncArtists = SyncMode.ALL,
+        onRetry = {},
+        onTrust = {},
+        onForgetCertificate = {},
+        onSongSyncChange = {},
+        onBack = {},
+        quality = {
+            StreamQualitySettings(
+                wifi = StreamQuality.ORIGINAL,
+                mobile = StreamQuality.HIGH,
+                label = labelsOf(StreamQuality.entries) { it.openSubsonicLabelRes },
+                onWifiChange = {},
+                onMobileChange = {},
+            )
+        },
+        proxy = { PreviewProxySettings(stringResource(R.string.setting_description_the_server)) },
+    )
 }

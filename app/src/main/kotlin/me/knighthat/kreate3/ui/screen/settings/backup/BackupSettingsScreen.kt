@@ -39,6 +39,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.TileButton
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import org.koin.androidx.compose.koinViewModel
@@ -53,7 +55,6 @@ fun BackupSettingsScreen(
     viewModel: BackupViewModel = koinViewModel(),
 ) {
     val working by viewModel.working.collectAsStateWithLifecycle()
-    var confirmRestore by remember { mutableStateOf(false) }
 
     val exportTo = rememberLauncherForActivityResult(CreateDocument("application/zip")) { uri ->
         uri?.let(viewModel::export)
@@ -61,6 +62,30 @@ fun BackupSettingsScreen(
     val restoreFrom = rememberLauncherForActivityResult(OpenDocument()) { uri ->
         uri?.let(viewModel::restore)
     }
+
+    BackupSettingsContent(
+        working = working,
+        onBackUp = { exportTo.launch(viewModel.fileName()) },
+        onRestore = { restoreFrom.launch(arrayOf("application/zip", "application/octet-stream")) },
+        onBack = onBack,
+        modifier = modifier,
+    )
+}
+
+/**
+ * @param working what runs now, `null` while nothing does
+ * @param onBackUp asks where to save a backup
+ * @param onRestore asks which backup to restore, once the user agreed to replace everything
+ */
+@Composable
+private fun BackupSettingsContent(
+    working: BackupTask?,
+    onBackUp: () -> Unit,
+    onRestore: () -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var confirmRestore by remember { mutableStateOf(false) }
 
     SettingsPage(stringResource(R.string.screen_title_backup), onBack, modifier) {
         Column(
@@ -92,7 +117,7 @@ fun BackupSettingsScreen(
                 ),
                 subtitle = stringResource(R.string.setting_description_back_up),
                 onClick = {
-                    if (working == null) exportTo.launch(viewModel.fileName())
+                    if (working == null) onBackUp()
                 },
                 busy = working == BackupTask.EXPORT,
                 contentPadding = padding,
@@ -112,7 +137,7 @@ fun BackupSettingsScreen(
                 TextButton(
                     onClick = {
                         confirmRestore = false
-                        restoreFrom.launch(arrayOf("application/zip", "application/octet-stream"))
+                        onRestore()
                     },
                 ) { Text(stringResource(R.string.action_pick_backup)) }
             },
@@ -122,4 +147,10 @@ fun BackupSettingsScreen(
                 }) { Text(stringResource(R.string.action_cancel)) }
             },
         )
+}
+
+@ScreenPreviews
+@Composable
+private fun BackupSettingsPreview() = PreviewTheme {
+    BackupSettingsContent(working = null, onBackUp = {}, onRestore = {}, onBack = {})
 }

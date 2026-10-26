@@ -46,10 +46,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import kotlinx.coroutines.flow.flowOf
 import me.knighthat.kreate3.R
+import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.ArtistItem
@@ -57,8 +60,11 @@ import me.knighthat.kreate3.ui.component.BackButton
 import me.knighthat.kreate3.ui.component.MessageHost
 import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
 import me.knighthat.kreate3.ui.component.PlaylistItem
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.TabBar
+import me.knighthat.kreate3.ui.component.previewAlbums
 import me.knighthat.kreate3.ui.component.rememberMiniPlayerSpace
 import me.knighthat.kreate3.ui.component.rememberSongTap
 import me.knighthat.kreate3.ui.component.sourceRes
@@ -106,7 +112,6 @@ private fun ResultsGrid(
  * library's lists narrowed to the matches, a YouTube search shows what YouTube finds, page after
  * page as the list scrolls.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchResultsScreen(
     initialTab: Tab,
@@ -127,6 +132,49 @@ fun SearchResultsScreen(
     val onSongClick = rememberSongTap(Preferences.SEARCH_SONGS_TAP_RADIO) {
         songs.itemSnapshotList.items
     }
+
+    SearchResultsContent(
+        query = viewModel.query,
+        origin = viewModel.origin,
+        selected = selected,
+        onSelect = { selected = it },
+        songs = songs,
+        albums = albums,
+        artists = artists,
+        playlists = playlists,
+        onSongClick = onSongClick,
+        onOpenAlbum = onOpenAlbum,
+        onOpenArtist = onOpenArtist,
+        onOpenPlaylist = onOpenPlaylist,
+        onBack = onBack,
+        modifier = modifier,
+        miniPlayer = { PlaybackMiniPlayer(rememberMiniPlayerSpace()) },
+    )
+}
+
+/**
+ * @param origin where [query] was searched
+ * @param miniPlayer the mini player above the tabs
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchResultsContent(
+    query: String,
+    origin: Origin,
+    selected: Tab,
+    onSelect: (Tab) -> Unit,
+    songs: LazyPagingItems<MediaItem>,
+    albums: LazyPagingItems<MediaItem>,
+    artists: LazyPagingItems<MediaItem>,
+    playlists: LazyPagingItems<MediaItem>,
+    onSongClick: (MediaItem) -> Unit,
+    onOpenAlbum: (MediaItem) -> Unit,
+    onOpenArtist: (MediaItem) -> Unit,
+    onOpenPlaylist: (MediaItem) -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    miniPlayer: @Composable () -> Unit,
+) {
     val current = when (selected) {
         Tab.SONGS -> songs
         Tab.ALBUMS -> albums
@@ -137,7 +185,7 @@ fun SearchResultsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(viewModel.query, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                title = { Text(query, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = { BackButton(onBack) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surfaceDim,
@@ -148,8 +196,8 @@ fun SearchResultsScreen(
             // The mini player sits on the tabs, like on the home screens. The lists run under
             // the whole bar already, so its room needs no splitting off
             Column {
-                PlaybackMiniPlayer(rememberMiniPlayerSpace())
-                TabBar(selected = selected, onSelect = { selected = it })
+                miniPlayer()
+                TabBar(selected = selected, onSelect = onSelect)
             }
         },
         // Above the tabs, the app's scaffold would put messages over them
@@ -157,7 +205,6 @@ fun SearchResultsScreen(
         containerColor = MaterialTheme.colorScheme.surfaceDim,
         modifier = modifier,
     ) { padding ->
-        val origin = viewModel.origin
         val refresh = current.loadState.refresh
         if (current.itemCount == 0) {
             Column(
@@ -182,7 +229,7 @@ fun SearchResultsScreen(
                         stringResource(
                             R.string.screen_search_results_status_none,
                             pluralStringResource(selected.noun, 2),
-                            stringResource(R.string.quoted, viewModel.query),
+                            stringResource(R.string.quoted, query),
                         )
                     )
                 }
@@ -210,4 +257,27 @@ fun SearchResultsScreen(
             }
         }
     }
+}
+
+@ScreenPreviews
+@Composable
+private fun SearchResultsPreview() = PreviewTheme {
+    val albums = flowOf(PagingData.from(previewAlbums(Origin.YOUTUBE))).collectAsLazyPagingItems()
+    val none = flowOf(PagingData.empty<MediaItem>()).collectAsLazyPagingItems()
+    SearchResultsContent(
+        query = "Neon Coast",
+        origin = Origin.YOUTUBE,
+        selected = Tab.ALBUMS,
+        onSelect = {},
+        songs = none,
+        albums = albums,
+        artists = none,
+        playlists = none,
+        onSongClick = {},
+        onOpenAlbum = {},
+        onOpenArtist = {},
+        onOpenPlaylist = {},
+        onBack = {},
+        miniPlayer = {},
+    )
 }

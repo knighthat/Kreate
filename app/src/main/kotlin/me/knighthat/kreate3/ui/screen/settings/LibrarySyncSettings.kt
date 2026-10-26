@@ -19,7 +19,6 @@
 package me.knighthat.kreate3.ui.screen.settings
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.preferences.Preference
@@ -35,8 +34,19 @@ import me.knighthat.kreate3.provider.LibrarySection
 internal fun LibrarySyncSettings(
     setting: (LibrarySection) -> Preference<Boolean>,
     onSyncChange: (LibrarySection, Boolean) -> Unit,
+) = LibrarySyncSettings(
+    syncs = LibrarySection.entries.associateWith {
+        setting(it).collectAsStateWithLifecycle().value
+    },
+    onSyncChange = onSyncChange,
+)
+
+/** [LibrarySyncSettings] with whether each section [syncs]. */
+@Composable
+internal fun LibrarySyncSettings(
+    syncs: Map<LibrarySection, Boolean>,
+    onSyncChange: (LibrarySection, Boolean) -> Unit,
 ) = LibrarySection.entries.forEach { section ->
-    val syncs by setting(section).collectAsStateWithLifecycle()
     val (title, summary) = when (section) {
         LibrarySection.SONGS ->
             stringResource(R.string.setting_title_sync_liked_songs) to stringResource(
@@ -65,7 +75,7 @@ internal fun LibrarySyncSettings(
     SwitchSetting(
         title = title,
         summary = summary,
-        checked = syncs,
+        checked = syncs.getValue(section),
         onCheckedChange = { onSyncChange(section, it) },
     )
 }

@@ -106,6 +106,21 @@ paths:
 - Not extracted yet, they stay literals: the labels of a setting's values. Protocol names (`HTTP`,
   `SOCKS5`) and examples are never translated and stay literals for good.
 
+## Previews
+
+- Every screen in `ui/screen` has a `@Preview` in its own file: `@ScreenPreviews` on a private
+  `XPreview() = PreviewTheme { XContent(…) }` at the end of the file, with made-up data from
+  `PreviewSamples.kt` (or literals there) and showing the screen in use (signed in, with items),
+  not empty. A new screen comes with its preview.
+- Previews render without the app: no Koin, so no `Preferences`, `Secrets`, view models,
+  `koinInject` or `PlaybackController`. The public `XScreen` reads those and passes values to a
+  private stateless `XContent`, which the preview calls. Writes may stay in the content as lambdas
+  (`{ Preferences.X.update(it) }`, they only run on a tap), never as `Preferences.X::update`,
+  which reads the setting while composing. A part that reads settings itself (`ProxySettings`,
+  `StreamQualitySettings`, `PlaybackMiniPlayer`) is a slot of the content: the preview passes its
+  stateless overload, or `{}` for the mini player.
+- Check a preview by rendering it (`PreviewActivity`, see `.claude/docs/emulator.md`).
+
 ## Covers
 
 - Cover fallback lives only in `Thumbnail` (`ItemParts.kt`: `image_not_available` while there's no

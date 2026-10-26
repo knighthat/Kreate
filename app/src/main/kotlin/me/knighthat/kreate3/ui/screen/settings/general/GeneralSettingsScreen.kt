@@ -26,6 +26,8 @@ import androidx.compose.ui.res.stringResource
 import me.knighthat.kreate3.R
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.screen.settings.NumberSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
@@ -48,6 +50,37 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val exitConfirmation by Preferences.EXIT_CONFIRMATION.collectAsStateWithLifecycle()
     val exitTimeout by Preferences.EXIT_CONFIRMATION_TIMEOUT.collectAsStateWithLifecycle()
 
+    GeneralSettingsContent(
+        scanInterval = scanInterval,
+        songCache = songCache,
+        songDownloads = songDownloads,
+        diskCache = diskCache,
+        memoryCache = memoryCache,
+        exitDisabled = exitDisabled,
+        exitConfirmation = exitConfirmation,
+        exitTimeout = exitTimeout,
+        onBack = onBack,
+        modifier = modifier,
+    )
+}
+
+/**
+ * @param songCache in bytes, like [songDownloads] and [diskCache]
+ * @param memoryCache the part of the app's memory, `0.15` for 15%
+ */
+@Composable
+private fun GeneralSettingsContent(
+    scanInterval: Int,
+    songCache: Long,
+    songDownloads: Long,
+    diskCache: Long,
+    memoryCache: Double,
+    exitDisabled: Boolean,
+    exitConfirmation: Boolean,
+    exitTimeout: Int,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     SettingsPage(stringResource(R.string.screen_title_general), onBack, modifier) {
         SettingsSection(stringResource(R.string.setting_header_library))
         NumberSetting(
@@ -151,4 +184,20 @@ fun GeneralSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 )
         }
     }
+}
+
+@ScreenPreviews
+@Composable
+private fun GeneralSettingsPreview() = PreviewTheme {
+    GeneralSettingsContent(
+        scanInterval = 30,
+        songCache = 1024 * MIB,
+        songDownloads = 4096 * MIB,
+        diskCache = 128 * MIB,
+        memoryCache = 0.15,
+        exitDisabled = false,
+        exitConfirmation = true,
+        exitTimeout = 2,
+        onBack = {},
+    )
 }

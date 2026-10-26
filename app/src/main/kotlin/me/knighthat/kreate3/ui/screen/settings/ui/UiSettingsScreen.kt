@@ -32,6 +32,8 @@ import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.labelsOf
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
@@ -51,6 +53,32 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     var appIcon by remember { mutableStateOf(AppIcon.current(context)) }
 
+    UiSettingsContent(
+        themeMode = themeMode,
+        contrastLevel = contrastLevel,
+        iconOnly = iconOnly,
+        playlistInitial = playlistInitial,
+        appIcon = appIcon,
+        onAppIconChange = {
+            it.apply(context)
+            appIcon = it
+        },
+        onBack = onBack,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun UiSettingsContent(
+    themeMode: ThemeMode,
+    contrastLevel: ContrastLevel,
+    iconOnly: Boolean,
+    playlistInitial: Boolean,
+    appIcon: AppIcon,
+    onAppIconChange: (AppIcon) -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     SettingsPage(stringResource(R.string.screen_title_ui), onBack, modifier) {
         SettingsSection(stringResource(R.string.setting_title_theme))
         ChoiceSetting(
@@ -58,27 +86,27 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             value = themeMode,
             options = ThemeMode.entries,
             label = labelsOf(ThemeMode.entries) { it.labelRes },
-            onSelect = Preferences.THEME_MODE::update,
+            onSelect = { Preferences.THEME_MODE.update(it) },
         )
         ChoiceSetting(
             title = stringResource(R.string.setting_title_contrast),
             value = contrastLevel,
             options = ContrastLevel.entries,
             label = labelsOf(ContrastLevel.entries) { it.labelRes },
-            onSelect = Preferences.CONTRAST_LEVEL::update,
+            onSelect = { Preferences.CONTRAST_LEVEL.update(it) },
         )
 
         SettingsSection(stringResource(R.string.setting_header_layout))
         SwitchSetting(
             title = stringResource(R.string.setting_title_icon_only),
             checked = iconOnly,
-            onCheckedChange = Preferences.ICON_ONLY::update,
+            onCheckedChange = { Preferences.ICON_ONLY.update(it) },
             summary = stringResource(R.string.setting_description_icon_only),
         )
         SwitchSetting(
             title = stringResource(R.string.setting_title_playlist_initial),
             checked = playlistInitial,
-            onCheckedChange = Preferences.PLAYLIST_INITIAL::update,
+            onCheckedChange = { Preferences.PLAYLIST_INITIAL.update(it) },
             summary = stringResource(R.string.setting_description_playlist_initial),
         )
 
@@ -88,10 +116,21 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             value = appIcon,
             options = AppIcon.entries,
             label = labelsOf(AppIcon.entries) { it.labelRes },
-            onSelect = {
-                it.apply(context)
-                appIcon = it
-            },
+            onSelect = onAppIconChange,
         )
     }
+}
+
+@ScreenPreviews
+@Composable
+private fun UiSettingsPreview() = PreviewTheme {
+    UiSettingsContent(
+        themeMode = ThemeMode.THUMBNAIL,
+        contrastLevel = ContrastLevel.NORMAL,
+        iconOnly = false,
+        playlistInitial = true,
+        appIcon = AppIcon.BLACK,
+        onAppIconChange = {},
+        onBack = {},
+    )
 }

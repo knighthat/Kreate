@@ -35,11 +35,17 @@ import me.knighthat.kreate3.constant.StreamQuality
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.provider.LibrarySection
+import me.knighthat.kreate3.provider.youtube.YouTubeAccount
+import me.knighthat.kreate3.provider.youtube.YouTubeChannel
 import me.knighthat.kreate3.provider.youtube.youTubeSyncSetting
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.labelsOf
 import me.knighthat.kreate3.ui.component.youTubeLabelRes
 import me.knighthat.kreate3.ui.screen.settings.LibrarySyncSettings
 import me.knighthat.kreate3.ui.screen.settings.MainSwitch
+import me.knighthat.kreate3.ui.screen.settings.PreviewProxySettings
 import me.knighthat.kreate3.ui.screen.settings.ProxySettings
 import me.knighthat.kreate3.ui.screen.settings.SettingsItem
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
@@ -64,6 +70,59 @@ fun YouTubeSettingsScreen(
     val channels by viewModel.channels.collectFlowAsState()
     val pageId by viewModel.pageId.collectFlowAsState()
     val enabled by Preferences.YOUTUBE_ACCOUNT_ENABLED.collectAsStateWithLifecycle()
+
+    YouTubeSettingsContent(
+        enabled = enabled,
+        account = account,
+        channels = channels,
+        pageId = pageId,
+        onEnabledChange = viewModel::setEnabled,
+        onSignIn = onSignIn,
+        onRetry = viewModel::retry,
+        onSignOut = viewModel::signOut,
+        onSwitchChannel = viewModel::switchTo,
+        onBack = onBack,
+        modifier = modifier,
+        library = { LibrarySyncSettings({ it.youTubeSyncSetting }, viewModel::setSyncing) },
+        quality = { YouTubeQualitySettings(it) },
+        // Signed out requests go through it too
+        proxy = {
+            ProxySettings(
+                source = stringResource(R.string.source_ytm),
+                enabled = Preferences.YOUTUBE_PROXY_ENABLED,
+                type = Preferences.YOUTUBE_PROXY_TYPE,
+                host = Preferences.YOUTUBE_PROXY_HOST,
+                port = Preferences.YOUTUBE_PROXY_PORT,
+                username = Secrets.YOUTUBE_PROXY_USERNAME,
+                password = Secrets.YOUTUBE_PROXY_PASSWORD,
+            )
+        },
+    )
+}
+
+/**
+ * @param pageId page id of the channel acted as now, empty for the account's own
+ * @param library what of the account's library is synced, see [LibrarySyncSettings]
+ * @param quality the stream quality, with Original while someone is signed in
+ * @param proxy YouTube's proxy, see [ProxySettings]
+ */
+@Composable
+private fun YouTubeSettingsContent(
+    enabled: Boolean,
+    account: YouTubeAccountState,
+    channels: List<YouTubeChannel>,
+    pageId: String,
+    onEnabledChange: (Boolean) -> Unit,
+    onSignIn: () -> Unit,
+    onRetry: () -> Unit,
+    onSignOut: () -> Unit,
+    onSwitchChannel: (YouTubeChannel) -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    library: @Composable () -> Unit,
+    quality: @Composable (signedIn: Boolean) -> Unit,
+    proxy: @Composable () -> Unit,
+) {
     var askSignOut by remember { mutableStateOf(false) }
     var pickChannel by remember { mutableStateOf(false) }
     // A choice only when the account has several channels
@@ -80,7 +139,7 @@ fun YouTubeSettingsScreen(
                 stringResource(R.string.source_ytm)
             ),
             checked = enabled,
-            onCheckedChange = viewModel::setEnabled,
+            onCheckedChange = onEnabledChange,
         )
 
         // The session stays when hidden, it is used again once the setting is back on
@@ -128,7 +187,7 @@ fun YouTubeSettingsScreen(
                         R.string.setting_description_account_status_failed,
                         state.reason
                     ),
-                    onClick = viewModel::retry,
+                    onClick = onRetry,
                 )
             }
             if (account != YouTubeAccountState.SignedOut) {
@@ -139,7 +198,7 @@ fun YouTubeSettingsScreen(
                 )
 
                 SettingsSection(stringResource(R.string.setting_header_library))
-                LibrarySyncSettings({ it.youTubeSyncSetting }, viewModel::setSyncing)
+                library()
             }
             if (pickChannel && canSwitch)
                 YouTubeChannelPicker(
@@ -147,7 +206,7 @@ fun YouTubeSettingsScreen(
                     pageId = pageId,
                     onPick = {
                         pickChannel = false
-                        viewModel.switchTo(it)
+                        onSwitchChannel(it)
                     },
                     onDismiss = { pickChannel = false },
                 )
@@ -173,7 +232,7 @@ fun YouTubeSettingsScreen(
                     confirmButton = {
                         TextButton(onClick = {
                             askSignOut = false
-                            viewModel.signOut()
+                            onSignOut()
                         }) { Text(stringResource(R.string.action_sign_out)) }
                     },
                     dismissButton = {
@@ -186,18 +245,9 @@ fun YouTubeSettingsScreen(
 
         // YouTube plays signed out too, only Original needs the account
         SettingsSection(stringResource(R.string.setting_header_playback))
-        YouTubeQualitySettings(signedIn = enabled && account is YouTubeAccountState.SignedIn)
+        quality(enabled && account is YouTubeAccountState.SignedIn)
 
-        // Signed out requests go through it too
-        ProxySettings(
-            source = stringResource(R.string.source_ytm),
-            enabled = Preferences.YOUTUBE_PROXY_ENABLED,
-            type = Preferences.YOUTUBE_PROXY_TYPE,
-            host = Preferences.YOUTUBE_PROXY_HOST,
-            port = Preferences.YOUTUBE_PROXY_PORT,
-            username = Secrets.YOUTUBE_PROXY_USERNAME,
-            password = Secrets.YOUTUBE_PROXY_PASSWORD,
-        )
+        proxy()
     }
 }
 
@@ -221,3 +271,32 @@ private fun YouTubeQualitySettings(signedIn: Boolean) =
             options = StreamQuality.entries - StreamQuality.ORIGINAL,
         )
 
+@ScreenPreviews
+@Composable
+private fun YouTubeSettingsPreview() = PreviewTheme {
+    YouTubeSettingsContent(
+        enabled = true,
+        account = YouTubeAccountState.SignedIn(YouTubeAccount("Neon Coast", "@neoncoast", null)),
+        channels = emptyList(),
+        pageId = "",
+        onEnabledChange = {},
+        onSignIn = {},
+        onRetry = {},
+        onSignOut = {},
+        onSwitchChannel = {},
+        onBack = {},
+        library = {
+            LibrarySyncSettings(LibrarySection.entries.associateWith { true }) { _, _ -> }
+        },
+        quality = {
+            StreamQualitySettings(
+                wifi = StreamQuality.ORIGINAL,
+                mobile = StreamQuality.MEDIUM,
+                label = labelsOf(StreamQuality.entries) { it.youTubeLabelRes },
+                onWifiChange = {},
+                onMobileChange = {},
+            )
+        },
+        proxy = { PreviewProxySettings(stringResource(R.string.source_ytm)) },
+    )
+}

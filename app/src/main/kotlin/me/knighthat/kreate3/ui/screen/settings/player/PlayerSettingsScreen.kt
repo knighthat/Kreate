@@ -27,11 +27,15 @@ import me.knighthat.kreate3.R
 import me.knighthat.kreate3.constant.AutoTapAction
 import me.knighthat.kreate3.constant.SleepTimerStep
 import me.knighthat.kreate3.lyrics.LyricsFinder
+import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.LyricsSync
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.ui.component.PreviewTheme
+import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.component.labelsOf
+import me.knighthat.kreate3.ui.component.sourceRes
 import me.knighthat.kreate3.ui.screen.player.LYRICS_TEXT_SIZES
 import me.knighthat.kreate3.ui.screen.player.labelRes
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
@@ -69,6 +73,55 @@ fun PlayerSettingsScreen(
     val autoArtistTap by Preferences.AUTO_ARTIST_TAP.collectAsStateWithLifecycle()
     val autoPlaylistTap by Preferences.AUTO_PLAYLIST_TAP.collectAsStateWithLifecycle()
 
+    PlayerSettingsContent(
+        historyPaused = historyPaused,
+        historyMinSeconds = historyMinSeconds,
+        homeTapRadio = homeTapRadio,
+        searchTapRadio = searchTapRadio,
+        queuePersisted = queuePersisted,
+        queueSaveInterval = queueSaveInterval,
+        preloadSeconds = preloadSeconds,
+        lyricsSource = (lyrics.source(lyricsSource) ?: lyrics.sources.first()).provider,
+        lyricsSources = lyrics.sources.associate { it.provider to it.name },
+        lyricsSync = lyricsSync,
+        lyricsAlwaysLive = lyricsAlwaysLive,
+        lyricsTextSize = lyricsTextSize,
+        sleepTimerRemove = sleepTimerRemove,
+        sleepTimerAdd = sleepTimerAdd,
+        autoAlbumTap = autoAlbumTap,
+        autoArtistTap = autoArtistTap,
+        autoPlaylistTap = autoPlaylistTap,
+        onBack = onBack,
+        modifier = modifier,
+    )
+}
+
+/**
+ * @param lyricsSource the provider used, one of [lyricsSources]
+ * @param lyricsSources the name of each provider there is a source for, in the order they show
+ */
+@Composable
+private fun PlayerSettingsContent(
+    historyPaused: Boolean,
+    historyMinSeconds: Int,
+    homeTapRadio: Boolean,
+    searchTapRadio: Boolean,
+    queuePersisted: Boolean,
+    queueSaveInterval: Int,
+    preloadSeconds: Int,
+    lyricsSource: LyricsProvider,
+    lyricsSources: Map<LyricsProvider, String>,
+    lyricsSync: LyricsSync,
+    lyricsAlwaysLive: Boolean,
+    lyricsTextSize: Int,
+    sleepTimerRemove: SleepTimerStep,
+    sleepTimerAdd: SleepTimerStep,
+    autoAlbumTap: AutoTapAction,
+    autoArtistTap: AutoTapAction,
+    autoPlaylistTap: AutoTapAction,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     SettingsPage(stringResource(R.string.screen_title_player), onBack, modifier) {
         SettingsSection(stringResource(R.string.setting_header_queue))
         SwitchSetting(
@@ -165,10 +218,10 @@ fun PlayerSettingsScreen(
         SettingsSection(stringResource(R.string.setting_header_lyrics))
         ChoiceSetting(
             title = stringResource(R.string.setting_title_lyrics_source),
-            value = lyrics.source(lyricsSource) ?: lyrics.sources.first(),
-            options = lyrics.sources,
-            label = { it.name },
-            onSelect = { Preferences.LYRICS_SOURCE.update(it.provider) },
+            value = lyricsSource,
+            options = lyricsSources.keys.toList(),
+            label = { lyricsSources.getValue(it) },
+            onSelect = { Preferences.LYRICS_SOURCE.update(it) },
         )
         val syncLabels = LyricsSync.entries.associateWith { stringResource(it.labelRes) }
         ChoiceSetting(
@@ -221,6 +274,31 @@ fun PlayerSettingsScreen(
             onSelect = { Preferences.AUTO_PLAYLIST_TAP.update(it) },
         )
     }
+}
+
+@ScreenPreviews
+@Composable
+private fun PlayerSettingsPreview() = PreviewTheme {
+    PlayerSettingsContent(
+        historyPaused = false,
+        historyMinSeconds = 1,
+        homeTapRadio = false,
+        searchTapRadio = false,
+        queuePersisted = true,
+        queueSaveInterval = 10,
+        preloadSeconds = 5,
+        lyricsSource = LyricsProvider.LRCLIB,
+        lyricsSources = LyricsProvider.entries.associateWith { stringResource(it.sourceRes) },
+        lyricsSync = LyricsSync.WORD,
+        lyricsAlwaysLive = false,
+        lyricsTextSize = 100,
+        sleepTimerRemove = SleepTimerStep.FIVE_MINUTES,
+        sleepTimerAdd = SleepTimerStep.FIVE_MINUTES,
+        autoAlbumTap = AutoTapAction.OPEN,
+        autoArtistTap = AutoTapAction.OPEN,
+        autoPlaylistTap = AutoTapAction.OPEN,
+        onBack = {},
+    )
 }
 
 /** Seconds of the next song that can be loaded ahead, `0` for none. */
