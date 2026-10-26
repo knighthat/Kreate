@@ -41,6 +41,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
@@ -48,6 +49,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.ui.component.AlbumItem
 import me.knighthat.kreate3.ui.component.ArtistItem
@@ -59,6 +61,7 @@ import me.knighthat.kreate3.ui.component.SongItem
 import me.knighthat.kreate3.ui.component.TabBar
 import me.knighthat.kreate3.ui.component.rememberMiniPlayerSpace
 import me.knighthat.kreate3.ui.component.rememberSongTap
+import me.knighthat.kreate3.ui.component.sourceRes
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 
@@ -166,17 +169,21 @@ fun SearchResultsScreen(
                 when {
                     refresh is LoadState.Loading -> CircularProgressIndicator()
                     refresh is LoadState.Error -> {
-                        Notice("Couldn't search ${origin.name}")
-                        Button(onClick = current::retry) { Text("Try again") }
+                        Notice(
+                            stringResource(
+                                R.string.error_cant_search,
+                                stringResource(origin.sourceRes)
+                            )
+                        )
+                        Button(onClick = current::retry) { Text(stringResource(R.string.action_try_again)) }
                     }
 
                     else -> Notice(
-                        "No ${
-                            pluralStringResource(
-                                selected.noun,
-                                2
-                            )
-                        } found for \"${viewModel.query}\""
+                        stringResource(
+                            R.string.screen_search_results_status_none,
+                            pluralStringResource(selected.noun, 2),
+                            stringResource(R.string.quoted, viewModel.query),
+                        )
                     )
                 }
             }

@@ -193,10 +193,17 @@ private fun SleepTimerControls(timer: SleepTimer, controller: PlaybackController
 
     Text(
         text = when {
-            remaining == null && timer.isPaused -> "On hold, until the song ends"
-            remaining == null -> "Pauses when the song ends"
-            timer.isPaused -> "On hold, ${formatDuration(remaining)} left"
-            else -> "Pauses in ${formatDuration(remaining)}"
+            remaining == null && timer.isPaused -> stringResource(R.string.screen_player_status_timer_on_hold_song_end)
+            remaining == null -> stringResource(R.string.screen_player_status_timer_song_end)
+            timer.isPaused -> stringResource(
+                R.string.screen_player_status_timer_on_hold,
+                formatDuration(remaining).toString()
+            )
+
+            else -> stringResource(
+                R.string.screen_player_status_timer_running,
+                formatDuration(remaining).toString()
+            )
         },
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.primary,

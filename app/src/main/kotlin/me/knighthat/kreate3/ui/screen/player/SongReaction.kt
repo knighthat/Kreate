@@ -23,12 +23,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.UserSongView
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.model.Origin
@@ -91,6 +93,7 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
     val playback = koinInject<PlaybackController>()
     val scope = koinInject<CoroutineScope>()
     val notifier = LocalNotifier.current
+    val context = LocalContext.current
     val lookup by remember(library, songId) { library.find(songId).map(::Lookup) }
         .collectAsStateWithLifecycle(null)
 
@@ -111,10 +114,10 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
         val change = { _: Instant? -> if (removing) null else likedAt() }
         // What was asked, for a message when the source doesn't take it
         val asked = when {
-            removing && to == Reaction.LIKED -> "remove the like"
-            removing -> "remove the dislike"
-            to == Reaction.LIKED -> "like the song"
-            else -> "dislike the song"
+            removing && to == Reaction.LIKED -> R.string.snackbar_change_remove_like
+            removing -> R.string.snackbar_change_remove_dislike
+            to == Reaction.LIKED -> R.string.snackbar_change_like_song
+            else -> R.string.snackbar_change_dislike_song
         }
         try {
             // Only a song in the database can be added to the library
@@ -128,9 +131,9 @@ internal fun rememberSongReaction(item: MediaItem): SongReaction {
             throw e
         } catch (e: ServerException) {
             // The reaction is already taken back
-            notifier.post(Message(e.serverFailure(asked), MessageDuration.LONG))
+            notifier.post(Message(e.serverFailure(context, asked), MessageDuration.LONG))
         } catch (e: YouTubeException) {
-            notifier.post(Message(e.youTubeFailure(asked), MessageDuration.LONG))
+            notifier.post(Message(e.youTubeFailure(context, asked), MessageDuration.LONG))
         } catch (e: Exception) {
             Log.w(TAG, "Couldn't save the reaction to $songId", e)
         }

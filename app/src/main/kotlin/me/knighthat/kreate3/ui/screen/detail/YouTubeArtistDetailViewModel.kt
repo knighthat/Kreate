@@ -17,10 +17,12 @@
  */
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CoroutineScope
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.notification.Notifier
@@ -57,19 +59,20 @@ data class YouTubeArtistDetail(
  * @param scope the app's, where a follow is sent
  */
 class YouTubeArtistDetailViewModel(
+    context: Context,
     savedStateHandle: SavedStateHandle,
     private val provider: YouTubeProvider,
     private val device: DeviceReactions,
     library: UserSongRepository,
     scope: CoroutineScope,
     notifier: Notifier,
-) : LiveDetailViewModel<YouTubeArtistDetail>(library.dislikedIds()) {
+) : LiveDetailViewModel<YouTubeArtistDetail>(context, library.dislikedIds()) {
 
     val artistId: String = checkNotNull(savedStateHandle[LocalArtist.ID]) {
         "LocalArtist.ID is missing from the saved state"
     }
 
-    override val notFound = "YouTube doesn't have this artist"
+    override val notFound: String get() = context.youTubeNotFound(R.plurals.unit_artist)
 
     /** The channel subscribed to, which may not be the artist's id. */
     @Volatile
@@ -92,8 +95,12 @@ class YouTubeArtistDetailViewModel(
             else provider.subscribe(checkNotNull(channelId), on)
         },
         failure = { e, on ->
-            if (onDevice != null) if (on) "Couldn't follow the artist" else "Couldn't unfollow the artist"
-            else e.youTubeFailure(if (on) "follow the artist" else "unfollow the artist")
+            if (onDevice != null)
+                context.getString(if (on) R.string.error_follow_artist else R.string.error_unfollow_artist)
+            else e.youTubeFailure(
+                context,
+                if (on) R.string.snackbar_change_follow_artist else R.string.snackbar_change_unfollow_artist
+            )
         },
     )
 

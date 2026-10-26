@@ -17,6 +17,7 @@
  */
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.repository.RemoteSong
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.provider.youtube.YouTubeException
@@ -58,16 +60,17 @@ data class YouTubePlaylistDetail(
  * as they are scrolled to. Nothing is stored.
  */
 class YouTubePlaylistDetailViewModel(
+    context: Context,
     savedStateHandle: SavedStateHandle,
     private val provider: YouTubeProvider,
     library: UserSongRepository,
-) : LiveDetailViewModel<YouTubePlaylistDetail>(library.dislikedIds()) {
+) : LiveDetailViewModel<YouTubePlaylistDetail>(context, library.dislikedIds()) {
 
     val playlistId: String = checkNotNull(savedStateHandle[YouTubePlaylist.ID]) {
         "YouTubePlaylist.ID is missing from the saved state"
     }
 
-    override val notFound = "YouTube doesn't have this playlist"
+    override val notFound: String get() = context.youTubeNotFound(R.plurals.unit_playlist)
 
     private val _songs = MutableStateFlow(emptyList<MediaItem>())
     private val _hasMore = MutableStateFlow(false)

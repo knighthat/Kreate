@@ -17,6 +17,7 @@
  */
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.database.repository.UserSongRepository
@@ -31,10 +32,11 @@ import me.knighthat.kreate3.ui.navigation.OpenSubsonicArtistSongs
  * album. Nothing is stored.
  */
 class OpenSubsonicArtistSongsViewModel(
+    context: Context,
     savedStateHandle: SavedStateHandle,
     private val provider: OpenSubsonicProvider,
     library: UserSongRepository,
-) : LiveDetailViewModel<List<MediaItem>>(library.dislikedIds()) {
+) : LiveDetailViewModel<List<MediaItem>>(context, library.dislikedIds()) {
 
     private val artistId: String = checkNotNull(savedStateHandle[LocalArtist.ID]) {
         "LocalArtist.ID is missing from the saved state"
@@ -43,7 +45,7 @@ class OpenSubsonicArtistSongsViewModel(
     /** The artist's name as their screen had it, `null` when they have none. */
     val name: String? = savedStateHandle[OpenSubsonicArtistSongs.NAME]
 
-    override val notFound = SERVER_OFF
+    override val notFound: String get() = context.serverOff()
 
     init {
         load()

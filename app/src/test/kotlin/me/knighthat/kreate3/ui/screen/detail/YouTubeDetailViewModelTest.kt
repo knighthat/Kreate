@@ -52,6 +52,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import java.lang.reflect.Proxy
 import java.util.Collections
 
@@ -124,6 +125,7 @@ class YouTubeDetailViewModelTest {
     @Test
     fun albumShowsItsSongsInOrder() = runTest {
         val viewModel = YouTubeAlbumDetailViewModel(
+            RuntimeEnvironment.getApplication(),
             SavedStateHandle(mapOf(LocalAlbum.ID to "MPREb_1")),
             provider { ALBUM },
             device,
@@ -147,6 +149,7 @@ class YouTubeDetailViewModelTest {
     fun dislikedSongsAreLeftOutAlsoWhenDislikedWhileShown() = runTest {
         disliked.value = setOf("v1")
         val viewModel = YouTubeAlbumDetailViewModel(
+            RuntimeEnvironment.getApplication(),
             SavedStateHandle(mapOf(LocalAlbum.ID to "MPREb_1")),
             provider { ALBUM },
             device,
@@ -168,6 +171,7 @@ class YouTubeDetailViewModelTest {
     fun dislikedSongsOfAPlaylistAreLeftOut() = runTest {
         disliked.value = setOf("v2")
         val viewModel = YouTubePlaylistDetailViewModel(
+            RuntimeEnvironment.getApplication(),
             SavedStateHandle(mapOf(YouTubePlaylist.ID to "PL1")),
             provider { if (it.contains("\"continuation\"")) PLAYLIST_MORE else PLAYLIST },
             library,
@@ -181,6 +185,7 @@ class YouTubeDetailViewModelTest {
     @Test
     fun aBookmarkWhileSignedOutStaysOnTheDevice() = runTest {
         val viewModel = YouTubeAlbumDetailViewModel(
+            RuntimeEnvironment.getApplication(),
             SavedStateHandle(mapOf(LocalAlbum.ID to "MPREb_1")),
             provider { ALBUM },
             device,
@@ -204,6 +209,7 @@ class YouTubeDetailViewModelTest {
     fun aFollowWhileSignedOutStaysOnTheDevice() = runTest {
         device.followed["UC1"] = true
         val viewModel = YouTubeArtistDetailViewModel(
+            RuntimeEnvironment.getApplication(),
             SavedStateHandle(mapOf(LocalArtist.ID to "UC1")),
             provider { ARTIST },
             device,
@@ -225,6 +231,7 @@ class YouTubeDetailViewModelTest {
     @Test
     fun unknownAlbumSaysSo() = runTest {
         val viewModel = YouTubeAlbumDetailViewModel(
+            RuntimeEnvironment.getApplication(),
             SavedStateHandle(mapOf(LocalAlbum.ID to "MPREb_x")),
             provider { "{}" },
             device,
@@ -235,12 +242,13 @@ class YouTubeDetailViewModelTest {
 
         val state = viewModel.state.first { it !is LiveState.Loading }
 
-        assertEquals(LiveState.Failed("YouTube doesn't have this album"), state)
+        assertEquals(LiveState.Failed("YouTube Music doesn't have this album"), state)
     }
 
     @Test
     fun failedRequestCanBeTriedAgain() = runTest {
         val viewModel = YouTubeAlbumDetailViewModel(
+            RuntimeEnvironment.getApplication(),
             SavedStateHandle(mapOf(LocalAlbum.ID to "MPREb_1")),
             provider(HttpStatusCode.TooManyRequests) { "{}" },
             device,
@@ -259,6 +267,7 @@ class YouTubeDetailViewModelTest {
     @Test
     fun playlistSongsComePartAfterPart() = runTest {
         val viewModel = YouTubePlaylistDetailViewModel(
+            RuntimeEnvironment.getApplication(),
             SavedStateHandle(mapOf(YouTubePlaylist.ID to "PL1")),
             provider { if (it.contains("\"continuation\"")) PLAYLIST_MORE else PLAYLIST },
             library,

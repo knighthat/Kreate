@@ -19,6 +19,7 @@
 package me.knighthat.kreate3.ui.component
 
 
+import android.content.Context
 import android.os.Bundle
 import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
@@ -31,6 +32,7 @@ import androidx.paging.PagingData
 import androidx.paging.flatMap
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.model.Artist
 import me.knighthat.kreate3.database.model.UserAlbumView
@@ -40,6 +42,7 @@ import me.knighthat.kreate3.database.model.UserSongView
 import me.knighthat.kreate3.database.repository.RemoteSong
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.source.local.albumArtUri
+import org.koin.core.context.GlobalContext
 import kotlin.time.Duration
 import kotlin.time.Instant
 
@@ -228,7 +231,15 @@ fun UserAlbumView.toMediaItem(): MediaItem =
 fun UserArtistView.toMediaItem(): MediaItem =
     mediaItem(artistId) {
         setTitle(name)
-        setSubtitle(songCount.takeIf { it > 0 }?.let { if (it == 1) "1 song" else "$it songs" })
+        setSubtitle(
+            songCount.takeIf { it > 0 }?.let {
+                GlobalContext.get().get<Context>().resources.getQuantityString(
+                    R.plurals.song,
+                    it,
+                    it
+                )
+            }
+        )
         setArtist(name)
         setTotalTrackCount(songCount)
         setArtworkUri(thumbnail)
@@ -248,7 +259,7 @@ fun UserPlaylist.toMediaItem(): MediaItem =
         setSubtitle(
             subtitle(
                 if (isMonthly) "Monthly" else null,
-                if (origin == Origin.LOCAL) "On this device" else origin.name
+                GlobalContext.get().get<Context>().getString(origin.sourceRes)
             )
         )
         setArtworkUri(thumbnail)

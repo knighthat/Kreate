@@ -38,9 +38,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.ui.component.ExplicitBadge
 import me.knighthat.kreate3.ui.component.OriginBadge
@@ -126,7 +128,7 @@ fun DetailDescription(text: String, modifier: Modifier = Modifier) {
         )
         if (overflows || expanded)
             Text(
-                text = if (expanded) "Less" else "More",
+                text = if (expanded) stringResource(R.string.action_less) else stringResource(R.string.action_more),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(top = 4.dp),

@@ -33,8 +33,12 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class LiveDetailViewModelTest {
 
     /** The main thread and the fetch's, so every step happens right away. */
@@ -44,7 +48,7 @@ class LiveDetailViewModelTest {
     private inner class Detail(
         disliked: Flow<Set<String>> = flowOf(emptySet()),
         var fetch: suspend () -> String?,
-    ) : LiveDetailViewModel<String>(disliked, dispatcher) {
+    ) : LiveDetailViewModel<String>(RuntimeEnvironment.getApplication(), disliked, dispatcher) {
         override val notFound = "Not here"
         override suspend fun fetch(): String? = fetch.invoke()
         override fun String.withoutSongs(disliked: Set<String>) =

@@ -64,9 +64,24 @@ paths:
   Code without a `Context` holds the error as a `@StringRes` and its caller resolves it.
 - A message shown in a snackbar is `snackbar_*`, an error in it `error_*` (see above). Code that
   builds one without a `Context` takes it as a parameter (`PlaybackController.queue(context, …)`).
+- The heading of a group in a list or a sheet is `section_header_*` (the headers of the settings are
+  `setting_header_*`).
+- An empty state or a hint of one screen is `screen_{screen}_status_*` or `screen_{screen}_hint_*`;
+  one shared by several screens is `status_*`.
+- A text only a notification shows is `notification_{channel}_title_*` or
+  `notification_{channel}_subtitle_*`; the name and the description of a channel are
+  `notification_{channel}_title_channel` and `_subtitle_channel`.
+- The names of the sources are `source_local`, `source_ytm` and `source_opensubsonicapi`; a
+  playlist's
+  origin label uses them (`Origin.sourceRes`).
+- A view model takes `context: Context` as a constructor parameter (`viewModelOf` resolves it, a
+  test
+  passes `RuntimeEnvironment.getApplication()`). Only code with no constructor to put it in, like a
+  data builder or a lyrics source, gets one from Koin: `GlobalContext.get().get<Context>()`. Never
+  call it while composing; a test that reaches it has to start Koin with the Robolectric
+  application.
 - Strings only a preview shows (`KreateThemePreview.kt`) are not extracted.
-- An action can be several words (`action_sign_out`). The Context a view model needs for its strings
-  is injected (`private val context: Context`, Koin provides it), never read from a global.
+- An action can be several words (`action_sign_out`).
 - The title of a screen (its top bar, the row that opens it, a page of the setup wizard) is
   `screen_title_*`, so the titles of every screen group together:
   `screen_title_network`. The `YouTube` and `OpenSubsonic` screens use `source_ytm` and

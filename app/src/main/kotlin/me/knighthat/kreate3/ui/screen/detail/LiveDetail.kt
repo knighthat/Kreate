@@ -17,6 +17,8 @@
  */
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.content.Context
+import androidx.annotation.PluralsRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -52,6 +55,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
 import me.knighthat.kreate3.provider.opensubsonic.ServerException
 import me.knighthat.kreate3.provider.youtube.YouTubeBrowse
@@ -79,10 +83,12 @@ sealed interface LiveState<out T> {
  * Fetches an item of an online catalog when its screen opens, see [LiveDetailScreen]. Subclasses
  * call [load] once from their `init`, after their own properties are set.
  *
+ * @param context for the texts of what went wrong
  * @param dislikedIds see [me.knighthat.kreate3.database.repository.UserSongRepository.dislikedIds]
  * @param background where [fetch] runs, never the main thread
  */
 abstract class LiveDetailViewModel<T : Any>(
+    protected val context: Context,
     dislikedIds: Flow<Set<String>>,
     private val background: CoroutineDispatcher = Dispatchers.Default,
 ) : ViewModel() {
@@ -124,9 +130,17 @@ abstract class LiveDetailViewModel<T : Any>(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: YouTubeException) {
-                LiveState.Failed(if (e.status == null) "Can't reach YouTube" else "YouTube refused: ${e.message}")
+                val youTube = context.getString(R.string.source_ytm)
+                LiveState.Failed(
+                    if (e.status == null) context.getString(R.string.error_unreachable, youTube)
+                    else context.getString(
+                        R.string.error_source_refused,
+                        youTube,
+                        e.message.orEmpty()
+                    )
+                )
             } catch (e: ServerException) {
-                LiveState.Failed(e.reason())
+                LiveState.Failed(e.reason(context))
             }
         }
     }
@@ -144,17 +158,38 @@ internal suspend fun <T> askServerOrNull(block: suspend () -> T?): T? =
     }
 
 /** What a screen of the OpenSubsonic server says when the provider gives nothing. */
-internal const val SERVER_OFF = "The server is turned off, turn it on in Network settings"
+internal fun Context.serverOff(): String =
+    getString(R.string.error_server_off, getString(R.string.screen_title_network))
+
+/** What a screen of YouTube says when it doesn't have the item, a [noun] like the plural album. */
+internal fun Context.youTubeNotFound(@PluralsRes noun: Int): String =
+    getString(
+        R.string.error_source_not_found,
+        getString(R.string.source_ytm),
+        resources.getQuantityString(noun, 1),
+    )
 
 /** What to tell the user when the OpenSubsonic server couldn't give an item. */
-private fun ServerException.reason(): String = when (val check = check) {
-    is ServerCheck.Rejected -> "The server refused: ${check.message.ifEmpty { "error ${check.code}" }}"
-    is ServerCheck.Unreachable -> "Can't reach the server: ${check.reason}"
-    is ServerCheck.UntrustedCertificate -> "The server's certificate isn't trusted"
-    is ServerCheck.CertificateChanged -> "The server's certificate changed, check it in Network settings"
-    ServerCheck.NotSubsonic -> "The server sent something unexpected"
-    ServerCheck.NotConfigured -> "Sign in to the server in Network settings"
-    else -> "Couldn't load this from the server"
+private fun ServerException.reason(context: Context): String = when (val check = check) {
+    is ServerCheck.Rejected -> context.getString(
+        R.string.error_server_refused,
+        check.message.ifEmpty { context.getString(R.string.error_server_code, check.code) },
+    )
+
+    is ServerCheck.Unreachable -> context.getString(R.string.error_server_unreachable, check.reason)
+    is ServerCheck.UntrustedCertificate -> context.getString(R.string.error_server_certificate_untrusted)
+    is ServerCheck.CertificateChanged -> context.getString(
+        R.string.error_server_certificate_changed,
+        context.getString(R.string.screen_title_network),
+    )
+
+    ServerCheck.NotSubsonic -> context.getString(R.string.error_server_unexpected)
+    ServerCheck.NotConfigured -> context.getString(
+        R.string.error_server_not_configured,
+        context.getString(R.string.screen_title_network),
+    )
+
+    else -> context.getString(R.string.error_server_load)
 }
 
 /**
@@ -197,7 +232,7 @@ fun <T : Any> LiveDetailScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
                         )
-                        FilledTonalButton(onClick = onRetry) { Text("Try again") }
+                        FilledTonalButton(onClick = onRetry) { Text(stringResource(R.string.action_try_again)) }
                     }
                 else CircularProgressIndicator()
             }

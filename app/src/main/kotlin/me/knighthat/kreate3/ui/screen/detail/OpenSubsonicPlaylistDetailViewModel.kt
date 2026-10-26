@@ -17,6 +17,7 @@
  */
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -42,16 +43,17 @@ data class OpenSubsonicPlaylistDetail(
  * stored.
  */
 class OpenSubsonicPlaylistDetailViewModel(
+    context: Context,
     savedStateHandle: SavedStateHandle,
     private val provider: OpenSubsonicProvider,
     library: UserSongRepository,
-) : LiveDetailViewModel<OpenSubsonicPlaylistDetail>(library.dislikedIds()) {
+) : LiveDetailViewModel<OpenSubsonicPlaylistDetail>(context, library.dislikedIds()) {
 
     val playlistId: String = checkNotNull(savedStateHandle[OpenSubsonicPlaylist.ID]) {
         "OpenSubsonicPlaylist.ID is missing from the saved state"
     }
 
-    override val notFound = SERVER_OFF
+    override val notFound: String get() = context.serverOff()
 
     /** Whether the user may make shares on the server, `false` until that is known. */
     val canShare = provider.canShare(viewModelScope)

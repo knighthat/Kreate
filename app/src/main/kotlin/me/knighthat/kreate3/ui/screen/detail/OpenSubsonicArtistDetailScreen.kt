@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
@@ -162,7 +163,7 @@ private fun OpenSubsonicArtistDetailContent(
             if (detail.topSongs.isNotEmpty()) {
                 item(key = "songs-title") {
                     SectionTitle(
-                        "Top songs",
+                        stringResource(R.string.section_header_top_songs),
                         onSeeMore = if (detail.hasMoreSongs) ({ onOpenSongs(detail.name) }) else null,
                     )
                 }

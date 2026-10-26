@@ -122,6 +122,7 @@ android {
         "/DebugProbesKt.bin",
     )
 
+    testOptions.unitTests.isIncludeAndroidResources = true
     testOptions.unitTests.all {
         // Robolectric sets up Android's file descriptors through JDK internals
         it.jvmArgs(

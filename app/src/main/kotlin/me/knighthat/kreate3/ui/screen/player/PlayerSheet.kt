@@ -814,9 +814,9 @@ private fun NowPlayingPage(
                 ModeButton(
                     icon = if (repeatMode == RepeatMode.ONE) R.drawable.repeat_one else R.drawable.repeat,
                     description = when (repeatMode) {
-                        RepeatMode.OFF -> "Repeat off"
-                        RepeatMode.ONE -> "Repeat one"
-                        RepeatMode.ALL -> "Repeat all"
+                        RepeatMode.OFF -> stringResource(R.string.semantic_repeat_off)
+                        RepeatMode.ONE -> stringResource(R.string.semantic_repeat_one)
+                        RepeatMode.ALL -> stringResource(R.string.semantic_repeat_all)
                     },
                     isOn = repeatMode != RepeatMode.OFF,
                     onClick = controller::cycleRepeat,

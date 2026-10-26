@@ -18,7 +18,9 @@
 
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.content.Context
 import android.util.Log
+import androidx.annotation.StringRes
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.notification.Message
 import me.knighthat.kreate3.notification.MessageDuration
 import me.knighthat.kreate3.notification.Notifier
@@ -95,25 +98,37 @@ class SourceToggle(
  * What to tell the user when the OpenSubsonic server didn't take a change, like "bookmark the
  * album" for [change].
  */
-internal fun Exception.serverFailure(change: String): String =
-    when ((this as? ServerException)?.check) {
-        is ServerCheck.Rejected -> "The server refused to $change"
+internal fun Exception.serverFailure(context: Context, @StringRes change: Int): String {
+    val what = context.getString(change)
+    return when ((this as? ServerException)?.check) {
+        is ServerCheck.Rejected -> context.getString(R.string.error_server_change_refused, what)
         is ServerCheck.Unreachable,
         is ServerCheck.UntrustedCertificate,
-        is ServerCheck.CertificateChanged -> "Can't reach the server to $change"
+        is ServerCheck.CertificateChanged -> context.getString(
+            R.string.error_server_change_unreachable,
+            what
+        )
 
-        else -> "Couldn't $change on the server"
+        else -> context.getString(R.string.error_server_change_failed, what)
     }
+}
 
 /**
  * What to tell the user when YouTube didn't take a change, like "save the album" for [change].
  */
-internal fun Exception.youTubeFailure(change: String): String {
+internal fun Exception.youTubeFailure(context: Context, @StringRes change: Int): String {
     val e = this as? YouTubeException
+    val what = context.getString(change)
+    val youTube = context.getString(R.string.source_ytm)
     return when {
-        e == null -> "Couldn't $change on YouTube"
-        e.signedOut -> "Sign in to YouTube again to $change"
-        e.status == null -> "Can't reach YouTube to $change"
-        else -> "YouTube refused to $change"
+        e == null -> context.getString(R.string.error_source_change_failed, what, youTube)
+        e.signedOut -> context.getString(R.string.error_source_change_signed_out, what, youTube)
+        e.status == null -> context.getString(
+            R.string.error_source_change_unreachable,
+            what,
+            youTube
+        )
+
+        else -> context.getString(R.string.error_source_change_refused, what, youTube)
     }
 }

@@ -42,7 +42,7 @@ class LocalScanNotifications(private val context: Context) {
     /** Shows that the device's music is being read. */
     fun scanning() = context.notify(
         SCAN_ID,
-        progress("Scanning music")
+        progress(context.getString(R.string.notification_local_scan_title_scanning))
             .setProgress(0, 0, true)
             .build()
     )
@@ -50,8 +50,13 @@ class LocalScanNotifications(private val context: Context) {
     /** Shows that [count] songs were read. */
     fun scanned(count: Int) = context.notify(
         SCAN_ID,
-        done("Music scan finished")
-            .setContentText(if (count == 1) "1 song scanned" else "$count songs scanned")
+        done(context.getString(R.string.notification_local_scan_title_scanned))
+            .setContentText(
+                context.getString(
+                    R.string.notification_local_scan_subtitle_scanned,
+                    context.resources.getQuantityString(R.plurals.song, count, count),
+                )
+            )
             .build()
     )
 
@@ -71,8 +76,14 @@ class LocalScanNotifications(private val context: Context) {
 
         context.notify(
             LOUDNESS_ID,
-            progress("Measuring loudness")
-                .setContentText("$measured/$total")
+            progress(context.getString(R.string.notification_local_scan_title_measuring))
+                .setContentText(
+                    context.getString(
+                        R.string.notification_local_scan_subtitle_progress,
+                        measured,
+                        total
+                    )
+                )
                 .setProgress(total, measured, false)
                 .build()
         )
@@ -86,8 +97,14 @@ class LocalScanNotifications(private val context: Context) {
         measuringShownAt = 0L
         cancelFailures()
 
-        val summary = done("Loudness measured")
-            .setContentText("$analyzed/$total")
+        val summary = done(context.getString(R.string.notification_local_scan_title_measured))
+            .setContentText(
+                context.getString(
+                    R.string.notification_local_scan_subtitle_progress,
+                    analyzed,
+                    total
+                )
+            )
         if (failed.isEmpty()) {
             context.notify(LOUDNESS_ID, summary.build())
             return
@@ -109,8 +126,16 @@ class LocalScanNotifications(private val context: Context) {
             summary
                 // The header of the group, the only text of the summary that shows from Android 7 on
                 .setSubText(
-                    if (shown.size == failed.size) "$analyzed/$total measured"
-                    else "$analyzed/$total, ${shown.size} of ${failed.size} failures listed"
+                    if (shown.size == failed.size)
+                        context.getString(
+                            R.string.notification_local_scan_subtitle_measured,
+                            analyzed,
+                            total
+                        )
+                    else context.getString(
+                        R.string.notification_local_scan_subtitle_failures_listed,
+                        analyzed, total, shown.size, failed.size,
+                    )
                 )
                 .setGroup(FAILED_GROUP)
                 .setGroupSummary(true)

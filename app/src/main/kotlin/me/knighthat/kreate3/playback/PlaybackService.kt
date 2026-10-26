@@ -370,7 +370,8 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             // in the foreground, which the media notification makes it only once playing.
             startForegroundWith(
                 RESUME_FOREGROUND_ID,
-                notificationBuilder(AppChannel.RESUME).setContentTitle("Resuming music").build(),
+                notificationBuilder(AppChannel.RESUME).setContentTitle(getString(R.string.notification_resume_title_resuming))
+                    .build(),
             )
             return scope.future {
                 val saved = try {

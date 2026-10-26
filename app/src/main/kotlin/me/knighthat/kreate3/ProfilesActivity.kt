@@ -57,6 +57,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.constant.ContrastLevel
@@ -92,15 +93,21 @@ class ProfilesActivity : ComponentActivity() {
         // The active profile shows since when it is active, the others when they were last used
         val subtitle = if (isActive)
             user.activeSince?.let {
-                "Active since " + DateUtils.formatDateTime(
-                    context,
-                    it.toEpochMilliseconds(),
-                    DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_ABBREV_ALL,
+                context.getString(
+                    R.string.screen_profiles_status_active_since,
+                    DateUtils.formatDateTime(
+                        context,
+                        it.toEpochMilliseconds(),
+                        DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_ABBREV_ALL,
+                    ),
                 )
             }
         else
             user.lastSeen?.let {
-                "Last seen " + DateUtils.getRelativeTimeSpanString(it.toEpochMilliseconds())
+                context.getString(
+                    R.string.screen_profiles_status_last_seen,
+                    DateUtils.getRelativeTimeSpanString(it.toEpochMilliseconds()),
+                )
             }
 
         Row(modifier = Modifier.height(IntrinsicSize.Min)) {
@@ -116,12 +123,15 @@ class ProfilesActivity : ComponentActivity() {
                 supportingContent = subtitle?.let { { Text(it) } },
                 trailingContent = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        TextButton(onClick = onSwitch, enabled = !isActive) { Text("Switch") }
+                        TextButton(
+                            onClick = onSwitch,
+                            enabled = !isActive
+                        ) { Text(stringResource(R.string.action_switch)) }
                         // The default profile can't be deleted
                         TextButton(
                             onClick = onDelete,
                             enabled = user.id != Profile.DEFAULT_ID
-                        ) { Text("Delete") }
+                        ) { Text(stringResource(R.string.action_delete)) }
                     }
                 },
                 modifier = Modifier.weight(1f),
@@ -144,7 +154,7 @@ class ProfilesActivity : ComponentActivity() {
             OutlinedTextField(
                 value = text,
                 onValueChange = onTextChange,
-                label = { Text("Search or add profile") },
+                label = { Text(stringResource(R.string.screen_profiles_hint_search_or_add)) },
                 singleLine = true,
                 modifier = Modifier.weight(1f),
             )
@@ -154,7 +164,7 @@ class ProfilesActivity : ComponentActivity() {
                     onTextChange("")
                 },
                 enabled = text.isNotBlank(),
-            ) { Text("Add") }
+            ) { Text(stringResource(R.string.action_add)) }
         }
     }
 

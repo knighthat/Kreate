@@ -17,6 +17,7 @@
  */
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -26,6 +27,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
@@ -63,18 +65,19 @@ const val TOP_SONGS = 10
  * @param scope the app's, where a follow is sent
  */
 class OpenSubsonicArtistDetailViewModel(
+    context: Context,
     savedStateHandle: SavedStateHandle,
     private val provider: OpenSubsonicProvider,
     library: UserSongRepository,
     scope: CoroutineScope,
     notifier: Notifier,
-) : LiveDetailViewModel<OpenSubsonicArtistDetail>(library.dislikedIds()) {
+) : LiveDetailViewModel<OpenSubsonicArtistDetail>(context, library.dislikedIds()) {
 
     val artistId: String = checkNotNull(savedStateHandle[LocalArtist.ID]) {
         "LocalArtist.ID is missing from the saved state"
     }
 
-    override val notFound = SERVER_OFF
+    override val notFound: String get() = context.serverOff()
 
     /** Every song of the artist once [allSongs] got them, they're asked for once. */
     @Volatile
@@ -94,7 +97,12 @@ class OpenSubsonicArtistDetailViewModel(
                 )
             ) throw ServerException(ServerCheck.Disabled)
         },
-        failure = { e, on -> e.serverFailure(if (on) "follow the artist" else "unfollow the artist") },
+        failure = { e, on ->
+            e.serverFailure(
+                context,
+                if (on) R.string.snackbar_change_follow_artist else R.string.snackbar_change_unfollow_artist
+            )
+        },
     )
 
     init {

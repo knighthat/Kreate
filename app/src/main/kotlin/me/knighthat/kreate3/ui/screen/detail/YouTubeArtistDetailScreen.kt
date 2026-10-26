@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import me.knighthat.kreate3.R
@@ -141,7 +142,7 @@ private fun YouTubeArtistDetailContent(
             if (detail.topSongs.isNotEmpty()) {
                 item(key = "songs-title") {
                     SectionTitle(
-                        "Top songs",
+                        stringResource(R.string.section_header_top_songs),
                         onSeeMore = detail.songsPlaylistId?.let { id -> { onOpenPlaylist(id) } },
                     )
                 }

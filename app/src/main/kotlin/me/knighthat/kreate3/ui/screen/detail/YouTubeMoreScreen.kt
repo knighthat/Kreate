@@ -113,11 +113,11 @@ private fun YouTubeMoreContent(
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
-                        FilledTonalButton(onClick = items::retry) { Text("Try again") }
+                        FilledTonalButton(onClick = items::retry) { Text(stringResource(R.string.action_try_again)) }
                     }
 
                     else -> Text(
-                        text = "Nothing here",
+                        text = stringResource(R.string.screen_youtube_more_status_nothing_here),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

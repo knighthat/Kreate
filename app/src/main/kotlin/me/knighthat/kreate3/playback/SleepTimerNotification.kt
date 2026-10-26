@@ -101,11 +101,17 @@ internal class SleepTimerNotification(private val context: Context) {
             } else
                 setTextViewText(
                     R.id.sleep_timer_song_end,
-                    if (timer.isPaused) "On hold" else "Until the song ends",
+                    context.getString(
+                        if (timer.isPaused) R.string.notification_sleep_timer_subtitle_on_hold
+                        else R.string.notification_sleep_timer_subtitle_until_song_ends
+                    ),
                 )
 
             setTextViewText(R.id.sleep_timer_remove, removeStep.buttonLabel(add = false))
-            setContentDescription(R.id.sleep_timer_remove, "Remove time")
+            setContentDescription(
+                R.id.sleep_timer_remove,
+                context.getString(R.string.semantic_remove_time)
+            )
             button(
                 R.id.sleep_timer_remove,
                 SleepTimerAction.REMOVE,
@@ -118,26 +124,35 @@ internal class SleepTimerNotification(private val context: Context) {
             )
             setContentDescription(
                 R.id.sleep_timer_toggle,
-                if (timer.isPaused) "Resume the sleep timer" else "Pause the sleep timer",
+                context.getString(
+                    if (timer.isPaused) R.string.semantic_resume_the_sleep_timer
+                    else R.string.semantic_pause_the_sleep_timer
+                ),
             )
             button(R.id.sleep_timer_toggle, SleepTimerAction.TOGGLE_PAUSE)
 
             setTextViewText(R.id.sleep_timer_add, addStep.buttonLabel(add = true))
-            setContentDescription(R.id.sleep_timer_add, "Add time")
+            setContentDescription(
+                R.id.sleep_timer_add,
+                context.getString(R.string.semantic_add_time)
+            )
             button(
                 R.id.sleep_timer_add,
                 SleepTimerAction.ADD,
                 enabled = timer.changedBy(addStep, add = true) != null,
             )
 
-            setContentDescription(R.id.sleep_timer_stop, "Stop the sleep timer")
+            setContentDescription(
+                R.id.sleep_timer_stop,
+                context.getString(R.string.semantic_stop_the_sleep_timer)
+            )
             button(R.id.sleep_timer_stop, SleepTimerAction.STOP)
         }
 
         return context.notificationBuilder(AppChannel.SLEEP_TIMER)
             .setSmallIcon(R.drawable.bedtime)
             // Read out and shown where the custom view isn't
-            .setContentTitle("Sleep timer")
+            .setContentTitle(context.getString(R.string.notification_sleep_timer_title_running))
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setCustomContentView(views)
             .setOngoing(true)
@@ -164,12 +179,17 @@ internal class SleepTimerNotification(private val context: Context) {
         )
         val notification = context.notificationBuilder(AppChannel.SLEEP_TIMER)
             .setSmallIcon(R.drawable.bedtime)
-            .setContentTitle("Sleep timer finished")
+            .setContentTitle(context.getString(R.string.notification_sleep_timer_title_finished))
             // In the user's 12 or 24 hour clock
-            .setContentText("Music paused at ${DateFormat.getTimeFormat(context).format(Date(at))}")
+            .setContentText(
+                context.getString(
+                    R.string.notification_sleep_timer_subtitle_paused_at,
+                    DateFormat.getTimeFormat(context).format(Date(at)),
+                )
+            )
             .setWhen(at)
             .setShowWhen(true)
-            .addAction(R.drawable.play_arrow, "Restart", restart)
+            .addAction(R.drawable.play_arrow, context.getString(R.string.action_restart), restart)
             .setAutoCancel(true)
             .setOnlyAlertOnce(true)
             .build()

@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.repository.SongRepository
 import me.knighthat.kreate3.model.Origin
@@ -118,7 +119,8 @@ class LoudnessWorker(
 
     /** What the user knows the song as, its id when it has no name. */
     private suspend fun nameOf(songId: String): String =
-        songs.find(songId).first()?.name ?: "Song $songId"
+        songs.find(songId).first()?.name
+            ?: applicationContext.getString(R.string.notification_local_scan_title_song, songId)
 
     /**
      * Songs with a gain whose file isn't the size it was when measured.

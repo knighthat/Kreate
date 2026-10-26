@@ -17,6 +17,7 @@
  */
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -24,6 +25,7 @@ import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.notification.Notifier
 import me.knighthat.kreate3.provider.opensubsonic.OpenSubsonicProvider
@@ -57,18 +59,19 @@ data class OpenSubsonicAlbumDetail(
  * @param scope the app's, where a bookmark is sent
  */
 class OpenSubsonicAlbumDetailViewModel(
+    context: Context,
     savedStateHandle: SavedStateHandle,
     private val provider: OpenSubsonicProvider,
     library: UserSongRepository,
     scope: CoroutineScope,
     notifier: Notifier,
-) : LiveDetailViewModel<OpenSubsonicAlbumDetail>(library.dislikedIds()) {
+) : LiveDetailViewModel<OpenSubsonicAlbumDetail>(context, library.dislikedIds()) {
 
     val albumId: String = checkNotNull(savedStateHandle[LocalAlbum.ID]) {
         "LocalAlbum.ID is missing from the saved state"
     }
 
-    override val notFound = SERVER_OFF
+    override val notFound: String get() = context.serverOff()
 
     /** Whether the user may make shares on the server, `false` until that is known. */
     val canShare = provider.canShare(viewModelScope)
@@ -80,7 +83,12 @@ class OpenSubsonicAlbumDetailViewModel(
         send = { on ->
             if (!provider.setAlbumStarred(albumId, on)) throw ServerException(ServerCheck.Disabled)
         },
-        failure = { e, on -> e.serverFailure(if (on) "bookmark the album" else "remove the bookmark") },
+        failure = { e, on ->
+            e.serverFailure(
+                context,
+                if (on) R.string.snackbar_change_bookmark_album else R.string.snackbar_change_remove_bookmark
+            )
+        },
     )
 
     init {

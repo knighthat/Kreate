@@ -17,10 +17,12 @@
  */
 package me.knighthat.kreate3.ui.screen.detail
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.CoroutineScope
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.database.model.Album
 import me.knighthat.kreate3.database.repository.UserSongRepository
 import me.knighthat.kreate3.notification.Notifier
@@ -70,19 +72,20 @@ internal fun YouTubeSection.toLiveSection(provider: YouTubeProvider): LiveSectio
  * @param scope the app's, where a bookmark is sent
  */
 class YouTubeAlbumDetailViewModel(
+    context: Context,
     savedStateHandle: SavedStateHandle,
     private val provider: YouTubeProvider,
     private val device: DeviceReactions,
     library: UserSongRepository,
     scope: CoroutineScope,
     notifier: Notifier,
-) : LiveDetailViewModel<YouTubeAlbumDetail>(library.dislikedIds()) {
+) : LiveDetailViewModel<YouTubeAlbumDetail>(context, library.dislikedIds()) {
 
     val albumId: String = checkNotNull(savedStateHandle[LocalAlbum.ID]) {
         "LocalAlbum.ID is missing from the saved state"
     }
 
-    override val notFound = "YouTube doesn't have this album"
+    override val notFound: String get() = context.youTubeNotFound(R.plurals.unit_album)
 
     /** The playlist of the album's songs, which is what YouTube saves to the library. */
     @Volatile
@@ -105,8 +108,12 @@ class YouTubeAlbumDetailViewModel(
             else provider.saveAlbum(checkNotNull(playlistId), on)
         },
         failure = { e, on ->
-            if (onDevice != null) if (on) "Couldn't bookmark the album" else "Couldn't remove the bookmark"
-            else e.youTubeFailure(if (on) "save the album" else "remove the album")
+            if (onDevice != null)
+                context.getString(if (on) R.string.error_bookmark_album else R.string.error_remove_bookmark)
+            else e.youTubeFailure(
+                context,
+                if (on) R.string.snackbar_change_save_album else R.string.snackbar_change_remove_album
+            )
         },
     )
 

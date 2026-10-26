@@ -226,7 +226,7 @@ fun <T> CenteredPicker(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
                             enabled = true,
-                            onClickLabel = "Select source",
+                            onClickLabel = stringResource(R.string.semantic_select_source),
                             role = Role.RadioButton,
                             onClick = { scope.launch { state.animateScrollToItem(index) } }
                         ),
@@ -298,7 +298,7 @@ private fun ConfigSheet(
     onDismiss: () -> Unit,
 ) {
     ModalBottomSheet(onDismissRequest = onDismiss) {
-        SectionTitle("Source")
+        SectionTitle(stringResource(R.string.section_header_source))
         // The server is only offered while it is in use
         val serverEnabled by Preferences.OPEN_SUBSONIC_ENABLED.collectAsStateWithLifecycle()
         CenteredPicker(
@@ -308,7 +308,7 @@ private fun ConfigSheet(
             label = { it.label },
             modifier = Modifier.padding(horizontal = 16.dp),
         )
-        SectionTitle("Look for")
+        SectionTitle(stringResource(R.string.section_header_look_for))
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(horizontal = 16.dp),
@@ -455,9 +455,13 @@ fun SearchScreen(
                 SearchInputBar(
                     text = text,
                     placeholder = when (origin) {
-                        Origin.LOCAL -> "Search your library"
-                        Origin.YOUTUBE -> "Search YouTube"
-                        Origin.OPEN_SUBSONIC -> "Search your server"
+                        Origin.LOCAL -> stringResource(R.string.screen_search_hint_library)
+                        Origin.YOUTUBE -> stringResource(
+                            R.string.screen_search_hint_youtube,
+                            stringResource(R.string.source_ytm)
+                        )
+
+                        Origin.OPEN_SUBSONIC -> stringResource(R.string.screen_search_hint_opensubsonic)
                     },
                     onTextChange = viewModel::setText,
                     onSearch = { search(text) },
@@ -474,8 +478,11 @@ fun SearchScreen(
         if (suggestions.isEmpty() && live.queries.isEmpty() && recent.isEmpty()) {
             Text(
                 text = when {
-                    query.isEmpty() -> "Your searches will show up here"
-                    else -> "No suggestions for \"$query\""
+                    query.isEmpty() -> stringResource(R.string.screen_search_status_no_history)
+                    else -> stringResource(
+                        R.string.screen_search_status_no_suggestions,
+                        stringResource(R.string.quoted, query)
+                    )
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -507,7 +514,7 @@ fun SearchScreen(
                 }
                 if (live.queries.isNotEmpty()) {
                     if (suggestions.isNotEmpty())
-                        item(key = "live-title") { SectionTitle("Suggested searches") }
+                        item(key = "live-title") { SectionTitle(stringResource(R.string.section_header_suggested_searches)) }
                     items(live.queries, key = { "live:$it" }) { suggestion ->
                         ListItem(
                             headlineContent = { Text(suggestion) },
@@ -522,7 +529,10 @@ fun SearchScreen(
                 if (recent.isNotEmpty()) {
                     if (suggestions.isNotEmpty() || live.queries.isNotEmpty())
                         item(key = "recent-title") {
-                            SectionTitle(if (text.isBlank()) "Recent searches" else "Searches")
+                            SectionTitle(
+                                if (text.isBlank()) stringResource(R.string.section_header_recent_searches)
+                                else stringResource(R.string.section_header_searches)
+                            )
                         }
                     items(recent, key = { "recent:" + it.query }) { recentSearch ->
                         ListItem(

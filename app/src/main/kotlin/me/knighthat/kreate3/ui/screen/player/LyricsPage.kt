@@ -196,6 +196,9 @@ internal class LyricsControls {
     }
 }
 
+/** What the inline icon of the change source button reads as, and where it goes in the hint. */
+private const val CHANGE_SOURCE_MARK = "⇄"
+
 /** Sizes the lyrics' text can take, in percent, see [Preferences.LYRICS_TEXT_SIZE]. */
 internal val LYRICS_TEXT_SIZES = 80..200 step 10
 
@@ -377,7 +380,10 @@ private fun LyricsPageContent(
 ) {
     when (val shown = state) {
         is LyricsState.Found -> {
-            val footer = listOfNotNull("From ${shown.source}", shown.credit).joinToString("\n")
+            val footer = listOfNotNull(
+                stringResource(R.string.screen_lyrics_status_from, shown.source),
+                shown.credit
+            ).joinToString("\n")
             val content by produceState(shown.content, shown, sync) {
                 value = if (sync == null) shown.content
                 else withContext(Dispatchers.Default) { shown.content.coarsenedTo(sync) }
@@ -420,22 +426,36 @@ private fun LyricsPageContent(
             ) {
                 when (shown) {
                     LyricsState.Loading -> CircularProgressIndicator()
-                    LyricsState.Missing -> Message("No lyrics for this song")
+                    LyricsState.Missing -> Message(stringResource(R.string.screen_lyrics_status_missing))
                     is LyricsState.Unavailable -> {
-                        Message("${shown.source} has no lyrics for this song.")
+                        Message(
+                            stringResource(
+                                R.string.screen_lyrics_status_unavailable,
+                                shown.source
+                            )
+                        )
+                        val hint = stringResource(
+                            R.string.screen_lyrics_hint_change_source,
+                            CHANGE_SOURCE_MARK
+                        )
                         Message(
                             buildAnnotatedString {
-                                append("Press Change source (")
-                                appendInlineContent(CHANGE_SOURCE_ICON, "⇄")
-                                append(") below to pick another source.")
+                                // The icon takes the place of the mark, wherever the translation puts it
+                                val start = hint.indexOf(CHANGE_SOURCE_MARK)
+                                if (start < 0) append(hint)
+                                else {
+                                    append(hint.substring(0, start))
+                                    appendInlineContent(CHANGE_SOURCE_ICON, CHANGE_SOURCE_MARK)
+                                    append(hint.substring(start + CHANGE_SOURCE_MARK.length))
+                                }
                             },
                         )
-                        Button(onClick = onFetchAgain) { Text("Reload") }
+                        Button(onClick = onFetchAgain) { Text(stringResource(R.string.action_reload)) }
                     }
 
                     else -> {
                         Message(stringResource(R.string.error_lyrics_load))
-                        TextButton(onClick = onFetchAgain) { Text("Retry") }
+                        TextButton(onClick = onFetchAgain) { Text(stringResource(R.string.action_retry)) }
                     }
                 }
             }

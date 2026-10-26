@@ -18,6 +18,8 @@
 
 package me.knighthat.kreate3.source.youtube
 
+import android.content.Context
+import me.knighthat.kreate3.R
 import me.knighthat.kreate3.lyrics.FoundLyrics
 import me.knighthat.kreate3.lyrics.LyricsQuery
 import me.knighthat.kreate3.lyrics.LyricsSource
@@ -25,6 +27,7 @@ import me.knighthat.kreate3.model.LyricsProvider
 import me.knighthat.kreate3.model.LyricsSync
 import me.knighthat.kreate3.model.Origin
 import me.knighthat.kreate3.provider.youtube.YouTubeProvider
+import org.koin.core.context.GlobalContext
 
 /**
  * The lyrics YouTube Music shows for its own songs, never timed. Songs of other origins have none
@@ -36,7 +39,8 @@ import me.knighthat.kreate3.provider.youtube.YouTubeProvider
 class YouTubeLyricsSource(private val youTube: YouTubeProvider) : LyricsSource {
 
     override val provider: LyricsProvider = LyricsProvider.YOUTUBE
-    override val name: String = "YouTube Music"
+    override val name: String
+        get() = GlobalContext.get().get<Context>().getString(R.string.source_ytm)
 
     override suspend fun find(query: LyricsQuery): FoundLyrics? {
         if (query.origin != Origin.YOUTUBE) return null

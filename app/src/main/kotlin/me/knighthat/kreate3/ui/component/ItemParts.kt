@@ -20,6 +20,7 @@ package me.knighthat.kreate3.ui.component
 
 import android.net.Uri
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -85,6 +86,15 @@ internal val Origin.label: String
         Origin.LOCAL -> "Local"
         Origin.YOUTUBE -> "YouTube"
         Origin.OPEN_SUBSONIC -> "OpenSubsonic"
+    }
+
+/** The name of the source an item comes from, as its own strings say it. */
+@get:StringRes
+internal val Origin.sourceRes: Int
+    get() = when (this) {
+        Origin.LOCAL -> R.string.source_local
+        Origin.YOUTUBE -> R.string.source_ytm
+        Origin.OPEN_SUBSONIC -> R.string.source_opensubsonicapi
     }
 
 /** The icon of the origin, on item badges and origin chips. */

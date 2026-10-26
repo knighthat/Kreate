@@ -20,6 +20,7 @@
     <string name="app_name">Kreate</string>
     <string name="source_ytm">YouTube Music</string>
     <string name="source_opensubsonicapi">OpenSubsonic API</string>
+    <string name="source_local">On device</string>
     <string name="all">All</string>
     <string name="mib">MiB</string>
     <string name="percent">%1$d%%</string>
@@ -238,6 +239,15 @@
     <string name="action_not_now">Not now</string>
     <string name="action_search">Search</string>
     <string name="action_create">Create</string>
+    <string name="action_try_again">Try again</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_reload">Reload</string>
+    <string name="action_switch">Switch</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_add">Add</string>
+    <string name="action_less">Less</string>
+    <string name="action_more">More</string>
+    <string name="action_restart">Restart</string>
     <string name="action_reset">Reset</string>
     <string name="action_clear">Clear</string>
     <string name="action_grant">Grant</string>
@@ -250,6 +260,8 @@
     <string name="status_granted">Granted</string>
     <string name="status_unknown_artist">Unknown artist</string>
     <string name="status_no_playlists_yet">No playlists yet</string>
+    <string name="status_playlist_empty">This playlist has no songs</string>
+
 
     <!-- Settings: screens and statuses -->
     <string name="screen_title_songs">Songs</string>
@@ -297,6 +309,13 @@
     <string name="semantic_from_youtube">From %1$s</string>
     <string name="semantic_go_to_the_song_playing">Go to the song playing</string>
     <string name="semantic_larger">Larger</string>
+    <string name="semantic_select_source">Select source</string>
+    <string name="semantic_repeat_off">Repeat off</string>
+    <string name="semantic_repeat_one">Repeat one</string>
+    <string name="semantic_repeat_all">Repeat all</string>
+    <string name="semantic_remove_time">Remove time</string>
+    <string name="semantic_add_time">Add time</string>
+    <string name="semantic_stop_the_sleep_timer">Stop the sleep timer</string>
     <string name="semantic_turn_shuffle_off_to_move_songs">Turn shuffle off to move songs</string>
     <string name="semantic_lock_the_order">Lock the order</string>
     <string name="semantic_unlock_to_move_songs">Unlock to move songs</string>
@@ -426,6 +445,29 @@
     <string name="error_share_unsupported">This server doesn\'t support sharing this %1$s</string>
     <string name="error_share_unreachable">Can\'t reach the server to share</string>
     <string name="error_cant_share">Can\'t share this %1$s</string>
+    <string name="error_cant_search">Couldn\'t search %1$s</string>
+    <string name="error_source_refused">%1$s refused: %2$s</string>
+    <string name="error_server_refused">The server refused: %1$s</string>
+    <string name="error_server_code">error %1$d</string>
+    <string name="error_server_unreachable">Can\'t reach the server: %1$s</string>
+    <string name="error_server_certificate_untrusted">The server\'s certificate isn\'t trusted</string>
+    <string name="error_server_certificate_changed">The server\'s certificate changed, check it in %1$s settings</string>
+    <string name="error_server_not_configured">Sign in to the server in %1$s settings</string>
+    <string name="error_server_unexpected">The server sent something unexpected</string>
+    <string name="error_server_load">Couldn\'t load this from the server</string>
+    <string name="error_server_off">The server is turned off, turn it on in %1$s settings</string>
+    <string name="error_source_not_found">%1$s doesn\'t have this %2$s</string>
+    <string name="error_bookmark_album">Couldn\'t bookmark the album</string>
+    <string name="error_remove_bookmark">Couldn\'t remove the bookmark</string>
+    <string name="error_follow_artist">Couldn\'t follow the artist</string>
+    <string name="error_unfollow_artist">Couldn\'t unfollow the artist</string>
+    <string name="error_server_change_refused">The server refused to %1$s</string>
+    <string name="error_server_change_unreachable">Can\'t reach the server to %1$s</string>
+    <string name="error_server_change_failed">Couldn\'t %1$s on the server</string>
+    <string name="error_source_change_failed">Couldn\'t %1$s on %2$s</string>
+    <string name="error_source_change_signed_out">Sign in to %2$s again to %1$s</string>
+    <string name="error_source_change_unreachable">Can\'t reach %2$s to %1$s</string>
+    <string name="error_source_change_refused">%2$s refused to %1$s</string>
 
     <!-- Snack bar messages -->
     <string name="snackbar_cant_play">Couldn\'t play %1$s: %2$s</string>
@@ -444,4 +486,69 @@
     <string name="snackbar_couldnt_add_to">Couldn\'t add to %1$s</string>
     <string name="snackbar_exit_swipe">Swipe again to exit</string>
     <string name="snackbar_exit_press">Press again to exit</string>
+    <string name="snackbar_change_bookmark_album">bookmark the album</string>
+    <string name="snackbar_change_remove_bookmark">remove the bookmark</string>
+    <string name="snackbar_change_follow_artist">follow the artist</string>
+    <string name="snackbar_change_unfollow_artist">unfollow the artist</string>
+    <string name="snackbar_change_save_album">save the album</string>
+    <string name="snackbar_change_remove_album">remove the album</string>
+    <string name="snackbar_change_remove_like">remove the like</string>
+    <string name="snackbar_change_remove_dislike">remove the dislike</string>
+    <string name="snackbar_change_like_song">like the song</string>
+    <string name="snackbar_change_dislike_song">dislike the song</string>
+
+    <!-- Section headers -->
+    <string name="section_header_top_songs">Top songs</string>
+    <string name="section_header_source">Source</string>
+    <string name="section_header_look_for">Look for</string>
+    <string name="section_header_suggested_searches">Suggested searches</string>
+    <string name="section_header_recent_searches">Recent searches</string>
+    <string name="section_header_searches">Searches</string>
+
+    <!-- Texts of one screen -->
+    <string name="screen_search_hint_library">Search your library</string>
+    <string name="screen_search_hint_youtube">Search %1$s</string>
+    <string name="screen_search_hint_opensubsonic">Search your server</string>
+    <string name="screen_search_status_no_history">Your searches will show up here</string>
+    <string name="screen_search_status_no_suggestions">No suggestions for %1$s</string>
+    <string name="screen_search_results_status_none">No %1$s found for %2$s</string>
+    <string name="screen_youtube_more_status_nothing_here">Nothing here</string>
+    <string name="screen_lyrics_status_missing">No lyrics for this song</string>
+    <string name="screen_lyrics_status_unavailable">%1$s has no lyrics for this song.</string>
+    <string name="screen_lyrics_status_from">From %1$s</string>
+    <string name="screen_lyrics_hint_change_source">Press Change source (%1$s) below to pick another source.</string>
+    <string name="screen_profiles_hint_search_or_add">Search or add profile</string>
+    <string name="screen_profiles_status_active_since">Active since %1$s</string>
+    <string name="screen_profiles_status_last_seen">Last seen %1$s</string>
+    <string name="screen_player_status_timer_on_hold_song_end">On hold, until the song ends</string>
+    <string name="screen_player_status_timer_song_end">Pauses when the song ends</string>
+    <string name="screen_player_status_timer_on_hold">On hold, %1$s left</string>
+    <string name="screen_player_status_timer_running">Pauses in %1$s</string>
+
+    <!-- Notifications -->
+    <string name="notification_playback_title_channel">Playback problems</string>
+    <string name="notification_playback_subtitle_channel">A song couldn\'t be played</string>
+    <string name="notification_other_title_channel">Other</string>
+    <string name="notification_other_subtitle_channel">One-off notices, like a backup that couldn\'t be restored</string>
+    <string name="notification_local_scan_title_channel">Music on this device</string>
+    <string name="notification_local_scan_subtitle_channel">Progress of reading the device\'s music and measuring its loudness</string>
+    <string name="notification_sleep_timer_title_channel">Sleep timer</string>
+    <string name="notification_sleep_timer_subtitle_channel">Time left until the music pauses, with buttons to change it</string>
+    <string name="notification_resume_title_channel">Resuming music</string>
+    <string name="notification_resume_subtitle_channel">Shows for a moment while headphones or the system\'s media controls play the last queue again</string>
+    <string name="notification_local_scan_title_scanning">Scanning music</string>
+    <string name="notification_local_scan_title_scanned">Music scan finished</string>
+    <string name="notification_local_scan_subtitle_scanned">%1$s scanned</string>
+    <string name="notification_local_scan_title_measuring">Measuring loudness</string>
+    <string name="notification_local_scan_subtitle_progress">%1$d/%2$d</string>
+    <string name="notification_local_scan_title_measured">Loudness measured</string>
+    <string name="notification_local_scan_subtitle_measured">%1$d/%2$d measured</string>
+    <string name="notification_local_scan_subtitle_failures_listed">%1$d/%2$d, %3$d of %4$d failures listed</string>
+    <string name="notification_local_scan_title_song">Song %1$s</string>
+    <string name="notification_sleep_timer_title_running">Sleep timer</string>
+    <string name="notification_sleep_timer_title_finished">Sleep timer finished</string>
+    <string name="notification_sleep_timer_subtitle_on_hold">On hold</string>
+    <string name="notification_sleep_timer_subtitle_until_song_ends">Until the song ends</string>
+    <string name="notification_sleep_timer_subtitle_paused_at">Music paused at %1$s</string>
+    <string name="notification_resume_title_resuming">Resuming music</string>
 </resources>

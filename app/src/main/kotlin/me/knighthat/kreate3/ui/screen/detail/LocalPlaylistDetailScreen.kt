@@ -63,6 +63,7 @@ import me.knighthat.kreate3.ui.component.SongMenuAction
 import me.knighthat.kreate3.ui.component.previewSongs
 import me.knighthat.kreate3.ui.component.rememberQueueActions
 import me.knighthat.kreate3.ui.component.rememberSongTap
+import me.knighthat.kreate3.ui.component.sourceRes
 import org.koin.androidx.compose.koinViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -94,7 +95,7 @@ fun LocalPlaylistDetailScreen(
         name = playlist?.name,
         thumbnail = playlist?.thumbnail,
         origin = playlist?.origin,
-        subtitle = playlist?.let { if (it.origin == Origin.LOCAL) "On this device" else it.origin.name },
+        subtitle = playlist?.let { stringResource(it.origin.sourceRes) },
         songs = viewModel.songs.collectAsLazyPagingItems(),
         mode = mode,
         arranged = arranged,

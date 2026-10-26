@@ -19,8 +19,10 @@
 package me.knighthat.kreate3.notification
 
 import android.content.Context
+import androidx.annotation.StringRes
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationManagerCompat
+import me.knighthat.kreate3.R
 
 /**
  * A kind of system notification, which the user can turn off or silence on its own in the
@@ -35,38 +37,38 @@ import androidx.core.app.NotificationManagerCompat
  */
 enum class AppChannel(
     val id: String,
-    val title: String,
-    val description: String,
+    @param:StringRes val titleRes: Int,
+    @param:StringRes val descriptionRes: Int,
     val importance: Int,
     val isSilent: Boolean = false,
 ) {
     PLAYBACK(
         id = "playback",
-        title = "Playback problems",
-        description = "A song couldn't be played",
+        titleRes = R.string.notification_playback_title_channel,
+        descriptionRes = R.string.notification_playback_subtitle_channel,
         importance = NotificationManagerCompat.IMPORTANCE_DEFAULT,
     ),
 
     /** One-off notices, not something that happens again and again like each backup. */
     OTHER(
         id = "other",
-        title = "Other",
-        description = "One-off notices, like a backup that couldn't be restored",
+        titleRes = R.string.notification_other_title_channel,
+        descriptionRes = R.string.notification_other_subtitle_channel,
         importance = NotificationManagerCompat.IMPORTANCE_DEFAULT,
     ),
 
     LOCAL_SCAN(
         id = "local_scan",
-        title = "Music on this device",
-        description = "Progress of reading the device's music and measuring its loudness",
+        titleRes = R.string.notification_local_scan_title_channel,
+        descriptionRes = R.string.notification_local_scan_subtitle_channel,
         importance = NotificationManagerCompat.IMPORTANCE_LOW,
     ),
 
     /** It stays while the timer runs. Silent, the user may be asleep. */
     SLEEP_TIMER(
         id = "sleep_timer",
-        title = "Sleep timer",
-        description = "Time left until the music pauses, with buttons to change it",
+        titleRes = R.string.notification_sleep_timer_title_channel,
+        descriptionRes = R.string.notification_sleep_timer_subtitle_channel,
         importance = NotificationManagerCompat.IMPORTANCE_LOW,
         isSilent = true,
     ),
@@ -77,8 +79,8 @@ enum class AppChannel(
      */
     RESUME(
         id = "resume",
-        title = "Resuming music",
-        description = "Shows for a moment while headphones or the system's media controls play the last queue again",
+        titleRes = R.string.notification_resume_title_channel,
+        descriptionRes = R.string.notification_resume_subtitle_channel,
         importance = NotificationManagerCompat.IMPORTANCE_LOW,
         isSilent = true,
     );
@@ -95,8 +97,8 @@ internal fun Context.createNotificationChannels() =
     NotificationManagerCompat.from(this).createNotificationChannelsCompat(
         AppChannel.entries.map {
             NotificationChannelCompat.Builder(it.id, it.importance)
-                .setName(it.title)
-                .setDescription(it.description)
+                .setName(getString(it.titleRes))
+                .setDescription(getString(it.descriptionRes))
                 .apply {
                     if (it.isSilent) {
                         setSound(null, null)
