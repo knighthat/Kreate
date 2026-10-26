@@ -25,6 +25,7 @@
     <string name="source_lyrics_plus" translatable="false">LyricsPlus</string>
     <string name="source_lrclib" translatable="false">LRCLIB</string>
     <string name="mib">%1$d MiB</string>
+    <string name="lufs">%1$d LUFS</string>
     <string name="percent">%1$d%%</string>
     <string name="name">Name</string>
     <string name="quoted">\"%1$s\"</string>
@@ -43,6 +44,7 @@
     <string name="setting_header_requests">Requests</string>
     <string name="setting_header_sources">Sources</string>
     <string name="setting_header_queue">Queue</string>
+    <string name="setting_header_sound">Sound</string>
     <string name="setting_header_buffering">Buffering</string>
     <string name="setting_header_sleep_timer">Sleep timer</string>
     <string name="setting_header_history">History</string>
@@ -147,6 +149,9 @@
     <string name="setting_title_load_next_song_ahead">Load the next song ahead</string>
     <string name="setting_title_when_a_song_fails">When a song fails</string>
     <string name="setting_title_give_up_loading_after">Give up loading after</string>
+    <string name="setting_title_even_out_loudness">Even out loudness</string>
+    <string name="setting_description_even_out_loudness">Quiet and loud songs play at about the same volume</string>
+    <string name="setting_title_target_loudness">Target loudness</string>
     <string name="setting_title_load_ahead">Load ahead</string>
     <string name="setting_title_load_before_playing">Load before playing</string>
     <string name="setting_title_keep_what_was_played">Keep what was played</string>
@@ -197,6 +202,8 @@
     <string name="setting_title_trusted_certificate">Trusted certificate</string>
     <string name="setting_title_api_key">API key</string>
     <string name="setting_title_direct_play">Direct play</string>
+    <string name="setting_title_replay_gain_reference">ReplayGain reference</string>
+    <string name="setting_description_replay_gain_reference">%1$s, the loudness the server\'s ReplayGain tags bring songs to</string>
     <string name="setting_description_direct_play">Streams songs from the server without keeping them in the song cache</string>
     <string name="setting_title_account_status_signed_out">Signed out by %1$s</string>
     <string name="setting_description_backup_status_default_profile_only">Only the default profile can back up or restore</string>

@@ -133,7 +133,15 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
                 player.preloadConfiguration = preloadConfiguration(it)
             }
         }
-        normalizer = LoudnessNormalizer(player, get(), get(), scope)
+        normalizer = LoudnessNormalizer(
+            player = player,
+            songs = get(),
+            formats = get(),
+            enabled = Preferences.LOUDNESS_NORMALIZATION.state,
+            targetLufs = Preferences.LOUDNESS_TARGET_LUFS.state,
+            replayGainLufs = Preferences.OPEN_SUBSONIC_REPLAY_GAIN_LUFS.state,
+            scope = scope,
+        )
         recovery = PlaybackRecovery(player, get(), this, scope)
         PlaybackHistoryRecorder(player, get(), writeScope)
         persistentQueue = PersistentQueue(

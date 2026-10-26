@@ -235,6 +235,12 @@ object Preferences : KoinComponent {
     val OPEN_SUBSONIC_DIRECT_PLAY by lazy { boolean("open_subsonic_direct_play", true) }
 
     /**
+     * Loudness, in LUFS, the server's files were tagged against, which their ReplayGain brings
+     * them to: -18 (ReplayGain 2) by default. `LoudnessNormalizer` follows it while playing.
+     */
+    val OPEN_SUBSONIC_REPLAY_GAIN_LUFS by lazy { int("open_subsonic_replay_gain_lufs", -18) }
+
+    /**
      * How good the songs of the OpenSubsonic server streamed on Wi-Fi and other networks that
      * aren't metered are. [StreamQuality.ORIGINAL] by default, the file as it is. Other qualities
      * are a highest bitrate: the server converts the songs above it, in the format it picked.
@@ -406,6 +412,19 @@ object Preferences : KoinComponent {
      * player.
      */
     val PLAYBACK_PRELOAD_SECONDS by lazy { int("playback_preload_seconds", 5) }
+
+    /**
+     * Evens out the loudness of songs with their measured gain, on by default. Off, every song
+     * plays as it is. `LoudnessNormalizer` follows it while playing.
+     */
+    val LOUDNESS_NORMALIZATION by lazy { boolean("loudness_normalization", true) }
+
+    /**
+     * Loudness songs are evened out to, in LUFS, from -18 to -10, -14 (YouTube's) by default.
+     * Louder means more songs get a boost, which stops at 6 dB. `LoudnessNormalizer` follows it
+     * while playing.
+     */
+    val LOUDNESS_TARGET_LUFS by lazy { int("loudness_target_lufs", -14) }
 
     /**
      * What the player does when a song fails to play, or loads longer than

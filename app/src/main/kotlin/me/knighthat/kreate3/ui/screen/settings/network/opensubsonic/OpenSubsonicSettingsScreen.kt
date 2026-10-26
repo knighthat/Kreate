@@ -53,6 +53,7 @@ import me.knighthat.kreate3.ui.component.labelsOf
 import me.knighthat.kreate3.ui.component.openSubsonicLabelRes
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
 import me.knighthat.kreate3.ui.screen.settings.MainSwitch
+import me.knighthat.kreate3.ui.screen.settings.NumberSetting
 import me.knighthat.kreate3.ui.screen.settings.PreviewProxySettings
 import me.knighthat.kreate3.ui.screen.settings.ProxySettings
 import me.knighthat.kreate3.ui.screen.settings.RadioSetting
@@ -232,6 +233,7 @@ fun OpenSubsonicSettingsScreen(
     val serverCheck by viewModel.server.collectFlowAsState()
     val allowSelfSigned by Preferences.OPEN_SUBSONIC_ALLOW_SELF_SIGNED.collectAsStateWithLifecycle()
     val directPlay by Preferences.OPEN_SUBSONIC_DIRECT_PLAY.collectAsStateWithLifecycle()
+    val replayGainLufs by Preferences.OPEN_SUBSONIC_REPLAY_GAIN_LUFS.collectAsStateWithLifecycle()
     val certificateHost by Preferences.OPEN_SUBSONIC_CERTIFICATE_HOST.collectAsStateWithLifecycle()
     val certificate by Preferences.OPEN_SUBSONIC_CERTIFICATE_SHA256.collectAsStateWithLifecycle()
     val syncSongs by Preferences.OPEN_SUBSONIC_SYNC_SONGS.collectAsStateWithLifecycle()
@@ -259,6 +261,7 @@ fun OpenSubsonicSettingsScreen(
         apiKey = apiKey,
         credentialsCheck = credentialsCheck,
         directPlay = directPlay,
+        replayGainLufs = replayGainLufs,
         syncSongs = syncSongs,
         syncPlaylists = syncPlaylists,
         syncAlbums = syncAlbums,
@@ -311,6 +314,7 @@ private fun OpenSubsonicSettingsContent(
     apiKey: String,
     credentialsCheck: CheckState,
     directPlay: Boolean,
+    replayGainLufs: Int,
     syncSongs: Boolean,
     syncPlaylists: Boolean,
     syncAlbums: SyncMode,
@@ -433,6 +437,19 @@ private fun OpenSubsonicSettingsContent(
             onCheckedChange = { Preferences.OPEN_SUBSONIC_DIRECT_PLAY.update(it) },
         )
         quality()
+        NumberSetting(
+            title = stringResource(R.string.setting_title_replay_gain_reference),
+            value = replayGainLufs.toLong(),
+            min = -30,
+            max = 0,
+            onSave = { Preferences.OPEN_SUBSONIC_REPLAY_GAIN_LUFS.update(it.toInt()) },
+            note = {
+                stringResource(
+                    R.string.setting_description_replay_gain_reference,
+                    stringResource(R.string.lufs, it.toInt()),
+                )
+            },
+        )
 
         SettingsSection(stringResource(R.string.setting_header_server_library))
         SwitchSetting(
@@ -485,6 +502,7 @@ private fun OpenSubsonicSettingsPreview() = PreviewTheme {
         apiKey = "",
         credentialsCheck = online,
         directPlay = false,
+        replayGainLufs = -18,
         syncSongs = true,
         syncPlaylists = true,
         syncAlbums = SyncMode.ALL,

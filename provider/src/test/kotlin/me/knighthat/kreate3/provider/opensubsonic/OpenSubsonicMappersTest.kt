@@ -161,9 +161,9 @@ class OpenSubsonicMappersTest {
                 "replayGain":{"trackGain":-7.5,"albumGain":-6,"trackPeak":0.98}}"""
         ).toSongFormat()
 
-        // -7.5 dB brings it to -18 LUFS, so it is at -10.5 LUFS, 3.5 dB over -14 LUFS
+        // The server's ReplayGain as given
         assertEquals(
-            SongFormat("s1", RAW_FORMAT, "audio/flac", 1_012_000, 31_415_926, 3.5f),
+            SongFormat("s1", RAW_FORMAT, "audio/flac", 1_012_000, 31_415_926, -7.5f),
             format,
         )
     }

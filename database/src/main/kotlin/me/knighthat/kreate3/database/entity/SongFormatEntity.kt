@@ -31,7 +31,9 @@ import kotlin.time.Instant
  * @property mimetype media type of the stream
  * @property bitrate bits per second
  * @property length size in bytes
- * @property gain loudness of the source relative to the reference in dB, positive when louder than the reference
+ * @property gain loudness of the source relative to the reference in dB, positive when louder than the reference;
+ *   OpenSubsonic's `raw` format holds the server's ReplayGain as given instead (negative when louder), its
+ *   reference is a setting
  * @property createdAt when the format was first stored
  * @property updatedAt when the format was last changed
  */

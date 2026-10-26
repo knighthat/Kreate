@@ -49,6 +49,20 @@ class LoudnessNormalizerTest {
     }
 
     @Test
+    fun louderTargetBoostsMore() {
+        assertEquals(4f, normalizationDb(0f, targetLufs = -10), 0f)
+        assertEquals(-7f, normalizationDb(3f, targetLufs = -18), 0f)
+    }
+
+    @Test
+    fun replayGainIsReadAgainstWhatTheFilesWereTaggedFor() {
+        // -7.5 dB brings it to -18 LUFS, so it is at -10.5 LUFS, 3.5 dB over -14 LUFS
+        assertEquals(3.5f, replayGainLoudness(-7.5f, taggedLufs = -18), 0f)
+        // Tagged against -14 LUFS, the ReplayGain is already the cut
+        assertEquals(7.5f, replayGainLoudness(-7.5f, taggedLufs = -14), 0f)
+    }
+
+    @Test
     fun sixDecibelsHalvesTheVolume() {
         assertEquals(0.5f, cutToVolume(-6.0206f), 0.001f)
     }

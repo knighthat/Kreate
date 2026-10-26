@@ -143,18 +143,11 @@ internal fun JsonObject.toSong(cover: (String) -> Uri?): RemoteSong {
 }
 
 /**
- * Loudness ReplayGain 2 brings songs to, in LUFS. A ReplayGain is the change that gets a song
- * there, `-7` for a song 7 dB louder.
- */
-private const val REPLAY_GAIN_LUFS = -18.0
-
-/** Loudness a gain of [SongFormat] is relative to, in LUFS, the app measures songs against it. */
-private const val GAIN_REFERENCE_LUFS = -14.0
-
-/**
  * The format of the song's file, `Child` in the API, tagged with the name of the origin: a song
- * of the server is one file. Its gain comes from the ReplayGain of the track, or of the album
- * when the track has none, `null` when the file has no ReplayGain tags or the server is plain
+ * of the server is one file. Its gain is the server's ReplayGain of the track as given, or of the
+ * album when the track has none: the change in dB that brings the song to the loudness the files
+ * were tagged against (`-7` for a song 7 dB louder), which only the user knows, so it is applied
+ * when the song plays. `null` when the file has no ReplayGain tags or the server is plain
  * Subsonic.
  */
 internal fun JsonObject.toSongFormat(): SongFormat {
@@ -167,7 +160,7 @@ internal fun JsonObject.toSongFormat(): SongFormat {
         // In kbps
         bitrate = get("bitRate")?.jsonPrimitive?.intOrNull?.takeIf { it > 0 }?.times(1000),
         length = get("size")?.jsonPrimitive?.longOrNull?.takeIf { it > 0 },
-        gain = adjustment?.let { (REPLAY_GAIN_LUFS - it - GAIN_REFERENCE_LUFS).toFloat() },
+        gain = adjustment?.toFloat(),
     )
 }
 

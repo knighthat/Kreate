@@ -69,7 +69,9 @@ playback/
 - `SongCaches.kt` — the two SimpleCaches (streamed cache in cacheDir, downloads in
   noBackupFilesDir); `copies(song)` (quality → whole?), `drop`, `cachedLength`.
 - `LoudnessNormalizer.kt` — volume change in dB from a song's gain (`normalizationDb`,
-  `cutToVolume`), from the recorder's in-memory formats first, then the DB.
+  `cutToVolume`, `replayGainLoudness`), from the recorder's in-memory formats first, then the DB;
+  to `LOUDNESS_TARGET_LUFS`, OpenSubsonic `raw` gains read against `OPEN_SUBSONIC_REPLAY_GAIN_LUFS`,
+  unchanged while `LOUDNESS_NORMALIZATION` is off (all followed live).
 - `PlaybackHistoryRecorder.kt` — AnalyticsListener created in `PlaybackService`:
   `PlaybackStatsListener` play time (no pauses/loading, wall-clock) → `recordPlay` per session ≥
   `Preferences.PLAYBACK_HISTORY_MIN_SECONDS` (Player settings → History, default 1 s), nothing while

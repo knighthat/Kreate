@@ -66,6 +66,8 @@ fun PlayerSettingsScreen(
     val preloadSeconds by Preferences.PLAYBACK_PRELOAD_SECONDS.collectAsStateWithLifecycle()
     val failureAction by Preferences.PLAYBACK_FAILURE_ACTION.collectAsStateWithLifecycle()
     val stallSeconds by Preferences.PLAYBACK_STALL_SECONDS.collectAsStateWithLifecycle()
+    val loudnessNormalization by Preferences.LOUDNESS_NORMALIZATION.collectAsStateWithLifecycle()
+    val loudnessTarget by Preferences.LOUDNESS_TARGET_LUFS.collectAsStateWithLifecycle()
     val bufferAhead by Preferences.PLAYBACK_BUFFER_AHEAD_SECONDS.collectAsStateWithLifecycle()
     val bufferToStart by Preferences.PLAYBACK_BUFFER_TO_START_SECONDS.collectAsStateWithLifecycle()
     val keepPlayed by Preferences.PLAYBACK_KEEP_PLAYED.collectAsStateWithLifecycle()
@@ -89,6 +91,8 @@ fun PlayerSettingsScreen(
         preloadSeconds = preloadSeconds,
         failureAction = failureAction,
         stallSeconds = stallSeconds,
+        loudnessNormalization = loudnessNormalization,
+        loudnessTarget = loudnessTarget,
         bufferAhead = bufferAhead,
         bufferToStart = bufferToStart,
         keepPlayed = keepPlayed,
@@ -122,6 +126,8 @@ private fun PlayerSettingsContent(
     preloadSeconds: Int,
     failureAction: PlaybackFailureAction,
     stallSeconds: Int,
+    loudnessNormalization: Boolean,
+    loudnessTarget: Int,
     bufferAhead: Int,
     bufferToStart: Int,
     keepPlayed: Boolean,
@@ -206,6 +212,24 @@ private fun PlayerSettingsContent(
             label = { stallLabels.getValue(it) },
             onSelect = { Preferences.PLAYBACK_STALL_SECONDS.update(it) },
         )
+
+        SettingsSection(stringResource(R.string.setting_header_sound))
+        SwitchSetting(
+            title = stringResource(R.string.setting_title_even_out_loudness),
+            checked = loudnessNormalization,
+            onCheckedChange = { Preferences.LOUDNESS_NORMALIZATION.update(it) },
+            summary = stringResource(R.string.setting_description_even_out_loudness),
+        )
+        if (loudnessNormalization) {
+            val lufsLabels = TARGET_LUFS.associateWith { stringResource(R.string.lufs, it) }
+            SliderSetting(
+                title = stringResource(R.string.setting_title_target_loudness),
+                value = loudnessTarget,
+                options = TARGET_LUFS,
+                label = { lufsLabels.getValue(it) },
+                onSelect = { Preferences.LOUDNESS_TARGET_LUFS.update(it) },
+            )
+        }
 
         SettingsSection(stringResource(R.string.setting_header_buffering))
         val unlimited = stringResource(R.string.status_unlimited)
@@ -348,6 +372,8 @@ private fun PlayerSettingsPreview() = PreviewTheme {
         preloadSeconds = 5,
         failureAction = PlaybackFailureAction.SKIP,
         stallSeconds = 15,
+        loudnessNormalization = true,
+        loudnessTarget = -14,
         bufferAhead = 50,
         bufferToStart = 1,
         keepPlayed = false,
@@ -376,3 +402,6 @@ private val BUFFER_SECONDS = listOf(1, 2, 3, 5, 10, 15, 20, 30, 40, 50, 60)
 
 /** Seconds that can be loaded ahead, `0` (last) for the whole song. */
 private val BUFFER_AHEAD_SECONDS = BUFFER_SECONDS + 0
+
+/** Loudness songs can be evened out to, in LUFS, quietest first. */
+private val TARGET_LUFS = (-18..-10).toList()

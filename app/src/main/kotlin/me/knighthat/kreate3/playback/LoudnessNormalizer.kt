@@ -28,10 +28,14 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import me.knighthat.kreate3.database.model.SongFormat
 import me.knighthat.kreate3.database.repository.SongRepository
+import me.knighthat.kreate3.provider.opensubsonic.RAW_FORMAT
+import me.knighthat.kreate3.source.local.REFERENCE_LUFS
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -42,12 +46,20 @@ private const val MAX_CUT_DB = 24f
 private const val MAX_BOOST_DB = 6f
 
 /**
- * How many dB to change the volume by so a song with [gain] plays at the reference loudness, `0`
- * when the gain isn't known. A gain is positive for a song louder than the reference, it is cut by
- * that much, and a quiet song with a negative gain is boosted, up to [MAX_BOOST_DB].
+ * How many dB to change the volume by so a song with [gain] plays at [targetLufs], `0` when the
+ * gain isn't known. A gain is the song's loudness over [REFERENCE_LUFS], positive for a louder
+ * song; a song louder than the target is cut, a quieter one is boosted, up to [MAX_BOOST_DB].
  */
-internal fun normalizationDb(gain: Float?): Float =
-    if (gain == null) 0f else (-gain).coerceIn(-MAX_CUT_DB, MAX_BOOST_DB)
+internal fun normalizationDb(gain: Float?, targetLufs: Int = REFERENCE_LUFS.toInt()): Float =
+    if (gain == null) 0f
+    else ((targetLufs - REFERENCE_LUFS).toFloat() - gain).coerceIn(-MAX_CUT_DB, MAX_BOOST_DB)
+
+/**
+ * The gain, over [REFERENCE_LUFS], of a song whose [replayGain] brings it to [taggedLufs]: a
+ * ReplayGain of `-7.5` against -18 LUFS is a song at -10.5 LUFS, `3.5` over -14 LUFS.
+ */
+internal fun replayGainLoudness(replayGain: Float, taggedLufs: Int): Float =
+    (taggedLufs - REFERENCE_LUFS).toFloat() - replayGain
 
 /** The volume, from `0` to `1`, that lowers the sound by [db], which can't be positive. */
 internal fun cutToVolume(db: Float): Float = 10f.pow(db.coerceAtMost(0f) / 20f)
@@ -62,6 +74,10 @@ internal fun cutToVolume(db: Float): Float = 10f.pow(db.coerceAtMost(0f) / 20f)
  * attached to the audio session of the player. The gain is followed while the song plays, so a
  * measurement that finishes meanwhile is applied at once.
  *
+ * Songs are brought to [targetLufs]. OpenSubsonic's gain is the server's ReplayGain, read against
+ * [replayGainLufs]. While [enabled] is off every song plays as it is. The settings are followed
+ * while playing, a change applies to the song playing at once.
+ *
  * Use it on the main thread, [scope] has to run there. Call [release] with the player.
  */
 @OptIn(UnstableApi::class)
@@ -69,12 +85,21 @@ class LoudnessNormalizer(
     private val player: ExoPlayer,
     private val songs: SongRepository,
     private val formats: SongFormatRecorder,
+    private val enabled: StateFlow<Boolean>,
+    private val targetLufs: StateFlow<Int>,
+    private val replayGainLufs: StateFlow<Int>,
     private val scope: CoroutineScope,
 ) : Player.Listener {
 
     private var enhancer: LoudnessEnhancer? = null
     private var following: Job? = null
+
+    /** The format of the song playing that holds its gain. */
+    private var gainFormat: SongFormat? = null
     private var adjustmentDb = 0f
+    private val settings = scope.launch {
+        combine(enabled, targetLufs, replayGainLufs) { _, _, _ -> }.collect { apply() }
+    }
 
     init {
         player.addListener(this)
@@ -89,6 +114,7 @@ class LoudnessNormalizer(
     fun release() {
         player.removeListener(this)
         following?.cancel()
+        settings.cancel()
         enhancer?.release()
         enhancer = null
     }
@@ -98,20 +124,32 @@ class LoudnessNormalizer(
         val songId = item?.mediaId
         // Never the last song's gain, the one of this song when it's in memory already, like
         // when it was read ahead of the song before
-        adjust(normalizationDb(songId?.let { gainOf(formats.pendingFormatsOf(it)) }))
+        gainFormat = songId?.let { gainFormatOf(formats.pendingFormatsOf(it)) }
+        apply()
 
         songId ?: return
         following = scope.launch {
             // Its formats move from memory to the database once it is stored, for a moment it
             // has neither: a gain found stays until another one is
             merge(songs.formatsOf(songId), formats.pendingFormats(songId)).collect { found ->
-                gainOf(found)?.let { adjust(normalizationDb(it)) }
+                gainFormatOf(found)?.let {
+                    gainFormat = it
+                    apply()
+                }
             }
         }
     }
 
-    private fun gainOf(formats: List<SongFormat>): Float? =
-        formats.firstOrNull { it.gain != null }?.gain
+    private fun gainFormatOf(formats: List<SongFormat>): SongFormat? =
+        formats.firstOrNull { it.gain != null }
+
+    /** Adjusts the volume to the song playing with the settings as they are now. */
+    private fun apply() {
+        val gain = gainFormat?.gain?.let {
+            if (gainFormat?.tag == RAW_FORMAT) replayGainLoudness(it, replayGainLufs.value) else it
+        }
+        adjust(if (enabled.value) normalizationDb(gain, targetLufs.value) else 0f)
+    }
 
     /**
      * Changes the volume by [db]. A cut goes through the player's volume and a boost through

@@ -71,7 +71,8 @@ open items are at the end.
 
 - Runs from the resolver's `beforeRead`, so the gain is stored before playback starts.
 - YouTube: `tag` = itag, gain = `loudnessDb`.
-- OpenSubsonic: `raw` row (from `getSong`, holds the gain: −4 − trackGain, album gain as fallback)
+- OpenSubsonic: `raw` row (from `getSong`, holds the server's ReplayGain as given: trackGain,
+  album gain as fallback; `LoudnessNormalizer` reads it against `OPEN_SUBSONIC_REPLAY_GAIN_LUFS`)
   and `{codec}-{kbps}` rows (e.g. `opus-96`) per transcoded output, without gain. Non-transcoding
   servers: tag from the response Content-Type (`recordAnswered`).
 - Songs not in the DB can't hold rows (FK): their formats wait in memory (`pending`, 50 songs)

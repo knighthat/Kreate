@@ -72,7 +72,8 @@ ui/screen/
   Wi-Fi + mobile quality sliders), `LibrarySyncSettings.kt` (per-section sync/show switches of a
   source); both, like `ProxySettings`, also have a stateless overload taking values that previews
   call. `general/GeneralSettingsScreen.kt`, `player/PlayerSettingsScreen.kt` (player behavior/UI
-  only: Queue incl. preload slider, failure action + stall limit, Buffering (load ahead incl.
+  only: Queue incl. preload slider, failure action + stall limit, Sound (even out loudness switch,
+  target loudness slider), Buffering (load ahead incl.
   Unlimited / before
   playing sliders, keep played switch), History; Android Auto section with
   the three
@@ -82,5 +83,6 @@ ui/screen/
   page + always-shown Playback quality sliders, `YouTubeAccountViewModel.kt`,
   `YouTubeSignInScreen.kt` WebView sign-in, `YouTubeChannelPicker.kt`), `network/opensubsonic/` (
   `OpenSubsonicSettingsScreen.kt` + `OpenSubsonicSettingsViewModel.kt`: server, cert trust, sign-in
-  checks, direct play, quality sliders, library), `backup/` (`BackupSettingsScreen.kt` +
+  checks, direct play, quality sliders, ReplayGain reference (LUFS), library), `backup/` (
+  `BackupSettingsScreen.kt` +
   `BackupViewModel.kt`, SAF export/restore).
