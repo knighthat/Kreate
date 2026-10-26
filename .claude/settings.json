@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./build/**)",
+      "Read(./**/build/intermediates/**)",
+      "Read(./**/build/outputs/**)",
+      "Read(./**/build/tmp/**)",
+      "Read(./**/build/kotlin/**)",
+      "Read(./**/build/kspCaches/**)",
+      "Read(./**/build/classes/**)",
+      "Read(./**/build/libs/**)",
+      "Read(./**/build/generated/res/**)",
+      "Read(./**/build/generated/updated_navigation_xml/**)",
+      "Read(./**/build/generated/ksp/release/**)"
+    ]
+  }
+}

@@ -8,7 +8,13 @@
   about the feature behind it. When the request itself says what the setting does and the behavior
   is small (e.g. "Icon only" hiding labels), ask once whether to build that behavior too.
 - **Where things live:** `.claude/file-index.md` maps every source file to what it does; check
-  it first. Ask once whether to update it yourself when files are added, moved or removed.
+  it first; grep it for a name or folder instead of reading it whole. Ask once whether to update
+  it yourself when files are added, moved or removed. `.claude/rule-index.md` does the same for
+  rules and docs: update it in the same change when a rule or doc is added, split, renamed or its
+  `paths` change.
+- **Read in parts.** Grep for the symbol before opening a file; read files over ~300 lines by
+  line range, and don't re-read what's unchanged since you last read it. Filter build and test
+  output to failures (`./gradlew … -q --continue 2>&1 | grep -E 'e: |w: |FAILED|error:'`).
 - **Shared templates and references are suggestions.** Take their useful ideas and follow the
   project's own design (e.g. `MutableStateFlow` with private `_state`, DataStore hidden behind an
   interface) instead of porting the reference wholesale.

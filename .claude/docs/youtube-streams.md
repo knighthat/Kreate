@@ -2,7 +2,7 @@
 
 ## Current setup
 
-- `:provider` depends on innertubex (pinning and bumping: `.claude/rules/sources.md`).
+- `:provider` depends on innertubex (pinning and bumping: `.claude/rules/youtube.md`).
 - `YouTubeStreams.kt` wraps `InnerTubeExtractor` (`PlayerConfigRepository.disabled()`, HLS/SABR
   off) behind `InnerTube.stream`. A signed-out instance serves every quality except ORIGINAL; a
   second instance with the session cookie + `ContentHints.withPremium()` serves ORIGINAL.
@@ -19,7 +19,7 @@
 
 ## Signed-out vs session
 
-- Streams stay signed out except ORIGINAL (see `.claude/rules/sources.md`). Age-restricted songs
+- Streams stay signed out except ORIGINAL (see `.claude/rules/youtube.md`). Age-restricted songs
   therefore return `null`, except that with ORIGINAL picked and someone signed in they may play as a
   side effect.
 - Premium isn't detected: a non-Premium account on ORIGINAL gets 251 (High), possibly after a 403 →

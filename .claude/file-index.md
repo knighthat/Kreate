@@ -6,7 +6,7 @@ path still exists before relying on it; `git ls-files '*/src/main/*.kt'` finds f
 Paths below are relative to `<module>/src/main/kotlin/me/knighthat/kreate3/`. Tests mirror them
 under `src/test/` (see the list at the end). Room schema:
 `database/schemas/me.knighthat.kreate3.database.AppDatabase/1.json` (v1, see
-`.claude/rules/data-model.md`).
+`.claude/rules/database.md`).
 
 Module shape and rules: `.claude/rules/modules.md`.
 
@@ -193,7 +193,7 @@ source/ (app-side glue for sources)
 - `CoverCache.kt` — shared cover sizes (`SMALL_COVER` 512 / `LARGE_COVER` 1440, `coverSize`), JPEG
   re-encode (`encodeCover`), Coil disk-cache read/save helpers (see `.claude/docs/cover-cache.md`).
 - local/`LocalCover.kt` — album-art content URI (`albumArtUri`), Coil `LocalCoverFetcher`/`Keyer`,
-  disk-cached in two sizes keyed by DATE_MODIFIED (see `.claude/rules/data-model.md`).
+  disk-cached in two sizes keyed by DATE_MODIFIED (see `.claude/docs/cover-cache.md`).
 - opensubsonic/`OpenSubsonicCoverFetcher.kt` — Coil fetcher signing `getCoverArt` requests via the
   provider, disk-cached in two sizes; throws (never returns null) while the server is off.
 - opensubsonic/`OpenSubsonicSearch.kt` — `searchOpenSubsonic` paging (search3 by offset, one kind
@@ -204,7 +204,7 @@ source/ (app-side glue for sources)
 - youtube/`YouTubeBrowse.kt` — `browseYouTube` paging for "See more" pages.
 
 ui/component/ (shared composables; each file that draws something ends with its own previews,
-`.claude/rules/ui.md`)
+`.claude/rules/previews.md`)
 
 - `Buttons.kt` —
   Back/Search/Profile/Settings/More/Share/PlayAll/Shuffle/PlayNext/AddToQueue/Random/CreatePlaylist/
@@ -229,7 +229,7 @@ ui/component/ (shared composables; each file that draws something ends with its 
   `add`/`create` on the global scope with an Added/Already in/Couldn't message; a song not in the
   `song` table is stored first (`SongStore`).
   `CreatePlaylistDialog` (also used by `HomePlaylistsScreen`).
-- `ItemParts.kt` — `ItemRow`, `Thumbnail` (fallback drawable, `.claude/rules/ui.md`),
+- `ItemParts.kt` — `ItemRow`, `Thumbnail` (fallback drawable, `.claude/rules/covers.md`),
   `thumbnailModel`, `ItemBadge(s)` (origin/explicit badges; `OriginBadge`, `ExplicitBadge` alone),
   `formatDuration`,
   `MediaItem.localSongId`.
@@ -343,7 +343,7 @@ ui/screen/
   The bar under the tabs (`PageButtons` in PlayerSheet.kt,
   `BUTTON_BAR_HEIGHT`) shows each page's buttons, fading with the pager; queue list state and mode
   are hoisted into `FullPlayer`; the mode resets to NONE whenever the pager's current page leaves
-  the queue (`.claude/rules/ui.md`: leaving a page resets its buttons).
+  the queue (`.claude/rules/player.md`: leaving a page resets its buttons).
 - search/ — `SearchScreen.kt` + `SearchViewModel.kt` (input, history, YouTube/server suggestions;
   the screen restores and saves `Preferences.SEARCH_ORIGIN`, falling back to LOCAL while the server
   is off), `SearchResultsScreen.kt` + `SearchResultsViewModel.kt`.
@@ -385,7 +385,7 @@ Pure Kotlin/JVM (`kotlin("jvm")`), package `me.knighthat.kreate3.model`, rules i
 ## :database
 
 - `AppDatabase.kt` — Room DB (internal), entity/view/DAO list. `DatabaseModule.kt` — Koin,
-  BundledSQLiteDriver (`.claude/rules/data-model.md`), repositories.
+  BundledSQLiteDriver (`.claude/rules/database.md`), repositories.
 - `DatabaseBackup.kt` — `export` (VACUUM INTO), `restore` (before the DB opens), `VERSION` (=
   `DATABASE_VERSION` in DatabaseModule.kt).
 - `ActiveUser.kt` — interface the app provides to say whose data to use. `repository/UserScope.kt` —

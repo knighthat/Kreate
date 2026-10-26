@@ -9,6 +9,8 @@ paths:
 
 # External sources (YouTube, OpenSubsonic)
 
+Per source: `youtube.md`, `opensubsonic.md`; sync: `sync.md`.
+
 ## Gates
 
 - Nothing contacts the OpenSubsonic server while `Preferences.OPEN_SUBSONIC_ENABLED` is off, saved
@@ -19,36 +21,6 @@ paths:
   (`IOException`), never return `null` (see `OpenSubsonicCoverFetcher`).
 - `YOUTUBE_ACCOUNT_ENABLED` off: YouTube requests carry no cookies (signed out; search still
   works, no library or like sync). The saved session is kept.
-
-## OpenSubsonic
-
-- The sign-in goes in a POST form body, never the address (the Ktor logger prints addresses).
-  Covers are fetched with a POST through the provider too.
-- Self-signed servers: trust on first use, only for chains ending in a self-signed cert; the cert
-  is pinned per host and a changed one prompts before it's trusted (`SelfSignedTrustManager`).
-- Volume levelling needs ReplayGain tags on the server; songs without them aren't levelled.
-  Measuring server songs in the app was dropped, don't propose it.
-- `getTopSongs` ranks by outside metadata (Last.fm/ListenBrainz on Navidrome) and is uneven: on
-  one server it gave anywhere from 10 down to 0 songs per artist, and some servers don't implement
-  it. Never rely on it alone: fill from `search3` by the artist's name, keeping only songs of that
-  artist id (`OpenSubsonicProvider.topSongs`).
-
-## YouTube
-
-- Screens are built on `YouTubeProvider` + Paging (`source/youtube/`), not on repositories.
-- Library calls fail with `YouTubeException.signedOut` when the answer reports `logged_in=0`, so an
-  ended session never empties the library.
-- Streams are requested **signed out** (no cookies to innertubex), except `StreamQuality.ORIGINAL`,
-  which asks in the session with innertubex's premium hint (itag 141). Don't pass cookies or add
-  age-restricted hints anywhere else.
-- innertubex is pinned from JitPack in `libs.versions.toml`, bumped by hand. Before bumping, check
-  the tag built: `https://jitpack.io/api/builds/com.github.MetrolistGroup/innertubex/<tag>`. If
-  playback breaks, an outdated innertubex is the first suspect; ask once whether to bump it then.
-- The BotGuard `API_KEY`/`REQUEST_KEY` in `PoTokenWebView` are YouTube's public web values (via
-  NewPipe/Metrolist); if Google rotates them, take the new ones from there.
-- Don't probe InnerTube heavily from a dev machine (bot flag). Check yt-dlp's `INNERTUBE_CLIENTS`
-  and innertubex's client catalog before changing clients.
-- Details: `.claude/docs/youtube-streams.md`, `.claude/docs/playback-pipeline.md`.
 
 ## Proxies
 

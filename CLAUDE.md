@@ -21,8 +21,6 @@ Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper
 - Release builds are minified and resource-shrunk by R8; obfuscation is off (`-dontobfuscate`).
 - Enum values use SCREAMING_SNAKE_CASE (`NORMAL`, `AUTOMATIC_DYNAMIC`), not PascalCase.
 - In a class or object, declare properties before functions.
-- Generated drawables (vector icons) use `#000` as their color unless the image needs a specific
-  color, and are 24dp × 24dp unless another size is asked for.
 - Work that must outlive a screen runs on the global `CoroutineScope` (Koin singleton,
   `SupervisorJob` + `Dispatchers.Default`); in UI code use `rememberCoroutineScope()` /
   `viewModelScope` instead.
@@ -31,25 +29,9 @@ Android app (Kotlin, Jetpack Compose, Material 3), built with the Gradle wrapper
   `withContext(Dispatchers.Default)` (a custom `PagingSource.load` too, Paging calls it on the
   collector's thread); long CPU work in the background runs on threads at
   `THREAD_PRIORITY_BACKGROUND`.
-- Screens with the mini player never pad around it from outside, or swiping it away leaves an
-  empty band: they pad only for the rest of the bottom bar (`MiniPlayerSpace.outside`) and end
-  their lists with room for it as content padding (`MiniPlayerSpace.inside`). `PlaybackMiniPlayer`
-  measures into the `MiniPlayerSpace` it's given.
-- Menus of list items open by long-press; rows have no trailing ⋮ (more) button.
-- Credentials never go in `Preferences`: passwords, API keys, tokens, cookies, usernames and
-  account or channel ids. Declare them in `Secrets`, which keeps them in `secrets.preferences_pb`
-  in the profile's folder under `noBackupFilesDir`, so they never leave the device. To move an
-  existing preference there, add its name to `SecretStore.MOVED_FROM_PREFERENCES`.
-- External sources sync liked songs, albums, artists and playlists separately. Of the synced data,
-  only liked songs are written to the database, and the server wins: `liked_at` is the server's
-  like time, or the current time when the song is inserted or newly liked (an already liked song
-  keeps its time); a liked song of that origin the server doesn't list as liked gets
-  `liked_at = NULL`, while dislikes (`-1`) are left alone. Albums, artists and playlists are never
-  stored by sync: lists and detail screens show only what the server returns, live (a YouTube
-  album or artist bookmarked or followed while signed out is stored, see `data-model.md`).
-  Signing out or turning off a source or its sync only stops syncing, it never clears synced
-  likes.
-- More rules load from `.claude/rules/` by path. Read `.claude/docs/` when a rule points there.
+- Rules load from `.claude/rules/` by the paths they cover; `.claude/rule-index.md` lists which
+  rule or doc covers a topic. Check it before work no loaded rule covers (builds, planning, a new
+  area), and read only the rule or doc it names. Read `.claude/docs/` when a rule points there.
 
 ## License
 
