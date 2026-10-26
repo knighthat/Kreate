@@ -13,8 +13,13 @@
   rules and docs: update it in the same change when a rule or doc is added, split, renamed or its
   `paths` change.
 - **Read in parts.** Grep for the symbol before opening a file; read files over ~300 lines by
-  line range, and don't re-read what's unchanged since you last read it. Filter build and test
-  output to failures (`./gradlew … -q --continue 2>&1 | grep -E 'e: |w: |FAILED|error:'`).
+  line range, and don't re-read what's unchanged since you last read it. Scripts in
+  `.claude/scripts/` (usage in each header) answer without reading files whole:
+  `outline.sh` (declarations with line numbers), `extract.sh` (one declaration), `callers.sh`
+  (uses and what they sit in), `strings.sh` (string keys and texts), `schema.sh` (Room tables,
+  diffs between versions), `lint.sh` (lint reports), `logcat.sh` (the app's log, collapsed).
+- **Local models** (Ollama and the like, e.g. to skim a file) only with the maintainer's explicit
+  permission: ask once, keep the answer in your local memory.
 - **Shared templates and references are suggestions.** Take their useful ideas and follow the
   project's own design (e.g. `MutableStateFlow` with private `_state`, DataStore hidden behind an
   interface) instead of porting the reference wholesale.
@@ -23,7 +28,8 @@
   it, and don't claim it as your work. Check `git status`/`git log` before assuming the tree is as
   you left it.
 - **Batch, then build.** For work spanning many files, write all of it first, then run one
-  `./gradlew … --continue` so every failure shows at once, fix, repeat. Don't build after each file.
+  `.claude/scripts/build.sh <task>…` (Gradle with `--continue`, printing only the failures) so every
+  failure shows at once, fix, repeat. Don't build after each file.
 - **Commits:** the maintainer commits. "Make a commit message" means print it. Subject short and
   lowercase like `git log`; body has one `- ` line per change, never hard-wrapped. Point out files
   that probably shouldn't be staged (e.g. `.idea/*` touched by Studio) and new files to add.
