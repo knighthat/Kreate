@@ -109,8 +109,9 @@ import me.knighthat.kreate3.ui.component.MessageHost
 import me.knighthat.kreate3.ui.component.PlaybackMiniPlayer
 import me.knighthat.kreate3.ui.component.SearchButton
 import me.knighthat.kreate3.ui.component.SectionTitle
-import me.knighthat.kreate3.ui.component.label
+import me.knighthat.kreate3.ui.component.labelsOf
 import me.knighthat.kreate3.ui.component.rememberMiniPlayerSpace
+import me.knighthat.kreate3.ui.component.sourceRes
 import me.knighthat.kreate3.ui.navigation.Tab
 import org.koin.androidx.compose.koinViewModel
 import kotlin.math.abs
@@ -305,7 +306,7 @@ private fun ConfigSheet(
             items = Origin.entries.filter { it != Origin.OPEN_SUBSONIC || serverEnabled },
             selected = origin,
             onSelect = onOriginChange,
-            label = { it.label },
+            label = labelsOf(Origin.entries) { it.sourceRes },
             modifier = Modifier.padding(horizontal = 16.dp),
         )
         SectionTitle(stringResource(R.string.section_header_look_for))

@@ -59,6 +59,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.R
@@ -68,7 +69,7 @@ import me.knighthat.kreate3.ui.component.ProfileButton
 import me.knighthat.kreate3.ui.component.SearchButton
 import me.knighthat.kreate3.ui.component.SettingsButton
 import me.knighthat.kreate3.ui.component.icon
-import me.knighthat.kreate3.ui.component.label
+import me.knighthat.kreate3.ui.component.sourceRes
 import kotlin.math.roundToInt
 
 /** How much of the content color is left on a disabled Material component. */
@@ -183,7 +184,7 @@ private fun HomeToolbar(
                     FilterChip(
                         selected = it in selected,
                         onClick = { onToggleOrigin(it) },
-                        label = { Text(it.label) },
+                        label = { Text(stringResource(it.sourceRes)) },
                         leadingIcon = {
                             // The label says the same, nothing more for screen readers
                             Icon(
@@ -213,7 +214,7 @@ private fun OriginToggle(origin: Origin, selected: Boolean, onToggle: () -> Unit
             checkedContentColor = MaterialTheme.colorScheme.primary,
         ),
     ) {
-        Icon(painterResource(origin.icon), contentDescription = origin.label)
+        Icon(painterResource(origin.icon), contentDescription = stringResource(origin.sourceRes))
     }
 
 /**

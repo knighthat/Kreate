@@ -45,6 +45,9 @@ import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.opensubsonic.ServerCheck
+import me.knighthat.kreate3.ui.component.labelRes
+import me.knighthat.kreate3.ui.component.labelsOf
+import me.knighthat.kreate3.ui.component.openSubsonicLabelRes
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
 import me.knighthat.kreate3.ui.screen.settings.MainSwitch
 import me.knighthat.kreate3.ui.screen.settings.ProxySettings
@@ -113,28 +116,7 @@ private fun CheckState.credentialsSummary(): String? = when (this) {
 }
 
 /** The first pairs of a fingerprint, enough to tell two apart at a glance. */
-/** The server converts songs above the bitrate, to the format it picked. */
-private fun StreamQuality.openSubsonicLabel(): String = when (this) {
-    StreamQuality.LOW -> "Low, up to 64 kbps"
-    StreamQuality.MEDIUM -> "Medium, up to 128 kbps"
-    StreamQuality.HIGH -> "High, up to 320 kbps, lossless songs are converted"
-    StreamQuality.ORIGINAL -> "Original, the file as it is"
-}
-
 private fun String.shortFingerprint(): String = split(':').take(8).joinToString(":") + "…"
-
-@Composable
-private fun syncModeLabel(): (SyncMode) -> String {
-    val off = stringResource(R.string.status_off)
-    val all = stringResource(R.string.all)
-    return { mode ->
-        when (mode) {
-            SyncMode.OFF -> off
-            SyncMode.LIKED -> "Liked only"
-            SyncMode.ALL -> all
-        }
-    }
-}
 
 /**
  * Asks whether to trust the certificate the server presents now in place of the trusted one.
@@ -326,7 +308,7 @@ fun OpenSubsonicSettingsScreen(
         RadioSetting(
             value = auth,
             options = OpenSubsonicAuth.entries,
-            label = { if (it == OpenSubsonicAuth.PASSWORD) "Username and password" else "API key" },
+            label = labelsOf(OpenSubsonicAuth.entries) { it.labelRes },
             onSelect = Preferences.OPEN_SUBSONIC_AUTH::update,
         )
         when (auth) {
@@ -370,7 +352,7 @@ fun OpenSubsonicSettingsScreen(
         StreamQualitySettings(
             wifi = Preferences.OPEN_SUBSONIC_QUALITY_WIFI,
             mobile = Preferences.OPEN_SUBSONIC_QUALITY_MOBILE,
-            label = StreamQuality::openSubsonicLabel,
+            label = labelsOf(StreamQuality.entries) { it.openSubsonicLabelRes },
         )
 
         SettingsSection(stringResource(R.string.setting_header_server_library))
@@ -390,14 +372,14 @@ fun OpenSubsonicSettingsScreen(
             title = stringResource(R.string.setting_title_show_albums),
             value = syncAlbums,
             options = SyncMode.entries,
-            label = syncModeLabel(),
+            label = labelsOf(SyncMode.entries) { it.labelRes },
             onSelect = Preferences.OPEN_SUBSONIC_SYNC_ALBUMS::update,
         )
         ChoiceSetting(
             title = stringResource(R.string.setting_title_show_artists),
             value = syncArtists,
             options = SyncMode.entries,
-            label = syncModeLabel(),
+            label = labelsOf(SyncMode.entries) { it.labelRes },
             onSelect = Preferences.OPEN_SUBSONIC_SYNC_ARTISTS::update,
         )
 

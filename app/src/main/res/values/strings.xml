@@ -21,11 +21,14 @@
     <string name="source_ytm">YouTube Music</string>
     <string name="source_opensubsonicapi">OpenSubsonic API</string>
     <string name="source_local">On device</string>
-    <string name="all">All</string>
+    <string name="source_better_lyrics">Better Lyrics</string>
+    <string name="source_lyrics_plus">LyricsPlus</string>
+    <string name="source_lrclib">LRCLIB</string>
     <string name="mib">MiB</string>
     <string name="percent">%1$d%%</string>
     <string name="name">Name</string>
     <string name="quoted">\"%1$s\"</string>
+    <string name="sleep_timer_to_end_of_song">Until the song ends</string>
 
     <!-- Settings: pages and sections -->
     <string name="setting_header_library">Library</string>
@@ -371,9 +374,6 @@
     <string name="menu_remove_from_playlist">Remove from playlist</string>
     <string name="menu_off">Off</string>
     <string name="menu_end_of_song">End of song</string>
-    <string name="menu_word_by_word">Word by word</string>
-    <string name="menu_line_by_line">Line by line</string>
-    <string name="menu_plain_text">Plain text</string>
 
     <!-- Setup wizard -->
     <string name="wizard_dear_user">Dear User,</string>
@@ -551,4 +551,38 @@
     <string name="notification_sleep_timer_subtitle_until_song_ends">Until the song ends</string>
     <string name="notification_sleep_timer_subtitle_paused_at">Music paused at %1$s</string>
     <string name="notification_resume_title_resuming">Resuming music</string>
+
+    <!-- The values of enums -->
+    <string name="constant_theme_mode_automatic">System</string>
+    <string name="constant_theme_mode_automatic_dynamic">Wallpaper</string>
+    <string name="constant_theme_mode_light">Light</string>
+    <string name="constant_theme_mode_light_dynamic">Light dynamic</string>
+    <string name="constant_theme_mode_dark">Dark</string>
+    <string name="constant_theme_mode_dark_dynamic">Dark dynamic</string>
+    <string name="constant_theme_mode_pitch_black">Pitch black</string>
+    <string name="constant_theme_mode_thumbnail">Thumbnail</string>
+    <string name="constant_contrast_level_normal">Normal</string>
+    <string name="constant_contrast_level_medium">Medium</string>
+    <string name="constant_contrast_level_high">High</string>
+    <string name="constant_app_icon_black">Black</string>
+    <string name="constant_app_icon_gradient">Gradient</string>
+    <string name="constant_sync_mode_off">Off</string>
+    <string name="constant_sync_mode_liked">Liked only</string>
+    <string name="constant_sync_mode_all">All</string>
+    <string name="constant_opensubsonic_auth_password">Username and password</string>
+    <string name="constant_opensubsonic_auth_api_key">API key</string>
+    <string name="constant_auto_tap_action_open">Show its songs</string>
+    <string name="constant_auto_tap_action_play_from_start">Play from the start</string>
+    <string name="constant_auto_tap_action_play_randomly">Play in random order</string>
+    <string name="constant_stream_quality_ytm_low">Low, about 48 kbps</string>
+    <string name="constant_stream_quality_ytm_medium">Medium, about 128 kbps</string>
+    <string name="constant_stream_quality_ytm_high">High, about 160 kbps</string>
+    <string name="constant_stream_quality_ytm_original">Original, 256 kbps with Premium, else High</string>
+    <string name="constant_stream_quality_opensubsonic_low">Low, up to 64 kbps</string>
+    <string name="constant_stream_quality_opensubsonic_medium">Medium, up to 128 kbps</string>
+    <string name="constant_stream_quality_opensubsonic_high">High, up to 320 kbps, lossless songs are converted</string>
+    <string name="constant_stream_quality_opensubsonic_original">Original, the file as it is</string>
+    <string name="constant_lyrics_sync_word">Word by word</string>
+    <string name="constant_lyrics_sync_line">Line by line</string>
+    <string name="constant_lyrics_sync_none">Plain text</string>
 </resources>

@@ -32,11 +32,12 @@ import me.knighthat.kreate3.constant.ContrastLevel
 import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
+import me.knighthat.kreate3.ui.component.labelRes
+import me.knighthat.kreate3.ui.component.labelsOf
 import me.knighthat.kreate3.ui.screen.settings.ChoiceSetting
 import me.knighthat.kreate3.ui.screen.settings.SettingsPage
 import me.knighthat.kreate3.ui.screen.settings.SettingsSection
 import me.knighthat.kreate3.ui.screen.settings.SwitchSetting
-import me.knighthat.kreate3.ui.screen.settings.prettyName
 
 /**
  * What the user sees and touches: the theme and the app icon.
@@ -56,14 +57,14 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             title = stringResource(R.string.setting_title_theme),
             value = themeMode,
             options = ThemeMode.entries,
-            label = ThemeMode::prettyName,
+            label = labelsOf(ThemeMode.entries) { it.labelRes },
             onSelect = Preferences.THEME_MODE::update,
         )
         ChoiceSetting(
             title = stringResource(R.string.setting_title_contrast),
             value = contrastLevel,
             options = ContrastLevel.entries,
-            label = ContrastLevel::prettyName,
+            label = labelsOf(ContrastLevel.entries) { it.labelRes },
             onSelect = Preferences.CONTRAST_LEVEL::update,
         )
 
@@ -86,7 +87,7 @@ fun UiSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             title = stringResource(R.string.setting_title_app_icon),
             value = appIcon,
             options = AppIcon.entries,
-            label = AppIcon::prettyName,
+            label = labelsOf(AppIcon.entries) { it.labelRes },
             onSelect = {
                 it.apply(context)
                 appIcon = it

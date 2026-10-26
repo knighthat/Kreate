@@ -36,6 +36,8 @@ import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.Secrets
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.provider.youtube.youTubeSyncSetting
+import me.knighthat.kreate3.ui.component.labelsOf
+import me.knighthat.kreate3.ui.component.youTubeLabelRes
 import me.knighthat.kreate3.ui.screen.settings.LibrarySyncSettings
 import me.knighthat.kreate3.ui.screen.settings.MainSwitch
 import me.knighthat.kreate3.ui.screen.settings.ProxySettings
@@ -209,19 +211,13 @@ private fun YouTubeQualitySettings(signedIn: Boolean) =
         StreamQualitySettings(
             wifi = Preferences.YOUTUBE_QUALITY_WIFI_PREMIUM,
             mobile = Preferences.YOUTUBE_QUALITY_MOBILE_PREMIUM,
-            label = StreamQuality::youTubeLabel,
+            label = labelsOf(StreamQuality.entries) { it.youTubeLabelRes },
         )
     else
         StreamQualitySettings(
             wifi = Preferences.YOUTUBE_QUALITY_WIFI,
             mobile = Preferences.YOUTUBE_QUALITY_MOBILE,
-            label = StreamQuality::youTubeLabel,
+            label = labelsOf(StreamQuality.entries) { it.youTubeLabelRes },
             options = StreamQuality.entries - StreamQuality.ORIGINAL,
         )
 
-private fun StreamQuality.youTubeLabel(): String = when (this) {
-    StreamQuality.LOW -> "Low, about 48 kbps"
-    StreamQuality.MEDIUM -> "Medium, about 128 kbps"
-    StreamQuality.HIGH -> "High, about 160 kbps"
-    StreamQuality.ORIGINAL -> "Original, 256 kbps with Premium, else High"
-}

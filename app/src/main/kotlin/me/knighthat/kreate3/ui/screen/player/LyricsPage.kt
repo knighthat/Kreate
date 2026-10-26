@@ -18,6 +18,7 @@
 
 package me.knighthat.kreate3.ui.screen.player
 
+import android.content.Context
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
@@ -85,8 +86,9 @@ import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.preferences.Preferences
 import me.knighthat.kreate3.preferences.collectAsStateWithLifecycle
 import me.knighthat.kreate3.ui.component.origin
-import me.knighthat.kreate3.ui.screen.settings.prettyName
+import me.knighthat.kreate3.ui.component.sourceRes
 import org.koin.compose.koinInject
+import org.koin.core.context.GlobalContext
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val TAG = "LyricsPage"
@@ -206,9 +208,9 @@ internal val LYRICS_TEXT_SIZES = 80..200 step 10
 @get:StringRes
 internal val LyricsSync.labelRes: Int
     get() = when (this) {
-        LyricsSync.WORD -> R.string.menu_word_by_word
-        LyricsSync.LINE -> R.string.menu_line_by_line
-        LyricsSync.NONE -> R.string.menu_plain_text
+        LyricsSync.WORD -> R.string.constant_lyrics_sync_word
+        LyricsSync.LINE -> R.string.constant_lyrics_sync_line
+        LyricsSync.NONE -> R.string.constant_lyrics_sync_none
     }
 
 /** What lyrics sources are told about the item, `null` when it has no origin or title. */
@@ -279,7 +281,7 @@ private suspend fun shown(text: String, source: String, credit: String?, setting
 
 /** Name of the source of [provider], the provider's own when it has no source anymore. */
 private fun LyricsFinder.nameOf(provider: LyricsProvider): String =
-    source(provider)?.name ?: provider.prettyName()
+    source(provider)?.name ?: GlobalContext.get().get<Context>().getString(provider.sourceRes)
 
 /**
  * The lyrics of [item], with who provides them under them. Timed lyrics follow the song, see

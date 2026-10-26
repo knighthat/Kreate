@@ -377,6 +377,3 @@ fun NumberSetting(
     )
 }
 
-/** `AUTOMATIC_DYNAMIC` as "Automatic dynamic". */
-fun Enum<*>.prettyName(): String =
-    name.lowercase().replace('_', ' ').replaceFirstChar { it.uppercase() }

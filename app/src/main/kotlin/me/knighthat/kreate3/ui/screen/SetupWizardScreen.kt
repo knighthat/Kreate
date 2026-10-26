@@ -116,6 +116,7 @@ import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.ui.component.PreviewTheme
 import me.knighthat.kreate3.ui.component.ScreenPreviews
 import me.knighthat.kreate3.ui.component.TileButton
+import me.knighthat.kreate3.ui.component.labelRes
 import me.knighthat.kreate3.ui.theme.KreateTheme
 import me.knighthat.kreate3.utils.AUDIO_PERMISSION
 import me.knighthat.kreate3.utils.hasAudioPermission
@@ -167,9 +168,6 @@ private suspend fun Context.importBackup(uri: Uri): String? =
     } catch (_: SecurityException) {
         getString(R.string.setting_description_restore_status_failed)
     }
-
-private fun String.prettify() =
-    lowercase().replace('_', ' ').replaceFirstChar { it.uppercase() }
 
 @Composable
 private fun StepColumn(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
@@ -447,7 +445,7 @@ private fun Settings(
                 FilterChip(
                     selected = it == themeMode,
                     onClick = { onThemeModeChange(it) },
-                    label = { Text(it.name.prettify()) },
+                    label = { Text(stringResource(it.labelRes)) },
                 )
             }
         }
@@ -461,7 +459,7 @@ private fun Settings(
                 FilterChip(
                     selected = it == contrastLevel,
                     onClick = { onContrastLevelChange(it) },
-                    label = { Text(it.name.prettify()) },
+                    label = { Text(stringResource(it.labelRes)) },
                 )
             }
         }

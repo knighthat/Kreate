@@ -80,6 +80,14 @@ paths:
   data builder or a lyrics source, gets one from Koin: `GlobalContext.get().get<Context>()`. Never
   call it while composing; a test that reaches it has to start Koin with the Robolectric
   application.
+- The text of a value of an enum is `constant_{enum class}_{value}` (`constant_sync_mode_liked`),
+  looked up by a `labelRes` extension in `EnumLabels.kt`; `labelsOf` hands a choice its labels. A
+  value that means something different per source has the source in the name
+  (`constant_stream_quality_ytm_low`). The one exception is `sleep_timer_to_end_of_song`.
+- An origin is named by its source: `Origin.sourceRes` gives `source_local`, `source_ytm` or
+  `source_opensubsonicapi`, there is no other label for it.
+  A lyrics provider is named the same way, `LyricsProvider.sourceRes` (`source_lrclib`), never from
+  the name of its enum value.
 - Strings only a preview shows (`KreateThemePreview.kt`) are not extracted.
 - An action can be several words (`action_sign_out`).
 - The title of a screen (its top bar, the row that opens it, a page of the setup wizard) is

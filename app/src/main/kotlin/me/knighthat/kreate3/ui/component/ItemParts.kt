@@ -80,14 +80,6 @@ import org.koin.compose.koinInject
 private val BADGE_SIZE = 12.dp
 private val ROW_THUMBNAIL_SIZE = 48.dp
 
-/** The name of the origin shown to the user. */
-internal val Origin.label: String
-    get() = when (this) {
-        Origin.LOCAL -> "Local"
-        Origin.YOUTUBE -> "YouTube"
-        Origin.OPEN_SUBSONIC -> "OpenSubsonic"
-    }
-
 /** The name of the source an item comes from, as its own strings say it. */
 @get:StringRes
 internal val Origin.sourceRes: Int
