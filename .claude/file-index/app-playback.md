@@ -90,4 +90,10 @@ playback/
   `PlaybackService.stop()` (session released, its write job joined, 5 s cap then cancelled), runs
   the block, reconnects; service makes no session while `isStopped`.
 - `PlaybackModule.kt` — Koin for player/controller and `AutoLibrary`;
-  `ProgressiveMediaSource` (128 KiB check interval), `preloadConfiguration(seconds)`.
+  `ProgressiveMediaSource` (128 KiB check interval), `preloadConfiguration(seconds)`,
+  `SongLoadControl` (back buffer from `PLAYBACK_KEEP_PLAYED` at build).
+- `SongLoadControl.kt` — `DefaultLoadControl` buffering by time: min = max = 60 s ceiling, the
+  buffer handed to the parent scaled to `PLAYBACK_BUFFER_AHEAD_SECONDS` (read each call; `0` =
+  whole song, parent loads until its heap headroom check stops it);
+  `shouldStartPlayback` own: `PLAYBACK_BUFFER_TO_START_SECONDS` (≤ ahead), ≥ 2 s after running out;
+  `KEPT_PLAYED_MS` 60 s back buffer.

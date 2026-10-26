@@ -43,6 +43,7 @@
     <string name="setting_header_requests">Requests</string>
     <string name="setting_header_sources">Sources</string>
     <string name="setting_header_queue">Queue</string>
+    <string name="setting_header_buffering">Buffering</string>
     <string name="setting_header_sleep_timer">Sleep timer</string>
     <string name="setting_header_history">History</string>
     <string name="setting_header_lyrics">Lyrics</string>
@@ -146,6 +147,10 @@
     <string name="setting_title_load_next_song_ahead">Load the next song ahead</string>
     <string name="setting_title_when_a_song_fails">When a song fails</string>
     <string name="setting_title_give_up_loading_after">Give up loading after</string>
+    <string name="setting_title_load_ahead">Load ahead</string>
+    <string name="setting_title_load_before_playing">Load before playing</string>
+    <string name="setting_title_keep_what_was_played">Keep what was played</string>
+    <string name="setting_description_keep_what_was_played">Seeking back up to a minute doesn\'t load it again, from the next time the player starts</string>
     <string name="setting_title_remove_button">Remove button</string>
     <string name="setting_title_add_button">Add button</string>
     <string name="setting_title_pause_history">Pause history</string>
@@ -266,6 +271,7 @@
 
     <!--<editor-fold defaultstate="collapsed" desc="Statuses">-->
     <string name="status_off">Off</string>
+    <string name="status_unlimited">Unlimited</string>
     <string name="status_not_set">Not set</string>
     <string name="status_granted">Granted</string>
     <string name="status_unknown_artist">Unknown artist</string>

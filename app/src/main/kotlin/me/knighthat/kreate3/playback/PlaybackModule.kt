@@ -103,6 +103,15 @@ val playbackModule = module {
                 .setHandleAudioBecomingNoisy(true)
                 // Keeps the CPU and Wi-Fi awake while playing with the screen off
                 .setWakeMode(C.WAKE_MODE_NETWORK)
+                // Buffers by time, as the settings ask
+                .setLoadControl(
+                    SongLoadControl(
+                        keptPlayedMs = if (Preferences.PLAYBACK_KEEP_PLAYED.value)
+                            SongLoadControl.KEPT_PLAYED_MS
+                        else
+                            0
+                    )
+                )
                 // Items carry no address, it is found when a song is read
                 .setMediaSourceFactory(
                     songMediaSourceFactory(

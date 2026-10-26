@@ -49,6 +49,7 @@ import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_PROXY_PORT
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_PROXY_TYPE
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_QUALITY_WIFI
 import me.knighthat.kreate3.preferences.Preferences.OPEN_SUBSONIC_SYNC_ALBUMS
+import me.knighthat.kreate3.preferences.Preferences.PLAYBACK_BUFFER_AHEAD_SECONDS
 import me.knighthat.kreate3.preferences.Preferences.PLAYBACK_STALL_SECONDS
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_ACCOUNT_ENABLED
 import me.knighthat.kreate3.preferences.Preferences.YOUTUBE_PROXY_ENABLED
@@ -420,6 +421,26 @@ object Preferences : KoinComponent {
      * as long as the network does. `PlaybackRecovery` reads it each time loading starts.
      */
     val PLAYBACK_STALL_SECONDS by lazy { int("playback_stall_seconds", 15) }
+
+    /**
+     * Seconds of the song playing the player loads ahead of where it is, from 1 to 60, `0` for
+     * the whole song. Loading stops once that much is in, and goes on as it plays out.
+     * `SongLoadControl` reads it each time the player decides whether to keep loading.
+     */
+    val PLAYBACK_BUFFER_AHEAD_SECONDS by lazy { int("playback_buffer_ahead_seconds", 50) }
+
+    /**
+     * Seconds that must be loaded before a song starts, or goes on after a seek, from 1 to 60,
+     * at most [PLAYBACK_BUFFER_AHEAD_SECONDS]. `SongLoadControl` reads it each time the player is
+     * waiting to play.
+     */
+    val PLAYBACK_BUFFER_TO_START_SECONDS by lazy { int("playback_buffer_to_start_seconds", 1) }
+
+    /**
+     * Keeps up to a minute of what was just played loaded, so seeking back doesn't load it again.
+     * `PlaybackModule` reads it when the player is made, a change applies to the next player.
+     */
+    val PLAYBACK_KEEP_PLAYED by lazy { boolean("playback_keep_played", false) }
 
     /**
      * Keeps the queue in the database, with where the song playing was, and puts it back in the

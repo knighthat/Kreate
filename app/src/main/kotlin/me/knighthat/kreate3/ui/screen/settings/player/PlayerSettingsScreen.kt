@@ -66,6 +66,9 @@ fun PlayerSettingsScreen(
     val preloadSeconds by Preferences.PLAYBACK_PRELOAD_SECONDS.collectAsStateWithLifecycle()
     val failureAction by Preferences.PLAYBACK_FAILURE_ACTION.collectAsStateWithLifecycle()
     val stallSeconds by Preferences.PLAYBACK_STALL_SECONDS.collectAsStateWithLifecycle()
+    val bufferAhead by Preferences.PLAYBACK_BUFFER_AHEAD_SECONDS.collectAsStateWithLifecycle()
+    val bufferToStart by Preferences.PLAYBACK_BUFFER_TO_START_SECONDS.collectAsStateWithLifecycle()
+    val keepPlayed by Preferences.PLAYBACK_KEEP_PLAYED.collectAsStateWithLifecycle()
     val lyricsSource by Preferences.LYRICS_SOURCE.collectAsStateWithLifecycle()
     val lyricsSync by Preferences.LYRICS_SYNC.collectAsStateWithLifecycle()
     val lyricsAlwaysLive by Preferences.LYRICS_ALWAYS_LIVE.collectAsStateWithLifecycle()
@@ -86,6 +89,9 @@ fun PlayerSettingsScreen(
         preloadSeconds = preloadSeconds,
         failureAction = failureAction,
         stallSeconds = stallSeconds,
+        bufferAhead = bufferAhead,
+        bufferToStart = bufferToStart,
+        keepPlayed = keepPlayed,
         lyricsSource = (lyrics.source(lyricsSource) ?: lyrics.sources.first()).provider,
         lyricsSources = lyrics.sources.associate { it.provider to it.name },
         lyricsSync = lyricsSync,
@@ -116,6 +122,9 @@ private fun PlayerSettingsContent(
     preloadSeconds: Int,
     failureAction: PlaybackFailureAction,
     stallSeconds: Int,
+    bufferAhead: Int,
+    bufferToStart: Int,
+    keepPlayed: Boolean,
     lyricsSource: LyricsProvider,
     lyricsSources: Map<LyricsProvider, String>,
     lyricsSync: LyricsSync,
@@ -196,6 +205,32 @@ private fun PlayerSettingsContent(
             options = STALL_SECONDS,
             label = { stallLabels.getValue(it) },
             onSelect = { Preferences.PLAYBACK_STALL_SECONDS.update(it) },
+        )
+
+        SettingsSection(stringResource(R.string.setting_header_buffering))
+        val unlimited = stringResource(R.string.status_unlimited)
+        val bufferLabels = BUFFER_AHEAD_SECONDS.associateWith {
+            if (it == 0) unlimited else pluralStringResource(R.plurals.second, it, it)
+        }
+        SliderSetting(
+            title = stringResource(R.string.setting_title_load_ahead),
+            value = bufferAhead,
+            options = BUFFER_AHEAD_SECONDS,
+            label = { bufferLabels.getValue(it) },
+            onSelect = { Preferences.PLAYBACK_BUFFER_AHEAD_SECONDS.update(it) },
+        )
+        SliderSetting(
+            title = stringResource(R.string.setting_title_load_before_playing),
+            value = bufferToStart,
+            options = BUFFER_SECONDS,
+            label = { bufferLabels.getValue(it) },
+            onSelect = { Preferences.PLAYBACK_BUFFER_TO_START_SECONDS.update(it) },
+        )
+        SwitchSetting(
+            title = stringResource(R.string.setting_title_keep_what_was_played),
+            checked = keepPlayed,
+            onCheckedChange = { Preferences.PLAYBACK_KEEP_PLAYED.update(it) },
+            summary = stringResource(R.string.setting_description_keep_what_was_played),
         )
 
         SettingsSection(stringResource(R.string.setting_header_sleep_timer))
@@ -313,6 +348,9 @@ private fun PlayerSettingsPreview() = PreviewTheme {
         preloadSeconds = 5,
         failureAction = PlaybackFailureAction.SKIP,
         stallSeconds = 15,
+        bufferAhead = 50,
+        bufferToStart = 1,
+        keepPlayed = false,
         lyricsSource = LyricsProvider.LRCLIB,
         lyricsSources = LyricsProvider.entries.associateWith { stringResource(it.sourceRes) },
         lyricsSync = LyricsSync.WORD,
@@ -332,3 +370,9 @@ private val PRELOAD_SECONDS = listOf(0, 5, 10, 15, 30, 60)
 
 /** Seconds a song may load while it should play before it fails, `0` to wait for the network. */
 private val STALL_SECONDS = listOf(0, 5, 10, 15, 30, 60)
+
+/** Seconds that can be loaded before a song plays. */
+private val BUFFER_SECONDS = listOf(1, 2, 3, 5, 10, 15, 20, 30, 40, 50, 60)
+
+/** Seconds that can be loaded ahead, `0` (last) for the whole song. */
+private val BUFFER_AHEAD_SECONDS = BUFFER_SECONDS + 0
