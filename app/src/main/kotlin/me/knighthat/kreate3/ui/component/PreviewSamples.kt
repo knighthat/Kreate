@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.ThumbRating
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaConstants
 import me.knighthat.kreate3.constant.ContrastLevel
@@ -65,7 +66,12 @@ annotation class ComponentPreviews
 fun PreviewTheme(content: @Composable () -> Unit) =
     KreateTheme(ThemeMode.AUTOMATIC, ContrastLevel.NORMAL, Color.Unspecified, content)
 
-/** An item that shows [title] and [subtitle], from [origin] when it is given. */
+/**
+ * An item that shows [title] and [subtitle], from [origin] when it is given.
+ *
+ * @param mediaType what the item is, like `MediaMetadata.MEDIA_TYPE_MUSIC`
+ * @param rated liked, bookmarked or followed, as [mediaType] says
+ */
 @OptIn(UnstableApi::class)
 fun previewItem(
     title: String,
@@ -73,6 +79,9 @@ fun previewItem(
     durationMs: Long? = null,
     origin: Origin? = null,
     explicit: Boolean = false,
+    album: String? = null,
+    mediaType: Int? = null,
+    rated: Boolean = false,
 ): MediaItem =
     MediaItem.Builder()
         .setMediaId("${origin?.name}:$title")
@@ -80,7 +89,10 @@ fun previewItem(
             MediaMetadata.Builder()
                 .setTitle(title)
                 .setSubtitle(subtitle)
+                .setAlbumTitle(album)
                 .setDurationMs(durationMs)
+                .setMediaType(mediaType)
+                .setUserRating(if (rated) ThumbRating(true) else ThumbRating())
                 .setExtras(Bundle().apply {
                     origin?.let { putString(EXTRA_ORIGIN, it.name) }
                     putBoolean(MediaConstants.EXTRAS_KEY_IS_EXPLICIT, explicit)

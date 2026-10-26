@@ -38,8 +38,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -447,3 +449,90 @@ fun formatDuration(millis: Long?): String? {
     val seconds = millis / 1000
     return "%d:%02d".format(seconds / 60, seconds % 60)
 }
+
+//<editor-fold defaultstate="collapsed" desc="Previews">
+@ComponentPreviews
+@Composable
+private fun ThumbnailPreview() = PreviewTheme {
+    val shape = MaterialTheme.shapes.small
+
+    Surface {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(16.dp),
+        ) {
+            // No picture
+            Thumbnail(uri = null, shape = shape, modifier = Modifier.size(64.dp))
+            Thumbnail(
+                models = emptyList(),
+                shape = shape,
+                modifier = Modifier.size(64.dp),
+                placeholder = {
+                    Icon(painterResource(R.drawable.queue_music), contentDescription = null)
+                },
+            )
+            // While it loads
+            Box(
+                Modifier
+                    .size(64.dp)
+                    .clip(shape)
+                    .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+            ) {
+                LoadingShimmer(Modifier.matchParentSize())
+            }
+        }
+    }
+}
+
+@ComponentPreviews
+@Composable
+private fun ItemBadgesPreview() = PreviewTheme {
+    val items = Origin.entries.map { previewItem(it.name, "", origin = it) } + listOf(
+        previewItem("Explicit", "", explicit = true),
+        previewItem("Liked", "", mediaType = MediaMetadata.MEDIA_TYPE_MUSIC, rated = true),
+        previewItem("Bookmarked", "", mediaType = MediaMetadata.MEDIA_TYPE_ALBUM, rated = true),
+        previewItem("Followed", "", mediaType = MediaMetadata.MEDIA_TYPE_ARTIST, rated = true),
+        previewItem(
+            "Everything",
+            "",
+            origin = Origin.YOUTUBE,
+            explicit = true,
+            mediaType = MediaMetadata.MEDIA_TYPE_MUSIC,
+            rated = true,
+        ),
+    )
+
+    Surface {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(16.dp),
+        ) {
+            items.forEach { ItemBadges(it) }
+            // As large as in the player
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Origin.entries.forEach { OriginBadge(it, size = 24.dp) }
+                ExplicitBadge(size = 24.dp)
+            }
+        }
+    }
+}
+
+@ComponentPreviews
+@Composable
+private fun ItemRowPreview() = PreviewTheme {
+    val item = previewItem("Title", "Subtitle")
+
+    Surface {
+        Column(modifier = Modifier.width(360.dp)) {
+            ItemRow(item, onClick = {})
+            ItemRow(
+                item,
+                onClick = {},
+                overlineEnd = "At the end of the badges' line",
+                trailing = { Text("Trailing", style = MaterialTheme.typography.labelSmall) },
+            )
+            ItemRow(item, onClick = {}, showThumbnail = false)
+        }
+    }
+}
+//</editor-fold>

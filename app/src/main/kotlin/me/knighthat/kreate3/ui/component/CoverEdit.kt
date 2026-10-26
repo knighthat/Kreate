@@ -24,9 +24,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.R
 
 /** How much a cover darkens under the handle or the remove button over it. */
@@ -116,3 +120,27 @@ private fun CoverIcon(
 ) {
     Icon(painterResource(icon), contentDescription = description, tint = Color.White)
 }
+
+//<editor-fold defaultstate="collapsed" desc="Previews">
+@ComponentPreviews
+@Composable
+private fun CoverEditPreview() = PreviewTheme {
+    val (none, reorder, remove, handle) = previewSongs()
+
+    Surface {
+        Column(modifier = Modifier.width(360.dp)) {
+            CoverEditMode.entries.zip(listOf(none, reorder, remove)).forEach { (mode, song) ->
+                SongItem(song, onClick = {}, thumbnailOverlay = {
+                    CoverEditOverlay(mode, Modifier, "Remove from playlist", onRemove = {})
+                })
+            }
+            SongItem(
+                handle,
+                onClick = {},
+                showThumbnail = false,
+                thumbnailOverlay = { DragHandle(Modifier) }
+            )
+        }
+    }
+}
+//</editor-fold>

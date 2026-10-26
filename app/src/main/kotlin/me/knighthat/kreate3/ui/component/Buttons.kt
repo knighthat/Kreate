@@ -22,24 +22,30 @@ import android.content.Context
 import android.content.Intent
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -323,3 +329,80 @@ fun MoreButton(
         }
     }
 }
+
+//<editor-fold defaultstate="collapsed" desc="Previews">
+@ComponentPreviews
+@Composable
+private fun TileButtonPreview() = PreviewTheme {
+    Surface {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier
+                .width(400.dp)
+                .padding(16.dp),
+        ) {
+            TileButton(
+                icon = R.drawable.settings,
+                title = "Restore",
+                subtitle = "From a backup file",
+                onClick = {},
+                modifier = Modifier.weight(1f),
+            )
+            TileButton(
+                icon = R.drawable.settings,
+                title = "Restoring",
+                subtitle = "While it is busy",
+                onClick = {},
+                modifier = Modifier.weight(1f),
+                busy = true,
+            )
+        }
+    }
+}
+
+@ComponentPreviews
+@Composable
+private fun IconButtonsPreview() = PreviewTheme {
+    Surface {
+        Column {
+            Row {
+                BackButton({})
+                SeeMoreButton({})
+                SearchButton({})
+                ProfileButton()
+                SettingsButton({})
+                ConfigButton({})
+                ShareButton({})
+                ShareButton({}, enabled = false)
+            }
+            Row {
+                PlayAllButton({})
+                ShuffleButton({})
+                PlayNextButton({})
+                AddToQueueButton({})
+                CreatePlaylistButton({})
+                RandomButton({})
+                SkipNextButton({})
+                MoreButton { close ->
+                    DropdownMenuItem(text = { Text("Item") }, onClick = close)
+                }
+            }
+        }
+    }
+}
+
+@ComponentPreviews
+@Composable
+private fun ToggleButtonsPreview() = PreviewTheme {
+    Surface {
+        Row {
+            BookmarkButton(isBookmarked = false, onClick = {})
+            BookmarkButton(isBookmarked = true, onClick = {})
+            FollowButton(isFollowed = false, onClick = {})
+            FollowButton(isFollowed = true, onClick = {})
+            PlayPauseButton(isPlaying = false, onClick = {})
+            PlayPauseButton(isPlaying = true, onClick = {})
+        }
+    }
+}
+//</editor-fold>

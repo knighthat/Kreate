@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -45,25 +46,19 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 import kotlinx.coroutines.launch
-import me.knighthat.kreate3.constant.ContrastLevel
-import me.knighthat.kreate3.constant.ThemeMode
 import me.knighthat.kreate3.playback.PlaybackController
 import me.knighthat.kreate3.playback.PlaybackState
 import me.knighthat.kreate3.ui.screen.player.LocalPlayerSheet
 import me.knighthat.kreate3.ui.screen.player.SETTLE_VELOCITY
-import me.knighthat.kreate3.ui.theme.KreateTheme
 import org.koin.compose.koinInject
 
 private val BUTTON_SIZE = 40.dp
@@ -256,38 +251,29 @@ fun MiniPlayer(
     }
 }
 
+//<editor-fold defaultstate="collapsed" desc="Previews">
+@ComponentPreviews
 @Composable
-private fun MiniPlayerSample(isPlaying: Boolean) {
-    MiniPlayer(
-        item = MediaItem.Builder()
-            .setMediaId("sample")
-            .setMediaMetadata(
-                MediaMetadata.Builder()
-                    .setTitle("A song with a rather long title that does not fit")
-                    .setSubtitle("Artist · Album")
-                    .build()
-            )
-            .build(),
-        isPlaying = isPlaying,
-        progress = { 0.4f },
-        onTogglePlay = {},
-        onNext = {},
-        onClick = {},
-    )
-}
+private fun MiniPlayerPreview() = PreviewTheme {
+    val songs = previewSongs()
 
-@Preview(showBackground = true, name = "Playing, light")
-@Composable
-private fun MiniPlayerPlayingPreview() {
-    KreateTheme(ThemeMode.LIGHT, ContrastLevel.NORMAL, Color.Unspecified) {
-        MiniPlayerSample(isPlaying = true)
+    Column(modifier = Modifier.width(360.dp)) {
+        MiniPlayer(
+            item = songs[2],
+            isPlaying = true,
+            progress = { 0.4f },
+            onTogglePlay = {},
+            onNext = {},
+            onClick = {},
+        )
+        MiniPlayer(
+            item = songs[1],
+            isPlaying = false,
+            progress = { 0.8f },
+            onTogglePlay = {},
+            onNext = {},
+            onClick = {},
+        )
     }
 }
-
-@Preview(showBackground = true, name = "Paused, dark")
-@Composable
-private fun MiniPlayerPausedPreview() {
-    KreateTheme(ThemeMode.DARK, ContrastLevel.NORMAL, Color.Unspecified) {
-        MiniPlayerSample(isPlaying = false)
-    }
-}
+//</editor-fold>

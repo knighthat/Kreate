@@ -21,11 +21,14 @@ package me.knighthat.kreate3.ui.component
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,6 +37,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
+import me.knighthat.kreate3.model.Origin
 
 /**
  * An artist for a grid: a round picture, the name and the number of songs under it, both centered.
@@ -87,3 +92,30 @@ fun ArtistItem(
         }
     }
 }
+
+//<editor-fold defaultstate="collapsed" desc="Previews">
+@ComponentPreviews
+@Composable
+private fun ArtistItemPreview() = PreviewTheme {
+    val artists = listOf(
+        previewArtists().first(),
+        previewItem(
+            "Followed artist with a long name",
+            "8 songs",
+            origin = Origin.YOUTUBE,
+            mediaType = MediaMetadata.MEDIA_TYPE_ARTIST,
+            rated = true,
+        ),
+        previewItem("No badges", "1 song"),
+    )
+
+    Surface {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(16.dp),
+        ) {
+            artists.forEach { ArtistItem(it, onClick = {}, modifier = Modifier.width(120.dp)) }
+        }
+    }
+}
+//</editor-fold>

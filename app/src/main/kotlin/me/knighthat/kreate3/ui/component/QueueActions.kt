@@ -21,6 +21,7 @@ package me.knighthat.kreate3.ui.component
 import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,8 +34,10 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -335,3 +338,30 @@ private fun LabeledButton(
         Spacer(Modifier.width(ButtonDefaults.IconSpacing))
         Text(label)
     }
+
+//<editor-fold defaultstate="collapsed" desc="Previews">
+@ComponentPreviews
+@Composable
+private fun QueueActionRowPreview() = PreviewTheme {
+    Surface {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .width(400.dp)
+                .padding(vertical = 8.dp),
+        ) {
+            QueueActionRow(onAction = {})
+            QueueActionRow(onAction = {}, menu = { close ->
+                DropdownMenuItem(text = { Text("Item") }, onClick = close)
+            })
+            CompositionLocalProvider(LocalIconOnly provides true) {
+                QueueActionRow(onAction = {})
+            }
+            Row(modifier = Modifier.padding(horizontal = 16.dp)) {
+                QueuePlayButton({})
+                QueueMoreButton({})
+            }
+        }
+    }
+}
+//</editor-fold>

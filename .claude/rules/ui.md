@@ -17,6 +17,15 @@ paths:
 - Helpers shared across files are `internal` top-level extensions (
   `internal fun Context.restart()`),
   not companion-object functions; companions are for the class's own constants and factories.
+- Every file of `ui/component` that draws something ends with its own previews, in a
+  `//<editor-fold defaultstate="collapsed" desc="Previews">` … `//</editor-fold>` block
+  (`SeekBar.kt`): private composables with `@ComponentPreviews`, wrapped in `PreviewTheme` and a
+  `Surface` unless the component has its own background, built from the samples of
+  `PreviewSamples.kt`. Preview-only helpers and fakes stay private inside the block. A new
+  component, or a new state of one (a flag, a mode), gets its preview in the same change. A part
+  that needs Koin, the navigator or the menu host is previewed through its pieces that don't
+  (`SongMenu.kt`). What only an effect shows has no preview, a static preview never runs it
+  (`MessageHost`). No shared preview files: previews live beside what they show.
 - Origin badges and the home origin chips both use `Origin.icon`; keep them in step. The YouTube
   Music and OpenSubsonic logos are the maintainer's choice and the trademark risk was discussed:
   don't raise it again or swap in a generic icon unless asked.

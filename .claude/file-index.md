@@ -203,7 +203,8 @@ source/ (app-side glue for sources)
   sizing.
 - youtube/`YouTubeBrowse.kt` — `browseYouTube` paging for "See more" pages.
 
-ui/component/ (shared composables)
+ui/component/ (shared composables; each file that draws something ends with its own previews,
+`.claude/rules/ui.md`)
 
 - `Buttons.kt` —
   Back/Search/Profile/Settings/More/Share/PlayAll/Shuffle/PlayNext/AddToQueue/Random/CreatePlaylist/
@@ -264,8 +265,9 @@ ui/component/ (shared composables)
   previews): bottom bar drops its text, home origin chips become `OriginToggle` icon toggles (
   primary on / 38% onSurface off), `QueuePlayButton` becomes a FilledIconButton;
   icons carry the content description.
-- `PreviewSamples.kt` (sample data, `PreviewTheme`, `@ScreenPreviews` phone-sized light+dark,
-  `@ComponentPreviews` wrap-content light+dark), `ItemPreviews.kt` (@Previews).
+- `PreviewSamples.kt` (sample data, `previewItem` with album/media type/reaction for badges,
+  `PreviewTheme`, `@ScreenPreviews` phone-sized light+dark, `@ComponentPreviews` wrap-content
+  light+dark).
 - seekbar/`SeekBar.kt` — the full player's seek bar (moved out of PlayerSheet.kt by the maintainer),
   with previews and a private fake `PlaybackController`.
 

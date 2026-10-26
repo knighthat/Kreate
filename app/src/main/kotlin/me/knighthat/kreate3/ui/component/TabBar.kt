@@ -18,14 +18,18 @@
 
 package me.knighthat.kreate3.ui.component
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import me.knighthat.kreate3.ui.navigation.Tab
 
 /**
@@ -56,3 +60,16 @@ fun TabBar(
         }
     }
 }
+
+//<editor-fold defaultstate="collapsed" desc="Previews">
+@ComponentPreviews
+@Composable
+private fun TabBarPreview() = PreviewTheme {
+    Column(modifier = Modifier.width(360.dp)) {
+        TabBar(selected = Tab.SONGS, onSelect = {})
+        CompositionLocalProvider(LocalIconOnly provides true) {
+            TabBar(selected = Tab.ALBUMS, onSelect = {})
+        }
+    }
+}
+//</editor-fold>

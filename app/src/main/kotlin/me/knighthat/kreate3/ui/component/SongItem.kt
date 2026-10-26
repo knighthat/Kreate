@@ -19,7 +19,10 @@
 package me.knighthat.kreate3.ui.component
 
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -31,8 +34,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionOnScreen
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
+import me.knighthat.kreate3.model.Origin
 
 /** Where a row is laid out, so its menu can lift it from there. */
 private class RowAnchor {
@@ -117,3 +123,28 @@ internal fun SongRow(
         onLongClick = onLongClick,
     )
 }
+
+//<editor-fold defaultstate="collapsed" desc="Previews">
+@ComponentPreviews
+@Composable
+private fun SongItemPreview() = PreviewTheme {
+    val liked = previewItem(
+        "Liked song",
+        "Neon Coast",
+        226_000,
+        Origin.OPEN_SUBSONIC,
+        album = "Afterglow",
+        mediaType = MediaMetadata.MEDIA_TYPE_MUSIC,
+        rated = true,
+    )
+
+    Surface {
+        Column(modifier = Modifier.width(360.dp)) {
+            previewSongs().take(3).forEach { SongItem(it, onClick = {}) }
+            SongItem(liked, onClick = {})
+            // Inside its album
+            SongItem(liked, onClick = {}, showThumbnail = false, showAlbum = false)
+        }
+    }
+}
+//</editor-fold>

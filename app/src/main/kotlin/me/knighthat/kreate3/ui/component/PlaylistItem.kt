@@ -18,7 +18,7 @@
 
 package me.knighthat.kreate3.ui.component
 
-import android.net.Uri
+import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,10 +26,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,6 +43,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import com.materialkolor.hct.Hct
 import me.knighthat.kreate3.R
@@ -65,7 +69,7 @@ private val MediaItem.playlistCovers: List<Any>
         val covers = extras.getStringArray(EXTRA_COVERS) ?: return emptyList()
         val localIds = extras.getStringArray(EXTRA_COVER_LOCAL_IDS)
         return covers.mapIndexedNotNull { index, cover ->
-            thumbnailModel(Uri.parse(cover), localIds?.getOrNull(index)?.toLongOrNull())
+            thumbnailModel(cover.toUri(), localIds?.getOrNull(index)?.toLongOrNull())
         }
     }
 
@@ -194,3 +198,33 @@ private fun initialColors(name: String, dark: Boolean): Pair<Color, Color> {
     val content = Hct.from(hue, INITIAL_CHROMA, if (dark) 90.0 else 10.0)
     return Color(background.toInt()) to Color(content.toInt())
 }
+
+//<editor-fold defaultstate="collapsed" desc="Previews">
+/** [item] with [count] song covers, that don't load in a preview. */
+private fun withCovers(item: MediaItem, count: Int): MediaItem = item.buildUpon()
+    .setMediaMetadata(
+        item.mediaMetadata.buildUpon()
+            .setExtras(Bundle(item.mediaMetadata.extras).apply {
+                putStringArray(EXTRA_COVERS, Array(count) { "preview://cover/$it" })
+            })
+            .build()
+    )
+    .build()
+
+@ComponentPreviews
+@Composable
+private fun PlaylistItemPreview() = PreviewTheme {
+    val (roadTrip, monthly, focus, gym) = previewPlaylists()
+
+    Surface {
+        Column(modifier = Modifier.width(360.dp)) {
+            PlaylistItem(roadTrip, onClick = {})
+            CompositionLocalProvider(LocalPlaylistInitial provides true) {
+                PlaylistItem(monthly, onClick = {})
+            }
+            PlaylistItem(withCovers(focus, 1), onClick = {})
+            PlaylistItem(withCovers(gym, GRID_COVERS), onClick = {})
+        }
+    }
+}
+//</editor-fold>

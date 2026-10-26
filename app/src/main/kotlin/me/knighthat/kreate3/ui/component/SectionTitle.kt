@@ -18,10 +18,13 @@
 
 package me.knighthat.kreate3.ui.component
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -59,3 +62,17 @@ fun SectionTitle(title: String, modifier: Modifier = Modifier, onSeeMore: (() ->
         SeeMoreButton(onSeeMore)
     }
 }
+
+//<editor-fold defaultstate="collapsed" desc="Previews">
+@ComponentPreviews
+@Composable
+private fun SectionTitlePreview() = PreviewTheme {
+    Surface {
+        Column(modifier = Modifier.width(360.dp)) {
+            SectionTitle("Recently played")
+            SectionTitle("Albums", onSeeMore = {})
+            SectionTitle("A title that is far too long to fit on one line", onSeeMore = {})
+        }
+    }
+}
+//</editor-fold>

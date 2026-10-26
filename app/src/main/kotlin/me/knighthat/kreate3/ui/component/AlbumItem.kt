@@ -19,11 +19,15 @@
 package me.knighthat.kreate3.ui.component
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -70,3 +74,20 @@ fun AlbumItem(
         }
     }
 }
+
+//<editor-fold defaultstate="collapsed" desc="Previews">
+@ComponentPreviews
+@Composable
+private fun AlbumItemPreview() = PreviewTheme {
+    val albums = previewAlbums().take(2) + previewItem("No badges", "Artist · 2022")
+
+    Surface {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(16.dp),
+        ) {
+            albums.forEach { AlbumItem(it, onClick = {}, modifier = Modifier.width(120.dp)) }
+        }
+    }
+}
+//</editor-fold>

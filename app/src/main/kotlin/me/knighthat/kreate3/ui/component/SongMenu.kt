@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,6 +48,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -612,3 +614,58 @@ private fun ButtonLabel(text: String, enabled: Boolean) = Text(
     style = MaterialTheme.typography.labelMedium,
     modifier = Modifier.alpha(if (enabled) 1f else 0.38f),
 )
+
+//<editor-fold defaultstate="collapsed" desc="Previews">
+/** What the sheet shows, from its parts: the menu itself reads the song's reaction from Koin. */
+@OptIn(ExperimentalMaterial3Api::class)
+@ComponentPreviews
+@Composable
+private fun SongMenuPreview() = PreviewTheme {
+    Surface(color = BottomSheetDefaults.ContainerColor) {
+        Column(modifier = Modifier.width(360.dp)) {
+            BottomSheetDefaults.DragHandle(Modifier.align(Alignment.CenterHorizontally))
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                ReactionToggle(
+                    isSet = false,
+                    enabled = true,
+                    setIcon = R.drawable.thumb_down,
+                    unsetIcon = R.drawable.thumb_down_outline,
+                    label = stringResource(R.string.menu_dislike),
+                    onClick = {},
+                )
+                ReactionToggle(
+                    isSet = true,
+                    enabled = true,
+                    setIcon = R.drawable.thumb_up,
+                    unsetIcon = R.drawable.thumb_up_outline,
+                    label = stringResource(R.string.menu_like),
+                    onClick = {},
+                )
+                LabeledIconButton(
+                    icon = R.drawable.share,
+                    label = stringResource(R.string.menu_share),
+                    enabled = false,
+                    onClick = {},
+                )
+            }
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            // Not playable
+            MenuRow(
+                R.drawable.queue_play_next,
+                stringResource(R.string.menu_play_next),
+                enabled = false
+            ) {}
+            MenuRow(
+                icon = R.drawable.library_add,
+                label = stringResource(R.string.menu_add_to_playlist),
+                trailing = R.drawable.chevron_right,
+            ) {}
+            MenuRow(R.drawable.radio, stringResource(R.string.menu_start_radio)) {}
+            Spacer(Modifier.height(16.dp))
+        }
+    }
+}
+//</editor-fold>
